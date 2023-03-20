@@ -206,6 +206,10 @@ AuthResult::AuthResult(const std::string& error_message,
 
 AuthResult::~AuthResult() = default;
 
+void AuthResult::CopyFlagsFrom(const AuthResult& source) {
+  flags |= source.flags;
+}
+
 // static
 AuthResult AuthResult::CreateWithParseError(const std::string& error_message,
                                             ErrorType error_type) {
@@ -250,9 +254,10 @@ AuthResult AuthContext::VerifySenderNonce(
       success.set_flag(CastChannelFlag::kSenderNonceMismatch);
     }
     if (base::FeatureList::IsEnabled(kEnforceNonceChecking)) {
-      return AuthResult("Sender nonce mismatched.",
-                        AuthResult::ERROR_SENDER_NONCE_MISMATCH,
-                        CastChannelFlag::kSenderNonceMismatch);
+      AuthResult failure = AuthResult("Sender nonce mismatched.",
+                                      AuthResult::ERROR_SENDER_NONCE_MISMATCH);
+      failure.CopyFlagsFrom(success);
+      return failure;
     }
   } else {
     RecordNonceStatus(CastNonceStatus::kMatch);
@@ -321,26 +326,32 @@ AuthResult AuthenticateChallengeReply(const CastMessage& challenge_reply,
                                       const net::X509Certificate& peer_cert,
                                       const AuthContext& auth_context) {
   DeviceAuthMessage auth_message;
-  AuthResult result = ParseAuthMessage(challenge_reply, &auth_message);
-  if (!result.success()) {
-    return result;
+  AuthResult parse_result = ParseAuthMessage(challenge_reply, &auth_message);
+  if (!parse_result.success()) {
+    return parse_result;
   }
 
   std::string peer_cert_der;
-  result = VerifyTLSCertificate(peer_cert, &peer_cert_der, base::Time::Now());
-  if (!result.success()) {
-    return result;
+  AuthResult tls_result =
+      VerifyTLSCertificate(peer_cert, &peer_cert_der, base::Time::Now());
+  tls_result.CopyFlagsFrom(parse_result);
+  if (!tls_result.success()) {
+    return tls_result;
   }
 
   const AuthResponse& response = auth_message.response();
   const std::string& nonce_response = response.sender_nonce();
 
-  result = auth_context.VerifySenderNonce(nonce_response);
-  if (!result.success()) {
-    return result;
+  AuthResult nonce_result = auth_context.VerifySenderNonce(nonce_response);
+  nonce_result.CopyFlagsFrom(tls_result);
+  if (!nonce_result.success()) {
+    return nonce_result;
   }
 
-  return VerifyCredentials(response, nonce_response + peer_cert_der);
+  AuthResult credentials_result =
+      VerifyCredentials(response, nonce_response + peer_cert_der);
+  credentials_result.CopyFlagsFrom(nonce_result);
+  return credentials_result;
 }
 
 // This function does the following
@@ -379,14 +390,17 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
                     response.intermediate_certificate().end());
 
   // Parse the CRL.
+  AuthResult parse_result;
   std::unique_ptr<cast_crypto::CastCRL> crl;
   if (response.crl().empty()) {
     RecordCertificateStatus(CastCertificateStatus::kMissingCRL);
+    parse_result.set_flag(CastChannelFlag::kCRLMissing);
   } else {
     crl = cast_crypto::ParseAndVerifyCRLUsingCustomTrustStore(
         response.crl(), verification_time, crl_trust_store);
     if (!crl) {
       RecordCertificateStatus(CastCertificateStatus::kInvalidCRL);
+      parse_result.set_flag(CastChannelFlag::kCRLInvalid);
     }
   }
 
@@ -400,6 +414,7 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
   // Handle and report errors.
   AuthResult result = MapToAuthResult(
       verify_result, crl_policy == cast_crypto::CRLPolicy::CRL_REQUIRED);
+  result.CopyFlagsFrom(parse_result);
   if (!result.success())
     return result;
 
@@ -408,11 +423,15 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
 
   if (response.signature().empty() && !signature_input.empty()) {
     RecordSignatureStatus(CastSignatureStatus::kEmpty);
-    return AuthResult("Signature is empty.", AuthResult::ERROR_SIGNATURE_EMPTY);
+    AuthResult empty_result("Signature is empty.",
+                            AuthResult::ERROR_SIGNATURE_EMPTY);
+    empty_result.CopyFlagsFrom(result);
+    return empty_result;
   }
   cast_certificate::CastDigestAlgorithm digest_algorithm;
   AuthResult digest_result =
       VerifyAndMapDigestAlgorithm(response.hash_algorithm(), &digest_algorithm);
+  digest_result.CopyFlagsFrom(result);
   if (!digest_result.success())
     return digest_result;
 
@@ -422,13 +441,16 @@ AuthResult VerifyCredentialsImpl(const AuthResponse& response,
     // normally verified using boringssl, which has its own fuzz tests.
 #ifndef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     RecordSignatureStatus(CastSignatureStatus::kVerifyFailed);
-    return AuthResult("Failed verifying signature over data.",
-                      AuthResult::ERROR_SIGNED_BLOBS_MISMATCH);
+    AuthResult mismatch_result("Failed verifying signature over data.",
+                               AuthResult::ERROR_SIGNED_BLOBS_MISMATCH);
+    mismatch_result.CopyFlagsFrom(digest_result);
+    return mismatch_result;
 #endif
   }
   RecordSignatureStatus(CastSignatureStatus::kOk);
 
   AuthResult success;
+  success.CopyFlagsFrom(digest_result);
 
   // Set the policy into the result.
   switch (device_policy) {

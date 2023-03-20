@@ -156,6 +156,9 @@ enum class CastChannelFlag : uint16_t {
 
 using CastChannelFlags = uint16_t;
 
+constexpr CastChannelFlags kCastChannelFlagsNone =
+    static_cast<CastChannelFlags>(CastChannelFlag::kFlagsNone);
+
 }  // namespace cast_channel
 
 #endif  // COMPONENTS_MEDIA_ROUTER_COMMON_PROVIDERS_CAST_CHANNEL_CAST_CHANNEL_ENUM_H_

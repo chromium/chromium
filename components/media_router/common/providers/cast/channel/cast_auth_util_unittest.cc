@@ -14,6 +14,7 @@
 #include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_validator.h"
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
+#include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
 #include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +26,12 @@ using cast::channel::SHA256;
 
 namespace cast_channel {
 namespace {
+
+constexpr CastChannelFlags kFlagsCRLMissing =
+    static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing);
+constexpr CastChannelFlags kFlagsSHA1AndCRLMissing =
+    static_cast<CastChannelFlags>(CastChannelFlag::kSha1DigestAlgorithm) |
+    static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing);
 
 class CastAuthUtilTest : public testing::Test {
  public:
@@ -82,6 +89,7 @@ TEST_F(CastAuthUtilTest, VerifySuccess) {
   EXPECT_TRUE(result.success());
   EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
             result.channel_policies);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadCA) {
@@ -91,6 +99,7 @@ TEST_F(CastAuthUtilTest, VerifyBadCA) {
   AuthResult result = VerifyCredentials(auth_response, signed_data);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_CERT_PARSING_FAILED, result.error_type);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadClientAuthCert) {
@@ -101,6 +110,7 @@ TEST_F(CastAuthUtilTest, VerifyBadClientAuthCert) {
   EXPECT_FALSE(result.success());
   // TODO(eroman): Not quite right of an error.
   EXPECT_EQ(AuthResult::ERROR_CERT_PARSING_FAILED, result.error_type);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadSignature) {
@@ -110,6 +120,7 @@ TEST_F(CastAuthUtilTest, VerifyBadSignature) {
   AuthResult result = VerifyCredentials(auth_response, signed_data);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_SIGNED_BLOBS_MISMATCH, result.error_type);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyEmptySignature) {
@@ -119,6 +130,7 @@ TEST_F(CastAuthUtilTest, VerifyEmptySignature) {
   AuthResult result = VerifyCredentials(auth_response, signed_data);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_SIGNATURE_EMPTY, result.error_type);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyUnsupportedDigest) {
@@ -132,6 +144,7 @@ TEST_F(CastAuthUtilTest, VerifyUnsupportedDigest) {
       nullptr, nullptr, now);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_DIGEST_UNSUPPORTED, result.error_type);
+  EXPECT_EQ(kFlagsSHA1AndCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyBackwardsCompatibleDigest) {
@@ -142,6 +155,7 @@ TEST_F(CastAuthUtilTest, VerifyBackwardsCompatibleDigest) {
       auth_response, signed_data, cast_certificate::CRLPolicy::CRL_OPTIONAL,
       nullptr, nullptr, now);
   EXPECT_TRUE(result.success());
+  EXPECT_EQ(kFlagsSHA1AndCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadPeerCert) {
@@ -151,6 +165,7 @@ TEST_F(CastAuthUtilTest, VerifyBadPeerCert) {
   AuthResult result = VerifyCredentials(auth_response, signed_data);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_SIGNED_BLOBS_MISMATCH, result.error_type);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifySenderNonceMatch) {
@@ -159,6 +174,7 @@ TEST_F(CastAuthUtilTest, VerifySenderNonceMatch) {
   AuthContext context = AuthContext::Create();
   AuthResult result = context.VerifySenderNonce(context.nonce());
   EXPECT_TRUE(result.success());
+  EXPECT_EQ(kCastChannelFlagsNone, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifySenderNonceMismatch) {
@@ -170,6 +186,9 @@ TEST_F(CastAuthUtilTest, VerifySenderNonceMismatch) {
   AuthResult result = context.VerifySenderNonce(received_nonce);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_SENDER_NONCE_MISMATCH, result.error_type);
+  EXPECT_EQ(
+      static_cast<CastChannelFlags>(CastChannelFlag::kSenderNonceMismatch),
+      result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifySenderNonceMissing) {
@@ -181,6 +200,8 @@ TEST_F(CastAuthUtilTest, VerifySenderNonceMissing) {
   AuthResult result = context.VerifySenderNonce(received_nonce);
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_SENDER_NONCE_MISMATCH, result.error_type);
+  EXPECT_EQ(static_cast<CastChannelFlags>(CastChannelFlag::kSenderNonceMissing),
+            result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
@@ -195,6 +216,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
   AuthResult result =
       VerifyTLSCertificate(*tls_cert, &peer_cert_der, tls_cert->valid_start());
   EXPECT_TRUE(result.success());
+  EXPECT_EQ(kCastChannelFlagsNone, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooEarly) {
@@ -211,6 +233,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooEarly) {
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_TLS_CERT_VALID_START_DATE_IN_FUTURE,
             result.error_type);
+  EXPECT_EQ(kCastChannelFlagsNone, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooLate) {
@@ -226,6 +249,7 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooLate) {
       *tls_cert, &peer_cert_der, tls_cert->valid_expiry() + base::Seconds(2));
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_TLS_CERT_EXPIRED, result.error_type);
+  EXPECT_EQ(kCastChannelFlagsNone, result.flags);
 }
 
 // Indicates the expected result of test step's verification.

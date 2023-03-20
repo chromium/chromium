@@ -72,11 +72,13 @@ struct AuthResult {
 
   bool success() const { return error_type == ERROR_NONE; }
 
+  // Copies any flags set in `source` to this object's flags.
+  void CopyFlagsFrom(const AuthResult& source);
+
   std::string error_message;
   ErrorType error_type{ERROR_NONE};
   unsigned int channel_policies{POLICY_NONE};
-  CastChannelFlags flags{
-      static_cast<CastChannelFlags>(CastChannelFlag::kFlagsNone)};
+  CastChannelFlags flags{kCastChannelFlagsNone};
 };
 
 class AuthContext {

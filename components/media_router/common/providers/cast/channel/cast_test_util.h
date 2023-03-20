@@ -164,8 +164,7 @@ class MockCastSocket : public CastSocket {
   net::IPEndPoint ip_endpoint_;
   int channel_id_;
   ChannelError error_state_;
-  CastChannelFlags flags_{
-      static_cast<CastChannelFlags>(CastChannelFlag::kFlagsNone)};
+  CastChannelFlags flags_{kCastChannelFlagsNone};
   bool keep_alive_;
   bool audio_only_;
 
