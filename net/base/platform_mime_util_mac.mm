@@ -11,6 +11,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 
@@ -30,6 +31,8 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     ext_nodot.erase(ext_nodot.begin());
   }
 
+  // TODO(crbug.com/1227419): Remove iOS availability check when cronet
+  // deployment target is bumped to 14.
   if (@available(macOS 11, iOS 14, *)) {
     UTType* uttype =
         [UTType typeWithFilenameExtension:base::SysUTF8ToNSString(ext_nodot)];
@@ -41,7 +44,11 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     }
     *result = base::SysNSStringToUTF8(uttype.preferredMIMEType);
     return true;
-  } else {
+  }
+#if (BUILDFLAG(IS_MAC) &&                                    \
+     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
+    (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
+  else {
     base::ScopedCFTypeRef<CFStringRef> ext_ref(
         base::SysUTF8ToCFStringRef(ext_nodot));
     if (!ext_ref) {
@@ -62,11 +69,19 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     *result = base::SysCFStringRefToUTF8(mime_ref);
     return true;
   }
+#else
+  NOTREACHED();
+  return false;
+#endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
+        // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&
+        // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
 }
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     const std::string& mime_type,
     base::FilePath::StringType* ext) const {
+  // TODO(crbug.com/1227419): Remove iOS availability check when cronet
+  // deployment target is bumped to 14.
   if (@available(macOS 11, iOS 14, *)) {
     UTType* uttype =
         [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
@@ -75,7 +90,11 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     }
     *ext = base::SysNSStringToUTF8(uttype.preferredFilenameExtension);
     return true;
-  } else {
+  }
+#if (BUILDFLAG(IS_MAC) &&                                    \
+     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
+    (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
+  else {
     base::ScopedCFTypeRef<CFStringRef> mime_ref(
         base::SysUTF8ToCFStringRef(mime_type));
     if (!mime_ref) {
@@ -96,11 +115,20 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     *ext = base::SysCFStringRefToUTF8(ext_ref);
     return true;
   }
+
+#else
+  NOTREACHED();
+  return false;
+#endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
+        // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&
+        // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
 }
 
 void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
     const std::string& mime_type,
     std::unordered_set<base::FilePath::StringType>* extensions) const {
+  // TODO(crbug.com/1227419): Remove iOS availability check when cronet
+  // deployment target is bumped to 14.
   if (@available(macOS 11, iOS 14, *)) {
     NSArray<UTType*>* types =
         [UTType typesWithTag:base::SysUTF8ToNSString(mime_type)
@@ -131,7 +159,11 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
     if (GetPlatformPreferredExtensionForMimeType(mime_type, &ext)) {
       extensions->insert(ext);
     }
-  } else {
+  }
+#if (BUILDFLAG(IS_MAC) &&                                    \
+     MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
+    (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
+  else {
     base::ScopedCFTypeRef<CFStringRef> mime_ref(
         base::SysUTF8ToCFStringRef(mime_type));
     if (mime_ref) {
@@ -164,6 +196,9 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
       extensions->insert(ext);
     }
   }
+#endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
+        // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&
+        // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
 }
 
 }  // namespace net
