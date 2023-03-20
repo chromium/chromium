@@ -479,6 +479,12 @@ const char kIndicateAccountStorageErrorInAccountCellDescription[] =
     "When enabled, the Account Cell indicates the Account"
     " Storage error when Sync is turned OFF";
 
+const char kIndicateIdentityErrorInOverflowMenuName[] =
+    "Indicate Identity Error in Overflow Menu";
+const char kIndicateIdentityErrorInOverflowMenuDescription[] =
+    "When enabled, the Overflow Menu indicates the identity error with an "
+    "error badge on the Settings destination";
+
 const char kInProductHelpDemoModeName[] = "In-Product Help Demo Mode";
 const char kInProductHelpDemoModeDescription[] =
     "When enabled, in-product help promotions occur exactly once per cold "

@@ -411,6 +411,11 @@ extern const char kIncognitoNtpRevampDescription[];
 extern const char kIndicateAccountStorageErrorInAccountCellName[];
 extern const char kIndicateAccountStorageErrorInAccountCellDescription[];
 
+// Title and description for the flag to indicate the identity error in
+// the overflow menu.
+extern const char kIndicateIdentityErrorInOverflowMenuName[];
+extern const char kIndicateIdentityErrorInOverflowMenuDescription[];
+
 // Title and description for the flag to enable feature_engagement::Tracker
 // demo mode.
 extern const char kInProductHelpDemoModeName[];

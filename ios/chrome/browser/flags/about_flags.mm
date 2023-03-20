@@ -1466,6 +1466,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePreferencesAccountStorageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kEnablePreferencesAccountStorage)},
+    {"indicate-identity-error-overflow-menu",
+     flag_descriptions::kIndicateIdentityErrorInOverflowMenuName,
+     flag_descriptions::kIndicateIdentityErrorInOverflowMenuDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIndicateSyncErrorInOverflowMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

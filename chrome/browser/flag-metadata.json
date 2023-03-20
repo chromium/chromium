@@ -4398,6 +4398,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "indicate-identity-error-overflow-menu",
+    "owners": [  "vincb", "mastiz", "chrome-sync-dev@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "info-card-acknowledgement-tracking",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 120
