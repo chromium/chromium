@@ -45,7 +45,6 @@ void SyncErrorBrowserAgent::SetUIProviders(
 }
 
 void SyncErrorBrowserAgent::ClearUIProviders() {
-  web_state_observations_.RemoveAllObservations();
   signin_presenter_provider_ = nil;
   sync_presenter_provider_ = nil;
 }
