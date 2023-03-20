@@ -136,7 +136,8 @@ void SitePermissionsHelper::SetShowAccessRequestsInToolbar(
   ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
       extension_id, kPrefShowAccessRequestsInToolbar,
       base::Value(show_access_requests_in_toolbar));
-  PermissionsManager::Get(profile_)->NotifyShowAccessRequestsInToolbarChanged();
+  PermissionsManager::Get(profile_)->NotifyShowAccessRequestsInToolbarChanged(
+      extension_id, show_access_requests_in_toolbar);
 }
 
 }  // namespace extensions

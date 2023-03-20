@@ -597,7 +597,9 @@ void ExtensionsToolbarContainer::OnUserPermissionsSettingsChanged(
   // settings update are not tied to a specific action.
 }
 
-void ExtensionsToolbarContainer::OnShowAccessRequestsInToolbarChanged() {
+void ExtensionsToolbarContainer::OnShowAccessRequestsInToolbarChanged(
+    const extensions::ExtensionId& extension_id,
+    bool can_show_requests) {
   UpdateControlsVisibility();
   // TODO(crbug.com/1351778): Update requests access button hover card. This is
   // tricky because it would need to change the items in the dialog. Another

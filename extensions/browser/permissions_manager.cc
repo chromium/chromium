@@ -865,9 +865,12 @@ void PermissionsManager::NotifyUserPermissionSettingsChanged() {
   }
 }
 
-void PermissionsManager::NotifyShowAccessRequestsInToolbarChanged() {
+void PermissionsManager::NotifyShowAccessRequestsInToolbarChanged(
+    const extensions::ExtensionId& extension_id,
+    bool can_show_requests) {
   for (auto& observer : observers_) {
-    observer.OnShowAccessRequestsInToolbarChanged();
+    observer.OnShowAccessRequestsInToolbarChanged(extension_id,
+                                                  can_show_requests);
   }
 }
 

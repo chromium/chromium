@@ -70,6 +70,9 @@ class ExtensionsMenuViewController
   void OnUserPermissionsSettingsChanged(
       const extensions::PermissionsManager::UserPermissionsSettings& settings)
       override;
+  void OnShowAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests) override;
 
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;

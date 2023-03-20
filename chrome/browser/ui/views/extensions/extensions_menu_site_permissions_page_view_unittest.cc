@@ -6,15 +6,18 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/controls/button/toggle_button.h"
 
 class ExtensionsSitePermissionsPageViewUnitTest
     : public ExtensionsToolbarUnitTest {
@@ -35,6 +38,10 @@ class ExtensionsSitePermissionsPageViewUnitTest
   // Returns whether the menu has the `extension_id` site permissions page
   // opened.
   bool IsSitePermissionsPageOpened(extensions::ExtensionId extension_id);
+
+  // Returns the extensions that are showing site access requests in the
+  // toolbar.
+  std::vector<extensions::ExtensionId> GetExtensionsShowingRequests();
 
   // Since this is a unittest, the extensions menu widget sometimes needs a
   // nudge to re-layout the views.
@@ -73,6 +80,14 @@ bool ExtensionsSitePermissionsPageViewUnitTest::IsSitePermissionsPageOpened(
     extensions::ExtensionId extension_id) {
   ExtensionsMenuSitePermissionsPageView* page = site_permissions_page();
   return page && page->extension_id() == extension_id;
+}
+
+std::vector<extensions::ExtensionId>
+ExtensionsSitePermissionsPageViewUnitTest::GetExtensionsShowingRequests() {
+  return extensions_container()
+      ->GetExtensionsToolbarControls()
+      ->request_access_button_for_testing()
+      ->GetExtensionIdsForTesting();
 }
 
 void ExtensionsSitePermissionsPageViewUnitTest::LayoutMenuIfNecessary() {
@@ -171,4 +186,79 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ReloadExtension) {
 
   EXPECT_FALSE(IsSitePermissionsPageOpened(extension->id()));
   EXPECT_TRUE(IsMainPageOpened());
+}
+
+// Tests that toggling the show requests button changes whether an extension can
+// show site access requests in the toolbar, and the UI is properly updated.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest, ShowRequestsTogglePressed) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  auto extensionA =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
+  auto extensionB =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extensionA.get());
+  WithholdHostPermissions(extensionB.get());
+
+  const GURL url("http://www.url.com");
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+
+  ShowSitePermissionsPage(extensionA->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extensionA->id()));
+
+  // By default, extensions are allowed to show request access in the toolbar.
+  EXPECT_TRUE(
+      site_permissions_page()->GetShowRequestsToggleForTesting()->GetIsOn());
+  EXPECT_THAT(GetExtensionsShowingRequests(),
+              testing::ElementsAre(extensionA->id(), extensionB->id()));
+
+  // Toggle off the show requests button for extension A and verify it is not
+  // requesting access in the toolbar.
+  ClickButton(site_permissions_page()->GetShowRequestsToggleForTesting());
+  WaitForAnimation();
+  EXPECT_THAT(GetExtensionsShowingRequests(),
+              testing::ElementsAre(extensionB->id()));
+
+  // Toggle on the shows requests button for extension A and verify it is
+  // requesting access in the toolbar.
+  ClickButton(site_permissions_page()->GetShowRequestsToggleForTesting());
+  WaitForAnimation();
+  EXPECT_THAT(GetExtensionsShowingRequests(),
+              testing::ElementsAre(extensionA->id(), extensionB->id()));
+}
+
+// Tests that the UI is properly updated when an extension pref for showing site
+// access requests in the toolbar changes while the menu is open.
+TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
+       ShowRequestsPrefChangedWithMenuOpen) {
+  content::WebContentsTester* web_contents_tester =
+      AddWebContentsAndGetTester();
+
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url("http://www.url.com");
+  web_contents_tester->NavigateAndCommit(url);
+  WaitForAnimation();
+
+  ShowSitePermissionsPage(extension->id());
+  EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  // By default, extensions are allowed to show request access in the toolbar.
+  EXPECT_TRUE(
+      site_permissions_page()->GetShowRequestsToggleForTesting()->GetIsOn());
+  EXPECT_THAT(GetExtensionsShowingRequests(),
+              testing::ElementsAre(extension->id()));
+
+  // Directly change the show access requests pref for extension, since it can
+  // be changed when menu is open, and verify toggle is updated and extension is
+  // not requesting access in the toolbar.
+  extensions::SitePermissionsHelper(browser()->profile())
+      .SetShowAccessRequestsInToolbar(extension->id(), false);
+  EXPECT_FALSE(
+      site_permissions_page()->GetShowRequestsToggleForTesting()->GetIsOn());
+  EXPECT_THAT(GetExtensionsShowingRequests(), testing::IsEmpty());
 }

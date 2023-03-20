@@ -115,7 +115,9 @@ class PermissionsManager : public KeyedService {
 
     // Called when an extension's ability to show site access requests in the
     // toolbar has been updated.
-    virtual void OnShowAccessRequestsInToolbarChanged() {}
+    virtual void OnShowAccessRequestsInToolbarChanged(
+        const extensions::ExtensionId& extension_id,
+        bool can_show_requests) {}
   };
 
   explicit PermissionsManager(content::BrowserContext* browser_context);
@@ -253,7 +255,9 @@ class PermissionsManager : public KeyedService {
                                          UpdateReason reason);
 
   // Notifies `observers_`that show access requests in toolbar pref changed.
-  void NotifyShowAccessRequestsInToolbarChanged();
+  void NotifyShowAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests);
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);

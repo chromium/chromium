@@ -134,10 +134,14 @@ void ExtensionsMenuViewController::OpenSitePermissionsPage(
   std::u16string extension_name = action_controller->GetActionName();
   ui::ImageModel extension_icon = action_controller->GetIcon(
       GetActiveWebContents(), gfx::Size(icon_size, icon_size));
+  bool is_show_requests_toggle_on =
+      extensions::SitePermissionsHelper(browser_->profile())
+          .ShowAccessRequestsInToolbar(extension_id);
 
   auto site_permissions_page =
       std::make_unique<ExtensionsMenuSitePermissionsPageView>(
-          browser_, extension_name, extension_icon, extension_id, this);
+          browser_, extension_name, extension_icon, extension_id,
+          is_show_requests_toggle_on, this);
   SwitchToPage(std::move(site_permissions_page));
 }
 
@@ -290,6 +294,20 @@ void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(
 
   // TODO(crbug.com/1390952): Run blocked actions for extensions that only have
   // blocked actions that don't require a page refresh to run.
+}
+
+void ExtensionsMenuViewController::OnShowAccessRequestsInToolbarChanged(
+    const extensions::ExtensionId& extension_id,
+    bool can_show_requests) {
+  DCHECK(current_page_);
+
+  // Changing whether an extension can show requests access in the toolbar only
+  // affects the site permissions page for such extension.
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_);
+  if (site_permissions_page &&
+      site_permissions_page->extension_id() == extension_id) {
+    site_permissions_page->UpdateShowRequestsToggle(can_show_requests);
+  }
 }
 
 void ExtensionsMenuViewController::OnViewIsDeleting(

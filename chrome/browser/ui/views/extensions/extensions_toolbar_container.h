@@ -279,7 +279,9 @@ class ExtensionsToolbarContainer
   void OnUserPermissionsSettingsChanged(
       const extensions::PermissionsManager::UserPermissionsSettings& settings)
       override;
-  void OnShowAccessRequestsInToolbarChanged() override;
+  void OnShowAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
