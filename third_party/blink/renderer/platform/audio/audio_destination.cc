@@ -35,6 +35,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -80,6 +81,7 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
     const WebAudioLatencyHint& latency_hint,
     absl::optional<float> context_sample_rate,
     unsigned render_quantum_frames) {
+  TRACE_EVENT0("webaudio", "AudioDestination::Create");
   return base::AdoptRef(
       new AudioDestination(callback, sink_descriptor, number_of_output_channels,
                            latency_hint, context_sample_rate,
@@ -491,6 +493,7 @@ void AudioDestination::SendLogMessage(const String& message) const {
 }
 
 media::OutputDeviceStatus AudioDestination::CreateSinkAndGetDeviceStatus() {
+  TRACE_EVENT0("webaudio", "AudioDestination::CreateSinkAndGetDeviceStatus");
   return web_audio_device_->CreateSinkAndGetDeviceStatus();
 }
 

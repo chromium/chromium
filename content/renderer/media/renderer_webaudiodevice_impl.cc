@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "media/audio/null_audio_sink.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -94,6 +95,7 @@ int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
 media::AudioParameters GetOutputDeviceParameters(
     const blink::LocalFrameToken& frame_token,
     const std::string& device_id) {
+  TRACE_EVENT0("webaudio", "GetOutputDeviceParameters");
   return AudioDeviceFactory::GetInstance()
       ->GetOutputDeviceInfo(frame_token, device_id)
       .output_params();
@@ -132,6 +134,8 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
       webaudio_callback_(callback),
       frame_token_(sink_descriptor.Token()),
       create_silent_sink_cb_(std::move(create_silent_sink_cb)) {
+  TRACE_EVENT0("webaudio",
+               "RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl");
   DCHECK(webaudio_callback_);
   SendLogMessage(base::StringPrintf("%s", __func__));
 
@@ -293,6 +297,8 @@ void RendererWebAudioDeviceImpl::SendLogMessage(const std::string& message) {
 }
 
 void RendererWebAudioDeviceImpl::CreateAudioRendererSink() {
+  TRACE_EVENT0("webaudio",
+               "RendererWebAudioDeviceImpl::CreateAudioRendererSink");
   DCHECK(thread_checker_.CalledOnValidThread());
   CHECK(!sink_);
 
