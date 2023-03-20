@@ -1248,7 +1248,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     [appActions addObject:self.openNewWindowAction];
   }
 
-  if (IsPinnedTabsOverflowEnabled()) {
+  if (IsPinnedTabsOverflowEnabled() && !self.isIncognito) {
     [appActions addObject:([self isTabPinned] ? self.unpinTabAction
                                               : self.pinTabAction)];
   }
