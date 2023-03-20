@@ -82186,6 +82186,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="16" label="kStylusRequiredNoDeviceData"/>
 </enum>
 
+<enum name="PreloadBookmarkMetricsEvent">
+  <int value="0" label="MouseOver"/>
+  <int value="1" label="MouseDown"/>
+  <int value="2" label="MouseClick"/>
+</enum>
+
 <enum name="PreloadedListCheckResult">
   <int value="0" label="origin was found and allowed https only"/>
   <int value="1" label="origin was not found"/>

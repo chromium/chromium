@@ -157,6 +157,15 @@ gfx::ImageSkia* GetImageSkiaNamed(int id) {
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PreloadBookmarkMetricsEvent {
+  kMouseOver = 0,
+  kMouseDown = 1,
+  kMouseClick = 2,
+  kMaxValue = kMouseClick,
+};
+
 // BookmarkButtonBase -----------------------------------------------
 
 // Base class for non-menu hosting buttons used on the bookmark bar.
@@ -229,7 +238,31 @@ class BookmarkButton : public BookmarkButtonBase {
   BookmarkButton(PressedCallback callback,
                  const GURL& url,
                  const std::u16string& title)
-      : BookmarkButtonBase(std::move(callback), title), url_(url) {}
+      : BookmarkButtonBase(std::move(callback), title), url_(url) {
+    const auto mouseover_and_mousedown_recorder_callback =
+        [](views::Button* button) {
+          switch (button->GetState()) {
+            case views::Button::ButtonState::STATE_PRESSED:
+              base::UmaHistogramEnumeration(
+                  "Prerender.Experimental.BookmarkUrlButtonEvent",
+                  PreloadBookmarkMetricsEvent::kMouseDown);
+              break;
+            case views::Button::ButtonState::STATE_HOVERED:
+              base::UmaHistogramEnumeration(
+                  "Prerender.Experimental.BookmarkUrlButtonEvent",
+                  PreloadBookmarkMetricsEvent::kMouseOver);
+              break;
+            case views::Button::ButtonState::STATE_DISABLED:
+            case views::Button::ButtonState::STATE_NORMAL:
+            case views::Button::ButtonState::STATE_COUNT:
+              break;
+          }
+        };
+
+    state_change_subscription_ =
+        this->AddStateChangedCallback(base::BindRepeating(
+            mouseover_and_mousedown_recorder_callback, base::Unretained(this)));
+  }
   BookmarkButton(const BookmarkButton&) = delete;
   BookmarkButton& operator=(const BookmarkButton&) = delete;
 
@@ -261,6 +294,7 @@ class BookmarkButton : public BookmarkButtonBase {
   mutable int max_tooltip_width_ = 0;
   mutable std::u16string tooltip_text_;
   const raw_ref<const GURL> url_;
+  base::CallbackListSubscription state_change_subscription_;
 };
 
 BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)
@@ -1346,6 +1380,11 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   RecordAppLaunch(browser_->profile(), node->url());
   chrome::OpenAllIfAllowed(browser_, {node},
                            ui::DispositionFromEventFlags(event.flags()), false);
+  if (event.IsMouseEvent()) {
+    base::UmaHistogramEnumeration(
+        "Prerender.Experimental.BookmarkUrlButtonEvent",
+        PreloadBookmarkMetricsEvent::kMouseClick);
+  }
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
       profile_metrics::GetBrowserProfileType(browser_->profile()));
