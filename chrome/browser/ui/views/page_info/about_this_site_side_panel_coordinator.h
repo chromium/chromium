@@ -53,8 +53,8 @@ class AboutThisSideSidePanelCoordinator
 
   // content::WebContentsObserver:
   // Override DidFinishNavigation to ensure that the AboutThisSide side panel
-  // is closed when the user navigates to a different site and that cached
-  // data is cleaned up.
+  // is closed or updates when the user navigates to a different site and
+  // that cached data is cleaned up.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 

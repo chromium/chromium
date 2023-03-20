@@ -128,25 +128,42 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
 
   // If the side panel is open and shows the AboutThisSide panel, close it.
   auto* side_panel_coordinator = browser_view->side_panel_coordinator();
-  if (about_this_site_side_panel_view_ &&
+  if (!page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
+      about_this_site_side_panel_view_ &&
       side_panel_coordinator->GetCurrentEntryId() ==
           SidePanelEntry::Id::kAboutThisSite) {
     side_panel_coordinator->Close();
   }
 
-  // If the user navigates to a different page than the one we have data for
-  // we need to remove the SidePanel registration. We might already have data
-  // from cacao for the current pageload if it was locally cached.
   auto* registry = SidePanelRegistry::Get(web_contents());
   SidePanelEntry::Key key(SidePanelEntry::Id::kAboutThisSite);
-  if (registry->GetEntryForKey(key) &&
+  // If the user navigates to a different page than the one we have data for
+  // we need to remove the SidePanel registration. We might already have
+  // data from cacao for the current pageload if it was locally cached.
+  if (!page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
+      registry->GetEntryForKey(key) &&
       web_contents()->GetLastCommittedURL() != last_url_info_->context_url) {
     registry->Deregister(key);
     last_url_info_.reset();
   }
 
-  // If the view is cached, we will remove it since it shows the wrong page.
-  if (about_this_site_side_panel_view_) {
+  // Update the SidePanel when a user navigates to another url with the
+  // correct Diner URL.
+  // TODO(1425421): Check for valid urls (non IP address, localhost and
+  // similar) before creating the Diner URL
+  if (page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
+      about_this_site_side_panel_view_ &&
+      side_panel_coordinator->GetCurrentEntryId() ==
+          SidePanelEntry::Id::kAboutThisSite) {
+    RegisterEntryAndShow(page_info::AboutThisSiteService::CreateMoreAboutUrl(
+        navigation_handle->GetURL()));
+  }
+
+  // If the about this site side panel is no longer being shown and the view is
+  // cached, then we will remove the cached view since it shows the wrong page.
+  if (side_panel_coordinator->GetCurrentEntryId() !=
+          SidePanelEntry::Id::kAboutThisSite &&
+      about_this_site_side_panel_view_) {
     auto* entry = registry->GetEntryForKey(
         SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
     DCHECK(entry);

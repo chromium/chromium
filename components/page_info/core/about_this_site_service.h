@@ -76,6 +76,7 @@ class AboutThisSiteService : public KeyedService {
       const GURL& url,
       ukm::SourceId source_id) const;
 
+  static GURL CreateMoreAboutUrl(const GURL& url);
   static void OnAboutThisSiteRowClicked(bool with_description);
   static void OnOpenedDirectlyFromSidePanel();
 

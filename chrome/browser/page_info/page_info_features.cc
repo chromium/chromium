@@ -42,6 +42,12 @@ bool IsPersistentSidePanelEntryFeatureEnabled() {
 BASE_FEATURE(kAboutThisSitePersistentSidePanelEntry,
              "AboutThisSitePersistentSidePanelEntry",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsKeepSidePanelOnSameTabNavsFeatureEnabled() {
+  return IsMoreAboutThisSiteFeatureEnabled() &&
+         base::FeatureList::IsEnabled(
+             page_info::kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs);
+}
 #endif
 
 }  // namespace page_info

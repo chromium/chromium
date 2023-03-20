@@ -67,15 +67,9 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   if (!client_->IsOptimizationGuideAllowed() && allow_non_msbb_users_) {
     RecordAboutThisSiteInteraction(AboutThisSiteInteraction::kShownWithoutMsbb);
 
-    GURL more_about_url = GURL("https://www.google.com/search");
-    more_about_url =
-        net::AppendQueryParameter(more_about_url, "q", "About " + url.spec());
-    more_about_url = net::AppendQueryParameter(more_about_url, "tbm", "ilp");
-    more_about_url = net::AppendQueryParameter(more_about_url, "ctx", "chrome");
-
     proto::SiteInfo site_info;
     proto::MoreAbout* more_about = site_info.mutable_more_about();
-    more_about->set_url(more_about_url.spec());
+    more_about->set_url(CreateMoreAboutUrl(url).spec());
     return site_info;
   }
 
@@ -147,6 +141,17 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   }
 
   return absl::nullopt;
+}
+
+// static
+GURL AboutThisSiteService::CreateMoreAboutUrl(const GURL& url) {
+  GURL more_about_url = GURL("https://www.google.com/search");
+  more_about_url =
+      net::AppendQueryParameter(more_about_url, "q", "About " + url.spec());
+  more_about_url = net::AppendQueryParameter(more_about_url, "tbm", "ilp");
+  more_about_url = net::AppendQueryParameter(more_about_url, "ctx", "chrome");
+
+  return more_about_url;
 }
 
 // static

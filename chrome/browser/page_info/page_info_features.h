@@ -27,6 +27,10 @@ bool IsPersistentSidePanelEntryFeatureEnabled();
 
 // Enables the persistent "About this site" entry in the side panel.
 BASE_DECLARE_FEATURE(kAboutThisSitePersistentSidePanelEntry);
+
+// Returns true if kPageInfoAboutThisSiteKeepSidePanelOnSameTabNavs and
+// dependent features are enabled.
+bool IsKeepSidePanelOnSameTabNavsFeatureEnabled();
 #endif
 
 }  // namespace page_info
