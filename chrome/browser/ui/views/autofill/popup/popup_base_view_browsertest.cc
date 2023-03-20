@@ -65,7 +65,9 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
 
 class PopupBaseViewBrowsertest : public InProcessBrowserTest {
  public:
-  PopupBaseViewBrowsertest() = default;
+  PopupBaseViewBrowsertest() {
+    feature_list_.InitAndDisableFeature(features::kAutofillMoreProminentPopup);
+  }
 
   PopupBaseViewBrowsertest(const PopupBaseViewBrowsertest&) = delete;
   PopupBaseViewBrowsertest& operator=(const PopupBaseViewBrowsertest&) = delete;
@@ -97,6 +99,7 @@ class PopupBaseViewBrowsertest : public InProcessBrowserTest {
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, CorrectBoundsTest) {

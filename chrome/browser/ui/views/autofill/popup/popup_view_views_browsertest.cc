@@ -170,8 +170,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 class PopupViewViewsBrowsertestShowAutocompleteDeleteButton
     : public PopupViewViewsBrowsertestBase {
  public:
-  PopupViewViewsBrowsertestShowAutocompleteDeleteButton()
-      : feature_list_{features::kAutofillShowAutocompleteDeleteButton} {}
+  PopupViewViewsBrowsertestShowAutocompleteDeleteButton() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillShowAutocompleteDeleteButton},
+        /*disabled_features=*/{features::kAutofillMoreProminentPopup});
+  }
   ~PopupViewViewsBrowsertestShowAutocompleteDeleteButton() override = default;
 
  private:
