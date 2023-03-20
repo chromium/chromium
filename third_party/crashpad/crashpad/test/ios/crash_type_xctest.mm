@@ -150,10 +150,16 @@
 
 - (void)testException {
   [rootObject_ crashException];
+  // After https://reviews.llvm.org/D141222 exceptions call
+  // __libcpp_verbose_abort, which Chromium sets to `brk 0` in release.
+#if defined(CRASHPAD_IS_IN_CHROMIUM) && defined(NDEBUG)
+  [self verifyCrashReportException:SIGABRT];
+#else
   [self verifyCrashReportException:EXC_SOFT_SIGNAL];
   NSNumber* report_exception;
   XCTAssertTrue([rootObject_ pendingReportExceptionInfo:&report_exception]);
   XCTAssertEqual(report_exception.intValue, SIGABRT);
+#endif
 }
 
 - (void)testNSException {
