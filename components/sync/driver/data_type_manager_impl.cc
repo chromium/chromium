@@ -259,9 +259,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
       continue;
     }
 
-    // TODO(crbug.com/1365938): Think through whether types in the
-    // initial-sync-partially-done state should be considered "downloaded" here.
-    if (IsInitialSyncAtLeastPartiallyDone(
+    if (IsInitialSyncDone(
             activation_response->model_type_state.initial_sync_state())) {
       downloaded_types_.Put(type);
     } else {
