@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 #include "base/strings/string_piece.h"
-#include "third_party/rust/cxx/v1/crate/include/cxx.h"
+#include "third_party/rust/cxx/v1/crate/include/cxx.h"  // nogncheck
 
 namespace base {
 
