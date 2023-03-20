@@ -2181,6 +2181,25 @@ TEST_F(DocumentRulesTest, LinkWithNoHrefAttribute) {
   link->remove();
 }
 
+// Tests that links with non-HTTP(s) urls are ignored.
+TEST_F(DocumentRulesTest, LinkWithNonHttpHref) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  auto* link = AddAnchor(*document.body(), "mailto:abc@xyz.com");
+  String speculation_script = R"({"prefetch": [{"source": "document"}]})";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_TRUE(candidates.empty());
+
+  PropagateRulesToStubSpeculationHostWithMicrotasksScope(
+      page_holder, speculation_host,
+      [&]() { link->setHref("https://foo.com/bar"); });
+  EXPECT_THAT(candidates, HasURLs("https://foo.com/bar"));
+}
+
 // Tests a couple of edge cases:
 // 1) Removing a link that doesn't match any rules
 // 2) Adding and removing a link before running microtasks (i.e. before calling

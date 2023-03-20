@@ -31,6 +31,7 @@ SpeculationCandidate::SpeculationCandidate(
       rule_set_(rule_set),
       anchor_(anchor) {
   DCHECK(rule_set);
+  DCHECK(url.ProtocolIsInHTTPFamily());
 }
 
 void SpeculationCandidate::Trace(Visitor* visitor) const {
