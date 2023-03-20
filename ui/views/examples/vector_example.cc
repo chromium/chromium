@@ -204,35 +204,39 @@ class VectorIconGallery : public View, public TextfieldController {
     size_t max = nCols * nRows;
     size_t count = 0;
 
-    base::FileEnumerator file_iter(path, false, base::FileEnumerator::FILES,
-                                   FILE_PATH_LITERAL("*.icon"));
-    base::FilePath file = file_iter.Next();
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::FileEnumerator file_iter(path, false, base::FileEnumerator::FILES,
+                                     FILE_PATH_LITERAL("*.icon"));
+      base::FilePath file = file_iter.Next();
 
-    while (!file.empty() && count < max) {
-      count++;
-      std::string file_content;
-      base::ReadFileToString(file, &file_content);
-      // Skip over comments.
-      // This handles very basic cases of // and /*. More complicated edge
-      // cases such as /* /* */ */ are not handled.
-      for (size_t slashes = file_content.find("//");
-           slashes != std::string::npos; slashes = file_content.find("//")) {
-        size_t eol = file_content.find("\n", slashes);
-        file_content.erase(slashes, eol - slashes);
+      while (!file.empty() && count < max) {
+        count++;
+        std::string file_content;
+        base::ReadFileToString(file, &file_content);
+        file = file_iter.Next();
+
+        // Skip over comments.
+        // This handles very basic cases of // and /*. More complicated edge
+        // cases such as /* /* */ */ are not handled.
+        for (size_t slashes = file_content.find("//");
+             slashes != std::string::npos; slashes = file_content.find("//")) {
+          size_t eol = file_content.find("\n", slashes);
+          file_content.erase(slashes, eol - slashes);
+        }
+
+        for (size_t slashes = file_content.find("/*");
+             slashes != std::string::npos; slashes = file_content.find("/*")) {
+          size_t eol = file_content.find("*/", slashes);
+          file_content.erase(slashes, eol - slashes + 2);
+        }
+
+        ImageView* icon_view =
+            image_view_container_->AddChildView(std::make_unique<ImageView>());
+        icon_view->SetImage(
+            gfx::CreateVectorIconFromSource(file_content, size_, color_));
+        icon_view->SetTooltipText(file.BaseName().AsUTF16Unsafe());
       }
-
-      for (size_t slashes = file_content.find("/*");
-           slashes != std::string::npos; slashes = file_content.find("/*")) {
-        size_t eol = file_content.find("*/", slashes);
-        file_content.erase(slashes, eol - slashes + 2);
-      }
-
-      ImageView* icon_view =
-          image_view_container_->AddChildView(std::make_unique<ImageView>());
-      icon_view->SetImage(
-          gfx::CreateVectorIconFromSource(file_content, size_, color_));
-      icon_view->SetTooltipText(file.BaseName().AsUTF16Unsafe());
-      file = file_iter.Next();
     }
     InvalidateLayout();
   }
