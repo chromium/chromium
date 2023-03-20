@@ -399,6 +399,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "args": [
+          "---force-device-scale-factor=1"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "args": [],
