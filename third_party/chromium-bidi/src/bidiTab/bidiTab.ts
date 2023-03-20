@@ -50,6 +50,9 @@ declare global {
     // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
     onBidiMessage: ((message: string) => void) | null;
 
+    // Set from the server side if verbose logging is required.
+    sendDebugMessage?: ((message: string) => void) | null;
+
     // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
     setSelfTargetId: (targetId: string) => void;
   }

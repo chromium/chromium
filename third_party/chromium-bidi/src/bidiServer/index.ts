@@ -61,8 +61,8 @@ function parseArguments() {
     default: true,
   });
 
-  parser.add_argument('-cdp', '--cdp-output', {
-    help: 'If present, the CDP commands from the Mapper will be logged into the server output.',
+  parser.add_argument('-v', '--verbose', {
+    help: 'If present, the Mapper debug log, including CDP commands and events will be logged into the server output.',
     action: 'store_true',
   });
 
@@ -77,7 +77,7 @@ function parseArguments() {
     const args = parseArguments();
     const bidiPort = args.port;
     const headless = args.headless !== 'false';
-    const cdpOutput = args.cdp_output === true;
+    const verbose = args.verbose === true;
     const chromeChannel = args.channel;
 
     new BidiServerRunner().run(bidiPort, (bidiServer) => {
@@ -85,7 +85,7 @@ function parseArguments() {
         headless,
         chromeChannel,
         bidiServer,
-        cdpOutput
+        verbose
       );
     });
     log('BiDi server launched');
@@ -107,7 +107,7 @@ async function onNewBidiConnectionOpen(
   headless: boolean,
   chromeChannel: ChromeReleaseChannel | undefined,
   bidiTransport: ITransport,
-  cdpOutput: boolean
+  verbose: boolean
 ) {
   // 1. Launch the browser using @puppeteer/browsers.
   const profileDir = await mkdtemp(
@@ -157,7 +157,7 @@ async function onNewBidiConnectionOpen(
   const mapperServer = await MapperServer.create(
     wsEndpoint,
     bidiMapperScript,
-    cdpOutput
+    verbose
   );
 
   // 4. Bind `BiDi-CDP` mapper to the `BiDi server`.
