@@ -59,10 +59,9 @@ class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
     kIsValue = 24,
     kSavedLayerScrollOffset = 25,
     kAnchorScrollData = 26,
-    kAnchorElementObserver = 27,
-    kImplicitlyAnchoredElementCount = 28,
+    kAnchoredPopoverCount = 27,
 
-    kNumFields = 29,
+    kNumFields = 28,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -253,12 +252,9 @@ class CORE_EXPORT ElementRareDataVector final : public ElementRareDataBase {
   void RemoveAnchorScrollData() override;
   AnchorScrollData& EnsureAnchorScrollData(Element*) override;
 
-  AnchorElementObserver& EnsureAnchorElementObserver(HTMLElement*) override;
-  AnchorElementObserver* GetAnchorElementObserver() const override;
-
-  void IncrementImplicitlyAnchoredElementCount() override;
-  void DecrementImplicitlyAnchoredElementCount() override;
-  bool HasImplicitlyAnchoredElement() const override;
+  void IncrementAnchoredPopoverCount() override;
+  void DecrementAnchoredPopoverCount() override;
+  bool HasAnchoredPopover() const override;
 
   void Trace(blink::Visitor*) const override;
 };

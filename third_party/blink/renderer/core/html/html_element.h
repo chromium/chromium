@@ -245,7 +245,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // attribute, if that element exists.
   Element* anchorElement();
   void setAnchorElement(Element*);
-  void NotifyAnchorElementObserver();
+  void ResetPopoverAnchorObserver();
+  void PopoverAnchorElementChanged();
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);
   void InvokePopover(Element* invoker);
   void SetPopoverFocusOnShow();

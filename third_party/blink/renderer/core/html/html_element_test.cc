@@ -283,13 +283,13 @@ TEST_F(HTMLElementTest, SlotDirAutoBySingleSlottedNodeRemoved) {
   EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kRtl);
 }
 
-TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
+TEST_F(HTMLElementTest, HasAnchoredPopover) {
+  ScopedHTMLPopoverAttributeForTest scoped_feature(true);
 
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
-    <div id="target" anchor="anchor1"></div>
+    <div id="target" popover anchor="anchor1"></div>
   )HTML");
 
   Element* anchor1 = GetDocument().getElementById("anchor1");
@@ -297,29 +297,23 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
   HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->HasAnchoredPopover());
+  EXPECT_FALSE(anchor2->HasAnchoredPopover());
 
   target->setAttribute(html_names::kAnchorAttr, "anchor2");
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
-
-  target->removeAttribute(html_names::kAnchorAttr);
-
-  EXPECT_FALSE(target->anchorElement());
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_FALSE(anchor1->HasAnchoredPopover());
+  EXPECT_TRUE(anchor2->HasAnchoredPopover());
 }
 
-TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
+TEST_F(HTMLElementTest, AnchoredPopoverIdChange) {
+  ScopedHTMLPopoverAttributeForTest scoped_feature(true);
 
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
-    <div id="target" anchor="anchor1"></div>
+    <div id="target" popover anchor="anchor1"></div>
   )HTML");
 
   Element* anchor1 = GetDocument().getElementById("anchor1");
@@ -327,107 +321,15 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
   HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
-
-  target->setAnchorElement(anchor2);
-
-  EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
-
-  target->setAnchorElement(nullptr);
-
-  EXPECT_FALSE(target->anchorElement());
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
-
-  target->setAttribute(html_names::kAnchorAttr, "anchor1");
-
-  EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
-}
-
-TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
-  SetBodyInnerHTML(R"HTML(
-    <div id="anchor1"></div>
-    <div id="anchor2"></div>
-    <div id="target" anchor="anchor1"></div>
-  )HTML");
-
-  Element* anchor1 = GetDocument().getElementById("anchor1");
-  Element* anchor2 = GetDocument().getElementById("anchor2");
-  HTMLElement* target = To<HTMLElement>(GetDocument().getElementById("target"));
-
-  EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->HasAnchoredPopover());
+  EXPECT_FALSE(anchor2->HasAnchoredPopover());
 
   anchor1->setAttribute(html_names::kIdAttr, "anchor2");
   anchor2->setAttribute(html_names::kIdAttr, "anchor1");
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
-}
-
-TEST_F(HTMLElementTest, ImplicitlyAnchoredElementRemoved) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
-  SetBodyInnerHTML(R"HTML(
-    <div id="anchor"></div>
-    <div id="target1" anchor="anchor"></div>
-    <div id="target2"></div>
-  )HTML");
-
-  Element* anchor = GetDocument().getElementById("anchor");
-  HTMLElement* target1 =
-      To<HTMLElement>(GetDocument().getElementById("target1"));
-  HTMLElement* target2 =
-      To<HTMLElement>(GetDocument().getElementById("target2"));
-
-  target2->setAnchorElement(anchor);
-
-  EXPECT_EQ(target1->anchorElement(), anchor);
-  EXPECT_EQ(target2->anchorElement(), anchor);
-  EXPECT_TRUE(anchor->HasImplicitlyAnchoredElement());
-
-  target1->remove();
-  target2->remove();
-
-  EXPECT_FALSE(target1->anchorElement());
-  EXPECT_FALSE(target2->anchorElement());
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
-}
-
-TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
-  SetBodyInnerHTML("<div id=anchor></div>");
-
-  Element* anchor = GetDocument().getElementById("anchor");
-
-  HTMLElement* target1 =
-      To<HTMLElement>(GetDocument().CreateElementForBinding("div"));
-  target1->setAttribute(html_names::kAnchorAttr, "anchor");
-
-  HTMLElement* target2 =
-      To<HTMLElement>(GetDocument().CreateElementForBinding("div"));
-  target2->setAnchorElement(anchor);
-
-  EXPECT_FALSE(target1->anchorElement());
-  EXPECT_FALSE(target2->anchorElement());
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
-
-  GetDocument().body()->appendChild(target1);
-  GetDocument().body()->appendChild(target2);
-
-  EXPECT_EQ(target1->anchorElement(), anchor);
-  EXPECT_EQ(target2->anchorElement(), anchor);
-  EXPECT_TRUE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_FALSE(anchor1->HasAnchoredPopover());
+  EXPECT_TRUE(anchor2->HasAnchoredPopover());
 }
 
 TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {

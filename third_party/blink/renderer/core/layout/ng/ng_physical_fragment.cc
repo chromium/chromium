@@ -555,9 +555,8 @@ bool NGPhysicalFragment::IsMonolithic() const {
 }
 
 bool NGPhysicalFragment::IsImplicitAnchor() const {
-  if (Element* element = DynamicTo<Element>(GetNode())) {
-    return element->HasImplicitlyAnchoredElement();
-  }
+  if (Element* element = DynamicTo<Element>(GetNode()))
+    return element->HasAnchoredPopover();
   return false;
 }
 
