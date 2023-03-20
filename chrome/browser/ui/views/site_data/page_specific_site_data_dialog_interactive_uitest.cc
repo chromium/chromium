@@ -29,7 +29,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -107,21 +106,12 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   }
 
   // Returns a common sequence of setup steps for all tests.
-  MultiStep NavigateAndOpenDialog(
-      ui::ElementIdentifier section_id,
-      content::CookieChangeObserver* cookie_observer = nullptr) {
+  MultiStep NavigateAndOpenDialog(ui::ElementIdentifier section_id) {
     const GURL third_party_cookie_page_url =
         https_server()->GetURL("a.test", GetTestPageRelativeURL());
     return Steps(
         InstrumentTab(kWebContentsElementId),
         NavigateWebContents(kWebContentsElementId, third_party_cookie_page_url),
-        Do(base::BindOnce(
-            [](content::CookieChangeObserver* cookie_observer) {
-              if (cookie_observer) {
-                cookie_observer->Wait();
-              }
-            },
-            cookie_observer)),
         PressButton(kLocationIconElementId),
         PressButton(PageInfoMainView::kCookieButtonElementId),
         PressButton(PageInfoCookiesContentView::kCookieDialogButton),
@@ -191,12 +181,9 @@ class PageSpecificSiteDataDialogInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        FirstPartyAllowed) {
-  content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
-      NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection,
-                            &observer),
+      NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
                                  kFirstPartyAllowedRow, 0)),
@@ -230,12 +217,9 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        ThirdPartyBlocked) {
-  content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
-      NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
-                            &observer),
+      NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection),
       // Name the third-party cookies row.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
                                  kThirdPartyBlockedRow, 2)),
@@ -268,12 +252,9 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        OnlyPartitionedBlockedThirdPartyCookies) {
-  content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
-      NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
-                            &observer),
+      NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection),
       // Find the third party section and name the row with partitioned only
       // access (b.test).
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,
@@ -301,12 +282,9 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        MixedPartitionedBlockedThirdPartyCookies) {
-  content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents(), 6);
   RunTestSequenceInContext(
       context(),
-      NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
-                            &observer),
+      NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection),
       // Find the third party section and name the row with mixed storage
       // access (c.test).
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogThirdPartySection,

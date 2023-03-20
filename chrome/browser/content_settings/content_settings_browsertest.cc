@@ -122,6 +122,28 @@ size_t GetRenderFrameHostCount(content::RenderFrameHost* starting_frame) {
   return count;
 }
 
+class CookieChangeObserver : public content::WebContentsObserver {
+ public:
+  explicit CookieChangeObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+  ~CookieChangeObserver() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override {
+    run_loop_.Quit();
+  }
+
+  void OnCookiesAccessed(content::NavigationHandle* navigation,
+                         const content::CookieAccessDetails& details) override {
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 class MockWebContentsLoadFailObserver : public content::WebContentsObserver {
  public:
   explicit MockWebContentsLoadFailObserver(content::WebContents* web_contents)
@@ -424,13 +446,8 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, MAYBE_AllowCookiesUsingExceptions) {
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
   settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
-  content::CookieChangeObserver observer1(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
   WriteCookie(browser());
   ASSERT_TRUE(ReadCookie(browser()).empty());
-
-  observer1.Wait();
 
   browsing_data::CannedCookieHelper* accepted =
       GetSiteSettingsCookieContainer(browser());
@@ -443,14 +460,8 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, MAYBE_AllowCookiesUsingExceptions) {
 
   settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_ALLOW);
 
-  content::CookieChangeObserver observer2(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
   WriteCookie(browser());
   ASSERT_FALSE(ReadCookie(browser()).empty());
-
-  observer2.Wait();
-
   accepted = GetSiteSettingsCookieContainer(browser());
   blocked = GetSiteSettingsBlockedCookieContainer(browser());
 
@@ -881,12 +892,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
   CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
-  content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  observer.Wait();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -923,13 +929,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsBackForwardCacheBrowserTest,
   CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
-  content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
-
-  observer.Wait();
-
   EXPECT_TRUE(PageSpecificContentSettings::GetForFrame(
                   web_contents->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::COOKIES));
@@ -968,11 +968,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SecureCookies) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
   EXPECT_TRUE(GetSiteSettingsCookieContainer(browser())->empty());
 
-  content::CookieChangeObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
-  observer.Wait();
   EXPECT_FALSE(GetSiteSettingsCookieContainer(browser())->empty());
 }
 
@@ -1342,7 +1338,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest, CookieStore) {
   EXPECT_EQ(true, result2);
 
   {
-    content::CookieChangeObserver observer(
+    CookieChangeObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
     // Set a cookie, see that it's reported.
     content::EvalJsResult result3 =
@@ -1362,7 +1358,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest, CookieStore) {
   }
 
   {
-    content::CookieChangeObserver observer(
+    CookieChangeObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
     // Now set with cookies blocked.
     content_settings::CookieSettings* settings =
