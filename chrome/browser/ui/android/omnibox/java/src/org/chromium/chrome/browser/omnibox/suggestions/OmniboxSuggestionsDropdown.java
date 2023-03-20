@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -184,6 +185,13 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 return 0;
             }
             return resultingDeltaY;
+        }
+
+        @Override
+        public LayoutParams generateDefaultLayoutParams() {
+            RecyclerView.LayoutParams params = super.generateDefaultLayoutParams();
+            params.width = RecyclerView.LayoutParams.MATCH_PARENT;
+            return params;
         }
 
         /**
@@ -582,8 +590,19 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // Recycle them by calling swapAdapter() to avoid showing views of the wrong size.
             swapAdapter(mAdapter, true);
         }
-        ViewUtils.requestLayout(OmniboxSuggestionsDropdown.this,
-                "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
+        if (isInLayout()) {
+            // requestLayout doesn't behave predictably in the middle of a layout pass. Even if it
+            // does trigger a second layout pass, measurement caches aren't properly reset,
+            // resulting in stale sizing. Absent a way to abort the current pass and start over the
+            // simplest solution is to wait until the current pass is over to request relayout.
+            PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+                ViewUtils.requestLayout(OmniboxSuggestionsDropdown.this,
+                        "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
+            });
+        } else {
+            ViewUtils.requestLayout((View) OmniboxSuggestionsDropdown.this,
+                    "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
+        }
     }
 
     private void adjustHorizontalPosition() {

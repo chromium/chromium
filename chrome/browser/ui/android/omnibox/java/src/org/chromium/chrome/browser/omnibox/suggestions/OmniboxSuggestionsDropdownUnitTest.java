@@ -11,6 +11,7 @@ import static junit.framework.Assert.assertTrue;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -35,8 +36,11 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -388,6 +392,28 @@ public class OmniboxSuggestionsDropdownUnitTest {
         layoutDropdown(600, 800);
 
         assertEquals(height, mDropdown.getMeasuredHeight());
+    }
+
+    @Test
+    @SmallTest
+    @LooperMode(Mode.PAUSED)
+    public void testAlignmentProvider_changeDuringlayout() {
+        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext));
+        mDropdown.setAdapter(mAdapter);
+        mDropdown.setEmbedder(mEmbedder);
+        mDropdown.onAttachedToWindow();
+
+        doReturn(true).when(mDropdown).isInLayout();
+        mOmniboxAlignment = new OmniboxAlignment(0, 80, 400, 600, 10, 10);
+        mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
+
+        mDropdown.layout(0, 0, 600, 800);
+        assertFalse(mDropdown.isLayoutRequested());
+
+        // The posted task should re-request layout.
+        Mockito.clearInvocations(mDropdown);
+        ShadowLooper.runUiThreadTasks();
+        verify(mDropdown).requestLayout();
     }
 
     private void layoutDropdown(int width, int height) {

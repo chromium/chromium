@@ -144,7 +144,7 @@ class LocationBarMediator
                 @Override
                 public void setValue(LocationBarMediator object, float value) {
                     ((LocationBarTablet) mLocationBarLayout).setWidthChangeAnimationFraction(value);
-                    if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext) && mUrlHasFocus) {
+                    if (mUrlHasFocus) {
                         mEmbedderImpl.recalculateOmniboxAlignment();
                     }
                 }
