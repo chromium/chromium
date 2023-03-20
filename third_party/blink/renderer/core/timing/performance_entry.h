@@ -49,8 +49,6 @@ class V8ObjectBuilder;
 using PerformanceEntryType = unsigned;
 using PerformanceEntryTypeMask = unsigned;
 
-constexpr uint32_t kNavigationIdDefaultValue = 1;
-
 class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

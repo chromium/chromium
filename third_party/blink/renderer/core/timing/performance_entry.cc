@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
 #include "base/atomic_sequence_num.h"
+#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
