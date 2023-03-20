@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/fake_file_system_access_permission_context.h"
+#include "content/public/test/fake_file_system_access_permission_context.h"
 
 #include "base/files/file_path.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"

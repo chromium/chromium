@@ -6,11 +6,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/file_system_access/features.h"
-#include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

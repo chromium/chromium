@@ -31,6 +31,9 @@ per-file *devtools*=file://content/browser/devtools/OWNERS
 # For BackForwardCache.
 per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 
+# For file system changes.
+per-file *file_system*=file://content/browser/file_system_access/OWNERS
+
 # For security presubmit checks, though test mojom really don't need review.
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

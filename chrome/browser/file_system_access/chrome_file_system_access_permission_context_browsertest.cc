@@ -18,6 +18,7 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,58 +28,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-// Fake ui::SelectFileDialog that selects one or more pre-determined files.
-class FakeSelectFileDialog : public ui::SelectFileDialog {
- public:
-  FakeSelectFileDialog(std::vector<base::FilePath> result,
-                       Listener* listener,
-                       std::unique_ptr<ui::SelectFilePolicy> policy)
-      : ui::SelectFileDialog(listener, std::move(policy)),
-        result_(std::move(result)) {}
-
- protected:
-  void SelectFileImpl(Type type,
-                      const std::u16string& title,
-                      const base::FilePath& default_path,
-                      const FileTypeInfo* file_types,
-                      int file_type_index,
-                      const base::FilePath::StringType& default_extension,
-                      gfx::NativeWindow owning_window,
-                      void* params,
-                      const GURL* caller) override {
-    if (result_.size() == 1)
-      listener_->FileSelected(result_[0], 0, params);
-    else
-      listener_->MultiFilesSelected(result_, params);
-  }
-
-  bool IsRunning(gfx::NativeWindow owning_window) const override {
-    return false;
-  }
-  void ListenerDestroyed() override {}
-  bool HasMultipleFileTypeChoicesImpl() override { return false; }
-
- private:
-  ~FakeSelectFileDialog() override = default;
-  std::vector<base::FilePath> result_;
-};
-
-class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
- public:
-  explicit FakeSelectFileDialogFactory(std::vector<base::FilePath> result)
-      : result_(std::move(result)) {}
-  ~FakeSelectFileDialogFactory() override = default;
-
-  ui::SelectFileDialog* Create(
-      ui::SelectFileDialog::Listener* listener,
-      std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new FakeSelectFileDialog(result_, listener, std::move(policy));
-  }
-
- private:
-  std::vector<base::FilePath> result_;
-};
 
 class TestFileSystemAccessPermissionContext
     : public ChromeFileSystemAccessPermissionContext {
@@ -185,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(
     PerformAfterWriteChecks) {
   const base::FilePath test_file = CreateTestFile("");
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}));
+      new content::FakeSelectFileDialogFactory({test_file}));
 
   TestFileSystemAccessPermissionContext permission_context(
       browser()->profile());

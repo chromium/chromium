@@ -8,8 +8,8 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
+#ifndef CONTENT_PUBLIC_TEST_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
+#define CONTENT_PUBLIC_TEST_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
 
 namespace content {
 
@@ -87,4 +87,4 @@ class FakeFileSystemAccessPermissionContext
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_
+#endif  // CONTENT_PUBLIC_TEST_FAKE_FILE_SYSTEM_ACCESS_PERMISSION_CONTEXT_H_

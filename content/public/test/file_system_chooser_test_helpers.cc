@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
-#include "base/memory/raw_ptr.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 
+#include "base/memory/raw_ptr.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 
@@ -32,10 +32,11 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
                       const GURL* caller) override {
     if (out_params_) {
       out_params_->type = type;
-      if (file_types)
+      if (file_types) {
         out_params_->file_types = *file_types;
-      else
+      } else {
         out_params_->file_types = absl::nullopt;
+      }
       out_params_->owning_window = owning_window;
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;
@@ -78,10 +79,11 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
                       const GURL* caller) override {
     if (out_params_) {
       out_params_->type = type;
-      if (file_types)
+      if (file_types) {
         out_params_->file_types = *file_types;
-      else
+      } else {
         out_params_->file_types = absl::nullopt;
+      }
       out_params_->owning_window = owning_window;
       out_params_->file_type_index = file_type_index;
       out_params_->default_path = default_path;
@@ -92,10 +94,11 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
     // outlive the dialog if it is immediately deleted by the listener.
     std::vector<ui::SelectedFileInfo> result = std::move(result_);
     result_.clear();
-    if (result.size() == 1)
+    if (result.size() == 1) {
       listener_->FileSelectedWithExtraInfo(result[0], 0, params);
-    else
+    } else {
       listener_->MultiFilesSelectedWithExtraInfo(result, params);
+    }
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
