@@ -2565,9 +2565,9 @@ void V4L2VideoDecodeAccelerator::SendBufferToClient(
       output_record.picture_id,
       std::make_pair(std::move(vda_buffer), std::move(frame)));
   // TODO(b/214190092): Get color space from the v4l2 buffer.
-  const Picture picture(output_record.picture_id, bitstream_buffer_id,
-                        gfx::Rect(visible_size_),
-                        container_color_space_.ToGfxColorSpace(), false);
+  const Picture picture(
+      output_record.picture_id, bitstream_buffer_id, gfx::Rect(visible_size_),
+      container_color_space_.ToGfxColorSpace(), /*allow_overlay=*/true);
   pending_picture_ready_.emplace(output_record.cleared, picture);
   SendPictureReady();
   // This picture will be cleared next time we see it.
