@@ -41,11 +41,15 @@ QuietModeFeaturePodController::QuietModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
   MessageCenter::Get()->AddObserver(this);
-  NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
+  if (!features::IsOsSettingsAppBadgingToggleEnabled()) {
+    NotifierSettingsController::Get()->AddNotifierSettingsObserver(this);
+  }
 }
 
 QuietModeFeaturePodController::~QuietModeFeaturePodController() {
-  NotifierSettingsController::Get()->RemoveNotifierSettingsObserver(this);
+  if (!features::IsOsSettingsAppBadgingToggleEnabled()) {
+    NotifierSettingsController::Get()->RemoveNotifierSettingsObserver(this);
+  }
   MessageCenter::Get()->RemoveObserver(this);
 }
 
@@ -66,12 +70,19 @@ FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
     TrackVisibilityUMA();
   }
 
-  button_->SetLabel(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL));
   button_->SetIconTooltip(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
       GetQuietModeStateTooltip()));
-  button_->ShowDetailedViewArrow();
+
+  if (features::IsOsSettingsAppBadgingToggleEnabled()) {
+    button_->SetLabel(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB));
+  } else {
+    button_->SetLabel(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL));
+    button_->ShowDetailedViewArrow();
+  }
+
   OnQuietModeChanged(MessageCenter::Get()->IsQuietMode());
   return button_;
 }
@@ -155,13 +166,29 @@ void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {
       GetQuietModeStateTooltip()));
 
   if (in_quiet_mode) {
-    button_->SetSubLabel(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_SUBLABEL));
-    button_->SetLabelTooltip(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOOLTIP));
-  } else if (button_->GetVisible()) {
-    NotifierSettingsController::Get()->GetNotifiers();
+    const int sublabel_string_id =
+        features::IsOsSettingsAppBadgingToggleEnabled()
+            ? IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_SUBLABEL
+            : IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_SUBLABEL;
+    const int tooltip_string_id =
+        features::IsOsSettingsAppBadgingToggleEnabled()
+            ? IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOGGLE_TOOLTIP
+            : IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOOLTIP;
+    button_->SetSubLabel(l10n_util::GetStringUTF16(sublabel_string_id));
+    button_->SetLabelTooltip(l10n_util::GetStringUTF16(tooltip_string_id));
+    return;
   }
+
+  if (button_->GetVisible() &&
+      !features::IsOsSettingsAppBadgingToggleEnabled()) {
+    NotifierSettingsController::Get()->GetNotifiers();
+    return;
+  }
+
+  button_->SetSubLabel(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_SUBLABEL));
+  button_->SetLabelTooltip(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_STATE));
 }
 
 void QuietModeFeaturePodController::OnNotifiersUpdated(

@@ -1321,6 +1321,15 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_SUBLABEL" desc="The sub label text shown under do not disturb button when all notifications are disabled. [CHAR_LIMIT=14]">
         Do not disturb
       </message>
+       <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOGGLE_TOOLTIP" desc="The tooltip text of the button that shows notification settings. Used when all notifications are disabled.">
+        Do not disturb is on
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_SUBLABEL" desc="The sub label text shown under the do not disturb button when notifications are disabled (do not disturb is on). [CHAR_LIMIT=14]">
+        On
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_SUBLABEL" desc="The sub label text shown under do not disturb button when notifications are enabled (do not disturb is off). [CHAR_LIMIT=14]">
+        Off
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_LOCALE" desc="The label used for locale button in system tray bubble. [CHAR_LIMIT=14]">
         Language
       </message>
