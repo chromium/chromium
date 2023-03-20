@@ -5388,7 +5388,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "GifRecording"
+                        "GifRecording",
+                        "GifRendering",
+                        "NotificationImageDrag"
                     ]
                 }
             ]
