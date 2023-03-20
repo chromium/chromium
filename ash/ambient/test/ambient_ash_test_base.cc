@@ -592,12 +592,6 @@ AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {
   AmbientManagedSlideshowUiLauncher* ui_launcher =
       static_cast<AmbientManagedSlideshowUiLauncher*>(
           ambient_controller()->ambient_ui_launcher());
-  // Used to make sure to make the ui launcher for
-  // ambient_managed_photo_controller unit tests don't fire an uninitialized
-  // callback and crash.
-  // TODO (fahadmansoor): Start using a test only method to remove the observer
-  // from the ui_launcher for testing the ambient controller
-  ui_launcher->initialization_callback_ = base::DoNothing();
   return &ui_launcher->photo_controller_;
 }
 

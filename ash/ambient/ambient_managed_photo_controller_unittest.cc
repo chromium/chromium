@@ -74,14 +74,19 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
+
     AmbientAshTestBase::SetUp();
-    CreateTestData();
-    managed_photo_controller()->ambient_backend_model()->SetPhotoConfig(
+    photo_controller_ = std::make_unique<AmbientManagedPhotoController>(
+        *ambient_controller()->ambient_view_delegate(),
         CreateAmbientManagedSlideshowPhotoConfig());
+    CreateTestData();
   }
 
   void TearDown() override {
     StopScreenUpdate();
+    // Call reset before calling tear down to make sure we aren't observing
+    // already freed resources
+    photo_controller_.reset();
     AmbientAshTestBase::TearDown();
     CleanUpTestData();
   }
@@ -137,11 +142,16 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
     EXPECT_TRUE(managed_photo_controller()->IsScreenUpdateActive());
   }
 
+  AmbientManagedPhotoController* managed_photo_controller() {
+    return photo_controller_.get();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   InProcessImageDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<AmbientManagedPhotoController> photo_controller_;
 };
 
 TEST_F(AmbientManagedPhotoControllerTest,
