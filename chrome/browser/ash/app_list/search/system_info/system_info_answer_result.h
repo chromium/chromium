@@ -32,6 +32,8 @@ class SystemInfoAnswerResult : public ChromeSearchResult {
 
   void Open(int event_flags) override;
 
+  void UpdateTitle(const std::u16string& title);
+
   void UpdateTitleAndDetails(const std::u16string& title,
                              const std::u16string& description);
 

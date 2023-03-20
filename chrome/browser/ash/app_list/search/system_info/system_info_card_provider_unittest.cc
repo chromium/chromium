@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_string.h"
@@ -113,6 +114,92 @@ void SetCrosHealthdMemoryUsageResponse(uint32_t total_memory_kib,
       /*page_faults_since_last_boot=*/0);
   SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr, /*cpu_info=*/nullptr,
                                 /*memory_info=*/std::move(memory_info));
+}
+
+// Constructs a BatteryInfoPtr.
+healthd_mojom::BatteryInfoPtr CreateCrosHealthdBatteryHealthResponse(
+    double charge_full_now,
+    double charge_full_design,
+    int32_t cycle_count) {
+  healthd_mojom::NullableUint64Ptr temp_value_ptr(
+      healthd_mojom::NullableUint64::New());
+  auto battery_info = healthd_mojom::BatteryInfo::New(
+      /*cycle_count=*/cycle_count, /*voltage_now=*/0,
+      /*vendor=*/"",
+      /*serial_number=*/"", /*charge_full_design=*/charge_full_design,
+      /*charge_full=*/charge_full_now,
+      /*voltage_min_design=*/0,
+      /*model_name=*/"",
+      /*charge_now=*/0,
+      /*current_now=*/0,
+      /*technology=*/"",
+      /*status=*/"",
+      /*manufacture_date=*/absl::nullopt, std::move(temp_value_ptr));
+  return battery_info;
+}
+
+void SetCrosHealthdBatteryHealthResponse(double charge_full_now,
+                                         double charge_full_design,
+                                         int32_t cycle_count) {
+  healthd_mojom::BatteryInfoPtr battery_info =
+      CreateCrosHealthdBatteryHealthResponse(charge_full_now,
+                                             charge_full_design, cycle_count);
+  SetProbeTelemetryInfoResponse(std::move(battery_info),
+                                /*cpu_info=*/nullptr,
+                                /*memory_info=*/nullptr);
+}
+
+bool AreValidPowerTimes(int64_t time_to_full, int64_t time_to_empty) {
+  // Exactly one of `time_to_full` or `time_to_empty` must be zero. The other
+  // can be a positive integer to represent the time to charge/discharge or -1
+  // to represent that the time is being calculated.
+  return (time_to_empty == 0 && (time_to_full > 0 || time_to_full == -1)) ||
+         (time_to_full == 0 && (time_to_empty > 0 || time_to_empty == -1));
+}
+
+power_manager::PowerSupplyProperties ConstructPowerSupplyProperties(
+    power_manager::PowerSupplyProperties::ExternalPower power_source,
+    power_manager::PowerSupplyProperties::BatteryState battery_state,
+    bool is_calculating_battery_time,
+    int64_t time_to_full,
+    int64_t time_to_empty,
+    double battery_percent) {
+  power_manager::PowerSupplyProperties props;
+  props.set_external_power(power_source);
+  props.set_battery_state(battery_state);
+
+  if (battery_state ==
+      power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT) {
+    // Leave `time_to_full` and `time_to_empty` unset.
+    return props;
+  }
+
+  DCHECK(AreValidPowerTimes(time_to_full, time_to_empty));
+
+  props.set_is_calculating_battery_time(is_calculating_battery_time);
+  props.set_battery_time_to_full_sec(time_to_full);
+  props.set_battery_time_to_empty_sec(time_to_empty);
+  props.set_battery_percent(battery_percent);
+
+  return props;
+}
+
+// Sets the PowerSupplyProperties on FakePowerManagerClient. Calling this
+// method immediately notifies PowerManagerClient observers. One of
+// `time_to_full` or `time_to_empty` must be either -1 or a positive number.
+// The other must be 0. If `battery_state` is NOT_PRESENT, both `time_to_full`
+// and `time_to_empty` will be left unset.
+void SetPowerManagerProperties(
+    power_manager::PowerSupplyProperties::ExternalPower power_source,
+    power_manager::PowerSupplyProperties::BatteryState battery_state,
+    bool is_calculating_battery_time,
+    int64_t time_to_full,
+    int64_t time_to_empty,
+    double battery_percent) {
+  power_manager::PowerSupplyProperties props = ConstructPowerSupplyProperties(
+      power_source, battery_state, is_calculating_battery_time, time_to_full,
+      time_to_empty, battery_percent);
+  chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
 }
 
 }  // namespace
@@ -274,6 +361,73 @@ TEST_F(SystemInfoCardProviderTest, memory) {
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"3.8 GB of 7.6 GB available");
   EXPECT_TRUE(details.GetTextTags().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, battery) {
+  const double charge_full_now = 20;
+  const double charge_full_design = 26;
+  const int32_t cycle_count = 500;
+
+  SetCrosHealthdBatteryHealthResponse(charge_full_now, charge_full_design,
+                                      cycle_count);
+
+  const auto power_source =
+      power_manager::PowerSupplyProperties_ExternalPower_AC;
+  const auto battery_state =
+      power_manager::PowerSupplyProperties_BatteryState_CHARGING;
+  const bool is_calculating_battery_time = false;
+  const int64_t time_to_full_secs = 1000;
+  const int64_t time_to_empty_secs = 0;
+  const double battery_percent = 94.0;
+
+  SetPowerManagerProperties(power_source, battery_state,
+                            is_calculating_battery_time, time_to_full_secs,
+                            time_to_empty_secs, battery_percent);
+  Wait();
+
+  StartSearch(u"battery");
+  Wait();
+
+  ASSERT_FALSE(results().empty());
+  EXPECT_EQ(results().size(), 1u);
+  EXPECT_EQ(results()[0]->display_type(),
+            ash::SearchResultDisplayType::kAnswerCard);
+  EXPECT_EQ(results()[0]->result_type(),
+            ash::AppListSearchResultType::kSystemInfo);
+  EXPECT_EQ(results()[0]->metrics_type(), ash::SYSTEM_INFO);
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->display_type,
+            ash::SystemInfoAnswerCardDisplayType::kBarChart);
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
+            94);
+
+  ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
+  const auto& title = results()[0]->title_text_vector()[0];
+  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title.GetText(), u"94% | 17 minutes until full");
+  EXPECT_TRUE(title.GetTextTags().empty());
+
+  ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
+  const auto& details = results()[0]->details_text_vector()[0];
+  ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details.GetText(), u"Battery health 76% | Cycle count 500");
+  EXPECT_TRUE(details.GetTextTags().empty());
+
+  const int64_t new_time_to_full_secs = time_to_full_secs - 100;
+  const double new_battery_percent = 96.0;
+
+  SetPowerManagerProperties(power_source, battery_state,
+                            is_calculating_battery_time, new_time_to_full_secs,
+                            time_to_empty_secs, new_battery_percent);
+  Wait();
+
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
+            96);
+
+  ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
+  const auto& updated_title = results()[0]->title_text_vector()[0];
+  ASSERT_EQ(updated_title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(updated_title.GetText(), u"96% | 15 minutes until full");
+  EXPECT_TRUE(updated_title.GetTextTags().empty());
 }
 
 }  // namespace app_list::test

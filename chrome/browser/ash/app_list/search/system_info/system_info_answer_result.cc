@@ -54,12 +54,16 @@ SystemInfoAnswerResult::SystemInfoAnswerResult(
 
 SystemInfoAnswerResult::~SystemInfoAnswerResult() = default;
 
-void SystemInfoAnswerResult::UpdateTitleAndDetails(
-    const std::u16string& title,
-    const std::u16string& description) {
+void SystemInfoAnswerResult::UpdateTitle(const std::u16string& title) {
   std::vector<TextItem> title_vector;
   title_vector.push_back(CreateStringTextItem(title));
   SetTitleTextVector(title_vector);
+}
+
+void SystemInfoAnswerResult::UpdateTitleAndDetails(
+    const std::u16string& title,
+    const std::u16string& description) {
+  UpdateTitle(title);
 
   std::vector<TextItem> details_vector;
   details_vector.push_back(CreateStringTextItem(description));

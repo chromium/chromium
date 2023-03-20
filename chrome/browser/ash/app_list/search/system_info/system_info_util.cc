@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 
+#include <string>
+
 #include "ash/public/cpp/power_utils.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
@@ -237,8 +240,8 @@ std::u16string GetBatteryTimeText(base::TimeDelta time_left) {
                                   time_left);
 }
 
-void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
-                         BatteryHealth& battery_health) {
+std::u16string CalculatePowerTime(
+    const power_manager::PowerSupplyProperties& proto) {
   bool charging = proto.battery_state() ==
                   power_manager::PowerSupplyProperties_BatteryState_CHARGING;
   bool calculating = proto.is_calculating_battery_time();
@@ -255,17 +258,23 @@ void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
 
   std::u16string status_text;
   if (show_time) {
-    // TODO(b/263994165): Create a new id with a | instead of a -.
     status_text = l10n_util::GetStringFUTF16(
-        charging ? IDS_SETTINGS_BATTERY_STATUS_CHARGING
-                 : IDS_SETTINGS_BATTERY_STATUS,
+        charging ? IDS_ASH_BATTERY_STATUS_CHARGING_IN_LAUNCHER_TITLE
+                 : IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_TITLE,
         base::NumberToString16(percent), GetBatteryTimeText(time_left));
   } else {
     status_text = l10n_util::GetStringFUTF16(IDS_SETTINGS_BATTERY_STATUS_SHORT,
                                              base::NumberToString16(percent));
   }
+  return status_text;
+}
 
-  battery_health.SetPowerTime(status_text);
+void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
+                         BatteryHealth& battery_health) {
+  int percent =
+      ash::power_utils::GetRoundedBatteryPercent(proto.battery_percent());
+
+  battery_health.SetPowerTime(CalculatePowerTime(proto));
   battery_health.SetBatteryPercentage(percent);
 }
 

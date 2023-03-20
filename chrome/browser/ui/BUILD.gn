@@ -2206,6 +2206,8 @@ static_library("ui") {
       "../ash/app_list/search/search_provider.h",
       "../ash/app_list/search/search_session_metrics_manager.cc",
       "../ash/app_list/search/search_session_metrics_manager.h",
+      "../ash/app_list/search/system_info/battery_answer_result.cc",
+      "../ash/app_list/search/system_info/battery_answer_result.h",
       "../ash/app_list/search/system_info/battery_health.h",
       "../ash/app_list/search/system_info/cpu_data.h",
       "../ash/app_list/search/system_info/cpu_usage_data.cc",

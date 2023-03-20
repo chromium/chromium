@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -31,7 +30,6 @@ relevant pages within the Settings and Diagnostics apps.*/
 // TODO(b/263994165): Complete the System Info Card Provider to return results.
 // This provider is a work in progress.
 class SystemInfoCardProvider : public SearchProvider,
-                               public chromeos::PowerManagerClient::Observer,
                                public ash::settings::SizeCalculator::Observer {
  public:
   explicit SystemInfoCardProvider(Profile* profile);
@@ -63,16 +61,9 @@ class SystemInfoCardProvider : public SearchProvider,
   void UpdateCpuUsage();
   void OnCpuUsageUpdated(ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
 
-  void UpdateBatteryInfo(absl::optional<power_manager::PowerSupplyProperties>
-                             power_supply_properties);
+  void UpdateBatteryInfo();
   void OnBatteryInfoUpdated(
-      absl::optional<power_manager::PowerSupplyProperties>
-          power_supply_properties,
       ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr);
-
-  // chromeos::PowerManagerClient::Observer:
-  void PowerChanged(const power_manager::PowerSupplyProperties&
-                        power_supply_properties) override;
 
   void UpdateChromeOsVersion();
 

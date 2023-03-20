@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/system_info/battery_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
@@ -75,7 +76,6 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
       base::BindOnce(&SystemInfoCardProvider::OnProbeServiceDisconnect,
                      weak_factory_.GetWeakPtr()));
   StartObservingCalculators();
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
 
   // TODO(b/261867385): We manually load the icon from the local codebase as
   // the icon load from proxy is flaky. When the flakiness if solved, we can
@@ -87,7 +87,6 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
 }
 
 SystemInfoCardProvider::~SystemInfoCardProvider() {
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   StopObservingCalculators();
 }
 
@@ -122,7 +121,7 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
     double relevance = CalculateRelevance(query, keyword);
     if (relevance > kRelevanceThreshold) {
       relevance_ = relevance;
-      UpdateBatteryInfo(absl::nullopt);
+      UpdateBatteryInfo();
       break;
     }
   }
@@ -314,20 +313,16 @@ void SystemInfoCardProvider::UpdateCpuUsage() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void SystemInfoCardProvider::UpdateBatteryInfo(
-    absl::optional<power_manager::PowerSupplyProperties>
-        power_supply_properties) {
+void SystemInfoCardProvider::UpdateBatteryInfo() {
   BindCrosHealthdProbeServiceIfNecessary();
 
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBattery},
       base::BindOnce(&SystemInfoCardProvider::OnBatteryInfoUpdated,
-                     weak_factory_.GetWeakPtr(), power_supply_properties));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SystemInfoCardProvider::OnBatteryInfoUpdated(
-    absl::optional<power_manager::PowerSupplyProperties>
-        power_supply_properties,
     ash::cros_healthd::mojom::TelemetryInfoPtr info_ptr) {
   if (info_ptr.is_null()) {
     LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
@@ -346,20 +341,26 @@ void SystemInfoCardProvider::OnBatteryInfoUpdated(
   PopulateBatteryHealth(*battery_info_ptr, *new_battery_health.get());
 
   const absl::optional<power_manager::PowerSupplyProperties>& proto =
-      power_supply_properties.has_value()
-          ? power_supply_properties
-          : chromeos::PowerManagerClient::Get()->GetLastStatus();
+      chromeos::PowerManagerClient::Get()->GetLastStatus();
   DCHECK(proto);
 
   PopulatePowerStatus(proto.value(), *new_battery_health.get());
 
-  battery_health_ = std::move(new_battery_health);
-}
+  std::u16string description = l10n_util::GetStringFUTF16(
+      IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION,
+      base::NumberToString16(new_battery_health->GetBatteryWearPercentage()),
+      base::NumberToString16(new_battery_health->GetCycleCount()));
 
-void SystemInfoCardProvider::PowerChanged(
-    const power_manager::PowerSupplyProperties& power_supply_properties) {
-  UpdateBatteryInfo(absl::make_optional<power_manager::PowerSupplyProperties>(
-      power_supply_properties));
+  AnswerCardInfo answer_card_info(new_battery_health->GetBatteryPercentage());
+  SearchProvider::Results new_results;
+  new_results.emplace_back(std::make_unique<BatteryAnswerResult>(
+      profile_, last_query_, /*url_path=*/"", diagnostics_icon_, relevance_,
+      new_battery_health->GetPowerTime(), description,
+      SystemInfoAnswerResult::SystemInfoCategory::kDiagnostics,
+      answer_card_info));
+  SwapResults(&new_results);
+
+  battery_health_ = std::move(new_battery_health);
 }
 
 void SystemInfoCardProvider::UpdateChromeOsVersion() {
