@@ -464,7 +464,6 @@ const size_t kActionsDuplicatedWithBrowserLength =
     std::size(kActionsDuplicatedWithBrowser);
 
 const AcceleratorAction kActionsInterceptableByBrowser[] = {
-    WINDOW_MINIMIZE,
     SHOW_TASK_MANAGER,
     OPEN_GET_HELP,
     MINIMIZE_TOP_WINDOW_ON_BACK,
