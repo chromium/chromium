@@ -105,5 +105,9 @@ std::string PerfettoPlatform::GetCurrentProcessName() {
   return process_name;
 }
 
+perfetto::base::PlatformThreadId PerfettoPlatform::GetCurrentThreadId() {
+  return base::PlatformThread::CurrentId();
+}
+
 }  // namespace tracing
 }  // namespace base

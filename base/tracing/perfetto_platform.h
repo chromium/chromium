@@ -5,6 +5,7 @@
 #ifndef BASE_TRACING_PERFETTO_PLATFORM_H_
 #define BASE_TRACING_PERFETTO_PLATFORM_H_
 
+#include "third_party/perfetto/include/perfetto/base/thread_utils.h"
 #include "third_party/perfetto/include/perfetto/tracing/platform.h"
 
 #include "base/base_export.h"
@@ -41,6 +42,11 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
   std::unique_ptr<perfetto::base::TaskRunner> CreateTaskRunner(
       const CreateTaskRunnerArgs&) override;
   std::string GetCurrentProcessName() override;
+
+  // Chrome uses different thread IDs than Perfetto on Mac. So we need to
+  // override this method to keep Perfetto tracks consistent with Chrome
+  // thread IDs.
+  perfetto::base::PlatformThreadId GetCurrentThreadId() override;
 
  private:
   const TaskRunnerType task_runner_type_;
