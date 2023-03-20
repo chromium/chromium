@@ -1523,6 +1523,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.DnsProxy.PlainTextProbe.{Family}.RetriesUntilSuccess"
+    units="count" expires_after="2023-05-07">
+  <owner>jasongustaman@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Diagnostic metric for ChromeOS DNS proxy that records number of retries
+    needed until a successful probe. A value will be recorded whenever the probe
+    completes in success. This metric does not catch consistenly failing probes.
+  </summary>
+  <token key="Family">
+    <variant name="IPv4"/>
+    <variant name="IPv6"/>
+  </token>
+</histogram>
+
 <histogram name="Network.DnsProxy.Query.Failed{Stage}Duration" units="ms"
     expires_after="2023-05-07">
   <owner>garrick@chromium.org</owner>
