@@ -40,6 +40,14 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // Padding between header items.
   static constexpr int kHeaderPaddingDp = 12;
 
+  // The corner radius for WindowMiniView. Please notice, instead of setting the
+  // corner radius directly on the window mini view, setting the corner radius
+  // on its children (header view, preview header). The reasons are:
+  // 1. The WindowMiniView might have a non-empty border.
+  // 2. The focus ring which is a child view of the WindowMiniView couldn't be
+  // drawn correctly if its parent's layer is clipped.
+  static constexpr int kWindowMiniViewCornerRadius = 16;
+
   // Sets the visibility of |backdrop_view_|. Creates it if it is null.
   void SetBackdropVisibility(bool visible);
 

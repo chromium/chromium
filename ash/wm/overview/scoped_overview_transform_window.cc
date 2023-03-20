@@ -10,12 +10,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -26,6 +28,7 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
@@ -537,18 +540,46 @@ void ScopedOverviewTransformWindow::UpdateWindowDimensionsType() {
 }
 
 void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
+  // TODO(b/274470528): Keep track of the corner radius animations.
+
   // Hide the corners if minimized, OverviewItemView will handle showing the
   // rounded corners on the UI.
   if (IsMinimized())
     DCHECK(!show);
 
   ui::Layer* layer = window_->layer();
+  layer->SetIsFastRoundedCorner(true);
+
   const float scale = layer->transform().To2dScale().x();
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kLow);
-  const gfx::RoundedCornersF radii(show ? (radius / scale) : 0.0f);
+
+  if (!show) {
+    layer->SetRoundedCornerRadius(gfx::RoundedCornersF());
+    return;
+  }
+
+  if (!chromeos::features::IsJellyrollEnabled()) {
+    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(radius / scale));
+    return;
+  }
+
+  gfx::RoundedCornersF radii;
+  // Corner radius is applied to the preview view only if the
+  // `backdrop_view_` is not visible.
+  auto* backdrop_view = overview_item_->overview_item_view()->backdrop_view();
+  if (backdrop_view && backdrop_view->GetVisible()) {
+    radii = gfx::RoundedCornersF();
+  } else {
+    radii = gfx::RoundedCornersF(0, 0, kOverviewItemCornerRadius / scale,
+                                 kOverviewItemCornerRadius / scale);
+  }
+
+  if (auto* shadow = overview_item_->shadow()) {
+    shadow->SetRoundedCornerRadius(kOverviewItemCornerRadius);
+  }
+
   layer->SetRoundedCornerRadius(radii);
-  layer->SetIsFastRoundedCorner(true);
 }
 
 void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
@@ -566,8 +597,9 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
   // Hide transient children which have been specified to be hidden in
   // overview mode.
   if (transient_child != window_ &&
-      transient_child->GetProperty(kHideInOverviewKey))
+      transient_child->GetProperty(kHideInOverviewKey)) {
     AddHiddenTransientWindows({transient_child});
+  }
 
   // Add this as |aura::WindowObserver| for observing |kHideInOverviewKey|
   // property changes.

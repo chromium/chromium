@@ -27,9 +27,13 @@ constexpr int kWindowMargin = 5;
 // Height of an item header.
 constexpr int kHeaderHeightDp = WindowMiniView::kHeaderHeightDp;
 
-// Windows whose aspect ratio surpass this (width twice as large as height or
-// vice versa) will be classified as too wide or too tall and will be handled
-// slightly differently in overview mode.
+// Corner radius of the overview item.
+constexpr int kOverviewItemCornerRadius =
+    WindowMiniView::kWindowMiniViewCornerRadius;
+
+// Windows whose aspect ratio surpass this (width twice as large as height
+// or vice versa) will be classified as too wide or too tall and will be
+// handled slightly differently in overview mode.
 constexpr float kExtremeWindowRatioThreshold = 2.f;
 
 // Inset for the focus ring around the focusable overview items. The ring is 2px

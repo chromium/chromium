@@ -10,15 +10,19 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/window_preview_view.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -36,6 +40,10 @@ constexpr int kLabelFontDelta = 2;
 
 // Values of the backdrop.
 constexpr int kBackdropBorderRoundingDp = 4;
+
+constexpr int kFocusRingCornerRadius = 20;
+
+constexpr gfx::Insets kHeaderInsets = gfx::Insets::TLBR(0, 10, 0, 10);
 
 std::u16string GetWindowTitle(aura::Window* window) {
   aura::Window* transient_root = wm::GetTransientRoot(window);
@@ -59,14 +67,22 @@ void WindowMiniView::SetBackdropVisibility(bool visible) {
   }
 
   if (!backdrop_view_) {
-    backdrop_view_ = AddChildView(std::make_unique<views::View>());
-    backdrop_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+    // Always put the backdrop view under other children.
+    backdrop_view_ = AddChildViewAt(std::make_unique<views::View>(), 0);
+    backdrop_view_->SetPaintToLayer();
+    backdrop_view_->SetBackground(
+        views::CreateThemedSolidBackground(cros_tokens::kCrosSysScrim));
+
     ui::Layer* layer = backdrop_view_->layer();
     layer->SetFillsBoundsOpaquely(false);
-    layer->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
-    layer->SetRoundedCornerRadius(
-        gfx::RoundedCornersF(kBackdropBorderRoundingDp));
+
+    const gfx::RoundedCornersF rounded_corder_radius =
+        chromeos::features::IsJellyrollEnabled()
+            ? gfx::RoundedCornersF(0, 0, kWindowMiniViewCornerRadius,
+                                   kWindowMiniViewCornerRadius)
+            : gfx::RoundedCornersF(kBackdropBorderRoundingDp);
+
+    layer->SetRoundedCornerRadius(rounded_corder_radius);
     layer->SetIsFastRoundedCorner(true);
     backdrop_view_->SetCanProcessEventsWithinSubtree(false);
     Layout();
@@ -108,7 +124,25 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
   const float scale = layer->transform().To2dScale().x();
   const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kLow);
-  const gfx::RoundedCornersF radii(show ? rounding / scale : 0.0f);
+  gfx::RoundedCornersF radii;
+
+  if (!show) {
+    radii = gfx::RoundedCornersF();
+  } else {
+    if (chromeos::features::IsJellyrollEnabled()) {
+      // Corner radius is applied to the previw view only if the
+      // `backdrop_view_` is not visible.
+      if (backdrop_view_ && backdrop_view_->GetVisible()) {
+        radii = gfx::RoundedCornersF();
+      } else {
+        radii = gfx::RoundedCornersF(0, 0, kWindowMiniViewCornerRadius / scale,
+                                     kWindowMiniViewCornerRadius / scale);
+      }
+    } else {
+      radii = gfx::RoundedCornersF(rounding / scale);
+    }
+  }
+
   layer->SetRoundedCornerRadius(radii);
   layer->SetIsFastRoundedCorner(true);
 }
@@ -147,9 +181,18 @@ WindowMiniView::WindowMiniView(aura::Window* source_window, int border_inset)
   header_view_ = AddChildView(std::make_unique<views::View>());
   header_view_->SetPaintToLayer();
   header_view_->layer()->SetFillsBoundsOpaquely(false);
+
+  gfx::Insets header_insets(0);
+  if (chromeos::features::IsJellyrollEnabled()) {
+    header_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysHeader, /*top_radius=*/kWindowMiniViewCornerRadius,
+        /*bottom_radius=*/0, /*for_border_thickness=*/0));
+    header_insets = kHeaderInsets;
+  }
+
   views::BoxLayout* layout =
       header_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          views::BoxLayout::Orientation::kHorizontal, header_insets,
           kHeaderPaddingDp));
 
   title_label_ = header_view_->AddChildView(
@@ -165,7 +208,8 @@ WindowMiniView::WindowMiniView(aura::Window* source_window, int border_inset)
   // needs to be counted when setting the insets for the focus ring.
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kFocusRingHaloInset + border_inset),
-      kBackdropBorderRoundingDp);
+      chromeos::features::IsJellyrollEnabled() ? kFocusRingCornerRadius
+                                               : kBackdropBorderRoundingDp);
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(ui::kColorAshFocusRing);

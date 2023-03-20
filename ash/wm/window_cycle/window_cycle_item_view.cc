@@ -74,7 +74,7 @@ gfx::Size WindowCycleItemView::GetPreviewViewSize() const {
         kMaxPreviewWidthDp / static_cast<float>(preview_pref_size.width()),
         kFixedPreviewHeightDp / static_cast<float>(preview_pref_size.height()));
     preview_pref_size =
-        gfx::ScaleToFlooredSize(preview_pref_size, scale, scale);
+        gfx::ScaleToRoundedSize(preview_pref_size, scale, scale);
   }
 
   return preview_pref_size;

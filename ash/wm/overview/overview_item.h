@@ -47,6 +47,8 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   ~OverviewItem() override;
 
+  SystemShadow* shadow() { return shadow_.get(); }
+
   aura::Window* GetWindow();
 
   // Returns true if |target| is contained in this OverviewItem.

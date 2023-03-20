@@ -67,6 +67,12 @@ constexpr int kMirrorContainerVerticalPaddingDp = 24;
 // Padding between the window previews within the alt-tab bandshield.
 constexpr int kBetweenChildPaddingDp = 10;
 
+// Padding between the window previews within the alt-tab bandshield when
+// feature flag Jellyroll is enabled.
+// TODO(conniekxu): Rename this to `kBetweenChildPaddingDp`, and remove
+// `kBetweenChildPaddingDp` above.
+constexpr int kBetweenChildPaddingDpCrOSNext = 12;
+
 // Padding between the tab slider button and the tab slider container.
 constexpr int kTabSliderContainerVerticalPaddingDp = 32;
 
@@ -118,6 +124,9 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
 
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysScrim2, kBackgroundCornerRadius));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kBackgroundCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
 
   // |mirror_container_| may be larger than |this|. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container
@@ -134,7 +143,9 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp,
                             kInsideBorderVerticalPaddingDp,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp),
-          kBetweenChildPaddingDp));
+          chromeos::features::IsJellyrollEnabled()
+              ? kBetweenChildPaddingDpCrOSNext
+              : kBetweenChildPaddingDp));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
@@ -647,19 +658,6 @@ void WindowCycleView::OnImplicitAnimationsCompleted() {
   }
 
   shadow_->GetLayer()->SetVisible(true);
-}
-
-void WindowCycleView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  background()->SetNativeControlColor(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80));
-  if (chromeos::features::IsDarkLightModeEnabled()) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kBackgroundCornerRadius,
-        views::HighlightBorder::Type::kHighlightBorder1,
-        /*use_light_colors=*/false));
-  }
 }
 
 bool WindowCycleView::IsEventInTabSliderContainer(
