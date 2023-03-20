@@ -704,6 +704,9 @@
           'linux-bionic',
           'x86-64',
         ],
+        'args': [
+          '--use-persistent-shell',
+        ],
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_12_emulator_gtests',
