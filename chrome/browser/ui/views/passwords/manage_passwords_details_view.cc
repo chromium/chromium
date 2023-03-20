@@ -307,9 +307,11 @@ std::unique_ptr<views::View> CreateEditNoteRow(
                                views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING)));
 
   (*textarea)->SetID(static_cast<int>(ManagePasswordsViewIDs::kNoteTextarea));
-  // TODO(crbug.com/1382017): use internationalized string.
   *error_label = note_with_error_label_view->AddChildView(
-      CreateErrorLabel(u"Notes can save up to 1000 characters."));
+      CreateErrorLabel(l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT_WARNING,
+          base::NumberToString16(
+              password_manager::constants::kMaxPasswordNoteLength))));
   return row;
 }
 
