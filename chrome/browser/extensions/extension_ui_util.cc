@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -26,7 +26,8 @@ bool IsBlockedByPolicy(const Extension* app, content::BrowserContext* context) {
   DCHECK(profile);
 
   return app->id() == extensions::kWebStoreAppId &&
-         profile->GetPrefs()->GetBoolean(prefs::kHideWebStoreIcon);
+         profile->GetPrefs()->GetBoolean(
+             policy::policy_prefs::kHideWebStoreIcon);
 }
 
 }  // namespace

@@ -61,6 +61,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_sorting.h"
@@ -457,7 +458,8 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   EXPECT_TRUE(model_updater1.FindItem(store->id()));
 
   // Activate the HideWebStoreIcon policy.
-  profile_->GetPrefs()->SetBoolean(prefs::kHideWebStoreIcon, true);
+  profile_->GetPrefs()->SetBoolean(policy::policy_prefs::kHideWebStoreIcon,
+                                   true);
   // Now the web store should not be present anymore.
   EXPECT_FALSE(model_updater1.FindItem(store->id()));
 
@@ -472,7 +474,8 @@ TEST_F(ExtensionAppTest, HideWebStore) {
   EXPECT_FALSE(model_updater2.FindItem(store->id()));
 
   // Deactivate the HideWebStoreIcon policy again.
-  profile_->GetPrefs()->SetBoolean(prefs::kHideWebStoreIcon, false);
+  profile_->GetPrefs()->SetBoolean(policy::policy_prefs::kHideWebStoreIcon,
+                                   false);
   // Now the web store should have appeared.
   EXPECT_TRUE(model_updater2.FindItem(store->id()));
 

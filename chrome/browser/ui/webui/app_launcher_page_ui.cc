@@ -32,6 +32,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/google/core/common/google_util.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -136,12 +137,13 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
   source->AddBoolean("isSwipeTrackingFromScrollEventsEnabled",
                      is_swipe_tracking_from_scroll_events_enabled);
 
-  source->AddBoolean("showWebStoreIcon",
-                     !prefs->GetBoolean(prefs::kHideWebStoreIcon));
+  source->AddBoolean(
+      "showWebStoreIcon",
+      !prefs->GetBoolean(policy::policy_prefs::kHideWebStoreIcon));
 
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
-      prefs::kHideWebStoreIcon,
+      policy::policy_prefs::kHideWebStoreIcon,
       base::BindRepeating(&AppLauncherPageUI::OnHideWebStoreIconChanged,
                           base::Unretained(this)));
 
@@ -180,7 +182,8 @@ AppLauncherPageUI::~AppLauncherPageUI() {
 void AppLauncherPageUI::OnHideWebStoreIconChanged() {
   base::Value::Dict update;
   PrefService* prefs = GetProfile()->GetPrefs();
-  update.Set("showWebStoreIcon", !prefs->GetBoolean(prefs::kHideWebStoreIcon));
+  update.Set("showWebStoreIcon",
+             !prefs->GetBoolean(policy::policy_prefs::kHideWebStoreIcon));
   content::WebUIDataSource::Update(
       GetProfile(), chrome::kChromeUIAppLauncherPageHost, std::move(update));
 }

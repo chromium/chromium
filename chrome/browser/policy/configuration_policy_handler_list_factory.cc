@@ -489,7 +489,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kGloballyScopeHTTPAuthCacheEnabled,
     base::Value::Type::BOOLEAN },
   { key::kHideWebStoreIcon,
-    prefs::kHideWebStoreIcon,
+    policy::policy_prefs::kHideWebStoreIcon,
     base::Value::Type::BOOLEAN },
   { key::kHomepageIsNewTabPage,
     prefs::kHomePageIsNewTabPage,

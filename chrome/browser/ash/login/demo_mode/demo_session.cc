@@ -49,6 +49,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -460,7 +461,7 @@ base::OneShotTimer* DemoSession::GetTimerForTesting() {
 void DemoSession::ActiveUserChanged(user_manager::User* active_user) {
   const base::RepeatingClosure hide_web_store_icon = base::BindRepeating([]() {
     ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-        prefs::kHideWebStoreIcon, true);
+        policy::policy_prefs::kHideWebStoreIcon, true);
   });
   active_user->AddProfileCreatedObserver(hide_web_store_icon);
 }

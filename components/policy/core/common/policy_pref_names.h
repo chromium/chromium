@@ -51,6 +51,7 @@ extern const char kPPAPISharedImagesSwapChainAllowed[];
 extern const char kForceEnablePepperVideoDecoderDevAPI[];
 extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
+extern const char kHideWebStoreIcon[];
 
 }  // namespace policy_prefs
 }  // namespace policy

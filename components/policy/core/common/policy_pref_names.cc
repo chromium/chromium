@@ -144,5 +144,9 @@ const char kForceGoogleSafeSearch[] = "settings.force_google_safesearch";
 // YouTube. See |safe_search_api::YouTubeRestrictMode| for possible values.
 const char kForceYouTubeRestrict[] = "settings.force_youtube_restrict";
 
+// A boolean pref set to true if the Chrome Web Store icons should be hidden
+// from the New Tab Page and app launcher.
+const char kHideWebStoreIcon[] = "hide_web_store_icon";
+
 }  // namespace policy_prefs
 }  // namespace policy

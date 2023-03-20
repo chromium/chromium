@@ -27,6 +27,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/top_sites_impl.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -71,7 +72,8 @@ void InitializePrepopulatedPageList(
 #if !BUILDFLAG(IS_ANDROID)
   DCHECK(prepopulated_pages);
   PrefService* pref_service = profile->GetPrefs();
-  bool hide_web_store_icon = pref_service->GetBoolean(prefs::kHideWebStoreIcon);
+  bool hide_web_store_icon =
+      pref_service->GetBoolean(policy::policy_prefs::kHideWebStoreIcon);
 
   prepopulated_pages->reserve(std::size(kRawPrepopulatedPages));
   for (size_t i = 0; i < std::size(kRawPrepopulatedPages); ++i) {

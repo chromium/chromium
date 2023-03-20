@@ -199,7 +199,6 @@ extern const char kNetworkQualities[];
 extern const char kNetworkEasterEggHighScore[];
 extern const char kNetworkPredictionOptions[];
 extern const char kPreinstalledAppsInstallState[];
-extern const char kHideWebStoreIcon[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kAttestationExtensionAllowlist[];
 extern const char kPrintingAPIExtensionsAllowlist[];
