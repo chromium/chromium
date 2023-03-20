@@ -494,9 +494,7 @@ public class TabSwitcherCoordinator
                             MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                             Profile.getLastUsedRegularProfile(), mActivity,
                             SharedPreferencesManager.getInstance(), mIncognitoReauthManager,
-                            mSnackbarManager,
-                            ()
-                                    -> TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivity),
+                            mSnackbarManager, TabUiFeatureUtilities::isTabToGtsAnimationEnabled,
                             mLifecycleDispatcher);
                     mMessageCardProviderCoordinator.subscribeMessageService(
                             mIncognitoReauthPromoMessageService);

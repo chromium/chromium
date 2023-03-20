@@ -121,10 +121,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             mWaitingTime = 1000;
             mTabNumCap = 0;
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                    mActivityTestRule.getActivity()));
-        });
+        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
 
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);

@@ -85,8 +85,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -98,8 +96,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -121,8 +117,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -136,8 +130,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -159,8 +151,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -174,8 +164,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -197,8 +185,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -212,8 +198,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -235,8 +219,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -249,8 +231,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -272,8 +252,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -286,8 +264,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -309,8 +285,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -323,8 +297,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -350,8 +322,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -364,8 +334,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -389,8 +357,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -405,8 +371,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -434,8 +398,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -450,8 +412,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -479,8 +439,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -495,8 +453,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -524,8 +480,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -540,8 +494,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -567,8 +519,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -581,8 +531,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -608,8 +556,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -622,8 +568,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -649,8 +593,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -663,8 +605,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -690,8 +630,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -704,8 +642,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -731,8 +667,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -745,8 +679,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -772,8 +704,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         setAccessibilityEnabledForTesting(true);
         DeviceClassManager.resetForTesting();
@@ -786,8 +716,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 
     @Test
@@ -813,8 +741,6 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertTrue(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertTrue(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertFalse(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
 
         CachedFeatureFlags.resetFlagsForTesting();
         // Pretend that we've flipped the continuation flag.
@@ -826,7 +752,5 @@ public class TabUiFeatureUtilitiesUnitTest {
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(
                 ContextUtils.getApplicationContext()));
         assertFalse(TabUiFeatureUtilities.shouldUseListMode(ContextUtils.getApplicationContext()));
-        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled(
-                ContextUtils.getApplicationContext()));
     }
 }

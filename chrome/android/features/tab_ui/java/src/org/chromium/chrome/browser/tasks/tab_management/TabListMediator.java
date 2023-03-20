@@ -1172,7 +1172,7 @@ class TabListMediator {
      * TODO(https://crbug.com/1413213): Revist this it is very inefficient for multi-thumbnails.
      */
     void prepareTabSwitcherView() {
-        if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)
+        if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
                 || !mTabModelSelector.isTabStateInitialized()) {
             return;
         }
@@ -1387,7 +1387,7 @@ class TabListMediator {
             boolean isSelectable = mUiType == UiType.SELECTABLE;
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),
                     (forceUpdate || forceUpdateLastSelected) && !isSelectable,
-                    forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)
+                    forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
                             && !isSelectable);
             mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
@@ -1711,7 +1711,7 @@ class TabListMediator {
             boolean isSelectable = mUiType == UiType.SELECTABLE;
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),
                     isSelected && !isSelectable,
-                    isSelected && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)
+                    isSelected && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
                             && !isSelectable);
             tabInfo.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }

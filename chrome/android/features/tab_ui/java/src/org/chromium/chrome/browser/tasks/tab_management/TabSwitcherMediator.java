@@ -758,7 +758,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mHandler.removeCallbacks(mClearTabListRunnable);
         boolean quick = false;
         if (!mTabModelSelector.isTabStateInitialized()) return quick;
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)) {
+        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
             quick = mResetHandler.resetWithTabList(
                     mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(), false,
                     mShowTabsInMruOrder);
@@ -795,8 +795,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             if (mTabModelSelector.isTabStateInitialized()) {
                 mResetHandler.resetWithTabList(
                         mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext),
-                        mShowTabsInMruOrder);
+                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(), mShowTabsInMruOrder);
                 // When |mTabModelSelector.isTabStateInitialized| is false and INSTANT_START is
                 // enabled, the scrolling request is already processed in
                 // TabModelObserver#restoreCompleted. Therefore, we only need to handle the case
@@ -808,8 +807,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                     allTabs = PseudoTab.getAllPseudoTabsFromStateFile(mContext);
                 }
                 mResetHandler.resetWithTabs(allTabs,
-                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext),
-                        mShowTabsInMruOrder);
+                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(), mShowTabsInMruOrder);
             }
         }
 
