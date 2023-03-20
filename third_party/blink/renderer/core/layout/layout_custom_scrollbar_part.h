@@ -38,12 +38,10 @@ class ScrollableArea;
 
 class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
  public:
-  static LayoutCustomScrollbarPart* CreateAnonymous(
-      Document*,
-      ScrollableArea*,
-      CustomScrollbar* = nullptr,
-      ScrollbarPart = kNoPart,
-      bool suppress_use_counters = false);
+  static LayoutCustomScrollbarPart* CreateAnonymous(Document*,
+                                                    ScrollableArea*,
+                                                    CustomScrollbar* = nullptr,
+                                                    ScrollbarPart = kNoPart);
 
   void Trace(Visitor*) const override;
 
@@ -92,10 +90,7 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
     return scrollable_area_;
   }
 
-  LayoutCustomScrollbarPart(ScrollableArea*,
-                            CustomScrollbar*,
-                            ScrollbarPart,
-                            bool suppress_use_counters);
+  LayoutCustomScrollbarPart(ScrollableArea*, CustomScrollbar*, ScrollbarPart);
 
  private:
   void UpdateFromStyle() override;
@@ -154,7 +149,6 @@ class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
   Member<CustomScrollbar> scrollbar_;
   LayoutRect overridden_rect_;
   ScrollbarPart part_;
-  bool suppress_use_counters_ = false;
 };
 
 template <>
