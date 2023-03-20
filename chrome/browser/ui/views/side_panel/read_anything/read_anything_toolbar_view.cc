@@ -28,8 +28,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
-// #include "ui/views/layout/layout_types.h"
-
 ReadAnythingToolbarView::ReadAnythingToolbarView(
     ReadAnythingCoordinator* coordinator,
     ReadAnythingToolbarView::Delegate* toolbar_delegate,

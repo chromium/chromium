@@ -10,7 +10,6 @@
 #include "components/profile_metrics/browser_profile_type.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

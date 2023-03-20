@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_NOTE_TAKING_HELPER_H_
 
 #include <memory>
-// #include <set>
 #include <string>
 #include <vector>
 
