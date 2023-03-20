@@ -586,13 +586,13 @@ const CSSValue* AspectRatio::CSSValueFromComputedStyleInternal(
                                       CSSPrimitiveValue::UnitType::kNumber),
       *CSSNumericLiteralValue::Create(ratio.GetRatio().height(),
                                       CSSPrimitiveValue::UnitType::kNumber));
-  if (ratio.GetTypeForComputedStyle() == EAspectRatioType::kRatio) {
-    return ratio_value;
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (ratio.GetTypeForComputedStyle() != EAspectRatioType::kRatio) {
+    DCHECK_EQ(ratio.GetTypeForComputedStyle(), EAspectRatioType::kAutoAndRatio);
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   }
 
-  DCHECK_EQ(ratio.GetTypeForComputedStyle(), EAspectRatioType::kAutoAndRatio);
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   list->Append(*ratio_value);
   return list;
 }

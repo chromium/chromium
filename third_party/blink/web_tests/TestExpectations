@@ -3705,7 +3705,6 @@ crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html 
 # Crashes with CSSTransitionDiscrete enabled
 crbug.com/1399631 external/wpt/css/css-properties-values-api/at-property-animation.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 external/wpt/css/css-properties-values-api/register-property.html [ Crash Failure Pass Timeout ]
-crbug.com/1399631 external/wpt/css/css-sizing/animation/aspect-ratio-interpolation.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 transitions/unanimatable-properties.html [ Crash Failure Pass Timeout ]
 
 # Tests failing when enabling new modern media controls
