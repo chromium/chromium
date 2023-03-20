@@ -27,6 +27,8 @@ namespace {
 const auto kClientFeatureMap =
     base::MakeFixedFlatMap<std::string, const base::Feature*>({
         {"timezone_code_phh", &features::kFederatedTimezoneCodePhh},
+        {"launcher_query_analytics_v1",
+         &features::kFederatedLauncherQueryAnalyticsTask},
     });
 
 // A client with empty launch stage ("") in the return value means
