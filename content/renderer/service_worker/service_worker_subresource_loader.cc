@@ -475,7 +475,8 @@ void ServiceWorkerSubresourceLoader::OnFallback(
   // It's OK to destruct this loader here. This loader may be the only one who
   // has a ref to fallback_factory_ but in that case the web context that made
   // the request is dead so the request is moot.
-  RecordTimingMetrics(false /* handled */);
+  TransitionToStatus(Status::kCompleted);
+  RecordTimingMetricsForNetworkFallbackCase();
   delete this;
 }
 
@@ -629,10 +630,11 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code) {
                           TRACE_ID_LOCAL(request_id_)),
       TRACE_EVENT_FLAG_FLOW_IN, "error_code", net::ErrorToString(error_code));
 
-  if (error_code == net::OK)
-    RecordTimingMetrics(/*handled=*/true);
-
   TransitionToStatus(Status::kCompleted);
+  if (error_code == net::OK) {
+    RecordTimingMetricsForFetchHandlerHandledCase();
+  }
+
   DCHECK(url_loader_client_.is_bound());
   body_as_blob_.reset();
   stream_waiter_.reset();
@@ -646,107 +648,141 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code) {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void ServiceWorkerSubresourceLoader::RecordTimingMetrics(bool handled) {
-  DCHECK(fetch_event_timing_);
+void ServiceWorkerSubresourceLoader::
+    RecordTimingMetricsForFetchHandlerHandledCase() {
+  if (!InitRecordTimingMetricsIfEligible(response_head_->load_timing)) {
+    return;
+  }
 
+  RecordForwardServiceWorkerToWorkerReadyTiming(response_head_->load_timing);
+  RecordWorkerReadyToFetchHandlerEndTiming(response_head_->load_timing);
+  RecordFetchHandlerEndToResponseReceivedTiming(response_head_->load_timing);
+  RecordResponseReceivedToCompletedTiming(response_head_->load_timing);
+}
+
+void ServiceWorkerSubresourceLoader::
+    RecordTimingMetricsForNetworkFallbackCase() {
+  if (!InitRecordTimingMetricsIfEligible(response_head_->load_timing)) {
+    return;
+  }
+
+  RecordForwardServiceWorkerToWorkerReadyTiming(response_head_->load_timing);
+  RecordWorkerReadyToFetchHandlerEndTiming(response_head_->load_timing);
+  RecordFetchHandlerEndToFallbackNetworkTiming(response_head_->load_timing);
+}
+
+bool ServiceWorkerSubresourceLoader::InitRecordTimingMetricsIfEligible(
+    const net::LoadTimingInfo& load_timing) {
+  DCHECK(fetch_event_timing_);
   // |devtools_request_id| is set when DevTools is attached. Don't record
   // metrics when DevTools is attached to reduce noise.
-  if (resource_request_.devtools_request_id.has_value())
-    return;
+  if (resource_request_.devtools_request_id.has_value()) {
+    return false;
+  }
 
   // |fetch_event_timing_| can be recorded in different process. We can get
   // reasonable metrics only when TimeTicks are consistent across processes.
   if (!base::TimeTicks::IsHighResolution() ||
-      !base::TimeTicks::IsConsistentAcrossProcesses())
-    return;
-
-  base::TimeTicks completion_time = base::TimeTicks::Now();
+      !base::TimeTicks::IsConsistentAcrossProcesses()) {
+    return false;
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
       "ServiceWorker", "ServiceWorker.LoadTiming.Subresource", this,
-      response_head_->load_timing.service_worker_start_time, "url",
-      resource_request_.url);
+      load_timing.service_worker_start_time, "url", resource_request_.url);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "ServiceWorker", "ServiceWorker.LoadTiming.Subresource", this,
-      completion_time);
+      completion_time_);
 
-  // Time spent for service worker startup including mojo message delay.
+  return true;
+}
+
+void ServiceWorkerSubresourceLoader::
+    RecordForwardServiceWorkerToWorkerReadyTiming(
+        const net::LoadTimingInfo& load_timing) {
   UMA_HISTOGRAM_TIMES(
       "ServiceWorker.LoadTiming.Subresource."
       "ForwardServiceWorkerToWorkerReady",
-      response_head_->load_timing.service_worker_ready_time -
-          response_head_->load_timing.service_worker_start_time);
+      load_timing.service_worker_ready_time -
+          load_timing.service_worker_start_time);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       "ServiceWorker", "ForwardServiceWorkerToWorkerReady", this,
-      response_head_->load_timing.service_worker_start_time);
+      load_timing.service_worker_start_time);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "ServiceWorker", "ForwardServiceWorkerToWorkerReady", this,
-      response_head_->load_timing.service_worker_ready_time);
+      load_timing.service_worker_ready_time);
+}
 
-  // Time spent by fetch handlers.
+void ServiceWorkerSubresourceLoader::RecordWorkerReadyToFetchHandlerEndTiming(
+    const net::LoadTimingInfo& load_timing) {
+  DCHECK(fetch_event_timing_);
   UMA_HISTOGRAM_TIMES(
       "ServiceWorker.LoadTiming.Subresource."
       "WorkerReadyToFetchHandlerEnd",
       fetch_event_timing_->respond_with_settled_time -
-          response_head_->load_timing.service_worker_ready_time);
+          load_timing.service_worker_ready_time);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       "ServiceWorker", "WorkerReadyToFetchHandlerEnd", this,
-      response_head_->load_timing.service_worker_ready_time);
+      load_timing.service_worker_ready_time);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "ServiceWorker", "WorkerReadyToFetchHandlerEnd", this,
       fetch_event_timing_->respond_with_settled_time);
+}
 
-  if (handled) {
-    // Mojo message delay. If the controller service worker lives in the same
-    // process this captures service worker thread -> background thread delay.
-    // Otherwise, this captures IPC delay (this renderer process -> other
-    // renderer process).
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LoadTiming.Subresource."
-        "FetchHandlerEndToResponseReceived",
-        response_head_->load_timing.receive_headers_end -
-            fetch_event_timing_->respond_with_settled_time);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "ServiceWorker", "FetchHandlerEndToResponseReceived", this,
-        fetch_event_timing_->respond_with_settled_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "ServiceWorker", "FetchHandlerEndToResponseReceived", this,
-        response_head_->load_timing.receive_headers_end);
+void ServiceWorkerSubresourceLoader::
+    RecordFetchHandlerEndToResponseReceivedTiming(
+        const net::LoadTimingInfo& load_timing) {
+  DCHECK(fetch_event_timing_);
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.Subresource."
+      "FetchHandlerEndToResponseReceived",
+      load_timing.receive_headers_end -
+          fetch_event_timing_->respond_with_settled_time);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "ServiceWorker", "FetchHandlerEndToResponseReceived", this,
+      fetch_event_timing_->respond_with_settled_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "FetchHandlerEndToResponseReceived", this,
+      load_timing.receive_headers_end);
+}
 
-    // Time spent reading response body.
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "ServiceWorker.LoadTiming.Subresource."
-        "ResponseReceivedToCompleted2",
-        completion_time - response_head_->load_timing.receive_headers_end);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "ServiceWorker", "ResponseReceivedToCompleted", this,
-        response_head_->load_timing.receive_headers_end,
-        "fetch_response_source",
-        blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
-            response_source_));
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "ServiceWorker", "ResponseReceivedToCompleted", this, completion_time);
-    // Same as above, breakdown by response source.
-    base::UmaHistogramMediumTimes(
-        base::StrCat(
-            {"ServiceWorker.LoadTiming.Subresource."
-             "ResponseReceivedToCompleted2.",
-             blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
-                 response_source_)}),
-        completion_time - response_head_->load_timing.receive_headers_end);
-  } else {
-    // Mojo message delay (network fallback case). See above for the detail.
-    UMA_HISTOGRAM_TIMES(
-        "ServiceWorker.LoadTiming.Subresource."
-        "FetchHandlerEndToFallbackNetwork",
-        completion_time - fetch_event_timing_->respond_with_settled_time);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "ServiceWorker", "FetchHandlerEndToFallbackNetwork", this,
-        fetch_event_timing_->respond_with_settled_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "ServiceWorker", "FetchHandlerEndToFallbackNetwork", this,
-        completion_time);
-  }
+void ServiceWorkerSubresourceLoader::RecordResponseReceivedToCompletedTiming(
+    const net::LoadTimingInfo& load_timing) {
+  UMA_HISTOGRAM_MEDIUM_TIMES(
+      "ServiceWorker.LoadTiming.Subresource."
+      "ResponseReceivedToCompleted2",
+      completion_time_ - load_timing.receive_headers_end);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "ServiceWorker", "ResponseReceivedToCompleted", this,
+      load_timing.receive_headers_end, "fetch_response_source",
+      blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
+          response_source_));
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "ResponseReceivedToCompleted", this, completion_time_);
+  // Same as above, breakdown by response source.
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {"ServiceWorker.LoadTiming.Subresource."
+           "ResponseReceivedToCompleted2.",
+           blink::ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
+               response_source_)}),
+      completion_time_ - load_timing.receive_headers_end);
+}
+
+void ServiceWorkerSubresourceLoader::
+    RecordFetchHandlerEndToFallbackNetworkTiming(
+        const net::LoadTimingInfo& load_timing) {
+  DCHECK(fetch_event_timing_);
+  UMA_HISTOGRAM_TIMES(
+      "ServiceWorker.LoadTiming.Subresource."
+      "FetchHandlerEndToFallbackNetwork",
+      completion_time_ - fetch_event_timing_->respond_with_settled_time);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "ServiceWorker", "FetchHandlerEndToFallbackNetwork", this,
+      fetch_event_timing_->respond_with_settled_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "ServiceWorker", "FetchHandlerEndToFallbackNetwork", this,
+      completion_time_);
 }
 
 // ServiceWorkerSubresourceLoader: URLLoader implementation -----------------
@@ -968,6 +1004,10 @@ void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
 #endif  // DCHECK_IS_ON()
 
   status_ = new_status;
+
+  if (new_status == Status::kCompleted) {
+    completion_time_ = base::TimeTicks::Now();
+  }
 }
 
 }  // namespace content

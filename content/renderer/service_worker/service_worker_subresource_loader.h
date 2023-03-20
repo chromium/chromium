@@ -153,8 +153,38 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   // Record loading milestones. Called after a response is completed or
   // a request is fall back to network. Never called when an error is
-  // occurred. |handled| is true when a fetch handler handled a request.
-  void RecordTimingMetrics(bool handled);
+  // occurred.
+  bool InitRecordTimingMetricsIfEligible(
+      const net::LoadTimingInfo& load_timing);
+  // Called when the fetch handler handles the request.
+  void RecordTimingMetricsForFetchHandlerHandledCase();
+  // Called when the fetch handler doesn't handle the requset (i.e. network
+  // fallback case).
+  void RecordTimingMetricsForNetworkFallbackCase();
+  // Time between the request is made and the request is routed to this loader.
+  void RecordStartToForwardServiceWorkerTiming(
+      const net::LoadTimingInfo& load_timing);
+  // Mojo message delay. If the controller service worker lives in the same
+  // process this captures service worker thread -> background thread delay.
+  // Otherwise, this captures IPC delay (this renderer process -> other
+  // renderer process).
+  void RecordFetchHandlerEndToResponseReceivedTiming(
+      const net::LoadTimingInfo& load_timing);
+  // Time spent reading response body.
+  void RecordResponseReceivedToCompletedTiming(
+      const net::LoadTimingInfo& load_timing);
+
+  // Time spent for service worker startup including mojo message delay.
+  void RecordForwardServiceWorkerToWorkerReadyTiming(
+      const net::LoadTimingInfo& load_timing);
+  // Time spent by fetch handlers.
+  void RecordWorkerReadyToFetchHandlerEndTiming(
+      const net::LoadTimingInfo& load_timing);
+  // Renderer -> Browser IPC delay (network fallback case).
+  void RecordFetchHandlerEndToFallbackNetworkTiming(
+      const net::LoadTimingInfo& load_timing);
+
+  base::TimeTicks completion_time_;
 
   void TransitionToStatus(Status new_status);
 
