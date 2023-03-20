@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import android.app.Activity;
+import android.graphics.Insets;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsAnimation;
@@ -21,6 +24,7 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 
@@ -56,6 +60,9 @@ abstract class PartialCustomTabVersionCompat {
     /** Returns the bottom navigation bar height */
     abstract @Px int getNavbarHeight();
 
+    /** Offset of x with respect to the origin, where the content area begins. */
+    abstract @Px int getXOffset();
+
     /**
      * Sets the callback to invoke when IME (soft keyboard) visible state is updated.
      * @param callback Callback to invoke upon IME state update. Can be {@code null} to
@@ -81,13 +88,23 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayHeight() {
-            return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds().height();
+            return windowBounds().height();
         }
 
         @Override
         @Px
         int getDisplayWidth() {
-            return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds().width();
+            Insets navbarInsets = mActivity.getWindowManager()
+                                          .getCurrentWindowMetrics()
+                                          .getWindowInsets()
+                                          .getInsets(WindowInsets.Type.navigationBars()
+                                                  | WindowInsets.Type.displayCutout());
+            int navbarWidth = navbarInsets.left + navbarInsets.right;
+            return windowBounds().width() - navbarWidth;
+        }
+
+        private Rect windowBounds() {
+            return mActivity.getWindowManager().getCurrentWindowMetrics().getBounds();
         }
 
         @Override
@@ -108,11 +125,20 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getNavbarHeight() {
+            return navigationBarInsets().bottom;
+        }
+
+        @Override
+        @Px
+        int getXOffset() {
+            return navigationBarInsets().left;
+        }
+
+        private Insets navigationBarInsets() {
             return mActivity.getWindowManager()
                     .getCurrentWindowMetrics()
                     .getWindowInsets()
-                    .getInsets(WindowInsets.Type.navigationBars())
-                    .bottom;
+                    .getInsets(WindowInsets.Type.navigationBars());
         }
 
         @Override
@@ -193,8 +219,12 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            DisplayMetrics displayMetrics = getDisplayMetrics();
-            return displayMetrics.widthPixels;
+            // TODO(crbug.com/1425558): The width on the devices with the display cutout,
+            //     when it is in landscape mode, is not correct. Fix this.
+            Display display = mActivity.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            return size.x;
         }
 
         @Override
@@ -248,6 +278,20 @@ abstract class PartialCustomTabVersionCompat {
             Point size = new Point();
             display.getSize(size);
             return size.y;
+        }
+
+        @Override
+        @Px
+        int getXOffset() {
+            Display display = mActivity.getWindowManager().getDefaultDisplay();
+            if (!DeviceFormFactor.isTablet() && display.getRotation() == Surface.ROTATION_270) {
+                // On the phone in reverse-landscape mode, navigation bar is located on the left
+                // side of the screen. The origin of x should be offset as much.
+                DisplayMetrics displayMetrics = getDisplayMetrics();
+                int wholeWidth = displayMetrics.widthPixels;
+                return wholeWidth - getDisplayWidth();
+            }
+            return 0;
         }
 
         @Override

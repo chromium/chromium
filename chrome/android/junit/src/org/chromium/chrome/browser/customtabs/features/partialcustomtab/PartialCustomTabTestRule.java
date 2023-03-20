@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Looper;
@@ -130,6 +131,7 @@ public class PartialCustomTabTestRule implements TestRule {
     Context mContext;
     List<WindowManager.LayoutParams> mAttributeResults;
     DisplayMetrics mRealMetrics;
+    Point mDisplaySize;
 
     FrameLayout.LayoutParams mLayoutParams = new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
@@ -205,6 +207,14 @@ public class PartialCustomTabTestRule implements TestRule {
                 .when(mDisplay)
                 .getRealMetrics(any(DisplayMetrics.class));
 
+        mDisplaySize = new Point(DEVICE_WIDTH, DEVICE_HEIGHT - NAVBAR_HEIGHT);
+        doAnswer(invocation -> {
+            Point size = invocation.getArgument(0);
+            size.set(mDisplaySize.x, mDisplaySize.y);
+            return null;
+        })
+                .when(mDisplay)
+                .getSize(any(Point.class));
         mContext = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mContext);
     }
@@ -224,6 +234,7 @@ public class PartialCustomTabTestRule implements TestRule {
         mRealMetrics.widthPixels = DEVICE_WIDTH;
         mRealMetrics.heightPixels = DEVICE_HEIGHT;
         mRealMetrics.density = DENSITY;
+        mDisplaySize.set(DEVICE_WIDTH, DEVICE_HEIGHT - NAVBAR_HEIGHT);
         when(mContentFrame.getHeight()).thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT);
         when(mDisplay.getRotation()).thenReturn(Surface.ROTATION_90);
     }
@@ -237,6 +248,7 @@ public class PartialCustomTabTestRule implements TestRule {
         mRealMetrics.widthPixels = DEVICE_HEIGHT;
         mRealMetrics.heightPixels = DEVICE_WIDTH;
         mRealMetrics.density = DENSITY;
+        mDisplaySize.set(DEVICE_HEIGHT, DEVICE_WIDTH);
         when(mContentFrame.getHeight()).thenReturn(DEVICE_WIDTH);
         when(mDisplay.getRotation()).thenReturn(direction);
     }

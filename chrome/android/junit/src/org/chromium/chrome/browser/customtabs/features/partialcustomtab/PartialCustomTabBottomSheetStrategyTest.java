@@ -304,6 +304,10 @@ public class PartialCustomTabBottomSheetStrategyTest {
         doReturn(Insets.of(0, 0, 0, NAVBAR_HEIGHT))
                 .when(windowInsets)
                 .getInsets(eq(WindowInsets.Type.navigationBars()));
+        doReturn(Insets.of(0, 0, 0, NAVBAR_HEIGHT))
+                .when(windowInsets)
+                .getInsets(
+                        eq(WindowInsets.Type.navigationBars() | WindowInsets.Type.displayCutout()));
     }
 
     private void configureStatusBarHeightForQ() {
@@ -875,6 +879,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         })
                 .when(mPCCTTestRule.mDisplay)
                 .getMetrics(any(DisplayMetrics.class));
+        mPCCTTestRule.mDisplaySize.y = MULTIWINDOW_HEIGHT;
         when(mPCCTTestRule.mContentFrame.getHeight()).thenReturn(MULTIWINDOW_HEIGHT);
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
@@ -1025,6 +1030,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
         mPCCTTestRule.configPortraitMode();
         mPCCTTestRule.mRealMetrics.widthPixels = 700;
+        mPCCTTestRule.mDisplaySize.x = 700;
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(800);
         PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
         assertEquals("Left margin should be zero because there is no shadow", 0,
@@ -1071,6 +1077,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
         mPCCTTestRule.configPortraitMode();
         mPCCTTestRule.mRealMetrics.widthPixels = 6000;
         mPCCTTestRule.mRealMetrics.heightPixels = 9500;
+        mPCCTTestRule.mDisplaySize.x = 6000;
+        mPCCTTestRule.mDisplaySize.y = 9500;
         createPcctAtHeight(5000);
         assertEquals("Left margin should be zero because there is no shadow", 0,
                 mPCCTTestRule.mLayoutParams.leftMargin);
@@ -1089,6 +1097,8 @@ public class PartialCustomTabBottomSheetStrategyTest {
         mPCCTTestRule.configLandscapeMode();
         mPCCTTestRule.mRealMetrics.widthPixels = 9500;
         mPCCTTestRule.mRealMetrics.heightPixels = 6000;
+        mPCCTTestRule.mDisplaySize.x = 6000;
+        mPCCTTestRule.mDisplaySize.y = 9500;
         createPcctAtHeight(5000);
         assertNotEquals("Left margin should not be zero because there is a shadow", 0,
                 mPCCTTestRule.mLayoutParams.leftMargin);

@@ -145,18 +145,18 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         if (mSheetOnRight) {
             setWindowWidth(mVersionCompat.getDisplayWidth());
             start = window.getAttributes().x;
-            end = mIsMaximized ? 0 : restWidth;
+            end = (mIsMaximized ? 0 : restWidth) + mVersionCompat.getXOffset();
         } else {
             if (mIsMaximized) {
-                // For the left-side sheet, adjust the start x (out of the screen) before
+                // For the left-side sheet, adjust the start x (to be negative) before
                 // animating the full-width tab back into screen.
                 var attrs = mActivity.getWindow().getAttributes();
-                attrs.x = -restWidth;
+                attrs.x = -restWidth + mVersionCompat.getXOffset();
                 attrs.width = mVersionCompat.getDisplayWidth();
                 mActivity.getWindow().setAttributes(attrs);
             }
             start = window.getAttributes().x;
-            end = mIsMaximized ? 0 : -restWidth;
+            end = (mIsMaximized ? 0 : -restWidth) + mVersionCompat.getXOffset();
         }
         AnimatorUpdateListener updateListener = (anim) -> setWindowX((int) anim.getAnimatedValue());
         startAnimation(start, end, updateListener, () -> onMaximizeEnd(animate), animate);
@@ -297,14 +297,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         attrs.width = calculateWidth(mUnclampedInitialWidth);
 
         attrs.y = mStatusbarHeight;
-        attrs.x = mSheetOnRight ? mVersionCompat.getDisplayWidth() - attrs.width : 0;
+        attrs.x = (mSheetOnRight ? mVersionCompat.getDisplayWidth() - attrs.width : 0)
+                + mVersionCompat.getXOffset();
         attrs.gravity = Gravity.TOP | Gravity.START;
         mActivity.getWindow().setAttributes(attrs);
     }
 
     private int calculateWidth(int unclampedWidth) {
-        return MathUtils.clamp(unclampedWidth, mVersionCompat.getDisplayWidth(),
-                (int) (mVersionCompat.getDisplayWidth() * MINIMAL_WIDTH_RATIO));
+        int width = mVersionCompat.getDisplayWidth();
+        return MathUtils.clamp(unclampedWidth, width, (int) (width * MINIMAL_WIDTH_RATIO));
     }
 
     private float calculateElevation() {
