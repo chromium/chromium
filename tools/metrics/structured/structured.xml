@@ -682,9 +682,20 @@
 
   <event name="UserLogout">
     <summary>
-      An event to signify a user explicity logged out of the system.
+      An event to signify a user explicitly logged out of the system.
     </summary>
 
+  </event>
+
+  <event name="SystemSuspended">
+    <summary>
+      An event to signify the system has gone to sleep.
+    </summary>
+    <metric name="Reason" type="int">
+      <summary>
+        The reason the system was suspended, maps to the SuspendImminent::Reason.
+      </summary>
+    </metric>
   </event>
 
   <event name="Test1">

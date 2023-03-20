@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
@@ -33,15 +34,11 @@ void AshStructuredMetricsRecorder::Initialize() {
         remote_.BindNewPipeAndPassReceiver());
 
     if (base::FeatureList::IsEnabled(kEventSequenceLogging)) {
-      auto* user_manager = user_manager::UserManager::Get();
-      auto* session_termination_manager = ash::SessionTerminationManager::Get();
-
-      DCHECK(user_manager);
-      DCHECK(session_termination_manager);
-
-      user_session_observer_ =
-          std::make_unique<StructuredMetricsUserSessionObserver>(
-              user_manager, session_termination_manager);
+      key_events_observer_ =
+          std::make_unique<StructuredMetricsKeyEventsObserver>(
+              user_manager::UserManager::Get(),
+              ash::SessionTerminationManager::Get(),
+              chromeos::PowerManagerClient::Get());
     }
     is_initialized_ = true;
   } else {
@@ -57,8 +54,8 @@ void AshStructuredMetricsRecorder::RecordEvent(Event&& event) {
 }
 
 bool AshStructuredMetricsRecorder::IsReadyToRecord() const {
-  // Remote doesn't have to be bound to since the remote can queue up messages.
-  // Should be ready to record the moment it is initialized.
+  // Remote doesn't have to be bound to since the remote can queue up
+  // messages. Should be ready to record the moment it is initialized.
   return true;
 }
 

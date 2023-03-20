@@ -30,14 +30,15 @@ static_library("structured") {
     sources += [
       "ash_structured_metrics_recorder.cc",
       "ash_structured_metrics_recorder.h",
-      "structured_metrics_user_session_observer.cc",
-      "structured_metrics_user_session_observer.h",
+      "structured_metrics_key_events_observer.cc",
+      "structured_metrics_key_events_observer.h",
     ]
 
     deps += [
       "//chrome/browser:browser_process",
       "//chrome/browser/ash/crosapi",
       "//chromeos/ash/components/login/session:session",
+      "//chromeos/dbus/power:power",
       "//components/user_manager:user_manager",
     ]
   }
