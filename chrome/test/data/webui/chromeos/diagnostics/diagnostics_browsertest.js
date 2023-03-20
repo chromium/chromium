@@ -98,7 +98,7 @@ tests.forEach(([testName, module, condition, caseName]) => {
     /** @override */
     get browsePreload() {
       return `chrome://diagnostics/test_loader.html` +
-          `?module=chromeos/diagnostics/${module}&host=test`;
+          `?module=chromeos/diagnostics/${module}`;
     }
   }
 
