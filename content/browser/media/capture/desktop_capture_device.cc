@@ -732,6 +732,11 @@ DesktopCaptureDevice::DesktopCaptureDevice(
     // This feature flag is disabled by default.
     zero_hertz_is_supported =
         base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz);
+  } else {
+    // TODO(https://crbug.com/1421656): 0Hz mode seems to cause a flickering
+    // cursor in some setups. This flag allows us to disable 0Hz when needed.
+    zero_hertz_is_supported =
+        base::FeatureList::IsEnabled(features::kWebRtcAllowDxgiGdiZeroHz);
   }
 #endif
 
