@@ -3858,6 +3858,7 @@ enum WebFeature {
   kV8StorageBucket_GetDirectory_Method = 4517,
   kV8StorageBucketManager_Keys_Method = 4518,
   kV8StorageBucketManager_Delete_Method = 4519,
+  kNavigatorUAData_GetHighEntropyValues = 4520,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

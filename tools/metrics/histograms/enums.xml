@@ -42534,6 +42534,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4517" label="V8StorageBucket_GetDirectory_Method"/>
   <int value="4518" label="V8StorageBucketManager_Keys_Method"/>
   <int value="4519" label="V8StorageBucketManager_Delete_Method"/>
+  <int value="4520" label="NavigatorUAData_GetHighEntropyValues"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
