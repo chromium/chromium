@@ -48,6 +48,10 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   const CSSSelector* To() const;
   const StyleScope* Parent() const { return parent_; }
 
+  // The rule to use for resolving the nesting selector (&) for this scope's
+  // inner rules.
+  StyleRule* RuleForNesting() const { return from_; }
+
   // https://drafts.csswg.org/css-cascade-6/#implicit-scope
   bool IsImplicit() const { return contents_; }
 

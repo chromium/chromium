@@ -294,6 +294,9 @@ class CORE_EXPORT CSSParserImpl {
   // to CSSSelectorParser, which temporarily holds on to a reference to it).
   HeapVector<CSSSelector> arena_;
 
+  // True when parsing a StyleRule via ConsumeNestedRule.
+  bool in_nested_style_rule_ = false;
+
   HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;
 };
 

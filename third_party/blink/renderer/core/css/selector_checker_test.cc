@@ -160,7 +160,6 @@ TEST_P(ScopeProximityTest, All) {
 
   auto* style_rule = DynamicTo<StyleRule>(rule);
   ASSERT_TRUE(style_rule);
-  ASSERT_TRUE(style_rule->FirstSelector()->IsLastInSelectorList());
 
   Element* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target);

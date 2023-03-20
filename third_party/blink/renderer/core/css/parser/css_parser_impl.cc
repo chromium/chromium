@@ -1586,9 +1586,13 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
     observer_->StartRuleBody(stream.Offset());
   }
 
+  StyleRule* parent_rule_for_nesting = style_scope->RuleForNesting();
+  CSSNestingType nesting_type =
+      parent_rule_for_nesting ? CSSNestingType::kScope : CSSNestingType::kNone;
+
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList, CSSNestingType::kNone,
-                  /*parent_rule_for_nesting=*/nullptr,
+  ConsumeRuleList(stream, kRegularRuleList, nesting_type,
+                  parent_rule_for_nesting,
                   [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
 
   if (observer_) {
@@ -1887,11 +1891,11 @@ static bool MayContainNestedRules(const String& text,
 StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
                                            CSSNestingType nesting_type,
                                            StyleRule* parent_rule_for_nesting) {
-  if (parent_rule_for_nesting == nullptr) {
+  if (!in_nested_style_rule_) {
     DCHECK_EQ(0u, arena_.size());
   }
   auto func_clear_arena = [&](HeapVector<CSSSelector>* arena) {
-    if (parent_rule_for_nesting == nullptr) {
+    if (!in_nested_style_rule_) {
       arena->resize(0);  // See class comment on CSSSelectorParser.
     }
   };
@@ -2132,6 +2136,8 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
   swap(parsed_properties_, outer_parsed_properties);
   StyleRuleBase* child;
   if (!id.has_value()) {
+    base::AutoReset<bool> reset_in_nested_style_rule(&in_nested_style_rule_,
+                                                     true);
     child = ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting);
   } else {
     child = ConsumeAtRuleContents(*id, stream, kConditionalGroupRules,
