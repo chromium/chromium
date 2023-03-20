@@ -38,13 +38,11 @@ namespace blink {
 LayoutCustomScrollbarPart::LayoutCustomScrollbarPart(
     ScrollableArea* scrollable_area,
     CustomScrollbar* scrollbar,
-    ScrollbarPart part,
-    bool suppress_use_counters)
+    ScrollbarPart part)
     : LayoutReplaced(nullptr, LayoutSize()),
       scrollable_area_(scrollable_area),
       scrollbar_(scrollbar),
-      part_(part),
-      suppress_use_counters_(suppress_use_counters) {
+      part_(part) {
   DCHECK(scrollable_area_);
 }
 
@@ -85,14 +83,11 @@ LayoutCustomScrollbarPart* LayoutCustomScrollbarPart::CreateAnonymous(
     Document* document,
     ScrollableArea* scrollable_area,
     CustomScrollbar* scrollbar,
-    ScrollbarPart part,
-    bool suppress_use_counters) {
+    ScrollbarPart part) {
   LayoutCustomScrollbarPart* layout_object =
-      MakeGarbageCollected<LayoutCustomScrollbarPart>(
-          scrollable_area, scrollbar, part, suppress_use_counters);
-  if (!suppress_use_counters) {
-    RecordScrollbarPartStats(*document, part);
-  }
+      MakeGarbageCollected<LayoutCustomScrollbarPart>(scrollable_area,
+                                                      scrollbar, part);
+  RecordScrollbarPartStats(*document, part);
   layout_object->SetDocumentForAnonymous(document);
   return layout_object;
 }
@@ -238,7 +233,7 @@ void LayoutCustomScrollbarPart::StyleDidChange(StyleDifference diff,
 
 void LayoutCustomScrollbarPart::RecordPercentLengthStats() const {
   NOT_DESTROYED();
-  if (!scrollbar_ || suppress_use_counters_) {
+  if (!scrollbar_) {
     return;
   }
 
