@@ -91,13 +91,11 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
   void PressPartialSecondary(const aura::Window& window) {
     ShowMultitaskMenu(window);
     DCHECK(GetMultitaskMenu());
-    gfx::Rect partial_bounds(GetMultitaskMenuView(GetMultitaskMenu())
-                                 ->partial_button()
-                                 ->GetBoundsInScreen());
-    gfx::Point secondary_center(
-        gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,
-                   partial_bounds.y() + partial_bounds.y() * 0.5f));
-    GetEventGenerator()->GestureTapAt(secondary_center);
+    GetEventGenerator()->GestureTapAt(GetMultitaskMenuView(GetMultitaskMenu())
+                                          ->partial_button()
+                                          ->GetRightBottomButton()
+                                          ->GetBoundsInScreen()
+                                          .CenterPoint());
   }
 
   TabletModeMultitaskMenuEventHandler* GetMultitaskMenuEventHandler() {
@@ -115,11 +113,11 @@ class TabletModeMultitaskMenuEventHandlerTest : public AshTestBase {
 
   chromeos::MultitaskMenuView* GetMultitaskMenuView(
       TabletModeMultitaskMenu* multitask_menu) const {
-    views::View* multitask_menu_view =
+    chromeos::MultitaskMenuView* multitask_menu_view =
         multitask_menu->GetMultitaskMenuViewForTesting();
     EXPECT_EQ(chromeos::MultitaskMenuView::kViewClassName,
               multitask_menu_view->GetClassName());
-    return static_cast<chromeos::MultitaskMenuView*>(multitask_menu_view);
+    return multitask_menu_view;
   }
 
  protected:
@@ -401,7 +399,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
   const gfx::Rect work_area_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   const int divider_delta = kSplitviewDividerShortSideLength / 2;
-  EXPECT_EQ(work_area_bounds.width() * 0.67f,
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
             window->bounds().width() + divider_delta);
   ASSERT_FALSE(GetMultitaskMenu());
   histogram_tester_.ExpectBucketCount(
@@ -412,7 +410,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, PartialButtonFunctionality) {
   PressPartialSecondary(*window);
   ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             WindowState::Get(window.get())->GetStateType());
-  EXPECT_EQ(work_area_bounds.width() * 0.33f,
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
             window->bounds().width() + divider_delta);
   ASSERT_FALSE(GetMultitaskMenu());
   histogram_tester_.ExpectBucketCount(
@@ -436,7 +434,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, AdjustedMenuBounds) {
   // Test that the menu fits on the 1/3 window on the right.
   const gfx::Rect work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  EXPECT_EQ(work_area.width() * 0.33f,
+  EXPECT_EQ(std::round(work_area.width() * chromeos::kOneThirdSnapRatio),
             window2->bounds().width() + kSplitviewDividerShortSideLength / 2);
   ShowMultitaskMenu(*window2);
   ASSERT_TRUE(GetMultitaskMenu());

@@ -183,8 +183,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // 4. |window|'s minimum size, if any, fits into the left or top with the
   //    default divider position. (If the work area length is odd, then the
   //    right or bottom will be one pixel larger.)
-  // See also the |DCHECK|s in |SnapWindow|.
+  // See also the `DCHECK`s in `SnapWindow()`. If `snap_ratio` is not passed,
+  // default to check if we can snap to half.
   bool CanSnapWindow(aura::Window* window) const;
+  bool CanSnapWindow(aura::Window* window, float snap_ratio) const;
 
   // Snap `window` in the split view at `snap_position`. It will send snap
   // WMEvent to `window` and rely on WindowState to do the actual work to
@@ -514,10 +516,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Gets the divider optional position ratios. The divider can always be
   // moved to the positions in `kFixedPositionRatios`. Whether the divider can
-  // be moved to `kOneThirdSnapRatio` or `kTwoThirdSnapRatio` depends
-  // on the minimum size of current snapped windows.
-  void GetDividerOptionalPositionRatios(
-      std::vector<float>* out_position_ratios);
+  // be moved to `chromeos::kOneThirdSnapRatio` or
+  // `chromeos::kTwoThirdSnapRatio` depends on the minimum size of current
+  // snapped windows.
+  void ModifyPositionRatios(std::vector<float>* out_position_ratios);
 
   // Gets the expected window component depending on current screen orientation
   // for resizing purpose.

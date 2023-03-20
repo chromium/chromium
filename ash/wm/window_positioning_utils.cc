@@ -119,7 +119,8 @@ gfx::Rect GetSnappedWindowBoundsInParent(aura::Window* window,
 
 gfx::Rect GetDefaultSnappedWindowBoundsInParent(aura::Window* window,
                                                 SnapViewType type) {
-  return GetSnappedWindowBoundsInParent(window, type, kDefaultSnapRatio);
+  return GetSnappedWindowBoundsInParent(window, type,
+                                        chromeos::kDefaultSnapRatio);
 }
 
 gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,

@@ -1739,10 +1739,12 @@ TEST_F(TabletModeWindowManagerTest,
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window.get()));
   // Check the window is moved to 1/3 snapped position.
   EXPECT_EQ(window->bounds().width(),
-            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+            std::round(1200 * chromeos::kOneThirdSnapRatio) -
+                kSplitviewDividerShortSideLength / 2);
   // Exit tablet mode and verify the window stays near the same position.
   DestroyTabletModeWindowManager();
-  EXPECT_NEAR(window->bounds().width(), 1200 * 0.33,
+  EXPECT_NEAR(window->bounds().width(),
+              std::round(1200 * chromeos::kOneThirdSnapRatio),
               kSplitviewDividerShortSideLength / 2);
 
   // Now test the 2 windows case.
@@ -1761,12 +1763,14 @@ TEST_F(TabletModeWindowManagerTest,
   EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
   // Check |window| and |window2| is moved to 1/3 snapped position.
   EXPECT_EQ(window->bounds().width(),
-            1200 * 0.33 - kSplitviewDividerShortSideLength / 2);
+            std::round(1200 * chromeos::kOneThirdSnapRatio) -
+                kSplitviewDividerShortSideLength / 2);
   EXPECT_EQ(window2->bounds().width(),
             1200 - window->bounds().width() - kSplitviewDividerShortSideLength);
   // Exit tablet mode and verify the windows stay near the same position.
   DestroyTabletModeWindowManager();
-  EXPECT_NEAR(window->bounds().width(), 1200 * 0.33,
+  EXPECT_NEAR(window->bounds().width(),
+              std::round(1200 * chromeos::kOneThirdSnapRatio),
               kSplitviewDividerShortSideLength / 2);
   EXPECT_NEAR(window2->bounds().width(), 1200 - window->bounds().width(),
               kSplitviewDividerShortSideLength / 2);
@@ -1793,19 +1797,22 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
                                  /*is_dragging=*/false)
                              .x();
   const int divider_delta = kSplitviewDividerShortSideLength / 2;
-  EXPECT_EQ(work_area_bounds.width() * 0.67f,
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
             window1->bounds().width() + divider_delta);
-  EXPECT_EQ(work_area_bounds.width() * 0.67f, divider_origin_x + divider_delta);
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
+            divider_origin_x + divider_delta);
   // Exit tablet mode and verify the window stays in the same position.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(work_area_bounds.width() * 0.67f, window1->bounds().width());
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
+            window1->bounds().width());
 
   // 2. Create another window and snap to secondary at 1/3.
   auto window2 = CreateTestWindow();
   const WMEvent snap_secondary_one_third(WM_EVENT_SNAP_SECONDARY,
                                          chromeos::kOneThirdSnapRatio);
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_one_third);
-  EXPECT_EQ(work_area_bounds.width() * 0.33f, window2->bounds().width());
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
+            window2->bounds().width());
   // Enter tablet mode and verify the windows are in splitview and the window
   // bounds and divider are at 2/3.
   CreateTabletModeWindowManager();
@@ -1817,17 +1824,22 @@ TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
                              /*is_dragging=*/false)
                          .x();
 
-  EXPECT_EQ(work_area_bounds.width() * 0.67f,
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
             window1->bounds().width() + divider_delta);
-  EXPECT_EQ(work_area_bounds.width() * 0.33f,
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
             window2->bounds().width() + divider_delta);
-  EXPECT_EQ(work_area_bounds.width() * 0.67f - divider_delta, divider_origin_x);
+  EXPECT_EQ(
+      std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio) -
+          divider_delta,
+      divider_origin_x);
 
   // Exit tablet mode and verify the windows are still at 2/3, with allowance
   // for the divider width since it is only there in tablet mode.
   DestroyTabletModeWindowManager();
-  EXPECT_EQ(work_area_bounds.width() * 0.67f, window1->bounds().width());
-  EXPECT_EQ(work_area_bounds.width() * 0.33f, window2->bounds().width());
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kTwoThirdSnapRatio),
+            window1->bounds().width());
+  EXPECT_EQ(std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio),
+            window2->bounds().width());
 }
 
 // Test that when switching from clamshell mode to tablet mode, if overview mode

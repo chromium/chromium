@@ -192,7 +192,7 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
 }
 
 views::Button* SplitButtonView::GetRightBottomButton() {
-  return static_cast<views::Button*>(right_bottom_button_);
+  return right_bottom_button_;
 }
 
 void SplitButtonView::OnButtonHoveredOrPressed() {

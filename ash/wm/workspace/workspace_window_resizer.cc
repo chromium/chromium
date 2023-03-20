@@ -1565,13 +1565,13 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
   switch (snap_type_) {
     case SnapType::kPrimary:
       phantom_bounds = GetSnappedWindowBounds(
-          display.work_area(), display, GetTarget(),
-          ash::SnapViewType::kPrimary, kDefaultSnapRatio);
+          display.work_area(), display, GetTarget(), SnapViewType::kPrimary,
+          chromeos::kDefaultSnapRatio);
       break;
     case SnapType::kSecondary:
       phantom_bounds = GetSnappedWindowBounds(
-          display.work_area(), display, GetTarget(),
-          ash::SnapViewType::kSecondary, kDefaultSnapRatio);
+          display.work_area(), display, GetTarget(), SnapViewType::kSecondary,
+          chromeos::kDefaultSnapRatio);
       break;
     case SnapType::kMaximize:
       phantom_bounds = display.work_area();
@@ -1674,7 +1674,8 @@ bool WorkspaceWindowResizer::AreBoundsValidSnappedBounds(
   SnapViewType snapped_type = state_type == WindowStateType::kPrimarySnapped
                                   ? SnapViewType::kPrimary
                                   : SnapViewType::kSecondary;
-  const float snap_ratio = state->snap_ratio().value_or(kDefaultSnapRatio);
+  const float snap_ratio =
+      state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
   gfx::Rect snapped_bounds = GetSnappedWindowBounds(
       screen_util::GetDisplayWorkAreaBoundsInParent(window),
       display::Screen::GetScreen()->GetDisplayNearestWindow(window), window,

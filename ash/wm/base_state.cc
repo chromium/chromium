@@ -213,7 +213,7 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
     const WindowStateType state_type) {
   return BaseState::GetSnappedWindowBoundsInParent(window, state_type,
-                                                   kDefaultSnapRatio);
+                                                   chromeos::kDefaultSnapRatio);
 }
 
 gfx::Rect BaseState::GetSnappedWindowBoundsInParent(

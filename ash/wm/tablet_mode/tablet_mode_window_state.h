@@ -97,8 +97,11 @@ class TabletModeWindowState : public WindowState::State {
   void CycleTabletSnap(WindowState* window_state,
                        SplitViewController::SnapPosition snap_position);
 
-  // Snap the window in tablet split view if it can be snapped.
-  void DoTabletSnap(WindowState* window_state, WMEventType snap_event_type);
+  // Tries to snap the window in tablet split view if possible. Shows a toast if
+  // it cannot be snapped.
+  void DoTabletSnap(WindowState* window_state,
+                    WMEventType snap_event_type,
+                    float snap_ratio);
 
   // Called by `WM_EVENT_RESTORE`, or a `WM_EVENT_NORMAL` that is restoring.
   // Restores to the state in `window_states`'s restore history.

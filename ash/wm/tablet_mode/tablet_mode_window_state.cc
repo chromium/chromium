@@ -220,14 +220,14 @@ gfx::Rect TabletModeWindowState::GetBoundsInTabletMode(
     return SplitViewController::Get(Shell::GetPrimaryRootWindow())
         ->GetSnappedWindowBoundsInParent(
             SplitViewController::SnapPosition::kPrimary, window,
-            state_object->snap_ratio().value_or(kDefaultSnapRatio));
+            state_object->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
   }
 
   if (state_object->GetStateType() == WindowStateType::kSecondarySnapped) {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow())
         ->GetSnappedWindowBoundsInParent(
             SplitViewController::SnapPosition::kSecondary, window,
-            state_object->snap_ratio().value_or(kDefaultSnapRatio));
+            state_object->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
   }
 
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled() &&
@@ -349,7 +349,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       break;
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:
-      DoTabletSnap(window_state, event->type());
+      DoTabletSnap(window_state, event->type(), event->snap_ratio());
       return;
     case WM_EVENT_CYCLE_SNAP_PRIMARY:
       CycleTabletSnap(window_state,
@@ -612,13 +612,14 @@ void TabletModeWindowState::CycleTabletSnap(
 }
 
 void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
-                                         WMEventType snap_event_type) {
+                                         WMEventType snap_event_type,
+                                         float snap_ratio) {
   DCHECK(snap_event_type == WM_EVENT_SNAP_PRIMARY ||
          snap_event_type == WM_EVENT_SNAP_SECONDARY);
 
   aura::Window* window = window_state->window();
   SplitViewController* split_view_controller = SplitViewController::Get(window);
-  if (!split_view_controller->CanSnapWindow(window)) {
+  if (!split_view_controller->CanSnapWindow(window, snap_ratio)) {
     ShowAppCannotSnapToast();
     return;
   }
@@ -643,9 +644,11 @@ void TabletModeWindowState::DoRestore(WindowState* window_state) {
   if (chromeos::IsSnappedWindowStateType(restore_state)) {
     window_state->set_snap_action_source(
         WindowSnapActionSource::kSnapByWindowStateRestore);
-    DoTabletSnap(window_state, restore_state == WindowStateType::kPrimarySnapped
-                                   ? WM_EVENT_SNAP_PRIMARY
-                                   : WM_EVENT_SNAP_SECONDARY);
+    DoTabletSnap(window_state,
+                 restore_state == WindowStateType::kPrimarySnapped
+                     ? WM_EVENT_SNAP_PRIMARY
+                     : WM_EVENT_SNAP_SECONDARY,
+                 chromeos::kDefaultSnapRatio);
     return;
   }
 

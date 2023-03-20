@@ -26,14 +26,6 @@ namespace ash {
 // We force at least this many DIPs for any window on the screen.
 const int kMinimumOnScreenArea = 25;
 
-// The target snap ratio for a snapped window. A window with
-// `kOneThirdSnapRatio` will occupy one thirds of the screen,
-// `kTwoThirdSnapRatio` will occupy two thirds of the screen, and
-// `kDefaultSnapRatio` will occupy the default half of the screen.
-constexpr float kOneThirdSnapRatio = 0.33f;
-constexpr float kDefaultSnapRatio = 0.5f;
-constexpr float kTwoThirdSnapRatio = 0.67f;
-
 // In clamshell mode, users can snap left/right for horizontal display and
 // top/bottom for vertical display. For primary-landscape-oriented display,
 // |kPrimary| and |kSecondary| are left snap and right snap.

@@ -87,13 +87,14 @@ using ::chromeos::WindowStateType;
 
 // Three fixed position ratios of the divider, which means the divider can
 // always be moved to these three positions.
-constexpr float kFixedPositionRatios[] = {0.f, 0.5f, 1.0f};
+constexpr float kFixedPositionRatios[] = {0.f, chromeos::kDefaultSnapRatio,
+                                          1.0f};
 
 // The black scrim starts to fade in when the divider is moved past the two
-// optional positions (kOneThirdSnapRatio, kTwoThirdSnapRatio) and
-// reaches to its maximum opacity (kBlackScrimOpacity) after moving
-// kBlackScrimFadeInRatio of the screen width. See https://crbug.com/827730 for
-// details.
+// optional positions (`chromeos::kOneThirdSnapRatio`,
+// `chromeos::kTwoThirdSnapRatio`) and reaches to its maximum opacity
+// (`kBlackScrimOpacity`) after moving `kBlackScrimFadeInRatio` of the screen
+// width. See https://crbug.com/827730 for details.
 constexpr float kBlackScrimFadeInRatio = 0.1f;
 constexpr float kBlackScrimOpacity = 0.4f;
 
@@ -772,6 +773,11 @@ bool SplitViewController::InTabletSplitViewMode() const {
 }
 
 bool SplitViewController::CanSnapWindow(aura::Window* window) const {
+  return CanSnapWindow(window, chromeos::kDefaultSnapRatio);
+}
+
+bool SplitViewController::CanSnapWindow(aura::Window* window,
+                                        float snap_ratio) const {
   if (!ShouldAllowSplitView())
     return false;
 
@@ -791,7 +797,8 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
     return false;
 
   return GetMinimumWindowLength(window, IsLayoutHorizontal(window)) <=
-         GetDividerEndPosition() / 2 - kSplitviewDividerShortSideLength / 2;
+         GetDividerEndPosition() * snap_ratio -
+             kSplitviewDividerShortSideLength / 2;
 }
 
 void SplitViewController::SnapWindow(aura::Window* window,
@@ -943,8 +950,9 @@ void SplitViewController::AttachSnappingWindow(aura::Window* window,
     absl::optional<float> snap_ratio = WindowState::Get(window)->snap_ratio();
     divider_position_ =
         (divider_position_ < 0)
-            ? GetDividerPosition(snap_position,
-                                 snap_ratio ? *snap_ratio : kDefaultSnapRatio)
+            ? GetDividerPosition(
+                  snap_position,
+                  snap_ratio ? *snap_ratio : chromeos::kDefaultSnapRatio)
             : divider_position_;
     default_snap_position_ = snap_position;
 
@@ -1040,7 +1048,7 @@ void SplitViewController::SwapWindows() {
     auto* window_state = WindowState::Get(primary_window_);
     const WMEvent primary_window_event(
         WM_EVENT_SNAP_PRIMARY,
-        window_state->snap_ratio().value_or(kDefaultSnapRatio));
+        window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
     window_state->OnWMEvent(&primary_window_event);
   }
   secondary_window_ = new_right_window;
@@ -1048,7 +1056,7 @@ void SplitViewController::SwapWindows() {
     auto* window_state = WindowState::Get(secondary_window_);
     const WMEvent secondary_window_event(
         WM_EVENT_SNAP_SECONDARY,
-        window_state->snap_ratio().value_or(kDefaultSnapRatio));
+        window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio));
     window_state->OnWMEvent(&secondary_window_event);
   }
 
@@ -1101,7 +1109,7 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInParent(
     SnapPosition snap_position,
     aura::Window* window_for_minimum_size) {
   return GetSnappedWindowBoundsInParent(snap_position, window_for_minimum_size,
-                                        kDefaultSnapRatio);
+                                        chromeos::kDefaultSnapRatio);
 }
 
 gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
@@ -1224,7 +1232,7 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
     SnapPosition snap_position,
     aura::Window* window_for_minimum_size) {
   return GetSnappedWindowBoundsInScreen(snap_position, window_for_minimum_size,
-                                        kDefaultSnapRatio);
+                                        chromeos::kDefaultSnapRatio);
 }
 
 bool SplitViewController::ShouldUseWindowBoundsDuringFastResize() {
@@ -1233,7 +1241,8 @@ bool SplitViewController::ShouldUseWindowBoundsDuringFastResize() {
 }
 
 int SplitViewController::GetDefaultDividerPosition() const {
-  return GetDividerPosition(SnapPosition::kPrimary, kDefaultSnapRatio);
+  return GetDividerPosition(SnapPosition::kPrimary,
+                            chromeos::kDefaultSnapRatio);
 }
 
 int SplitViewController::GetDividerPosition(SnapPosition snap_position,
@@ -1775,8 +1784,10 @@ void SplitViewController::OnResizeLoopEnded(aura::Window* window) {
 
   NotifyWindowResized();
 
-  if (divider_position_ < GetDividerEndPosition() * kOneThirdSnapRatio ||
-      divider_position_ > GetDividerEndPosition() * kTwoThirdSnapRatio) {
+  if (divider_position_ <
+          GetDividerEndPosition() * chromeos::kOneThirdSnapRatio ||
+      divider_position_ >
+          GetDividerEndPosition() * chromeos::kTwoThirdSnapRatio) {
     // Ending overview will also end clamshell split view unless
     // `SnapGroupController::IsArm1AutomaticallyLockEnabled()` returns true.
     Shell::Get()->overview_controller()->EndOverview(
@@ -2298,7 +2309,7 @@ void SplitViewController::UpdateBlackScrim(
   if (!IsLayoutHorizontal(root_window_))
     work_area_bounds.Transpose();
   float opacity = kBlackScrimOpacity;
-  const float ratio = kOneThirdSnapRatio - kBlackScrimFadeInRatio;
+  const float ratio = chromeos::kOneThirdSnapRatio - kBlackScrimFadeInRatio;
   const int distance = std::min(std::abs(location - work_area_bounds.x()),
                                 std::abs(work_area_bounds.right() - location));
   if (distance > work_area_bounds.width() * ratio) {
@@ -2444,11 +2455,13 @@ SplitViewController::SnapPosition SplitViewController::GetBlackScrimPosition(
     min_right_length = secondary_window_min_size.height();
   }
 
-  if (primary_window_distance < divider_end_position * kOneThirdSnapRatio ||
+  if (primary_window_distance <
+          divider_end_position * chromeos::kOneThirdSnapRatio ||
       primary_window_distance < min_left_length) {
     return SnapPosition::kPrimary;
   }
-  if (secondary_window_distance < divider_end_position * kOneThirdSnapRatio ||
+  if (secondary_window_distance <
+          divider_end_position * chromeos::kOneThirdSnapRatio ||
       secondary_window_distance < min_right_length) {
     return SnapPosition::kSecondary;
   }
@@ -2714,7 +2727,7 @@ float SplitViewController::FindClosestPositionRatio(float distance,
   std::vector<float> position_ratios(
       kFixedPositionRatios,
       kFixedPositionRatios + sizeof(kFixedPositionRatios) / sizeof(float));
-  GetDividerOptionalPositionRatios(&position_ratios);
+  ModifyPositionRatios(&position_ratios);
   for (float ratio : position_ratios) {
     if (std::abs(current_ratio - ratio) <
         std::abs(current_ratio - closest_ratio)) {
@@ -2724,7 +2737,7 @@ float SplitViewController::FindClosestPositionRatio(float distance,
   return closest_ratio;
 }
 
-void SplitViewController::GetDividerOptionalPositionRatios(
+void SplitViewController::ModifyPositionRatios(
     std::vector<float>* out_position_ratios) {
   const bool landscape = IsCurrentScreenOrientationLandscape();
   const int min_left_size =
@@ -2736,10 +2749,19 @@ void SplitViewController::GetDividerOptionalPositionRatios(
       static_cast<float>(min_left_size) / divider_end_position;
   const float min_size_right_ratio =
       static_cast<float>(min_right_size) / divider_end_position;
-  if (min_size_left_ratio <= kOneThirdSnapRatio)
-    out_position_ratios->push_back(kOneThirdSnapRatio);
-  if (min_size_right_ratio <= kOneThirdSnapRatio)
-    out_position_ratios->push_back(kTwoThirdSnapRatio);
+  if (min_size_left_ratio <= chromeos::kOneThirdSnapRatio) {
+    out_position_ratios->push_back(chromeos::kOneThirdSnapRatio);
+  }
+  if (min_size_right_ratio <= chromeos::kOneThirdSnapRatio) {
+    out_position_ratios->push_back(chromeos::kTwoThirdSnapRatio);
+  }
+
+  // Remove 0.5f if a window cannot be snapped. We can get into this state by
+  // snapping a window to two thirds.
+  if (min_size_left_ratio > chromeos::kDefaultSnapRatio ||
+      min_size_right_ratio > chromeos::kDefaultSnapRatio) {
+    base::Erase(*out_position_ratios, chromeos::kDefaultSnapRatio);
+  }
 }
 
 int SplitViewController::GetWindowComponentForResize(aura::Window* window) {

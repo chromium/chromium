@@ -517,8 +517,10 @@ TEST_F(ClientControlledStateTest, PartialSnap) {
                                    chromeos::kOneThirdSnapRatio);
   window_state()->OnWMEvent(&snap_right_partial);
   EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
-  expected_bounds.set_x(work_area.width() * chromeos::kTwoThirdSnapRatio);
-  expected_bounds.set_width(work_area.width() * chromeos::kOneThirdSnapRatio);
+  expected_bounds.set_x(
+      std::round(work_area.width() * chromeos::kTwoThirdSnapRatio));
+  expected_bounds.set_width(
+      std::round(work_area.width() * chromeos::kOneThirdSnapRatio));
   EXPECT_EQ(expected_bounds, delegate()->requested_bounds());
 }
 

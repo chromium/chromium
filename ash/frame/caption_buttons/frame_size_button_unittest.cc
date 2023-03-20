@@ -793,7 +793,8 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   generator->ClickLeftButton();
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_EQ(window_state()->window()->bounds().width(),
-            work_area_bounds_in_screen.width() * 0.67);
+            std::round(work_area_bounds_in_screen.width() *
+                       chromeos::kTwoThirdSnapRatio));
   EXPECT_EQ(user_action_tester.GetActionCount(
                 chromeos::kPartialSplitTwoThirdsUserAction),
             1);
@@ -803,18 +804,17 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
 
   // Snap to secondary with 0.33f screen ratio.
   ShowMultitaskMenu();
-  gfx::Rect partial_bounds(GetMultitaskMenu()
-                               ->multitask_menu_view()
-                               ->partial_button()
-                               ->GetBoundsInScreen());
-  gfx::Point secondary_center(
-      gfx::Point(partial_bounds.x() + partial_bounds.width() * 0.67f,
-                 partial_bounds.y() + partial_bounds.y() / 2));
-  generator->MoveMouseTo(secondary_center);
+  generator->MoveMouseTo(GetMultitaskMenu()
+                             ->multitask_menu_view()
+                             ->partial_button()
+                             ->GetRightBottomButton()
+                             ->GetBoundsInScreen()
+                             .CenterPoint());
   generator->ClickLeftButton();
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
   EXPECT_EQ(window_state()->window()->bounds().width(),
-            work_area_bounds_in_screen.width() * 0.33);
+            std::round(work_area_bounds_in_screen.width() *
+                       chromeos::kOneThirdSnapRatio));
   EXPECT_EQ(user_action_tester.GetActionCount(
                 chromeos::kPartialSplitOneThirdUserAction),
             1);
