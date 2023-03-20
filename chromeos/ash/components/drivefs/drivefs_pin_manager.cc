@@ -773,6 +773,7 @@ void PinManager::Complete(const Stage stage) {
 
 void PinManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
   VLOG(1) << "To pin: " << files_to_pin_.size() << " files, "
           << HumanReadableSize(progress_.bytes_to_pin);
