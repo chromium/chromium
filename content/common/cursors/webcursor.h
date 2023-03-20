@@ -53,13 +53,13 @@ class CONTENT_EXPORT WebCursor {
   // The basic cursor info.
   ui::Cursor cursor_;
 
-#if defined(USE_AURA) || BUILDFLAG(IS_OZONE)
+#if defined(USE_AURA)
   // Only used for custom cursors.
   float device_scale_factor_ = 1.f;
   display::Display::Rotation rotation_ = display::Display::ROTATE_0;
 #endif
 
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // This matches ozone drm_util.cc's kDefaultCursorWidth/Height.
   static constexpr int kDefaultMaxSize = 64;
   gfx::Size maximum_cursor_size_ = {kDefaultMaxSize, kDefaultMaxSize};

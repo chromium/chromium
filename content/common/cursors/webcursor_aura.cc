@@ -33,8 +33,8 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
   return cursor_.type();
 }
 
-#if !BUILDFLAG(IS_OZONE)
-// ozone has its own SetDisplayInfo that takes rotation into account
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Ash has its own SetDisplayInfo that takes rotation into account.
 void WebCursor::SetDisplayInfo(const display::Display& display) {
   if (device_scale_factor_ == display.device_scale_factor())
     return;
@@ -43,7 +43,7 @@ void WebCursor::SetDisplayInfo(const display::Display& display) {
   custom_cursor_.reset();
 }
 
-// ozone also has extra calculations for scale factor (taking max cursor size
+// Ash also has extra calculations for scale factor (taking max cursor size
 // into account).
 float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {
   DCHECK_NE(0, cursor_.image_scale_factor());

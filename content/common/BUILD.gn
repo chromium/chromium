@@ -95,8 +95,8 @@ source_set("common") {
     "content_switches_internal.h",
     "cursors/webcursor.cc",
     "cursors/webcursor.h",
+    "cursors/webcursor_ash.cc",
     "cursors/webcursor_aura.cc",
-    "cursors/webcursor_ozone.cc",
     "debug_utils.cc",
     "debug_utils.h",
     "features.cc",
@@ -348,8 +348,8 @@ source_set("common") {
     deps += [ "//ppapi/proxy:ipc_sources" ]
   }
 
-  if (!use_ozone) {
-    sources -= [ "cursors/webcursor_ozone.cc" ]
+  if (!is_chromeos_ash) {
+    sources -= [ "cursors/webcursor_ash.cc" ]
   }
 
   if (use_aura) {
