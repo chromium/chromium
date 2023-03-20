@@ -62,10 +62,12 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
 
   OverlayData(std::unique_ptr<gpu::OverlayImageRepresentation> representation,
               std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
-                  scoped_read_access)
+                  scoped_read_access,
+              bool is_root_render_pass)
       : representation_(std::move(representation)),
         scoped_read_access_(std::move(scoped_read_access)),
-        ref_(1) {
+        ref_(1),
+        is_root_render_pass_(is_root_render_pass) {
     DCHECK(representation_);
     DCHECK(scoped_read_access_);
   }
@@ -83,13 +85,20 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
     representation_ = std::move(other.representation_);
     ref_ = other.ref_;
     other.ref_ = 0;
+    is_root_render_pass_ = other.is_root_render_pass_;
     return *this;
   }
 
   bool IsInUseByWindowServer() const {
 #if BUILDFLAG(IS_APPLE)
-    if (!scoped_read_access_)
+    if (!scoped_read_access_) {
       return false;
+    }
+    // The root render pass buffers are managed by SkiaRenderer so we don't care
+    // if they're in use by the window server.
+    if (is_root_render_pass_) {
+      return false;
+    }
     return scoped_read_access_->IsInUseByWindowServer();
 #else
     return false;
@@ -117,6 +126,8 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
     return scoped_read_access_.get();
   }
 
+  bool IsRootRenderPass() { return is_root_render_pass_; }
+
  private:
   void Reset() {
     scoped_read_access_.reset();
@@ -128,6 +139,7 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
   std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
       scoped_read_access_;
   int ref_ = 0;
+  bool is_root_render_pass_ = false;
 };
 
 SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
@@ -324,6 +336,7 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
 
 SkiaOutputDeviceBufferQueue::OverlayData*
 SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
+                                                    bool is_root_render_pass,
                                                     bool* is_existing) {
   if (is_existing)
     *is_existing = false;
@@ -357,8 +370,9 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
   }
 
   bool result;
-  std::tie(it, result) = overlays_.emplace(std::move(shared_image),
-                                           std::move(shared_image_access));
+  std::tie(it, result) =
+      overlays_.emplace(std::move(shared_image), std::move(shared_image_access),
+                        is_root_render_pass);
   DCHECK(result);
   DCHECK(it->unique());
 
@@ -397,8 +411,8 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 
     OutputPresenter::ScopedOverlayAccess* access = nullptr;
     bool overlay_has_been_submitted;
-    auto* overlay_data =
-        GetOrCreateOverlayData(mailbox, &overlay_has_been_submitted);
+    auto* overlay_data = GetOrCreateOverlayData(
+        mailbox, overlay.is_root_render_pass, &overlay_has_been_submitted);
     if (overlay_data) {
       access = overlay_data->scoped_read_access();
       pending_overlay_mailboxes_.emplace_back(mailbox);
@@ -537,7 +551,11 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
     // Right now, only macOS and LaCros needs to return maliboxes of released
     // overlays, so SkiaRenderer can unlock resources for them.
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-    released_overlays.push_back(overlay.mailbox());
+    // The root render pass buffers are managed by SkiaRenderer so we don't need
+    // to explicitly return them via callback.
+    if (!overlay.IsRootRenderPass()) {
+      released_overlays.push_back(overlay.mailbox());
+    }
 #else
     (void)released_overlays;
 #endif

@@ -871,9 +871,8 @@ void SkiaRenderer::FinishDrawingFrame() {
     if (!buffer_queue_) {
       skia_output_surface_->ScheduleOutputSurfaceAsOverlay(surface_plane);
     } else {
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-      // Windows and Mac have different OverlayList types, but those platforms
-      // aren't supported by buffer_queue_ yet, so this won't be reached.
+#if BUILDFLAG(IS_WIN)
+      // Windows does not use buffer_queue_ so this won't be reached.
       NOTREACHED();
 #else
       auto root_pass_backing =
@@ -884,7 +883,11 @@ void SkiaRenderer::FinishDrawingFrame() {
       OverlayCandidate surface_candidate;
       surface_candidate.mailbox = root_pass_backing->second.mailbox;
       surface_candidate.is_root_render_pass = true;
+#if BUILDFLAG(IS_APPLE)
+      surface_candidate.transform = gfx::Transform();
+#else
       surface_candidate.transform = surface_plane.transform;
+#endif  // BUILDFLAG(IS_APPLE)
       surface_candidate.display_rect = surface_plane.display_rect;
       surface_candidate.uv_rect = surface_plane.uv_rect;
       surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
@@ -900,7 +903,7 @@ void SkiaRenderer::FinishDrawingFrame() {
 
       current_frame()->overlay_list.insert(
           current_frame()->overlay_list.begin(), surface_candidate);
-#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     }
   } else {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_APPLE)
