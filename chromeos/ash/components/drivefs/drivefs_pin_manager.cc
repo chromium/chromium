@@ -815,11 +815,7 @@ void PinManager::PinSomeFiles() {
     File& file = it->second;
     const Path& path = file.path;
 
-    if (file.pinned) {
-      VLOG(2) << "Already pinned: " << id << " " << Quote(path);
-      continue;
-    }
-
+    DCHECK(!file.pinned) << "Already pinned: " << id << " " << Quote(path);
     VLOG(2) << "Pinning " << id << " " << Quote(path);
     drivefs_->SetPinnedByStableId(
         static_cast<int64_t>(id), true,
