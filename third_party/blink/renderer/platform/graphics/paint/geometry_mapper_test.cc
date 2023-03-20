@@ -1098,20 +1098,24 @@ TEST_P(GeometryMapperTest, MightOverlap) {
 }
 
 TEST_P(GeometryMapperTest, MightOverlapCommonClipAncestor) {
-  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 0, 1, 1));
+  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 100, 101, 99));
   auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
-  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 100, 100, 100));
+  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 150, 100, 100));
   auto c3 =
       CreateClip(*common_clip, t0(), FloatRoundedRect(100, 100, 100, 100));
+  auto c4 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 200, 100, 100));
 
   gfx::RectF r(0, 100, 200, 100);
   PropertyTreeState s1(t0(), *c1, e0());
   PropertyTreeState s2(t0(), *c2, e0());
   PropertyTreeState s3(t0(), *c3, e0());
+  PropertyTreeState s4(t0(), *c4, e0());
 
   EXPECT_TRUE(MightOverlapForCompositing(r, s1, r, s2));
   EXPECT_FALSE(MightOverlapForCompositing(r, s1, r, s3));
   EXPECT_TRUE(MightOverlapForCompositing(r, s2, r, s3));
+  // r in s4 is invisible in common_clip.
+  EXPECT_FALSE(MightOverlapForCompositing(r, s2, r, s4));
 }
 
 TEST_P(GeometryMapperTest, MightOverlapFixed) {
@@ -1217,6 +1221,7 @@ TEST_P(GeometryMapperTest, MightOverlapWithScrollingClipAndScale) {
 
 TEST_P(GeometryMapperTest, MightOverlapScroll) {
   auto viewport = CreateTransform(t0(), gfx::Transform());
+  // The scroll offsets are arbitrary and should not affect the test result.
   auto outer_scroll_state = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(10, 20, 100, 200), gfx::Size(150, 300));
@@ -1271,13 +1276,14 @@ TEST_P(GeometryMapperTest, MightOverlapScroll) {
                  state_outside);
   }
   {
-    // `map` is mapped through two scroll translations.
+    // `rect` is mapped through two scroll translations.
     SCOPED_TRACE("inner_scroll_state and state_outside");
     CheckOverlap(rect, inner_scroll_state.GetPropertyTreeState(),
                  gfx::RectF(-90, -180, 63, 64), state_outside);
   }
   {
-    // `map` is mapped by local transform, then through two scroll translations.
+    // `rect` is mapped by local transform, then through two scroll
+    // translations.
     SCOPED_TRACE("state_under_inner_scroll and state_outside");
     CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(-90, -180, 100, 90),
                  state_outside);
@@ -1285,17 +1291,17 @@ TEST_P(GeometryMapperTest, MightOverlapScroll) {
   {
     SCOPED_TRACE("inner_scroll_state and outer_scroll_state");
     CheckOverlap(rect, inner_scroll_state.GetPropertyTreeState(),
-                 gfx::RectF(20, 10, 53, 74),
+                 gfx::RectF(20, 20, 53, 64),
                  outer_scroll_state.GetPropertyTreeState());
   }
   {
     SCOPED_TRACE("state_under_inner_scroll and outer_scroll_state");
-    CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(20, 10, 98, 100),
+    CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(20, 20, 98, 90),
                  outer_scroll_state.GetPropertyTreeState());
   }
   {
     SCOPED_TRACE("state_under_inner_scroll and state_under_outer_scroll");
-    CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(-14, -46, 98, 100),
+    CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(-14, -36, 98, 90),
                  state_under_outer_scroll);
   }
 }

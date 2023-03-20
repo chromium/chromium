@@ -132,13 +132,13 @@ class PLATFORM_EXPORT GeometryMapper {
   // meaning in the presence of inclusive intersection.)
   //
   // Note: if inclusive intersection is specified, then the
-  // GeometryMapperClipCache is bypassed (the GeometryMapperTRansformCache is
+  // GeometryMapperClipCache is bypassed (the GeometryMapperTransformCache is
   // still used, however).
   //
   // If kInclusiveIntersect is set, clipping operations will
   // use gfx::RectF::InclusiveIntersect, and the return value of
   // InclusiveIntersect will be propagated to the return value of this method.
-  // Otherwise, clipping operations will use LayoutRect::intersect, and the
+  // Otherwise, clipping operations will use gfx::RectF::Intersect, and the
   // return value will be true only if the clipped rect has non-zero area.
   // See the documentation for gfx::RectF::InclusiveIntersect for more
   // information.
@@ -163,6 +163,23 @@ class PLATFORM_EXPORT GeometryMapper {
                                          const PropertyTreeState& state1,
                                          const gfx::RectF& rect2,
                                          const PropertyTreeState& state2);
+
+  // Returns a clip rect that limits the visibility of painted contents under
+  // the given PropertyTreeState. For now only the following simple cases
+  // are considered:
+  // 1. The clip rect of `state`, if the clip's local transform space is the
+  //    same as that of the state.
+  // 2. The scrolling contents rect, if the transform is a scroll translation.
+  //
+  // The clip rect can be applied to the result of LocalToAncestorVisualRect()
+  // to exclude areas that are never visible in the compositor without a
+  // blink-side compositing update. MightOverlapForCompositing() uses this
+  // function.
+  //
+  // TODO(wangxianzhu): Investigate if this can be integrated into
+  // LocalToAncestorVisualRect().
+  static absl::optional<gfx::RectF> VisibilityLimit(
+      const PropertyTreeState& state);
 
   static void ClearCache();
 
