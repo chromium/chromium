@@ -24,8 +24,8 @@ import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.DarkModeStrategy;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
-import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
+import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
@@ -106,15 +106,14 @@ public class BrowserImpl extends IBrowser.Stub {
                 mProfile.getNativeProfile(), serviceContext.getPackageName(), this);
         mPasswordEchoEnabled = null;
 
-        mBrowserFragmentImpl = new BrowserFragmentImpl(this, serviceContext);
-
-        notifyFragmentInit();
+        notifyFragmentInit(); // TODO(swestphal): Perhaps move to createBrowserFragmentImpl()?
     }
 
     @Override
-    public IBrowserFragment getBrowserFragmentImpl() {
+    public IRemoteFragment createBrowserFragmentImpl() {
         StrictModeWorkaround.apply();
-        return mBrowserFragmentImpl.asIBrowserFragment();
+        mBrowserFragmentImpl = new BrowserFragmentImpl(this, mServiceContext);
+        return mBrowserFragmentImpl;
     }
 
     @Override

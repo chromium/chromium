@@ -5,7 +5,7 @@
 package org.chromium.weblayer_private.interfaces;
 
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
-import org.chromium.weblayer_private.interfaces.IBrowserFragment;
+import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
@@ -39,7 +39,7 @@ interface IBrowser {
 
   void shutdown() = 22;
 
-  IBrowserFragment getBrowserFragmentImpl() = 23;
+  IRemoteFragment createBrowserFragmentImpl() = 23;
   IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl() = 24;
 
 }

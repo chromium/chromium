@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.RemoteException;
 import android.os.SystemClock;
 import android.view.ContextThemeWrapper;
 import android.view.SurfaceControlViewHost;
@@ -23,8 +25,7 @@ import org.chromium.components.embedder_support.application.ClassLoaderContextWr
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.weblayer_private.interfaces.IBrowserFragment;
-import org.chromium.weblayer_private.interfaces.IRemoteFragment;
+import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 /**
@@ -173,6 +174,16 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     }
 
     @Override
+    public boolean startActivityForResult(Intent intent, int requestCode, Bundle options) {
+        try {
+            return mClient.startActivityForResult(
+                    ObjectWrapper.wrap(intent), requestCode, ObjectWrapper.wrap(options));
+        } catch (RemoteException e) {
+        }
+        return false;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         StrictModeWorkaround.apply();
         if (mWindowAndroid != null) {
@@ -269,16 +280,6 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
-    }
-
-    public IBrowserFragment asIBrowserFragment() {
-        return new IBrowserFragment.Stub() {
-            @Override
-            public IRemoteFragment asRemoteFragment() {
-                StrictModeWorkaround.apply();
-                return BrowserFragmentImpl.this;
-            }
-        };
     }
 
     @Override

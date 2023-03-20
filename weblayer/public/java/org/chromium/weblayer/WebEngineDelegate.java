@@ -34,7 +34,7 @@ class WebEngineDelegate extends IWebEngineDelegate.Stub {
             Browser browser = new Browser(webLayer.createBrowser(context, bundleParams(params)));
 
             WebFragmentEventsDelegate fragmentEventsDelegate =
-                    new WebFragmentEventsDelegate(context, browser);
+                    new WebFragmentEventsDelegate(context, browser.connectFragment());
 
             CookieManagerDelegate cookieManagerDelegate =
                     new CookieManagerDelegate(browser.getProfile().getCookieManager());

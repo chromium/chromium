@@ -9,7 +9,7 @@ import android.os.Bundle;
 import org.chromium.webengine.interfaces.IWebFragmentEventsDelegateClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
-// Next value: 15
+// Next value: 16
 oneway interface IWebFragmentEventsDelegate {
     void setClient(in IWebFragmentEventsDelegateClient client) = 1;
 
@@ -31,6 +31,7 @@ oneway interface IWebFragmentEventsDelegate {
     void attachViewHierarchy(in IBinder hostToken) = 12;
 
     // In process operations.
-    void onAttachWithContext(IObjectWrapper context) = 13;
+    void onAttachWithContext(IObjectWrapper context, IObjectWrapper fragment) = 13;
     void retrieveContentViewRenderView() = 14;
+    void onActivityResult(int requestCode, int resultCode, IObjectWrapper intent) = 15;
 }

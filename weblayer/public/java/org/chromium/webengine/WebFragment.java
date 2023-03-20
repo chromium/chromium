@@ -5,6 +5,7 @@
 package org.chromium.webengine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -133,7 +134,8 @@ public class WebFragment extends Fragment {
                 // Pass the activity context for the in-process mode.
                 // This is because the Autofill Manager is only available with activity contexts.
                 // This will be cleaned up when the fragment is detached.
-                mDelegate.onAttachWithContext(ObjectWrapper.wrap(context));
+                mDelegate.onAttachWithContext(
+                        ObjectWrapper.wrap(context), ObjectWrapper.wrap((Fragment) this));
             } else {
                 mDelegate.onAttach();
             }
@@ -162,6 +164,14 @@ public class WebFragment extends Fragment {
             return layout;
         } else {
             return new WebSurfaceView(getActivity(), mSurfaceHolderCallback);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            mDelegate.onActivityResult(requestCode, resultCode, ObjectWrapper.wrap(data));
+        } catch (RemoteException e) {
         }
     }
 

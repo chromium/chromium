@@ -146,8 +146,9 @@ public final class TestWebLayer {
             Browser browser = new Browser(webLayer.createBrowser(application, args));
             browser.initializeState();
 
-            WebFragmentEventHandler eventHandler = new WebFragmentEventHandler(browser);
-            eventHandler.onAttach(application);
+            WebFragmentEventHandler eventHandler =
+                    new WebFragmentEventHandler(browser.connectFragment());
+            eventHandler.onAttach(application, null);
             eventHandler.onCreate();
             eventHandler.onStart();
             eventHandler.onResume();

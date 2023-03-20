@@ -5,9 +5,13 @@
 package org.chromium.weblayer_private.interfaces;
 
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 
-// Next value: 15
+// Next value: 16
 interface IRemoteFragment {
+
+  void setClient(in IRemoteFragmentClient client) = 15;
+
   // Fragment events.
   void handleOnCreate() = 0;
   void handleOnAttach(in IObjectWrapper context) = 1;

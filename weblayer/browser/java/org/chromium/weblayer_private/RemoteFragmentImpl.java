@@ -13,10 +13,12 @@ import android.os.Bundle;
 import android.view.SurfaceControlViewHost;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
+import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
@@ -26,6 +28,9 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  * to call super, etc.
  */
 public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
+    @Nullable
+    protected IRemoteFragmentClient mClient;
+
     protected RemoteFragmentImpl() {}
 
     // TODO(swestphal): remove this.
@@ -89,6 +94,11 @@ public abstract class RemoteFragmentImpl extends IRemoteFragment.Stub {
     protected void removeFragmentFromFragmentManager() {}
 
     // IRemoteFragment implementation below.
+
+    @Override
+    public void setClient(IRemoteFragmentClient client) {
+        mClient = client;
+    }
 
     @Override
     public final void handleOnStart() {

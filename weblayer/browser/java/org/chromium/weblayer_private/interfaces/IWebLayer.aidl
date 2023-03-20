@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.weblayer_private.interfaces.IBrowser;
-import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.ICrashReporterController;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;

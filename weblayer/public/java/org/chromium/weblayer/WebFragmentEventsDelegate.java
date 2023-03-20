@@ -5,6 +5,7 @@
 package org.chromium.weblayer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -12,9 +13,12 @@ import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.WindowManager;
 
+import androidx.fragment.app.Fragment;
+
 import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
 import org.chromium.webengine.interfaces.IWebFragmentEventsDelegateClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
@@ -32,12 +36,11 @@ class WebFragmentEventsDelegate extends IWebFragmentEventsDelegate.Stub {
     private IWebFragmentEventsDelegateClient mClient;
     private SurfaceControlViewHost mSurfaceControlViewHost;
 
-    WebFragmentEventsDelegate(Context context, Browser browser) {
+    WebFragmentEventsDelegate(Context context, IRemoteFragment remoteFragment) {
         ThreadCheck.ensureOnUiThread();
 
         mContext = context;
-
-        mEventHandler = new WebFragmentEventHandler(browser);
+        mEventHandler = new WebFragmentEventHandler(remoteFragment);
     }
 
     @Override
@@ -86,12 +89,13 @@ class WebFragmentEventsDelegate extends IWebFragmentEventsDelegate.Stub {
 
     @Override
     public void onAttach() {
-        mHandler.post(() -> mEventHandler.onAttach(mContext));
+        mHandler.post(() -> mEventHandler.onAttach(mContext, null));
     }
 
     @Override
-    public void onAttachWithContext(IObjectWrapper context) {
-        mHandler.post(() -> mEventHandler.onAttach(ObjectWrapper.unwrap(context, Context.class)));
+    public void onAttachWithContext(IObjectWrapper context, IObjectWrapper fragment) {
+        mHandler.post(() -> mEventHandler.onAttach(ObjectWrapper.unwrap(context, Context.class),
+                                ObjectWrapper.unwrap(fragment, Fragment.class)));
     }
 
     @Override
@@ -133,6 +137,12 @@ class WebFragmentEventsDelegate extends IWebFragmentEventsDelegate.Stub {
     @Override
     public void onPause() {
         mHandler.post(() -> mEventHandler.onPause());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, IObjectWrapper intent) {
+        mHandler.post(() -> mEventHandler.onActivityResult(requestCode, resultCode,
+                                ObjectWrapper.unwrap(intent, Intent.class)));
     }
 
     /**

@@ -5,15 +5,20 @@
 package org.chromium.weblayer;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
+import org.chromium.weblayer_private.interfaces.IRemoteFragmentClient;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
@@ -26,20 +31,26 @@ abstract class RemoteFragmentEventHandler {
     @Nullable
     private IRemoteFragment mRemoteFragment;
 
-    RemoteFragmentEventHandler(Browser browser) {
+    private RemoteFragmentClientImpl mRemoteFragmentClient;
+
+    RemoteFragmentEventHandler(IRemoteFragment remoteFragment) {
         ThreadCheck.ensureOnUiThread();
-        mRemoteFragment = createRemoteFragmentEventHandler(browser);
+        mRemoteFragment = remoteFragment;
+
+        mRemoteFragmentClient = new RemoteFragmentClientImpl();
+        try {
+            mRemoteFragment.setClient(mRemoteFragmentClient);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
     }
 
-    protected abstract IRemoteFragment createRemoteFragmentEventHandler(Browser browser);
-
     @CallSuper
-    protected void onAttach(Context context) {
+    protected void onAttach(Context context, @Nullable Fragment fragment) {
         ThreadCheck.ensureOnUiThread();
-
+        mRemoteFragmentClient.setFragment(fragment);
         try {
             mRemoteFragment.handleOnAttach(ObjectWrapper.wrap(context));
-            // handleOnAttach results in creating BrowserImpl on the other side.
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -110,8 +121,20 @@ abstract class RemoteFragmentEventHandler {
     @CallSuper
     protected void onDetach() {
         ThreadCheck.ensureOnUiThread();
+        mRemoteFragmentClient.setFragment(null);
         try {
             mRemoteFragment.handleOnDetach();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    @CallSuper
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        ThreadCheck.ensureOnUiThread();
+        try {
+            mRemoteFragment.handleOnActivityResult(
+                    requestCode, resultCode, ObjectWrapper.wrap(intent));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -150,5 +173,26 @@ abstract class RemoteFragmentEventHandler {
 
     protected IRemoteFragment getRemoteFragment() {
         return mRemoteFragment;
+    }
+
+    final class RemoteFragmentClientImpl extends IRemoteFragmentClient.Stub {
+        // The WebFragment. Only available for in-process mode.
+        @Nullable
+        private Fragment mFragment;
+
+        void setFragment(@Nullable Fragment fragment) {
+            mFragment = fragment;
+        }
+
+        @Override
+        public boolean startActivityForResult(
+                IObjectWrapper intent, int requestCode, IObjectWrapper options) {
+            if (mFragment != null) {
+                mFragment.startActivityForResult(ObjectWrapper.unwrap(intent, Intent.class),
+                        requestCode, ObjectWrapper.unwrap(options, Bundle.class));
+                return true;
+            }
+            return false;
+        }
     }
 }

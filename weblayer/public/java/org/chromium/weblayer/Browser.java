@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
-import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.IMediaRouteDialogFragment;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 import org.chromium.weblayer_private.interfaces.ITab;
@@ -107,11 +106,11 @@ class Browser {
     }
 
     /**
-     * Returns remote counterpart for the BrowserFragment: an {@link IBrowserFragment}.
+     * Returns remote counterpart for the BrowserFragment: an {@link IRemoteFragment}.
      */
-    IBrowserFragment connectFragment() {
+    IRemoteFragment connectFragment() {
         try {
-            return mImpl.getBrowserFragmentImpl();
+            return mImpl.createBrowserFragmentImpl();
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
