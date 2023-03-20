@@ -170,7 +170,7 @@ ChunkedPolicyPrefsTest::ChunkedPolicyPrefsTest() {
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 // TODO(crbug.com/1425785): Fix flakiness and re-enable.
 #define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
 #else
