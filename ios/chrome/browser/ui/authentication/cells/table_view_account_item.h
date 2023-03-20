@@ -26,7 +26,11 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 @property(nonatomic, strong) UIImage* image;
 @property(nonatomic, copy) NSString* text;
 @property(nonatomic, copy) NSString* detailText;
+
+// Set to YES to display an error icon at the end of the cell content with an
+// accessibility error message.
 @property(nonatomic, assign) BOOL shouldDisplayError;
+
 @property(nonatomic, strong) id<SystemIdentity> identity;
 // The default value is TableViewAccountModeEnabled.
 @property(nonatomic, assign) TableViewAccountMode mode;
