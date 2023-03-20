@@ -9,14 +9,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace media_router {
 
@@ -94,7 +91,7 @@ class LoggerImpl : mojom::Logger {
     std::string session_id;
   };
 
-  static base::Value AsValue(const Entry& entry);
+  static base::Value::Dict AsValue(const Entry& entry);
 
   mojo::ReceiverSet<mojom::Logger> receivers_;
   base::circular_deque<Entry> entries_;
