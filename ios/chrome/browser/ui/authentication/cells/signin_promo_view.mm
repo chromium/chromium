@@ -787,16 +787,14 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
                   kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
                   kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
         }
-      }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+      } else {
+        UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(
             kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
             kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
             kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
             kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
+        SetContentEdgeInsets(self.primaryButton, contentEdgeInsets);
       }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
       constraintsToActivate = self.compactHorizontalLayoutConstraints;
       break;

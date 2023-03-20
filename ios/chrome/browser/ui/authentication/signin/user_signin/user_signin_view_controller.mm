@@ -307,12 +307,9 @@ enum AuthenticationButtonType {
           [UIButton buttonWithConfiguration:buttonConfiguration
                               primaryAction:nil];
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     self.primaryActionButton = [[UIButton alloc] init];
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
   [self.primaryActionButton addTarget:self
                                action:@selector(onPrimaryActionButtonPressed:)
@@ -331,12 +328,9 @@ enum AuthenticationButtonType {
           [UIButton buttonWithConfiguration:buttonConfiguration
                               primaryAction:nil];
     }
-  }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  else {
+  } else {
     self.secondaryActionButton = [[UIButton alloc] init];
   }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
 
   [self.secondaryActionButton
              addTarget:self

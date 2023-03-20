@@ -353,8 +353,6 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
                           forState:UIControlStateNormal];
     _primaryActionButton.accessibilityIdentifier =
         kWhatsNewPrimaryActionAccessibilityIdentifier;
-    _primaryActionButton.contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
     [_primaryActionButton
         setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
@@ -386,6 +384,9 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
       UIEdgeInsets titleInsets = UIEdgeInsetsMake(0, kButtonHorizontalMargin, 0,
                                                   kButtonHorizontalMargin);
       SetTitleEdgeInsets(_primaryActionButton, titleInsets);
+      UIEdgeInsets contentInsets =
+          UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+      SetContentEdgeInsets(_primaryActionButton, contentInsets);
     }
 
     [_primaryActionButton addTarget:self
