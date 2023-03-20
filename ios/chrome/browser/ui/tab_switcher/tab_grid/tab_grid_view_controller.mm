@@ -2980,8 +2980,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
+  // On iOS 15+, key commands visible in the app's menu are created in
+  // MenuBuilder.
   if (@available(iOS 15, *)) {
-    // Other key commands are already declared in the menu.
+    // Return the key commands that are not already present in the menu.
     return @[
       UIKeyCommand.cr_openNewRegularTab,
       UIKeyCommand.cr_undo,
@@ -2992,6 +2994,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       UIKeyCommand.cr_select3,
     ];
   } else {
+    // Return all the commands supported by TabGridViewController.
     return @[
       UIKeyCommand.cr_openNewTab,
       UIKeyCommand.cr_openNewIncognitoTab,

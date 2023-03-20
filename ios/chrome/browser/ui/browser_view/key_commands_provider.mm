@@ -103,9 +103,10 @@ using base::UserMetricsAction;
 }
 
 - (NSArray<UIKeyCommand*>*)keyCommands {
+  // On iOS 15+, key commands visible in the app's menu are created in
+  // MenuBuilder.
   if (@available(iOS 15, *)) {
-    // Return the key commands that are not already present in the menu (see
-    // i/c/b/ui/keyboard/menu_builder.h).
+    // Return the key commands that are not already present in the menu.
     return @[
       UIKeyCommand.cr_openNewRegularTab,
       UIKeyCommand.cr_showNextTab_2,
@@ -125,6 +126,7 @@ using base::UserMetricsAction;
       UIKeyCommand.cr_reportAnIssue_2,
     ];
   } else {
+    // Return all the commands supported by BrowserViewController.
     return @[
       UIKeyCommand.cr_openNewTab,
       UIKeyCommand.cr_openNewIncognitoTab,
