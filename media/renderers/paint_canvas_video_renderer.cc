@@ -179,6 +179,7 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
          PIXEL_FORMAT_XR30 == video_frame->format() ||
          PIXEL_FORMAT_NV12 == video_frame->format() ||
          PIXEL_FORMAT_NV12A == video_frame->format() ||
+         PIXEL_FORMAT_P016LE == video_frame->format() ||
          PIXEL_FORMAT_RGBAF16 == video_frame->format())
       << "Format: " << VideoPixelFormatToString(video_frame->format());
 
@@ -1429,6 +1430,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   DCHECK(video_frame->HasTextures());
 
   if (video_frame->NumTextures() > 1 ||
+      video_frame->shared_image_format_type() ==
+          SharedImageFormatType::kSharedImageFormat ||
       video_frame->metadata().read_lock_fences_enabled) {
     DCHECK(video_frame->metadata().texture_origin_is_top_left);
     if (!raster_context_provider)
@@ -1442,6 +1445,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // alpha been requested. And dst texture mipLevel must be 0.
     // TODO(crbug.com/1155003): Figure out whether premultiply options here are
     // accurate.
+    // TODO(crbug.com/1366486): Update check for SharedImageFormatType once
+    // passthrough decoder supports copying shared image to gl texture.
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
         level == 0 && video_frame->NumTextures() > 1) {
       if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
@@ -1493,6 +1498,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     if (!video_frame->metadata().texture_origin_is_top_left)
       flip_y = !flip_y;
 
+    DCHECK(video_frame->shared_image_format_type() ==
+               SharedImageFormatType::kLegacy ||
+           video_frame->shared_image_format_type() ==
+               SharedImageFormatType::kSharedImageFormatExternalSampler);
     const gpu::MailboxHolder& mailbox_holder =
         GetVideoFrameMailboxHolder(video_frame.get());
     DCHECK(mailbox_holder.texture_target == GL_TEXTURE_2D ||
@@ -1547,6 +1556,13 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 
   if (raster_context_provider->ContextCapabilities().disable_legacy_mailbox)
     return false;
+
+  // TODO(crbug.com/1366486): Remove early return once passthrough decoder
+  // supports copying shared image to gl texture.
+  if (video_frame->shared_image_format_type() !=
+      SharedImageFormatType::kLegacy) {
+    return false;
+  }
 
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
@@ -1605,6 +1621,8 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrameForWebGL(
 
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
+  // TODO(crbug.com/1366486): Remove early return once passthrough decoder
+  // supports copying shared image to gl texture.
   if (video_frame->NumTextures() == 1) {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
       // We don't support Android now.
@@ -1910,6 +1928,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     // `texture_target` is set only when the image backing the frame is
     // compatible with GL.
     bool can_wrap_texture = video_frame->NumTextures() == 1 &&
+                            video_frame->shared_image_format_type() ==
+                                SharedImageFormatType::kLegacy &&
                             video_frame->mailbox_holder(0).texture_target != 0;
 
     if (allow_wrap_texture && can_wrap_texture) {
@@ -1955,7 +1975,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       }
 
-      // Copy into the texture backing of the cached copy.
+      // Copy into the texture backing of the cached copy. This supports
+      // multiplanar shared images.
       if (video_frame->NumTextures() == 1) {
         const gpu::MailboxHolder& frame_mailbox_holder =
             GetVideoFrameMailboxHolder(video_frame.get());
