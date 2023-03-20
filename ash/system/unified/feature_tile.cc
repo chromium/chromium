@@ -280,10 +280,8 @@ void FeatureTile::OnThemeChanged() {
 
 void FeatureTile::UpdateDrillInButtonFocusRingColor() {
   views::FocusRing::Get(drill_in_arrow_)
-      ->SetColorId(toggled_
-                       ? static_cast<ui::ColorId>(
-                             kToggledFeatureTileDrillInButtonFocusRingColor)
-                       : cros_tokens::kCrosSysFocusRing);
+      ->SetColorId(toggled_ ? cros_tokens::kCrosSysFocusRingOnPrimaryContainer
+                            : cros_tokens::kCrosSysFocusRing);
 }
 
 BEGIN_METADATA(FeatureTile, views::Button)

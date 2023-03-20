@@ -616,9 +616,6 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorToggleButtonTrackOffDisabled] =
       ui::SetAlpha({ui::kColorToggleButtonTrackOff}, kDisabledColorOpacity);
   mixer[ui::kColorToggleButtonHover] = {cros_tokens::kCrosSysHoverOnProminent};
-  // TODO(b/274134608): Remove when focus on primary container tokens are added.
-  mixer[kToggledFeatureTileDrillInButtonFocusRingColor] = {
-      cros_tokens::kCrosRefPrimary40};
 }
 
 }  // namespace ash
