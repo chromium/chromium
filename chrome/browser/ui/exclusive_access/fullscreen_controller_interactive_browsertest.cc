@@ -1400,10 +1400,9 @@ class FullscreenOnScreensChangeFullscreenControllerInteractiveTest
 // TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
 // blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
 // TODO(crbug.com/1183791): Disabled on Mac due to flaky ObserverList crashes.
-// TODO(crbug.com/1420348): Disabled on ChromiumOS MSAN because of consistent
-// failures.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER))
+// TODO(crbug.com/1420348): Disabled on ChromiumOS due to flakes and even, on
+// MSAN, consistent failures.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FullscreenOnScreensChange DISABLED_FullscreenOnScreensChange
 #else
 #define MAYBE_FullscreenOnScreensChange FullscreenOnScreensChange
