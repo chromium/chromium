@@ -56,7 +56,8 @@ class HttpsOnlyModeBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kHttpsOnlyMode},
-        /*disabled_features=*/{features::kHttpsFirstModeV2});
+        /*disabled_features=*/{features::kHttpsFirstModeV2,
+                               features::kHttpsUpgrades});
     InProcessBrowserTest::SetUp();
   }
 

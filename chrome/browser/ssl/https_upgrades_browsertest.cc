@@ -77,6 +77,10 @@ class HttpsUpgradesBrowserTest
           /*enabled_features=*/{features::kHttpsFirstModeV2,
                                 features::kHttpsUpgrades},
           /*disabled_features=*/{});
+    } else if (GetParam() == HttpsUpgradesTestType::kNeither) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kHttpsFirstModeV2},
+          /*disabled_features=*/{features::kHttpsUpgrades});
     } else {
       feature_list_.InitAndEnableFeature(features::kHttpsFirstModeV2);
     }

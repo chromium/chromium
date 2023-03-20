@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
@@ -145,6 +146,15 @@ class ContentScriptApiTest : public ExtensionApiTest {
         https_test_server_->port());
     HttpsUpgradesInterceptor::SetHttpPortForTesting(
         embedded_test_server()->port());
+
+    // Test extensions use these hostnames. Allow them to be loaded over
+    // HTTP so that HTTPS-Upgrades feature doesn't upgrade their URLs.
+    // TODO(crbug.com/1394910): Use https in these tests and remove these
+    // allowlist entries.
+    AllowHttpForHostnamesForTesting(
+        {"a.com", "b.com", "default.test", "bar.com", "path-test.example",
+         "example.com", "chromium.org", "example1.com"},
+        browser()->profile()->GetPrefs());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -994,13 +1004,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CannotScriptTheNewTabPage) {
 
   // The extension should inject on "normal" urls.
 
-  // Test on an HTTP URL. Disable HTTPS upgrades on example1.com for this test
-  // to work.
-  auto* prefs = browser()->profile()->GetPrefs();
-  base::Value::List allowlist;
-  allowlist.Append("example1.com");
-  prefs->SetList(prefs::kHttpAllowlist, std::move(allowlist));
-
+  // Test on an HTTP URL. HTTPS upgrades is disabled on example1.com so it
+  // loads over http instead of https. example2.com loads over https.
   GURL unprotected_url1 = embedded_test_server()->GetURL(
       "example1.com", "/extensions/test_file.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url1));
