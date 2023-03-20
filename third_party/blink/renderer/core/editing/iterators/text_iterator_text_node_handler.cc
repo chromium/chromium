@@ -177,9 +177,9 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
   }
 
   // Restore end offset from magic value.
-  if (end_offset_ == kMaxOffset)
+  if (end_offset_ == kMaxOffset) {
     end_offset_ = CalculateMaxOffset(*node);
-  ;
+  }
   mapping_units_ = mapping->GetMappingUnitsForDOMRange(
       EphemeralRange(Position(node, offset_), Position(node, end_offset_)));
   mapping_units_index_ = 0;
