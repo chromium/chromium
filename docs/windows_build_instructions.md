@@ -184,7 +184,7 @@ to generate `.ninja` files. You can create any number of *build directories*
 with different configurations. To create a build directory:
 
 ```shell
-$ gn gen out/Default
+$ gn gen out\Default
 ```
 
 * You only have to run this once for each new build directory, Ninja will
@@ -209,8 +209,8 @@ $ gn gen out/Default
 
 There are some gn flags that can improve build speeds. You can specify these
 in the editor that appears when you create your output directory
-(`gn args out/Default`) or on the gn gen command line
-(`gn gen out/Default --args="is_component_build = true is_debug = true"`).
+(`gn args out\Default`) or on the gn gen command line
+(`gn gen out\Default --args="is_component_build = true is_debug = true"`).
 Some helpful settings to consider using include:
 * `is_component_build = true` - this uses more, smaller DLLs, and may avoid
 having to relink chrome.dll after every change.
@@ -364,9 +364,9 @@ $ autoninja -C out\Default chrome
 arguments passed to `ninja`.
 
 You can get a list of all of the other build targets from GN by running
-`gn ls out/Default` from the command line. To compile one, pass to Ninja
+`gn ls out\Default` from the command line. To compile one, pass to Ninja
 the GN label with no preceding "//" (so for `//chrome/test:unit_tests`
-use ninja -C out/Default chrome/test:unit_tests`).
+use `autoninja -C out\Default chrome/test:unit_tests`).
 
 ## Run Chromium
 
@@ -380,11 +380,27 @@ $ out\Default\chrome.exe
 
 ## Running test targets
 
-You can run the tests in the same way. You can also limit which tests are
-run using the `--gtest_filter` arg, e.g.:
+Tests are split into multiple test targets based on their type and where they
+exist in the directory structure. To see what target a given unit test or
+browser test file corresponds to, the following command can be used:
 
 ```shell
-$ out\Default\unit_tests.exe --gtest_filter="PushClientTest.*"
+$ gn refs out\Default --testonly=true --type=executable --all chrome\browser\ui\browser_list_unittest.cc
+//chrome/test:unit_tests
+```
+
+In the example above, the target is unit_tests. The unit_tests binary can be
+built by running the following command:
+
+```shell
+$ autoninja -C out\Default unit_tests
+```
+
+You can run the tests by running the unit_tests binary. You can also limit which
+tests are run using the `--gtest_filter` arg, e.g.:
+
+```shell
+$ out\Default\unit_tests.exe --gtest_filter="BrowserListUnitTest.*"
 ```
 
 You can find out more about GoogleTest at its

@@ -198,17 +198,27 @@ course beware that they will change the behavior of certain subsystems):
 
 ## Build and run test targets
 
-You can build a test in the same way, e.g.:
+Tests are split into multiple test targets based on their type and where they
+exist in the directory structure. To see what target a given unit test or
+browser test file corresponds to, the following command can be used:
+
+```shell
+$ gn refs out/Default --testonly=true --type=executable --all chrome/browser/ui/browser_list_unittest.cc
+//chrome/test:unit_tests
+```
+
+In the example above, the target is unit_tests. The unit_tests binary can be
+built by running the following command:
 
 ```shell
 $ autoninja -C out/Default unit_tests
 ```
 
-and can run the tests in the same way. You can also limit which tests are
-run using the `--gtest_filter` arg, e.g.:
+You can run the tests by running the unit_tests binary. You can also limit which
+tests are run using the `--gtest_filter` arg, e.g.:
 
-```
-$ out/Default/unit_tests --gtest_filter="PushClientTest.*"
+```shell
+$ out/Default/unit_tests --gtest_filter="BrowserListUnitTest.*"
 ```
 
 You can find out more about GoogleTest at its
