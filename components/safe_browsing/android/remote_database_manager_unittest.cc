@@ -9,6 +9,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/variations/variations_associated_data.h"
@@ -110,6 +111,55 @@ TEST_F(RemoteDatabaseManagerTest, DestinationsToCheckFromTrial) {
       network::mojom::RequestDestination::kVideo));
   EXPECT_TRUE(db_->CanCheckRequestDestination(
       network::mojom::RequestDestination::kWorker));
+}
+
+TEST_F(RemoteDatabaseManagerTest,
+       LogCheckUrlForHighConfidenceAllowlistResultsMetrics) {
+  const char kComponentUpdaterResultMatchesSBApiHandlerCheck[] =
+      "SafeBrowsing.Android.RealTimeAllowlist."
+      "ComponentUpdaterResultMatchesSBApiHandlerCheck";
+  base::HistogramTester histogram_tester;
+
+  db_->LogCheckUrlForHighConfidenceAllowlistResults(true, true);
+  histogram_tester.ExpectBucketCount(
+      kComponentUpdaterResultMatchesSBApiHandlerCheck,
+      RemoteSafeBrowsingDatabaseManager::HighConfidenceUrlAllowlistCheckResult::
+          kHandlerAndComponentUpdaterBothMatch,
+      1);
+
+  db_->LogCheckUrlForHighConfidenceAllowlistResults(true, false);
+  histogram_tester.ExpectBucketCount(
+      kComponentUpdaterResultMatchesSBApiHandlerCheck,
+      RemoteSafeBrowsingDatabaseManager::HighConfidenceUrlAllowlistCheckResult::
+          kHandlerMatchAndComponentUpdaterNoMatch,
+      1);
+
+  db_->LogCheckUrlForHighConfidenceAllowlistResults(absl::nullopt, true);
+  histogram_tester.ExpectBucketCount(
+      kComponentUpdaterResultMatchesSBApiHandlerCheck,
+      RemoteSafeBrowsingDatabaseManager::HighConfidenceUrlAllowlistCheckResult::
+          kHandlerUninitializedAndComponentUpdaterMatch,
+      1);
+
+  db_->LogCheckUrlForHighConfidenceAllowlistResults(false, true);
+  histogram_tester.ExpectBucketCount(
+      kComponentUpdaterResultMatchesSBApiHandlerCheck,
+      RemoteSafeBrowsingDatabaseManager::HighConfidenceUrlAllowlistCheckResult::
+          kHandlerNoMatchAndComponentUpdaterMatch,
+      1);
+
+  db_->LogCheckUrlForHighConfidenceAllowlistResults(absl::nullopt, false);
+  histogram_tester.ExpectBucketCount(
+      kComponentUpdaterResultMatchesSBApiHandlerCheck,
+      RemoteSafeBrowsingDatabaseManager::HighConfidenceUrlAllowlistCheckResult::
+          kHandlerUninitializedAndComponentUpdaterNoMatch,
+      1);
+  db_->LogCheckUrlForHighConfidenceAllowlistResults(false, false);
+  histogram_tester.ExpectBucketCount(
+      kComponentUpdaterResultMatchesSBApiHandlerCheck,
+      RemoteSafeBrowsingDatabaseManager::HighConfidenceUrlAllowlistCheckResult::
+          kHandlerAndComponentUpdaterBothNoMatch,
+      1);
 }
 
 }  // namespace safe_browsing

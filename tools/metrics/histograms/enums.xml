@@ -49625,6 +49625,28 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Unknown Pointer"/>
 </enum>
 
+<enum name="HighConfidenceUrlAllowlistCheckResults">
+  <int value="0" label="Results are unknown"/>
+  <int value="1"
+      label="SB API Handler and component updater methods both return NO
+             MATCH"/>
+  <int value="2"
+      label="SB API Handler and component updater methods both return MATCH"/>
+  <int value="3"
+      label="SB API Handler returns MATCH while component updater method
+             returns NO MATCH"/>
+  <int value="4"
+      label="SB API Handler returns NO MATCH while component updater method
+             returns MATCH"/>
+  <int value="5"
+      label="SB API Handler returns NO MATCH because the JNI env is
+             uninitialized, while the component updater method returns MATCH"/>
+  <int value="6"
+      label="SB API Handler returns NO MATCH because the JNI env is
+             uninitialized and the component updater method also returns NO
+             MATCH"/>
+</enum>
+
 <enum name="HighEfficiencyBubbleActionType">
   <int value="0" label="Open settings"/>
   <int value="1" label="Dismiss dialog"/>

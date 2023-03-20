@@ -43,7 +43,9 @@ class SafeBrowsingApiHandlerBridge {
 
   bool StartCSDAllowlistCheck(const GURL& url);
 
-  bool StartHighConfidenceAllowlistCheck(const GURL& url);
+  // Return nullopt when the JNI env is not initialized. If the JNI env is
+  // initialized, then return whether the URL is in the allowlist.
+  absl::optional<bool> StartHighConfidenceAllowlistCheck(const GURL& url);
 
   void SetInterceptorForTesting(UrlCheckInterceptor* interceptor) {
     interceptor_for_testing_ = interceptor;

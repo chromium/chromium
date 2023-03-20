@@ -152,6 +152,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="SafeBrowsing.Android.RealTimeAllowlist.ComponentUpdaterResultMatchesSBApiHandlerCheck"
+    enum="HighConfidenceUrlAllowlistCheckResults" expires_after="2023-04-20">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Measures whether the result returned using the new
+    RealTimeUrlChecksAllowlist method matches the result returned using the Safe
+    Browsing API. The value logged also tells us if the JNI env is initialized
+    or not when the SB API method returns NOMATCH and the
+    RealTimeUrlChecksAllowlist method returns MATCH, since this is one suspected
+    theory for the match rate difference. Logged on high confidence URL
+    allowlist checks, only when the kComponentUpdaterAndroidProtegoAllowlist
+    feature is enabled. This is a temporary histogram that we plan to remove
+    once we diagnose the match rate difference between the two methods.
+  </summary>
+</histogram>
+
+<histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.InstallerLoadFromDiskPbFileEmpty"
     units="bool" expires_after="2023-10-26">
   <owner>skrakowi@chromium.org</owner>
