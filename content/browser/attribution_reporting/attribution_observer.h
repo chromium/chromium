@@ -9,13 +9,27 @@
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#endif
+
 namespace attribution_reporting {
 class SuitableOrigin;
 }  // namespace attribution_reporting
+
+#if BUILDFLAG(IS_ANDROID)
+class GURL;
+
+namespace url {
+class Origin;
+}  // namespace url
+#endif
 
 namespace content {
 
@@ -71,6 +85,16 @@ class AttributionObserver : public base::CheckedObserver {
       const attribution_reporting::SuitableOrigin& reporting_origin,
       attribution_reporting::mojom::SourceType,
       attribution_reporting::mojom::SourceRegistrationError) {}
+
+#if BUILDFLAG(IS_ANDROID)
+  // Called when a source or trigger registration is passed to the OS.
+  virtual void OnOsRegistration(
+      base::Time time,
+      const GURL& registration_url,
+      const url::Origin& top_level_origin,
+      attribution_reporting::mojom::OsRegistrationType,
+      bool is_debug_key_allowed) {}
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace content

@@ -34,6 +34,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_input_event.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #endif
@@ -153,6 +154,12 @@ class MockAttributionManager : public AttributionManager {
   void NotifyDebugReportSent(const AttributionDebugReport&,
                              int status,
                              base::Time);
+#if BUILDFLAG(IS_ANDROID)
+  void NotifyOsRegistration(const GURL& registration_url,
+                            const url::Origin& top_level_origin,
+                            attribution_reporting::mojom::OsRegistrationType,
+                            bool is_debug_key_allowed);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager>);
 

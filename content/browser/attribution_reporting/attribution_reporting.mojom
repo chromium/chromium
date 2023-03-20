@@ -12,3 +12,8 @@ enum ReportType {
   // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md
   kAggregatableAttribution = 1,
 };
+
+enum OsRegistrationType {
+  kSource = 0,
+  kTrigger = 1,
+};

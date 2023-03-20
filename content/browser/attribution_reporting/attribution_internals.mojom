@@ -8,6 +8,7 @@ import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_registration_error.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
+import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -179,6 +180,18 @@ struct WebUISourceRegistration {
   SourceStatus status;
 };
 
+// Struct containing info of successfully passed OS registrations to be
+// displayed as a log by WebUI.
+struct WebUIOsRegistration {
+  // Contains msec since the Unix epoch, as returned by
+  // base::Time::toJsTimeIgnoringNull().
+  double time;
+  url.mojom.Url registration_url;
+  url.mojom.Origin top_level_origin;
+  bool is_debug_key_allowed;
+  attribution_reporting.mojom.OsRegistrationType type;
+};
+
 // Observer for events relevant to the attribution internals WebUI.
 interface Observer {
   // Called when the sources in storage changed, indicating that the observer
@@ -204,6 +217,9 @@ interface Observer {
 
   // Called when a trigger is registered, regardless of success or failure.
   OnTriggerHandled(WebUITrigger trigger);
+
+  // Called when an OS source or trigger is successfully passed to the OS.
+  OnOsRegistration(WebUIOsRegistration registration);
 };
 
 // Mojo interface for the attribution internals WebUI to communicate with the

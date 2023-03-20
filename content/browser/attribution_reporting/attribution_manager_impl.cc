@@ -93,6 +93,9 @@ namespace {
 
 using ScopedUseInMemoryStorageForTesting =
     ::content::AttributionManagerImpl::ScopedUseInMemoryStorageForTesting;
+#if BUILDFLAG(IS_ANDROID)
+using OsRegistrationType = ::attribution_reporting::mojom::OsRegistrationType;
+#endif
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -1324,20 +1327,38 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
                     ->RegisterAttributionSource(
                         event.registration_url, event.top_level_origin,
                         is_debug_key_allowed, *event.input_event);
+                manager->NotifyOsRegistration(
+                    event.registration_url, event.top_level_origin,
+                    OsRegistrationType::kSource, is_debug_key_allowed);
               } else {
                 manager->attribution_os_level_manager_
                     ->RegisterAttributionTrigger(event.registration_url,
                                                  event.top_level_origin,
                                                  is_debug_key_allowed);
+                manager->NotifyOsRegistration(
+                    event.registration_url, event.top_level_origin,
+                    OsRegistrationType::kTrigger, is_debug_key_allowed);
               }
-            }
 
-            manager->pending_os_events_.pop_front();
-            if (!manager->pending_os_events_.empty()) {
-              manager->ProcessNextOsEvent();
+              manager->pending_os_events_.pop_front();
+              if (!manager->pending_os_events_.empty()) {
+                manager->ProcessNextOsEvent();
+              }
             }
           },
           weak_factory_.GetWeakPtr()));
+}
+
+void AttributionManagerImpl::NotifyOsRegistration(
+    const GURL& registration_url,
+    const url::Origin& top_level_origin,
+    OsRegistrationType registration_type,
+    bool is_debug_key_allowed) {
+  base::Time now = base::Time::Now();
+  for (auto& observer : observers_) {
+    observer.OnOsRegistration(now, registration_url, top_level_origin,
+                              registration_type, is_debug_key_allowed);
+  }
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

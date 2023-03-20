@@ -32,6 +32,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#endif
+
 class GURL;
 
 namespace attribution_reporting {
@@ -176,6 +180,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   AttributionOsLevelManager* GetOsLevelManager() {
     return attribution_os_level_manager_.get();
   }
+
+  void NotifyOsRegistration(const GURL& registration_url,
+                            const url::Origin& top_level_origin,
+                            attribution_reporting::mojom::OsRegistrationType,
+                            bool is_debug_key_allowed);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

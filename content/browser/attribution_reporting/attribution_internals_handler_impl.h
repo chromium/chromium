@@ -81,6 +81,14 @@ class AttributionInternalsHandlerImpl
       attribution_reporting::mojom::SourceType,
       attribution_reporting::mojom::SourceRegistrationError) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  void OnOsRegistration(base::Time time,
+                        const GURL& registration_url,
+                        const url::Origin& top_level_origin,
+                        attribution_reporting::mojom::OsRegistrationType,
+                        bool is_debug_key_allowed) override;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   void OnObserverDisconnected();
 
   raw_ptr<WebUI> web_ui_;

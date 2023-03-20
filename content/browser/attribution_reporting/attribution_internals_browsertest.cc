@@ -15,6 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -55,6 +57,11 @@
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
+#endif
 
 namespace content {
 
@@ -410,6 +417,38 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
+                       OsRegistrationsShown) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+
+  static constexpr char kScript[] = R"(
+    const table = document.querySelector('#osRegistrationTable')
+        .shadowRoot.querySelector('tbody');
+
+    const obs = new MutationObserver((_, obs) => {
+      if (table.children.length === 1 &&
+          table.children[0].children[1]?.innerText === 'OS Source' &&
+          table.children[0].children[2]?.innerText === 'https://a.test/' &&
+          table.children[0].children[3]?.innerText === 'https://b.test' &&
+          table.children[0].children[4]?.innerText === 'false') {
+        obs.disconnect();
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {childList: true, subtree: true, characterData: true});
+  )";
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
+
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+
+  manager()->NotifyOsRegistration(
+      GURL("https://a.test"), url::Origin::Create(GURL("https://b.test")),
+      attribution_reporting::mojom::OsRegistrationType::kSource, false);
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
