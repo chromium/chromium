@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -19,11 +20,17 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/origin.h"
 
+namespace {
+constexpr base::TimeDelta kMinimumNotificationPresenceTime = base::Seconds(6);
+}  // namespace
+
 namespace ash {
 
 class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
  public:
-  MultiCaptureNotificationTest() = default;
+  MultiCaptureNotificationTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~MultiCaptureNotificationTest() override = default;
 
   void SetUp() override {
@@ -42,6 +49,9 @@ class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
     tester_->SetNotificationAddedClosure(
         base::BindRepeating(&MultiCaptureNotificationTest::OnNotificationAdded,
                             base::Unretained(this)));
+    tester_->SetNotificationClosedClosure(base::BindRepeating(
+        &MultiCaptureNotificationTest::OnNotificationRemoved,
+        base::Unretained(this)));
     multi_capture_notification_ = std::make_unique<MultiCaptureNotification>();
     notification_count_ = 0u;
   }
@@ -58,6 +68,7 @@ class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
   }
 
   void OnNotificationAdded() { notification_count_++; }
+  void OnNotificationRemoved() { notification_count_--; }
 
   void CheckNotification(const std::u16string& origin) {
     absl::optional<message_center::Notification> notification =
@@ -77,17 +88,23 @@ class MultiCaptureNotificationTest : public BrowserWithTestWindowTest {
   unsigned int notification_count_;
 };
 
-TEST_F(MultiCaptureNotificationTest, NotificationTriggered) {
+TEST_F(MultiCaptureNotificationTest,
+       NotificationStartedAndStoppedAfterSixSeconds) {
+  const url::Origin example_origin = url::Origin::CreateFromNormalizedTuple(
+      /*scheme=*/"https", /*host=*/"example.com", /*port=*/443);
   multi_capture_notification_->MultiCaptureStarted(
-      /*label=*/"test_label_1",
-      /*origin=*/url::Origin::CreateFromNormalizedTuple(
-          /*scheme=*/"https", /*host=*/"example.com", /*port=*/443));
+      /*label=*/"test_label_1", example_origin);
   CheckNotification(u"example.com");
   EXPECT_EQ(1u, notification_count_);
+
+  task_environment()->FastForwardBy(kMinimumNotificationPresenceTime +
+                                    base::Milliseconds(1));
+  multi_capture_notification_->MultiCaptureStopped(/*label=*/"test_label_1");
+  EXPECT_EQ(0u, notification_count_);
 }
 
 TEST_F(MultiCaptureNotificationTest,
-       NotificationsWithDifferentOriginsTriggered) {
+       NotificationsWithDifferentOriginsStartedAndStoppedAfterSixSeconds) {
   multi_capture_notification_->MultiCaptureStarted(
       /*label=*/"test_label_1",
       /*origin=*/url::Origin::CreateFromNormalizedTuple(
@@ -99,6 +116,66 @@ TEST_F(MultiCaptureNotificationTest,
   CheckNotification(u"example.com");
   CheckNotification(u"anotherexample.com");
   EXPECT_EQ(2u, notification_count_);
+
+  task_environment()->FastForwardBy(kMinimumNotificationPresenceTime +
+                                    base::Milliseconds(1));
+  multi_capture_notification_->MultiCaptureStopped(/*label=*/"test_label_1");
+  EXPECT_EQ(1u, notification_count_);
+  EXPECT_FALSE(GetNotification("example.com").has_value());
+  CheckNotification(u"anotherexample.com");
+
+  multi_capture_notification_->MultiCaptureStopped(/*label=*/"test_label_2");
+  EXPECT_EQ(0u, notification_count_);
+  EXPECT_FALSE(GetNotification("example.com").has_value());
+  EXPECT_FALSE(GetNotification("anotherexample.com").has_value());
+}
+
+TEST_F(MultiCaptureNotificationTest,
+       FastNotificationStartedAndStoppedExpectedClosingDelay) {
+  const url::Origin example_origin = url::Origin::CreateFromNormalizedTuple(
+      /*scheme=*/"https", /*host=*/"example.com", /*port=*/443);
+  multi_capture_notification_->MultiCaptureStarted(
+      /*label=*/"test_label_1", example_origin);
+  CheckNotification(u"example.com");
+  EXPECT_EQ(1u, notification_count_);
+
+  task_environment()->FastForwardBy(kMinimumNotificationPresenceTime -
+                                    base::Milliseconds(1));
+  multi_capture_notification_->MultiCaptureStopped(/*label=*/"test_label_1");
+  EXPECT_TRUE(GetNotification("example.com").has_value());
+  EXPECT_EQ(1u, notification_count_);
+
+  task_environment()->FastForwardBy(base::Milliseconds(2));
+  EXPECT_EQ(0u, notification_count_);
+}
+
+TEST_F(
+    MultiCaptureNotificationTest,
+    FastNotificationsWithDifferentOriginsStartedAndStoppedExpectedClosingDelay) {
+  multi_capture_notification_->MultiCaptureStarted(
+      /*label=*/"test_label_1",
+      /*origin=*/url::Origin::CreateFromNormalizedTuple(
+          /*scheme=*/"https", /*host=*/"example.com", /*port=*/443));
+  multi_capture_notification_->MultiCaptureStarted(
+      /*label=*/"test_label_2",
+      /*origin=*/url::Origin::CreateFromNormalizedTuple(
+          /*scheme=*/"https", /*host=*/"anotherexample.com", /*port=*/443));
+  CheckNotification(u"example.com");
+  CheckNotification(u"anotherexample.com");
+  EXPECT_EQ(2u, notification_count_);
+
+  task_environment()->FastForwardBy(kMinimumNotificationPresenceTime -
+                                    base::Milliseconds(1));
+  multi_capture_notification_->MultiCaptureStopped(/*label=*/"test_label_1");
+  CheckNotification(u"example.com");
+  CheckNotification(u"anotherexample.com");
+  EXPECT_EQ(2u, notification_count_);
+
+  multi_capture_notification_->MultiCaptureStopped(/*label=*/"test_label_2");
+  EXPECT_EQ(2u, notification_count_);
+
+  task_environment()->FastForwardBy(base::Milliseconds(2));
+  EXPECT_EQ(0u, notification_count_);
 }
 
 }  // namespace ash
