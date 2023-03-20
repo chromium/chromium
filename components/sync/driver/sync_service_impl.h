@@ -182,9 +182,6 @@ class SyncServiceImpl : public SyncService,
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
-  void OnErrorStateOfRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override;
 
   // Similar to above but with a callback that will be invoked on completion.
   void OnAccountsInCookieUpdatedWithCallback(
@@ -465,8 +462,6 @@ class SyncServiceImpl : public SyncService,
   // is typically false on Android (to save network traffic), but true on all
   // other platforms.
   bool sessions_invalidations_enabled_;
-
-  GoogleServiceAuthError last_error_state_of_refresh_token_;
 
   // This weak factory invalidates its issued pointers when Sync is disabled.
   base::WeakPtrFactory<SyncServiceImpl> sync_enabled_weak_factory_{this};

@@ -1567,25 +1567,6 @@ void SyncServiceImpl::OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info.signed_in_accounts, base::NullCallback());
 }
 
-void SyncServiceImpl::OnErrorStateOfRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
-  if (error.state() == GoogleServiceAuthError::NONE &&
-      last_error_state_of_refresh_token_.IsPersistentError()) {
-    // Resolving a persistent error may or may not necessarily imply changes in
-    // the recoverability state. However, over-triggering
-    // OnTrustedVaultRecoverabilityChanged() is totally fine and should lead to
-    // no user-facing changes, either because it's a strict no-op, e.g. if the
-    // passphrase type != kTrustedVaultPassphrase, or because the recoverability
-    // hasn't changed.
-    // TODO(crbug.com/1156584): This is only needed because currently not all
-    // persistent errors stop the sync engine.
-    crypto_.OnTrustedVaultRecoverabilityChanged();
-  }
-
-  last_error_state_of_refresh_token_ = error;
-}
-
 void SyncServiceImpl::OnAccountsInCookieUpdatedWithCallback(
     const std::vector<gaia::ListedAccount>& signed_in_accounts,
     base::OnceClosure callback) {
