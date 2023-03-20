@@ -341,6 +341,9 @@ void PasswordManager::RegisterProfilePrefs(
                                 false);
 #endif
   registry->RegisterBooleanPref(prefs::kPasswordsGroupingInfoRequested, false);
+#if BUILDFLAG(IS_IOS)
+  registry->RegisterBooleanPref(prefs::kAccountStorageNoticeShown, false);
+#endif
 }
 
 // static

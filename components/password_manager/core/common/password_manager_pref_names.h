@@ -228,6 +228,12 @@ extern const char kHadBiometricsAvailable[];
 // TODO(crbug.com/1420597): Remove this after Passwords Grouping launch.
 extern const char kPasswordsGroupingInfoRequested[];
 
+#if BUILDFLAG(IS_IOS)
+// Boolean pref indicating if the one-time notice for account storage was shown.
+// The notice informs passwords will start being saved to the signed-in account.
+extern const char kAccountStorageNoticeShown[];
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace prefs
 }  // namespace password_manager
 
