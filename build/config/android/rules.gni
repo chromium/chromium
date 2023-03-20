@@ -479,6 +479,10 @@ if (enable_java_templates && is_android) {
       if (defined(invoker.namespace)) {
         args += [ "--namespace=${invoker.namespace}" ]
       }
+
+      if (defined(invoker.module_name)) {
+        args += [ "--module-name=${invoker.module_name}" ]
+      }
     }
   }
 

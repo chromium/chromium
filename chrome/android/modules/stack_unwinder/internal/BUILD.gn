@@ -24,6 +24,7 @@ if (current_toolchain == default_toolchain) {
     targets = [ ":java" ]
     manual_jni_registration = true
     namespace = "stack_unwinder"
+    module_name = "stack_unwinder"
     no_transitive_deps = true
   }
 }

@@ -79,6 +79,7 @@ class JniRegistrationGeneratorOptions(object):
     self.manual_jni_registration = False
     self.include_test_only = False
     self.header_path = None
+    self.module_name = ''
 
 
 class BaseTest(unittest.TestCase):
@@ -1395,6 +1396,7 @@ class ProxyTestGenerator(BaseTest):
     ]
     options = JniRegistrationGeneratorOptions()
     options.use_proxy_hash = True
+    options.module_name = 'module'
     name_to_goldens = {
         'org/chromium/base/natives/GEN_JNI.java':
         'HashedSampleForAnnotationProcessorGenJni.2.golden',

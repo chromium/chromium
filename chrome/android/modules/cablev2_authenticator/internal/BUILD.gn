@@ -42,5 +42,6 @@ if (current_toolchain == default_toolchain) {
     targets = [ "//chrome/android/features/cablev2_authenticator:java" ]
     manual_jni_registration = true
     namespace = "cablev2_authenticator"
+    module_name = "cablev2_authenticator"
   }
 }
