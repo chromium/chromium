@@ -6,7 +6,9 @@
 #define EXTENSIONS_BROWSER_API_ALARMS_ALARM_MANAGER_H_
 
 #include <map>
+#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -84,7 +86,9 @@ class AlarmManager : public BrowserContextKeyedAPI,
   ~AlarmManager() override;
 
   // Override the default delegate. Callee assumes onwership. Used for testing.
-  void set_delegate(Delegate* delegate) { delegate_.reset(delegate); }
+  void set_delegate(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
 
   using AddAlarmCallback = base::OnceClosure;
   // Adds |alarm| for the given extension, and starts the timer. Invokes

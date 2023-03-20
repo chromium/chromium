@@ -65,13 +65,21 @@ class ExtensionAlarmsTest : public ApiUnitTest {
     alarm_manager_ = AlarmManager::Get(browser_context());
     alarm_manager_->SetClockForTesting(&test_clock_);
 
-    alarm_delegate_ = new AlarmDelegate();
-    alarm_manager_->set_delegate(alarm_delegate_);
+    auto delegate = std::make_unique<AlarmDelegate>();
+    alarm_delegate_ = delegate.get();
+    alarm_manager_->set_delegate(std::move(delegate));
 
     // Make sure there's a RenderViewHost for alarms to warn into.
     CreateBackgroundPage();
 
     test_clock_.SetNow(base::Time::FromDoubleT(10));
+  }
+
+  void TearDown() override {
+    // Drop unowned references before superclass destroys them.
+    alarm_delegate_ = nullptr;
+    alarm_manager_ = nullptr;
+    ApiUnitTest::TearDown();
   }
 
   void CreateAlarm(const std::string& args) {
