@@ -2323,8 +2323,7 @@
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
-      'chromeos_with_codecs', 'release_bot_reclient', 'also_build_lacros_chrome',
-      'enable_dangling_raw_ptr_checks', 'enable_backup_ref_ptr_feature_flag',
+      'chromeos_with_codecs', 'release_bot_reclient', 'also_build_lacros_chrome'
     ],
 
     'clang_code_coverage_ios_xctest_reclient': [
