@@ -22,6 +22,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/events/keyboard_capability.h"
@@ -105,7 +106,8 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl()
       touchpad_pref_handler_(std::make_unique<TouchpadPrefHandlerImpl>()),
       mouse_pref_handler_(std::make_unique<MousePrefHandlerImpl>()),
       pointing_stick_pref_handler_(
-          std::make_unique<PointingStickPrefHandlerImpl>()) {
+          std::make_unique<PointingStickPrefHandlerImpl>()),
+      sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   Init();
 }
 
@@ -113,11 +115,13 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
     std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler,
     std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
     std::unique_ptr<MousePrefHandler> mouse_pref_handler,
-    std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler)
+    std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : keyboard_pref_handler_(std::move(keyboard_pref_handler)),
       touchpad_pref_handler_(std::move(touchpad_pref_handler)),
       mouse_pref_handler_(std::move(mouse_pref_handler)),
-      pointing_stick_pref_handler_(std::move(pointing_stick_pref_handler)) {
+      pointing_stick_pref_handler_(std::move(pointing_stick_pref_handler)),
+      sequenced_task_runner_(std::move(task_runner)) {
   Init();
 }
 
@@ -172,6 +176,23 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     return;
   }
   active_pref_service_ = pref_service;
+
+  // Device settings must be refreshed when the user pref service is updated,
+  // but all dependencies of `InputDeviceSettingsControllerImpl` must be updated
+  // due to the active pref service change first. Therefore, schedule a task so
+  // other dependencies are updated first.
+  if (!settings_refresh_pending_) {
+    settings_refresh_pending_ = true;
+    sequenced_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
+  settings_refresh_pending_ = false;
   for (const auto& [id, keyboard] : keyboards_) {
     keyboard_pref_handler_->InitializeKeyboardSettings(active_pref_service_,
                                                        keyboard.get());
@@ -579,11 +600,6 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   for (const auto id : pointing_stick_ids_to_remove) {
     DispatchPointingStickDisconnectedAndEraseFromList(id);
   }
-}
-
-void InputDeviceSettingsControllerImpl::SetPrefHandlersForTesting(
-    std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler) {
-  keyboard_pref_handler_ = std::move(keyboard_pref_handler);
 }
 
 }  // namespace ash

@@ -35,7 +35,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler,
       std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
       std::unique_ptr<MousePrefHandler> mouse_pref_handler,
-      std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler);
+      std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
       delete;
   InputDeviceSettingsControllerImpl& operator=(
@@ -78,11 +79,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
-  void SetPrefHandlersForTesting(
-      std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler);
-
  private:
   void Init();
+
+  void RefreshAllDeviceSettings();
 
   void DispatchKeyboardConnected(DeviceId id);
   void DispatchKeyboardDisconnectedAndEraseFromList(DeviceId id);
@@ -121,6 +121,14 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       pointing_stick_notifier_;
 
   raw_ptr<PrefService> active_pref_service_ = nullptr;  // Not owned.
+
+  // Boolean which notes whether or not there is a settings update in progress.
+  bool settings_refresh_pending_ = false;
+
+  // Task runner where settings refreshes are scheduled to run.
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  base::WeakPtrFactory<InputDeviceSettingsControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash
