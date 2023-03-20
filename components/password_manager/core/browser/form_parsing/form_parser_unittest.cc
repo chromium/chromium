@@ -37,6 +37,9 @@ namespace password_manager {
 
 namespace {
 
+using testing::IsNull;
+using testing::NotNull;
+
 using UsernameDetectionMethod = FormDataParser::UsernameDetectionMethod;
 
 // Use this value in FieldDataDescription.value to get an arbitrary unique value
@@ -346,9 +349,9 @@ void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
           mode == FormDataParser::Mode::kFilling ? fill_result : save_result;
 
       if (expected_ids.IsEmpty()) {
-        EXPECT_FALSE(parsed_form) << "Expected no parsed results";
+        EXPECT_THAT(parsed_form, IsNull()) << "Expected no parsed results";
       } else {
-        ASSERT_TRUE(parsed_form) << "Expected successful parsing";
+        ASSERT_THAT(parsed_form, NotNull()) << "Expected successful parsing";
         EXPECT_EQ(PasswordForm::Scheme::kHtml, parsed_form->scheme);
         EXPECT_FALSE(parsed_form->blocked_by_user);
         EXPECT_EQ(PasswordForm::Type::kFormSubmission, parsed_form->type);
@@ -1767,7 +1770,7 @@ TEST(FormParserTest, ComplementingResults) {
 }
 
 // The parser should avoid identifying CVC fields as passwords.
-TEST(FormParserTest, CVC) {
+TEST(FormParserTest, IgnoreCvcFields) {
   CheckTestData({
       {
           .description_for_logging =
@@ -1823,6 +1826,45 @@ TEST(FormParserTest, CVC) {
                    .name = u"verification_type",
                    .form_control_type = "password"},
               },
+          .fallback_only = true,
+      },
+  });
+}
+
+TEST(FormParserTest, ServerHintsForCvcFieldsOverrideAutocomplete) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Credit card server hints override autocomplete=*-password",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.autocomplete_attribute = "current-password",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::CREDIT_CARD_NUMBER}},
+                  {.autocomplete_attribute = "new-password",
+                   .form_control_type = "password",
+                   .prediction = {.type =
+                                      autofill::CREDIT_CARD_VERIFICATION_CODE}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password"},
+              },
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
+              "Server hint turns autocomplete=cc-csc into a password field",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "cc-csc",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::PASSWORD}},
+              },
+          // TODO(crbug.com/913965): As server predictions are not used in the
+          // saving mode, it is only for fallback. Ideally, a server hint should
+          // override autocomplete and enable a regular prompt.
           .fallback_only = true,
       },
   });
@@ -2115,6 +2157,7 @@ TEST(FormParserTest, NotPasswordFieldDespiteAutocompleteAttribute) {
               {
                   {.role = ElementRole::USERNAME, .form_control_type = "text"},
                   {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "current-password",
                    .form_control_type = "password",
                    .prediction = {.type = autofill::NOT_PASSWORD}},
               },
@@ -2696,9 +2739,9 @@ TEST(FormParserTest, ContradictingPasswordPredictionAndAutocomplete) {
   CheckTestData({{
       .description_for_logging =
           "Server data and autocomplete contradics each other",
-      // On saving, server predictions for passwords are ignored.
-      // So autocomplete attributes define the role. On filling,
-      // both server predictions and autocomplete are considered and
+      // On saving, server predictions for passwords are ignored
+      // (crbug.com/913965). So autocomplete attributes define the role. On
+      // filling, both server predictions and autocomplete are considered and
       // server predictions have higher priority and therefore
       // define the role. An autofill attributes cannot override it.
       .fields =

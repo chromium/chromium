@@ -49,11 +49,10 @@ struct AutocompleteParsing {
 // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls%3A-the-autocomplete-attribute).
 // For password forms, only the field_type is relevant. So parsing the attribute
 // amounts to just taking the last token.  If that token is one of "username",
-// "current-password", "new-password", this returns an appropriate enum value.
-// If the token starts with a "cc-" prefix or is "one-time-code" token, this
-// returns kNonPassword.  Otherwise, returns kNone.
-// If the webauthn token is present, this sets accepts_webauthn_credentials to
-// true.
+// "current-password", "new-password", "one-time-code", this returns an
+// appropriate enum value. If the token starts with a "cc-" prefix, this returns
+// kCreditCardField. Otherwise, returns kNone. If the webauthn token is present,
+// this sets accepts_webauthn_credentials to true.
 AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
   AutocompleteParsing result;
   std::vector<base::StringPiece> tokens =
@@ -82,11 +81,12 @@ AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
                  field_type, constants::kAutocompleteNewPassword)) {
     result.flag = AutocompleteFlag::kNewPassword;
   } else if (base::EqualsCaseInsensitiveASCII(
-                 field_type, constants::kAutocompleteOneTimePassword) ||
-             base::StartsWith(field_type,
+                 field_type, constants::kAutocompleteOneTimePassword)) {
+    result.flag = AutocompleteFlag::kOneTimeCode;
+  } else if (base::StartsWith(field_type,
                               constants::kAutocompleteCreditCardPrefix,
                               base::CompareCase::SENSITIVE)) {
-    result.flag = AutocompleteFlag::kNonPassword;
+    result.flag = AutocompleteFlag::kCreditCardField;
   }
   return result;
 }
@@ -118,18 +118,24 @@ bool StringMatchesHiddenValue(const std::u16string& str) {
   return autofill::MatchesRegex<autofill::kHiddenValueRe>(str);
 }
 
-// TODO(crbug.com/860700): Remove name and attribute checking once server-side
-// provides hints for CVC.
-// Returns true if the |field| is suspected to be not the password field.
-// The suspicion is based on server-side provided hints and on checking the
-// field's id and name for hinting towards a CVC code, Social Security
-// Number or one-time password.
+// Return true if the |field| is suspected to be a credit card field based on
+// server side predictions, autocomplete attribute, and keywords in field's id
+// and name.
+bool IsCreditCardField(const ProcessedField& field) {
+  return field.server_hints_credit_card_field ||
+         field.autocomplete_flag == AutocompleteFlag::kCreditCardField ||
+         StringMatchesCVC(field.field->name_attribute) ||
+         StringMatchesCVC(field.field->id_attribute);
+}
+
+// Returns true if the |field| is suspected to be not a password field
+// (including CVC fields). The suspicion is based on server-side provided hints
+// and on checking the field's id and name for hinting towards a CVC code,
+// Social Security Number or one-time password.
 bool IsNotPasswordField(const ProcessedField& field,
                         bool* otp_field_detected_with_regex = nullptr) {
-  if (field.server_hints_not_password ||
-      field.autocomplete_flag == AutocompleteFlag::kNonPassword ||
-      StringMatchesCVC(field.field->name_attribute) ||
-      StringMatchesCVC(field.field->id_attribute) ||
+  if (IsCreditCardField(field) || field.server_hints_not_password ||
+      field.autocomplete_flag == AutocompleteFlag::kOneTimeCode ||
       StringMatchesSSN(field.field->name_attribute) ||
       StringMatchesSSN(field.field->id_attribute)) {
     return true;
@@ -461,8 +467,9 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     if (!current_field)
       continue;
     if (prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE ||
-        prediction.type == autofill::CREDIT_CARD_NUMBER ||
-        prediction.type == autofill::NOT_PASSWORD) {
+        prediction.type == autofill::CREDIT_CARD_NUMBER) {
+      current_field->server_hints_credit_card_field = true;
+    } else if (prediction.type == autofill::NOT_PASSWORD) {
       current_field->server_hints_not_password = true;
     } else if (prediction.type == autofill::NOT_USERNAME) {
       current_field->server_hints_not_username = true;
@@ -501,15 +508,19 @@ void ParseUsingAutocomplete(const std::vector<ProcessedField>& processed_fields,
         break;
       case AutocompleteFlag::kCurrentPassword:
         if (!processed_field.is_password || result->password ||
-            processed_field.server_hints_not_password)
+            processed_field.server_hints_not_password ||
+            processed_field.server_hints_credit_card_field) {
           continue;
+        }
         result->password = processed_field.field;
         break;
       case AutocompleteFlag::kNewPassword:
         if (!processed_field.is_password || new_password_found_by_server ||
             processed_field.server_hints_not_password ||
-            should_ignore_new_password_autocomplete)
+            processed_field.server_hints_credit_card_field ||
+            should_ignore_new_password_autocomplete) {
           continue;
+        }
         // The first field with autocomplete=new-password is considered to be
         // new_password and the second is confirmation_password.
         if (!result->new_password) {
@@ -529,7 +540,8 @@ void ParseUsingAutocomplete(const std::vector<ProcessedField>& processed_fields,
           result->confirmation_password = processed_field.field;
         }
         break;
-      case AutocompleteFlag::kNonPassword:
+      case AutocompleteFlag::kOneTimeCode:
+      case AutocompleteFlag::kCreditCardField:
       case AutocompleteFlag::kNone:
         break;
     }

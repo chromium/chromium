@@ -28,8 +28,9 @@ enum class AutocompleteFlag {
   kUsername,
   kCurrentPassword,
   kNewPassword,
-  // Represents the whole family of cc-* flags + OTP flag.
-  kNonPassword
+  // Represents the whole family of cc-* flags.
+  kCreditCardField,
+  kOneTimeCode
 };
 
 // How likely is user interaction for a given field?
@@ -59,7 +60,12 @@ struct ProcessedField {
   // True if field is predicted to be a password.
   bool is_predicted_as_password = false;
 
-  // True if the server predicts that this field is not a password field.
+  // True if the server predicts that this field is a credit card field (e.g.
+  // CVC field).
+  bool server_hints_credit_card_field = false;
+
+  // True if the server predicts that this field is not a password field (credit
+  // cards fields don't set this field).
   bool server_hints_not_password = false;
 
   // True if the server predicts that this field is not a username field.
