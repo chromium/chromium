@@ -17,4 +17,4 @@
 
 export {CdpClient} from './cdpClient.js';
 export {CdpConnection} from './cdpConnection.js';
-export {WebSocketTransport} from './websocketTransport.js';
+export {WebSocketTransport} from '../utils/websocketTransport.js';

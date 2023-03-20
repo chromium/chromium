@@ -20,8 +20,9 @@ import {expect} from 'chai';
 import * as sinon from 'sinon';
 import chaiAsPromised from 'chai-as-promised';
 
+import {StubTransport} from '../utils/transportStub.spec.js';
+
 import {CdpConnection} from './cdpConnection.js';
-import {StubTransport} from './stubTransport.spec.js';
 
 chai.use(chaiAsPromised);
 

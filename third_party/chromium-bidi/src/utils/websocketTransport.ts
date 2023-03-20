@@ -17,7 +17,7 @@
 
 import WebSocket from 'ws';
 
-import {ITransport} from '../utils/transport.js';
+import {ITransport} from './transport.js';
 
 export class WebSocketTransport implements ITransport {
   #onMessage: ((message: string) => void) | null = null;
