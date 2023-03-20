@@ -8,6 +8,8 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
@@ -35,6 +37,10 @@ class TestAutofillManagerInjectorBase {
 
 // RAII type that installs new AutofillManagers of type `T` in all newly
 // navigated frames in all newly created WebContents.
+//
+// The injector only injects an AutofillManager if a driver is created.
+// Especially in unit tests it may be necessary to force-create the driver using
+// `client->GetAutofillDriverFactory()->DriverForFrame(rfh)`.
 //
 // To prevent hard-to-find bugs, only one TestAutofillManagerInjector may be
 // alive at a time. It must not be created before a TestAutofillClientInjector.
@@ -101,21 +107,36 @@ class TestAutofillManagerInjector : TestAutofillManagerInjectorBase {
         : WebContentsObserver(web_contents), owner_(owner) {}
     Injector(const Injector&) = delete;
     Injector& operator=(const Injector&) = delete;
-    ~Injector() override = default;
+    ~Injector() override {
+      if (factory_) {
+        factory_->RemoveObserver(this);
+      }
+    }
 
     void RenderFrameCreated(content::RenderFrameHost* rfh) override {
-      if (observation_.IsObserving()) {
+      if (factory_) {
         return;
       }
-      if (auto* client =
-              ContentAutofillClient::FromWebContents(web_contents())) {
-        observation_.Observe(client->GetAutofillDriverFactory());
+      auto* client = ContentAutofillClient::FromWebContents(web_contents());
+      if (!client) {
+        return;
       }
+      factory_ = client->GetAutofillDriverFactory();
+      // The injectors' observers should come first so that production-code
+      // observers affect the injected objects.
+      // The AutofillManager injector should come right after the
+      // ContentAutofillDriver injector, if one exists.
+      ContentAutofillDriverFactoryTestApi(factory_).AddObserverAtIndex(
+          this,
+          TestAutofillDriverInjectorBase::some_instance_is_alive() ? 1 : 0);
     }
 
     void OnContentAutofillDriverFactoryDestroyed(
         ContentAutofillDriverFactory& factory) override {
-      observation_.Reset();
+      if (factory_) {
+        factory_->RemoveObserver(this);
+        factory_ = nullptr;
+      }
     }
 
     // Replaces the just created `driver`'s manager with a new test manager.
@@ -141,9 +162,11 @@ class TestAutofillManagerInjector : TestAutofillManagerInjectorBase {
     }
 
     raw_ptr<TestAutofillManagerInjector> owner_;
-    base::ScopedObservation<ContentAutofillDriverFactory,
-                            ContentAutofillDriverFactory::Observer>
-        observation_{this};
+
+    // Observed source. We can't use a ScopedObservation because we use
+    // ContentAutofillDriverFactoryTestApi::AddObserverAtIndex() instead of
+    // ContentAutofillDriverFactory::AddObserver().
+    raw_ptr<ContentAutofillDriverFactory> factory_ = nullptr;
   };
 
   void ObserveWebContentsAndInjectManager(content::WebContents* web_contents) {

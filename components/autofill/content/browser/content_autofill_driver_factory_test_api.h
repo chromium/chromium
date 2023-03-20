@@ -37,6 +37,16 @@ class ContentAutofillDriverFactoryTestApi {
                  std::unique_ptr<ContentAutofillDriver> driver);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
+  base::ObserverList<ContentAutofillDriverFactory::Observer>& observers() {
+    return factory_->observers_;
+  }
+
+  // Like the normal AddObserver(), but enqueues `observer` at position `index`
+  // in the list, so that `observer` is notified before production-code
+  // observers.
+  void AddObserverAtIndex(ContentAutofillDriverFactory::Observer* observer,
+                          size_t index);
+
   void set_client(AutofillClient* client) { factory_->client_ = client; }
 
   ContentAutofillRouter& router() { return factory_->router_; }

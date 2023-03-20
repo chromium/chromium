@@ -49,4 +49,22 @@ ContentAutofillDriver* ContentAutofillDriverFactoryTestApi::GetDriver(
   return it != factory_->driver_map_.end() ? it->second.get() : nullptr;
 }
 
+void ContentAutofillDriverFactoryTestApi::AddObserverAtIndex(
+    ContentAutofillDriverFactory::Observer* new_observer,
+    size_t index) {
+  std::vector<ContentAutofillDriverFactory::Observer*> observers;
+  auto it = factory_->observers_.begin();
+  for (; it != factory_->observers_.end() && index-- > 0; ++it) {
+    observers.push_back(&*it);
+  }
+  observers.push_back(new_observer);
+  for (; it != factory_->observers_.end(); ++it) {
+    observers.push_back(&*it);
+  }
+  factory_->observers_.Clear();
+  for (auto* observer : observers) {
+    factory_->observers_.AddObserver(observer);
+  }
+}
+
 }  // namespace autofill
