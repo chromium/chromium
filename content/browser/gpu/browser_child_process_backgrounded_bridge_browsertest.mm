@@ -109,8 +109,9 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
   EXPECT_FALSE(IsProcessBackgrounded(gpu_process_host->process_id()));
 }
 
+// TODO(crbug.com/1426160): Disabled because this test is flaky.
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
-                       InitiallyBackgrounded) {
+                       DISABLED_InitiallyBackgrounded) {
   // Set the browser process as backgrounded.
   SetProcessBackgrounded(base::Process::Current().Pid(), true);
 
