@@ -2249,6 +2249,106 @@ TEST_F(DriveFsPinManagerTest, PinSomeFiles) {
   manager.Stop();
 }
 
+// Tests PinManager::CheckStalledFiles().
+TEST_F(DriveFsPinManagerTest, CheckStalledFiles) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+  manager.progress_.free_space = 1 << 30;  // 1 GB
+
+  const Id id1 = Id(101);
+  const Path path1 = Path("/root/Path 1");
+  const int64_t size1 = 6248964;
+
+  const Id id2 = Id(102);
+  const Path path2 = Path("/root/Path 2");
+  const int64_t size2 = 257835;
+
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
+  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+
+  // Add an item.
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id1);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size1;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = true;
+    md.available_offline = false;
+    EXPECT_TRUE(manager.Add(md, path1));
+  }
+  {
+    FileMetadata md;
+    md.stable_id = static_cast<int64_t>(id2);
+    md.type = FileMetadata::Type::kFile;
+    md.size = size2;
+    md.can_pin = FileMetadata::CanPinStatus::kOk;
+    md.pinned = false;
+    md.available_offline = false;
+    EXPECT_TRUE(manager.Add(md, path2));
+  }
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id2));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id1);
+    EXPECT_EQ(file.path, path1);
+    EXPECT_EQ(file.total, size1);
+    EXPECT_EQ(file.transferred, 0);
+    EXPECT_TRUE(file.pinned);
+    EXPECT_TRUE(file.in_progress);
+  }
+
+  manager.CheckStalledFiles();
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id2));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id1);
+    EXPECT_FALSE(file.in_progress);
+  }
+
+  task_environment_.FastForwardBy(Seconds(9));
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(static_cast<int64_t>(id1), _))
+      .Times(1);
+  task_environment_.FastForwardBy(Seconds(1));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    auto& [id, file] = *it;
+    EXPECT_EQ(id, id1);
+    EXPECT_FALSE(file.in_progress);
+    file.in_progress = true;
+  }
+
+  task_environment_.FastForwardBy(Seconds(19));
+
+  {
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
+    const auto& [id, file] = *it;
+    EXPECT_EQ(id, id1);
+    EXPECT_FALSE(file.in_progress);
+  }
+
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(static_cast<int64_t>(id1), _))
+      .Times(10);
+  task_environment_.FastForwardBy(Seconds(100));
+
+  manager.Stop();
+}
+
 TEST_F(DriveFsPinManagerTest,
        DISABLED_FailingToPinOneItemShouldNotFailCompletely) {
   CompletionCallback completion_callback;
