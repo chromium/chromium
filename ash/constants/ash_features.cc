@@ -1988,7 +1988,7 @@ BASE_FEATURE(kTelemetryExtension,
 // Enables the alternative emulator for the Terminal app.
 BASE_FEATURE(kTerminalAlternativeEmulator,
              "TerminalAlternativeEmulator",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 //
 // Enables Terminal System App to load from Downloads for developer testing.
 // Only works in dev and canary channels.
@@ -2005,7 +2005,7 @@ BASE_FEATURE(kTerminalSftp, "TerminalSftp", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables tmux integration in the Terminal System App.
 BASE_FEATURE(kTerminalTmuxIntegration,
              "TerminalTmuxIntegration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables time of day screen saver.
 BASE_FEATURE(kTimeOfDayScreenSaver,
