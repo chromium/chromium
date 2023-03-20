@@ -1,32 +1,41 @@
 <!DOCTYPE html>
-<canvas id="canvasCPU" width="300" height="300"></canvas>
-<canvas id="canvasGPU" width="300" height="300"></canvas>
-<canvas id="canvasDefault" width="300" height="300"></canvas>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
+
 // Testing that willReadFrequently works the same with HTMLCanvasElement and
 // OffscreenCanvas with a placeholder canvas
-var canvasCPU = document.getElementById("canvasCPU");
-var offscreenCanvasCPU = canvasCPU.transferControlToOffscreen();
-var ctxCPU = offscreenCanvasCPU.getContext('2d', { willReadFrequently: true });
-
-var canvasGPU = document.getElementById("canvasGPU");
-var offscreenCanvasGPU = canvasGPU.transferControlToOffscreen();
-var ctxGPU = offscreenCanvasGPU.getContext('2d', { willReadFrequently: false });
-
-var canvasDefault = document.getElementById("canvasDefault");
-var offscreenCanvasDefault = canvasDefault.transferControlToOffscreen();
-var ctxDefault = offscreenCanvasDefault.getContext('2d');
-
-var img = document.createElement('IMG');
-img.onload = function () {
-  ctxCPU.drawImage(img, 0, 0, 300, 300);
-  ctxGPU.drawImage(img, 0, 0, 300, 300);
-  ctxDefault.drawImage(img, 0, 0, 300, 300);
+function do_test(t, context_options) {
+  const canvas = document.createElement('canvas');
+  const offscreen_canvas = canvas.transferControlToOffscreen();
+  const ctx = offscreen_canvas.getContext('2d', context_options);
+  const reference_canvas = document.createElement('canvas');
+  const reference_ctx = reference_canvas.getContext('2d', context_options);
+  const img = document.createElement('img');
+  img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgk" +
+  "QYQAAAAGklEQVQYlWNgYGD4j4z/////H12MYVQRUYoAkYZrlWt0UekAAAAASUVORK5CYII=";
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, 300, 300);
+    reference_ctx.drawImage(img, 0, 0, 300, 300);
+    const image_data = ctx.getImageData(0, 0, 300, 300);
+    const expected_image_data = reference_ctx.getImageData(0, 0, 300, 300);
+    t.step(() => {
+      assert_array_equals(image_data.data, expected_image_data.data);
+    });
+    t.done();
+  };
 }
 
-// This src image corresponds to a gradient white line that looks different in
-// CPU and GPU backend
-img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQ" +
-"AAAAGklEQVQYlWNgYGD4j4z/////H12MYVQRUYoAkYZrlWt0UekAAAAASUVORK5CYII=";
+async_test(t => {
+  do_test(t, { willReadFrequently: true });
+}, "willReadFrequently true");
+
+async_test(t => {
+  do_test(t, { willReadFrequently: false });
+}, "willReadFrequently false");
+
+async_test(t => {
+  do_test(t, {});
+}, "willReadFrequently default");
 
 </script>

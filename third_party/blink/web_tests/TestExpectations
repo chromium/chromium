@@ -4555,10 +4555,6 @@ crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Failure Pass ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass ]
 
-# Sheriff 2020-07-23
-
-crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Failure Pass ]
-
 # Sheriff 2020-08-03
 crbug.com/1106429 virtual/percent-based-scrolling/max-percent-delta-page-zoom.html [ Failure Pass ]
 
