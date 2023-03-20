@@ -210,6 +210,10 @@
       light: '$cros.ref.neutralvariant95',
       dark: 'rgba($cros.ref.neutralvariant40.rgb, 0.4)',
     },
+    'system-on-base1': {
+      light: 'rgba($cros.ref.neutral99.rgb, 0.10)',
+      dark: 'rgba($cros.ref.neutral10.rgb, 0.06)',
+    },
     'system-primary-container': {
       light: '$cros.ref.primary80',
       dark: '$cros.ref.primary80',
@@ -355,6 +359,10 @@
     'focus-ring': {
       light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',
+    },
+    'focus-ring-on-primary-container': {
+      light: '$cros.ref.primary40',
+      dark: '$cros.ref.primary40',
     },
     'shadow': {
       light: '$cros.ref.neutral30',
