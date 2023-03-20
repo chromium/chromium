@@ -297,6 +297,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // `ScreenCaptureWithoutGestureAllowedForOrigins` policy.
   bool require_transient_activation_for_get_display_media;
 
+  // `show{OpenFile|SaveFile|Directory}Picker()`'s transient activation
+  // requirement can be bypassed via
+  // `FileOrDirectoryPickerWithoutGestureAllowedForOrigins` policy.
+  bool require_transient_activation_for_show_file_or_directory_picker;
+
   // The preferred color scheme for the web content. The scheme is used to
   // evaluate the prefers-color-scheme media query and resolve UA color scheme
   // to be used based on the supported-color-schemes META tag and CSS property.

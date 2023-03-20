@@ -33063,6 +33063,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1090" label="DefaultThirdPartyStoragePartitioningSetting"/>
   <int value="1091" label="ThirdPartyStoragePartitioningBlockedForOrigins"/>
   <int value="1092" label="ScreenCaptureWithoutGestureAllowedForOrigins"/>
+  <int value="1093"
+      label="FileOrDirectoryPickerWithoutGestureAllowedForOrigins"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

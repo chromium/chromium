@@ -54,6 +54,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAccelerated2dCanvasMSAASampleCount(int) override;
   void SetAutoplayPolicy(mojom::blink::AutoplayPolicy) override;
   void SetRequireTransientActivationForGetDisplayMedia(bool) override;
+  void SetRequireTransientActivationForShowFileOrDirectoryPicker(bool) override;
   void SetLCDTextPreference(LCDTextPreference) override;
   void SetAccessibilityPasswordValuesEnabled(bool) override;
   void SetAllowFileAccessFromFileURLs(bool) override;

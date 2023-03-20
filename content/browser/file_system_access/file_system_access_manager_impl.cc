@@ -433,7 +433,12 @@ void FileSystemAccessManagerImpl::ChooseEntries(
   // IPC, but just to be sure double check here as well. This is not treated
   // as a BadMessage because it is possible for the transient user activation
   // to expire between the renderer side check and this check.
-  if (!rfh->HasTransientUserActivation()) {
+  ContentBrowserClient* content_browser_client = GetContentClient()->browser();
+  WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
+  if (!rfh->HasTransientUserActivation() &&
+      content_browser_client
+          ->IsTransientActivationRequiredForShowFileOrDirectoryPicker(
+              web_contents)) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kPermissionDenied,

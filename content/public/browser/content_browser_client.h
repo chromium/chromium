@@ -2399,6 +2399,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsThirdPartyStoragePartitioningAllowed(
       content::BrowserContext* browser_context,
       const url::Origin& top_level_origin);
+
+  // Checks if file or directory pickers from the file system access web API
+  // require a user gesture (transient activation). They usually do, but this
+  // can be bypassed via admin policy.
+  virtual bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
+      WebContents* web_contents);
 };
 
 }  // namespace content

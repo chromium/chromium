@@ -115,6 +115,8 @@ class WebSettings {
   virtual void SetAntialiasedClips2dCanvasEnabled(bool) = 0;
   virtual void SetAutoplayPolicy(mojom::AutoplayPolicy) = 0;
   virtual void SetRequireTransientActivationForGetDisplayMedia(bool) = 0;
+  virtual void SetRequireTransientActivationForShowFileOrDirectoryPicker(
+      bool) = 0;
   virtual void SetAutoZoomFocusedEditableToLegibleScale(bool) = 0;
   virtual void SetCaretBrowsingEnabled(bool) = 0;
   virtual void SetClobberUserAgentInitialScaleQuirk(bool) = 0;

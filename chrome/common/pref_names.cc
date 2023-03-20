@@ -3216,6 +3216,11 @@ const char kBlockAutoplayEnabled[] = "media.block_autoplay";
 // `getDisplayMedia()` without prior user gesture.
 const char kScreenCaptureWithoutGestureAllowedForOrigins[] =
     "media.screen_capture_without_gesture_allowed_for_origins";
+
+// Holds URL patterns that specify origins that will be allowed to call
+// `show{OpenFile|SaveFile|Directory}Picker()` without prior user gesture.
+const char kFileOrDirectoryPickerWithoutGestureAllowedForOrigins[] =
+    "file_system.file_or_directory_picker_without_allowed_for_origins";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Boolean allowing Chrome to block external protocol navigation in sandboxed

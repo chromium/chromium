@@ -1447,4 +1447,10 @@ bool ContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
   return true;
 }
 
+bool ContentBrowserClient::
+    IsTransientActivationRequiredForShowFileOrDirectoryPicker(
+        WebContents* web_contents) {
+  return true;
+}
+
 }  // namespace content

@@ -217,6 +217,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->autoplay_policy = data.autoplay_policy();
   out->require_transient_activation_for_get_display_media =
       data.require_transient_activation_for_get_display_media();
+  out->require_transient_activation_for_show_file_or_directory_picker =
+      data.require_transient_activation_for_show_file_or_directory_picker();
   out->preferred_color_scheme = data.preferred_color_scheme();
   out->preferred_contrast = data.preferred_contrast();
   out->picture_in_picture_enabled = data.picture_in_picture_enabled();

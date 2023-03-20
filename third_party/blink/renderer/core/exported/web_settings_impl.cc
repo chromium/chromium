@@ -143,6 +143,12 @@ void WebSettingsImpl::SetRequireTransientActivationForGetDisplayMedia(
   settings_->SetRequireTransientActivationForGetDisplayMedia(required);
 }
 
+void WebSettingsImpl::SetRequireTransientActivationForShowFileOrDirectoryPicker(
+    bool required) {
+  settings_->SetRequireTransientActivationForShowFileOrDirectoryPicker(
+      required);
+}
+
 void WebSettingsImpl::SetAutoZoomFocusedEditableToLegibleScale(
     bool auto_zoom_focused_editable_to_legible_scale) {
   auto_zoom_focused_editable_to_legible_scale_ =

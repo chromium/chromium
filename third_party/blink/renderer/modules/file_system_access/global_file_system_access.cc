@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_filesystemhandle_wellknowndirectory.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
@@ -191,7 +192,9 @@ void VerifyIsAllowedToShowFilePicker(const LocalDOMWindow& window,
     return;
   }
 
-  if (!LocalFrame::HasTransientUserActivation(local_frame)) {
+  if (!LocalFrame::HasTransientUserActivation(local_frame) &&
+      local_frame->GetSettings()
+          ->GetRequireTransientActivationForShowFileOrDirectoryPicker()) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a file picker.");
     return;

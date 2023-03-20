@@ -880,6 +880,27 @@ bool HandleNewTabPageLocationOverride(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+bool IsFileOrDirectoryPickerWithoutGestureAllowed(
+    content::WebContents* contents) {
+  if (!contents) {
+    return true;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  if (!profile) {
+    return true;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  if (!prefs) {
+    return true;
+  }
+
+  return !policy::IsOriginInAllowlist(
+      contents->GetURL(), prefs,
+      prefs::kFileOrDirectoryPickerWithoutGestureAllowedForOrigins);
+}
+
 // Check if autoplay is allowed by policy configuration.
 bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
                                PrefService* prefs) {
@@ -1574,6 +1595,8 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kAutoplayAllowlist);
   registry->RegisterListPref(
       prefs::kScreenCaptureWithoutGestureAllowedForOrigins);
+  registry->RegisterListPref(
+      prefs::kFileOrDirectoryPickerWithoutGestureAllowedForOrigins);
   registry->RegisterIntegerPref(prefs::kFetchKeepaliveDurationOnShutdown, 0);
   registry->RegisterBooleanPref(
       prefs::kSharedArrayBufferUnrestrictedAccessAllowed, false);
@@ -4162,6 +4185,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->require_transient_activation_for_get_display_media =
       capture_policy::IsTransientActivationRequiredForGetDisplayMedia(
           web_contents);
+  web_prefs->require_transient_activation_for_show_file_or_directory_picker =
+      IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   switch (GetWebTheme()->GetPreferredContrast()) {
@@ -4244,6 +4269,15 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
        require_transient_activation_for_get_display_media);
   web_prefs->require_transient_activation_for_get_display_media =
       require_transient_activation_for_get_display_media;
+
+  const bool require_transient_activation_for_show_file_or_directory_picker =
+      IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
+  prefs_changed |=
+      (web_prefs
+           ->require_transient_activation_for_show_file_or_directory_picker !=
+       require_transient_activation_for_show_file_or_directory_picker);
+  web_prefs->require_transient_activation_for_show_file_or_directory_picker =
+      require_transient_activation_for_show_file_or_directory_picker;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   for (ChromeContentBrowserClientParts* parts : extra_parts_) {
@@ -7584,6 +7618,16 @@ bool ChromeContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
              top_level_origin.GetURL(), top_level_origin.GetURL(),
              ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING) ==
          CONTENT_SETTING_ALLOW;
+}
+
+bool ChromeContentBrowserClient::
+    IsTransientActivationRequiredForShowFileOrDirectoryPicker(
+        content::WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+  return IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
+#else   // !BUILDFLAG(IS_ANDROID)
+  return true;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_MAC)
