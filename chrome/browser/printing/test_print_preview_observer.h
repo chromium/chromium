@@ -40,11 +40,12 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   uint32_t rendered_page_count() const { return rendered_page_count_; }
 
  private:
-  // PrintPreviewUI::TestDelegate:
-  void DidGetPreviewPageCount(uint32_t page_count) override;
+  void EnsureWaitForLoaded();
 
   // PrintPreviewUI::TestDelegate:
+  void DidGetPreviewPageCount(uint32_t page_count) override;
   void DidRenderPreviewPage(content::WebContents* preview_dialog) override;
+  void PreviewDocumentReady(content::WebContents* preview_dialog) override;
 
   absl::optional<content::DOMMessageQueue> queue_;
 

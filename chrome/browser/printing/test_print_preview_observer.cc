@@ -54,6 +54,22 @@ void TestPrintPreviewObserver::WaitUntilPreviewIsReady() {
   std::ignore = WaitUntilPreviewIsReadyAndReturnPreviewDialog();
 }
 
+void TestPrintPreviewObserver::EnsureWaitForLoaded() {
+  if (queue_.has_value()) {
+    // Have already added event listener.
+    return;
+  }
+  // Instantiate `queue_` to listen for messages in `preview_dialog_`.
+  queue_.emplace(preview_dialog_);
+  content::ExecuteScriptAsync(
+      preview_dialog_.get(),
+      "window.addEventListener('message', event => {"
+      "  if (event.data.type === 'documentLoaded') {"
+      "    domAutomationController.send(event.data.load_state);"
+      "  }"
+      "});");
+}
+
 void TestPrintPreviewObserver::DidGetPreviewPageCount(uint32_t page_count) {
   // `page_count` is the number of pages to be generated but doesn't take
   // N-up into consideration.  Since `DidRenderPreviewPage()` is called after
@@ -74,15 +90,21 @@ void TestPrintPreviewObserver::DidRenderPreviewPage(
     preview_dialog_ = preview_dialog;
 
     if (wait_for_loaded_) {
-      // Instantiate `queue_` to listen for messages in `preview_dialog_`.
-      queue_.emplace(preview_dialog_);
-      content::ExecuteScriptAsync(
-          preview_dialog_.get(),
-          "window.addEventListener('message', event => {"
-          "  if (event.data.type === 'documentLoaded') {"
-          "    domAutomationController.send(event.data.load_state);"
-          "  }"
-          "});");
+      EnsureWaitForLoaded();
+    }
+  }
+}
+
+void TestPrintPreviewObserver::PreviewDocumentReady(
+    content::WebContents* preview_dialog) {
+  // This runs after `DidGetPreviewPageCount()` for modifiable content, but is
+  // otherwise the only notification.
+  if (run_loop_ && run_loop_->running()) {
+    run_loop_->Quit();
+    preview_dialog_ = preview_dialog;
+
+    if (wait_for_loaded_) {
+      EnsureWaitForLoaded();
     }
   }
 }

@@ -173,6 +173,10 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
     // multiple pages that were counted in `DidGetPreviewPageCount()`.
     virtual void DidRenderPreviewPage(content::WebContents* preview_dialog) {}
 
+    // Notifies that the document to print from preview is ready.  This occurs
+    // after any possible N-up processing.
+    virtual void PreviewDocumentReady(content::WebContents* preview_dialog) {}
+
    protected:
     virtual ~TestDelegate() = default;
   };

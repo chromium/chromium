@@ -1785,6 +1785,22 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, WindowDotPrint) {
   print_preview_observer.WaitUntilPreviewIsReady();
 }
 
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PdfWindowDotPrint) {
+  // Do not add any other printers; will default to "Save as PDF".
+
+  // Load test page and check the initial state.
+  const GURL kUrl(embedded_test_server()->GetURL("/printing/hello_world.pdf"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
+  content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(),
+                              "window.print();");
+  print_preview_observer.WaitUntilPreviewIsReady();
+}
+
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
                        WindowDotPrintTriggersBeforeAfterEvents) {
   // Load test page and check the initial state.

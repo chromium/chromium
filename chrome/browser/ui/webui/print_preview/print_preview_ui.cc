@@ -537,6 +537,9 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
 
   SetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX,
                               std::move(data_bytes));
+  if (g_test_delegate) {
+    g_test_delegate->PreviewDocumentReady(web_ui()->GetWebContents());
+  }
   handler_->OnPrintPreviewReady(*id_, request_id);
 }
 
