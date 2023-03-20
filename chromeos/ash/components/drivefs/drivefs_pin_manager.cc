@@ -898,6 +898,7 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
 
   if (!event.is_download) {
     // We're only interested in download events.
+    VLOG(3) << "Ignored upload-related event " << Quote(event);
     return false;
   }
 

@@ -1321,6 +1321,18 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     EXPECT_FALSE(manager.OnSyncingEvent(event));
   }
 
+  // Upload events should be ignored.
+  {
+    ItemEvent event;
+    event.is_download = false;
+    event.stable_id = static_cast<int64_t>(id1);
+    event.path = path1.value();
+    event.state = ItemEvent::State::kInProgress;
+    event.bytes_to_transfer = 30000;
+    event.bytes_transferred = 7000;
+    EXPECT_FALSE(manager.OnSyncingEvent(event));
+  }
+
   EXPECT_THAT(manager.files_to_track_, SizeIs(2));
 
   {
