@@ -132,6 +132,22 @@ TEST_F(BluetoothUtilsTest,
       kMaxDevicesForFilter /* num_expected_remaining_devices */);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(BluetoothUtilsTest,
+       TestFilterBluetoothDeviceList_FilterKnown_AlwaysKeepBondedDevices) {
+  auto* mock_bluetooth_device =
+      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_INVALID);
+  EXPECT_CALL(*mock_bluetooth_device, IsPaired)
+      .WillRepeatedly(testing::Return(true));
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  0u /* num_expected_remaining_devices */);
+
+  EXPECT_CALL(*mock_bluetooth_device, IsBonded)
+      .WillRepeatedly(testing::Return(true));
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  1u /* num_expected_remaining_devices */);
+}
+#else
 TEST_F(BluetoothUtilsTest,
        TestFilterBluetoothDeviceList_FilterKnown_AlwaysKeepPairedDevices) {
   auto* mock_bluetooth_device =
@@ -142,6 +158,7 @@ TEST_F(BluetoothUtilsTest,
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   1u /* num_expected_remaining_devices */);
 }
+#endif
 
 TEST_F(BluetoothUtilsTest,
        TestFilterBluetoothDeviceList_FilterKnown_FilterPairedPhone) {

@@ -42,6 +42,7 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -116,7 +117,7 @@ class FakeBluetoothDevice
             0,
             kDeviceName,
             kBluetoothCanonicalizedAddress,
-            /*paired=*/true,
+            /*paired=*/false,
             /*connected*/ false),
         fake_adapter_(adapter) {}
 
@@ -141,6 +142,7 @@ class FakeBluetoothDevice
   }
 
   void TriggerPairCallback() {
+    ASSERT_TRUE(pair_callback_);
     std::move(pair_callback_).Run(/*error_code=*/absl::nullopt);
   }
 
@@ -271,6 +273,7 @@ class FastPairPairerImplTest : public AshTestBase {
     fake_bluetooth_device_ =
         std::make_unique<FakeBluetoothDevice>(adapter_.get());
     fake_bluetooth_device_ptr_ = fake_bluetooth_device_.get();
+
     adapter_->AddMockDevice(std::move(fake_bluetooth_device_));
   }
 

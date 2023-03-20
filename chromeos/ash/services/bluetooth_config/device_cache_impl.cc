@@ -209,6 +209,14 @@ bool DeviceCacheImpl::AttemptSetDeviceInPairedDeviceList(
   // Remove the old (stale) properties, if they exist.
   RemoveFromPairedDeviceList(device);
 
+  // Do not allow unsupported devices in the paired device list.
+  if (device::IsUnsupportedDevice(device)) {
+    BLUETOOTH_LOG(DEBUG) << "Attempted to set device in paired device list "
+                         << "but device is unsupported: "
+                         << device->GetAddress();
+    return false;
+  }
+
   paired_devices_.push_back(GeneratePairedBluetoothDeviceProperties(device));
   SortPairedDeviceList();
   return true;
@@ -273,7 +281,7 @@ bool DeviceCacheImpl::AttemptSetDeviceInUnpairedDeviceList(
     return false;
   }
 
-  // Check if the device should be added to the unpaired device list.
+  // Do not allow unsupported devices in the unpaired device list.
   if (device::IsUnsupportedDevice(device)) {
     BLUETOOTH_LOG(DEBUG) << "Attempted to set device in unpaired device list "
                          << "but device is unsupported: "

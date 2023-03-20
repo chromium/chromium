@@ -205,9 +205,17 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
     return true;
   }
 
-  // Allow paired devices which are not filtered above to appear in the UI.
-  if (device->IsPaired())
+#if BUILDFLAG(IS_CHROMEOS)
+  // Allow bonded devices which are not filtered above to appear in the UI.
+  if (device->IsBonded()) {
     return false;
+  }
+#else
+  // Allow paired devices which are not filtered above to appear in the UI.
+  if (device->IsPaired()) {
+    return false;
+  }
+#endif
 
   switch (device->GetType()) {
     // Device with invalid bluetooth transport is filtered out.
