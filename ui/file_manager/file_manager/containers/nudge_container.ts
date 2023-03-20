@@ -131,6 +131,13 @@ export class NudgeContainer {
   }
 
   /**
+   * Clears the `seen` state from the localStorage for the given nudge.
+   */
+  async clearSeen(nudgeType: NudgeType) {
+    storage.local.remove(nudgeType);
+  }
+
+  /**
    * Shows the nudge if it has not already been seen before.
    */
   async showNudge(nudge: NudgeType) {

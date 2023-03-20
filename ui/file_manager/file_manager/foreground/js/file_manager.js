@@ -1696,6 +1696,22 @@ export class FileManager extends EventTarget {
       redraw = true;
     }
 
+    this.updateOfficePrefs_(prefs);
+
+    if (util.isSearchV2Enabled()) {
+      this.ui_.nudgeContainer.showNudge(NudgeType['SEARCH_V2_EDUCATION_NUDGE']);
+    }
+
+    if (redraw) {
+      this.directoryTree.redraw(false);
+    }
+  }
+
+  /**
+   * @param {!chrome.fileManagerPrivate.Preferences} prefs
+   * @private
+   */
+  async updateOfficePrefs_(prefs) {
     // These prefs starts with value 0. We only want to display when they're
     // non-zero and show the most recent (larger value).
     if (prefs.officeFileMovedOneDrive > prefs.officeFileMovedGoogleDrive) {
@@ -1705,12 +1721,21 @@ export class FileManager extends EventTarget {
         prefs.officeFileMovedOneDrive < prefs.officeFileMovedGoogleDrive) {
       this.ui_.nudgeContainer.showNudge(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
     }
-    if (util.isSearchV2Enabled()) {
-      this.ui_.nudgeContainer.showNudge(NudgeType['SEARCH_V2_EDUCATION_NUDGE']);
+    // Reset the seen state for office nudge. For normal users these 2 prefs
+    // will never reset to 0, however for manual tests it can be reset in
+    // chrome://files-internals.
+    if (prefs.officeFileMovedOneDrive === 0 &&
+        await this.ui_.nudgeContainer.checkSeen(
+            NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE'])) {
+      this.ui_.nudgeContainer.clearSeen(
+          NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']);
+      console.debug('Reset OneDrive move to cloud nudge');
     }
-
-    if (redraw) {
-      this.directoryTree.redraw(false);
+    if (prefs.officeFileMovedGoogleDrive === 0 &&
+        await this.ui_.nudgeContainer.checkSeen(
+            NudgeType['DRIVE_MOVED_FILE_NUDGE'])) {
+      this.ui_.nudgeContainer.clearSeen(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
+      console.debug('Reset Google Drive move to cloud nudge');
     }
   }
 

@@ -6,10 +6,14 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router.h"
+#include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/file_manager_pref_names.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "components/prefs/pref_service.h"
 
 ChromeFilesInternalsUIDelegate::ChromeFilesInternalsUIDelegate(
@@ -76,5 +80,11 @@ void ChromeFilesInternalsUIDelegate::SetAlwaysMoveOfficeFiles(
                                                            base::Time());
     file_manager::file_tasks::SetOfficeFileMovedToGoogleDrive(profile,
                                                               base::Time());
+    // Spawn the Files app Window so it clears up its localStorage.
+    auto url = ::file_manager::util::GetFileManagerURL().Resolve("");
+    ::ash::SystemAppLaunchParams params;
+    params.url = url;
+    ::ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                                   params);
   }
 }
