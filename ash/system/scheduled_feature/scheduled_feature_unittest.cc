@@ -390,11 +390,16 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
 TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
   // Start with user1 logged in and update to sunset-to-sunrise schedule type.
   const std::string kScheduleTypePrefString = kTestScheduleTypePref;
-  const ScheduleType user1_schedule_type = ScheduleType::kSunsetToSunrise;
-  feature()->SetScheduleType(user1_schedule_type);
-  EXPECT_EQ(user1_schedule_type, GetScheduleType());
+  constexpr ScheduleType kUser1ScheduleType = ScheduleType::kSunsetToSunrise;
+  constexpr bool kUser1EnabledState = false;
+  constexpr ScheduleCheckpoint kUser1Checkpoint = ScheduleCheckpoint::kMorning;
+  feature()->SetScheduleType(kUser1ScheduleType);
+  FastForwardTo(MakeTimeOfDay(10, AmPm::kAM));
+  EXPECT_EQ(GetScheduleType(), kUser1ScheduleType);
   EXPECT_EQ(user1_pref_service()->GetInteger(kScheduleTypePrefString),
-            static_cast<int>(user1_schedule_type));
+            static_cast<int>(kUser1ScheduleType));
+  EXPECT_EQ(GetEnabled(), kUser1EnabledState);
+  EXPECT_EQ(feature()->current_checkpoint(), kUser1Checkpoint);
 
   // Switch to user 2, and set to custom schedule type.
   SwitchActiveUser(kUser2Email);
@@ -402,14 +407,16 @@ TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
   const ScheduleType user2_schedule_type = ScheduleType::kCustom;
   user2_pref_service()->SetInteger(kScheduleTypePrefString,
                                    static_cast<int>(user2_schedule_type));
-  EXPECT_EQ(user2_schedule_type, GetScheduleType());
+  EXPECT_EQ(GetScheduleType(), user2_schedule_type);
   EXPECT_EQ(user2_pref_service()->GetInteger(kScheduleTypePrefString),
             static_cast<int>(user2_schedule_type));
 
   // Switch back to user 1, to find feature schedule type is restored to
-  // sunset-to-sunrise.
+  // sunset-to-sunrise with the correct enabled state and checkpoint.
   SwitchActiveUser(kUser1Email);
-  EXPECT_EQ(user1_schedule_type, GetScheduleType());
+  EXPECT_EQ(GetScheduleType(), kUser1ScheduleType);
+  EXPECT_EQ(GetEnabled(), kUser1EnabledState);
+  EXPECT_EQ(feature()->current_checkpoint(), kUser1Checkpoint);
 }
 
 // Tests that the scheduler type is initiallized from user prefs and observes

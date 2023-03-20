@@ -241,8 +241,7 @@ bool ScheduledFeature::MaybeRestoreSchedule() {
 
   VLOG(1) << "Restoring a previous schedule.";
   current_checkpoint_ = snapshot_to_restore.current_checkpoint;
-  ScheduleNextRefresh(snapshot_to_restore.target_time - now,
-                      snapshot_to_restore.target_status);
+  ScheduleNextRefresh(snapshot_to_restore, now);
   return true;
 }
 
@@ -399,7 +398,9 @@ void ScheduledFeature::RefreshScheduleTimer(
   // wish and maintain the current status that they desire, but we schedule the
   // status to be toggled according to the time that corresponds with the
   // opposite status of the current one.
-  ScheduleNextRefresh(time_until_next_refresh, next_feature_status);
+  ScheduleNextRefresh(
+      {now + time_until_next_refresh, next_feature_status, new_checkpoint},
+      now);
   RefreshFeatureState();
   // Should be called after `ScheduleNextRefresh` and `RefreshFeatureState()`
   // so that all of the feature's internal bookkeeping has been updated before
@@ -410,27 +411,28 @@ void ScheduledFeature::RefreshScheduleTimer(
   SetCurrentCheckpoint(new_checkpoint);
 }
 
-void ScheduledFeature::ScheduleNextRefresh(base::TimeDelta delay,
-                                           bool target_status) {
+void ScheduledFeature::ScheduleNextRefresh(
+    const ScheduleSnapshot& current_snapshot,
+    base::Time now) {
   DCHECK(active_user_pref_service_);
+  const base::TimeDelta delay = current_snapshot.target_time - now;
   DCHECK_GE(delay, base::TimeDelta());
 
-  const base::Time target_time = clock_->Now() + delay;
-  per_user_schedule_snapshot_[active_user_pref_service_] =
-      ScheduleSnapshot{target_time, target_status, current_checkpoint_};
+  per_user_schedule_snapshot_[active_user_pref_service_] = current_snapshot;
   base::OnceClosure timer_cb;
-  if (target_status == GetEnabled()) {
+  if (current_snapshot.target_status == GetEnabled()) {
     timer_cb =
         base::BindOnce(&ScheduledFeature::Refresh, base::Unretained(this),
                        /*did_schedule_change=*/false,
                        /*keep_manual_toggles_during_schedules=*/false);
   } else {
-    timer_cb = base::BindOnce(&ScheduledFeature::SetEnabled,
-                              base::Unretained(this), target_status);
+    timer_cb =
+        base::BindOnce(&ScheduledFeature::SetEnabled, base::Unretained(this),
+                       current_snapshot.target_status);
   }
   VLOG(1) << "Setting " << GetFeatureName() << " to refresh to "
-          << (target_status ? "enabled" : "disabled") << " at "
-          << base::TimeFormatTimeOfDay(target_time);
+          << (current_snapshot.target_status ? "enabled" : "disabled") << " at "
+          << base::TimeFormatTimeOfDay(current_snapshot.target_time);
   timer_->Start(FROM_HERE, delay, std::move(timer_cb));
 }
 

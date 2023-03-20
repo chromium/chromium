@@ -120,6 +120,22 @@ class ASH_EXPORT ScheduledFeature
   virtual void RefreshFeatureState() {}
 
  private:
+  // Contains all of the data required to restore `ScheduledFeature` to a state
+  // it was in previously. This is maintained per user mainly so that
+  // `ScheduledFeature` can pick up where it left off when the active user
+  // changes. This includes restoring a manually toggled feature status. See
+  // `MaybeRestoreSchedule()`.
+  struct ScheduleSnapshot {
+    // The time at which the feature will switch to `target_status` defined
+    // below. `target_status` is not necessarily a change in status. See
+    // comments above `ScheduleNextRefresh()`.
+    base::Time target_time;
+    bool target_status;
+    // The value of `current_checkpoint_` at the time this snapshot of the
+    // feature's state was captured.
+    ScheduleCheckpoint current_checkpoint;
+  };
+
   virtual const char* GetFeatureName() const = 0;
 
   // Attempts restoring a previously stored schedule for the current user if
@@ -166,11 +182,16 @@ class ASH_EXPORT ScheduledFeature
                             bool did_schedule_change,
                             bool keep_manual_toggles_during_schedules);
 
-  // Schedule the next upcoming refresh of the feature state. `target_status`
-  // may actually be the same as `GetEnabled()` in some cases. For example, if
-  // it is currently `kSunrise` (`GetEnabled()` is false), that means the next
-  // `ScheduleCheckpoint` is `kMorning` (`target_status` is still false).
-  void ScheduleNextRefresh(base::TimeDelta delay, bool target_status);
+  // Schedule the next upcoming refresh of the feature state and save a copy of
+  // the schedule's `current_snapshot` so that it can be restored in the future
+  // for the current user if needed.
+  //
+  // `current_snapshot.target_status` may actually be the same as `GetEnabled()`
+  // in some cases. For example, if it is currently `kSunrise` (`GetEnabled()`
+  // is false), that means the next `ScheduleCheckpoint` is `kMorning`
+  // (`target_status` is still false).
+  void ScheduleNextRefresh(const ScheduleSnapshot& current_snapshot,
+                           base::Time now);
 
   void SetCurrentCheckpoint(ScheduleCheckpoint new_checkpoint);
 
@@ -178,21 +199,6 @@ class ASH_EXPORT ScheduledFeature
   // ash_unittests.
   PrefService* active_user_pref_service_ = nullptr;
 
-  // Contains all of the data required to restore `ScheduledFeature` to a state
-  // it was in previously. This is maintained per user mainly so that
-  // `ScheduledFeature` can pick up where it left off when the active user
-  // changes. This includes restoring a manually toggled feature status. See
-  // `MaybeRestoreSchedule()`.
-  struct ScheduleSnapshot {
-    // The time at which the feature will switch to `target_status` defined
-    // below. `target_status` is not necessarily a change in status. See
-    // comments above `ScheduleNextRefresh()`.
-    base::Time target_time;
-    bool target_status;
-    // The value of `current_checkpoint_` at the time this snapshot of the
-    // feature's state was captured.
-    ScheduleCheckpoint current_checkpoint;
-  };
   base::flat_map<PrefService*, ScheduleSnapshot> per_user_schedule_snapshot_;
 
   // The timer that schedules the start and end of this feature when the
