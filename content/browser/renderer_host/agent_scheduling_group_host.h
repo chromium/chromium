@@ -62,25 +62,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       public IPC::Listener,
       public mojom::AgentSchedulingGroupHost {
  public:
-  // Dispatches toward `listener`, IPC::Messages received by the
-  // `agent_scheduling_group` with the matching `routing_id`. This should be
-  // used by any class using routing IDs, preferably as a member initialized at
-  // their construction.
-  //
-  // Releasing the last RouteOwner may schedule the RenderProcessHost for
-  // deletion.
-  class RouteOwner {
-   public:
-    RouteOwner(Listener* listener,
-               AgentSchedulingGroupHost& agent_scheduling_group,
-               int32_t routing_id);
-    ~RouteOwner();
-
-   private:
-    const raw_ref<AgentSchedulingGroupHost> agent_scheduling_group_;
-    const int32_t routing_id_;
-  };
-
   // Get the appropriate AgentSchedulingGroupHost for the given
   // `site_instance_group` and `process`. Depending on the value of
   // `features::kMBIModeParam`, there may be a single AgentSchedulingGroupHost
@@ -113,6 +94,8 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   IPC::ChannelProxy* GetChannel();
   // This is marked virtual for use in tests by `MockAgentSchedulingGroupHost`.
   virtual bool Send(IPC::Message* message);
+  void AddRoute(int32_t routing_id, IPC::Listener* listener);
+  void RemoveRoute(int32_t routing_id);
 
   // Mojo:
   mojom::RouteProvider* GetRemoteRouteProvider();
@@ -148,7 +131,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
     // kRenderProcessHostDestroyed is the terminal state of the state machine.
     kRenderProcessHostDestroyed,
   };
-  friend RouteOwner;
   friend base::StateTransitions<LifecycleState>;
   friend std::ostream& operator<<(std::ostream& os, LifecycleState state);
 

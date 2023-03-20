@@ -430,7 +430,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       waiting_for_init_(renderer_initiated_creation),
       delegate_(delegate),
       agent_scheduling_group_(site_instance_group->agent_scheduling_group()),
-      site_instance_group_(site_instance_group->GetSafeRef()),
+      site_instance_group_(site_instance_group->GetWeakPtrToAllowDangling()),
       routing_id_(routing_id),
       is_hidden_(hidden),
       last_view_screen_rect_(kInvalidScreenRect),
@@ -2590,7 +2590,7 @@ void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
 }
 
 SiteInstanceGroup* RenderWidgetHostImpl::GetSiteInstanceGroup() {
-  return &*site_instance_group_;
+  return site_instance_group_.get();
 }
 
 void RenderWidgetHostImpl::UpdateBrowserControlsState(

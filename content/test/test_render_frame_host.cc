@@ -118,6 +118,11 @@ MockRenderProcessHost* TestRenderFrameHost::GetProcess() const {
   return static_cast<MockRenderProcessHost*>(RenderFrameHostImpl::GetProcess());
 }
 
+MockAgentSchedulingGroupHost& TestRenderFrameHost::GetAgentSchedulingGroup() {
+  return static_cast<MockAgentSchedulingGroupHost&>(
+      RenderFrameHostImpl::GetAgentSchedulingGroup());
+}
+
 TestRenderWidgetHost* TestRenderFrameHost::GetRenderWidgetHost() {
   return static_cast<TestRenderWidgetHost*>(
       RenderFrameHostImpl::GetRenderWidgetHost());

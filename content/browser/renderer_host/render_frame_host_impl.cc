@@ -1487,7 +1487,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     FencedFrameStatus fenced_frame_status)
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
-      routing_id_(routing_id),
       site_instance_(static_cast<SiteInstanceImpl*>(site_instance)),
       agent_scheduling_group_(
           site_instance_->GetOrCreateAgentSchedulingGroup().GetSafeRef()),
@@ -1499,6 +1498,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       parent_(parent),
       depth_(parent_ ? parent_->GetFrameDepth() + 1 : 0),
       last_committed_site_info_(site_instance_->GetBrowserContext()),
+      routing_id_(routing_id),
       beforeunload_timeout_delay_(kUnloadTimeout),
       frame_(std::move(frame_remote)),
       waiting_for_init_(renderer_initiated_creation_of_main_frame),
@@ -1534,6 +1534,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // Only main frames have `waiting_for_init_` set.
   DCHECK(!waiting_for_init_ || !parent_);
 
+  GetAgentSchedulingGroup().AddRoute(routing_id_, this);
   g_routing_id_frame_map.Get().emplace(
       GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_), this);
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
@@ -1784,6 +1785,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
           lifecycle_state() == LifecycleStateImpl::kSpeculative)
         << lifecycle_state();
   }
+
+  GetAgentSchedulingGroup().RemoveRoute(routing_id_);
 
   // Null out the unload timer; in crash dumps this member will be null only if
   // the dtor has run.  (It may also be null in tests.)

@@ -11,7 +11,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
@@ -311,7 +310,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   }
 
   // This RenderFrameProxyHost's routing id.
-  const int routing_id_;
+  int routing_id_;
 
   // The SiteInstance this proxy is associated with.
   // TODO(crbug.com/1195535): Remove this in favor of site_instance_group_.
@@ -320,8 +319,6 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // The SiteInstanceGroup this RenderFrameProxyHost belongs to, where it is a
   // placeholder for a frame in a different SiteInstanceGroup.
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
-
-  const AgentSchedulingGroupHost::RouteOwner route_;
 
   // The renderer process this RenderFrameProxyHost is associated with. It is
   // equivalent to the result of site_instance_->GetProcess(), but that
