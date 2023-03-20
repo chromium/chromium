@@ -1586,13 +1586,9 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(CSSParserTokenStream& stream) {
     observer_->StartRuleBody(stream.Offset());
   }
 
-  StyleRule* parent_rule_for_nesting = style_scope->RuleForNesting();
-  CSSNestingType nesting_type =
-      parent_rule_for_nesting ? CSSNestingType::kScope : CSSNestingType::kNone;
-
   HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(stream, kRegularRuleList, nesting_type,
-                  parent_rule_for_nesting,
+  ConsumeRuleList(stream, kRegularRuleList, CSSNestingType::kScope,
+                  style_scope->RuleForNesting(),
                   [&rules](StyleRuleBase* rule) { rules.push_back(rule); });
 
   if (observer_) {

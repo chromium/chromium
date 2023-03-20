@@ -104,7 +104,7 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
                            style_sheet, arena);
   range.ConsumeWhitespace();
   base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(
-      range, /*in_nested_style_rule=*/parent_rule_for_nesting != nullptr);
+      range, /*in_nested_style_rule=*/nesting_type != CSSNestingType::kNone);
   if (!range.AtEnd()) {
     return {};
   }
@@ -127,7 +127,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
   stream.ConsumeWhitespace();
   base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(
       stream, observer,
-      /*in_nested_style_rule=*/parent_rule_for_nesting != nullptr);
+      /*in_nested_style_rule=*/nesting_type != CSSNestingType::kNone);
   parser.RecordUsageAndDeprecations(result);
   return result;
 }
@@ -187,9 +187,7 @@ CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
       nesting_type_(nesting_type),
       parent_rule_for_nesting_(parent_rule_for_nesting),
       style_sheet_(style_sheet),
-      output_(output) {
-  DCHECK(nesting_type_ == CSSNestingType::kNone || parent_rule_for_nesting);
-}
+      output_(output) {}
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenRange& range,
