@@ -269,6 +269,8 @@ void ContentAutofillRouter::FormsSeen(
     ContentAutofillDriver* target = DriverOfFrame(frame);
     AFCHECK(target, return );
     callback(target, browser_forms, removed_forms);
+  } else if (!removed_forms.empty()) {
+    callback(source, {}, removed_forms);
   }
 }
 
