@@ -298,6 +298,8 @@ class ServiceWorkerContextClient
   int32_t service_worker_route_id_;
 
   std::vector<std::string> cors_exempt_header_list_;
+
+  base::TimeTicks top_level_script_loading_start_time_ = base::TimeTicks::Now();
 };
 
 }  // namespace content

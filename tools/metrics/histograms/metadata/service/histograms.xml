@@ -364,6 +364,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.EvaluateTopLevelScript.{ResultStatus}.Time"
+    units="ms" expires_after="2023-09-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Execution time of the service worker's top level script. The metric is
+    recorded for each startup of service workers. Recorded only when the
+    evaluation was {ResultStatus}.
+  </summary>
+  <token key="ResultStatus">
+    <variant name="Failed" summary="failed"/>
+    <variant name="Succeeded" summary="succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.ExtendableMessageEvent.Time" units="ms"
     expires_after="2023-06-15">
   <owner>nhiroki@chromium.org</owner>
@@ -823,6 +838,30 @@ chromium-metrics-reviews@google.com.
     Recorded for each subresource request where there is a fetch event handler
     and the fetch event was successfully dispatched to the service worker.
   </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.LoadTopLevelScript.{ResultStatus}.{WhetherAlreadyInstalledOrNot}.Time"
+    units="ms" expires_after="2023-09-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Loading time of the service worker's top level script. The metric is
+    recorded for each startup of service workers. Recorded only when the loading
+    was {ResultStatus}, and the service worker scripts were
+    {WhetherAlreadyInstalledOrNot}.
+  </summary>
+  <token key="WhetherAlreadyInstalledOrNot">
+    <variant name="AlreadyInstalled" summary="already installed"/>
+    <variant name="NewlyInstalled" summary="newly installed"/>
+  </token>
+  <token key="ResultStatus">
+    <variant name="FailedToFetchClassicScript"
+        summary="failed to fetch classic script"/>
+    <variant name="FailedToFetchModuleScript"
+        summary="failed to fetch module script"/>
+    <variant name="Succeeded" summary="succeeded"/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorker.MainFrame.MainResource.FetchResult"

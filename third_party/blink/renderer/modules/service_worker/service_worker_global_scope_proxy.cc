@@ -34,6 +34,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -180,10 +182,15 @@ void ServiceWorkerGlobalScopeProxy::WillEvaluateScript() {
       WorkerGlobalScope()->ScriptController()->GetScriptState());
   Client().WillEvaluateScript(
       WorkerGlobalScope()->ScriptController()->GetContext());
+  top_level_script_evaluation_start_time_ = base::TimeTicks::Now();
 }
 
 void ServiceWorkerGlobalScopeProxy::DidEvaluateTopLevelScript(bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  base::UmaHistogramTimes(
+      base::StrCat({"ServiceWorker.EvaluateTopLevelScript.",
+                    success ? "Succeeded" : "Failed", ".Time"}),
+      base::TimeTicks::Now() - top_level_script_evaluation_start_time_);
   WorkerGlobalScope()->DidEvaluateScript();
   Client().DidEvaluateScript(success);
   TRACE_EVENT_NESTABLE_ASYNC_END1(

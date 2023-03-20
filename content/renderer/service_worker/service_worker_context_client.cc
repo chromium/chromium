@@ -14,8 +14,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -71,6 +73,10 @@ namespace {
 
 constexpr char kServiceWorkerContextClientScope[] =
     "ServiceWorkerContextClient";
+
+std::string ComposeAlreadyInstalledString(bool is_starting_installed_worker) {
+  return is_starting_installed_worker ? "AlreadyInstalled" : "NewlyInstalled";
+}
 
 }  // namespace
 
@@ -229,6 +235,12 @@ void ServiceWorkerContextClient::WorkerReadyForInspectionOnInitiatorThread(
 
 void ServiceWorkerContextClient::FailedToFetchClassicScript() {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"ServiceWorker.LoadTopLevelScript.FailedToFetchClassicScript.",
+           ComposeAlreadyInstalledString(is_starting_installed_worker_),
+           ".Time"}),
+      base::TimeTicks::Now() - top_level_script_loading_start_time_);
   TRACE_EVENT_NESTABLE_ASYNC_END1("ServiceWorker", "LOAD_SCRIPT", this,
                                   "Status", "FailedToFetchClassicScript");
   // The caller is responsible for terminating the thread which
@@ -237,6 +249,12 @@ void ServiceWorkerContextClient::FailedToFetchClassicScript() {
 
 void ServiceWorkerContextClient::FailedToFetchModuleScript() {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"ServiceWorker.LoadTopLevelScript.FailedToFetchModuleScript.",
+           ComposeAlreadyInstalledString(is_starting_installed_worker_),
+           ".Time"}),
+      base::TimeTicks::Now() - top_level_script_loading_start_time_);
   TRACE_EVENT_NESTABLE_ASYNC_END1("ServiceWorker", "LOAD_SCRIPT", this,
                                   "Status", "FailedToFetchModuleScript");
   // The caller is responsible for terminating the thread which
@@ -246,6 +264,12 @@ void ServiceWorkerContextClient::FailedToFetchModuleScript() {
 void ServiceWorkerContextClient::WorkerScriptLoadedOnWorkerThread() {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
   instance_host_->OnScriptLoaded();
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"ServiceWorker.LoadTopLevelScript.Succeeded.",
+           ComposeAlreadyInstalledString(is_starting_installed_worker_),
+           ".Time"}),
+      base::TimeTicks::Now() - top_level_script_loading_start_time_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("ServiceWorker", "LOAD_SCRIPT", this);
 }
 
