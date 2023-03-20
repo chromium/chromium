@@ -1278,6 +1278,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_SHUTDOWN" desc="The accessible text for the shutdown button.">
         Shut down
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_POWER_MENU" desc="The accessible text for the power button.">
+        Power menu
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_COLLAPSE" desc="The accessible text for the button to collapse system menu.">
         Collapse menu
       </message>

@@ -133,10 +133,16 @@ class ShutdownPolicyInSessionTest : public ShutdownPolicyBaseTest {
   }
 };
 
-// Tests that by default the shutdown button tooltip is "Shut down".
+// Tests that by default the shutdown button tooltip is "Shut down" in the old
+// view or "Power menu" in the revamped view.
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyInSessionTest, TestBasic) {
   OpenSystemTrayMenu();
-  EXPECT_TRUE(HasShutdownButtonTooltip("Shut down"));
+  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
+    EXPECT_TRUE(HasShutdownButtonTooltip("Power menu"));
+  } else {
+    EXPECT_TRUE(HasShutdownButtonTooltip("Shut down"));
+  }
+
   CloseSystemTrayMenu();
 }
 

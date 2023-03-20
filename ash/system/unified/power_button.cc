@@ -240,7 +240,7 @@ PowerButton::PowerButton()
                               base::Unretained(this)),
           IconButton::Type::kMediumFloating,
           &kUnifiedMenuPowerIcon,
-          IDS_ASH_STATUS_TRAY_SHUTDOWN,
+          IDS_ASH_STATUS_TRAY_POWER_MENU,
           /*is_togglable=*/true,
           /*has_border=*/false))),
       context_menu_(std::make_unique<MenuController>(/*button=*/this)) {

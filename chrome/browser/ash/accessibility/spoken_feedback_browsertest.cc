@@ -973,7 +973,11 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
 
     // Shutdown button.
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
-    sm_.ExpectSpeech("Shut down");
+    if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
+      sm_.ExpectSpeech("Power menu");
+    } else {
+      sm_.ExpectSpeech("Shut down");
+    }
     sm_.ExpectSpeech("Button");
 
     sm_.Replay();
@@ -992,7 +996,11 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
 
   // Shutdown button.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_B); });
-  sm_.ExpectSpeech("Shut down");
+  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
+    sm_.ExpectSpeech("Power menu");
+  } else {
+    sm_.ExpectSpeech("Shut down");
+  }
   sm_.ExpectSpeech("Button");
 
   sm_.Replay();
