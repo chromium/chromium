@@ -18,7 +18,7 @@ namespace mojo {
 
 // TODO(crbug.com/1371667): Test is failing.
 TEST(NetworkAnonymizationKeyMojomTraitsTest,
-     DISABLED_SerializeAndDeserializeDoubleKeyWithCrossSiteFlag) {
+     SerializeAndDeserializeDoubleKeyWithCrossSiteFlag) {
   base::UnguessableToken token = base::UnguessableToken::Create();
   std::vector<net::NetworkAnonymizationKey> keys = {
       net::NetworkAnonymizationKey(),
@@ -35,7 +35,6 @@ TEST(NetworkAnonymizationKeyMojomTraitsTest,
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
                 network::mojom::NetworkAnonymizationKey>(original, copied));
     SCOPED_TRACE(copied.ToDebugString());
-
     EXPECT_EQ(original, copied);
   }
 }
