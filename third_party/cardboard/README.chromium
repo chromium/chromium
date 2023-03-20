@@ -15,3 +15,4 @@ Local Modifications:
 * Created local proguard-rules.pro to remove wildcard rules
 * Created local override for device_gyroscope_sensor to remove static initializers
 * Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
+* Created local override for opengl_es2_distortion_renderer to allow using external_oes textures.
