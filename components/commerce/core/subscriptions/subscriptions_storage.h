@@ -27,6 +27,12 @@ using GetLocalSubscriptionsCallback = base::OnceCallback<void(
 // Used to handle if storage-related operation succeeds.
 using StorageOperationCallback =
     base::OnceCallback<void(SubscriptionsRequestStatus)>;
+// Indicate if storage is updated successfully and pass the added & removed
+// subscriptions to the callback.
+using StorageUpdateCallback =
+    base::OnceCallback<void(SubscriptionsRequestStatus,
+                            std::vector<CommerceSubscription>,
+                            std::vector<CommerceSubscription>)>;
 
 using CommerceSubscriptionProto =
     commerce_subscription_db::CommerceSubscriptionContentProto;
@@ -66,6 +72,14 @@ class SubscriptionsStorage {
   virtual void UpdateStorage(
       SubscriptionType type,
       StorageOperationCallback callback,
+      std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
+
+  // Update local cache to keep consistency with |remote_subscriptions| and
+  // notify |callback| if it completes successfully. This will also pass the
+  // added & removed subscriptions to the |callback|.
+  virtual void UpdateStorageAndNotifyModifiedSubscriptions(
+      SubscriptionType type,
+      StorageUpdateCallback callback,
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
 
   // Delete all local subscriptions.
@@ -116,7 +130,7 @@ class SubscriptionsStorage {
       std::unique_ptr<std::vector<CommerceSubscription>> local_subscriptions);
 
   void PerformUpdateStorage(
-      StorageOperationCallback callback,
+      StorageUpdateCallback callback,
       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions,
       std::unique_ptr<std::vector<CommerceSubscription>> local_subscriptions);
 

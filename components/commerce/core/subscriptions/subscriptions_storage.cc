@@ -64,6 +64,23 @@ void SubscriptionsStorage::UpdateStorage(
     SubscriptionType type,
     StorageOperationCallback callback,
     std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {
+  UpdateStorageAndNotifyModifiedSubscriptions(
+      type,
+      base::BindOnce(
+          [](StorageOperationCallback callback,
+             SubscriptionsRequestStatus status,
+             std::vector<CommerceSubscription> added_subs,
+             std::vector<CommerceSubscription> removed_subs) {
+            std::move(callback).Run(status);
+          },
+          std::move(callback)),
+      std::move(remote_subscriptions));
+}
+
+void SubscriptionsStorage::UpdateStorageAndNotifyModifiedSubscriptions(
+    SubscriptionType type,
+    StorageUpdateCallback callback,
+    std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {
   LoadAllSubscriptionsForType(
       type, base::BindOnce(&SubscriptionsStorage::PerformUpdateStorage,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -223,14 +240,18 @@ void SubscriptionsStorage::PerformGetExistingSubscriptions(
 }
 
 void SubscriptionsStorage::PerformUpdateStorage(
-    StorageOperationCallback callback,
+    StorageUpdateCallback callback,
     std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions,
     std::unique_ptr<std::vector<CommerceSubscription>> local_subscriptions) {
   auto remote_map = SubscriptionsListToMap(std::move(remote_subscriptions));
   auto local_map = SubscriptionsListToMap(std::move(local_subscriptions));
+  std::vector<CommerceSubscription> added_subscriptions;
+  std::vector<CommerceSubscription> removed_subscriptions;
+
   bool all_succeeded = true;
   for (auto& kv : local_map) {
     if (remote_map.find(kv.first) == remote_map.end()) {
+      removed_subscriptions.push_back(kv.second);
       std::string key = GetStorageKeyForSubscription(kv.second);
       DeleteSubscription(
           std::move(kv.second),
@@ -263,6 +284,7 @@ void SubscriptionsStorage::PerformUpdateStorage(
                              },
                              &all_succeeded));
     }
+    added_subscriptions.push_back(kv.second);
     std::string key_to_insert = GetStorageKeyForSubscription(kv.second);
     SaveSubscription(
         std::move(kv.second),
@@ -276,9 +298,10 @@ void SubscriptionsStorage::PerformUpdateStorage(
             },
             weak_ptr_factory_.GetWeakPtr(), key_to_insert, &all_succeeded));
   }
-  std::move(callback).Run(all_succeeded
-                              ? SubscriptionsRequestStatus::kSuccess
-                              : SubscriptionsRequestStatus::kStorageError);
+  std::move(callback).Run(
+      all_succeeded ? SubscriptionsRequestStatus::kSuccess
+                    : SubscriptionsRequestStatus::kStorageError,
+      std::move(added_subscriptions), std::move(removed_subscriptions));
 }
 
 void SubscriptionsStorage::IsSubscribed(

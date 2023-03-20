@@ -245,6 +245,20 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   void HandleCheckTimestampOnBookmarkChange(
       int64_t bookmark_subscription_change_time);
 
+  void HandleGetSubscriptionsResponseOnBookmarkChange(
+      SubscriptionsRequestStatus status,
+      std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions);
+
+  void OnStorageUpdatedOnBookmarkChange(
+      SubscriptionsRequestStatus status,
+      std::vector<CommerceSubscription> added_subs,
+      std::vector<CommerceSubscription> removed_subs);
+
+  void OnSubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                   bool succeeded);
+  void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
+                     bool succeeded);
+
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 

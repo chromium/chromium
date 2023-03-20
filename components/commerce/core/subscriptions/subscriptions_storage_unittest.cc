@@ -472,6 +472,43 @@ TEST_F(SubscriptionsStorageTest, TestUpdateStorage_OperationFailed) {
   ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
 }
 
+TEST_F(SubscriptionsStorageTest, UpdateStorageAndNotifyModifiedSubscriptions) {
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+
+  proto_db_->MockLoadResponse(true);
+  proto_db_->MockOperationResult(true);
+
+  EXPECT_CALL(*proto_db_, LoadContentWithPrefix("PRICE_TRACK", _));
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey3, _)).Times(1);
+  EXPECT_CALL(*proto_db_, InsertContent(kKey1, _, _)).Times(1);
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(kKey2, _)).Times(0);
+  EXPECT_CALL(*proto_db_, InsertContent(kKey2, _, _)).Times(0);
+
+  base::RunLoop run_loop;
+  storage_->UpdateStorageAndNotifyModifiedSubscriptions(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, SubscriptionsRequestStatus status,
+             std::vector<CommerceSubscription> added_subs,
+             std::vector<CommerceSubscription> removed_subs) {
+            ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
+            ASSERT_EQ(1, (int)added_subs.size());
+            ASSERT_EQ(kMockId1, added_subs[0].id);
+            ASSERT_EQ(1, (int)removed_subs.size());
+            ASSERT_EQ(kMockId3, removed_subs[0].id);
+            run_loop->Quit();
+          },
+          &run_loop),
+      MockRemoteSubscriptions());
+  run_loop.Run();
+
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
+  ASSERT_TRUE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId2)));
+  ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId3)));
+}
+
 TEST_F(SubscriptionsStorageTest, TestIsSubscribed) {
   ASSERT_FALSE(storage_->IsSubscribedFromCache(BuildSubscription(kMockId1)));
 

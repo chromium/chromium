@@ -146,6 +146,13 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
        StorageOperationCallback callback,
        std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions),
       (override));
+  MOCK_METHOD(
+      void,
+      UpdateStorageAndNotifyModifiedSubscriptions,
+      (SubscriptionType type,
+       StorageUpdateCallback callback,
+       std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions),
+      (override));
   MOCK_METHOD(void, DeleteAll, (), (override));
   MOCK_METHOD(void,
               IsSubscribed,
@@ -205,6 +212,17 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
               std::move(callback).Run(
                   succeeded ? SubscriptionsRequestStatus::kSuccess
                             : SubscriptionsRequestStatus::kStorageError);
+            });
+    ON_CALL(*this, UpdateStorageAndNotifyModifiedSubscriptions)
+        .WillByDefault(
+            [succeeded](SubscriptionType type, StorageUpdateCallback callback,
+                        std::unique_ptr<std::vector<CommerceSubscription>>
+                            remote_subscriptions) {
+              std::move(callback).Run(
+                  succeeded ? SubscriptionsRequestStatus::kSuccess
+                            : SubscriptionsRequestStatus::kStorageError,
+                  std::vector<CommerceSubscription>{BuildSubscription("333")},
+                  std::vector<CommerceSubscription>{BuildSubscription("444")});
             });
   }
 
@@ -270,7 +288,7 @@ class SubscriptionsManagerTest : public testing::Test,
   void OnUnsubscribe(const std::vector<CommerceSubscription>& subscriptions,
                      bool succeeded) override {
     ASSERT_EQ(1, (int)subscriptions.size());
-    ASSERT_EQ("333", subscriptions[0].id);
+    ASSERT_EQ("444", subscriptions[0].id);
     ASSERT_EQ(true, succeeded);
     on_unsubscribe_run_loop_.Quit();
   }
@@ -911,14 +929,20 @@ TEST_F(SubscriptionsManagerTest,
                 UpdateStorage(_, _, AreExpectedSubscriptions("111")));
     // Re-try the sync when local cache is outdated.
     EXPECT_CALL(*mock_server_proxy_, Get);
-    EXPECT_CALL(*mock_storage_,
-                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    EXPECT_CALL(*mock_storage_, UpdateStorageAndNotifyModifiedSubscriptions(
+                                    _, _, AreExpectedSubscriptions("111")));
   }
 
   CreateManagerAndVerify(true);
+  AddObserver();
+
   int64_t last_sync_time = subscriptions_manager_->GetLastSyncTimeForTesting();
   subscriptions_manager_->CheckTimestampOnBookmarkChange(
       subscriptions_manager_->GetLastSyncTimeForTesting() + 100);
+
+  on_subscribe_run_loop_.Run();
+  on_unsubscribe_run_loop_.Run();
+
   EXPECT_LT(last_sync_time,
             subscriptions_manager_->GetLastSyncTimeForTesting());
 }
@@ -933,6 +957,8 @@ TEST_F(SubscriptionsManagerTest,
   EXPECT_CALL(*mock_storage_,
               UpdateStorage(_, _, AreExpectedSubscriptions("111")))
       .Times(1);
+  EXPECT_CALL(*mock_storage_, UpdateStorageAndNotifyModifiedSubscriptions)
+      .Times(0);
 
   CreateManagerAndVerify(true);
   int64_t last_sync_time = subscriptions_manager_->GetLastSyncTimeForTesting();
@@ -966,7 +992,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscriptionsObserver) {
 
   base::RunLoop unsubscribe_run_loop;
   subscriptions_manager_->Unsubscribe(
-      BuildSubscriptions("333"),
+      BuildSubscriptions("444"),
       base::BindOnce(
           [](base::RunLoop* unsubscribe_run_loop, bool succeeded) {
             ASSERT_EQ(true, succeeded);

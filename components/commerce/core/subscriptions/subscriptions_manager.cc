@@ -228,9 +228,7 @@ void SubscriptionsManager::OnSubscribeStatusFetched(
   base::UmaHistogramEnumeration(kTrackResultHistogramName, result);
   bool succeeded = result == SubscriptionsRequestStatus::kSuccess ||
                    result == SubscriptionsRequestStatus::kNoOp;
-  for (SubscriptionsObserver& observer : observers_) {
-    observer.OnSubscribe(notified_subscriptions, succeeded);
-  }
+  OnSubscribe(notified_subscriptions, succeeded);
   std::move(callback).Run(succeeded);
   // We sync local cache with server only when the product is successfully added
   // on server. The sync states should be updated after notifying all observers
@@ -290,9 +288,7 @@ void SubscriptionsManager::OnUnsubscribeStatusFetched(
   base::UmaHistogramEnumeration(kUntrackResultHistogramName, result);
   bool succeeded = result == SubscriptionsRequestStatus::kSuccess ||
                    result == SubscriptionsRequestStatus::kNoOp;
-  for (SubscriptionsObserver& observer : observers_) {
-    observer.OnUnsubscribe(notified_subscriptions, succeeded);
-  }
+  OnUnsubscribe(notified_subscriptions, succeeded);
   std::move(callback).Run(succeeded);
   // We sync local cache with server only when the product is successfully
   // removed on server. The sync states should be updated after notifying all
@@ -396,10 +392,60 @@ void SubscriptionsManager::HandleCheckTimestampOnBookmarkChange(
     OnRequestCompletion();
     return;
   }
-  GetRemoteSubscriptionsAndUpdateStorage(
+
+  server_proxy_->Get(
       SubscriptionType::kPriceTrack,
-      base::BindOnce(&SubscriptionsManager::OnSyncStatusFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &SubscriptionsManager::HandleGetSubscriptionsResponseOnBookmarkChange,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SubscriptionsManager::HandleGetSubscriptionsResponseOnBookmarkChange(
+    SubscriptionsRequestStatus status,
+    std::unique_ptr<std::vector<CommerceSubscription>> remote_subscriptions) {
+  if (status != SubscriptionsRequestStatus::kSuccess) {
+    UpdateSyncStates(false);
+    OnRequestCompletion();
+    return;
+  }
+
+  storage_->UpdateStorageAndNotifyModifiedSubscriptions(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(&SubscriptionsManager::OnStorageUpdatedOnBookmarkChange,
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(remote_subscriptions));
+}
+
+void SubscriptionsManager::OnStorageUpdatedOnBookmarkChange(
+    SubscriptionsRequestStatus status,
+    std::vector<CommerceSubscription> added_subs,
+    std::vector<CommerceSubscription> removed_subs) {
+  if (status == SubscriptionsRequestStatus::kSuccess) {
+    if (added_subs.size() > 0) {
+      OnSubscribe(added_subs, true);
+    }
+    if (removed_subs.size() > 0) {
+      OnUnsubscribe(removed_subs, true);
+    }
+  }
+  UpdateSyncStates(status == SubscriptionsRequestStatus::kSuccess);
+  OnRequestCompletion();
+}
+
+void SubscriptionsManager::OnSubscribe(
+    const std::vector<CommerceSubscription>& subscriptions,
+    bool succeeded) {
+  for (SubscriptionsObserver& observer : observers_) {
+    observer.OnSubscribe(subscriptions, succeeded);
+  }
+}
+
+void SubscriptionsManager::OnUnsubscribe(
+    const std::vector<CommerceSubscription>& subscriptions,
+    bool succeeded) {
+  for (SubscriptionsObserver& observer : observers_) {
+    observer.OnUnsubscribe(subscriptions, succeeded);
+  }
 }
 
 void SubscriptionsManager::OnPrimaryAccountChanged(
