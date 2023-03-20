@@ -21,6 +21,8 @@ source_set("mixers") {
     "chrome_color_mixers.h",
     "chrome_color_provider_utils.cc",
     "chrome_color_provider_utils.h",
+    "material_chrome_color_mixer.cc",
+    "material_chrome_color_mixer.h",
     "material_side_panel_color_mixer.cc",
     "material_side_panel_color_mixer.h",
     "material_tab_strip_color_mixer.cc",

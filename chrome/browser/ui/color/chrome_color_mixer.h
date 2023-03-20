@@ -12,8 +12,6 @@ namespace ui {
 class ColorProvider;
 }
 
-constexpr SkAlpha kToolbarInkDropHighlightVisibleAlpha = 0x14;
-
 // Adds a color mixer to |provider| that supplies default values for various
 // chrome/ colors before taking into account any custom themes.
 void AddChromeColorMixer(ui::ColorProvider* provider,

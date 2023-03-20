@@ -9,7 +9,10 @@
 
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
+#include "ui/color/color_transform.h"
 #include "ui/gfx/color_utils.h"
+
+inline constexpr SkAlpha kToolbarInkDropHighlightVisibleAlpha = 0x14;
 
 // Converts ColorId if |color_id| is in CHROME_COLOR_IDS.
 std::string ChromeColorIdName(ui::ColorId color_id);
@@ -27,6 +30,11 @@ color_utils::HSL GetThemeTint(int id, const ui::ColorProviderManager::Key& key);
 // with both of these as well as the background tab color, and contrasting with
 // the foreground tab is the most important).
 SkColor GetToolbarTopSeparatorColor(SkColor toolbar_color, SkColor frame_color);
+
+// Adjusts the desired highlight color for a toolbar control `fg` for contrast
+// against the `bg` color.
+ui::ColorTransform AdjustHighlightColorForContrast(ui::ColorTransform fg,
+                                                   ui::ColorTransform bg);
 
 // Returns true if we should apply chrome high contrast colors for the `key`.
 bool ShouldApplyHighContrastColors(const ui::ColorProviderManager::Key& key);

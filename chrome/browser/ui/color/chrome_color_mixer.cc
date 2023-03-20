@@ -20,24 +20,6 @@
 
 namespace {
 
-ui::ColorTransform AdjustHighlightColorForContrast(ui::ColorTransform fg,
-                                                   ui::ColorTransform bg) {
-  auto candidate_fg =
-      ui::PickGoogleColor(fg, bg, color_utils::kMinimumReadableContrastRatio);
-  // Setting highlight color will set the text to the highlight color, and the
-  // background to the same color with an alpha of
-  // kToolbarInkDropHighlightVisibleOpacity. This means that our target contrast
-  // is between the text (the highlight color) and a blend of the highlight
-  // color and the toolbar color.
-  auto candidate_bg =
-      ui::AlphaBlend(candidate_fg, bg, kToolbarInkDropHighlightVisibleAlpha);
-  // Add a fudge factor to the minimum contrast ratio since we'll actually be
-  // blending with the adjusted color.
-  return ui::PickGoogleColor(
-      candidate_fg, candidate_bg,
-      color_utils::kMinimumReadableContrastRatio * 1.05f);
-}
-
 // This differs from ui::SelectColorBasedOnInput in that we're checking if the
 // input transform is *not* dark under the assumption that the background color
 // *is* dark from a potential custom theme. Additionally, if the mode is
