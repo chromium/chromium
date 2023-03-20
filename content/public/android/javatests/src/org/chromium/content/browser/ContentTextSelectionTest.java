@@ -343,7 +343,7 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O)
+    @DisabledTest(message = "crbug.com/1426223")
     public void testPastePopupPasteAsPlainTextHtmlTextRichEditor() throws Throwable {
         copyHtmlToClipboard("SampleTextToCopy", "<span style=\"color: red;\">HTML</span>");
         DOMUtils.longPressNode(mWebContents, "rich_div");
