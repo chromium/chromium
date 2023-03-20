@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget_observer.h"
 
 class Browser;
 class SavedTabGroupButton;
@@ -23,11 +24,16 @@ namespace content {
 class PageNavigator;
 }
 
+namespace views {
+class Widget;
+}
+
 // The view for accessing SavedTabGroups from the bookmarks bar. Is responsible
 // for rendering the SavedTabGroupButtons with the bounds that are defined by
 // its parent, BookmarkBarView.
 class SavedTabGroupBar : public views::AccessiblePaneView,
-                         public SavedTabGroupModelObserver {
+                         public SavedTabGroupModelObserver,
+                         public views::WidgetObserver {
  public:
   SavedTabGroupBar(Browser* browser, bool animations_enabled);
   SavedTabGroupBar(Browser* browser,
@@ -74,11 +80,17 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
       const base::GUID& group_guid,
       const absl::optional<base::GUID>& tab_guid = absl::nullopt) override;
 
+  // WidgetObserver
+  void OnWidgetClosing(views::Widget* widget) override;
+
   // Calculates what the visible width would be when a restriction on width is
   // placed on the bar.
   int CalculatePreferredWidthRestrictedBy(int width_restriction);
 
  private:
+  // Overrides the View methods needed to be a drop target for saved tab groups.
+  class OverflowMenu;
+
   // Adds the saved group denoted by `guid` as a button in the
   // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
   void SavedTabGroupAdded(const base::GUID& guid);
@@ -114,7 +126,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // When called, display a bubble which shows all the groups that are saved
   // and not visible. Each entry in the bubble, when clicked, should open the
   // group into the tabstrip.
-  void OnOverflowButtonPressed(views::View* bar, const ui::Event& event);
+  void MaybeShowOverflowMenu();
+
+  // Hides the overflow menu if it is open.
+  void HideOverflowMenu();
 
   // TODO: Move implementation inside of STGOverflowButton.
   void HideOverflowButton();
@@ -143,6 +158,12 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // During a drag and drop session, `drag_data_` owns the state for the drag.
   std::unique_ptr<SavedTabGroupDragData> drag_data_;
+
+  // The currently open overflow menu, or nullptr if one is not open now.
+  raw_ptr<OverflowMenu> overflow_menu_ = nullptr;
+
+  base::ScopedObservation<views::Widget, SavedTabGroupBar> widget_observation_{
+      this};
 
   // animations have been noted to cause issues with tests in the bookmarks bar.
   // this boolean lets the SavedTabGroupButton choose whether they want to

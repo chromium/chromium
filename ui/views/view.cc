@@ -1104,6 +1104,13 @@ void View::ConvertPointToScreen(const View* src, gfx::Point* p) {
 }
 
 // static
+gfx::Point View::ConvertPointToScreen(const View* src, const gfx::Point& p) {
+  gfx::Point screen_pt = p;
+  ConvertPointToScreen(src, &screen_pt);
+  return screen_pt;
+}
+
+// static
 void View::ConvertPointFromScreen(const View* dst, gfx::Point* p) {
   DCHECK(dst);
   DCHECK(p);
@@ -1113,6 +1120,13 @@ void View::ConvertPointFromScreen(const View* dst, gfx::Point* p) {
     return;
   *p -= widget->GetClientAreaBoundsInScreen().OffsetFromOrigin();
   ConvertPointFromWidget(dst, p);
+}
+
+// static
+gfx::Point View::ConvertPointFromScreen(const View* src, const gfx::Point& p) {
+  gfx::Point local_pt = p;
+  ConvertPointFromScreen(src, &local_pt);
+  return local_pt;
 }
 
 // static

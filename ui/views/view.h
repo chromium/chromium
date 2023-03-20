@@ -873,13 +873,14 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // |source| and |target| must be in the same widget, but don't need to be in
   // the same view hierarchy.
   // Neither |source| nor |target| can be null.
-  static void ConvertPointToTarget(const View* source,
-                                   const View* target,
-                                   gfx::Point* point);
-
   [[nodiscard]] static gfx::Point ConvertPointToTarget(const View* source,
                                                        const View* target,
                                                        const gfx::Point& point);
+  // The in-place version of this method is strongly discouraged, please use the
+  // by-value version above for improved const-compatability and readability.
+  static void ConvertPointToTarget(const View* source,
+                                   const View* target,
+                                   gfx::Point* point);
 
   // Converts |rect| from the coordinate system of |source| to the coordinate
   // system of |target|.
@@ -887,12 +888,14 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // |source| and |target| must be in the same widget, but don't need to be in
   // the same view hierarchy.
   // Neither |source| nor |target| can be null.
-  static void ConvertRectToTarget(const View* source,
-                                  const View* target,
-                                  gfx::RectF* rect);
   [[nodiscard]] static gfx::RectF ConvertRectToTarget(const View* source,
                                                       const View* target,
                                                       const gfx::RectF& rect);
+  // The in-place version of this method is strongly discouraged, please use the
+  // by-value version above for improved const-compatability and readability.
+  static void ConvertRectToTarget(const View* source,
+                                  const View* target,
+                                  gfx::RectF* rect);
 
   // Converts |rect| from the coordinate system of |source| to the
   // coordinate system of |target|.
@@ -915,10 +918,19 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   static void ConvertPointFromWidget(const View* dest, gfx::Point* p);
 
   // Converts a point from a View's coordinate system to that of the screen.
+  [[nodiscard]] static gfx::Point ConvertPointToScreen(const View* src,
+                                                       const gfx::Point& point);
+  // The in-place version of this method is strongly discouraged, please use the
+  // by-value version above for improved const-compatability and readability.
   static void ConvertPointToScreen(const View* src, gfx::Point* point);
 
   // Converts a point from the screen coordinate system to that View's
   // coordinate system.
+  [[nodiscard]] static gfx::Point ConvertPointFromScreen(
+      const View* src,
+      const gfx::Point& point);
+  // The in-place version of this method is strongly discouraged, please use the
+  // by-value version above for improved const-compatability and readability.
   static void ConvertPointFromScreen(const View* dst, gfx::Point* point);
 
   // Converts a rect from a View's coordinate system to that of the screen.
