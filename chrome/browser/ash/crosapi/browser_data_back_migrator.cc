@@ -23,10 +23,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator_metrics.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -97,7 +97,8 @@ void BrowserDataBackMigrator::Migrate(
   DCHECK(IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState::kBeforeInit));
 
-  RecordNumberOfLacrosSecondaryProfiles(ash_profile_dir_);
+  browser_data_back_migrator_metrics::RecordNumberOfLacrosSecondaryProfiles(
+      ash_profile_dir_);
 
   running_ = true;
   migration_start_time_ = base::TimeTicks::Now();
@@ -174,7 +175,9 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
     }
   }
 
-  base::UmaHistogramMediumTimes(kPreMigrationCleanUpTimeUMA, timer.Elapsed());
+  base::UmaHistogramMediumTimes(
+      browser_data_back_migrator_metrics::kPreMigrationCleanUpTimeUMA,
+      timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -318,7 +321,9 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
     return {TaskStatus::kMergeSplitItemsMergeSyncDataFailed};
   }
 
-  base::UmaHistogramMediumTimes(kMergeSplitItemsTimeUMA, timer.Elapsed());
+  base::UmaHistogramMediumTimes(
+      browser_data_back_migrator_metrics::kMergeSplitItemsTimeUMA,
+      timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -378,7 +383,9 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteAshItems(
     }
   }
 
-  base::UmaHistogramMediumTimes(kDeleteAshItemsTimeUMA, timer.Elapsed());
+  base::UmaHistogramMediumTimes(
+      browser_data_back_migrator_metrics::kDeleteAshItemsTimeUMA,
+      timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -435,8 +442,9 @@ BrowserDataBackMigrator::MoveLacrosItemsToAshDir(
     }
   }
 
-  base::UmaHistogramMediumTimes(kMoveLacrosItemsToAshDirTimeUMA,
-                                timer.Elapsed());
+  base::UmaHistogramMediumTimes(
+      browser_data_back_migrator_metrics::kMoveLacrosItemsToAshDirTimeUMA,
+      timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -476,8 +484,9 @@ BrowserDataBackMigrator::MoveMergedItemsBackToAsh(
     return {TaskStatus::kMoveMergedItemsBackToAshMoveFileFailed, errno};
   }
 
-  base::UmaHistogramMediumTimes(kMoveMergedItemsBackToAshTimeUMA,
-                                timer.Elapsed());
+  base::UmaHistogramMediumTimes(
+      browser_data_back_migrator_metrics::kMoveMergedItemsBackToAshTimeUMA,
+      timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -579,7 +588,9 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteLacrosDir(
     }
   }
 
-  base::UmaHistogramMediumTimes(kDeleteLacrosDirTimeUMA, timer.Elapsed());
+  base::UmaHistogramMediumTimes(
+      browser_data_back_migrator_metrics::kDeleteLacrosDirTimeUMA,
+      timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -617,7 +628,9 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteTmpDir(
     }
   }
 
-  base::UmaHistogramMediumTimes(kDeleteTmpDirTimeUMA, timer.Elapsed());
+  base::UmaHistogramMediumTimes(
+      browser_data_back_migrator_metrics::kDeleteTmpDirTimeUMA,
+      timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -1348,114 +1361,11 @@ BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
 }
 
 void BrowserDataBackMigrator::InvokeCallback(TaskResult result) {
-  RecordFinalStatus(result);
-  RecordPosixErrnoIfAvailable(result);
-  RecordMigrationTimeIfSuccessful(result, migration_start_time_);
+  browser_data_back_migrator_metrics::RecordFinalStatus(result);
+  browser_data_back_migrator_metrics::RecordPosixErrnoIfAvailable(result);
+  browser_data_back_migrator_metrics::RecordMigrationTimeIfSuccessful(
+      result, migration_start_time_);
   std::move(finished_callback_).Run(ToResult(result));
-}
-
-// static
-void BrowserDataBackMigrator::RecordFinalStatus(TaskResult result) {
-  base::UmaHistogramEnumeration(kFinalStatusUMA, result.status);
-}
-
-// static
-void BrowserDataBackMigrator::RecordPosixErrnoIfAvailable(TaskResult result) {
-  if (result.status == TaskStatus::kSucceeded ||
-      !result.posix_errno.has_value()) {
-    return;
-  }
-
-  const int posix_errno = result.posix_errno.value();
-  if (posix_errno == 0) {
-    return;
-  }
-
-  std::string uma_name = kPosixErrnoUMA + TaskStatusToString(result.status);
-  base::UmaHistogramSparse(uma_name, posix_errno);
-}
-
-// static
-void BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
-    TaskResult result,
-    base::TimeTicks migration_start_time) {
-  if (result.status != TaskStatus::kSucceeded) {
-    return;
-  }
-
-  base::UmaHistogramMediumTimes(kSuccessfulMigrationTimeUMA,
-                                base::TimeTicks::Now() - migration_start_time);
-}
-
-// static
-void BrowserDataBackMigrator::RecordNumberOfLacrosSecondaryProfiles(
-    const base::FilePath& ash_profile_dir) {
-  // Since backward migration runs in Ash, calling `GetNumberOfProfiles()` on
-  // `ProfileManager` returns the number of profiles in Ash. In order to get the
-  // number of secondary profiles in Lacros, the number of directories in the
-  // format `chrome::kMultiProfileDirPrefix` + number inside the Lacros
-  // directory is counted.
-
-  const base::FilePath lacros_dir =
-      ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir);
-
-  size_t number_of_secondary_profiles = 0;
-  const std::string prefix = chrome::kMultiProfileDirPrefix;
-  const size_t prefix_length = prefix.length();
-
-  base::FileEnumerator enumerator(lacros_dir, false /* recursive */,
-                                  base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath entry = enumerator.Next(); !entry.empty();
-       entry = enumerator.Next()) {
-    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
-    if (!S_ISDIR(info.stat().st_mode)) {
-      continue;
-    }
-
-    const std::string base_name = entry.BaseName().value();
-
-    bool starts_with_prefix =
-        base::StartsWith(base_name, prefix, base::CompareCase::SENSITIVE);
-    int number;
-    bool ends_with_number =
-        base::StringToInt(base_name.substr(prefix_length), &number);
-
-    if (starts_with_prefix && ends_with_number) {
-      number_of_secondary_profiles += 1;
-    }
-  }
-
-  base::UmaHistogramCounts100(kNumberOfLacrosSecondaryProfilesUMA,
-                              number_of_secondary_profiles);
-}
-
-// static
-std::string BrowserDataBackMigrator::TaskStatusToString(
-    TaskStatus task_status) {
-  switch (task_status) {
-#define MAPPING(name)       \
-  case TaskStatus::k##name: \
-    return #name
-    MAPPING(Succeeded);
-    MAPPING(PreMigrationCleanUpDeleteTmpDirFailed);
-    MAPPING(MergeSplitItemsCreateTmpDirFailed);
-    MAPPING(MergeSplitItemsCopyExtensionsFailed);
-    MAPPING(MergeSplitItemsCopyExtensionStorageFailed);
-    MAPPING(MergeSplitItemsCreateDirFailed);
-    MAPPING(MergeSplitItemsMergeIndexedDBFailed);
-    MAPPING(MergeSplitItemsMergePrefsFailed);
-    MAPPING(MergeSplitItemsMergeLocalStorageLevelDBFailed);
-    MAPPING(MergeSplitItemsMergeStateStoreLevelDBFailed);
-    MAPPING(MergeSplitItemsMergeSyncDataFailed);
-    MAPPING(DeleteAshItemsDeleteExtensionsFailed);
-    MAPPING(DeleteAshItemsDeleteLacrosItemFailed);
-    MAPPING(DeleteLacrosDirDeleteFailed);
-    MAPPING(DeleteTmpDirDeleteFailed);
-    MAPPING(MoveLacrosItemsToAshDirFailed);
-    MAPPING(MoveMergedItemsBackToAshCopyDirectoryFailed);
-    MAPPING(MoveMergedItemsBackToAshMoveFileFailed);
-#undef MAPPING
-  }
 }
 
 }  // namespace ash

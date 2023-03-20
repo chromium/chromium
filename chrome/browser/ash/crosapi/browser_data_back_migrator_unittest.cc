@@ -11,10 +11,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_data_back_migrator_metrics.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/policy/core/common/policy_map.h"
@@ -193,30 +194,6 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
     CreateDirectoryAndFile(ash_leveldb_path, kAshDataFilePath, kAshDataContent,
                            kAshDataSize);
   }
-}
-
-void SetUpProfileDirectories(const base::FilePath& lacros_dir) {
-  // Set up the contents of lacros to mimic several secondary profile
-  // directories and some other irrelevant files and directories.
-  // |- user
-  //     |- lacros
-  //         |- Default
-  //         |- Profile 3     /* directory */
-  //         |- Profile 9     /* file */
-  //         |- Profile 14
-  //         |- Profile 824
-  //         |- Profile w/o number
-  //         |- Other directory
-
-  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile 3")));
-  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile 14")));
-  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile 824")));
-  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Profile w/o number")));
-  ASSERT_TRUE(base::CreateDirectory(lacros_dir.Append("Other directory")));
-
-  ASSERT_TRUE(
-      base::WriteFile(lacros_dir.Append("Profile 9"),
-                      base::StringPiece(kLacrosDataContent, kLacrosDataSize)));
 }
 
 void GenerateLevelDB(const base::FilePath& path,
@@ -498,7 +475,8 @@ TEST_F(BrowserDataBackMigratorTest, PreMigrationCleanUp) {
 
   ASSERT_FALSE(base::PathExists(tmp_profile_dir_));
 
-  histogram_tester.ExpectTotalCount(kPreMigrationCleanUpTimeUMA, 1);
+  histogram_tester.ExpectTotalCount(
+      browser_data_back_migrator_metrics::kPreMigrationCleanUpTimeUMA, 1);
 }
 
 TEST_F(BrowserDataBackMigratorTest, MergeCommonExtensionsDataFiles) {
@@ -1113,85 +1091,6 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledAfterInit) {
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState::kAfterInit));
-}
-
-TEST(BrowserDataBackMigratorUMATest, RecordFinalStatus) {
-  base::HistogramTester histogram_tester;
-
-  BrowserDataBackMigrator::TaskResult success = {
-      BrowserDataBackMigrator::TaskStatus::kSucceeded};
-  BrowserDataBackMigrator::RecordFinalStatus(success);
-
-  histogram_tester.ExpectUniqueSample(
-      kFinalStatusUMA,
-      static_cast<base::HistogramBase::Sample>(
-          BrowserDataBackMigrator::TaskStatus::kSucceeded),
-      1);
-  histogram_tester.ExpectTotalCount(kFinalStatusUMA, 1);
-
-  BrowserDataBackMigrator::TaskResult failure = {
-      BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed, EPERM};
-  BrowserDataBackMigrator::RecordFinalStatus(failure);
-
-  histogram_tester.ExpectBucketCount(
-      kFinalStatusUMA,
-      static_cast<base::HistogramBase::Sample>(
-          BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed),
-      1);
-  histogram_tester.ExpectTotalCount(kFinalStatusUMA, 2);
-}
-
-TEST(BrowserDataBackMigratorUMATest, RecordPosixErrnoIfAvailable) {
-  base::HistogramTester histogram_tester;
-  auto task_status =
-      BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed;
-  std::string uma_name =
-      kPosixErrnoUMA + BrowserDataBackMigrator::TaskStatusToString(task_status);
-
-  BrowserDataBackMigrator::TaskResult failure_without_errno = {task_status};
-  BrowserDataBackMigrator::RecordPosixErrnoIfAvailable(failure_without_errno);
-  histogram_tester.ExpectTotalCount(uma_name, 0);
-
-  BrowserDataBackMigrator::TaskResult failure_with_errno = {task_status, EPERM};
-  BrowserDataBackMigrator::RecordPosixErrnoIfAvailable(failure_with_errno);
-  histogram_tester.ExpectTotalCount(uma_name, 1);
-  histogram_tester.ExpectUniqueSample(uma_name, EPERM, 1);
-}
-
-TEST(BrowserDataBackMigratorUMATest, TaskStatusToString) {
-  EXPECT_EQ(BrowserDataBackMigrator::TaskStatusToString(
-                BrowserDataBackMigrator::TaskStatus::kSucceeded),
-            "Succeeded");
-}
-
-TEST(BrowserDataBackMigratorUMATest, RecordMigrationTimeIfSuccessful) {
-  base::HistogramTester histogram_tester;
-
-  // No total time is recorded on failed migration.
-  BrowserDataBackMigrator::TaskResult failure = {
-      BrowserDataBackMigrator::TaskStatus::kDeleteTmpDirDeleteFailed, EPERM};
-  BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
-      failure, base::TimeTicks::Now());
-  histogram_tester.ExpectTotalCount(kSuccessfulMigrationTimeUMA, 0);
-
-  // When migration succeeds, total time is recorded.
-  BrowserDataBackMigrator::TaskResult success = {
-      BrowserDataBackMigrator::TaskStatus::kSucceeded};
-  BrowserDataBackMigrator::RecordMigrationTimeIfSuccessful(
-      success, base::TimeTicks::Now());
-  histogram_tester.ExpectTotalCount(kSuccessfulMigrationTimeUMA, 1);
-}
-TEST_F(BrowserDataBackMigratorTest, RecordNumberOfLacrosSecondaryProfiles) {
-  base::HistogramTester histogram_tester;
-
-  SetUpProfileDirectories(lacros_dir_);
-  BrowserDataBackMigrator::RecordNumberOfLacrosSecondaryProfiles(
-      ash_profile_dir_);
-
-  histogram_tester.ExpectTotalCount(kNumberOfLacrosSecondaryProfilesUMA, 1);
-
-  // Expect that the bucket for 3 secondary profiles has one record.
-  histogram_tester.ExpectBucketCount(kNumberOfLacrosSecondaryProfilesUMA, 3, 1);
 }
 
 }  // namespace ash

@@ -47,6 +47,8 @@ source_set("crosapi") {
     "browser_action.h",
     "browser_data_back_migrator.cc",
     "browser_data_back_migrator.h",
+    "browser_data_back_migrator_metrics.cc",
+    "browser_data_back_migrator_metrics.h",
     "browser_data_migrator.cc",
     "browser_data_migrator.h",
     "browser_data_migrator_util.cc",
@@ -411,6 +413,7 @@ source_set("unit_tests") {
 
   sources = [
     "audio_service_ash_unittest.cc",
+    "browser_data_back_migrator_metrics_unittest.cc",
     "browser_data_back_migrator_unittest.cc",
     "browser_data_migrator_unittest.cc",
     "browser_data_migrator_util_unittest.cc",
