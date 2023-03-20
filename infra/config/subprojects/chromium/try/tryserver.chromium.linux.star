@@ -64,6 +64,12 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-afl-asan-rel",
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    executable = "recipe:chromium/fuzz",
+)
+
+try_.builder(
     name = "linux-annotator-rel",
     mirrors = ["ci/linux-annotator-rel"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
@@ -96,6 +102,12 @@ try_.builder(
     name = "linux-blink-heap-verification-try",
     mirrors = ["ci/linux-blink-heap-verification"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "linux-centipede-asan-rel",
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    executable = "recipe:chromium/fuzz",
 )
 
 try_.builder(

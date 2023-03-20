@@ -1204,11 +1204,13 @@
       'layout_test_leak_detection': 'release_trybot_reclient',
       'leak_detection_linux': 'release_trybot_reclient',
       'linux-1mbu-compile-fyi-rel': 'release_trybot_reclient',
+      'linux-afl-asan-rel': 'afl_asan_release_trybot_reclient',
       'linux-annotator-rel': 'release_trybot_reclient',
       'linux-arm64-castos': 'cast_arm64_release_bot_reclient',
       'linux-bfcache-rel': 'release_bot_blink_reclient',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification_reclient',
+      'linux-centipede-asan-rel': 'centipede_asan_release_trybot_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
       'linux-code-coverage': 'clang_code_coverage_reclient',
       'linux-dcheck-off-rel': 'release_trybot_dcheck_off_reclient',
@@ -1466,6 +1468,10 @@
   # is not necessarily so (i.e., we might have mac, win, and linux
   # bots all using the 'release_bot' config).
   'configs': {
+    'afl_asan_release_trybot_reclient': [
+      'afl', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
+    ],
+
     'afl_asan_shared_release_bot_reclient': [
       'afl', 'asan', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl',
       'optimize_for_fuzzing', 'shared_release_bot_reclient', 'disable_seed_corpus',
@@ -1977,6 +1983,10 @@
 
     'cast_release_trybot_reclient': [
       'cast_receiver', 'cast_os', 'release_trybot_reclient',
+    ],
+
+    'centipede_asan_release_trybot_reclient': [
+      'centipede', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
     ],
 
     'centipede_asan_shared_release_bot_reclient': [
