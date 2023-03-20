@@ -7,17 +7,49 @@
 
 #include <memory>
 
-#include "android_webview/browser/gfx/hardware_renderer.h"
+#include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
+#include "ui/gfx/color_space.h"
 
 namespace android_webview {
 
 class AwVulkanContextProvider;
+class RenderThreadManager;
 
-class HardwareRendererViz : public HardwareRenderer {
+struct OverlaysParams {
+  enum class Mode {
+    Disabled,
+    Enabled,
+  };
+
+  typedef ASurfaceControl* (*GetSurfaceControlFn)();
+  typedef void (*MergeTransactionFn)(ASurfaceTransaction*);
+
+  Mode overlays_mode = Mode::Disabled;
+  GetSurfaceControlFn get_surface_control = nullptr;
+  MergeTransactionFn merge_transaction = nullptr;
+};
+
+struct HardwareRendererDrawParams {
+  bool operator==(const HardwareRendererDrawParams& other) const;
+  bool operator!=(const HardwareRendererDrawParams& other) const;
+
+  int clip_left;
+  int clip_top;
+  int clip_right;
+  int clip_bottom;
+  int width;
+  int height;
+  float transform[16];
+  gfx::ColorSpace color_space;
+};
+
+class HardwareRendererViz {
  public:
   // Two rules:
   // 1) Never wait on |new_frame| on the UI thread, or in kModeSync. Otherwise
@@ -40,12 +72,12 @@ class HardwareRendererViz : public HardwareRenderer {
   HardwareRendererViz(const HardwareRendererViz&) = delete;
   HardwareRendererViz& operator=(const HardwareRendererViz&) = delete;
 
-  ~HardwareRendererViz() override;
+  ~HardwareRendererViz();
 
-  // HardwareRenderer overrides.
-  void DrawAndSwap(const HardwareRendererDrawParams& params,
-                   const OverlaysParams& overlays_params) override;
-
+  void Draw(const HardwareRendererDrawParams& params,
+            const OverlaysParams& overlays_params);
+  void CommitFrame();
+  void SetChildFrameForTesting(std::unique_ptr<ChildFrame> child_frame);
   void RemoveOverlays(OverlaysParams::MergeTransactionFn merge_transaction);
   void AbandonContext();
 
@@ -56,6 +88,49 @@ class HardwareRendererViz : public HardwareRenderer {
   bool IsUsingVulkan() const;
   void MergeTransactionIfNeeded(
       OverlaysParams::MergeTransactionFn merge_transaction);
+  void ReturnChildFrame(std::unique_ptr<ChildFrame> child_frame);
+  void ReturnResourcesToCompositor(std::vector<viz::ReturnedResource> resources,
+                                   const viz::FrameSinkId& frame_sink_id,
+                                   uint32_t layer_tree_frame_sink_id);
+
+  void ReportDrawMetric(const HardwareRendererDrawParams& params);
+  void DrawAndSwap(const HardwareRendererDrawParams& params,
+                   const OverlaysParams& overlays_params);
+
+  THREAD_CHECKER(render_thread_checker_);
+
+  const raw_ptr<RenderThreadManager> render_thread_manager_;
+
+  typedef void* EGLContext;
+
+  // NOTE: This must be initialized before |output_surface_provider_|: this
+  // field is expected to be initialized with the current EGL context just
+  // *before* creation of this HardwareRenderer instance, whereas this
+  // HardwareRenderer instance's creation of |output_surface_provider_| actually
+  // *causes* an EGL context to be created.
+  EGLContext last_egl_context_;
+
+  ChildFrameQueue child_frame_queue_;
+
+  // This holds the last ChildFrame received. Contains the frame info of the
+  // last frame. The |frame| member is always null since frame has already
+  // been submitted.
+  std::unique_ptr<ChildFrame> child_frame_;
+  // Used in metrics. Indicates if we invalidated/submitted for the ChildFrame
+  // in |child_frame_|
+  bool did_invalidate_ = false;
+  bool did_submit_compositor_frame_ = false;
+
+  // Information from UI on last commit.
+  gfx::Point scroll_offset_;
+
+  // HardwareRendererSingleThread guarantees resources are returned in the order
+  // of layer_tree_frame_sink_id, and resources for old output surfaces are
+  // dropped.
+  uint32_t last_committed_layer_tree_frame_sink_id_ = 0u;
+
+  // Draw params that was used in previous draw. Used in reporting draw metric.
+  HardwareRendererDrawParams last_draw_params_ = {};
 
   // Information about last delegated frame.
   float device_scale_factor_ = 0;
@@ -67,8 +142,6 @@ class HardwareRendererViz : public HardwareRenderer {
 
   // These are accessed on the viz thread.
   std::unique_ptr<OnViz> on_viz_;
-
-  THREAD_CHECKER(render_thread_checker_);
 };
 
 }  // namespace android_webview
