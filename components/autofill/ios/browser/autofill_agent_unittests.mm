@@ -61,15 +61,10 @@ class AutofillAgentTests : public web::WebTest {
   AutofillAgentTests& operator=(const AutofillAgentTests&) = delete;
 
   void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
-    web::WebFrame* frame_ptr = frame.get();
     fake_web_frames_manager_->AddWebFrame(std::move(frame));
-    fake_web_state_.OnWebFrameDidBecomeAvailable(frame_ptr);
   }
 
   void RemoveWebFrame(const std::string& frame_id) {
-    web::WebFrame* frame_ptr =
-        fake_web_frames_manager_->GetFrameWithId(frame_id);
-    fake_web_state_.OnWebFrameWillBecomeUnavailable(frame_ptr);
     fake_web_frames_manager_->RemoveWebFrame(frame_id);
   }
 

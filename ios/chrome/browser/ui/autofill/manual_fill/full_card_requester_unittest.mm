@@ -84,8 +84,6 @@ class PaymentRequestFullCardRequesterTest : public PlatformTest {
         /*security_origin=*/GURL());
     frames_manager->AddWebFrame(std::move(main_frame));
     web_state()->SetWebFramesManager(std::move(frames_manager));
-    web_state()->OnWebFrameDidBecomeAvailable(
-        web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame());
 
     UniqueIDDataTabHelper::CreateForWebState(web_state());
 

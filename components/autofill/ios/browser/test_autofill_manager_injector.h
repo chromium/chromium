@@ -17,7 +17,7 @@
 
 namespace autofill {
 
-// Upon construction, and in response to WebFrameDidBecomeAvailable, installs an
+// Upon construction, and in response to WebFrameBecameAvailable, installs an
 // BrowserAutofillManager of type `T` in the main frame of the given `web_state`
 // and all subsequently created frames of the `web_state`.
 //
@@ -35,15 +35,17 @@ namespace autofill {
 //   TestAutofillManagerInjector<MockAutofillManager> injector(web_state());
 //   NavigateToURL(...);
 template <typename T>
-class TestAutofillManagerInjector : public web::WebStateObserver {
+class TestAutofillManagerInjector : public web::WebFramesManager::Observer,
+                                    public web::WebStateObserver {
  public:
   // Builds the managers using `T(AutofillDriverIOS*, AutofillClient*)`.
   explicit TestAutofillManagerInjector(web::WebState* web_state)
       : web_state_(web_state) {
-    observation_.Observe(web_state);
+    web_state_observation_.Observe(web_state);
     web::WebFramesManager* frames_manager =
         AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
             web_state);
+    frames_manager_observation_.Observe(frames_manager);
     if (web::WebFrame* main_frame = frames_manager->GetMainWebFrame()) {
       Inject(main_frame);
     }
@@ -66,14 +68,16 @@ class TestAutofillManagerInjector : public web::WebStateObserver {
   }
 
  private:
-  // web::WebStateObserver:
-  void WebFrameDidBecomeAvailable(web::WebState* web_state,
-                                  web::WebFrame* web_frame) override {
+  // web::WebFramesManager::Observer:
+  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
+                               web::WebFrame* web_frame) override {
     Inject(web_frame);
   }
 
+  // web::WebStateObserver:
   void WebStateDestroyed(web::WebState* web_state) override {
-    observation_.Reset();
+    web_state_observation_.Reset();
+    frames_manager_observation_.Reset();
   }
 
   void Inject(web::WebFrame* web_frame) {
@@ -89,8 +93,11 @@ class TestAutofillManagerInjector : public web::WebStateObserver {
   }
 
   web::WebState* web_state_;
-  base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
-      this};
+  base::ScopedObservation<web::WebFramesManager,
+                          web::WebFramesManager::Observer>
+      frames_manager_observation_{this};
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 };
 
 }  // namespace autofill
