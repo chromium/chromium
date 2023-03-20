@@ -178,19 +178,19 @@ class ContentAutofillRouter {
   // Routing of events called by the renderer:
   void SetFormToBeProbablySubmitted(
       ContentAutofillDriver* source,
-      const absl::optional<FormData>& form,
+      absl::optional<FormData> form,
       void (*callback)(ContentAutofillDriver* target,
-                       const absl::optional<FormData>& form));
+                       const FormData* optional_form));
   void FormsSeen(
       ContentAutofillDriver* source,
-      const std::vector<FormData>& updated_forms,
+      std::vector<FormData> updated_forms,
       const std::vector<FormGlobalId>& removed_forms,
       void (*callback)(ContentAutofillDriver* target,
                        const std::vector<FormData>& updated_forms,
                        const std::vector<FormGlobalId>& removed_forms));
   void FormSubmitted(
       ContentAutofillDriver* source,
-      const FormData& form,
+      FormData form,
       bool known_success,
       mojom::SubmissionSource submission_source,
       void (*callback)(ContentAutofillDriver* target,
@@ -198,7 +198,7 @@ class ContentAutofillRouter {
                        bool known_success,
                        mojom::SubmissionSource submission_source));
   void TextFieldDidChange(ContentAutofillDriver* source,
-                          const FormData& form,
+                          FormData form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
                           base::TimeTicks timestamp,
@@ -208,7 +208,7 @@ class ContentAutofillRouter {
                                            const gfx::RectF& bounding_box,
                                            base::TimeTicks timestamp));
   void TextFieldDidScroll(ContentAutofillDriver* source,
-                          const FormData& form,
+                          FormData form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box,
                           void (*callback)(ContentAutofillDriver* target,
@@ -216,7 +216,7 @@ class ContentAutofillRouter {
                                            const FormFieldData& field,
                                            const gfx::RectF& bounding_box));
   void SelectControlDidChange(ContentAutofillDriver* source,
-                              const FormData& form,
+                              FormData form,
                               const FormFieldData& field,
                               const gfx::RectF& bounding_box,
                               void (*callback)(ContentAutofillDriver* target,
@@ -225,7 +225,7 @@ class ContentAutofillRouter {
                                                const gfx::RectF& bounding_box));
   void AskForValuesToFill(
       ContentAutofillDriver* source,
-      const FormData& form,
+      FormData form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       AutoselectFirstSuggestion autoselect_first_suggestion,
@@ -243,7 +243,7 @@ class ContentAutofillRouter {
                            void (*callback)(ContentAutofillDriver* target,
                                             bool had_interacted_form));
   void FocusOnFormField(ContentAutofillDriver* source,
-                        const FormData& form,
+                        FormData form,
                         const FormFieldData& field,
                         const gfx::RectF& bounding_box,
                         void (*callback)(ContentAutofillDriver* target,
@@ -251,7 +251,7 @@ class ContentAutofillRouter {
                                          const FormFieldData& field,
                                          const gfx::RectF& bounding_box));
   void DidFillAutofillFormData(ContentAutofillDriver* source,
-                               const FormData& form,
+                               FormData form,
                                base::TimeTicks timestamp,
                                void (*callback)(ContentAutofillDriver* target,
                                                 const FormData& form,
@@ -263,11 +263,11 @@ class ContentAutofillRouter {
                               void (*callback)(ContentAutofillDriver* target));
   void SelectFieldOptionsDidChange(
       ContentAutofillDriver* source,
-      const FormData& form,
+      FormData form,
       void (*callback)(ContentAutofillDriver* target, const FormData& form));
   void JavaScriptChangedAutofilledValue(
       ContentAutofillDriver* source,
-      const FormData& form,
+      FormData form,
       const FormFieldData& field,
       const std::u16string& old_value,
       void (*callback)(ContentAutofillDriver* target,
