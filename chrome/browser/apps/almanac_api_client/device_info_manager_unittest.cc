@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
@@ -36,6 +37,12 @@ class DeviceInfoManagerTest : public testing::Test {
 };
 
 TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {
+  const char kLsbRelease[] = R"(
+  CHROMEOS_RELEASE_VERSION=123.4.5
+  CHROMEOS_RELEASE_BOARD=puff-signed-mp-v11keys
+  )";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
   static constexpr char kTestLocale[] = "test_locale";
   profile()->GetPrefs()->SetString(language::prefs::kApplicationLocale,
                                    kTestLocale);
@@ -45,11 +52,12 @@ TEST_F(DeviceInfoManagerTest, CheckDeviceInfo) {
 
   DeviceInfo device_info = info_future.Take();
 
-  ASSERT_FALSE(device_info.board.empty());
+  // Values set above:
+  ASSERT_EQ(device_info.board, "puff");
   ASSERT_FALSE(device_info.model.empty());
-  ASSERT_FALSE(device_info.user_type.empty());
+  ASSERT_EQ(device_info.user_type, "unmanaged");
   ASSERT_FALSE(device_info.version_info.ash_chrome.empty());
-  ASSERT_FALSE(device_info.version_info.platform.empty());
+  ASSERT_EQ(device_info.version_info.platform, "123.4.5");
   ASSERT_EQ(device_info.version_info.channel, chrome::GetChannel());
   ASSERT_EQ(device_info.locale, kTestLocale);
 }

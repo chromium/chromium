@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/user_type_filter.h"
@@ -47,7 +48,7 @@ void DeviceInfoManager::GetDeviceInfo(
 
   DeviceInfo device_info;
 
-  device_info.board = base::SysInfo::HardwareModelName();
+  device_info.board = base::ToLowerASCII(base::SysInfo::HardwareModelName());
   device_info.version_info.ash_chrome = version_info::GetVersionNumber();
   device_info.user_type = apps::DetermineUserType(profile_);
   device_info.version_info.channel = chrome::GetChannel();
