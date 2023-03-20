@@ -29,6 +29,8 @@
 #include <tuple>
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -55,6 +57,7 @@
 #include "third_party/blink/renderer/core/events/composition_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -550,6 +553,22 @@ void InputMethodController::SelectComposition() const {
   if (range.IsNull())
     return;
 
+  // When we select the composition (to be able to replace it), we must not
+  // claim that the selection is the result of an input event, even though
+  // the act of committing the composition _is_ an input event in itself.
+  // Otherwise, X11 clients would interpret the selection as a command to
+  // replace the primary selection (on the clipboard) with the contents
+  // of the composition.
+  bool old_handling_input_event = false;
+  WebFrameWidget* widget = nullptr;
+  if (GetFrame().Client() && GetFrame().Client()->GetWebFrame()) {
+    widget = GetFrame().Client()->GetWebFrame()->FrameWidget();
+  }
+  if (widget) {
+    old_handling_input_event = widget->HandlingInputEvent();
+    widget->SetHandlingInputEvent(false);
+  }
+
   // The composition can start inside a composed character sequence, so we have
   // to override checks. See <http://bugs.webkit.org/show_bug.cgi?id=15781>
 
@@ -560,6 +579,10 @@ void InputMethodController::SelectComposition() const {
   GetFrame().Selection().SetSelection(
       SelectionInDOMTree::Builder().SetBaseAndExtent(range).Build(),
       SetSelectionOptions());
+
+  if (widget) {
+    widget->SetHandlingInputEvent(old_handling_input_event);
+  }
 }
 
 bool IsTextTooLongAt(const Position& position) {
