@@ -136,8 +136,9 @@ public class StartSurfaceHomeLayout extends Layout {
         if (mBackgroundTabAnimation != null && mBackgroundTabAnimation.isStarted()) {
             mBackgroundTabAnimation.end();
         }
-        mBackgroundTabAnimation = BackgroundTabAnimation.create(
-                this, startSurfaceView, originX, originY, getOrientation() == Orientation.PORTRAIT);
+        float dpToPx = getContext().getResources().getDisplayMetrics().density;
+        mBackgroundTabAnimation = BackgroundTabAnimation.create(this, startSurfaceView,
+                originX * dpToPx, originY * dpToPx, getOrientation() == Orientation.PORTRAIT);
         mBackgroundTabAnimation.start();
     }
 

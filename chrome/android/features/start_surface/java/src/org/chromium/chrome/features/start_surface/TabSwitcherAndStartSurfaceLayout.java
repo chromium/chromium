@@ -490,8 +490,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         if (mBackgroundTabAnimation != null && mBackgroundTabAnimation.isStarted()) {
             mBackgroundTabAnimation.end();
         }
-        mBackgroundTabAnimation = BackgroundTabAnimation.create(this, primaryTasksSurface, originX,
-                originY, getOrientation() == Orientation.PORTRAIT);
+        float dpToPx = getContext().getResources().getDisplayMetrics().density;
+        mBackgroundTabAnimation = BackgroundTabAnimation.create(this, primaryTasksSurface,
+                originX * dpToPx, originY * dpToPx, getOrientation() == Orientation.PORTRAIT);
         mBackgroundTabAnimation.start();
     }
 

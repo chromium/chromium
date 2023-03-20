@@ -2046,8 +2046,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         insetSupplier.setKeyboardAccessoryInsetSupplier(
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
         compositorViewHolder.setApplicationViewportInsetSupplier(insetSupplier);
-        compositorViewHolder.setAutofillUiBottomInsetSupplier(
-                mManualFillingComponentSupplier.get().getBottomInsetSupplier());
 
         compositorViewHolder.setTopUiThemeColorProvider(
                 mRootUiCoordinator.getTopUiThemeColorProvider());

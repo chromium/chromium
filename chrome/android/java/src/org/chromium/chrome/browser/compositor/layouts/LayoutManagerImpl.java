@@ -221,9 +221,8 @@ public class LayoutManagerImpl
                 float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
                 float lastTapY = 0.f;
                 if (launchType != TabLaunchType.FROM_CHROME_UI) {
-                    float heightDelta = mHost.getHeightMinusBrowserControls() * mPxToDp;
                     lastTapX = mPxToDp * mLastTapX;
-                    lastTapY = mPxToDp * mLastTapY - heightDelta;
+                    lastTapY = mPxToDp * mLastTapY;
                 }
 
                 tabCreated(tabId, getTabModelSelector().getCurrentTabId(), launchType, incognito,

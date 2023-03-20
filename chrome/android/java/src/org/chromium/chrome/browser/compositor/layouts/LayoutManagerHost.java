@@ -72,12 +72,6 @@ public interface LayoutManagerHost {
     void getViewportFullControls(RectF outRect);
 
     /**
-     * @return The height of the screen minus the height of the top and bottom browser controls
-     *         when not hidden.
-     */
-    float getHeightMinusBrowserControls();
-
-    /**
      * @return The height of the top browser controls in pixels.
      */
     int getTopControlsHeightPixels();

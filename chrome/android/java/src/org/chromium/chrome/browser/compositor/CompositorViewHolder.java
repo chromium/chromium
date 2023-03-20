@@ -169,7 +169,6 @@ public class CompositorViewHolder extends FrameLayout
     /** The toolbar control container. **/
     private @Nullable ControlContainer mControlContainer;
 
-    private ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     private boolean mShowingFullscreen;
     private Runnable mSystemUiFullscreenResizeRunnable;
 
@@ -558,17 +557,6 @@ public class CompositorViewHolder extends FrameLayout
      */
     public void setTopUiThemeColorProvider(TopUiThemeColorProvider themeColorProvider) {
         mTopUiThemeColorProvider = themeColorProvider;
-    }
-
-    /**
-     * A supplier providing an inset that resizes the page in addition or instead of the keyboard.
-     * This is inset is used to add to browser bottom controls until the
-     * ApplicationViewportInsetSupplier integrates them.
-     * @param autofillUiBottomInsetSupplier A {@link ObservableSupplier<Integer>}.
-     */
-    public void setAutofillUiBottomInsetSupplier(
-            ObservableSupplier<Integer> autofillUiBottomInsetSupplier) {
-        mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
     }
 
     /**
@@ -1182,29 +1170,30 @@ public class CompositorViewHolder extends FrameLayout
     public void getVisibleViewport(RectF outRect) {
         getWindowViewport(outRect);
 
-        float bottomControlOffset = 0;
+        if (mApplicationBottomInsetSupplier != null) {
+            outRect.bottom -= mApplicationBottomInsetSupplier.get().viewVisibleHeightInset;
+        }
+
+        // mApplicationBottomInsetSupplier doesn't include browser controls.
         if (mBrowserControlsManager != null) {
             // All of these values are in pixels.
             outRect.top += mBrowserControlsManager.getTopVisibleContentOffset();
-            bottomControlOffset = mBrowserControlsManager.getBottomControlOffset();
+            float bottomControlOffset = mBrowserControlsManager.getBottomControlOffset();
+            outRect.bottom -= (getBottomControlsHeightPixels() - bottomControlOffset);
         }
-        outRect.bottom -= (getBottomControlsHeightPixels() - bottomControlOffset);
     }
 
     @Override
     public void getViewportFullControls(RectF outRect) {
         getWindowViewport(outRect);
 
-        if (mBrowserControlsManager != null) {
-            // All of these values are in pixels.
-            outRect.top += mBrowserControlsManager.getTopControlsHeight();
+        if (mApplicationBottomInsetSupplier != null) {
+            outRect.bottom -= mApplicationBottomInsetSupplier.get().viewVisibleHeightInset;
         }
-        outRect.bottom -= getBottomControlsHeightPixels();
-    }
 
-    @Override
-    public float getHeightMinusBrowserControls() {
-        return getHeight() - (getTopControlsHeightPixels() + getBottomControlsHeightPixels());
+        // mApplicationBottomInsetSupplier doesn't include browser controls.
+        outRect.top += getTopControlsHeightPixels();
+        outRect.bottom -= getBottomControlsHeightPixels();
     }
 
     @Override
@@ -1328,17 +1317,8 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public int getBottomControlsHeightPixels() {
-        int bottomControlsHeight = mBrowserControlsManager != null
-                ? mBrowserControlsManager.getBottomControlsHeight()
-                : 0;
-        int keyboardAccessoryHeight = 0;
-        // TODO(bokan): This preserves behavior but this method is used to determine UI insets so
-        // this shouldn't depend on VirtualKeyboardMode
-        if (mVirtualKeyboardMode != VirtualKeyboardMode.RESIZES_VISUAL) {
-            keyboardAccessoryHeight = mAutofillUiBottomInsetSupplier.get();
-        }
-
-        return bottomControlsHeight + keyboardAccessoryHeight;
+        return mBrowserControlsManager != null ? mBrowserControlsManager.getBottomControlsHeight()
+                                               : 0;
     }
 
     /**

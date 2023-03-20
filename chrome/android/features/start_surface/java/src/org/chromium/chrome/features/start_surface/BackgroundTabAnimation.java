@@ -48,8 +48,8 @@ public class BackgroundTabAnimation {
      * Create an animation to show that a tab has been created in the background.
      * @param layout {@link Layout} from which the tab was created.
      * @param view View that will appear to momentarily shrink.
-     * @param lastTapX X position of the last touch down event.
-     * @param lastTapY Y position of the last touch down event.
+     * @param lastTapX X position of the last touch down event in px.
+     * @param lastTapY Y position of the last touch down event in px.
      * @param portrait True for portrait mode, false for landscape.
      * @return An @{link Animator} for the background tab animation.
      */
