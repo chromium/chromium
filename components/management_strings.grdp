@@ -304,7 +304,7 @@
       Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
     </message>
     <message name="IDS_MANAGEMENT_PAGE_PRINTED_VISIBLE_DATA" desc="Description of the visible data for the page print scanning feature.">
-      The content of pages you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
+      The content of pages you print and information about your printer is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
     </message>
     <message name="IDS_MANAGEMENT_FILE_TRANSFER_VISIBLE_DATA" desc="Description of the visible data for the file transfer scanning feature.">
       Files you copy or move are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.
