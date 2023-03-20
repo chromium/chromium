@@ -3211,7 +3211,7 @@ id<GREYMatcher> EditDoneButton() {
   id<GREYMatcher> localIconMatcher =
       grey_allOf(grey_accessibilityID(kLocalOnlyPasswordIconId),
                  grey_ancestor(passwordMatcher), nil);
-  [[EarlGrey selectElementWithMatcher:localIconMatcher]
+  [GetInteractionForListItem(localIconMatcher, kGREYDirectionDown)
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:passwordMatcher]
@@ -3236,7 +3236,7 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:localIconMatcher]
+  [GetInteractionForListItem(localIconMatcher, kGREYDirectionDown)
       assertWithMatcher:grey_notVisible()];
 }
 
