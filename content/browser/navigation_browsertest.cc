@@ -6022,6 +6022,57 @@ IN_PROC_BROWSER_TEST_F(
             second_tab_handle->GetRedirectChain());
 }
 
+// Regression test for https://crbug.com/1392653.  Ensure that loading a URL
+// that doesn't go through the network stack but does assign a site for its
+// SiteInstance in an unassigned SiteInstance does not fail.  An example of
+// such a URL is about:srcdoc. This ensures that the SiteInstance's site is set
+// even on the WillCommitWithoutUrlLoader() path in NavigationRequest.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       AboutSrcdocInjectedOnAboutBlankPage) {
+  // Start on an about:blank page, which should stay in an unassigned
+  // SiteInstance.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  SiteInstanceImpl* site_instance = current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(site_instance->HasSite());
+
+  // Inject a srcdoc iframe into the blank document.  This shouldn't really be
+  // possible on the open web, since an about:blank page with an unassigned
+  // SiteInstance shouldn't be scriptable by other pages, but it could still
+  // happen in automation scenarios or through DevTools.
+  TestNavigationObserver navigation_observer(web_contents());
+  EXPECT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    let frame = document.createElement('iframe');
+    frame.srcdoc = 'test';
+    document.body.appendChild(frame);
+  )")));
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ("about:srcdoc", navigation_observer.last_navigation_url());
+
+  // The srcdoc child should stay in its about:blank parent SiteInstance.
+  EXPECT_EQ(1U, main_frame()->child_count());
+  FrameTreeNode* child = main_frame()->child_at(0);
+  EXPECT_EQ(child->current_frame_host()->GetSiteInstance(), site_instance);
+
+  // Committing an about:srcdoc navigation currently forces the SiteInstance's
+  // site to be set. Prior to fixing https://crbug.com/1392653, this happened
+  // after the actual commit was processed at DidNavigate() time, which is a
+  // path that is no longer supported, and hence this triggered a NOTREACHED().
+  // Now, the site should be set before we send the CommitNavigation IPC.
+  EXPECT_TRUE(site_instance->HasSite());
+
+  if (AreDefaultSiteInstancesEnabled()) {
+    EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
+    EXPECT_EQ(SiteInstanceImpl::GetDefaultSiteURL(),
+              site_instance->GetSiteInfo().site_url());
+  } else {
+    // When we get into this situation with strict site isolation, the site URL
+    // currently used is "about:". This may be changed in the future (e.g., to
+    // an opaque ID).
+    EXPECT_EQ("about:", site_instance->GetSiteInfo().site_url());
+  }
+}
+
 class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {
  public:
   CacheTransparencyNavigationBrowserTest() {
