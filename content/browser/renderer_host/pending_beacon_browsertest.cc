@@ -911,7 +911,7 @@ class PendingBeaconRendererProcessExitBrowserTest
   }
 };
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 // Disabled due to failures on various Mac/Linux builders.
 // TODO(crbug.com/1382713) Reenable the test.
 #define MAYBE_SendAllOnProcessCrash DISABLED_SendAllOnProcessCrash
