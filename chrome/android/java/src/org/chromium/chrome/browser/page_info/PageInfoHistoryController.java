@@ -163,9 +163,6 @@ public class PageInfoHistoryController
         mDataIsStale = false;
     }
 
-    @Override
-    public void onNativeInitialized() {}
-
     // HistoryContentManager.Observer
     @Override
     public void onScrolledCallback(boolean loadedMore) {}

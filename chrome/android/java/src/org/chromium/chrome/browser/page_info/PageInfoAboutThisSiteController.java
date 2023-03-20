@@ -246,11 +246,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     @Override
     public void updateRowIfNeeded() {}
 
-    @Override
-    public void onNativeInitialized() {
-        mMainController.setAboutThisSiteShown(mSiteInfo != null);
-    }
-
     @NativeMethods
     interface Natives {
         boolean isFeatureEnabled();

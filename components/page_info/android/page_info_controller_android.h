@@ -34,9 +34,6 @@ class PageInfoControllerAndroid : public PageInfoUI {
   void RecordPageInfoAction(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj,
                             jint action);
-  void SetAboutThisSiteShown(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
-                             jboolean was_about_this_site_shown);
   void UpdatePermissions(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
 

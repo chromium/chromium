@@ -34,14 +34,6 @@ public interface PageInfoMainController {
      */
     void recordAction(@PageInfoAction int action);
 
-    /**
-     * Inform the native controller that the AboutThisSite section was shown.
-     * This signal is used for metrics.
-     *
-     * @param wasAboutThisSiteShown Whether the section was shown.
-     */
-    void setAboutThisSiteShown(boolean wasAboutThisSiteShown);
-
     /** Refreshes the permissions of the page info. */
     void refreshPermissions();
 

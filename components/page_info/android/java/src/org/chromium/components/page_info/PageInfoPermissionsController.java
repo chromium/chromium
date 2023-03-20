@@ -211,9 +211,6 @@ public class PageInfoPermissionsController
         mDataIsStale = false;
     }
 
-    @Override
-    public void onNativeInitialized() {}
-
     // SingleWebsiteSettings.Observer methods
 
     @Override

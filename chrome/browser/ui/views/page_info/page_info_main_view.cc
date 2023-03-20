@@ -408,7 +408,6 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     if (page_info::IsAboutThisSiteFeatureEnabled(
             g_browser_process->GetApplicationLocale())) {
       auto info = ui_delegate_->GetAboutThisSiteInfo();
-      presenter_->SetAboutThisSiteShown(info.has_value());
       if (info.has_value()) {
         about_this_site_section_->RemoveAllChildViews();
         about_this_site_section_->AddChildView(

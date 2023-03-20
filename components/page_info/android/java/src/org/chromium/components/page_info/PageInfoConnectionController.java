@@ -177,7 +177,4 @@ public class PageInfoConnectionController
 
     @Override
     public void updateRowIfNeeded() {}
-
-    @Override
-    public void onNativeInitialized() {}
 }

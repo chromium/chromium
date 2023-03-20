@@ -33,9 +33,4 @@ public interface PageInfoSubpageController {
      * since the last time.
      */
     void updateRowIfNeeded();
-
-    /**
-     * Called when the native counterpart of PageInfoController is initialized.
-     */
-    void onNativeInitialized();
 }
