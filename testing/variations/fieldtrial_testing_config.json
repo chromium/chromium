@@ -450,21 +450,6 @@
             ]
         }
     ],
-    "AnonymousUpdateChecks": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "AnonymousUpdateChecks",
-                    "enable_features": [
-                        "AnonymousUpdateChecks"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppCloseRefreshClankStudy": [
         {
             "platforms": [
