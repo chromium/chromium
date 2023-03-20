@@ -20,7 +20,7 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   Promise<void> joinAdInterestGroup(AuctionAdInterestGroup group, double durationSeconds);
 
   [CallWith=ScriptState, Measure, RaisesException]
-  Promise<void> leaveAdInterestGroup(optional AuctionAdInterestGroup group);
+  Promise<void> leaveAdInterestGroup(optional AuctionAdInterestGroupKey group);
 
   [CallWith=ScriptState, Measure, RaisesException]
   void updateAdInterestGroups();

@@ -16,6 +16,12 @@ dictionary AuctionAdInterestGroupSize {
   required USVString height;
 };
 
+// Used for leaving interest groups. Other fields ignored.
+dictionary AuctionAdInterestGroupKey {
+  required USVString owner;
+  required USVString name;
+};
+
 dictionary AuctionAdInterestGroup {
   required USVString owner;
   required USVString name;

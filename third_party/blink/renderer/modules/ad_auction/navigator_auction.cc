@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_size.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h"
@@ -2237,13 +2238,13 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
 
 ScriptPromise NavigatorAuction::leaveAdInterestGroup(
     ScriptState* script_state,
-    const AuctionAdInterestGroup* group,
+    const AuctionAdInterestGroupKey* group_key,
     ExceptionState& exception_state) {
-  scoped_refptr<const SecurityOrigin> owner = ParseOrigin(group->owner());
+  scoped_refptr<const SecurityOrigin> owner = ParseOrigin(group_key->owner());
   if (!owner) {
-    exception_state.ThrowTypeError("owner '" + group->owner() +
+    exception_state.ThrowTypeError("owner '" + group_key->owner() +
                                    "' for AuctionAdInterestGroup with name '" +
-                                   group->name() +
+                                   group_key->name() +
                                    "' must be a valid https origin.");
     return ScriptPromise();
   }
@@ -2260,7 +2261,7 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
           WTF::BindOnce(&NavigatorAuction::LeaveComplete,
                         WrapWeakPersistent(this), is_cross_origin));
 
-  PendingLeave pending_leave{std::move(owner), std::move(group->name()),
+  PendingLeave pending_leave{std::move(owner), std::move(group_key->name()),
                              std::move(callback)};
   if (is_cross_origin) {
     queued_cross_site_leaves_.Enqueue(std::move(pending_leave));
@@ -2303,7 +2304,7 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
 ScriptPromise NavigatorAuction::leaveAdInterestGroup(
     ScriptState* script_state,
     Navigator& navigator,
-    const AuctionAdInterestGroup* group,
+    const AuctionAdInterestGroupKey* group_key,
     ExceptionState& exception_state) {
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -2322,7 +2323,7 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
   }
 
   return From(context, navigator)
-      .leaveAdInterestGroup(script_state, group, exception_state);
+      .leaveAdInterestGroup(script_state, group_key, exception_state);
 }
 
 /* static */

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AD_AUCTION_NAVIGATOR_AUCTION_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
@@ -28,6 +29,7 @@ namespace blink {
 class AdRequestConfig;
 class Ads;
 class AuctionAdInterestGroup;
+class AuctionAdInterestGroupKey;
 class AuctionAdConfig;
 class ScopedAbortState;
 class ScriptPromiseResolver;
@@ -56,11 +58,11 @@ class MODULES_EXPORT NavigatorAuction final
                                            double,
                                            ExceptionState&);
   ScriptPromise leaveAdInterestGroup(ScriptState*,
-                                     const AuctionAdInterestGroup*,
+                                     const AuctionAdInterestGroupKey*,
                                      ExceptionState&);
   static ScriptPromise leaveAdInterestGroup(ScriptState*,
                                             Navigator&,
-                                            const AuctionAdInterestGroup*,
+                                            const AuctionAdInterestGroupKey*,
                                             ExceptionState&);
   // Implicit leaveAdInterestGroup - only supported when called from within
   // a fenced frame showing FLEDGE ads.
