@@ -33,6 +33,10 @@ enum class AccessPoint : int;
 - (void)consistencyDefaultAccountCoordinatorSignin:
     (ConsistencyDefaultAccountCoordinator*)coordinator;
 
+// Called when the user wants to sign in without an existing account.
+- (void)consistencyDefaultAccountCoordinatorOpenAddAccount:
+    (ConsistencyDefaultAccountCoordinator*)coordinator;
+
 @end
 
 // This coordinator presents an entry point to the Chrome sign-in flow with the

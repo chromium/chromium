@@ -30,6 +30,10 @@ enum class AccessPoint : int;
 // Called when the user taps on the continue button.
 - (void)consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:
     (ConsistencyDefaultAccountViewController*)viewController;
+// Called when the user taps on the "Sign In…" button without an existing
+// account.
+- (void)consistencyDefaultAccountViewControllerAddAccountAndSignin:
+    (ConsistencyDefaultAccountViewController*)viewController;
 
 @end
 

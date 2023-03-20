@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -109,6 +110,11 @@
 - (void)consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:
     (ConsistencyDefaultAccountViewController*)viewController {
   [self.delegate consistencyDefaultAccountCoordinatorSignin:self];
+}
+
+- (void)consistencyDefaultAccountViewControllerAddAccountAndSignin:
+    (ConsistencyDefaultAccountViewController*)viewController {
+  [self.delegate consistencyDefaultAccountCoordinatorOpenAddAccount:self];
 }
 
 @end

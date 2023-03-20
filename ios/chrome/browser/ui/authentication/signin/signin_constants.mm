@@ -17,8 +17,8 @@ NSString* const kConfirmationAccessibilityIdentifier =
 NSString* const kMoreAccessibilityIdentifier = @"MoreAccessibilityIdentifier";
 NSString* const kWebSigninAccessibilityIdentifier =
     @"WebSigninAccessibilityIdentifier";
-NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier =
-    @"WebSigninContinueAsButtonAccessibilityIdentifier";
+NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier =
+    @"WebSigninPrimaryButtonAccessibilityIdentifier";
 NSString* const kWebSigninSkipButtonAccessibilityIdentifier =
     @"WebSigninSkipButtonAccessibilityIdentifier";
 NSString* const kTangibleSyncViewAccessibilityIdentifier =
