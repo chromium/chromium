@@ -166,12 +166,12 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   class TestDelegate {
    public:
     // Provides the total number of pages requested for the preview.
-    virtual void DidGetPreviewPageCount(uint32_t page_count) = 0;
+    virtual void DidGetPreviewPageCount(uint32_t page_count) {}
 
     // Notifies that a page was rendered for the preview.  This occurs after
     // any possible N-up processing, so each rendered page could represent
     // multiple pages that were counted in `DidGetPreviewPageCount()`.
-    virtual void DidRenderPreviewPage(content::WebContents* preview_dialog) = 0;
+    virtual void DidRenderPreviewPage(content::WebContents* preview_dialog) {}
 
    protected:
     virtual ~TestDelegate() = default;
