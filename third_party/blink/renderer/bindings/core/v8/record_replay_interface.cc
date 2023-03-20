@@ -279,6 +279,9 @@ function commandCallback(method, params) {
     return result;
   } catch (e) {
     log(`[RuntimeError][Command ${method}] ${e?.stack || e}`);
+    // Pass the error up to V8; it can (for now) decide how to handle itself, whether
+    // it should crash or not, etc.  Eventually, the caller of the command should make
+    // that decision.
     return e;
   }
 }
