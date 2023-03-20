@@ -657,24 +657,35 @@ deps = {
       'condition': 'checkout_mac',
   },
 
+  'src/third_party/updater/chrome_linux64': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_linux',
+      'packages': [
+        {
+          'package': 'chromium/third_party/updater/chrome_linux64',
+          'version': 'fASOrs-2QxLH4wGz3cq2kYWaOmOZ6iPzXWBaHW-3YRkC',
+        },
+      ],
+  },
+
   'src/third_party/updater/chrome_mac_universal': {
       'dep_type': 'cipd',
       'condition': 'checkout_mac',
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal',
-          'version': 'u1XGTm7703jO-Ax33P8j-x_KijOeHd36aBA6SO8V3a8C',
+          'version': '7VhToYn-E3LXpYnm9s9jYdxNXke02DtWaJDqYrYRnNUC',
         },
       ],
-  }
-  ,
+  },
+
   'src/third_party/updater/chrome_mac_universal_prod': {
       'dep_type': 'cipd',
       'condition': 'checkout_mac',
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_mac_universal_prod',
-          'version': 'qDhUmRj82uhWqE2eVqt12e1eJKWKgRpRjgQrBSrdyP4C',
+          'version': 'c7qrycwnkp4R8gi0EeUV9U8BnOE0r--LhZAC9uG6xWoC',
         },
       ],
   },
@@ -685,7 +696,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86',
-          'version': 'RmZn_R0BOPSbruD15DEq9pfu5IhhtjoJX6z-ufrWnD4C',
+          'version': 'tZsZTfw7VWDV34gVY9dbe0GfdIpzyEiI8OixEeNiZa8C',
         },
       ],
   },
@@ -696,7 +707,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_x86_64',
-          'version': 'AAes70A2b8-CLhU1h9Sh1x2K-N3WjG7j2Tlp6VOgmnQC',
+          'version': 'WmP4Vc7qJey93eEtaErCNDpQisABBTDHw4TWPOJyFU4C',
         },
       ],
   },
@@ -708,7 +719,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_amd64',
-          'version': '5ui7_fqpvI7a8omWqM8iyD0PZFPJpYKoMHkAb6xA_TkC',
+          'version': '181zBl1aAUqG8duH_W8VOA1eT009_B8SX-Wevln3sI4C',
         },
       ],
   },
@@ -720,7 +731,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_mac_arm64',
-          'version': '0KnizXQ2_n_V3aEHR240LqMKw7b0-Pm9VBUmVuQh0cAC',
+          'version': 'BdTuSFp4NP_JTwW5UBQtYiCIECiizKxOXuOvJBrkzuMC',
         },
       ],
   },
@@ -731,7 +742,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86',
-          'version': 'g_24x4tVzQIoveectPGIXIGc2ptYDTnOodXieF_OG_4C',
+          'version': '7axlCTeGu9zVyvMFjl_VGHdOeChRxuMVUg9lJB0t0y0C',
         },
       ],
   },
@@ -742,7 +753,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86_64',
-          'version': 's6U9lpJZsILIKkP5bCc_QqvJjPW2MwMWg5IoCBt_YEYC',
+          'version': 'bg3EWZJ5FdbYY7I949RV5oo782KRGxW4c9Qx2QHVW5oC',
         },
       ],
   },
