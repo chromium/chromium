@@ -187,4 +187,11 @@ BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType();
 // or reading list item is added.
 BASE_DECLARE_FEATURE(kEnableEmailInBookmarksReadingListSnackbar);
 
+// Feature flag to enable indicating Sync errors (including identity errors)
+// on the Settings destination in the overflow menu carousel.
+BASE_DECLARE_FEATURE(kIndicateSyncErrorInOverflowMenu);
+
+// Returns true if the `kIndicateSyncErrorInOverflowMenu` feature is enabled.
+bool IsIndicateSyncErrorInOverflowMenuEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

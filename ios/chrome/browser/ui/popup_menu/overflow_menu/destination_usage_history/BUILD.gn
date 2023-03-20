@@ -1,6 +1,7 @@
 source_set("destination_usage_history") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "constants.h",
     "destination_usage_history.h",
     "destination_usage_history.mm",
   ]

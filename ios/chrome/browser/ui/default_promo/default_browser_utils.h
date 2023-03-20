@@ -12,6 +12,9 @@
 namespace feature_engagement {
 class Tracker;
 }
+namespace syncer {
+class SyncService;
+}
 
 // Enum for the different types of default browser modal promo. These are stored
 // as values, if adding a new one, make sure to add it at the end.
@@ -65,9 +68,10 @@ bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo();
 // Returns true if the passed default browser badge `feature` should be shown.
 // Also makes the necessary calls to the FET for keeping track of usage, as well
 // as checking that the correct preconditions are met.
-bool ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
+bool ShouldTriggerDefaultBrowserHighlightFeature(
     const base::Feature& feature,
-    feature_engagement::Tracker* tracker);
+    feature_engagement::Tracker* tracker,
+    syncer::SyncService* syncService);
 
 // Returns true if the user is in the group that will be shown the Remind Me
 // Later button in the fullscreen promo.

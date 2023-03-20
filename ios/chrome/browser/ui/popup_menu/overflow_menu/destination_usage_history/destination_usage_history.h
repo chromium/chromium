@@ -32,9 +32,19 @@ class PrefService;
 // (4) Swap (i.e. "promote") the [group B] destination with the [group A] one if
 // B's number of clicks exceeds A's.
 //
-// Additionally, new destinations introduced to the carousel will be inserted
-// starting at position `kNewDestinationsInsertionIndex` and display a new
-// indicator badge.
+// Destinations may optionally be displayed with one of three badge types (in
+// priority order):
+//
+//   1. Error badge
+//   2. Promo badge
+//   3. New badge
+//
+// Destinations with badges will ignore the ranking determined by the sorting
+// algorithm, and instead be inserted into the carousel starting at position
+// kNewDestinationsInsertionIndex.
+//
+// Destinations with badges of different type will order themselves according
+// to the priority order defined above.
 //
 // Expects `-start` to be called before any other method is invoked.
 //
@@ -57,8 +67,8 @@ class PrefService;
 // Records a `destination` click from the overflow menu carousel.
 - (void)recordClickForDestination:(overflow_menu::Destination)destination;
 
-// Returns a new frecency-sorted list of OverflowMenuDestination* given a
-// list of OverflowMenuDestination*.
+// Returns a new frecency-sorted list of OverflowMenuDestination* given a list
+// of OverflowMenuDestination*.
 - (NSArray<OverflowMenuDestination*>*)
     sortedDestinationsFromCarouselDestinations:
         (NSArray<OverflowMenuDestination*>*)carouselDestinations;

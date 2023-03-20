@@ -13,6 +13,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -593,7 +594,8 @@ TEST_F(DestinationUsageHistoryTest, InsertsNewDestinationsInMiddleOfRanking) {
   const base::Value::List& actual = ranking.value().GetList();
 
   ASSERT_EQ(
-      overflow_menu::DestinationForStringName(actual[3].GetString()),
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex].GetString()),
       static_cast<overflow_menu::Destination>(all_destinations[7].destination));
 
   ASSERT_EQ(
@@ -644,10 +646,265 @@ TEST_F(DestinationUsageHistoryTest, InsertsAndRemovesNewDestinationsInRanking) {
       static_cast<overflow_menu::Destination>(all_destinations[2].destination));
 
   ASSERT_EQ(
-      overflow_menu::DestinationForStringName(actual[3].GetString()),
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex].GetString()),
       static_cast<overflow_menu::Destination>(all_destinations[7].destination));
 
   ASSERT_EQ(
-      overflow_menu::DestinationForStringName(actual[4].GetString()),
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 1].GetString()),
       static_cast<overflow_menu::Destination>(all_destinations[6].destination));
+}
+
+// Tests that the destinations that have a badge are moved in the middle of the
+// ranking to get the user's attention; before the untapped destinations.
+TEST_F(DestinationUsageHistoryTest, MoveBadgedDestinationsInRanking) {
+  NSArray<OverflowMenuDestination*>* all_destinations = SampleDestinations();
+  NSArray<OverflowMenuDestination*>* current_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+  ];
+
+  // Creates `DestinationUsageHistory` with initial ranking
+  // `current_destinations`.
+  DestinationUsageHistory* destination_usage_history =
+      CreateDestinationUsageHistory(current_destinations);
+
+  NSArray<OverflowMenuDestination*>* updated_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+    // New destinations
+    all_destinations[6],
+  ];
+
+  all_destinations[4].badge = BadgeTypeError;
+
+  [destination_usage_history
+      sortedDestinationsFromCarouselDestinations:updated_destinations];
+
+  ScopedDictPrefUpdate update(prefs_.get(),
+                              prefs::kOverflowMenuDestinationUsageHistory);
+
+  absl::optional<base::Value> ranking = update->Extract("ranking");
+
+  EXPECT_TRUE(ranking.has_value());
+
+  const base::Value::List& actual = ranking.value().GetList();
+
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[4].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 1].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[6].destination));
+}
+
+// Tests that the destinations that have an error badge have priority over the
+// other badges when they are moved.
+TEST_F(DestinationUsageHistoryTest, PriorityToErrorBadgeOverOtherBadges) {
+  NSArray<OverflowMenuDestination*>* all_destinations = SampleDestinations();
+  NSArray<OverflowMenuDestination*>* current_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+  ];
+
+  all_destinations[5].badge = BadgeTypeError;
+  all_destinations[3].badge = BadgeTypePromo;
+
+  // Creates `DestinationUsageHistory` with initial ranking
+  // `current_destinations`.
+  CreateDestinationUsageHistory(current_destinations);
+
+  ScopedDictPrefUpdate update(prefs_.get(),
+                              prefs::kOverflowMenuDestinationUsageHistory);
+
+  absl::optional<base::Value> ranking = update->Extract("ranking");
+
+  EXPECT_TRUE(ranking.has_value());
+
+  const base::Value::List& actual = ranking.value().GetList();
+
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[5].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 1].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[3].destination));
+}
+
+// Tests that the destinations that have a badge but are in a better position
+// than kNewDestinationsInsertionIndex won't be moved hence not demoted.
+TEST_F(DestinationUsageHistoryTest, DontMoveBadgedDestinationWithGoodRanking) {
+  NSArray<OverflowMenuDestination*>* all_destinations = SampleDestinations();
+  NSArray<OverflowMenuDestination*>* current_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+  ];
+
+  all_destinations[0].badge = BadgeTypePromo;
+
+  // Creates `DestinationUsageHistory` with initial ranking
+  // `current_destinations`.
+  CreateDestinationUsageHistory(current_destinations);
+
+  ScopedDictPrefUpdate update(prefs_.get(),
+                              prefs::kOverflowMenuDestinationUsageHistory);
+
+  absl::optional<base::Value> ranking = update->Extract("ranking");
+
+  EXPECT_TRUE(ranking.has_value());
+
+  const base::Value::List& actual = ranking.value().GetList();
+
+  // Verify that the destination with a badge and with a better ranking than
+  // kNewDestinationsInsertionIndex wasn't moved.
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(actual[0].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[0].destination));
+}
+
+// Tests that if a destination is both new and has a badge, it will be inserted
+// before the other destinations that are only new without a badge assigned.
+TEST_F(DestinationUsageHistoryTest, PriorityToBadgeOverNewDestinationStatus) {
+  NSArray<OverflowMenuDestination*>* all_destinations = SampleDestinations();
+  NSArray<OverflowMenuDestination*>* current_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+  ];
+
+  // Creates `DestinationUsageHistory` with initial ranking
+  // `current_destinations`.
+  DestinationUsageHistory* destination_usage_history =
+      CreateDestinationUsageHistory(current_destinations);
+
+  NSArray<OverflowMenuDestination*>* updated_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    // New destinations
+    all_destinations[5],
+    all_destinations[6],
+    all_destinations[7],
+  ];
+
+  all_destinations[6].badge = BadgeTypeNew;
+
+  [destination_usage_history
+      sortedDestinationsFromCarouselDestinations:updated_destinations];
+
+  ScopedDictPrefUpdate update(prefs_.get(),
+                              prefs::kOverflowMenuDestinationUsageHistory);
+
+  absl::optional<base::Value> ranking = update->Extract("ranking");
+
+  EXPECT_TRUE(ranking.has_value());
+
+  const base::Value::List& actual = ranking.value().GetList();
+
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[6].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 1].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[7].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 2].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[5].destination));
+}
+
+// Tests that if a destination is both new and has a badge, it will be inserted
+// before the other destinations wtih a badge of the same priority that are not
+// new.
+TEST_F(DestinationUsageHistoryTest, PriorityToNewDestinationWithBadge) {
+  NSArray<OverflowMenuDestination*>* all_destinations = SampleDestinations();
+  NSArray<OverflowMenuDestination*>* current_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+  ];
+
+  // Creates `DestinationUsageHistory` with initial ranking
+  // `current_destinations`.
+  DestinationUsageHistory* destination_usage_history =
+      CreateDestinationUsageHistory(current_destinations);
+
+  NSArray<OverflowMenuDestination*>* updated_destinations = @[
+    all_destinations[0],
+    all_destinations[1],
+    all_destinations[2],
+    all_destinations[3],
+    all_destinations[4],
+    all_destinations[5],
+    // New destinations
+    all_destinations[6],
+    all_destinations[7],
+  ];
+
+  all_destinations[4].badge = BadgeTypeError;
+  all_destinations[5].badge = BadgeTypePromo;
+  all_destinations[7].badge = BadgeTypeError;
+
+  [destination_usage_history
+      sortedDestinationsFromCarouselDestinations:updated_destinations];
+
+  ScopedDictPrefUpdate update(prefs_.get(),
+                              prefs::kOverflowMenuDestinationUsageHistory);
+
+  absl::optional<base::Value> ranking = update->Extract("ranking");
+
+  EXPECT_TRUE(ranking.has_value());
+
+  const base::Value::List& actual = ranking.value().GetList();
+
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[7].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 1].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[4].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 2].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[5].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 3].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[6].destination));
+  ASSERT_EQ(
+      overflow_menu::DestinationForStringName(
+          actual[kNewDestinationsInsertionIndex + 4].GetString()),
+      static_cast<overflow_menu::Destination>(all_destinations[3].destination));
 }

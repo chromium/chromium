@@ -7,8 +7,6 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 source_set("utils") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "account_error_ui_info.h",
-    "account_error_ui_info.mm",
     "sync_error_infobar_delegate.h",
     "sync_error_infobar_delegate.mm",
     "sync_presenter.h",
@@ -16,6 +14,7 @@ source_set("utils") {
     "sync_util.mm",
   ]
   deps = [
+    ":identity_error_util",
     "//base",
     "//components/browser_sync",
     "//components/infobars/core",
@@ -42,6 +41,25 @@ source_set("utils") {
     "//ui/gfx",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("identity_error_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "account_error_ui_info.h",
+    "account_error_ui_info.mm",
+    "identity_error_util.h",
+    "identity_error_util.mm",
+    "sync_state.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/driver",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

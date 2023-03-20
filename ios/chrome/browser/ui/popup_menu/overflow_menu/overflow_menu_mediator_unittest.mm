@@ -21,6 +21,8 @@
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
@@ -37,11 +39,13 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -57,6 +61,7 @@
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
@@ -65,9 +70,41 @@
 #endif
 
 using bookmarks::BookmarkModel;
+using testing::Return;
 
 namespace {
+
 const int kNumberOfWebStates = 3;
+
+// Turns on Sync.
+void SetupSyncServiceEnabledExpectations(
+    syncer::MockSyncService* sync_service) {
+  ON_CALL(*sync_service, GetTransportState())
+      .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
+  ON_CALL(*sync_service->GetMockUserSettings(), IsFirstSetupComplete())
+      .WillByDefault(Return(true));
+  ON_CALL(*sync_service->GetMockUserSettings(), GetSelectedTypes())
+      .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));
+  ON_CALL(*sync_service, HasSyncConsent()).WillByDefault(Return(true));
+}
+
+// Sync Service error that is eligble to be indicated as an Identity error when
+// Sync is turned OFF.
+constexpr syncer::SyncService::UserActionableError
+    kEligibleIdentityErrorWhenSyncOff =
+        syncer::SyncService::UserActionableError::kNeedsPassphrase;
+
+// Sync Service error that is ineligble to be indicated as an Identity error
+// when Sync is turned OFF.
+constexpr syncer::SyncService::UserActionableError
+    kIneligibleIdentityErrorWhenSyncOff =
+        syncer::SyncService::UserActionableError::kGenericUnrecoverableError;
+
+void CleanupNSUserDefaults() {
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kWhatsNewUsageEntryKey];
+}
+
 }  // namespace
 
 class OverflowMenuMediatorTest : public PlatformTest {
@@ -79,6 +116,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+
+    // TODO(crbug.com/1425657): Removed this once the other test suites properly
+    // clean up their NSUserDefaults on teardown.
+    CleanupNSUserDefaults();
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
@@ -142,6 +183,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
     // observers when browser_ gets destroyed.
     [mediator_ disconnect];
     browser_.reset();
+
+    CleanupNSUserDefaults();
 
     PlatformTest::TearDown();
   }
@@ -262,6 +305,21 @@ class OverflowMenuMediatorTest : public PlatformTest {
     return NO;
   }
 
+  OverflowMenuDestination* GetDestination(NSString* accessibility_identifier) {
+    OverflowMenuDestination* found_destination = nil;
+    for (OverflowMenuDestination* destination in mediator_.overflowMenuModel
+             .destinations) {
+      if (destination.accessibilityIdentifier == accessibility_identifier) {
+        EXPECT_EQ(nil, found_destination)
+            << "there shouldn't be more than one destination with the \""
+            << accessibility_identifier << "\" accessibility identifier";
+        found_destination = destination;
+      }
+    }
+
+    return found_destination;
+  }
+
   web::WebTaskEnvironment task_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
@@ -284,7 +342,7 @@ TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
   CreateMediator(/*is_incognito=*/NO);
   feature_engagement::test::MockTracker tracker;
   EXPECT_CALL(tracker, ShouldTriggerHelpUI(testing::_))
-      .WillRepeatedly(testing::Return(true));
+      .WillRepeatedly(Return(true));
   mediator_.engagementTracker = &tracker;
 
   // Force model creation.
@@ -541,12 +599,14 @@ TEST_F(OverflowMenuMediatorTest, TestWhatsNewEnabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
   CreateBrowserStatePrefs();
+  CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
   mediator_.browserStatePrefs = browserStatePrefs_.get();
+  mediator_.localStatePrefs = localStatePrefs_.get();
 
   // Force creation of the model.
   [mediator_ overflowMenuModel];
@@ -574,4 +634,188 @@ TEST_F(OverflowMenuMediatorTest, TestWhatsNewDisabled) {
   [mediator_ overflowMenuModel];
 
   EXPECT_FALSE(HasItem(kToolsMenuWhatsNewId, /*enabled=*/NO));
+}
+
+// Tests that the Settings destination is badged with an error dot and
+// positioned at at most kNewDestinationsInsertionIndex when there is an
+// eligible identity error that can be resolved from the Settings menu.
+TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
+                                 kIndicateAccountStorageErrorInAccountCell},
+                                {});
+
+  CreateMediator(/*is_incognito=*/NO);
+
+  syncer::MockSyncService syncService;
+  // Inject eligible identity error in Sync Service.
+  ON_CALL(syncService, GetUserActionableError())
+      .WillByDefault(Return(kEligibleIdentityErrorWhenSyncOff));
+  mediator_.syncService = &syncService;
+  CreateLocalStatePrefs();
+  mediator_.localStatePrefs = localStatePrefs_.get();
+
+  // Verify that the Settings destination is put at
+  // the kNewDestinationsInsertionIndex position and that it has the error
+  // badge to indicate the error.
+  OverflowMenuDestination* promotedDestination =
+      mediator_.overflowMenuModel.destinations[kNewDestinationsInsertionIndex];
+  EXPECT_NSEQ(kToolsMenuSettingsId,
+              promotedDestination.accessibilityIdentifier);
+  EXPECT_EQ(BadgeTypeError, promotedDestination.badge);
+}
+
+// Tests that there is no error badge displayed on the Settings destination when
+// there is no eligible identity error. Sync is OFF.
+TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
+                                 kIndicateAccountStorageErrorInAccountCell},
+                                {});
+
+  CreateMediator(/*is_incognito=*/NO);
+
+  syncer::MockSyncService syncService;
+  ON_CALL(syncService, GetUserActionableError())
+      .WillByDefault(Return(kIneligibleIdentityErrorWhenSyncOff));
+  mediator_.syncService = &syncService;
+  CreateLocalStatePrefs();
+  mediator_.localStatePrefs = localStatePrefs_.get();
+
+  // Verify that the Settings destination it still there and does not have the
+  // error badge.
+  OverflowMenuDestination* settingsDestination =
+      GetDestination(kToolsMenuSettingsId);
+  ASSERT_NE(nil, settingsDestination);
+  EXPECT_EQ(BadgeTypeNone, settingsDestination.badge);
+}
+
+// Tests that there is an error badge on the Settings destination when there is
+// a Sync error that will be indicated in the Settings menu. The account is
+// signed in and has Sync turned ON.
+TEST_F(OverflowMenuMediatorTest, TestSyncError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
+                                 kIndicateAccountStorageErrorInAccountCell},
+                                {});
+
+  CreateMediator(/*is_incognito=*/NO);
+
+  syncer::MockSyncService syncService;
+  // Inject Sync error in Sync Service.
+  ON_CALL(syncService, GetUserActionableError())
+      .WillByDefault(Return(kIneligibleIdentityErrorWhenSyncOff));
+  SetupSyncServiceEnabledExpectations(&syncService);
+  mediator_.syncService = &syncService;
+  CreateLocalStatePrefs();
+  mediator_.localStatePrefs = localStatePrefs_.get();
+
+  // Verify that the Settings destination is put at the front of the
+  // destinations and that it has the red dot badge to indicate the error.
+  OverflowMenuDestination* promotedDestination =
+      mediator_.overflowMenuModel.destinations[kNewDestinationsInsertionIndex];
+  EXPECT_NSEQ(kToolsMenuSettingsId,
+              promotedDestination.accessibilityIdentifier);
+  EXPECT_EQ(BadgeTypeError, promotedDestination.badge);
+}
+
+// Tests that there is no error cue (red dot) displayed on the Settings
+// destination when there is no error in both Sync and Identity levels.
+TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
+                                 kIndicateAccountStorageErrorInAccountCell},
+                                {});
+
+  CreateMediator(/*is_incognito=*/NO);
+
+  syncer::MockSyncService syncService;
+  ON_CALL(syncService, GetUserActionableError())
+      .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
+  SetupSyncServiceEnabledExpectations(&syncService);
+  mediator_.syncService = &syncService;
+  CreateLocalStatePrefs();
+  mediator_.localStatePrefs = localStatePrefs_.get();
+
+  // Verify that the Settings destination it still there and does not have the
+  // error badge.
+  OverflowMenuDestination* settingsDestination =
+      GetDestination(kToolsMenuSettingsId);
+  ASSERT_NE(nil, settingsDestination);
+  EXPECT_EQ(BadgeTypeNone, settingsDestination.badge);
+}
+
+// Tests that the Settings destination that has an error cue has predence over
+// the promoted What's New destination.
+TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kIndicateSyncErrorInOverflowMenu,
+       kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
+      {});
+
+  const GURL kUrl("https://chromium.test");
+  web_state_->SetCurrentURL(kUrl);
+  CreateBrowserStatePrefs();
+  CreateMediator(/*is_incognito=*/NO);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
+      browser_.get(), OverlayModality::kWebContentArea);
+  mediator_.browserStatePrefs = browserStatePrefs_.get();
+  CreateLocalStatePrefs();
+  mediator_.localStatePrefs = localStatePrefs_.get();
+
+  syncer::MockSyncService syncService;
+  ON_CALL(syncService, GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
+  mediator_.syncService = &syncService;
+
+  // Verify that the Settings destination is put at the front of the
+  // destinations and that What's New is put at the second place.
+  EXPECT_NSEQ(
+      kToolsMenuSettingsId,
+      mediator_.overflowMenuModel.destinations[kNewDestinationsInsertionIndex]
+          .accessibilityIdentifier);
+  EXPECT_NSEQ(kToolsMenuWhatsNewId,
+              mediator_.overflowMenuModel
+                  .destinations[kNewDestinationsInsertionIndex + 1]
+                  .accessibilityIdentifier);
+}
+
+// Tests that the destinations are still promoted when there is no usage
+// history ranking.
+TEST_F(OverflowMenuMediatorTest,
+       TestPromotedDestinationsWhenNoHistoryUsageRanking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kIndicateSyncErrorInOverflowMenu,
+       kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
+      {});
+
+  CreateMediator(/*is_incognito=*/NO);
+  syncer::MockSyncService syncService;
+  ON_CALL(syncService, GetUserActionableError())
+      .WillByDefault(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
+  mediator_.syncService = &syncService;
+
+  // Verify the destinations to be promoted are put in the right rank and have
+  // the right badge.
+  EXPECT_NSEQ(
+      kToolsMenuSettingsId,
+      mediator_.overflowMenuModel.destinations[kNewDestinationsInsertionIndex]
+          .accessibilityIdentifier);
+  EXPECT_EQ(BadgeTypeError, mediator_.overflowMenuModel
+                                .destinations[kNewDestinationsInsertionIndex]
+                                .badge);
+  EXPECT_NSEQ(kToolsMenuWhatsNewId,
+              mediator_.overflowMenuModel
+                  .destinations[kNewDestinationsInsertionIndex + 1]
+                  .accessibilityIdentifier);
+  EXPECT_EQ(BadgeTypeNew, mediator_.overflowMenuModel
+                              .destinations[kNewDestinationsInsertionIndex + 1]
+                              .badge);
+  EXPECT_EQ(8U, [mediator_.overflowMenuModel.destinations count]);
 }

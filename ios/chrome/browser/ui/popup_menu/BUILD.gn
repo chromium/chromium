@@ -84,6 +84,7 @@ source_set("popup_menu") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/bookmarks:core",

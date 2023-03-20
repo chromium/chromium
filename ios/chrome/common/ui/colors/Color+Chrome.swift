@@ -96,6 +96,11 @@ extension Color {
     return Color(kBlue600Color)
   }
 
+  /// The red500 color.
+  public static var red500: Color {
+    return Color(kRed500Color)
+  }
+
   /// The table row view highlight color.
   public static var tableRowViewHighlight: Color {
     return Color(kTableViewRowHighlightColor)

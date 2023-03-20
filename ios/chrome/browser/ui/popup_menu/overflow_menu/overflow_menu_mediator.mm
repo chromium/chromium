@@ -21,6 +21,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
+#import "components/sync/driver/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
@@ -50,18 +51,21 @@
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_utils.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -143,6 +147,59 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                             image:[UIImage imageNamed:imageName]
                           accessibilityIdentifier:kTextMenuEnterpriseInfo
                                           handler:handler];
+}
+
+// Sorts badged destinations using a local heuristic when the usage history
+// isn't available (e.g. when on an incognito tab). Destionations that need
+// highlight and that are at a position of kNewDestinationsInsertionIndex
+// or worst are re-inserted at kNewDestinationsInsertionIndex. Destionations
+// that are at a better position than kNewDestinationsInsertionIndex aren't
+// moved.
+NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
+    NSArray<OverflowMenuDestination*>* carouselDestinations) {
+  NSMutableSet<OverflowMenuDestination*>* destinationsToSort =
+      [NSMutableSet setWithArray:carouselDestinations];
+  NSMutableArray<OverflowMenuDestination*>* sortedDestinations =
+      [NSMutableArray array];
+
+  // Keep the ranking of badged destination as is up to
+  // kNewDestinationsInsertionIndex and keep the ranking as is for all
+  // destinations without a badge.
+  for (OverflowMenuDestination* destination in carouselDestinations) {
+    const bool dontSort =
+        [sortedDestinations count] < kNewDestinationsInsertionIndex ||
+        destination.badge == BadgeTypeNone;
+    if (dontSort) {
+      [destinationsToSort removeObject:destination];
+      [sortedDestinations addObject:destination];
+    }
+  }
+
+  // Put the destinations with non-error badges in the middle.
+  for (OverflowMenuDestination* destination in carouselDestinations) {
+    if ([destinationsToSort containsObject:destination] &&
+        destination.badge != BadgeTypeError) {
+      [destinationsToSort removeObject:destination];
+      [sortedDestinations insertObject:destination
+                               atIndex:kNewDestinationsInsertionIndex];
+    }
+  }
+
+  // Put the destinations with error badges in the middle before the
+  // destinations with non-error badges.
+  for (OverflowMenuDestination* destination in carouselDestinations) {
+    if ([destinationsToSort containsObject:destination]) {
+      [destinationsToSort removeObject:destination];
+      [sortedDestinations insertObject:destination
+                               atIndex:kNewDestinationsInsertionIndex];
+    }
+  }
+
+  // Verify that all the carousel destinations are in the sorted result.
+  DCHECK_EQ([destinationsToSort count], 0u);
+  DCHECK_EQ([sortedDestinations count], [carouselDestinations count]);
+
+  return sortedDestinations;
 }
 
 }  // namespace
@@ -289,6 +346,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   self.bookmarkModel = nullptr;
   self.browserStatePrefs = nullptr;
   self.localStatePrefs = nullptr;
+
+  self.syncService = nullptr;
 }
 
 #pragma mark - Property getters/setters
@@ -421,6 +480,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (_webContentAreaShowingOverlay == webContentAreaShowingOverlay)
     return;
   _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
+  [self updateModel];
+}
+
+- (void)setSyncService:(syncer::SyncService*)syncService {
+  _syncService = syncService;
+
+  if (!syncService) {
+    return;
+  }
+
   [self updateModel];
 }
 
@@ -770,62 +839,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   return result;
 }
 
-// Adds What's New to the OverflowMenuDestination to be displayed in the
-// destinations carousel.
-- (NSArray<OverflowMenuDestination*>*)insertWhatsNewToDestinations:
-    (NSArray<OverflowMenuDestination*>*)destinations {
-  NSMutableArray<OverflowMenuDestination*>* newDestinations =
-      [[NSMutableArray alloc] init];
-
-  if (WasWhatsNewUsed()) {
-    // Place What's New at the bottom of the overflow menu carousel.
-    [newDestinations addObjectsFromArray:destinations];
-    [newDestinations addObject:self.whatsNewDestination];
-    return newDestinations;
-  }
-
-  // Set the new label badge.
-  self.whatsNewDestination.badge = BadgeTypeNewLabel;
-
-  // Place What's New at the top of the overflow menucarousel.
-  [newDestinations addObject:self.whatsNewDestination];
-  [newDestinations addObjectsFromArray:destinations];
-
-  return newDestinations;
-}
-
-// Decides whether the default browser blue dot promo should be active, and if
-// it is, move the settings destination to 4th position and add the blue dot
-// badge.
-- (NSArray<OverflowMenuDestination*>*)maybeActivateDefaultBrowserBlueDotPromo:
-    (NSArray<OverflowMenuDestination*>*)destinations {
-  if (!self.engagementTracker) {
-    return destinations;
-  }
-
-  if (ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
+// Highlight the Settings destination with a promo badge if needed.
+- (void)maybeHighlightSettingsWithPromoBadge {
+  if (self.engagementTracker &&
+      ShouldTriggerDefaultBrowserHighlightFeature(
           feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
-          self.engagementTracker)) {
-    // Add the blue dot promo badge to the settings destination.
-    self.settingsDestination.badge = BadgeTypeBlueDot;
-
-    // Move the settings destination to the 4th position of the destinations,
-    // otherwise respecting the original order.
-    NSMutableArray<OverflowMenuDestination*>* newDestinations =
-        [[NSMutableArray alloc] init];
-
-    for (OverflowMenuDestination* destination in destinations) {
-      if (destination == self.settingsDestination) {
-        continue;
-      }
-
-      if ([newDestinations count] == 3) {
-        [newDestinations addObject:self.settingsDestination];
-      }
-
-      [newDestinations addObject:destination];
-    }
-
+          self.engagementTracker, self.syncService)) {
+    self.settingsDestination.badge = BadgeTypePromo;
     // If we've only started showing the blue dot recently (<6 hours), don't
     // notify the FET again that the promo is being shown, since we're not in a
     // new user session. We record the badge being shown per user session,
@@ -836,11 +856,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.engagementTracker->NotifyEvent(
           feature_engagement::events::kBlueDotPromoOverflowMenuShownNewSession);
     }
-
-    return newDestinations;
   }
-
-  return destinations;
 }
 
 // Adds SpotlightDebugger to the OverflowMenuDestination to be displayed in the
@@ -880,14 +896,45 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     [baseDestinations addObject:self.priceNotificationsDestination];
   }
 
+  if (IsWhatsNewEnabled()) {
+    [baseDestinations addObject:self.whatsNewDestination];
+  }
+
   return baseDestinations;
 }
 
-// Make sure the model to match the current page state.
+// Returns YES if the Overflow Menu should indicate an identity error.
+- (BOOL)shouldIndicateIdentityError {
+  if (!self.syncService) {
+    return NO;
+  }
+
+  return ShouldIndicateIdentityErrorInOverflowMenu(self.syncService);
+}
+
+// Updates the model to match the current page state.
 - (void)updateModel {
   // If the model hasn't been created, there's no need to update.
   if (!_overflowMenuModel) {
     return;
+  }
+
+  if ([self shouldIndicateIdentityError]) {
+    self.settingsDestination.badge = BadgeTypeError;
+  } else {
+    [self maybeHighlightSettingsWithPromoBadge];
+  }
+
+  if (IsWhatsNewEnabled() && !WasWhatsNewUsed()) {
+    // Highlight What's New with a badge if it was never used before.
+    self.whatsNewDestination.badge = BadgeTypeNew;
+  }
+
+  // Set badges if necessary.
+  if (self.engagementTracker &&
+      self.engagementTracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHBadgedReadingListFeature)) {
+    self.readingListDestination.badge = BadgeTypePromo;
   }
 
   NSArray<OverflowMenuDestination*>* baseDestinations = [self baseDestinations];
@@ -895,22 +942,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (self.destinationUsageHistory && IsSmartSortingNewOverflowMenuEnabled()) {
     baseDestinations = [self.destinationUsageHistory
         sortedDestinationsFromCarouselDestinations:baseDestinations];
-  }
-
-  // What's New defies the smart sorting rules of the overflow menu to appear
-  // either at the front of the carousel or the back. Thus, What's New is
-  // inserted after smart sorting returns the sorted destinations.
-  if (IsWhatsNewEnabled()) {
-    baseDestinations = [self insertWhatsNewToDestinations:baseDestinations];
+  } else {
+    baseDestinations = SortBadgedDestinations(baseDestinations);
   }
 
   if (IsSpotlightDebuggingEnabled()) {
     baseDestinations =
         [self insertSpotlightDebuggerToDestinations:baseDestinations];
   }
-
-  baseDestinations =
-      [self maybeActivateDefaultBrowserBlueDotPromo:baseDestinations];
 
   self.overflowMenuModel.destinations = [baseDestinations
       filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
@@ -1051,13 +1090,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       IsIncognitoModeForced(self.browserStatePrefs);
   self.openIncognitoTabAction.enterpriseDisabled =
       IsIncognitoModeDisabled(self.browserStatePrefs);
-
-  // Set badges if necessary
-  if (self.engagementTracker &&
-      self.engagementTracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHBadgedReadingListFeature)) {
-    self.readingListDestination.badge = BadgeTypeBlueDot;
-  }
 }
 
 // Returns whether the page can be manually translated. If `forceMenuLogging` is
@@ -1642,7 +1674,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Dismisses the menu and opens settings.
 - (void)openSettings {
-  if (self.settingsDestination.badge == BadgeTypeBlueDot &&
+  if (self.settingsDestination.badge == BadgeTypePromo &&
       self.engagementTracker) {
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);

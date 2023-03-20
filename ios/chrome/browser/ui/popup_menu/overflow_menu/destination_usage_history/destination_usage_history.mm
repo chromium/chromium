@@ -17,6 +17,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -30,10 +31,6 @@ namespace {
 // is stored for a given user. Usage history older than `kDataExpirationWindow`
 // will be removed during the presentation of the overflow menu.
 constexpr base::TimeDelta kDataExpirationWindow = base::Days(365);
-
-// `kNewDestinationsInsertionIndex` represents the index new destinations are
-// inserted into the current ranking.
-constexpr int kNewDestinationsInsertionIndex = 3;
 
 // `kDataRecencyWindow` is the window of time (inclusive) that new usage history
 // is considered recent.
@@ -104,6 +101,22 @@ std::vector<overflow_menu::Destination> SortByUsage(
       });
 
   return ordered_ranking;
+}
+
+// Inserts `destination` in `output` at kNewDestinationsInsertionIndex and
+// clear `destination` from the `destinationsToAdd` set.
+void InsertDestination(overflow_menu::Destination destination,
+                       std::map<overflow_menu::Destination,
+                                OverflowMenuDestination*>* destinationsToAdd,
+                       NSMutableArray<OverflowMenuDestination*>* output) {
+  const NSUInteger insertionIndex =
+      std::min([output count] - 1,
+               static_cast<NSUInteger>(kNewDestinationsInsertionIndex));
+
+  [output insertObject:destinationsToAdd->at(destination)
+               atIndex:insertionIndex];
+
+  destinationsToAdd->erase(destination);
 }
 
 }  // namespace
@@ -224,8 +237,6 @@ std::vector<overflow_menu::Destination> SortByUsage(
     }
 
     [self flushToPrefs];
-
-    return carouselDestinations;
   }
 
   [self calculateNewRanking];
@@ -267,12 +278,25 @@ std::vector<overflow_menu::Destination> SortByUsage(
       [[NSMutableArray alloc] init];
 
   // Reconstruct carousel based on current ranking.
+  //
+  // Add all ranked destinations that don't need be re-sorted back-to-back
+  // following their ranking.
+  //
+  // Destinations that need to be re-sorted for highlight are not added here
+  // where they are re-inserted later. These destinations have a badge and a
+  // position of kNewDestinationsInsertionIndex or worst.
   for (overflow_menu::Destination rankedDestination : _ranking) {
-    if (destinations[rankedDestination] &&
+    if (destinations.contains(rankedDestination) &&
         !_untappedDestinations.contains(rankedDestination)) {
-      [sortedDestinations addObject:destinations[rankedDestination]];
+      const bool dontSort =
+          destinations[rankedDestination].badge == BadgeTypeNone ||
+          [sortedDestinations count] < kNewDestinationsInsertionIndex;
 
-      destinations.erase(rankedDestination);
+      if (dontSort) {
+        [sortedDestinations addObject:destinations[rankedDestination]];
+
+        destinations.erase(rankedDestination);
+      }
     }
   }
 
@@ -280,29 +304,52 @@ std::vector<overflow_menu::Destination> SortByUsage(
   // destinations in `_untappedDestinations` from its result, so new, untapped
   // destinations must be added to `sortedDestinations` as a separate step. New,
   // untapped destinations are inserted into the carousel starting at position
-  // `kNewDestinationsInsertionIndex`.
+  // `kNewDestinationsInsertionIndex`. Destinations that already have a badge
+  // are inserted in another step where they are inserted before the untapped
+  // destinations that don't have badges.
   if (!_untappedDestinations.empty()) {
     for (overflow_menu::Destination untappedDestination :
          _untappedDestinations) {
-      if (destinations[untappedDestination]) {
-        OverflowMenuDestination* destination =
-            destinations[untappedDestination];
+      if (destinations.contains(untappedDestination) &&
+          destinations[untappedDestination].badge == BadgeTypeNone) {
+        destinations[untappedDestination].badge = BadgeTypeNew;
 
-        destination.badge = BadgeTypeNewLabel;
-
-        [sortedDestinations
-            insertObject:destination
-                 atIndex:std::min(
-                             static_cast<int>([sortedDestinations count] - 1),
-                             kNewDestinationsInsertionIndex)];
-
-        destinations.erase(untappedDestination);
+        InsertDestination(untappedDestination, &destinations,
+                          sortedDestinations);
       }
     }
   }
 
-  _ranking = {};
+  std::vector<overflow_menu::Destination> allDestinations;
 
+  // Merge all destinations by prioritizing untapped destinations over ranked
+  // destinations in their order of insertion.
+  std::merge(_ranking.begin(), _ranking.end(), _untappedDestinations.begin(),
+             _untappedDestinations.end(), std::back_inserter(allDestinations));
+
+  // Insert the destinations with a badge that is not for an error at
+  // kNewDestinationsInsertionIndex before the untapped destinations.
+  for (overflow_menu::Destination destination : allDestinations) {
+    if (destinations.contains(destination) &&
+        destinations[destination].badge != BadgeTypeError) {
+      InsertDestination(destination, &destinations, sortedDestinations);
+    }
+  }
+
+  // Insert the destinations with an error badge before the destinations with
+  // other types of badges.
+  for (overflow_menu::Destination destination : allDestinations) {
+    if (destinations.contains(destination)) {
+      InsertDestination(destination, &destinations, sortedDestinations);
+    }
+  }
+
+  // Check that all the destinations to show in the carousel were added to the
+  // sorted destinations output at this point.
+  DCHECK(destinations.empty());
+
+  // Set the new ranking.
+  _ranking = {};
   for (OverflowMenuDestination* sortedDestination in sortedDestinations) {
     _ranking.push_back(
         static_cast<overflow_menu::Destination>(sortedDestination.destination));

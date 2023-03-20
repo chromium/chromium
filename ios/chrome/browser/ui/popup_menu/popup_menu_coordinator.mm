@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -482,6 +483,9 @@ enum class IOSOverflowMenuActionType {
             overlayPresenter;
         self.overflowMenuMediator.browserPolicyConnector =
             GetApplicationContext()->GetBrowserPolicyConnector();
+        self.overflowMenuMediator.syncService =
+            SyncServiceFactory::GetForBrowserState(
+                self.browser->GetBrowserState());
 
         if (IsWebChannelsEnabled()) {
           self.overflowMenuMediator.followBrowserAgent =

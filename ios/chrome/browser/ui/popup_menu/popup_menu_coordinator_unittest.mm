@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
@@ -17,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -91,7 +91,7 @@ class PopupMenuCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(QRScannerCommands)];
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_env_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   id mock_browser_commands_handler_;

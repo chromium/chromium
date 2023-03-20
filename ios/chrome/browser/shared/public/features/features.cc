@@ -221,3 +221,11 @@ BASE_FEATURE(kNewNTPOmniboxLayout,
 BASE_FEATURE(kEnableEmailInBookmarksReadingListSnackbar,
              "EnableEmailInBookmarksReadingListSnackbar",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIndicateSyncErrorInOverflowMenu,
+             "IndicateSyncErrorInOverflowMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIndicateSyncErrorInOverflowMenuEnabled() {
+  return base::FeatureList::IsEnabled(kIndicateSyncErrorInOverflowMenu);
+}

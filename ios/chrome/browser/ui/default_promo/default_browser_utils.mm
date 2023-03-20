@@ -13,8 +13,10 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/identity_error_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -372,11 +374,13 @@ bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {
       kRemindMeLaterPromoActionInteraction, kRemindMeLaterPresentationDelay);
 }
 
-bool ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
+bool ShouldTriggerDefaultBrowserHighlightFeature(
     const base::Feature& feature,
-    feature_engagement::Tracker* tracker) {
+    feature_engagement::Tracker* tracker,
+    syncer::SyncService* syncService) {
   // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (!IsBlueDotPromoEnabled() || IsChromeLikelyDefaultBrowser()) {
+  if (!IsBlueDotPromoEnabled() || IsChromeLikelyDefaultBrowser() ||
+      (syncService && ShouldIndicateIdentityErrorInOverflowMenu(syncService))) {
     return false;
   }
 

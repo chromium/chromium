@@ -105,6 +105,8 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
 #import "ios/chrome/browser/ui/settings/search_engine_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/sync_state.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
@@ -162,42 +164,6 @@ NSString* const kMostRecentTimestampBlueDotPromoShownInSettingsMenu =
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 NSString* kDevViewSourceKey = @"DevViewSource";
 #endif  // BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
-
-enum SyncState {
-  kSyncDisabledByAdministrator,
-  kSyncConsentOff,
-  kSyncOff,
-  kSyncEnabledWithNoSelectedTypes,
-  kSyncEnabledWithError,
-  kSyncEnabled,
-};
-
-SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  syncer::SyncService::UserActionableError errorState =
-      syncService->GetUserActionableError();
-  if (syncService->GetDisableReasons().Has(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    // Sync is disabled by administrator policy.
-    return kSyncDisabledByAdministrator;
-  } else if (!syncService->GetUserSettings()->IsFirstSetupComplete()) {
-    // User has not completed Sync setup in sign-in flow.
-    return kSyncConsentOff;
-  } else if (!syncService->CanSyncFeatureStart()) {
-    // Sync engine is off.
-    return kSyncOff;
-  } else if (syncService->GetUserSettings()->GetSelectedTypes().Empty()) {
-    // User has deselected all sync data types.
-    // With pre-MICE, the sync status should be kSyncEnabled to show the same
-    // value than the sync toggle.
-    return kSyncEnabledWithNoSelectedTypes;
-  } else if (errorState != syncer::SyncService::UserActionableError::kNone) {
-    // Sync error.
-    return kSyncEnabledWithError;
-  }
-  return kSyncEnabled;
-}
 
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
@@ -1513,25 +1479,26 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       break;
     case SettingsItemTypeGoogleSync: {
       base::RecordAction(base::UserMetricsAction("Settings.Sync"));
-      switch (GetSyncStateFromBrowserState(_browserState)) {
-        case kSyncConsentOff: {
+      switch (
+          GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState))) {
+        case SyncState::kSyncConsentOff: {
           [self showSignInWithIdentity:nil
                            promoAction:signin_metrics::PromoAction::
                                            PROMO_ACTION_NO_SIGNIN_PROMO
                             completion:nil];
           break;
         }
-        case kSyncOff: {
+        case SyncState::kSyncOff: {
           [self showGoogleSync];
           break;
         }
-        case kSyncEnabled:
-        case kSyncEnabledWithError:
-        case kSyncEnabledWithNoSelectedTypes: {
+        case SyncState::kSyncEnabled:
+        case SyncState::kSyncEnabledWithError:
+        case SyncState::kSyncEnabledWithNoSelectedTypes: {
           [self showGoogleSync];
           break;
         }
-        case kSyncDisabledByAdministrator:
+        case SyncState::kSyncDisabledByAdministrator:
           break;
       }
       break;
@@ -1754,8 +1721,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 // Returns true if sync is disabled by policy.
 - (bool)isSyncDisabledByPolicy {
-  return GetSyncStateFromBrowserState(_browserState) ==
-         kSyncDisabledByAdministrator;
+  return GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState)) ==
+         SyncState::kSyncDisabledByAdministrator;
 }
 
 - (void)showGoogleServices {
@@ -1878,8 +1845,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           _identity, IdentityAvatarSize::TableViewIcon);
   identityAccountItem.text = _identity.userFullName;
   identityAccountItem.detailText = _identity.userEmail;
+
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(_browserState);
+  DCHECK(syncService);
   identityAccountItem.shouldDisplayError =
-      GetAccountErrorUIInfo(_browserState) != nil;
+      GetAccountErrorUIInfo(syncService) != nil;
 }
 
 - (void)reloadAccountCell {
@@ -1903,8 +1874,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Updates the Sync item to display the right icon and status message in the
 // cell.
 - (void)updateSyncItem:(TableViewDetailIconItem*)googleSyncItem {
-  switch (GetSyncStateFromBrowserState(_browserState)) {
-    case kSyncConsentOff: {
+  switch (GetSyncState(SyncServiceFactory::GetForBrowserState(_browserState))) {
+    case SyncState::kSyncConsentOff: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
       if (UseSymbols()) {
         googleSyncItem.iconImage =
@@ -1918,8 +1889,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       }
       break;
     }
-    case kSyncOff:
-    case kSyncEnabledWithNoSelectedTypes: {
+    case SyncState::kSyncOff:
+    case SyncState::kSyncEnabledWithNoSelectedTypes: {
       googleSyncItem.detailText = nil;
       if (UseSymbols()) {
         googleSyncItem.iconImage =
@@ -1933,7 +1904,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       }
       break;
     }
-    case kSyncEnabledWithError: {
+    case SyncState::kSyncEnabledWithError: {
       syncer::SyncService* syncService =
           SyncServiceFactory::GetForBrowserState(_browserState);
       googleSyncItem.detailText =
@@ -1951,7 +1922,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
       return;
     }
-    case kSyncEnabled: {
+    case SyncState::kSyncEnabled: {
       googleSyncItem.detailText = l10n_util::GetNSString(IDS_IOS_SETTING_ON);
 
       if (UseSymbols()) {
@@ -1966,7 +1937,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       }
       break;
     }
-    case kSyncDisabledByAdministrator:
+    case SyncState::kSyncDisabledByAdministrator:
       // Nothing to update.
       break;
   }
@@ -2029,9 +2000,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     return;
   }
 
-  if (ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(_browserState);
+  if (!syncService) {
+    return;
+  }
+
+  if (ShouldTriggerDefaultBrowserHighlightFeature(
           feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature,
-          tracker)) {
+          tracker, syncService)) {
     // Add the blue dot promo badge to the default browser row.
     defaultBrowserCellItem.showNotificationDot = YES;
     self.showingDefaultBrowserNotificationDot = YES;
