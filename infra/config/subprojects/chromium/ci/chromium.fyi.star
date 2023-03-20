@@ -2136,7 +2136,7 @@ fyi_ios_builder(
         category = "iOS",
         short_name = "ios-blk",
     ),
-    execution_timeout = 12 * time.hour,
+    execution_timeout = 3 * time.hour,
 )
 
 fyi_ios_builder(
