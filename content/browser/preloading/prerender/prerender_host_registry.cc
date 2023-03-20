@@ -209,7 +209,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
             attributes.prerendering_url, attributes.initiator_origin.value())) {
       RecordFailedPrerenderFinalStatus(
           PrerenderCancellationReason(
-              PrerenderFinalStatus::kCrossSiteNavigation),
+              PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation),
           attributes);
       if (attempt) {
         attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);

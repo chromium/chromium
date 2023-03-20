@@ -84858,12 +84858,16 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="41" label="kInactivePageRestriction"/>
   <int value="42" label="kStartFailed"/>
   <int value="43" label="kTimeoutBackgrounded"/>
-  <int value="44" label="kCrossSiteRedirect"/>
-  <int value="45" label="kCrossSiteNavigation"/>
-  <int value="46" label="kSameSiteCrossOriginRedirect"/>
-  <int value="47" label="kSameSiteCrossOriginNavigation (obsoleted)"/>
-  <int value="48" label="kSameSiteCrossOriginRedirectNotOptIn"/>
-  <int value="49" label="kSameSiteCrossOriginNavigationNotOptIn"/>
+  <int value="44" label="kCrossSiteRedirectInInitialNavigation"/>
+  <int value="45" label="kCrossSiteNavigationInInitialNavigation"/>
+  <int value="46"
+      label="kSameSiteCrossOriginRedirectInInitialNavigation (obsoleted)"/>
+  <int value="47"
+      label="kSameSiteCrossOriginNavigationInInitialNavigation (obsoleted)"/>
+  <int value="48"
+      label="kSameSiteCrossOriginRedirectNotOptInInInitialNavigation"/>
+  <int value="49"
+      label="kSameSiteCrossOriginNavigationNotOptInInInitialNavigation"/>
   <int value="50" label="kActivationNavigationParameterMismatch"/>
   <int value="51" label="kActivatedInBackground"/>
   <int value="52" label="kEmbedderHostDisallowed"/>
@@ -84877,6 +84881,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="60" label="kBatterySaverEnabled"/>
   <int value="61" label="kActivatedDuringMainFrameNavigation"/>
   <int value="62" label="kPreloadingUnsupportedByWebContents"/>
+  <int value="63" label="kMainFrameCrossSiteRedirectInMainFrameNavigation"/>
+  <int value="64" label="kMainFrameCrossSiteNavigationInMainFrameNavigation"/>
+  <int value="65"
+      label="kMainFrameSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation"/>
+  <int value="66"
+      label="kMainFrameSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

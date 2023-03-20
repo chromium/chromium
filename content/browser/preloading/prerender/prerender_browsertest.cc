@@ -1736,7 +1736,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossSiteRedirection) {
   EXPECT_EQ(GetRequestCount(kRedirectedUrl), 0);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kCrossSiteRedirect);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation);
 }
 
 // Makes sure that activation on navigation for an iframes doesn't happen.
@@ -2371,13 +2372,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
       NavigationType::kSameSiteCrossOrigin};
   TestMainFrameNavigation(
       navigations,
-      PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn);
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest, CrossSite) {
   std::vector<NavigationType> navigations = {NavigationType::kCrossSite};
-  TestMainFrameNavigation(navigations,
-                          PrerenderFinalStatus::kCrossSiteNavigation);
+  TestMainFrameNavigation(
+      navigations,
+      PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
@@ -2404,7 +2407,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
       NavigationType::kSameSiteCrossOrigin};
   TestMainFrameNavigation(
       navigations,
-      PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn);
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
@@ -2412,8 +2416,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
   std::vector<NavigationType> navigations = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
       NavigationType::kCrossSite};
-  TestMainFrameNavigation(navigations,
-                          PrerenderFinalStatus::kCrossSiteNavigation);
+  TestMainFrameNavigation(
+      navigations,
+      PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
@@ -2436,15 +2441,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
   std::vector<NavigationType> redirections = {
       NavigationType::kSameOrigin, NavigationType::kSameSiteCrossOrigin};
   TestMainFrameRedirection(
-      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+      redirections,
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
                        Redirection_SameOrigin_CrossSite) {
   std::vector<NavigationType> redirections = {NavigationType::kSameOrigin,
                                               NavigationType::kCrossSite};
-  TestMainFrameRedirection(redirections,
-                           PrerenderFinalStatus::kCrossSiteRedirect);
+  TestMainFrameRedirection(
+      redirections,
+      PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
@@ -2471,7 +2479,9 @@ IN_PROC_BROWSER_TEST_F(
       NavigationType::kSameSiteCrossOriginWithOptIn,
       NavigationType::kSameSiteCrossOrigin};
   TestMainFrameRedirection(
-      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+      redirections,
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
@@ -2479,8 +2489,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
   std::vector<NavigationType> redirections = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
       NavigationType::kCrossSite};
-  TestMainFrameRedirection(redirections,
-                           PrerenderFinalStatus::kCrossSiteRedirect);
+  TestMainFrameRedirection(
+      redirections,
+      PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2511,7 +2522,9 @@ IN_PROC_BROWSER_TEST_F(
       NavigationType::kSameSiteCrossOriginWithOptIn,
       NavigationType::kSameSiteCrossOrigin};
   TestMainFrameRedirection(
-      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+      redirections,
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2521,8 +2534,9 @@ IN_PROC_BROWSER_TEST_F(
       NavigationType::kSameOrigin,
       NavigationType::kSameSiteCrossOriginWithOptIn,
       NavigationType::kCrossSite};
-  TestMainFrameRedirection(redirections,
-                           PrerenderFinalStatus::kCrossSiteRedirect);
+  TestMainFrameRedirection(
+      redirections,
+      PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2551,7 +2565,9 @@ IN_PROC_BROWSER_TEST_F(
       NavigationType::kSameSiteCrossOriginWithOptIn,
       NavigationType::kSameOrigin, NavigationType::kSameSiteCrossOrigin};
   TestMainFrameRedirection(
-      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+      redirections,
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2560,8 +2576,9 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<NavigationType> redirections = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
       NavigationType::kSameOrigin, NavigationType::kCrossSite};
-  TestMainFrameRedirection(redirections,
-                           PrerenderFinalStatus::kCrossSiteRedirect);
+  TestMainFrameRedirection(
+      redirections,
+      PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
 // Regression test for https://crbug.com/1198051
@@ -7683,7 +7700,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossSitePrerender) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kCrossSiteNavigation);
+      PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation);
 
   ASSERT_TRUE(NavigateToURL(shell(), kPrerenderingUrl));
   {
@@ -7732,7 +7749,8 @@ IN_PROC_BROWSER_TEST_F(
   NavigatePrimaryPage(kPrerenderingUrl);
 
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn);
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginNavigationNotOptInInInitialNavigation);
 }
 
 // Tests that same-site cross-origin redirection by speculation rules with the
@@ -7759,7 +7777,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginRedirectNotOptInInInitialNavigation);
 }
 
 // Tests that same-site cross-origin redirection with credentialed prerender by
@@ -7788,7 +7807,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginRedirectNotOptInInInitialNavigation);
 }
 
 // Tests that same-site cross-origin redirection with credentialed prerender by
@@ -7817,7 +7837,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
   ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+      PrerenderFinalStatus::
+          kSameSiteCrossOriginRedirectNotOptInInInitialNavigation);
 }
 
 // Tests that same-site cross-origin navigation redirecting back to same-origin
@@ -7886,7 +7907,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
   EXPECT_FALSE(HasHostForUrl(kRedirectedUrl2));
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kCrossSiteRedirect);
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation);
 }
 
 // Tests that same-site cross-origin navigation by speculation rules can be
@@ -8135,7 +8157,7 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kCrossSiteRedirect, 1);
+      PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation, 1);
   EXPECT_FALSE(HasHostForUrl(prerendering_initial_url));
 }
 
@@ -9674,7 +9696,7 @@ void CheckExpectedCrossOriginMetrics(
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
-      PrerenderFinalStatus::kCrossSiteRedirect, 1);
+      PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation, 1);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCrossOriginRedirectionMismatch.Embedder_"
       "EmbedderSuffixForTest",

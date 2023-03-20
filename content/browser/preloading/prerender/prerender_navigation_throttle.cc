@@ -181,8 +181,10 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                                                 initial_prerendering_origin)) {
       prerender_host_registry->CancelHost(
           frame_tree_node->frame_tree_node_id(),
-          is_redirection ? PrerenderFinalStatus::kCrossSiteRedirect
-                         : PrerenderFinalStatus::kCrossSiteNavigation);
+          is_redirection
+              ? PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation
+              : PrerenderFinalStatus::
+                    kCrossSiteNavigationInMainFrameNavigation);
       return CANCEL;
     }
   }
@@ -222,7 +224,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
           prerender_host->embedder_histogram_suffix());
       prerender_host_registry->CancelHost(
           frame_tree_node->frame_tree_node_id(),
-          PrerenderFinalStatus::kCrossSiteRedirect);
+          PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation);
       return CANCEL;
     }
 
@@ -240,8 +242,9 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     // prerendered page.
     prerender_host_registry->CancelHost(
         frame_tree_node->frame_tree_node_id(),
-        is_redirection ? PrerenderFinalStatus::kCrossSiteRedirect
-                       : PrerenderFinalStatus::kCrossSiteNavigation);
+        is_redirection
+            ? PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation
+            : PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation);
     return CANCEL;
   } else if (navigation_origin != prerender_host->initiator_origin()) {
     is_same_site_cross_origin_prerender_ = true;
@@ -277,11 +280,34 @@ PrerenderNavigationThrottle::WillProcessResponse() {
           navigation_request->response()->parsed_headers->supports_loading_mode,
           network::mojom::LoadingMode::kCredentialedPrerender);
   if (!is_credentialed_prerender && is_same_site_cross_origin_prerender_) {
-    prerender_host_registry->CancelHost(
-        frame_tree_node->frame_tree_node_id(),
-        same_site_cross_origin_prerender_did_redirect_
-            ? PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn
-            : PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn);
+    // Get the prerender host of the prerendering page.
+    auto* prerender_host =
+        static_cast<PrerenderHost*>(frame_tree_node->frame_tree().delegate());
+    CHECK(prerender_host);
+
+    // Check if the main frame navigation happens after the initial
+    // prerendering navigation in a prerendered page.
+    bool is_initial_navigation = prerender_host->GetInitialNavigationId() ==
+                                 navigation_request->GetNavigationId();
+
+    PrerenderFinalStatus final_status = PrerenderFinalStatus::kDestroyed;
+    if (is_initial_navigation) {
+      final_status =
+          same_site_cross_origin_prerender_did_redirect_
+              ? PrerenderFinalStatus::
+                    kSameSiteCrossOriginRedirectNotOptInInInitialNavigation
+              : PrerenderFinalStatus::
+                    kSameSiteCrossOriginNavigationNotOptInInInitialNavigation;
+    } else {
+      final_status =
+          same_site_cross_origin_prerender_did_redirect_
+              ? PrerenderFinalStatus::
+                    kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation
+              : PrerenderFinalStatus::
+                    kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation;
+    }
+    prerender_host_registry->CancelHost(frame_tree_node->frame_tree_node_id(),
+                                        final_status);
     return CANCEL;
   }
 

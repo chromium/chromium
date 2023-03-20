@@ -38,11 +38,9 @@ namespace {
 
 namespace {
 
-// This is equal to content::PrerenderFinalStatus::kActivated.
-// TODO(crbug.com/1274021): Replace this with the FinalStatus enum value
-// once it is exposed.
+// Following definitions are equal to content::PrerenderFinalStatus.
 constexpr int kFinalStatusActivated = 0;
-constexpr int kFinalStatusCrossSiteNavigation = 45;
+constexpr int kFinalStatusCrossSiteNavigationInMainFrameNavigation = 64;
 
 }  // namespace
 
@@ -472,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
-      kFinalStatusCrossSiteNavigation, 1);
+      kFinalStatusCrossSiteNavigationInMainFrameNavigation, 1);
 }
 
 }  // namespace

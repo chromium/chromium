@@ -95,18 +95,20 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::StartFailed;
     case PrerenderFinalStatus::kTimeoutBackgrounded:
       return Preload::PrerenderFinalStatusEnum::TimeoutBackgrounded;
-    case PrerenderFinalStatus::kCrossSiteRedirect:
-      return Preload::PrerenderFinalStatusEnum::CrossSiteRedirect;
-    case PrerenderFinalStatus::kCrossSiteNavigation:
-      return Preload::PrerenderFinalStatusEnum::CrossSiteNavigation;
-    case PrerenderFinalStatus::kSameSiteCrossOriginRedirect:
-      return Preload::PrerenderFinalStatusEnum::SameSiteCrossOriginRedirect;
-    case PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn:
+    case PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation:
       return Preload::PrerenderFinalStatusEnum::
-          SameSiteCrossOriginRedirectNotOptIn;
-    case PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn:
+          CrossSiteRedirectInInitialNavigation;
+    case PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation:
       return Preload::PrerenderFinalStatusEnum::
-          SameSiteCrossOriginNavigationNotOptIn;
+          CrossSiteNavigationInInitialNavigation;
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInInitialNavigation:
+      return Preload::PrerenderFinalStatusEnum::
+          SameSiteCrossOriginRedirectNotOptInInInitialNavigation;
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInInitialNavigation:
+      return Preload::PrerenderFinalStatusEnum::
+          SameSiteCrossOriginNavigationNotOptInInInitialNavigation;
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
       return Preload::PrerenderFinalStatusEnum::
           ActivationNavigationParameterMismatch;
@@ -140,6 +142,20 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
       return Preload::PrerenderFinalStatusEnum::
           PreloadingUnsupportedByWebContents;
+    case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
+      return Preload::PrerenderFinalStatusEnum::
+          CrossSiteRedirectInMainFrameNavigation;
+    case PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation:
+      return Preload::PrerenderFinalStatusEnum::
+          CrossSiteNavigationInMainFrameNavigation;
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
+      return Preload::PrerenderFinalStatusEnum::
+          SameSiteCrossOriginRedirectNotOptInInMainFrameNavigation;
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
+      return Preload::PrerenderFinalStatusEnum::
+          SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation;
   }
 }
 

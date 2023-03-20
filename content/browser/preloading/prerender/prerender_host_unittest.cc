@@ -220,7 +220,8 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
     prerender_host_observer.WaitForDestroyed();
     EXPECT_FALSE(prerender_host_observer.was_activated());
     EXPECT_EQ(registry().FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
-    ExpectFinalStatus(PrerenderFinalStatus::kCrossSiteNavigation);
+    ExpectFinalStatus(
+        PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation);
   }
 
   // The activation falls back to regular navigation.

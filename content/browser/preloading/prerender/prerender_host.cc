@@ -975,11 +975,12 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kInactivePageRestriction:
     case PrerenderFinalStatus::kStartFailed:
     case PrerenderFinalStatus::kTimeoutBackgrounded:
-    case PrerenderFinalStatus::kCrossSiteNavigation:
-    case PrerenderFinalStatus::kCrossSiteRedirect:
-    case PrerenderFinalStatus::kSameSiteCrossOriginRedirect:
-    case PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn:
-    case PrerenderFinalStatus::kSameSiteCrossOriginNavigationNotOptIn:
+    case PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation:
+    case PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInInitialNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInInitialNavigation:
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
     case PrerenderFinalStatus::kActivatedInBackground:
     case PrerenderFinalStatus::kEmbedderHostDisallowed:
@@ -991,6 +992,12 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kBatterySaverEnabled:
     case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
     case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
+    case PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation:
+    case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
       // SetFailureReason() will call SetTriggeringOutcome() with kFailure.
       devtools_instrumentation::DidUpdatePrerenderStatus(
           initiator_frame_tree_node_id(), prerendering_url(),

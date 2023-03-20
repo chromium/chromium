@@ -10842,11 +10842,10 @@ experimental domain Preload
       InactivePageRestriction
       StartFailed
       TimeoutBackgrounded
-      CrossSiteRedirect
-      CrossSiteNavigation
-      SameSiteCrossOriginRedirect
-      SameSiteCrossOriginRedirectNotOptIn
-      SameSiteCrossOriginNavigationNotOptIn
+      CrossSiteRedirectInInitialNavigation
+      CrossSiteNavigationInInitialNavigation
+      SameSiteCrossOriginRedirectNotOptInInInitialNavigation
+      SameSiteCrossOriginNavigationNotOptInInInitialNavigation
       ActivationNavigationParameterMismatch
       ActivatedInBackground
       EmbedderHostDisallowed
@@ -10860,6 +10859,10 @@ experimental domain Preload
       BatterySaverEnabled
       ActivatedDuringMainFrameNavigation
       PreloadingUnsupportedByWebContents
+      CrossSiteRedirectInMainFrameNavigation
+      CrossSiteNavigationInMainFrameNavigation
+      SameSiteCrossOriginRedirectNotOptInInMainFrameNavigation
+      SameSiteCrossOriginNavigationNotOptInInMainFrameNavigation
 
   # Fired when a prerender attempt is completed.
   event prerenderAttemptCompleted

@@ -70,14 +70,19 @@ enum class PrerenderFinalStatus {
   kInactivePageRestriction = 41,
   kStartFailed = 42,
   kTimeoutBackgrounded = 43,
-  kCrossSiteRedirect = 44,
-  kCrossSiteNavigation = 45,
-  kSameSiteCrossOriginRedirect = 46,
+
+  // Enums for prerender initial navigation. For main frame navigation in
+  // prerendered pages after prerender initial navigation, use enums suffixed
+  // with InMainFrameNavigation (e.g., kCrossSiteRedirectInMainFrameNavigation).
+  kCrossSiteRedirectInInitialNavigation = 44,
+  kCrossSiteNavigationInInitialNavigation = 45,
   // Deprecated. Same-site cross-origin navigation in a prerendered page is
   // allowed in crbug.com/1239281.
-  // kSameSiteCrossOriginNavigation = 47,
-  kSameSiteCrossOriginRedirectNotOptIn = 48,
-  kSameSiteCrossOriginNavigationNotOptIn = 49,
+  // kSameSiteCrossOriginRedirectInInitialNavigation = 46,
+  // kSameSiteCrossOriginNavigationInInitialNavigation = 47,
+  kSameSiteCrossOriginRedirectNotOptInInInitialNavigation = 48,
+  kSameSiteCrossOriginNavigationNotOptInInInitialNavigation = 49,
+
   // The prediction is correct, and we are almost ready to activate this
   // PrerenderHost, but the activation navigation's parameters are different
   // from the initial prerendering navigation so Prerender fails to activate it.
@@ -99,7 +104,14 @@ enum class PrerenderFinalStatus {
   kBatterySaverEnabled = 60,
   kActivatedDuringMainFrameNavigation = 61,
   kPreloadingUnsupportedByWebContents = 62,
-  kMaxValue = kPreloadingUnsupportedByWebContents,
+
+  // Enums for main frame navigation in prerendered pages.
+  kCrossSiteRedirectInMainFrameNavigation = 63,
+  kCrossSiteNavigationInMainFrameNavigation = 64,
+  kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation = 65,
+  kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation = 66,
+
+  kMaxValue = kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
