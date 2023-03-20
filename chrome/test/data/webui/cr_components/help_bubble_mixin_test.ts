@@ -63,7 +63,7 @@ export class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
         <li id='list-item'>List item 1</li>
         <li>List item 2</li>
       </ul>
-      <span>Span text</span>
+      <span style='display: block;'>Span text</span>
       <container-element id='container-element'></container-element>
     </div>`;
   }
@@ -97,7 +97,7 @@ export class HelpBubbleMixinTestContainerElement extends PolymerElement {
   static get template() {
     return html`
     <div>
-      <div class='child-element'></div>
+      <div class='child-element'>ABCDE</div>
     </div>`;
   }
 }

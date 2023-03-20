@@ -47,7 +47,6 @@ export const HelpBubbleMixin = dedupingMixin(
         private helpBubbleControllerById_: Map<string, HelpBubbleController> =
             new Map();
         private helpBubbleListenerIds_: number[] = [];
-        private helpBubbleAnchorObserver_: IntersectionObserver|null = null;
         private helpBubbleFixedAnchorObserver_: IntersectionObserver|null =
             null;
         private helpBubbleAnchorResizeObserver_: ResizeObserver|null = null;
@@ -88,11 +87,6 @@ export const HelpBubbleMixin = dedupingMixin(
               entries => entries.forEach(
                   ({target}) => this.onAnchorVisibilityChanged_(
                       target as HTMLElement, isVisible(target))));
-          this.helpBubbleAnchorObserver_ = new IntersectionObserver(
-              entries => entries.forEach(
-                  ({target, isIntersecting}) => this.onAnchorVisibilityChanged_(
-                      target as HTMLElement, isIntersecting)),
-              {root: document.body});
           this.helpBubbleFixedAnchorObserver_ = new IntersectionObserver(
               entries => entries.forEach(
                   ({target, isIntersecting}) => this.onAnchorVisibilityChanged_(
@@ -126,9 +120,6 @@ export const HelpBubbleMixin = dedupingMixin(
           assert(this.helpBubbleAnchorResizeObserver_);
           this.helpBubbleAnchorResizeObserver_.disconnect();
           this.helpBubbleAnchorResizeObserver_ = null;
-          assert(this.helpBubbleAnchorObserver_);
-          this.helpBubbleAnchorObserver_.disconnect();
-          this.helpBubbleAnchorObserver_ = null;
           assert(this.helpBubbleFixedAnchorObserver_);
           this.helpBubbleFixedAnchorObserver_.disconnect();
           this.helpBubbleFixedAnchorObserver_ = null;
@@ -146,6 +137,9 @@ export const HelpBubbleMixin = dedupingMixin(
          * - a selector
          * - an array of selectors (will traverse shadow DOM elements)
          * - an arbitrary HTMLElement
+         *
+         * The referenced element should have block display and non-zero size
+         * when visible (inline elements may be supported in the future).
          *
          * Example:
          *   registerHelpBubble(
@@ -209,7 +203,7 @@ export const HelpBubbleMixin = dedupingMixin(
           // This can be called before or after `connectedCallback()`, so if the
           // component isn't connected and the observer set up yet, delay
           // observation until it is.
-          if (this.helpBubbleAnchorObserver_) {
+          if (this.helpBubbleAnchorResizeObserver_) {
             this.observeControllerAnchor_(controller);
           }
           return controller;
@@ -236,12 +230,9 @@ export const HelpBubbleMixin = dedupingMixin(
           if (controller.isAnchorFixed()) {
             assert(this.helpBubbleFixedAnchorObserver_);
             this.helpBubbleFixedAnchorObserver_.observe(anchor);
-          } else if (controller.isNonBodyScrollable()) {
+          } else {
             assert(this.helpBubbleAnchorResizeObserver_);
             this.helpBubbleAnchorResizeObserver_.observe(anchor);
-          } else {
-            assert(this.helpBubbleAnchorObserver_);
-            this.helpBubbleAnchorObserver_.observe(anchor);
           }
         }
 
@@ -251,12 +242,9 @@ export const HelpBubbleMixin = dedupingMixin(
           if (controller.isAnchorFixed()) {
             assert(this.helpBubbleFixedAnchorObserver_);
             this.helpBubbleFixedAnchorObserver_.unobserve(anchor);
-          } else if (controller.isNonBodyScrollable()) {
+          } else {
             assert(this.helpBubbleAnchorResizeObserver_);
             this.helpBubbleAnchorResizeObserver_.unobserve(anchor);
-          } else {
-            assert(this.helpBubbleAnchorObserver_);
-            this.helpBubbleAnchorObserver_.unobserve(anchor);
           }
         }
 
