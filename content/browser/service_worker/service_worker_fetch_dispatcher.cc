@@ -36,6 +36,7 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -780,20 +781,8 @@ bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
       version_->navigation_preload_state().header);
 
   // Create the network factory.
-  scoped_refptr<network::SharedURLLoaderFactory> factory;
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory;
-
-  // TODO(asamidoi): Require the caller to pass in a FrameTreeNode directly, or
-  // figure out why it's OK for it to be null.
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  auto* storage_partition = context_wrapper->storage_partition();
-  if (frame_tree_node && storage_partition) {
-    CreateNetworkFactoryForNavigationPreload(
-        *frame_tree_node, *storage_partition,
-        network_factory.InitWithNewPipeAndPassReceiver());
-  }
-  factory = base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-      std::move(network_factory));
+  scoped_refptr<network::SharedURLLoaderFactory> factory =
+      CreateNetworkURLLoaderFactory(context_wrapper, frame_tree_node_id);
 
   // Create the DelegatingURLLoaderClient, which becomes the
   // URLLoaderClient for the navigation preload network request.
@@ -851,6 +840,24 @@ bool ServiceWorkerFetchDispatcher::IsEventDispatched() const {
 }
 
 // static
+scoped_refptr<network::SharedURLLoaderFactory>
+ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
+    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+    int frame_tree_node_id) {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory;
+  // TODO(crbug.com/1424235): Require the caller to pass in a FrameTreeNode
+  // directly, or figure out why it's OK for it to be null.
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  auto* storage_partition = context_wrapper->storage_partition();
+  if (frame_tree_node && storage_partition) {
+    CreateNetworkFactoryForNavigationPreload(
+        *frame_tree_node, *storage_partition,
+        network_factory.InitWithNewPipeAndPassReceiver());
+  }
+  return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
+      std::move(network_factory));
+}
+
 void ServiceWorkerFetchDispatcher::OnFetchEventFinished(
     base::WeakPtr<ServiceWorkerFetchDispatcher> fetch_dispatcher,
     ServiceWorkerVersion* version,

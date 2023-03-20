@@ -255,6 +255,11 @@ enum class ServiceWorkerBypassFetchHandlerTarget {
   // subresources. If the ServiceWorker is running, it invokes fetch handlers as
   // usual.
   kAllOnlyIfServiceWorkerNotStarted,
+  // BestEffortServiceWorker(crbug.com/1420517). It allows the browser to
+  // dispatch a request directly to the network even if there is a registered
+  // ServiceWorker. This behavior races the network request and the
+  // ServiceWorker fetch handler and uses the result of whichever is faster.
+  kAllWithRaceNetworkRequest,
   // Bypass fetch handlers for subresource requests. Fetch handlers will be
   // bypassed regardless of the current ServiceWorker running status.
   kSubResource,

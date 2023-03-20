@@ -1504,6 +1504,9 @@ data/service_worker/navigation_preload_worker.js
 data/service_worker/navigation_preload_worker.js.mock-http-headers
 data/service_worker/non_function_fetch_event.js
 data/service_worker/one_subframe.html
+data/service_worker/race_network_request.html
+data/service_worker/race_network_request.js
+data/service_worker/race_network_request_from_fetch_handler.html
 data/service_worker/request_navigate.html
 data/service_worker/request_origin_worker.js
 data/service_worker/skip_waiting_and_clients_claim_worker.js

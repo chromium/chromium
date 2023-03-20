@@ -1010,6 +1010,10 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>::Option
             "all_only_if_service_worker_not_started",
         },
         {
+            ServiceWorkerBypassFetchHandlerTarget::kAllWithRaceNetworkRequest,
+            "all_with_race_network_request",
+        },
+        {
             ServiceWorkerBypassFetchHandlerTarget::kSubResource,
             "sub_resource",
         },

@@ -95,6 +95,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
  private:
   class StreamWaiter;
+  class RaceNetworkRequestURLLoaderClient;
   enum class Status {
     kNotStarted,
     // |receiver_| is bound and the fetch event is being dispatched to the
@@ -108,6 +109,26 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
     // OnComplete() was called on |url_loader_client_|, or fallback to network
     // occurred so the request was not handled.
     kCompleted,
+  };
+  enum class FetchResponseFrom {
+    kNoResponseYet,
+    kServiceWorker,
+    kWithoutServiceWorker,
+  };
+  // Indicates what kind of preload request is dispatched before starting
+  // the ServiceWorker.
+  //
+  // kNone: No preload request is triggered. This is the default state.
+  // kRaceNetworkRequest:
+  //    RaceNetworkRequest is triggered.
+  //    TODO(crbug.com/1420517) This will be passed to the renderer and block
+  //    the corresponding request from the ServiceWorker.
+  // kNavigationPreload:
+  //    Enabled when Navigation Preload is triggered.
+  enum class DispatchedPreloadType {
+    kNone,
+    kRaceNetworkRequest,
+    kNavigationPreload
   };
 
   void DidPrepareFetchEvent(scoped_refptr<ServiceWorkerVersion> version,
@@ -124,8 +145,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
                      scoped_refptr<ServiceWorkerVersion> version,
                      blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream);
 
-  // Calls url_loader_client_->OnReceiveResponse() with |response_head_|.
-  void CommitResponseHeaders();
+  // Calls url_loader_client_->OnReceiveResponse() with given |response_head|.
+  void CommitResponseHeaders(
+      const network::mojom::URLResponseHeadPtr& response_head);
 
   // Calls url_loader_client_->OnReceiveResponse() with
   // |response_body| and |cached_metadata|.
@@ -162,9 +184,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       const net::LoadTimingInfo& load_timing);
   // Called when the fetch handler handles the request.
   void RecordTimingMetricsForFetchHandlerHandledCase();
-  // Called when the fetch handler doesn't handle the requset (i.e. network
+  // Called when the fetch handler doesn't handle the request (i.e. network
   // fallback case).
   void RecordTimingMetricsForNetworkFallbackCase();
+  // Called when the response from RaceNetworkRequest is faster than the
+  // response from the fetch handler.
+  void RecordTimingMetricsForRaceNetworkRequestCase();
   // Time between the request is made and the request is routed to this loader.
   void RecordStartToForwardServiceWorkerTiming(
       const net::LoadTimingInfo& load_timing,
@@ -207,6 +232,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
 
   void TransitionToStatus(Status new_status);
 
+  bool MaybeStartRaceNetworkRequest(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper);
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   network::ResourceRequest resource_request_;
@@ -219,7 +247,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // The blob needs to be held while it's read to keep it alive.
   mojo::Remote<blink::mojom::Blob> body_as_blob_;
 
-  bool did_navigation_preload_ = false;
+  DispatchedPreloadType dispatched_preload_type_ = DispatchedPreloadType::kNone;
+
   network::mojom::URLResponseHeadPtr response_head_ =
       network::mojom::URLResponseHead::New();
 
@@ -236,6 +265,15 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   Status status_ = Status::kNotStarted;
   absl::optional<EmbeddedWorkerStatus> initial_embedded_worker_status_;
   bool is_detached_ = false;
+
+  FetchResponseFrom fetch_response_from_ = FetchResponseFrom::kNoResponseYet;
+
+  scoped_refptr<network::SharedURLLoaderFactory>
+      race_network_request_url_loader_factory_;
+  mojo::PendingRemote<network::mojom::URLLoader>
+      race_network_request_url_loader_;
+  std::unique_ptr<RaceNetworkRequestURLLoaderClient>
+      race_network_request_loader_client_;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };

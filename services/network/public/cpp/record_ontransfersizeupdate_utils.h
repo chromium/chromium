@@ -47,7 +47,8 @@ enum class OnTransferSizeUpdatedFrom {
   kWorkerMainScriptLoader = 34,
   kWorkerScriptFetcher = 35,
   kWorkerScriptLoader = 36,
-  kMaxValue = kWorkerScriptLoader,
+  kServiceWorkerRaceNetworkRequest = 37,
+  kMaxValue = kServiceWorkerRaceNetworkRequest,
 };
 
 inline void RecordOnTransferSizeUpdatedUMA(

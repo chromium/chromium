@@ -84,6 +84,11 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
 
   bool FetchCallbackIsNull() { return fetch_callback_.is_null(); }
 
+  static scoped_refptr<network::SharedURLLoaderFactory>
+  CreateNetworkURLLoaderFactory(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      int frame_tree_node_id);
+
  private:
   class ResponseCallback;
   class URLLoaderAssets;

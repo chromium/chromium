@@ -420,4 +420,5 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_download_google_photo" added_in_milestone="102" content_hash_code="0565daa5" os_list="chromeos" file_path="ash/wallpaper/wallpaper_image_downloader.cc" />
  <item id="wallpaper_online_downloader" added_in_milestone="110" content_hash_code="00286fc5" os_list="chromeos" file_path="ash/wallpaper/wallpaper_image_downloader.cc" />
  <item id="chrome_support_tool_file_upload" added_in_milestone="113" content_hash_code="04a07122" os_list="chromeos" file_path="chrome/browser/policy/messaging_layer/upload/file_upload_impl.cc" />
+ <item id="service_worker_race_network_request" added_in_milestone="113" content_hash_code="01abb946" os_list="linux,windows,android,chromeos" file_path="content/browser/service_worker/service_worker_main_resource_loader.cc" />
 </annotations>
