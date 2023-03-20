@@ -363,6 +363,9 @@ class CORE_EXPORT WebLocalFrameImpl final
           session_storage_area) override;
   void AddHitTestOnTouchStartCallback(
       base::RepeatingCallback<void(const WebHitTestResult&)> callback) override;
+  void SetResourceCacheRemote(
+      CrossVariantMojoRemote<mojom::blink::ResourceCacheInterfaceBase> remote)
+      override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;

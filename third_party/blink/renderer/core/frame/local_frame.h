@@ -61,6 +61,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/loader/resource_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
@@ -144,6 +145,7 @@ class NodeTraversal;
 class PerformanceMonitor;
 class PluginData;
 class PolicyContainer;
+class ResourceCacheImpl;
 class ScrollSnapshotClient;
 class SmoothScrollSequencer;
 class SpellChecker;
@@ -860,6 +862,12 @@ class CORE_EXPORT LocalFrame final
       const BFCacheBlockingFeatureAndLocations&,
       const BFCacheBlockingFeatureAndLocations&);
 
+  // Sets a ResourceCacheImpl.
+  void SetResourceCacheImpl(ResourceCacheImpl*);
+
+  // Sets a ResourceCache hosted by another frame in a different renderer.
+  void SetResourceCacheRemote(mojo::PendingRemote<mojom::blink::ResourceCache>);
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -1076,6 +1084,9 @@ class CORE_EXPORT LocalFrame final
 
   HeapHashSet<WeakMember<ScrollSnapshotClient>>
       unvalidated_scroll_snapshot_clients_;
+
+  // Set lazily, when the browser asks to host a resource cache in this frame.
+  Member<ResourceCacheImpl> resource_cache_;
 
   // Manages a transient affordance for this frame to enter fullscreen.
   TransientAllowFullscreen transient_allow_fullscreen_;

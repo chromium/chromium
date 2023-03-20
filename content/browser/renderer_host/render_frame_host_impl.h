@@ -141,6 +141,7 @@
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/resource_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
@@ -2882,6 +2883,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Retrieves the information about the cookie changes that are observed on the
   // last committed document.
   CookieChangeListener::CookieChangeInfo GetCookieChangeInfo();
+
+  // Sets a ResourceCache in the renderer. `remote` must have the same process
+  // isolation policy.
+  // TODO(https://crbug.com/1414262): Add checks to ensure the preconditions.
+  void SetResourceCache(
+      mojo::PendingRemote<blink::mojom::ResourceCache> remote);
+
+  void FlushMojomFrameRemoteForTesting();
 
  protected:
   friend class RenderFrameHostFactory;

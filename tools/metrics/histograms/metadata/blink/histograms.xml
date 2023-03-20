@@ -36,6 +36,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".Slow2G" summary="Slow-2G effective connection type"/>
 </variants>
 
+<variants name="ResourceCacheLifecycleState">
+  <variant name="Frozen"/>
+  <variant name="Paused"/>
+  <variant name="Running"/>
+  <variant name="Unknown"/>
+</variants>
+
 <variants name="ResourceType">
   <variant name="Audio" summary="Audio"/>
   <variant name="CSSStyleSheet" summary="CSS Style Sheet"/>
@@ -2341,6 +2348,58 @@ chromium-metrics-reviews@google.com.
     when the user navigates to a newpage under the same origin. Recorded only
     with feature flag MemoryCacheStrongReference.
   </summary>
+</histogram>
+
+<histogram name="Blink.MemoryCache.Remote.IsInCache.{Destination}"
+    enum="Boolean" expires_after="2023-08-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    Records whether a cached response exists in another renderer that has the
+    same process isolation policies. Recorded when ResourceFetcher fetches a
+    resource from network. This histogram is for `{Destination}` destination.
+  </summary>
+  <token key="Destination" variants="RequestDestination"/>
+</histogram>
+
+<histogram
+    name="Blink.MemoryCache.Remote.{Visibility}.{LifecycleState}.IPCRecvDelay"
+    units="microseconds" expires_after="2023-08-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    Records the time between when a renderer receives an IPC to look for cached
+    response and when another renderer receives the response of that IPC. The
+    IPC is sent when ResourceFetcher fetches a resource from network. Recorded
+    when the renderer receives the response.
+
+    Note: This histogram is not recorded on low-resolution clock clients.
+  </summary>
+  <token key="Visibility">
+    <variant name="Hidden"/>
+    <variant name="Visible"/>
+  </token>
+  <token key="LifecycleState" variants="ResourceCacheLifecycleState"/>
+</histogram>
+
+<histogram
+    name="Blink.MemoryCache.Remote.{Visibility}.{LifecycleState}.IPCSendDelay"
+    units="microseconds" expires_after="2023-08-13">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-dev@chromium.org</owner>
+  <summary>
+    Records the time between when a renderer sends an IPC to look for cached
+    response and when another renderer receives that IPC. The IPC is sent when
+    ResourceFetcher fetches a resource from network. Recorded when the renderer
+    receives the response.
+
+    Note: This histogram is not recorded on low-resolution clock clients.
+  </summary>
+  <token key="Visibility">
+    <variant name="Hidden"/>
+    <variant name="Visible"/>
+  </token>
+  <token key="LifecycleState" variants="ResourceCacheLifecycleState"/>
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.AsyncScript"

@@ -1075,6 +1075,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kMemoryCacheStrongReferenceFilterImages);
 
+// If enabled, renderers look for cached resources from another renderer
+// that has the same process isolation policies. Note that renderers don't
+// use cached resources in other rendereres yet, just record histograms.
+// See https://crbug.com/1414262
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoteResourceCache);
+
 }  // namespace features
 }  // namespace blink
 

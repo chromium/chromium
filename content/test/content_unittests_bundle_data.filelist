@@ -230,6 +230,8 @@ data/cache_transparency/pervasive.js.mock-http-headers
 data/cache_transparency/pervasive2.html
 data/cacheable-isolated.jpg
 data/cacheable-isolated.jpg.mock-http-headers
+data/cacheable.js
+data/cacheable.js.mock-http-headers
 data/cacheable.svg
 data/cacheable.svg.mock-http-headers
 data/click-nocontent-link.html

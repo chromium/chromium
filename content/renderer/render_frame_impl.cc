@@ -166,6 +166,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
+#include "third_party/blink/public/mojom/loader/resource_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
@@ -2199,6 +2200,12 @@ void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(
   // Serialize the frame (without recursing into subframes).
   WebFrameSerializer::Serialize(GetWebFrame(), &client, &delegate,
                                 save_with_empty_url);
+}
+
+void RenderFrameImpl::SetResourceCache(
+    mojo::PendingRemote<blink::mojom::ResourceCache> remote) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kRemoteResourceCache));
+  frame_->SetResourceCacheRemote(std::move(remote));
 }
 
 void RenderFrameImpl::SetWantErrorMessageStackTrace() {

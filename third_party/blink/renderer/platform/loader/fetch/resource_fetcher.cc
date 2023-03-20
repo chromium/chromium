@@ -41,7 +41,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -605,6 +607,7 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
               ? init.frame_or_worker_scheduler->GetWeakPtr()
               : nullptr),
       blob_registry_remote_(init.context_lifecycle_notifier),
+      resource_cache_remote_(init.context_lifecycle_notifier),
       auto_load_images_(true),
       images_enabled_(true),
       allow_stale_resources_(false),
@@ -1333,6 +1336,13 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   // the resource was already initialized for the revalidation here, but won't
   // start loading.
   if (ResourceNeedsLoad(resource, policy, should_defer)) {
+    if (resource_cache_remote_.is_bound()) {
+      resource_cache_remote_->Contains(
+          params.Url(),
+          WTF::BindOnce(&ResourceFetcher::OnResourceCacheContainsFinished,
+                        WrapWeakPersistent(this), base::TimeTicks::Now(),
+                        resource_request.GetRequestDestination()));
+    }
     if (!StartLoad(resource,
                    std::move(params.MutableResourceRequest().MutableBody()),
                    load_blocking_policy, params.GetRenderBlockingBehavior())) {
@@ -2678,6 +2688,53 @@ void ResourceFetcher::OnMemoryPressure(
   document_resource_strong_refs_.clear();
 }
 
+void ResourceFetcher::SetResourceCache(
+    mojo::PendingRemote<mojom::blink::ResourceCache> remote) {
+  DCHECK(remote.is_valid());
+  resource_cache_remote_.reset();
+  resource_cache_remote_.Bind(std::move(remote), unfreezable_task_runner_);
+}
+
+void ResourceFetcher::OnResourceCacheContainsFinished(
+    base::TimeTicks ipc_send_time,
+    network::mojom::RequestDestination destination,
+    mojom::blink::ResourceCacheContainsResultPtr result) {
+  DCHECK(result);
+
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Blink.MemoryCache.Remote.IsInCache.",
+           network::RequestDestinationToStringForHistogram(destination)}),
+      result->is_in_cache);
+  const char* visibility = result->is_visible ? "Visible" : "Hidden";
+  const char* lifecycle = nullptr;
+  switch (result->lifecycle_state) {
+    case mojom::blink::ResourceCacheContainsResult::LifecycleState::kUnknown:
+      lifecycle = ".Unknown";
+      break;
+    case mojom::blink::ResourceCacheContainsResult::LifecycleState::kRunning:
+      lifecycle = ".Running";
+      break;
+    case mojom::blink::ResourceCacheContainsResult::LifecycleState::kPaused:
+      lifecycle = ".Paused";
+      break;
+    case mojom::blink::ResourceCacheContainsResult::LifecycleState::kFrozen:
+      lifecycle = ".Frozen";
+      break;
+  }
+  base::TimeDelta send_delay = result->ipc_response_time - ipc_send_time;
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({"Blink.MemoryCache.Remote.", visibility, lifecycle,
+                    ".IPCSendDelay"}),
+      send_delay);
+  base::TimeDelta recv_delay =
+      base::TimeTicks::Now() - result->ipc_response_time;
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({"Blink.MemoryCache.Remote.", visibility, lifecycle,
+                    ".IPCRecvDelay"}),
+      recv_delay);
+}
+
 void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
   visitor->Trace(properties_);
@@ -2700,6 +2757,7 @@ void ResourceFetcher::Trace(Visitor* visitor) const {
   visitor->Trace(blob_registry_remote_);
   visitor->Trace(subresource_web_bundles_);
   visitor->Trace(document_resource_strong_refs_);
+  visitor->Trace(resource_cache_remote_);
   MemoryPressureListener::Trace(visitor);
 }
 

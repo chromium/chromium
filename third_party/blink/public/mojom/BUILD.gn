@@ -117,6 +117,7 @@ mojom("mojom_platform") {
     "loader/pause_subresource_loading_handle.mojom",
     "loader/referrer.mojom",
     "loader/request_context_frame_type.mojom",
+    "loader/resource_cache.mojom",
     "loader/resource_load_info.mojom",
     "loader/resource_load_info_notifier.mojom",
     "loader/same_document_navigation_type.mojom",

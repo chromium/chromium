@@ -1,0 +1,51 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// Represents a resource cache that lives in a renderer. Roughly corresponds
+// with blink::MemoryCache, but semantically ResourceCache has 1:1 relationship
+// with a LocalFrame. Implemented by a renderer and used by other
+// renderers that have the same process isolation policy.
+// Exposed only to the browser process directly and the browser process is
+// responsible to pass the interface to permitted renderers to avoid unexpected
+// exposures.
+// NOTE: Usage of this interface is restricted. Must be used only for recording
+// histograms.
+interface ResourceCache {
+  // Checks whether there is a cached resource for `url`.
+  Contains(url.mojom.Url url) => (ResourceCacheContainsResult result);
+};
+
+// A result of Contains() method.
+struct ResourceCacheContainsResult {
+  // True when a cached response exists.
+  bool is_in_cache = false;
+
+  // The time this result was sent from a ResourceCache.
+  mojo_base.mojom.TimeTicks ipc_response_time;
+
+  // True when the frame is visible, false when hidden.
+  bool is_visible = false;
+
+  // NOTE: This is almost the same as blink.mojom.FrameLifecycleState. We can't
+  // use blink.mojom.FrameLifecycleState here because of dependency issues.
+  // See comments in third_party/blink/public/mojom/BUILD.gn.
+  enum LifecycleState {
+    // The state is unknown.
+    kUnknown,
+    // The frame is running.
+    kRunning,
+    // The frame is paused.
+    kPaused,
+    // The frame is frozen.
+    kFrozen,
+  };
+
+  // The lifecycle state at the time a ResourceCache received the method.
+  LifecycleState lifecycle_state = LifecycleState.kUnknown;
+};

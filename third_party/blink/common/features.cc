@@ -1752,5 +1752,9 @@ BASE_FEATURE(kMemoryCacheStrongReferenceFilterImages,
              "MemoryCacheStrongReferenceFilterImages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRemoteResourceCache,
+             "RemoteResourceCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

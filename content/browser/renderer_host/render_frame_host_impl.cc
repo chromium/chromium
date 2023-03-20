@@ -14930,4 +14930,14 @@ bool RenderFrameHostImpl::GetIsThirdPartyCookiesUserBypassEnabled() {
   return read_context.IsThirdPartyCookiesUserBypassEnabled();
 }
 
+void RenderFrameHostImpl::SetResourceCache(
+    mojo::PendingRemote<blink::mojom::ResourceCache> remote) {
+  GetMojomFrameInRenderer()->SetResourceCache(std::move(remote));
+}
+
+void RenderFrameHostImpl::FlushMojomFrameRemoteForTesting() {
+  DCHECK(frame_);
+  frame_.FlushForTesting();  // IN-TEST
+}
+
 }  // namespace content

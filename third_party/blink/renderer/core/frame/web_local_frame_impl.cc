@@ -3165,6 +3165,11 @@ void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
       event_type_names::kTouchstart, touch_start_event_listener, &options);
 }
 
+void WebLocalFrameImpl::SetResourceCacheRemote(
+    CrossVariantMojoRemote<mojom::blink::ResourceCacheInterfaceBase> remote) {
+  GetFrame()->SetResourceCacheRemote(std::move(remote));
+}
+
 void WebLocalFrameImpl::SetTargetToCurrentHistoryItem(const WebString& target) {
   current_history_item_.SetTarget(target);
 }

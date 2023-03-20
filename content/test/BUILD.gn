@@ -1342,6 +1342,7 @@ test("content_browsertests") {
     "../browser/loader/prefetch_browsertest_base.cc",
     "../browser/loader/prefetch_browsertest_base.h",
     "../browser/loader/reload_cache_control_browsertest.cc",
+    "../browser/loader/resource_cache_browsertest.cc",
     "../browser/loader/resource_scheduler_browsertest.cc",
     "../browser/loader/web_transport_browsertest.cc",
     "../browser/locks/lock_manager_browsertest.cc",

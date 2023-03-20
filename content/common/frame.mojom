@@ -38,6 +38,7 @@ import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/loader/resource_cache.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
@@ -500,6 +501,11 @@ interface Frame {
       map<blink.mojom.FrameToken, mojo_base.mojom.FilePath>
           frame_token_map, bool save_with_empty_url,
           pending_remote<FrameHTMLSerializerHandler> handler_remote);
+
+  // Sets a ResourceCache hosted by another frame. Before calling this, the
+  // browser process must make sure that `remote` satisifes the same process
+  // isolation policy.
+  SetResourceCache(pending_remote<blink.mojom.ResourceCache> remote);
 };
 
 // Implemented by the frame (e.g. renderer processes).
