@@ -402,6 +402,9 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
       features::IsRgbKeyboardEnabled() &&
           Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
 
+  source->AddBoolean("isScreenSaverDurationEnabled",
+                     features::IsScreenSaverDurationEnabled());
+
   source->AddBoolean("isScreenSaverPreviewEnabled",
                      features::IsScreenSaverPreviewEnabled());
 

@@ -6352,6 +6352,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "screen-saver-duration",
+    "owners": [ "pzliu", "assistive-eng@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "screen-saver-preview",
     "owners": [ "safarli", "assistive-eng@google.com" ],
     "expiry_milestone": 116

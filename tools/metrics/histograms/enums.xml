@@ -66019,6 +66019,7 @@ from previous Chrome versions.
   <int value="2137599770" label="enable-win32k-renderer-lockdown"/>
   <int value="2138146331" label="OmniboxVoiceSearchAlwaysVisible:enabled"/>
   <int value="2138431623" label="GlobalMediaControlsCrOSUpdatedUI:disabled"/>
+  <int value="2138744939" label="ScreenSaverDuration:disabled"/>
   <int value="2139048614" label="UseSurfaceLayerForVideo:enabled"/>
   <int value="2139520082" label="EnableRestrictedWebApis:disabled"/>
   <int value="2140205372" label="ScreenAI"/>
@@ -66026,6 +66027,7 @@ from previous Chrome versions.
       label="MigrateDefaultChromeAppToWebAppsGSuite:enabled"/>
   <int value="2141067485" label="SystemWebApps:enabled"/>
   <int value="2141463681" label="enable-offer-upload-credit-cards"/>
+  <int value="2142286279" label="ScreenSaverDuration:enabled"/>
   <int value="2142661816" label="AllowRemoteContextForNotifications:disabled"/>
   <int value="2142979536" label="EnableManualFallbacksFilling:disabled"/>
   <int value="2144581598" label="UpcomingSharingFeatures:enabled"/>

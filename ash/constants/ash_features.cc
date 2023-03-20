@@ -1799,6 +1799,11 @@ BASE_FEATURE(kReverseScrollGestures,
 
 BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables screensaver customized running time.
+BASE_FEATURE(kScreenSaverDuration,
+             "ScreenSaverDuration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the "Preview" button for screensaver.
 BASE_FEATURE(kScreenSaverPreview,
              "ScreenSaverPreview",
@@ -2714,6 +2719,10 @@ bool IsHostnameSettingEnabled() {
 
 bool IsHotspotEnabled() {
   return base::FeatureList::IsEnabled(kHotspot);
+}
+
+bool IsScreenSaverDurationEnabled() {
+  return base::FeatureList::IsEnabled(kScreenSaverDuration);
 }
 
 bool IsScreenSaverPreviewEnabled() {

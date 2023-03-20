@@ -31,6 +31,10 @@ export function isRgbKeyboardSupported() {
   return loadTimeData.getBoolean('isRgbKeyboardSupported');
 }
 
+export function isScreenSaverDurationEnabled() {
+  return loadTimeData.getBoolean('isScreenSaverDurationEnabled');
+}
+
 export function isScreenSaverPreviewEnabled() {
   return loadTimeData.getBoolean('isScreenSaverPreviewEnabled');
 }

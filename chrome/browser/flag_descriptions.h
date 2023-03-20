@@ -1561,6 +1561,9 @@ extern const char kPartitionedCookiesDescription[];
 extern const char kThirdPartyStoragePartitioningName[];
 extern const char kThirdPartyStoragePartitioningDescription[];
 
+extern const char kScreenSaverDurationName[];
+extern const char kScreenSaverDurationDescription[];
+
 extern const char kScreenSaverPreviewName[];
 extern const char kScreenSaverPreviewDescription[];
 
