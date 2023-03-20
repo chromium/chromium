@@ -384,6 +384,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   mojo::Remote<mojom::SearchQuery> search_query_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::ElapsedTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ElapsedTimer progress_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stable IDs of the files to pin, and which are not already marked as pinned.
   std::unordered_set<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);

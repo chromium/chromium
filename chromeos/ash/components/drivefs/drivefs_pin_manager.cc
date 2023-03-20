@@ -830,11 +830,14 @@ void PinManager::PinSomeFiles() {
     DCHECK_EQ(progress_.syncing_files, CountPinnedFiles());
   }
 
-  VLOG(1) << "Progress "
-          << Percentage(progress_.pinned_bytes, progress_.bytes_to_pin)
-          << "%: Synced " << HumanReadableSize(progress_.pinned_bytes)
-          << " and " << progress_.pinned_files << " files, Syncing "
-          << progress_.syncing_files << " files";
+  if (progress_timer_.Elapsed() >= base::Seconds(1)) {
+    VLOG(1) << "Progress "
+            << Percentage(progress_.pinned_bytes, progress_.bytes_to_pin)
+            << "%: Synced " << HumanReadableSize(progress_.pinned_bytes)
+            << " and " << progress_.pinned_files << " files, Syncing "
+            << progress_.syncing_files << " files";
+    progress_timer_ = {};
+  }
 
   if (files_to_track_.empty() && !progress_.emptied_queue) {
     progress_.emptied_queue = true;
