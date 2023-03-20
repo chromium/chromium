@@ -167,11 +167,13 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
   }
   return content::NavigationThrottle::DEFER;
 #else
-  NOTREACHED();
-
-  // This should never happen but needs to be included to avoid compilation
-  // error on debug builds.
-  return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  // On other platforms we do not currently provide the same guarantees that a
+  // user must be signed in for relevant domains.
+  // Allow the navigation to proceed even in an unauthenticated state.
+  //
+  // TODO(b/274402198): if we implement similar guarantees on Linux/Mac/Windows,
+  // trigger re-auth and defer navigation.
+  return content::NavigationThrottle::PROCEED;
 #endif
 }
 

@@ -168,6 +168,14 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
             CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
+#else
+  EXPECT_EQ(
+      CreateNavigationThrottle(GURL(kGoogleSearchURL))->WillStartRequest(),
+      content::NavigationThrottle::PROCEED);
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            CreateNavigationThrottle(GURL(kGoogleHomeURL))->WillStartRequest());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
 #endif
 
   // Prerendering is not supported for supervised users.
