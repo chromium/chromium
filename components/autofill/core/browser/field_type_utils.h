@@ -31,6 +31,9 @@ bool TypeOfFieldIsPossibleType(const AutofillField& field);
 // `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`.
 bool IsStreetNameOrHouseNumberType(const ServerFieldType type);
 
+// Returns true if `type` is address-related.
+bool IsAddressType(const AutofillType& type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_

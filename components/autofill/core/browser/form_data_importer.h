@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -219,8 +220,8 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // a specified `section`. If no section is passed, the import is performed on
   // the union of all sections.
   bool ExtractAddressProfileFromSection(
-      const FormStructure& form,
-      const Section& section,
+      base::span<const AutofillField* const> section_fields,
+      const GURL& source_url,
       std::vector<AddressProfileImportCandidate>*
           address_profile_import_candidates,
       LogBuffer* import_log_buffer);

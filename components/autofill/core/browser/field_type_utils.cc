@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -39,4 +41,26 @@ bool IsStreetNameOrHouseNumberType(const ServerFieldType type) {
   return type == ADDRESS_HOME_STREET_NAME || type == ADDRESS_HOME_HOUSE_NUMBER;
 }
 
+bool IsAddressType(const AutofillType& type) {
+  switch (type.group()) {
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kNameBilling:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kAddressHome:
+    case FieldTypeGroup::kAddressBilling:
+    case FieldTypeGroup::kPhoneHome:
+    case FieldTypeGroup::kPhoneBilling:
+    case FieldTypeGroup::kBirthdateField:
+      return true;
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+      return false;
+  }
+  NOTREACHED_NORETURN();
+}
 }  // namespace autofill

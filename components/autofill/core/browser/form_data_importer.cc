@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -29,6 +30,8 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -356,13 +359,14 @@ size_t FormDataImporter::ExtractAddressProfiles(
                               << "Form is empty." << CTag{};
   } else {
     // Relevant sections for address fields.
-    std::set<Section> sections;
+    std::map<Section, std::vector<const AutofillField*>> section_fields;
     for (const auto& field : form) {
-      if (field->Type().group() != FieldTypeGroup::kCreditCard)
-        sections.insert(field->section);
+      if (IsAddressType(field->Type())) {
+        section_fields[field->section].push_back(field.get());
+      }
     }
 
-    for (const Section& section : sections) {
+    for (const auto& [section, fields] : section_fields) {
       if (num_complete_profiles == kMaxNumAddressProfilesSaved)
         break;
       // Log the output from a section in a separate div for readability.
@@ -373,7 +377,7 @@ size_t FormDataImporter::ExtractAddressProfiles(
           << CTag{};
       // Try to extract an address profile from the form fields of this section.
       // Only allow for a prompt if no other complete profile was found so far.
-      if (ExtractAddressProfileFromSection(form, section,
+      if (ExtractAddressProfileFromSection(fields, form.source_url(),
                                            address_profile_import_candidates,
                                            &import_log_buffer)) {
         num_complete_profiles++;
@@ -398,8 +402,8 @@ size_t FormDataImporter::ExtractAddressProfiles(
 }
 
 bool FormDataImporter::ExtractAddressProfileFromSection(
-    const FormStructure& form,
-    const Section& section,
+    base::span<const AutofillField* const> section_fields,
+    const GURL& source_url,
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates,
     LogBuffer* import_log_buffer) {
@@ -429,19 +433,14 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   bool ignore_phone_number_fields = false;
 
   // Metadata about the way we construct candidate_profile.
-  ProfileImportMetadata import_metadata{
-      .origin = url::Origin::Create(form.source_url())};
+  ProfileImportMetadata import_metadata{.origin =
+                                            url::Origin::Create(source_url)};
 
   // Tracks if any of the fields belongs to FormType::kAddressForm.
   bool has_address_related_fields = false;
 
   // Go through each |form| field and attempt to constitute a valid profile.
-  for (const auto& field : form) {
-    // Reject fields that are not within the specified |section|.
-    if (field->section != section) {
-      continue;
-    }
-
+  for (const auto* field : section_fields) {
     std::u16string value;
     base::TrimWhitespace(field->value, base::TRIM_ALL, &value);
 
@@ -641,7 +640,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
 
   AddressProfileImportCandidate import_candidate;
   import_candidate.profile = candidate_profile;
-  import_candidate.url = form.source_url();
+  import_candidate.url = source_url;
   import_candidate.all_requirements_fulfilled = all_fulfilled;
   import_candidate.import_metadata = import_metadata;
   address_profile_import_candidates->push_back(import_candidate);
