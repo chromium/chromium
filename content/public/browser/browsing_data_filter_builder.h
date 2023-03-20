@@ -95,6 +95,8 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // cross-site context. Only works for processing the Clear-Site-Data header
   // (which means the filter contains a single domain) when partitioned cookies
   // are enabled.
+  // TODO(crbug.com/1416655): Remove this method in favor of
+  //    SetPartitionedStateAllowedOnly.
   virtual bool IsCrossSiteClearSiteDataForCookies() const = 0;
 
   // Set the StorageKey for the filter.
@@ -114,6 +116,11 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
 
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;
+
+  // When true, this filter will exclude unpartitioned cookies, i.e. cookies
+  // whose partition key is null. By default, the value is false.
+  // Partitioned cookies are unaffected by this setting.
+  virtual void SetPartitionedStateAllowedOnly(bool value) = 0;
 
   // Deprecated: Prefer `BuildOriginFilter()` instead.
   // Builds a filter that matches URLs that are in the list to delete, or aren't

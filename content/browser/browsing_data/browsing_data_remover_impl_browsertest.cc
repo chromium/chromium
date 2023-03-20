@@ -407,6 +407,36 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   EXPECT_EQ("F", cookies[2].Name());
 }
 
+IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
+                       ClearSiteData_PartitionedStateAllowedOnly) {
+  // Unpartitioned cookie should not be removed when third-party cookie blocking
+  // applies to the request that sent Clear-Site-Data.
+  ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure;",
+                        /*cookie_partition_key=*/absl::nullopt));
+  // Partitioned cookies should still be removed.
+  ASSERT_TRUE(SetCookie(
+      GURL("https://a.com"), "B=1; secure; partitioned",
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://b.com"))));
+  // Nonced partitioned cookies should still be removed.
+  ASSERT_TRUE(
+      SetCookie(GURL("https://a.com"), "C=2; secure;",
+                net::CookiePartitionKey::FromURLForTesting(
+                    GURL("https://b.com"), base::UnguessableToken::Create())));
+
+  std::unique_ptr<BrowsingDataFilterBuilder> builder(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  builder->AddRegisterableDomain("a.com");
+  builder->SetPartitionedStateAllowedOnly(true);
+
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
+                          std::move(builder));
+
+  auto cookies = GetAllCookies();
+  EXPECT_EQ(1u, cookies.size());
+  EXPECT_EQ("A", cookies[0].Name());
+}
+
 namespace {
 // Provide BrowsingDataRemoverImplTrustTokenTest the Trust Tokens
 // feature as a mixin so that it gets set before the superclass initializes

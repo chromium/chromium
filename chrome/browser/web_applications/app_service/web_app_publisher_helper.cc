@@ -772,16 +772,17 @@ void WebAppPublisherHelper::UninstallWebApp(
   constexpr bool kClearCache = true;
   constexpr bool kAvoidClosingConnections = false;
 
-  content::ClearSiteData(base::BindRepeating(
-                             [](content::BrowserContext* browser_context) {
-                               return browser_context;
-                             },
-                             base::Unretained(profile())),
-                         origin, kClearCookies, kClearStorage, kClearCache,
-                         /*storage_buckets_to_remove=*/{},
-                         kAvoidClosingConnections,
-                         /*cookie_partition_key=*/absl::nullopt,
-                         /*storage_key=*/absl::nullopt, base::DoNothing());
+  content::ClearSiteData(
+      base::BindRepeating(
+          [](content::BrowserContext* browser_context) {
+            return browser_context;
+          },
+          base::Unretained(profile())),
+      origin, kClearCookies, kClearStorage, kClearCache,
+      /*storage_buckets_to_remove=*/{}, kAvoidClosingConnections,
+      /*cookie_partition_key=*/absl::nullopt,
+      /*storage_key=*/absl::nullopt,
+      /*partitioned_state_allowed_only=*/false, base::DoNothing());
 }
 
 void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {

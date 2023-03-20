@@ -335,6 +335,11 @@ struct CookieDeletionFilter {
   // is equivalent to setting the field to
   // CookiePartitionKeyCollection::ContainsAll.
   CookiePartitionKeyCollection? cookie_partition_key_collection;
+
+  // If true, it indicates that third-party cookie blocking would apply to the
+  // context triggering the deletion. In these cases, we should only delete
+  // partitioned cookies.
+  bool partitioned_state_only;
 };
 
 interface CookieChangeListener {

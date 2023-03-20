@@ -174,14 +174,20 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   }
 
   // Adds a cookie for the |url|. Used in the cookie integration tests.
-  void AddCookie(const GURL& url) {
+  void AddCookie(const GURL& url,
+                 const absl::optional<net::CookiePartitionKey>&
+                     cookie_partition_key = absl::nullopt) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     network::mojom::CookieManager* cookie_manager =
         storage_partition()->GetCookieManagerForBrowserProcess();
 
+    std::string cookie_line = "A=1";
+    if (cookie_partition_key) {
+      cookie_line += "; Secure; Partitioned";
+    }
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, "A=1", base::Time::Now(), absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */));
+        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        cookie_partition_key));
 
     base::RunLoop run_loop;
     cookie_manager->SetCanonicalCookie(
@@ -294,6 +300,12 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
       // auditor will complain if its |value| contains JS code. Disable that
       // protection.
       response->AddCustomHeader("X-XSS-Protection", "0");
+    }
+
+    if (net::GetValueForKeyInQuery(request.GetURL(),
+                                   "access-control-allow-origin", &value)) {
+      response->AddCustomHeader("Access-Control-Allow-Origin", value);
+      response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
     }
 
     browsing_data_browsertest_utils::SetResponseContent(request.GetURL(),
@@ -742,6 +754,71 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
   ASSERT_EQ(2u, cookies.size());
   EXPECT_EQ(cookies[0].Domain(), "origin2.com");
   EXPECT_EQ(cookies[1].Domain(), "subdomain.origin2.com");
+}
+
+class PartitionedCookiesClearSiteDataHandlerBrowserTest
+    : public ClearSiteDataHandlerBrowserTest {
+ public:
+  PartitionedCookiesClearSiteDataHandlerBrowserTest() {
+    feature_list_.InitAndEnableFeature(net::features::kPartitionedCookies);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PartitionedCookiesClearSiteDataHandlerBrowserTest,
+                       ThirdPartyCookieBlocking) {
+  // First disable third-party cookie blocking.
+  network::mojom::CookieManager* cookie_manager =
+      storage_partition()->GetCookieManagerForBrowserProcess();
+  cookie_manager->BlockThirdPartyCookies(false);
+
+  // When third-party cookie blocking is disabled, both cookies should be
+  // cleared.
+  AddCookie(https_server()->GetURL("origin1.com", "/"));
+  AddCookie(
+      https_server()->GetURL("origin1.com", "/"),
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://origin2.com")));
+
+  GURL url = https_server()->GetURL("origin2.com", "/");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL csd_url = https_server()->GetURL("origin1.com", "/clear-site-data");
+  AddQuery(&csd_url, "header", kClearCookiesHeader);
+  std::string origin = url.spec();
+  // Pop the last character to remove trailing /.
+  origin.erase(origin.size() - 1);
+  AddQuery(&csd_url, "access-control-allow-origin", origin);
+
+  // Script that makes a cross-site subresource request that responds with
+  // Clear-Site-Data.
+  std::string script =
+      "fetch('" + csd_url.spec() + "', {credentials: 'include'})";
+  script += ".then(resp => resp.ok)";
+  script += ".catch(err => { console.error(err); return false; });";
+
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), script));
+
+  auto cookies = GetCookies();
+  ASSERT_EQ(0u, cookies.size());
+
+  // Now enable third-party cookie blocking.
+  cookie_manager->BlockThirdPartyCookies(true);
+
+  // Unpartitioned cookie, should not be removed.
+  AddCookie(https_server()->GetURL("origin1.com", "/"));
+  // Partitioned cookie set in the partition we are clearing, should still
+  // be removed.
+  AddCookie(
+      https_server()->GetURL("origin1.com", "/"),
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://origin2.com")));
+
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), script));
+
+  cookies = GetCookies();
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_FALSE(cookies[0].IsPartitioned());
 }
 
 // Integration test for the unregistering of service workers.

@@ -1471,6 +1471,7 @@ class ClearSiteDataAuthCertObserver : public TestURLLoaderNetworkObserver {
       const std::string& header_value,
       int load_flags,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      bool partitioned_state_allowed_only,
       OnClearSiteDataCallback callback) override {
     ++on_clear_site_data_counter_;
     last_on_clear_site_data_header_value_ = header_value;

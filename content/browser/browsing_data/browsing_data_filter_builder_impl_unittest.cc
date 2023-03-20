@@ -869,4 +869,51 @@ TEST(BrowsingDataFilterBuilderImplTest, GetRegisterableDomains) {
               UnorderedElementsAre(kGoogleDomain, kLongETLDDomain));
 }
 
+TEST(BrowsingDataFilterBuilderImplTest, ExcludeUnpartitionedCookies) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+
+  builder.SetPartitionedStateAllowedOnly(true);
+
+  CookieDeletionInfo delete_info =
+      network::DeletionFilterToInfo(builder.BuildCookieDeletionFilter());
+
+  // Unpartitioned cookie should NOT match.
+  std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
+      GURL("https://www.cookie.com/"),
+      "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now(),
+      absl::nullopt, absl::nullopt);
+  EXPECT_TRUE(cookie);
+  EXPECT_FALSE(delete_info.Matches(
+      *cookie, net::CookieAccessParams{
+                   net::CookieAccessSemantics::NONLEGACY, false,
+                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+
+  // Partitioned cookie should match.
+  cookie = net::CanonicalCookie::Create(
+      GURL("https://www.cookie.com/"),
+      "__Host-A=B; Secure; SameSite=None; Path=/; Partitioned;",
+      base::Time::Now(), absl::nullopt,
+      net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com")));
+  EXPECT_TRUE(cookie);
+  EXPECT_TRUE(delete_info.Matches(
+      *cookie, net::CookieAccessParams{
+                   net::CookieAccessSemantics::NONLEGACY, false,
+                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+
+  // Nonced partitioned cookie should match.
+  cookie = net::CanonicalCookie::Create(
+      GURL("https://www.cookie.com/"),
+      "__Host-A=B; Secure; SameSite=None; Path=/;", base::Time::Now(),
+      absl::nullopt,
+      net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
+  EXPECT_TRUE(cookie);
+  EXPECT_TRUE(delete_info.Matches(
+      *cookie, net::CookieAccessParams{
+                   net::CookieAccessSemantics::NONLEGACY, false,
+                   net::CookieSamePartyStatus::kNoSamePartyEnforcement}));
+}
+
 }  // namespace content

@@ -366,10 +366,21 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
     return net::OK;
   }
 
+  auto& cookie_settings = network_context_->cookie_manager()->cookie_settings();
+  net::NetworkDelegate::PrivacySetting privacy_settings =
+      cookie_settings.IsPrivacyModeEnabled(
+          request->url(), request->site_for_cookies(),
+          request->isolation_info().top_frame_origin(),
+          request->cookie_setting_overrides());
+  bool partitioned_state_allowed_only =
+      privacy_settings ==
+      net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly;
+
   url_loader_network_observer->OnClearSiteData(
       request->url(), header_value, request->load_flags(),
       net::CookiePartitionKey::FromNetworkIsolationKey(
           request->isolation_info().network_isolation_key()),
+      partitioned_state_allowed_only,
       base::BindOnce(&NetworkServiceNetworkDelegate::FinishedClearSiteData,
                      weak_ptr_factory_.GetWeakPtr(), request->GetWeakPtr(),
                      std::move(callback)));

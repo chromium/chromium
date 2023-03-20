@@ -41,6 +41,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   bool MatchesWithSavedStorageKey(
       const blink::StorageKey& other_key) const override;
   bool MatchesAllOriginsAndDomains() override;
+  void SetPartitionedStateAllowedOnly(bool value) override;
   base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() override;
   content::StoragePartition::StorageKeyMatcherFunction BuildStorageKeyFilter()
       override;
@@ -68,6 +69,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   net::CookiePartitionKeyCollection cookie_partition_key_collection_ =
       net::CookiePartitionKeyCollection::ContainsAll();
   absl::optional<blink::StorageKey> storage_key_ = absl::nullopt;
+  bool partitioned_state_only_ = false;
 };
 
 }  // content
