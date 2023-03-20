@@ -201,6 +201,15 @@ bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityAcceleratorNotificationsTimeout);
 }
+
+BASE_FEATURE(kAccessibilityDeprecateChromeVoxTabs,
+             "AccessibilityDeprecateChromeVoxTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityDeprecateChromeVoxTabsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityDeprecateChromeVoxTabs);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kAugmentExistingImageLabels,

@@ -2324,6 +2324,11 @@
     "expiry_milestone": 120
   },
   {
+    "name" : "enable-experimental-accessibility-deprecate-chromevox-tabs",
+    "owners": [ "katie", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "enable-experimental-accessibility-dictation-context-checking",
     "owners": [ "jeevam","akihiroota"],
     "expiry_milestone": 115

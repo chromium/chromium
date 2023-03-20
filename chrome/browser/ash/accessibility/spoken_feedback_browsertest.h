@@ -73,6 +73,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   StubBrailleController braille_controller_;
   ui::ScopedAnimationDurationScaleMode animation_mode_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace ash

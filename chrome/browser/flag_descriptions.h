@@ -587,6 +587,9 @@ extern const char kExperimentalAccessibilityColorEnhancementSettingsName[];
 extern const char
     kExperimentalAccessibilityColorEnhancementSettingsDescription[];
 
+extern const char kAccessibilityDeprecateChromeVoxTabsName[];
+extern const char kAccessibilityDeprecateChromeVoxTabsDescription[];
+
 extern const char kAccessibilitySelectToSpeakPageMigrationName[];
 extern const char kAccessibilitySelectToSpeakPageMigrationDescription[];
 

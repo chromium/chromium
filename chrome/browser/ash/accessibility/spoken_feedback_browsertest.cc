@@ -62,6 +62,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -79,7 +80,11 @@ const double kExpectedPhoneticSpeechAndHintDelayMS = 1000;
 }  // namespace
 
 LoggedInSpokenFeedbackTest::LoggedInSpokenFeedbackTest()
-    : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+    : animation_mode_(ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ::features::kAccessibilityDeprecateChromeVoxTabs);
+}
+
 LoggedInSpokenFeedbackTest::~LoggedInSpokenFeedbackTest() = default;
 
 void LoggedInSpokenFeedbackTest::SetUpInProcessBrowserTestFixture() {
@@ -2161,6 +2166,50 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
     ASSERT_EQ(AccessibilityManager::Get()->profile(),
               ProfileManager::GetActiveUserProfile());
   });
+  sm_.Replay();
+}
+
+class DeprecateTabsSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
+ public:
+  DeprecateTabsSpokenFeedbackTest() = default;
+  DeprecateTabsSpokenFeedbackTest(const DeprecateTabsSpokenFeedbackTest&) =
+      delete;
+  DeprecateTabsSpokenFeedbackTest& operator=(
+      const DeprecateTabsSpokenFeedbackTest&) = delete;
+  ~DeprecateTabsSpokenFeedbackTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityDeprecateChromeVoxTabs};
+};
+
+// Matches NavigateTabsMenu test.
+IN_PROC_BROWSER_TEST_F(DeprecateTabsSpokenFeedbackTest, NoTabsMenu) {
+  EnableChromeVox();
+
+  // Open two tabs, titled "Hello" and "World".
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+            <title>Hello</title>
+            <button autofocus>Hello webpage</button>
+            <a target="_blank" href="https://google.com">Open world</a>)")));
+  });
+  sm_.ExpectSpeech("Hello webpage");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Open world");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+
+  // Move to where the tabs menu was (see SpokenFeedbackTest.NavigateTabsMenu).
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_PERIOD); });
+  sm_.ExpectSpeech("Search the menus");
+  sm_.Call([this]() {
+    SendKeyPress(ui::VKEY_RIGHT);
+    SendKeyPress(ui::VKEY_RIGHT);
+    SendKeyPress(ui::VKEY_RIGHT);
+  });
+  sm_.ExpectNextSpeechIsNot("Tabs Menu");
+
   sm_.Replay();
 }
 

@@ -269,6 +269,10 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           ::features::IsAccessibilitySelectToSpeakContextMenuOptionEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_CHROMEVOXTABSDEPRECATION:
+      enabled = ::features::IsAccessibilityDeprecateChromeVoxTabsEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
       return RespondNow(Error("Unrecognized feature"));
   }

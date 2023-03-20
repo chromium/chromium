@@ -5012,6 +5012,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityGoogleTtsLanguagePacks)},
+    {"enable-experimental-accessibility-deprecate-chromevox-tabs",
+     flag_descriptions::kAccessibilityDeprecateChromeVoxTabsName,
+     flag_descriptions::kAccessibilityDeprecateChromeVoxTabsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityDeprecateChromeVoxTabs)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,

@@ -61752,6 +61752,7 @@ from previous Chrome versions.
   <int value="-237367320" label="AssistantAudioEraser:disabled"/>
   <int value="-236719122" label="AddIdentityInCanMakePaymentEvent:enabled"/>
   <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
+  <int value="-236310717" label="AccessibilityDeprecateChromeVoxTabs:disabled"/>
   <int value="-236071174" label="NearbyShareVisibilityReminder:disabled"/>
   <int value="-235949168" label="DrawPredictedInkPoint:enabled"/>
   <int value="-235843754" label="OmniboxGroupingFrameworkForNonZPS:disabled"/>
@@ -65531,6 +65532,7 @@ from previous Chrome versions.
   <int value="1866656400" label="DisplayCutoutAPI:disabled"/>
   <int value="1866963423" label="SyncPseudoUSSThemes:enabled"/>
   <int value="1867085340" label="brotli-encoding:enabled"/>
+  <int value="1870023694" label="AccessibilityDeprecateChromeVoxTabs:enabled"/>
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>
   <int value="1871938175" label="FontSrcLocalMatching:disabled"/>
   <int value="1872185826" label="LocationHardReload:enabled"/>

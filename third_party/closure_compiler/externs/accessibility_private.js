@@ -265,6 +265,7 @@ chrome.accessibilityPrivate.AccessibilityFeature = {
   GOOGLE_TTS_LANGUAGE_PACKS: 'googleTtsLanguagePacks',
   SELECT_TO_SPEAK_CONTEXT_MENU_OPTION: 'selectToSpeakContextMenuOption',
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
+  CHROMEVOX_TABS_DEPRECATION: 'chromevoxTabsDeprecation',
 };
 
 /**

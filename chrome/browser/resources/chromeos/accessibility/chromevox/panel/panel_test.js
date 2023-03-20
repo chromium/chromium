@@ -10,6 +10,17 @@ GEN_INCLUDE(['panel_test_base.js']);
  */
 ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
   /** @override */
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`#include "ui/accessibility/accessibility_features.h"`);
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kAccessibilityDeprecateChromeVoxTabs']};
+  }
+
+  /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
 
@@ -288,8 +299,6 @@ AX_TEST_F(
       this.assertActiveMenuItem(
           'panel_menu_speech', 'Announce Current Battery Status',
           'Search+O, then B');
-      // Skip the tabs menu.
-      this.fireMockEvent('ArrowRight')();
       this.fireMockEvent('ArrowRight')();
       this.assertActiveMenuItem(
           'panel_menu_chromevox', 'Open keyboard shortcuts menu', 'Ctrl+Alt+/');
