@@ -212,8 +212,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     });
     this.shoppingListApi_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
-          product => this.availableProductInfos_.set(
-              product.bookmarkId.toString(), product));
+          product => this.setAvailableProductInfo_(product));
     });
     const callbackRouter = this.shoppingListApi_.getCallbackRouter();
     this.shoppingListenerIds_.push(
@@ -480,9 +479,17 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.availableProductInfos_.clear();
     this.shoppingListApi_.getAllShoppingBookmarkProductInfo().then(res => {
       res.productInfos.forEach(
-          product => this.availableProductInfos_.set(
-              product.bookmarkId.toString(), product));
+          product => this.setAvailableProductInfo_(product));
     });
+  }
+
+  private setAvailableProductInfo_(productInfo: BookmarkProductInfo) {
+    const bookmarkId = productInfo.bookmarkId.toString();
+    this.availableProductInfos_.set(bookmarkId, productInfo);
+    if (productInfo.info.imageUrl.url !== '') {
+      const bookmark = this.bookmarksService_.findBookmarkWithId(bookmarkId)!;
+      this.setImageUrl(bookmark, productInfo.info.imageUrl.url);
+    }
   }
 
   /**
