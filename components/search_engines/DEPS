@@ -23,6 +23,7 @@ include_rules = [
   "+services/network/test",
   "+sql",
   "+third_party/metrics_proto",
+  "+third_party/omnibox_proto",
   "+ui/base",
   "+ui/gfx",
 ]

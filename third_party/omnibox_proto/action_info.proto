@@ -1,0 +1,34 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox.metrics';
+option java_outer_classname = 'ActionInfoProto';
+
+package omnibox.metrics;
+
+// Entity Suggestion Action type received in the server response and echoed back
+// as part of the searchboxstats. The values are not used in Chrome in any way
+// and thus do not need names or comments that describe what they represent.
+enum ActionType {
+  UNKNOWN_ACTION_TYPE = 0;
+  ACTION_PHONE_CALL = 1;
+  ACTION_TEXT = 2;
+  ACTION_EMAIL = 3;
+  ACTION_CALL = 4;
+  ACTION_CHAT = 5;
+  ACTION_VIDEO_CALL = 6;
+  ACTION_NAVIGATE = 7;
+  ACTION_SEARCH = 8;
+  ACTION_WEBPAGE = 9;
+  ACTION_OSRP = 10;
+  ACTION_SM = 11;
+  ACTION_AOG = 12;
+}
+
+message ActionInfo {
+  optional ActionType action_type = 1;
+}

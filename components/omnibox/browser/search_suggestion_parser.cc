@@ -608,7 +608,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
         if (!type_int || !string_value) {
           continue;
         }
-        metrics::ChromeSearchboxStats::ExperimentStatsV2 experiment_stats_v2;
+        omnibox::metrics::ChromeSearchboxStats::ExperimentStatsV2
+            experiment_stats_v2;
         experiment_stats_v2.set_type_int(*type_int);
         experiment_stats_v2.set_string_value(*string_value);
         results->experiment_stats_v2s.push_back(std::move(experiment_stats_v2));

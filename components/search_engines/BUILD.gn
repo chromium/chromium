@@ -61,6 +61,7 @@ static_library("search_engines") {
     "//components/sync",
     "//components/webdata/common",
     "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
   ]
 
   deps = [
@@ -84,6 +85,7 @@ static_library("search_engines") {
     "//services/network/public/mojom",
     "//sql",
     "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",

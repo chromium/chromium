@@ -24,9 +24,9 @@
 #include "components/search_engines/testing_search_terms_data.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 
 using base::ASCIIToUTF16;
 using RequestSource = SearchTermsData::RequestSource;
@@ -665,14 +665,14 @@ TEST_F(TemplateURLTest, ReplaceAssistedQueryStats) {
   feature_list.InitWithFeatures({omnibox::kReportAssistedQueryStats},
                                 {omnibox::kReportSearchboxStats});
 
-  metrics::ChromeSearchboxStats searchbox_stats;
+  omnibox::metrics::ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
   searchbox_stats.set_zero_prefix_enabled(true);
 
   struct TestData {
     const std::u16string search_term;
     const std::string aqs;
-    const metrics::ChromeSearchboxStats searchbox_stats;
+    const omnibox::metrics::ChromeSearchboxStats searchbox_stats;
     const std::string base_url;
     const std::string url;
     const std::string expected_result;
@@ -724,14 +724,14 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStats) {
   feature_list.InitWithFeatures({omnibox::kReportSearchboxStats},
                                 {omnibox::kReportAssistedQueryStats});
 
-  metrics::ChromeSearchboxStats searchbox_stats;
+  omnibox::metrics::ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
   searchbox_stats.set_zero_prefix_enabled(true);
 
   struct TestData {
     const std::u16string search_term;
     const std::string aqs;
-    const metrics::ChromeSearchboxStats searchbox_stats;
+    const omnibox::metrics::ChromeSearchboxStats searchbox_stats;
     const std::string base_url;
     const std::string url;
     const std::string expected_result;
@@ -782,14 +782,14 @@ TEST_F(TemplateURLTest, ReplaceSearchboxStatsAndAssistedQueryStats) {
   feature_list.InitWithFeatures(
       {omnibox::kReportSearchboxStats, omnibox::kReportAssistedQueryStats}, {});
 
-  metrics::ChromeSearchboxStats searchbox_stats;
+  omnibox::metrics::ChromeSearchboxStats searchbox_stats;
   searchbox_stats.set_client_name("chrome");
   searchbox_stats.set_zero_prefix_enabled(true);
 
   struct TestData {
     const std::u16string search_term;
     const std::string aqs;
-    const metrics::ChromeSearchboxStats searchbox_stats;
+    const omnibox::metrics::ChromeSearchboxStats searchbox_stats;
     const std::string base_url;
     const std::string url;
     const std::string expected_result;

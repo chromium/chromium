@@ -9,6 +9,8 @@ if (is_android) {
 }
 
 _proto_files = [
+  "action_info.proto",
+  "chrome_searchbox_stats.proto",
   "entity_info.proto",
   "groups.proto",
   "types.proto",
@@ -16,12 +18,12 @@ _proto_files = [
 
 proto_library("omnibox_proto") {
   sources = _proto_files
-  proto_in_dir = "//"
+  proto_in_dir = "."
 }
 
 if (is_android) {
   proto_java_library("omnibox_proto_java") {
-    proto_path = "//"
+    proto_path = "."
     sources = _proto_files
   }
 }

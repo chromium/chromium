@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+syntax = 'proto2';
 
 option optimize_for = LITE_RUNTIME;
-option java_package = "org.chromium.components.metrics";
+option java_package = 'org.chromium.components.omnibox.metrics';
+option java_outer_classname = 'ChromeSearchboxStatsProto';
 
-option java_outer_classname = "ChromeSearchboxStatsProtos";
-
-package metrics;
+package omnibox.metrics;
 
 // Chrome-specific version of searchbox_stats.proto containing a strict subset
 // of the fields in searchbox_stats.proto.
