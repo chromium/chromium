@@ -181,7 +181,8 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                                                 initial_prerendering_origin)) {
       prerender_host_registry->CancelHost(
           frame_tree_node->frame_tree_node_id(),
-          PrerenderFinalStatus::kCrossSiteNavigation);
+          is_redirection ? PrerenderFinalStatus::kCrossSiteRedirect
+                         : PrerenderFinalStatus::kCrossSiteNavigation);
       return CANCEL;
     }
   }

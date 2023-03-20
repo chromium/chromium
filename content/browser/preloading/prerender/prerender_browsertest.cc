@@ -214,6 +214,10 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   ~PrerenderBrowserTest() override = default;
 
   void SetUp() override {
+    ssl_server_.RegisterRequestHandler(
+        base::BindRepeating(&net::test_server::HandlePrefixedRequest,
+                            "/server-redirect-credentialed-prerender",
+                            base::BindRepeating(HandleCredentialedRequest)));
     prerender_helper_->SetUp(&ssl_server_);
     ContentBrowserTest::SetUp();
   }
@@ -241,6 +245,25 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   void TearDownOnMainThread() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     EXPECT_TRUE(ssl_server_.ShutdownAndWaitUntilComplete());
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleCredentialedRequest(const net::test_server::HttpRequest& request) {
+    GURL request_url = request.GetURL();
+    std::string dest =
+        base::UnescapeBinaryURLComponent(request_url.query_piece());
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_FOUND);
+    http_response->AddCustomHeader("Location", dest);
+    http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    http_response->AddCustomHeader("Supports-Loading-Mode",
+                                   "credentialed-prerender");
+    http_response->set_content_type("text/html");
+    http_response->set_content(base::StringPrintf(
+        "<!doctype html><p>Redirecting to %s", dest.c_str()));
+    return http_response;
   }
 
   // Waits until the request count for `url` reaches `count`.
@@ -2238,6 +2261,62 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
     ExpectFinalStatusForSpeculationRule(expected_status);
   }
 
+  // Runs redirections in the `navigations_types` order and makes sure it ends
+  // with `expected_status`.
+  void TestMainFrameRedirection(
+      const std::vector<NavigationType>& redirection_types,
+      PrerenderFinalStatus expected_status) {
+    ASSERT_FALSE(redirection_types.empty());
+
+    // Create a URL that rus a redirection sequence in the order of
+    // `redirection_types`. To make the URL, create a final URL from the last
+    // element of `redirection_types` and then prefix a rediretion URL by
+    // iterating the types in reverse order.
+    const GURL final_url = CreateUrl(redirection_types.back());
+    GURL url = final_url;
+    for (auto it = redirection_types.rbegin() + 1;
+         it != redirection_types.rend(); ++it) {
+      url = CreateRedirectionUrl(*it, url);
+    }
+
+    const GURL kInitialUrl = GetUrl("/empty.html");
+    const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+    // Navigate to an initial page.
+    ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+    // Start a prerender.
+    int host_id = AddPrerender(kPrerenderingUrl);
+    test::PrerenderHostObserver observer(*web_contents_impl(), host_id);
+
+    // Run redirections in the main frame of the prerendered page.
+    TestNavigationManager navigation_observer(web_contents(), url);
+    NavigatePrerenderedPage(host_id, url);
+    ASSERT_TRUE(navigation_observer.WaitForNavigationFinished());
+
+    switch (expected_status) {
+      case PrerenderFinalStatus::kActivated: {
+        // Redirections should succeed.
+        EXPECT_TRUE(navigation_observer.was_successful());
+
+        // Activation should succeed.
+        NavigatePrimaryPage(kPrerenderingUrl);
+        observer.WaitForActivation();
+        EXPECT_TRUE(observer.was_activated());
+        EXPECT_EQ(web_contents()->GetLastCommittedURL(), final_url);
+        break;
+      }
+      default: {
+        // Redirections should cancel prerendering.
+        EXPECT_FALSE(navigation_observer.was_successful());
+        observer.WaitForDestroyed();
+        EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+        break;
+      }
+    }
+    ExpectFinalStatusForSpeculationRule(expected_status);
+  }
+
  private:
   GURL CreateUrl(NavigationType type) {
     static int number_for_prefix = 0;
@@ -2252,6 +2331,24 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
             "/prerender/prerender_with_opt_in_header.html?" + prefix);
       case NavigationType::kCrossSite:
         return GetCrossSiteUrl("/empty.html?" + prefix);
+    }
+  }
+
+  // Creates a URL that redirects to `url_to_redirect`. The origin of the URL is
+  // determined by `type`.
+  GURL CreateRedirectionUrl(NavigationType type, const GURL& url_to_redirect) {
+    switch (type) {
+      case NavigationType::kSameOrigin:
+        return GetUrl("/server-redirect?" + url_to_redirect.spec());
+      case NavigationType::kSameSiteCrossOrigin:
+        return GetSameSiteCrossOriginUrl("/server-redirect?" +
+                                         url_to_redirect.spec());
+      case NavigationType::kSameSiteCrossOriginWithOptIn:
+        return GetSameSiteCrossOriginUrl(
+            "/server-redirect-credentialed-prerender?" +
+            url_to_redirect.spec());
+      case NavigationType::kCrossSite:
+        return GetCrossSiteUrl("/server-redirect?" + url_to_redirect.spec());
     }
   }
 };
@@ -2317,6 +2414,154 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
       NavigationType::kCrossSite};
   TestMainFrameNavigation(navigations,
                           PrerenderFinalStatus::kCrossSiteNavigation);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+                       Redirection_SameOrigin_SameOrigin) {
+  std::vector<NavigationType> redirections = {NavigationType::kSameOrigin,
+                                              NavigationType::kSameOrigin};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+                       Redirection_SameOrigin_SameSiteCrossOriginWithOptIn) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameOrigin,
+      NavigationType::kSameSiteCrossOriginWithOptIn};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+                       Redirection_SameOrigin_SameSiteCrossOrigin) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameOrigin, NavigationType::kSameSiteCrossOrigin};
+  TestMainFrameRedirection(
+      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+                       Redirection_SameOrigin_CrossSite) {
+  std::vector<NavigationType> redirections = {NavigationType::kSameOrigin,
+                                              NavigationType::kCrossSite};
+  TestMainFrameRedirection(redirections,
+                           PrerenderFinalStatus::kCrossSiteRedirect);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+                       Redirection_SameSiteCrossOriginWithOptIn_SameOrigin) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameOrigin};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameSiteCrossOriginWithOptIn_SameSiteCrossOriginWithOptIn) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameSiteCrossOriginWithOptIn};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameSiteCrossOriginWithOptIn_SameSiteCrossOrigin) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameSiteCrossOrigin};
+  TestMainFrameRedirection(
+      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+                       Redirection_SameSiteCrossOriginWithOptIn_CrossSite) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kCrossSite};
+  TestMainFrameRedirection(redirections,
+                           PrerenderFinalStatus::kCrossSiteRedirect);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_SameOrigin) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameOrigin,
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameOrigin};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_SameSiteCrossOriginWithOptIn) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameOrigin,
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameSiteCrossOriginWithOptIn};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_SameSiteCrossOrigin) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameOrigin,
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameSiteCrossOrigin};
+  TestMainFrameRedirection(
+      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_CrossSite) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameOrigin,
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kCrossSite};
+  TestMainFrameRedirection(redirections,
+                           PrerenderFinalStatus::kCrossSiteRedirect);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_SameOrigin) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameOrigin, NavigationType::kSameOrigin};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_SameSiteCrossOriginWithOptIn) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameOrigin,
+      NavigationType::kSameSiteCrossOriginWithOptIn};
+  TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_SameSiteCrossOrigin) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameOrigin, NavigationType::kSameSiteCrossOrigin};
+  TestMainFrameRedirection(
+      redirections, PrerenderFinalStatus::kSameSiteCrossOriginRedirectNotOptIn);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderMainFrameNavigationBrowserTest,
+    Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_CrossSite) {
+  std::vector<NavigationType> redirections = {
+      NavigationType::kSameSiteCrossOriginWithOptIn,
+      NavigationType::kSameOrigin, NavigationType::kCrossSite};
+  TestMainFrameRedirection(redirections,
+                           PrerenderFinalStatus::kCrossSiteRedirect);
 }
 
 // Regression test for https://crbug.com/1198051
@@ -6905,33 +7150,6 @@ class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
 class PrerenderSameSiteCrossOriginBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderSameSiteCrossOriginBrowserTest() = default;
-
-  void SetUp() override {
-    ssl_server().RegisterRequestHandler(
-        base::BindRepeating(&net::test_server::HandlePrefixedRequest,
-                            "/server-redirect-credentialed-prerender",
-                            base::BindRepeating(HandleCredentialedRequest)));
-    PrerenderBrowserTest::SetUp();
-  }
-
-  static std::unique_ptr<net::test_server::HttpResponse>
-  HandleCredentialedRequest(const net::test_server::HttpRequest& request) {
-    GURL request_url = request.GetURL();
-    std::string dest =
-        base::UnescapeBinaryURLComponent(request_url.query_piece());
-
-    auto http_response =
-        std::make_unique<net::test_server::BasicHttpResponse>();
-    http_response->set_code(net::HTTP_FOUND);
-    http_response->AddCustomHeader("Location", dest);
-    http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-    http_response->AddCustomHeader("Supports-Loading-Mode",
-                                   "credentialed-prerender");
-    http_response->set_content_type("text/html");
-    http_response->set_content(base::StringPrintf(
-        "<!doctype html><p>Redirecting to %s", dest.c_str()));
-    return http_response;
-  }
 
   GURL GetUrl(const std::string& path) {
     return ssl_server().GetURL("a.a.test", path);
