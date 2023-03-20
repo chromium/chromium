@@ -548,12 +548,6 @@ void CartService::OnGetDiscountURL(
       cart_proto.discount_info().rule_discount_info().empty()) {
     if (cart_proto.discount_info().has_coupons()) {
       CartDiscountMetricCollector::RecordClickedOnDiscount(true);
-      // code based rbd.
-      if (commerce::kCodeBasedRuleDiscount.Get() &&
-          !cart_proto.discount_info().coupon_info().empty()) {
-        CacheUsedDiscounts(cart_proto, /*is_code_based_rbd=*/true);
-        CleanUpDiscounts(cart_proto);
-      }
     } else {
       CartDiscountMetricCollector::RecordClickedOnDiscount(false);
     }
@@ -581,7 +575,7 @@ void CartService::OnDiscountURLFetched(
   std::move(callback).Run(discount_url.is_valid() ? AppendUTM(discount_url)
                                                   : default_cart_url);
   if (discount_url.is_valid()) {
-    CacheUsedDiscounts(cart_proto, /*is_code_based_rbd=*/false);
+    CacheUsedDiscounts(cart_proto);
     CleanUpDiscounts(cart_proto);
     CartDiscountMetricCollector::RecordAppliedDiscount();
   }
@@ -1089,26 +1083,6 @@ void CartService::UpdateDiscounts(const GURL& cart_url,
     return;
   }
 
-  // Filter used code-based Rule-based Discounts.
-  if (commerce::kCodeBasedRuleDiscount.Get() && new_proto.has_discount_info() &&
-      new_proto.discount_info().coupon_info_size() > 0) {
-    std::vector<cart_db::CouponInfoProto> coupon_info_protos;
-    std::string merchant_id = new_proto.discount_info().merchant_id();
-    for (const auto& coupon_info : new_proto.discount_info().coupon_info()) {
-      std::string key = merchant_id + "-" + coupon_info.promo_id();
-      if (is_tester || !IsDiscountUsed(key)) {
-        coupon_info_protos.emplace_back(coupon_info);
-      }
-    }
-    if (coupon_info_protos.empty()) {
-      new_proto.mutable_discount_info()->clear_coupon_info();
-      new_proto.mutable_discount_info()->set_has_coupons(false);
-    } else {
-      *new_proto.mutable_discount_info()->mutable_coupon_info() = {
-          coupon_info_protos.begin(), coupon_info_protos.end()};
-    }
-  }
-
   // Filter used codeless Rule-based Discounts.
   if (new_proto.has_discount_info() &&
       !new_proto.discount_info().rule_discount_info().empty()) {
@@ -1120,11 +1094,7 @@ void CartService::UpdateDiscounts(const GURL& cart_url,
       }
     }
     if (rule_discount_info_protos.empty()) {
-      if (commerce::kCodeBasedRuleDiscount.Get()) {
-        new_proto.mutable_discount_info()->clear_rule_discount_info();
-      } else {
-        new_proto.clear_discount_info();
-      }
+      new_proto.clear_discount_info();
     } else {
       *new_proto.mutable_discount_info()->mutable_rule_discount_info() = {
           rule_discount_info_protos.begin(), rule_discount_info_protos.end()};
@@ -1186,37 +1156,16 @@ void CartService::UpdateFreeListingCoupons(
 }
 
 void CartService::CacheUsedDiscounts(
-    const cart_db::ChromeCartContentProto& proto,
-    bool is_code_based_rbd) {
-  if (!proto.has_discount_info()) {
+    const cart_db::ChromeCartContentProto& proto) {
+  if (!proto.has_discount_info() ||
+      proto.discount_info().rule_discount_info().empty()) {
     VLOG(1) << "Empty rule based discounts, cache nothing";
     return;
   }
-  auto& discount_info = proto.discount_info();
-  if (is_code_based_rbd) {
-    DCHECK(commerce::kCodeBasedRuleDiscount.Get())
-        << "Should be called only if the code-based RBD feature is enabled.";
-    if (discount_info.coupon_info_size() == 0) {
-      VLOG(1) << "Empty code-based rule based discounts, cache nothing";
-      return;
-    }
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kCartUsedDiscounts);
-    std::string merchant_id = discount_info.merchant_id();
-    for (auto coupon_info : discount_info.coupon_info()) {
-      std::string key = merchant_id + "-" + coupon_info.promo_id();
-      update->Set(key, true);
-    }
-  } else {
-    if (discount_info.rule_discount_info().empty()) {
-      VLOG(1) << "Empty codeless rule based discounts, cache nothing";
-      return;
-    }
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kCartUsedDiscounts);
-    for (auto rule_discount_info : discount_info.rule_discount_info()) {
-      update->Set(rule_discount_info.rule_id(), true);
-    }
+
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kCartUsedDiscounts);
+  for (auto rule_discount_info : proto.discount_info().rule_discount_info()) {
+    update->Set(rule_discount_info.rule_id(), true);
   }
 }
 
@@ -1233,14 +1182,6 @@ void CartService::CleanUpDiscounts(cart_db::ChromeCartContentProto proto) {
   // Clean up the rule-based discounts.
   if (!proto.discount_info().rule_discount_info().empty()) {
     proto.clear_discount_info();
-  }
-
-  // Clean up code-based rule discounts.
-  if (commerce::kCodeBasedRuleDiscount.Get()) {
-    if (proto.has_discount_info() &&
-        proto.discount_info().coupon_info_size() > 0) {
-      proto.clear_discount_info();
-    }
   }
 
   cart_db_->AddCart(eTLDPlusOne(GURL(proto.merchant_cart_url())), proto,
