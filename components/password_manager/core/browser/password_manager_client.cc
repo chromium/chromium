@@ -24,10 +24,6 @@ bool PasswordManagerClient::IsFillingEnabled(const GURL& url) const {
   return true;
 }
 
-bool PasswordManagerClient::IsFillingFallbackEnabled(const GURL& url) const {
-  return true;
-}
-
 bool PasswordManagerClient::IsAutoSignInEnabled() const {
   return false;
 }

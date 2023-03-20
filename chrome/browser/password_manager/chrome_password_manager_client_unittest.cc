@@ -488,7 +488,6 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
   const GURL kUrlOn("https://accounts.google.com");
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
-  EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
 
   // Disable password saving.
   ON_CALL(*settings_service,
@@ -499,14 +498,12 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
   // disabled.
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
-  EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
 
   // Saving disabled if there are no SSL errors, but the manager itself is
   // disabled.
   EXPECT_CALL(*client, GetMainFrameCertStatus()).WillRepeatedly(Return(0));
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
-  EXPECT_TRUE(client->IsFillingFallbackEnabled(kUrlOn));
 
   // Enable password saving.
   ON_CALL(*settings_service,
@@ -518,7 +515,6 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
   EXPECT_CALL(*client, GetMainFrameCertStatus()).WillRepeatedly(Return(0));
   EXPECT_TRUE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
-  EXPECT_TRUE(client->IsFillingFallbackEnabled(kUrlOn));
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -540,7 +536,6 @@ TEST_F(ChromePasswordManagerClientTest,
   const GURL kUrlOn("https://accounts.google.com");
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
-  EXPECT_TRUE(client->IsFillingFallbackEnabled(kUrlOn));
 
   // In guest mode saving, filling and manual filling are disabled.
   profile()->SetGuestSession(true);
@@ -550,7 +545,6 @@ TEST_F(ChromePasswordManagerClientTest,
       ->SetGuestSession(true);
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
-  EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
 }
 
 TEST_F(ChromePasswordManagerClientTest, AutoSignInEnabledDeterminedByService) {
@@ -620,7 +614,6 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingDisabledForAboutBlank) {
   EXPECT_TRUE(GetClient()->GetLastCommittedOrigin().opaque());
   EXPECT_FALSE(GetClient()->IsSavingAndFillingEnabled(kUrl));
   EXPECT_FALSE(GetClient()->IsFillingEnabled(kUrl));
-  EXPECT_FALSE(GetClient()->IsFillingFallbackEnabled(kUrl));
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -687,8 +680,6 @@ TEST_P(ChromePasswordManagerClientSchemeTest,
   EXPECT_EQ(it->password_manager_works,
             GetClient()->IsSavingAndFillingEnabled(url));
   EXPECT_EQ(it->password_manager_works, GetClient()->IsFillingEnabled(url));
-  EXPECT_EQ(it->password_manager_works,
-            GetClient()->IsFillingFallbackEnabled(url));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -912,7 +903,6 @@ TEST_F(ChromePasswordManagerClientTest,
   const GURL kUrlOn("https://accounts.google.com");
   EXPECT_FALSE(client->IsSavingAndFillingEnabled(kUrlOn));
   EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
-  EXPECT_FALSE(client->IsFillingFallbackEnabled(kUrlOn));
 }
 
 TEST_F(ChromePasswordManagerClientTest,

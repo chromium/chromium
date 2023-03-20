@@ -132,10 +132,6 @@ class PasswordManagerClient {
   // determines whether saving prompts should be shown.
   virtual bool IsFillingEnabled(const GURL& url) const;
 
-  // Checks if manual filling fallback is enabled for the page that has |url|
-  // address.
-  virtual bool IsFillingFallbackEnabled(const GURL& url) const;
-
   // Checks if the auto sign-in functionality is enabled.
   virtual bool IsAutoSignInEnabled() const;
 

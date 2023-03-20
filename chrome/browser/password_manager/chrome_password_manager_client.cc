@@ -307,13 +307,6 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
          IsPasswordManagementEnabledForCurrentPage(url);
 }
 
-bool ChromePasswordManagerClient::IsFillingFallbackEnabled(
-    const GURL& url) const {
-  const Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return IsFillingEnabled(url) && !profile->IsGuestSession();
-}
-
 bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
   PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
