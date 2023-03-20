@@ -10074,5 +10074,27 @@ const CSSValue* InternalEmptyLineHeight::ParseSingleValue(
                                          CSSValueID::kNone>(range);
 }
 
+const CSSValue* BackgroundRepeatX::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const FillLayer* curr_layer = &style.BackgroundLayers(); curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(*CSSIdentifierValue::Create(curr_layer->RepeatX()));
+  }
+  return list;
+}
+
+const CSSValue* BackgroundRepeatY::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const FillLayer* curr_layer = &style.BackgroundLayers(); curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(*CSSIdentifierValue::Create(curr_layer->RepeatY()));
+  }
+  return list;
+}
+
 }  // namespace css_longhand
 }  // namespace blink
