@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 
+#include <algorithm>
 #include <memory>
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -16,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -174,46 +176,6 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
 #endif
 };
 
-// As FakeVideoConferenceMediaListener does not setup any mojo connection with
-// VCManagerAsh, this test is currently only supported on ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Tests request-on-mute functionality appropriately updates tray controller.
-IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
-  ash::FakeVideoConferenceTrayController* controller =
-      static_cast<ash::FakeVideoConferenceTrayController*>(
-          ash::VideoConferenceTrayController::Get());
-  ASSERT_TRUE(controller);
-
-  auto* vc_manager = crosapi::CrosapiManager::Get()
-                         ->crosapi_ash()
-                         ->video_conference_manager_ash();
-  ASSERT_TRUE(vc_manager);
-
-  auto* vc_app1 = CreateVcWebAppInNewTab();
-  auto* vc_app2 = CreateVcWebAppInNewTab();
-
-  vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera, true);
-
-  // Initially should be zero.
-  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
-
-  // Start capture (and store callback in variable to prevent destructor from
-  // stopping capture).
-  auto stop_capture_callback1 =
-      StartCapture(&vc_app1->GetWebContents(),
-                   blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
-  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 1u);
-
-  vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, true);
-  auto stop_capture_callback2 =
-      StartCapture(&vc_app2->GetWebContents(),
-                   blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
-  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 2u);
-}
-#endif
-
 // Tests video capturing is correctly detected by VideoConferenceMediaListener.
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
                        DeviceVideoCapturing) {
@@ -328,5 +290,94 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
         nullptr);
   }
 }
+
+// These tests call methods on `VideoConferenceManagerAsh` that are not part of
+// the crosapi interface. As a result these tests are run on ash-chrome only.
+// TODO(b/274368285): Add lacros support for these tests.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests request-on-mute functionality appropriately updates tray controller.
+IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
+  ash::FakeVideoConferenceTrayController* controller =
+      static_cast<ash::FakeVideoConferenceTrayController*>(
+          ash::VideoConferenceTrayController::Get());
+  ASSERT_TRUE(controller);
+
+  auto* vc_manager = crosapi::CrosapiManager::Get()
+                         ->crosapi_ash()
+                         ->video_conference_manager_ash();
+  ASSERT_TRUE(vc_manager);
+
+  auto* vc_app1 = CreateVcWebAppInNewTab();
+  auto* vc_app2 = CreateVcWebAppInNewTab();
+
+  vc_manager->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kCamera, /*disabled=*/true);
+
+  // Initially should be zero.
+  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
+
+  // Start capture (and store callback in variable to prevent destructor from
+  // stopping capture).
+  auto stop_capture_callback1 =
+      StartCapture(&vc_app1->GetWebContents(),
+                   blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 1u);
+
+  vc_manager->SetSystemMediaDeviceStatus(
+      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+      /*disabled=*/true);
+  auto stop_capture_callback2 =
+      StartCapture(&vc_app2->GetWebContents(),
+                   blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  EXPECT_EQ(controller->device_used_while_disabled_records().size(), 2u);
+}
+
+// Tests that a VC webapp corresponding to an extension is removed from the
+// client when capturing stops.
+IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
+                       ExtensionRemovedWhenCapturingStopped) {
+  auto* vc_manager = crosapi::CrosapiManager::Get()
+                         ->crosapi_ash()
+                         ->video_conference_manager_ash();
+  ASSERT_TRUE(vc_manager);
+
+  std::unique_ptr<FakeVideoConferenceMediaListener> media_listener =
+      std::make_unique<FakeVideoConferenceMediaListener>();
+
+  EXPECT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  // Start capturing camera (this should create a VCWebApp on the VC client).
+  auto stop_capture_callback = StartCapture(
+      web_contents, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+
+  // Get that VCWebApp.
+  auto* vc_app =
+      content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
+          web_contents);
+  ASSERT_TRUE(vc_app);
+
+  // Make `vc_app` an extension.
+  vc_app->state().is_extension = true;
+
+  vc_manager->GetMediaApps(base::BindLambdaForTesting([](ash::MediaApps apps) {
+    EXPECT_EQ(apps.size(), 1u);
+    EXPECT_TRUE(apps[0]->is_capturing_camera);
+    EXPECT_FALSE(apps[0]->is_capturing_microphone);
+    EXPECT_FALSE(apps[0]->is_capturing_screen);
+  }));
+
+  std::move(stop_capture_callback).Run();
+
+  // The VC app for the extension should be destroyed and removed from client.
+  vc_manager->GetMediaApps(base::BindLambdaForTesting(
+      [](ash::MediaApps apps) { EXPECT_EQ(apps.size(), 0u); }));
+
+  // The VCWebApp associated with this webcontents should have been destroyed.
+  EXPECT_FALSE(
+      content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
+          web_contents));
+}
+#endif
 
 }  // namespace video_conference

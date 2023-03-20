@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/browser/process_manager.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 namespace video_conference {
@@ -32,6 +33,13 @@ void VideoConferenceWebApp::ActivateApp() {
 }
 
 VideoConferencePermissions VideoConferenceWebApp::GetPermissions() {
+  // Permissions don't work the same way for extensions so we equate permissions
+  // to capturing status for them.
+  if (state_.is_extension) {
+    return {.has_camera_permission = state_.is_capturing_camera,
+            .has_microphone_permission = state_.is_capturing_microphone};
+  }
+
   auto& web_contents = GetWebContents();
 
   auto* permission_controller =
@@ -52,6 +60,12 @@ VideoConferencePermissions VideoConferenceWebApp::GetPermissions() {
               (camera_status == blink::mojom::PermissionStatus::GRANTED),
           .has_microphone_permission =
               (microphone_status == blink::mojom::PermissionStatus::GRANTED)};
+}
+
+bool VideoConferenceWebApp::IsInactiveExtension() {
+  return state_.is_extension &&
+         !(state_.is_capturing_camera || state_.is_capturing_microphone ||
+           state_.is_capturing_screen);
 }
 
 void VideoConferenceWebApp::OnWebContentsFocused(
@@ -81,6 +95,10 @@ VideoConferenceWebApp::VideoConferenceWebApp(
              .is_capturing_camera = false,
              .is_capturing_screen = false} {
   DCHECK(remove_media_app_callback_);
+
+  auto* source =
+      extensions::ProcessManager::Get(web_contents->GetBrowserContext());
+  state_.is_extension = !!source->GetExtensionForWebContents(web_contents);
 }
 
 }  // namespace video_conference

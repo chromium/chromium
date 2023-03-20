@@ -55,19 +55,28 @@ void VideoConferenceMediaListener::OnIsCapturingVideoChanged(
     bool is_capturing_video) {
   VideoConferenceWebApp* vc_app =
       GetOrCreateVcWebApp(contents, is_capturing_video);
-
   // It is normal for `vc_app` to be a nullptr, e.g. when this method is called
   // upon the deletion of a `VideoConferenceWebApp` with an is_capturing of
   // false.
   if (vc_app) {
-    if (camera_system_disabled_ && !vc_app->state().is_capturing_camera &&
+    auto& state = vc_app->state();
+    bool prev_is_capturing_video = state.is_capturing_camera;
+    state.is_capturing_camera = is_capturing_video;
+
+    // Remove `vc_app` from client if it belongs to an extension which has
+    // stopped capturing.
+    if (vc_app->IsInactiveExtension()) {
+      vc_app->WebContentsDestroyed();
+      return;
+    }
+
+    if (camera_system_disabled_ && !prev_is_capturing_video &&
         is_capturing_video) {
       device_used_while_disabled_callback_.Run(
           crosapi::mojom::VideoConferenceMediaDevice::kCamera,
           contents->GetTitle());
     }
 
-    vc_app->state().is_capturing_camera = is_capturing_video;
     media_usage_update_callback_.Run();
   }
 }
@@ -82,14 +91,24 @@ void VideoConferenceMediaListener::OnIsCapturingAudioChanged(
   // upon the deletion of a `VideoConferenceWebApp` with an is_capturing of
   // false.
   if (vc_app) {
-    if (microphone_system_disabled_ &&
-        !vc_app->state().is_capturing_microphone && is_capturing_audio) {
+    auto& state = vc_app->state();
+    bool prev_is_capturing_audio = state.is_capturing_microphone;
+    state.is_capturing_microphone = is_capturing_audio;
+
+    // Remove `vc_app` from client if it belongs to an extension which has
+    // stopped capturing.
+    if (vc_app->IsInactiveExtension()) {
+      vc_app->WebContentsDestroyed();
+      return;
+    }
+
+    if (microphone_system_disabled_ && !prev_is_capturing_audio &&
+        is_capturing_audio) {
       device_used_while_disabled_callback_.Run(
           crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
           contents->GetTitle());
     }
 
-    vc_app->state().is_capturing_microphone = is_capturing_audio;
     media_usage_update_callback_.Run();
   }
 }
@@ -121,6 +140,14 @@ void VideoConferenceMediaListener::OnIsCapturingScreenChanged(
   // false.
   if (vc_app) {
     vc_app->state().is_capturing_screen = is_capturing_screen;
+
+    // Remove `vc_app` from client if it belongs to an extension which has
+    // stopped capturing.
+    if (vc_app->IsInactiveExtension()) {
+      vc_app->WebContentsDestroyed();
+      return;
+    }
+
     media_usage_update_callback_.Run();
   }
 }

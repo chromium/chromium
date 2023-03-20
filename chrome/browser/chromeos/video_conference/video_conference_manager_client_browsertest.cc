@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
+#include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/ui/browser.h"
@@ -62,6 +63,10 @@ class FakeVideoConferenceManagerClient
   }
 
   const base::UnguessableToken& client_id() { return client_id_; }
+
+  VideoConferencePermissions GetAggregatedPermissions() {
+    return VideoConferenceManagerClientImpl::GetAggregatedPermissions();
+  }
 
   bool camera_system_disabled() {
     return media_listener_->camera_system_disabled_;
@@ -129,46 +134,44 @@ class VideoConferenceManagerClientTest : public InProcessBrowserTest {
 // Tests creating VcWebApps and removing them by closing tabs.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        TabCreationAndRemoval) {
-  std::unique_ptr<FakeVideoConferenceManagerClient> client =
-      std::make_unique<FakeVideoConferenceManagerClient>();
+  FakeVideoConferenceManagerClient client;
 
   auto* web_contents1 = CreateWebContentsAt(0);
   auto* web_contents2 = CreateWebContentsAt(1);
   auto* web_contents3 = CreateWebContentsAt(2);
 
-  client->CreateVideoConferenceWebApp(web_contents1);
-  EXPECT_EQ(client->id_to_webcontents().size(), 1u);
+  client.CreateVideoConferenceWebApp(web_contents1);
+  EXPECT_EQ(client.id_to_webcontents().size(), 1u);
 
-  client->CreateVideoConferenceWebApp(web_contents2);
-  EXPECT_EQ(client->id_to_webcontents().size(), 2u);
+  client.CreateVideoConferenceWebApp(web_contents2);
+  EXPECT_EQ(client.id_to_webcontents().size(), 2u);
 
-  client->CreateVideoConferenceWebApp(web_contents3);
-  EXPECT_EQ(client->id_to_webcontents().size(), 3u);
+  client.CreateVideoConferenceWebApp(web_contents3);
+  EXPECT_EQ(client.id_to_webcontents().size(), 3u);
 
   // It's important to close tabs from right-to-left as otherwise the indices
   // change.
   RemoveWebContentsAt(2);
-  EXPECT_EQ(client->id_to_webcontents().size(), 2u);
+  EXPECT_EQ(client.id_to_webcontents().size(), 2u);
 
   RemoveWebContentsAt(1);
-  EXPECT_EQ(client->id_to_webcontents().size(), 1u);
+  EXPECT_EQ(client.id_to_webcontents().size(), 1u);
 
   RemoveWebContentsAt(0);
-  EXPECT_EQ(client->id_to_webcontents().size(), 0u);
+  EXPECT_EQ(client.id_to_webcontents().size(), 0u);
 }
 
 // Tests that a change in the primary page of the web contents of a VcWebApp
 // removes it from the client.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        WebContentsPrimaryPageChange) {
-  std::unique_ptr<FakeVideoConferenceManagerClient> client =
-      std::make_unique<FakeVideoConferenceManagerClient>();
+  FakeVideoConferenceManagerClient client;
   TabActivitySimulator tab_activity_simulator;
 
   auto* web_contents = CreateWebContentsAt(0);
-  auto* vc_app = client->CreateVideoConferenceWebApp(web_contents);
+  auto* vc_app = client.CreateVideoConferenceWebApp(web_contents);
 
-  EXPECT_EQ(client->id_to_webcontents().size(), 1u);
+  EXPECT_EQ(client.id_to_webcontents().size(), 1u);
 
   // Ensure tab is in focus.
   vc_app->ActivateApp();
@@ -180,14 +183,13 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
       content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
           web_contents));
 
-  EXPECT_EQ(client->id_to_webcontents().size(), 0u);
+  EXPECT_EQ(client.id_to_webcontents().size(), 0u);
 }
 
 // Tests `GetMediaApps` returns `VideoConferenceMediaAppInfo`s with expected
 // values.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
-  std::unique_ptr<FakeVideoConferenceManagerClient> client =
-      std::make_unique<FakeVideoConferenceManagerClient>();
+  FakeVideoConferenceManagerClient client;
 
   auto* web_contents1 = CreateWebContentsAt(0);
   UpdateWebContentsTitle(web_contents1, u"app1");
@@ -196,9 +198,9 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
   UpdateWebContentsTitle(web_contents2, u"app2");
 
   auto* web_contents3 = CreateWebContentsAt(2);
-  auto* vc_app1 = client->CreateVideoConferenceWebApp(web_contents1);
-  auto* vc_app2 = client->CreateVideoConferenceWebApp(web_contents2);
-  auto* vc_app3 = client->CreateVideoConferenceWebApp(web_contents3);
+  auto* vc_app1 = client.CreateVideoConferenceWebApp(web_contents1);
+  auto* vc_app2 = client.CreateVideoConferenceWebApp(web_contents2);
+  auto* vc_app3 = client.CreateVideoConferenceWebApp(web_contents3);
 
   vc_app1->state().is_capturing_camera = true;
 
@@ -215,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
       {vc_app3->state().id, vc_app3},
   };
 
-  client->GetMediaApps(base::BindLambdaForTesting(
+  client.GetMediaApps(base::BindLambdaForTesting(
       [&](std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps) {
         EXPECT_EQ(apps.size(), 3u);
 
@@ -236,13 +238,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
 // Tests setting/clearing system statuses for camera and microphone.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
                        SetSystemMediaDeviceStatus) {
-  std::unique_ptr<FakeVideoConferenceManagerClient> client =
-      std::make_unique<FakeVideoConferenceManagerClient>();
+  FakeVideoConferenceManagerClient client;
 
   auto* vc_manager = crosapi::CrosapiManager::Get()
                          ->crosapi_ash()
                          ->video_conference_manager_ash();
-  vc_manager->RegisterCppClient(client.get(), client->client_id());
+  vc_manager->RegisterCppClient(&client, client.client_id());
 
   ash::FakeVideoConferenceTrayController* controller =
       static_cast<ash::FakeVideoConferenceTrayController*>(
@@ -250,44 +251,43 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
   ASSERT_TRUE(controller);
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
 
-  EXPECT_FALSE(client->camera_system_disabled());
-  EXPECT_FALSE(client->microphone_system_disabled());
+  EXPECT_FALSE(client.camera_system_disabled());
+  EXPECT_FALSE(client.microphone_system_disabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera,
       /*disabled=*/true);
-  EXPECT_TRUE(client->camera_system_disabled());
-  EXPECT_FALSE(client->microphone_system_disabled());
+  EXPECT_TRUE(client.camera_system_disabled());
+  EXPECT_FALSE(client.microphone_system_disabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
       /*disabled=*/true);
-  EXPECT_TRUE(client->camera_system_disabled());
-  EXPECT_TRUE(client->microphone_system_disabled());
+  EXPECT_TRUE(client.camera_system_disabled());
+  EXPECT_TRUE(client.microphone_system_disabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
       /*disabled=*/false);
-  EXPECT_TRUE(client->camera_system_disabled());
-  EXPECT_FALSE(client->microphone_system_disabled());
+  EXPECT_TRUE(client.camera_system_disabled());
+  EXPECT_FALSE(client.microphone_system_disabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera,
       /*disabled=*/false);
-  EXPECT_FALSE(client->camera_system_disabled());
-  EXPECT_FALSE(client->microphone_system_disabled());
+  EXPECT_FALSE(client.camera_system_disabled());
+  EXPECT_FALSE(client.microphone_system_disabled());
 }
 #endif
 
 // Tests aggregated media usage status received on `HandleMediaUsageUpdate`.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
-  std::unique_ptr<FakeVideoConferenceManagerClient> client =
-      std::make_unique<FakeVideoConferenceManagerClient>();
+  FakeVideoConferenceManagerClient client;
 
-  EXPECT_FALSE(client->status()->has_media_app);
-  EXPECT_FALSE(client->status()->is_capturing_camera);
-  EXPECT_FALSE(client->status()->is_capturing_microphone);
-  EXPECT_FALSE(client->status()->is_capturing_screen);
+  EXPECT_FALSE(client.status()->has_media_app);
+  EXPECT_FALSE(client.status()->is_capturing_camera);
+  EXPECT_FALSE(client.status()->is_capturing_microphone);
+  EXPECT_FALSE(client.status()->is_capturing_screen);
 
   auto* web_contents1 = CreateWebContentsAt(0);
   UpdateWebContentsTitle(web_contents1, u"app1");
@@ -296,77 +296,106 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
   UpdateWebContentsTitle(web_contents2, u"app2");
 
   auto* web_contents3 = CreateWebContentsAt(2);
-  auto* vc_app1 = client->CreateVideoConferenceWebApp(web_contents1);
-  auto* vc_app2 = client->CreateVideoConferenceWebApp(web_contents2);
-  auto* vc_app3 = client->CreateVideoConferenceWebApp(web_contents3);
+  auto* vc_app1 = client.CreateVideoConferenceWebApp(web_contents1);
+  auto* vc_app2 = client.CreateVideoConferenceWebApp(web_contents2);
+  auto* vc_app3 = client.CreateVideoConferenceWebApp(web_contents3);
 
-  client->HandleMediaUsageUpdate();
-  EXPECT_TRUE(client->status()->has_media_app);
-  EXPECT_FALSE(client->status()->is_capturing_camera);
-  EXPECT_FALSE(client->status()->is_capturing_microphone);
-  EXPECT_FALSE(client->status()->is_capturing_screen);
+  client.HandleMediaUsageUpdate();
+  EXPECT_TRUE(client.status()->has_media_app);
+  EXPECT_FALSE(client.status()->is_capturing_camera);
+  EXPECT_FALSE(client.status()->is_capturing_microphone);
+  EXPECT_FALSE(client.status()->is_capturing_screen);
 
   vc_app1->state().is_capturing_camera = true;
-  client->HandleMediaUsageUpdate();
-  EXPECT_TRUE(client->status()->has_media_app);
-  EXPECT_TRUE(client->status()->is_capturing_camera);
-  EXPECT_FALSE(client->status()->is_capturing_microphone);
-  EXPECT_FALSE(client->status()->is_capturing_screen);
+  client.HandleMediaUsageUpdate();
+  EXPECT_TRUE(client.status()->has_media_app);
+  EXPECT_TRUE(client.status()->is_capturing_camera);
+  EXPECT_FALSE(client.status()->is_capturing_microphone);
+  EXPECT_FALSE(client.status()->is_capturing_screen);
 
   vc_app2->state().is_capturing_microphone = true;
-  client->HandleMediaUsageUpdate();
-  EXPECT_TRUE(client->status()->has_media_app);
-  EXPECT_TRUE(client->status()->is_capturing_camera);
-  EXPECT_TRUE(client->status()->is_capturing_microphone);
-  EXPECT_FALSE(client->status()->is_capturing_screen);
+  client.HandleMediaUsageUpdate();
+  EXPECT_TRUE(client.status()->has_media_app);
+  EXPECT_TRUE(client.status()->is_capturing_camera);
+  EXPECT_TRUE(client.status()->is_capturing_microphone);
+  EXPECT_FALSE(client.status()->is_capturing_screen);
 
   vc_app3->state().is_capturing_screen = true;
-  client->HandleMediaUsageUpdate();
-  EXPECT_TRUE(client->status()->has_media_app);
-  EXPECT_TRUE(client->status()->is_capturing_camera);
-  EXPECT_TRUE(client->status()->is_capturing_microphone);
-  EXPECT_TRUE(client->status()->is_capturing_screen);
+  client.HandleMediaUsageUpdate();
+  EXPECT_TRUE(client.status()->has_media_app);
+  EXPECT_TRUE(client.status()->is_capturing_camera);
+  EXPECT_TRUE(client.status()->is_capturing_microphone);
+  EXPECT_TRUE(client.status()->is_capturing_screen);
 
   RemoveWebContentsAt(2);
   RemoveWebContentsAt(1);
   RemoveWebContentsAt(0);
 
-  client->HandleMediaUsageUpdate();
-  EXPECT_FALSE(client->status()->has_media_app);
-  EXPECT_FALSE(client->status()->is_capturing_camera);
-  EXPECT_FALSE(client->status()->is_capturing_microphone);
-  EXPECT_FALSE(client->status()->is_capturing_screen);
+  client.HandleMediaUsageUpdate();
+  EXPECT_FALSE(client.status()->has_media_app);
+  EXPECT_FALSE(client.status()->is_capturing_camera);
+  EXPECT_FALSE(client.status()->is_capturing_microphone);
+  EXPECT_FALSE(client.status()->is_capturing_screen);
 }
 
 // Tests if `ReturnToApp` correctly activates tab of the `VideoConferenceWebApp`
 // corresponding to the `id` provided.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ReturnToApp) {
-  std::unique_ptr<FakeVideoConferenceManagerClient> client =
-      std::make_unique<FakeVideoConferenceManagerClient>();
+  FakeVideoConferenceManagerClient client;
 
   auto* web_contents1 = CreateWebContentsAt(0);
   auto* web_contents2 = CreateWebContentsAt(1);
 
-  auto* vc_app1 = client->CreateVideoConferenceWebApp(web_contents1);
-  auto* vc_app2 = client->CreateVideoConferenceWebApp(web_contents2);
+  auto* vc_app1 = client.CreateVideoConferenceWebApp(web_contents1);
+  auto* vc_app2 = client.CreateVideoConferenceWebApp(web_contents2);
 
-  client->ReturnToApp(
+  client.ReturnToApp(
       vc_app1->state().id, base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
       }));
 
-  client->ReturnToApp(
+  client.ReturnToApp(
       vc_app2->state().id, base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
       }));
 
-  client->ReturnToApp(
+  client.ReturnToApp(
       vc_app1->state().id, base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
       }));
+}
+
+// Tests that for extensions, permissions equate to capturing statuses.
+IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ExtensionPermissions) {
+  FakeVideoConferenceManagerClient client;
+
+  auto* web_contents = CreateWebContentsAt(0);
+
+  auto* vc_app = client.CreateVideoConferenceWebApp(web_contents);
+
+  // Make vc_app an extension.
+  vc_app->state().is_extension = true;
+
+  auto permissions = client.GetAggregatedPermissions();
+  EXPECT_FALSE(permissions.has_camera_permission);
+  EXPECT_FALSE(permissions.has_microphone_permission);
+
+  // Set capturing to true.
+  vc_app->state().is_capturing_camera = true;
+
+  permissions = client.GetAggregatedPermissions();
+  EXPECT_TRUE(permissions.has_camera_permission);
+  EXPECT_FALSE(permissions.has_microphone_permission);
+
+  // Make vc_app a non-extension.
+  vc_app->state().is_extension = false;
+
+  permissions = client.GetAggregatedPermissions();
+  EXPECT_FALSE(permissions.has_camera_permission);
+  EXPECT_FALSE(permissions.has_microphone_permission);
 }
 
 }  // namespace video_conference

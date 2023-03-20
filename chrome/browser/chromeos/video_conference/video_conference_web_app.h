@@ -43,6 +43,7 @@ class VideoConferenceWebApp
     bool is_capturing_microphone = false;
     bool is_capturing_camera = false;
     bool is_capturing_screen = false;
+    bool is_extension = false;
   };
 
   VideoConferenceWebApp(const VideoConferenceWebApp&) = delete;
@@ -56,6 +57,10 @@ class VideoConferenceWebApp
   // Returns a pair containing the (camera, microphone) permissions granted
   // status for this app.
   VideoConferencePermissions GetPermissions();
+
+  // Returns bool indicating whether the VC webapp is an extension and is not
+  // capturing camera, microphone, or screen.
+  bool IsInactiveExtension();
 
   // content::WebcontentsObserver overrides
   void OnWebContentsFocused(
