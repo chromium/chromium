@@ -287,17 +287,17 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     request_id_to_guid_[params->request_id] = guid;
 
     // Keeps the worker alive during extension function call. Balanced in
-    // HandleWorkerResponse().
-    dispatcher_->Send(new ExtensionHostMsg_IncrementServiceWorkerActivity(
-        service_worker_version_id_, guid));
+    // `SendOnRequestResponseReceivedIPC()`.
+    dispatcher_->IncrementServiceWorkerActivity(service_worker_version_id_,
+                                                guid);
     dispatcher_->Send(new ExtensionHostMsg_RequestWorker(*params));
   }
 
   void SendOnRequestResponseReceivedIPC(int request_id) override {
     auto iter = request_id_to_guid_.find(request_id);
     DCHECK(iter != request_id_to_guid_.end());
-    dispatcher_->Send(new ExtensionHostMsg_DecrementServiceWorkerActivity(
-        service_worker_version_id_, iter->second));
+    dispatcher_->DecrementServiceWorkerActivity(service_worker_version_id_,
+                                                iter->second);
     request_id_to_guid_.erase(iter);
   }
 

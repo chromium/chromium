@@ -430,23 +430,6 @@ IPC_MESSAGE_CONTROL5(ExtensionMsg_ResponseWorker,
                      ExtensionMsg_ResponseWorkerData /* response */,
                      std::string /* error */)
 
-// Asks the browser to increment the pending activity count for
-// the worker with version id |service_worker_version_id|.
-// Each request to increment must use unique |request_uuid|. If a request with
-// |request_uuid| is already in progress (due to race condition or renderer
-// compromise), browser process ignores the IPC.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_IncrementServiceWorkerActivity,
-                     int64_t /* service_worker_version_id */,
-                     std::string /* request_uuid */)
-
-// Asks the browser to decrement the pending activity count for
-// the worker with version id |service_worker_version_id|.
-// |request_uuid| must match the GUID of a previous request, otherwise the
-// browser process ignores the IPC.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_DecrementServiceWorkerActivity,
-                     int64_t /* service_worker_version_id */,
-                     std::string /* request_uuid */)
-
 // Tells the browser that an event with |event_id| was successfully dispatched
 // to the worker with version |service_worker_version_id|.
 IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,

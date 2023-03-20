@@ -5,6 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_HOST_H_
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_SERVICE_WORKER_HOST_H_
 
+#include <string>
+#include <unordered_set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "extensions/common/extension_id.h"
@@ -54,6 +57,10 @@ class ServiceWorkerHost : public base::SupportsUserData::Data,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
       int worker_thread_id) override;
+  void IncrementServiceWorkerActivity(int64_t service_worker_version_id,
+                                      const std::string& request_uuid) override;
+  void DecrementServiceWorkerActivity(int64_t service_worker_version_id,
+                                      const std::string& request_uuid) override;
 
  private:
   // Returns the browser context associated with the render process this
@@ -63,6 +70,9 @@ class ServiceWorkerHost : public base::SupportsUserData::Data,
   // This is safe because ServiceWorkerHost is tied to the life time of
   // RenderProcessHost.
   const raw_ptr<content::RenderProcessHost> render_process_host_;
+
+  // This set is maintained by `(In|De)crementServiceWorkerActivity`.
+  std::unordered_set<std::string> active_request_uuids_;
 
   mojo::AssociatedReceiver<mojom::ServiceWorkerHost> receiver_{this};
 };

@@ -6,6 +6,10 @@
 
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_external_request_result.h"
+#include "content/public/browser/storage_partition.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker_task_queue.h"
@@ -136,6 +140,53 @@ void ServiceWorkerHost::DidStopServiceWorkerContext(
       ->DidStopServiceWorkerContext(
           render_process_id, extension_id, activation_token,
           service_worker_scope, service_worker_version_id, worker_thread_id);
+}
+
+void ServiceWorkerHost::IncrementServiceWorkerActivity(
+    int64_t service_worker_version_id,
+    const std::string& request_uuid) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!GetBrowserContext()) {
+    return;
+  }
+
+  active_request_uuids_.insert(request_uuid);
+  // The worker might have already stopped before we got here, so the increment
+  // below might fail legitimately. Therefore, we do not send bad_message to the
+  // worker even if it fails.
+  render_process_host_->GetStoragePartition()
+      ->GetServiceWorkerContext()
+      ->StartingExternalRequest(
+          service_worker_version_id,
+          content::ServiceWorkerExternalRequestTimeoutType::kDefault,
+          request_uuid);
+}
+
+void ServiceWorkerHost::DecrementServiceWorkerActivity(
+    int64_t service_worker_version_id,
+    const std::string& request_uuid) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!GetBrowserContext()) {
+    return;
+  }
+
+  content::ServiceWorkerExternalRequestResult result =
+      render_process_host_->GetStoragePartition()
+          ->GetServiceWorkerContext()
+          ->FinishedExternalRequest(service_worker_version_id, request_uuid);
+  if (result != content::ServiceWorkerExternalRequestResult::kOk) {
+    LOG(ERROR) << "ServiceWorkerContext::FinishedExternalRequest failed: "
+               << static_cast<int>(result);
+  }
+
+  bool erased = active_request_uuids_.erase(request_uuid) == 1;
+  // The worker may have already stopped before we got here, so only report
+  // a bad message if we didn't have an increment for the UUID.
+  if (!erased) {
+    bad_message::ReceivedBadMessage(
+        render_process_host_->GetID(),
+        bad_message::ESWMF_INVALID_DECREMENT_ACTIVITY);
+  }
 }
 
 content::BrowserContext* ServiceWorkerHost::GetBrowserContext() {

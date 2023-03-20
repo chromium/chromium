@@ -554,6 +554,32 @@ void WorkerThreadDispatcher::DidStopContext(const GURL& service_worker_scope,
       service_worker_version_id, thread_id));
 }
 
+void WorkerThreadDispatcher::IncrementServiceWorkerActivity(
+    int64_t service_worker_version_id,
+    const std::string& request_uuid) {
+  PostTaskToIOThread(base::BindOnce(
+      [](int64_t service_worker_version_id, const std::string& request_uuid) {
+        WorkerThreadDispatcher::Get()
+            ->GetServiceWorkerHostOnIO()
+            ->IncrementServiceWorkerActivity(service_worker_version_id,
+                                             request_uuid);
+      },
+      service_worker_version_id, request_uuid));
+}
+
+void WorkerThreadDispatcher::DecrementServiceWorkerActivity(
+    int64_t service_worker_version_id,
+    const std::string& request_uuid) {
+  PostTaskToIOThread(base::BindOnce(
+      [](int64_t service_worker_version_id, const std::string& request_uuid) {
+        WorkerThreadDispatcher::Get()
+            ->GetServiceWorkerHostOnIO()
+            ->DecrementServiceWorkerActivity(service_worker_version_id,
+                                             request_uuid);
+      },
+      service_worker_version_id, request_uuid));
+}
+
 void WorkerThreadDispatcher::RemoveWorkerData(
     int64_t service_worker_version_id) {
   if (service_worker_data) {

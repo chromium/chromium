@@ -5,9 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_SERVICE_WORKER_MESSAGE_FILTER_H_
 #define EXTENSIONS_BROWSER_EXTENSION_SERVICE_WORKER_MESSAGE_FILTER_H_
 
-#include <string>
-#include <unordered_set>
-
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -59,10 +56,6 @@ class ExtensionServiceWorkerMessageFilter
   // Message handlers.
   void OnRequestWorker(const mojom::RequestParams& params);
   void OnResponseWorker(int request_id, int64_t service_worker_version_id);
-  void OnIncrementServiceWorkerActivity(int64_t service_worker_version_id,
-                                        const std::string& request_uuid);
-  void OnDecrementServiceWorkerActivity(int64_t service_worker_version_id,
-                                        const std::string& request_uuid);
   void OnEventAckWorker(const ExtensionId& extension_id,
                         int64_t service_worker_version_id,
                         int thread_id,
@@ -84,8 +77,6 @@ class ExtensionServiceWorkerMessageFilter
   std::unique_ptr<ExtensionFunctionDispatcher,
                   content::BrowserThread::DeleteOnUIThread>
       dispatcher_;
-
-  std::unordered_set<std::string> active_request_uuids_;
 };
 
 }  // namespace extensions
