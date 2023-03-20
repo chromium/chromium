@@ -1258,6 +1258,7 @@ void CommerceHintAgent::OnMainFrameIntersectionChanged(
 
 void CommerceHintAgent::FocusedElementChanged(
     const blink::WebElement& focused_element) {
+  base::Time before_check = base::Time::Now();
   if (!should_skip_.has_value() || should_skip_.value()) {
     return;
   }
@@ -1266,7 +1267,6 @@ void CommerceHintAgent::FocusedElementChanged(
   }
   auto builder = ukm::builders::Shopping_AddToCartDetection(
       render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());
-  base::Time before_check = base::Time::Now();
   blink::WebElement element = focused_element;
   if (IsAddToCartButton(element)) {
     add_to_cart_focus_time_ = base::Time::Now();
