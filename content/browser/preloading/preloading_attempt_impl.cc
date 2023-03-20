@@ -222,6 +222,11 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
     return;
   }
 
+  // Turn sampling_likelihood into an int64_t for UKM logging. Multiply by one
+  // million to preserve accuracy.
+  int64_t sampling_likelihood_per_million =
+      static_cast<int64_t>(1'000'000 * sampling_likelihood);
+
   if (navigated_page_source_id != ukm::kInvalidSourceId) {
     ukm::builders::Preloading_Attempt builder(navigated_page_source_id);
     builder.SetPreloadingType(static_cast<int64_t>(preloading_type_))
@@ -230,7 +235,8 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
         .SetHoldbackStatus(static_cast<int64_t>(holdback_status_))
         .SetTriggeringOutcome(static_cast<int64_t>(triggering_outcome_))
         .SetFailureReason(static_cast<int64_t>(failure_reason_))
-        .SetAccurateTriggering(is_accurate_triggering_);
+        .SetAccurateTriggering(is_accurate_triggering_)
+        .SetSamplingLikelihood(sampling_likelihood_per_million);
     if (time_to_next_navigation_) {
       builder.SetTimeToNextNavigation(ukm::GetExponentialBucketMinForCounts1000(
           time_to_next_navigation_->InMilliseconds()));
@@ -251,7 +257,8 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
         .SetHoldbackStatus(static_cast<int64_t>(holdback_status_))
         .SetTriggeringOutcome(static_cast<int64_t>(triggering_outcome_))
         .SetFailureReason(static_cast<int64_t>(failure_reason_))
-        .SetAccurateTriggering(is_accurate_triggering_);
+        .SetAccurateTriggering(is_accurate_triggering_)
+        .SetSamplingLikelihood(sampling_likelihood_per_million);
     if (time_to_next_navigation_) {
       builder.SetTimeToNextNavigation(ukm::GetExponentialBucketMinForCounts1000(
           time_to_next_navigation_->InMilliseconds()));

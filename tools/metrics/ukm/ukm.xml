@@ -18799,6 +18799,17 @@ be describing additional metrics about the same event.
       only meaningful to these three types of preloading.
     </summary>
   </metric>
+  <metric name="SamplingLikelihood">
+    <summary>
+      The sampling rate of this particular event multiplied by 1,000,000
+      (because we cannot log floating point values in UKM). A value of 1,000,000
+      means that the event had a 100% chance of being sampled, whereas a value
+      of one means that the event had a one-in-a-millon chance of being sampled.
+      The sampling rate for preloading attempts is set via field trial through
+      the PreloadingConfig feature. The logged value just represents the
+      configuration used for that preloading attempt.
+    </summary>
+  </metric>
   <metric name="TimeToNextNavigation">
     <summary>
       The amount of time the attempt took to reach the next navigation, in
@@ -18873,6 +18884,17 @@ be describing additional metrics about the same event.
       to be used for the next navigation, in milliseconds. Note: currently only
       Prefetch, Prerender and NoStatePrefetch have a ready state. This field is
       only meaningful to these three types of preloading.
+    </summary>
+  </metric>
+  <metric name="SamplingLikelihood">
+    <summary>
+      The sampling rate of this particular event multiplied by 1,000,000
+      (because we cannot log floating point values in UKM). A value of 1,000,000
+      means that the event had a 100% chance of being sampled, whereas a value
+      of one means that the event had a one-in-a-millon chance of being sampled.
+      The sampling rate for preloading attempts is set via field trial through
+      the PreloadingConfig feature. The logged value just represents the
+      configuration used for that preloading attempt.
     </summary>
   </metric>
   <metric name="TimeToNextNavigation">
