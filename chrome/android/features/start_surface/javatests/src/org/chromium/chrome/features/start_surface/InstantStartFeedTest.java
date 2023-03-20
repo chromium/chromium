@@ -137,7 +137,6 @@ public class InstantStartFeedTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1314456")
     public void testCachedFeedVisibility() {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         mActivityTestRule.waitForActivityNativeInitializationComplete();
