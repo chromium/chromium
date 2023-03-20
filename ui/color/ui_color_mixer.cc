@@ -285,8 +285,10 @@ void AddUiColorMixer(ColorProvider* provider,
       dark_mode ? ColorTransform(gfx::kGoogleGrey700) : kColorMidground};
   mixer[kColorToggleButtonTrackOn] =
       PickGoogleColor(kColorAccent, kColorToggleButtonThumbOn, 2.13f);
-  mixer[kColorTooltipBackground] = SetAlpha(kColorPrimaryBackground, 0xCC);
-  mixer[kColorTooltipForeground] = SetAlpha(kColorPrimaryForeground, 0xDE);
+  mixer[kColorTooltipBackground] = GetResultingPaintColor(
+      SetAlpha(kColorPrimaryBackground, 0xCC), {kColorWindowBackground});
+  mixer[kColorTooltipForeground] = GetResultingPaintColor(
+      SetAlpha(kColorPrimaryForeground, 0xDE), {kColorTooltipBackground});
   mixer[kColorTreeBackground] = {kColorPrimaryBackground};
   mixer[kColorTreeNodeBackgroundSelectedFocused] = {
       kColorItemSelectionBackground};

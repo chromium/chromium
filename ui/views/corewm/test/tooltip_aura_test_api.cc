@@ -13,7 +13,7 @@
 
 namespace views::corewm::test {
 
-gfx::RenderText* TooltipAuraTestApi::GetRenderText() {
+const gfx::RenderText* TooltipAuraTestApi::GetRenderText() const {
   return tooltip_aura_->GetRenderTextForTest();
 }
 

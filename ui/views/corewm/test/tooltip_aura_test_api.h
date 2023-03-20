@@ -34,7 +34,7 @@ class TooltipAuraTestApi {
   TooltipAuraTestApi(const TooltipAuraTestApi&) = delete;
   TooltipAuraTestApi& operator=(const TooltipAuraTestApi&) = delete;
 
-  gfx::RenderText* GetRenderText();
+  const gfx::RenderText* GetRenderText() const;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data);
 

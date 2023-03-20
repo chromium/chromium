@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/views/corewm/tooltip.h"
+#include "ui/views/corewm/tooltip_view_aura.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/tooltip_observer.h"
 
@@ -40,7 +42,12 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   static constexpr int kCursorOffsetX = 10;
   static constexpr int kCursorOffsetY = 15;
 
+  using TooltipViewFactory =
+      base::RepeatingCallback<std::unique_ptr<TooltipViewAura>(void)>;
+
   TooltipAura();
+
+  explicit TooltipAura(const TooltipViewFactory& tooltip_view_factory);
 
   TooltipAura(const TooltipAura&) = delete;
   TooltipAura& operator=(const TooltipAura&) = delete;
@@ -57,7 +64,7 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   class TooltipWidget;
 
   friend class test::TooltipAuraTestApi;
-  gfx::RenderText* GetRenderTextForTest();
+  const gfx::RenderText* GetRenderTextForTest() const;
   void GetAccessibleNodeDataForTest(ui::AXNodeData* node_data);
 
   // Adjusts the bounds given by the arguments to fit inside the desktop
@@ -89,6 +96,9 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   // WidgetObserver:
   void OnWidgetDestroying(Widget* widget) override;
+
+  // A callback to generate a `TooltipViewAura` instance.
+  const TooltipViewFactory tooltip_view_factory_;
 
   // The widget containing the tooltip. May be NULL.
   raw_ptr<TooltipWidget> widget_ = nullptr;

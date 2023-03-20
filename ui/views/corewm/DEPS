@@ -15,13 +15,15 @@ specific_include_rules = {
   ],
 
   "tooltip_aura.cc": [
+    "+ui/views/widget/widget.h",
+  ],
+
+  "tooltip_view_aura.cc": [
     "+ui/base/metadata/metadata_header_macros.h",
     "+ui/base/metadata/metadata_impl_macros.h",
     "+ui/views/background.h",
     "+ui/views/border.h",
     "+ui/views/painter.h",
-    "+ui/views/widget/widget.h",
-    "+ui/views/view.h",
   ],
 
   "tooltip_lacros.cc": [
@@ -52,6 +54,10 @@ specific_include_rules = {
 
   "tooltip_aura.h": [
     "+ui/views/widget/widget_observer.h",
+  ],
+
+  "tooltip_view_aura.h": [
+    "+ui/views/view.h",
   ],
 
   "tooltip_controller_test_helper.h": [

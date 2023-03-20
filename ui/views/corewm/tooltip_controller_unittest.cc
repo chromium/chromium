@@ -334,7 +334,7 @@ TEST_F(TooltipControllerTest, MaxWidth) {
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
             TooltipTrigger::kCursor);
-  gfx::RenderText* render_text =
+  const gfx::RenderText* render_text =
       test::TooltipAuraTestApi(tooltip_).GetRenderText();
 
   int max = helper_->controller()->GetMaxWidth(center);
