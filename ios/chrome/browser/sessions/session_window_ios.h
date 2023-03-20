@@ -9,27 +9,6 @@
 
 @class CRWSessionStorage;
 
-// Encapsulate minimum data about a tab.
-// This data about each tab is always available, even if the data on disk is
-// not deserialized.
-// This is the only data available for unrealized webStates.
-@interface SessionSummary : NSObject <NSCoding>
-// The current URL of the session.
-@property(nonatomic, readonly) NSURL* url;
-// The current title of the session.
-@property(nonatomic, readonly) NSString* title;
-// The stable identifier of the session.
-@property(nonatomic, readonly) NSString* stableIdentifier;
-
-- (instancetype)initWithURL:(NSURL*)url
-                      title:(NSString*)title
-           stableIdentifier:(NSString*)stableIdentifier
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-@end
-
 // Encapsulates everything required to save a session "window".
 @interface SessionWindowIOS : NSObject<NSCoding>
 

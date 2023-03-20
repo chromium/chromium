@@ -31,42 +31,6 @@ BOOL IsIndexValidForSessionCount(NSUInteger index, NSUInteger session_count) {
 }
 }  // namespace
 
-@implementation SessionSummary
-@synthesize url = _url;
-@synthesize title = _title;
-@synthesize stableIdentifier = _stableIdentifier;
-
-- (instancetype)initWithURL:(NSURL*)url
-                      title:(NSString*)title
-           stableIdentifier:(NSString*)stableIdentifier {
-  self = [super init];
-  if (self) {
-    _url = url;
-    _title = title;
-    _stableIdentifier = stableIdentifier;
-  }
-  return self;
-}
-
-- (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  NSURL* url = [aDecoder decodeObjectForKey:kSessionCurrentURLKey];
-  NSString* title = [aDecoder decodeObjectForKey:kSessionCurrentTitleKey];
-  NSString* stableIdentifier =
-      [aDecoder decodeObjectForKey:kSessionStableIdentifierKey];
-
-  if (!url || !title || !stableIdentifier) {
-    return nil;
-  }
-  return [self initWithURL:url title:title stableIdentifier:stableIdentifier];
-}
-
-- (void)encodeWithCoder:(NSCoder*)aCoder {
-  [aCoder encodeObject:_url forKey:kSessionCurrentURLKey];
-  [aCoder encodeObject:_title forKey:kSessionCurrentTitleKey];
-  [aCoder encodeObject:_stableIdentifier forKey:kSessionStableIdentifierKey];
-}
-@end
-
 @implementation SessionWindowIOS
 
 @synthesize sessions = _sessions;
