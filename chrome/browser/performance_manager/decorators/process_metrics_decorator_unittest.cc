@@ -21,6 +21,10 @@ namespace performance_manager {
 
 namespace {
 
+using ::testing::_;
+using ::testing::ByMove;
+using ::testing::Return;
+
 constexpr uint32_t kFakeResidentSetKb = 12345;
 constexpr uint32_t kFakePrivateFootprintKb = 67890;
 
@@ -125,9 +129,6 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
     EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
     graph()->PassToGraph(std::move(decorator));
     EXPECT_FALSE(decorator_raw_->IsTimerRunningForTesting());
-    metrics_interest_token_ =
-        ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
-    EXPECT_TRUE(decorator_raw_->IsTimerRunningForTesting());
   }
 
   TestProcessMetricsDecorator* decorator() const { return decorator_raw_; }
@@ -136,127 +137,172 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
     return mock_graph_.get();
   }
 
-  void ReleaseMetricsInterestToken() { metrics_interest_token_.reset(); }
+  void ExpectProcessResults(uint64_t resident_set_kb,
+                            uint64_t private_footprint_kb) {
+    EXPECT_EQ(resident_set_kb, mock_graph()->process->resident_set_kb());
+    EXPECT_EQ(private_footprint_kb,
+              mock_graph()->process->private_footprint_kb());
+
+    EXPECT_EQ(resident_set_kb / 3,
+              mock_graph()->frame->resident_set_kb_estimate());
+    EXPECT_EQ(private_footprint_kb / 3,
+              mock_graph()->frame->private_footprint_kb_estimate());
+    EXPECT_EQ(resident_set_kb / 3,
+              mock_graph()->other_frame->resident_set_kb_estimate());
+    EXPECT_EQ(private_footprint_kb / 3,
+              mock_graph()->other_frame->private_footprint_kb_estimate());
+    EXPECT_EQ(resident_set_kb / 3,
+              mock_graph()->worker->resident_set_kb_estimate());
+    EXPECT_EQ(private_footprint_kb / 3,
+              mock_graph()->worker->private_footprint_kb_estimate());
+  }
+
+  void ExpectOtherProcessResults(uint64_t resident_set_kb,
+                                 uint64_t private_footprint_kb) {
+    EXPECT_EQ(resident_set_kb, mock_graph()->other_process->resident_set_kb());
+    EXPECT_EQ(private_footprint_kb,
+              mock_graph()->other_process->private_footprint_kb());
+
+    EXPECT_EQ(resident_set_kb / 2,
+              mock_graph()->child_frame->resident_set_kb_estimate());
+    EXPECT_EQ(private_footprint_kb / 2,
+              mock_graph()->child_frame->private_footprint_kb_estimate());
+    EXPECT_EQ(resident_set_kb / 2,
+              mock_graph()->other_worker->resident_set_kb_estimate());
+    EXPECT_EQ(private_footprint_kb / 2,
+              mock_graph()->other_worker->private_footprint_kb_estimate());
+  }
+
+  void ResetResults() {
+    mock_graph()->process->set_resident_set_kb(0);
+    mock_graph()->process->set_private_footprint_kb(0);
+    mock_graph()->frame->SetResidentSetKbEstimate(0);
+    mock_graph()->frame->SetPrivateFootprintKbEstimate(0);
+    mock_graph()->other_frame->SetResidentSetKbEstimate(0);
+    mock_graph()->other_frame->SetPrivateFootprintKbEstimate(0);
+    mock_graph()->worker->SetResidentSetKbEstimate(0);
+    mock_graph()->worker->SetPrivateFootprintKbEstimate(0);
+    mock_graph()->other_process->set_resident_set_kb(0);
+    mock_graph()->other_process->set_private_footprint_kb(0);
+    mock_graph()->child_frame->SetResidentSetKbEstimate(0);
+    mock_graph()->child_frame->SetPrivateFootprintKbEstimate(0);
+    mock_graph()->other_worker->SetResidentSetKbEstimate(0);
+    mock_graph()->other_worker->SetPrivateFootprintKbEstimate(0);
+  }
 
  private:
   raw_ptr<TestProcessMetricsDecorator> decorator_raw_;
 
   std::unique_ptr<MockMultiplePagesAndWorkersWithMultipleProcessesGraph>
       mock_graph_;
-
-  std::unique_ptr<ProcessMetricsDecorator::ScopedMetricsInterestToken>
-      metrics_interest_token_;
 };
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshTimer) {
   MockSystemNodeObserver sys_node_observer;
 
   graph()->AddSystemNodeObserver(&sys_node_observer);
-  auto memory_dump = absl::make_optional(
-      GenerateMemoryDump({{mock_graph()->process->process_id(),
-                           kFakeResidentSetKb, kFakePrivateFootprintKb},
-                          {mock_graph()->other_process->process_id(),
-                           kFakeResidentSetKb, kFakePrivateFootprintKb}}));
-
-  EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(testing::Return(testing::ByMove(std::move(memory_dump))));
 
   // There's no data available initially.
-  EXPECT_EQ(0U, mock_graph()->process->resident_set_kb());
-  EXPECT_EQ(0U, mock_graph()->process->private_footprint_kb());
+  ExpectProcessResults(0, 0);
+  ExpectOtherProcessResults(0, 0);
 
-  EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(testing::_));
+  // The first measurement should be taken immediately.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(GenerateMemoryDump(
+          {{mock_graph()->process->process_id(), kFakeResidentSetKb,
+            kFakePrivateFootprintKb},
+           {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
+            kFakePrivateFootprintKb}}))));
+  EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
+
+  auto interest_token =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+
+  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectOtherProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ResetResults();
 
   // Advance the timer, this should trigger a refresh of the metrics.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(GenerateMemoryDump(
+          {{mock_graph()->process->process_id(), kFakeResidentSetKb,
+            kFakePrivateFootprintKb},
+           {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
+            kFakePrivateFootprintKb}}))));
+  EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
+
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
-  EXPECT_EQ(kFakeResidentSetKb, mock_graph()->process->resident_set_kb());
-  EXPECT_EQ(kFakePrivateFootprintKb,
-            mock_graph()->process->private_footprint_kb());
+  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectOtherProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ResetResults();
 
-  EXPECT_EQ(kFakeResidentSetKb / 3,
-            mock_graph()->frame->resident_set_kb_estimate());
-  EXPECT_EQ(kFakeResidentSetKb / 3,
-            mock_graph()->other_frame->resident_set_kb_estimate());
-  EXPECT_EQ(kFakeResidentSetKb / 3,
-            mock_graph()->worker->resident_set_kb_estimate());
-
-  EXPECT_EQ(kFakeResidentSetKb, mock_graph()->other_process->resident_set_kb());
-  EXPECT_EQ(kFakePrivateFootprintKb,
-            mock_graph()->other_process->private_footprint_kb());
-
-  EXPECT_EQ(kFakeResidentSetKb / 2,
-            mock_graph()->child_frame->resident_set_kb_estimate());
-  EXPECT_EQ(kFakeResidentSetKb / 2,
-            mock_graph()->other_worker->resident_set_kb_estimate());
+  // Refreshes should stop when there are no tokens left.
+  interest_token.reset();
+  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
+  ExpectProcessResults(0, 0);
+  ExpectOtherProcessResults(0, 0);
 
   graph()->RemoveSystemNodeObserver(&sys_node_observer);
 }
 
 TEST_F(ProcessMetricsDecoratorTest, PartialRefresh) {
   // Only contains the data for one of the two processes.
-  auto partial_memory_dump = absl::make_optional(
-      GenerateMemoryDump({{mock_graph()->process->process_id(),
-                           kFakeResidentSetKb, kFakePrivateFootprintKb}}));
-
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(
-          testing::Return(testing::ByMove(std::move(partial_memory_dump))));
+      .WillOnce(Return(ByMove(GenerateMemoryDump(
+          {{mock_graph()->process->process_id(), kFakeResidentSetKb,
+            kFakePrivateFootprintKb}}))));
+
+  auto interest_token =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+
+  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectOtherProcessResults(0, 0);
+
+  // Do another partial refresh but this time for the other process. The
+  // data attached to |mock_graph()->process| shouldn't change.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(GenerateMemoryDump(
+          {{mock_graph()->other_process->process_id(), kFakeResidentSetKb * 2,
+            kFakePrivateFootprintKb * 2}}))));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
-  EXPECT_EQ(kFakeResidentSetKb, mock_graph()->process->resident_set_kb());
-  EXPECT_EQ(kFakePrivateFootprintKb,
-            mock_graph()->process->private_footprint_kb());
-
-  // Do another partial refresh but this time for the other process. The data
-  // attached to |mock_graph()->process| shouldn't change.
-  auto partial_memory_dump2 = absl::make_optional(GenerateMemoryDump(
-      {{mock_graph()->other_process->process_id(), kFakeResidentSetKb * 2,
-        kFakePrivateFootprintKb * 2}}));
-  EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(
-          testing::Return(testing::ByMove(std::move(partial_memory_dump2))));
-
-  task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
-
-  EXPECT_EQ(kFakeResidentSetKb, mock_graph()->process->resident_set_kb());
-  EXPECT_EQ(kFakePrivateFootprintKb,
-            mock_graph()->process->private_footprint_kb());
-
-  EXPECT_EQ(kFakeResidentSetKb / 3,
-            mock_graph()->frame->resident_set_kb_estimate());
-  EXPECT_EQ(kFakeResidentSetKb / 3,
-            mock_graph()->other_frame->resident_set_kb_estimate());
-  EXPECT_EQ(kFakeResidentSetKb / 3,
-            mock_graph()->worker->resident_set_kb_estimate());
-
-  EXPECT_EQ(kFakeResidentSetKb * 2,
-            mock_graph()->other_process->resident_set_kb());
-  EXPECT_EQ(kFakePrivateFootprintKb * 2,
-            mock_graph()->other_process->private_footprint_kb());
-
-  EXPECT_EQ(kFakeResidentSetKb,
-            mock_graph()->child_frame->resident_set_kb_estimate());
-  EXPECT_EQ(kFakeResidentSetKb,
-            mock_graph()->other_worker->resident_set_kb_estimate());
+  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectOtherProcessResults(kFakeResidentSetKb * 2,
+                            kFakePrivateFootprintKb * 2);
 }
 
 TEST_F(ProcessMetricsDecoratorTest, RefreshFailure) {
   EXPECT_CALL(*decorator(), GetMemoryDump())
-      .WillOnce(testing::Return(testing::ByMove(absl::nullopt)));
+      .WillOnce(Return(ByMove(absl::nullopt)));
+
+  auto interest_token =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
+
+  ExpectProcessResults(0, 0);
+  ExpectOtherProcessResults(0, 0);
+
+  // A failure shouldn't stop the next refresh.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(GenerateMemoryDump(
+          {{mock_graph()->process->process_id(), kFakeResidentSetKb,
+            kFakePrivateFootprintKb},
+           {mock_graph()->other_process->process_id(), kFakeResidentSetKb,
+            kFakePrivateFootprintKb}}))));
 
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
 
-  EXPECT_EQ(0U, mock_graph()->process->resident_set_kb());
-  EXPECT_EQ(0U, mock_graph()->process->private_footprint_kb());
-  EXPECT_EQ(0U, mock_graph()->frame->resident_set_kb_estimate());
-  EXPECT_EQ(0U, mock_graph()->child_frame->resident_set_kb_estimate());
+  ExpectProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
+  ExpectOtherProcessResults(kFakeResidentSetKb, kFakePrivateFootprintKb);
 }
 
 TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {
-  ReleaseMetricsInterestToken();
   EXPECT_FALSE(decorator()->IsTimerRunningForTesting());
+
+  // The first token created will take a measurement, then start the timer.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(absl::nullopt)));
   auto metrics_interest_token1 =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
   EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
@@ -267,8 +313,16 @@ TEST_F(ProcessMetricsDecoratorTest, MetricsInterestTokens) {
 
   metrics_interest_token1.reset();
   EXPECT_TRUE(decorator()->IsTimerRunningForTesting());
+
   metrics_interest_token2.reset();
   EXPECT_FALSE(decorator()->IsTimerRunningForTesting());
+
+  // Creating another token after all are deleted should take another
+  // measurement.
+  EXPECT_CALL(*decorator(), GetMemoryDump())
+      .WillOnce(Return(ByMove(absl::nullopt)));
+  auto metrics_interest_token3 =
+      ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
 }
 
 }  // namespace performance_manager

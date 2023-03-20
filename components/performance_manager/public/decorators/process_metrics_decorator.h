@@ -98,7 +98,7 @@ class ProcessMetricsDecorator
 
  private:
   // The timer responsible for refreshing the metrics.
-  base::RetainingOneShotTimer refresh_timer_;
+  base::OneShotTimer refresh_timer_;
 
   // The Graph instance owning this decorator.
   raw_ptr<Graph> graph_;

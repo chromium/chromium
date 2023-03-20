@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -88,16 +89,20 @@ void ProcessMetricsDecorator::OnTakenFromGraph(Graph* graph) {
 void ProcessMetricsDecorator::OnMetricsInterestTokenCreated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++metrics_interest_token_count_;
-  if (metrics_interest_token_count_ == 1)
-    StartTimer();
+  if (metrics_interest_token_count_ == 1) {
+    // Take the first metrics measurement immediately.
+    CHECK(!refresh_timer_.IsRunning());
+    RefreshMetrics();
+  }
 }
 
 void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(metrics_interest_token_count_, 0U);
   --metrics_interest_token_count_;
-  if (metrics_interest_token_count_ == 0)
+  if (metrics_interest_token_count_ == 0) {
     StopTimer();
+  }
 }
 
 void ProcessMetricsDecorator::StartTimer() {
@@ -138,8 +143,21 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
     bool success,
     std::unique_ptr<memory_instrumentation::GlobalMemoryDump> process_dumps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!success)
+  CHECK(process_dumps);
+  // Check if the decorator was removed from the graph while the request was
+  // being handled.
+  if (!graph_) {
     return;
+  }
+
+  // Always schedule the next measurement, even if this one didn't succeed.
+  if (metrics_interest_token_count_) {
+    StartTimer();
+  }
+
+  if (!success) {
+    return;
+  }
 
   auto* graph_impl = GraphImpl::FromGraph(graph_);
 
@@ -152,8 +170,9 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
     // Check if there's a process node associated with this PID.
     auto* process_node =
         graph_impl->GetProcessNodeByPid(process_dump_iter.pid());
-    if (!process_node)
+    if (!process_node) {
       continue;
+    }
 
     uint64_t process_pmf = process_dump_iter.os_dump().private_footprint_kb;
     process_node->set_private_footprint_kb(process_pmf);
@@ -169,7 +188,6 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
 
     size_t frame_and_worker_node_count = process_node->frame_nodes().size() +
                                          process_node->worker_nodes().size();
-
     if (frame_and_worker_node_count > 0) {
       // For now, equally split the process' RSS and PMF among all of its frames
       // and workers.
@@ -193,7 +211,6 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
   GraphImpl::FromGraph(graph_)
       ->GetSystemNodeImpl()
       ->OnProcessMemoryMetricsAvailable();
-  refresh_timer_.Reset();
 }
 
 }  // namespace performance_manager
