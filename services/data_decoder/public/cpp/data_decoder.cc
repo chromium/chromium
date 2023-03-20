@@ -206,19 +206,18 @@ void DataDecoder::ParseJson(const std::string& json,
                 [](ValueParseCallback callback,
                    scoped_refptr<CancellationFlag> is_cancelled,
                    JsonSanitizer::Result result) {
-                  if (is_cancelled->data)
-                    return;
-
-                  if (!result.value) {
-                    std::move(callback).Run(base::unexpected(*result.error));
+                  if (is_cancelled->data) {
                     return;
                   }
 
-                  auto value_with_error =
-                      base::JSONReader::ReadAndReturnValueWithError(
-                          *result.value, base::JSON_PARSE_RFC);
+                  if (!result.has_value()) {
+                    std::move(callback).Run(base::unexpected(result.error()));
+                    return;
+                  }
+
                   ParsingComplete(is_cancelled, std::move(callback),
-                                  std::move(value_with_error));
+                                  base::JSONReader::ReadAndReturnValueWithError(
+                                      result.value(), base::JSON_PARSE_RFC));
                 },
                 std::move(callback), cancel_requests_));
 #else

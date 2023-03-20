@@ -28,10 +28,7 @@ source_set("cpp") {
     "json_sanitizer.h",
   ]
 
-  sources = [
-    "data_decoder.cc",
-    "json_sanitizer.cc",
-  ]
+  sources = [ "data_decoder.cc" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

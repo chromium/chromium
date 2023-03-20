@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/types/expected.h"
 
 namespace data_decoder {
 
@@ -21,16 +21,8 @@ namespace data_decoder {
 // the resulting JSON, which might save some space.
 class JsonSanitizer {
  public:
-  struct Result {
-    Result();
-    Result(Result&&);
-    ~Result();
-
-    static Result Error(const std::string& error);
-
-    absl::optional<std::string> value;
-    absl::optional<std::string> error;
-  };
+  using Result = base::expected<std::string, std::string>;
+  using Callback = base::OnceCallback<void(Result)>;
 
   JsonSanitizer(const JsonSanitizer&) = delete;
   JsonSanitizer& operator=(const JsonSanitizer&) = delete;
@@ -38,7 +30,6 @@ class JsonSanitizer {
   // Starts sanitizing the passed in unsafe JSON string. The passed |callback|
   // will be called with the result of the sanitization or an error message, but
   // not before the method returns.
-  using Callback = base::OnceCallback<void(Result)>;
   static void Sanitize(const std::string& json, Callback callback);
 };
 

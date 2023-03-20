@@ -31,9 +31,9 @@ void CheckSuccess(const std::string& json) {
   JsonSanitizer::Sanitize(
       json, base::BindLambdaForTesting([&](JsonSanitizer::Result result) {
         result_received = true;
-        ASSERT_TRUE(result.value);
+        ASSERT_TRUE(result.has_value());
         auto reparse = base::JSONReader::ReadAndReturnValueWithError(
-            *result.value, base::JSON_PARSE_RFC);
+            *result, base::JSON_PARSE_RFC);
         ASSERT_TRUE(reparse.has_value());
         EXPECT_EQ(*reparse, *original_parse);
         loop.Quit();
@@ -52,8 +52,7 @@ void CheckError(const std::string& json) {
   JsonSanitizer::Sanitize(
       json, base::BindLambdaForTesting([&](JsonSanitizer::Result result) {
         result_received = true;
-        EXPECT_FALSE(result.value);
-        EXPECT_TRUE(result.error);
+        EXPECT_FALSE(result.has_value());
         loop.Quit();
       }));
 

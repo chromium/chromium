@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -16,32 +17,22 @@ namespace data_decoder {
 // static
 void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
   DataDecoder::ParseJsonIsolated(
-      json,
-      base::BindOnce(
-          [](Callback callback, DataDecoder::ValueOrError parse_result) {
-            if (!parse_result.has_value()) {
-              std::move(callback).Run(Result::Error(parse_result.error()));
-              return;
-            }
-
-            const base::Value::Type type = parse_result->type();
-            if (type != base::Value::Type::DICT &&
-                type != base::Value::Type::LIST) {
-              std::move(callback).Run(Result::Error("Invalid top-level type"));
-              return;
-            }
-
-            std::string safe_json;
-            if (!base::JSONWriter::Write(*parse_result, &safe_json)) {
-              std::move(callback).Run(Result::Error("Encoding error"));
-              return;
-            }
-
-            Result result;
-            result.value = std::move(safe_json);
-            std::move(callback).Run(std::move(result));
-          },
-          std::move(callback)));
+      json, base::BindOnce(
+                [](Callback callback, DataDecoder::ValueOrError parse_result) {
+                  std::move(callback).Run(parse_result.and_then(
+                      [](const base::Value& value) -> JsonSanitizer::Result {
+                        if (value.type() != base::Value::Type::DICT &&
+                            value.type() != base::Value::Type::LIST) {
+                          return base::unexpected("Invalid top-level type");
+                        }
+                        std::string safe_json;
+                        if (!base::JSONWriter::Write(value, &safe_json)) {
+                          return base::unexpected("Encoding error");
+                        }
+                        return base::ok(safe_json);
+                      }));
+                },
+                std::move(callback)));
 }
 
 }  // namespace data_decoder

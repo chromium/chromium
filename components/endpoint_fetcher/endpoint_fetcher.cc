@@ -309,17 +309,12 @@ void EndpointFetcher::OnSanitizationResult(
     std::unique_ptr<EndpointResponse> response,
     EndpointFetcherCallback endpoint_fetcher_callback,
     data_decoder::JsonSanitizer::Result result) {
-  if (result.value.has_value()) {
-    response->response = result.value.value();
-  } else if (result.error.has_value()) {
-    response->error_type =
-        absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
-    response->response =
-        "There was a sanitization error: " + result.error.value();
+  if (result.has_value()) {
+    response->response = result.value();
   } else {
     response->error_type =
         absl::make_optional<FetchErrorType>(FetchErrorType::kResultParseError);
-    response->response = "There was an unknown sanitization error";
+    response->response = "There was a sanitization error: " + result.error();
   }
   // The EndpointFetcher and its members will be destroyed after
   // any the below callback. Do not access The EndpointFetcher
