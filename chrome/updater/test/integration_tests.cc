@@ -100,13 +100,19 @@ class IntegrationTest : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(EnterTestMode(GURL("http://localhost:1234")));
 
 #if BUILDFLAG(IS_LINUX)
-    // On LUCI the XDG_RUNTIME_DIR environment variable may not be set. This is
-    // required for systemctl to connect to its bus in user mode.
+    // On LUCI the XDG_RUNTIME_DIR and DBUS_SESSION_BUS_ADDRESS environment
+    // variables may not be set. These are required for systemctl to connect to
+    // its bus in user mode.
     std::unique_ptr<base::Environment> env = base::Environment::Create();
+    const std::string xdg_runtime_dir =
+        base::StrCat({"/run/user/", base::NumberToString(getuid())});
     if (!env->HasVar("XDG_RUNTIME_DIR")) {
-      ASSERT_TRUE(env->SetVar(
-          "XDG_RUNTIME_DIR",
-          base::StrCat({"/run/user/", base::NumberToString(getuid())})));
+      ASSERT_TRUE(env->SetVar("XDG_RUNTIME_DIR", xdg_runtime_dir));
+    }
+    if (!env->HasVar("DBUS_SESSION_BUS_ADDRESS")) {
+      ASSERT_TRUE(
+          env->SetVar("DBUS_SESSION_BUS_ADDRESS",
+                      base::StrCat({"unix:path=", xdg_runtime_dir, "/bus"})));
     }
 #endif
   }
