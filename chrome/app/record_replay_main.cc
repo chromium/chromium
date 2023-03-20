@@ -22,6 +22,29 @@
 
 #endif // !BUILDFLAG(IS_WIN)
 
+static void ReportFailure(const char* format, ...) {
+  {
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    fprintf(stderr, "\n");
+    va_end(args);
+  }
+#if BUILDFLAG(IS_WIN)
+  // Additionally write the message to a new file. Capturing the output written to
+  // stderr by browser subprocesses on windows is surprisingly difficult.
+  FILE* f = fopen("record_replay_load_recorder_error.txt", "w");
+  if (f) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(f, format, args);
+    fprintf(f, "\n");
+    va_end(args);
+    fclose(f);
+  }
+#endif
+}
+
 static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
 static void (*gRecordReplaySetApiKey)(const char* apiKey);
 static void (*gRecordReplayProfileExecution)(const char* path);
@@ -43,7 +66,7 @@ static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) 
   void* sym = (void*)GetProcAddress((HMODULE)handle, name);
 #endif
   if (!sym) {
-    fprintf(stderr, "Could not find %s in Record Replay driver.\n", name);
+    ReportFailure("Could not find %s in Record Replay driver.", name);
     return;
   }
 
@@ -66,13 +89,13 @@ static DriverHandle DoLoadDriverHandle(const char* aPath, bool aPrintError = tru
   void* handle = dlopen(aPath, RTLD_LAZY);
   if (!handle && aPrintError) {
     char* error = dlerror();
-    fprintf(stderr, "DoLoadDriverHandle: dlopen failed %s: %s\n", aPath, error ? error : "<no error>");
+    ReportFailure("DoLoadDriverHandle: dlopen failed %s: %s", aPath, error ? error : "<no error>");
   }
   return handle;
 #else
   HMODULE handle = LoadLibraryA(aPath);
   if (!handle && aPrintError) {
-    fprintf(stderr, "DoLoadDriverHandle: LoadLibraryA failed %s: %lu\n", aPath, GetLastError());
+    ReportFailure("DoLoadDriverHandle: LoadLibraryA failed %s: %lu", aPath, GetLastError());
   }
   return handle;
 #endif
@@ -90,7 +113,7 @@ static const char* WindowsDriverDLL = "windows-recordreplay.dll";
 static DriverHandle OpenDriverHandle() {
   const char* tmpdir = GetTempDirectory();
   if (!tmpdir) {
-    fprintf(stderr, "Can't figure out temporary directory, can't create driver.\n");
+    ReportFailure("Can't figure out temporary directory, can't create driver.");
     return nullptr;
   }
 
@@ -104,7 +127,7 @@ static DriverHandle OpenDriverHandle() {
     snprintf(driverDir, sizeof(driverDir), "%s\\recordreplay-XXXXXX", tmpdir);
     _mktemp(driverDir);
     if (!CreateDirectoryA(driverDir, nullptr)) {
-      fprintf(stderr, "Creating directory for existing driver failed, can't create driver.\n");
+      ReportFailure("Creating directory for existing driver failed, can't create driver.");
       return nullptr;
     }
 
@@ -112,7 +135,7 @@ static DriverHandle OpenDriverHandle() {
     snprintf(newDriver, sizeof(newDriver), "%s\\%s", driverDir, WindowsDriverDLL);
 
     if (!CopyFileA(driver, newDriver, /* bFailIfExists */ true)) {
-      fprintf(stderr, "Copying existing driver failed, can't create driver.\n");
+      ReportFailure("Copying existing driver failed, can't create driver.");
       return nullptr;
     }
     return DoLoadDriverHandle(newDriver);
@@ -127,7 +150,7 @@ static DriverHandle OpenDriverHandle() {
   snprintf(driverDir, sizeof(driverDir), "%s\\%s",
            tmpdir, recordreplay::gBuildId);
   if (!CreateDirectoryA(driverDir, nullptr) && GetLastError() != ERROR_ALREADY_EXISTS) {
-    fprintf(stderr, "Creating directory for driver failed, can't create driver.\n");
+    ReportFailure("Creating directory for driver failed, can't create driver.");
     return nullptr;
   }
   snprintf(filename, sizeof(filename), "%s\\%s",
@@ -160,13 +183,13 @@ static DriverHandle OpenDriverHandle() {
   #define close _close
 #endif
   if (fd < 0) {
-    fprintf(stderr, "mkstemp failed, can't create driver.\n");
+    ReportFailure("mkstemp failed, can't create driver.");
     return nullptr;
   }
 
   int nbytes = write(fd, recordreplay::gRecordReplayDriver, recordreplay::gRecordReplayDriverSize);
   if (nbytes != recordreplay::gRecordReplayDriverSize) {
-    fprintf(stderr, "write to driver temporary file failed, can't create driver.\n");
+    ReportFailure("write to driver temporary file failed, can't create driver.");
     return nullptr;
   }
 
@@ -190,18 +213,18 @@ static DriverHandle OpenDriverHandle() {
   pid_t pid;
   rv = posix_spawn(&pid, "/usr/bin/xattr", nullptr, nullptr, args, &empty_environ);
   if (rv < 0) {
-    fprintf(stderr, "Recorder initialization warning: posix_spawn failed %d\n", errno);
+    ReportFailure("Recorder initialization warning: posix_spawn failed %d");
   }
 
   rv = waitpid(pid, nullptr, 0);
   if (rv < 0) {
-    fprintf(stderr, "Recorder initialization warning: waitpid failed %d\n", errno);
+    ReportFailure("Recorder initialization warning: waitpid failed %d", errno);
   }
 #endif // BUILDFLAG(IS_MAC)
 
   rv = rename(tmpFilename, filename);
   if (rv < 0) {
-    fprintf(stderr, "renaming temporary driver failed\n");
+    ReportFailure("renaming temporary driver failed");
   }
 
   return DoLoadDriverHandle(filename);
