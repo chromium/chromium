@@ -92,7 +92,7 @@ BASE_FEATURE(kNormalPriorityImageDecoding,
 
 BASE_FEATURE(kSkipCommitsIfNotSynchronizingCompositorState,
              "SkipCommitsIfNotSynchronizingCompositorState",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseDMSAAForTiles,
              "UseDMSAAForTiles",
