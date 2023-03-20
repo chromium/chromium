@@ -999,6 +999,9 @@
   <message name="IDS_SETTINGS_PASSWORD_ROW_FEDERATED_MORE_ACTIONS" desc="The ARIA (accessibility) message for the More Actions button, which sits in every row of the password list. For this row does not include a password, only information of the account. It opens a menu with a list of actions, which apply to the account presented on this row.">
     More actions, saved account for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_PASSWORD_TABLE_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="The ARIA (accessibility) message for the password table containing the list of user's persisted passwords">
+    Saved passwords table
+  </message>
   <message name="IDS_SETTINGS_PASSWORD_ROW_PASSWORD_DETAIL_PAGE" desc="The ARIA (accessibility) message for the password subpage button, which sits in every row of the password list.">
     Credential details for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
   </message>

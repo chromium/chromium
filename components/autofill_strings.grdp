@@ -199,6 +199,9 @@
   <message name="IDS_AUTOFILL_ADDRESSES" desc="Title for the list of addresses that chrome has saved for use in filling in forms.">
     Addresses
   </message>
+  <message name="IDS_AUTOFILL_ADDRESSES_TABLE_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="Aria label for the list of addresses that chrome has saved for use in filling forms.">
+    Saved addresses table
+  </message>
   <message name="IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether addresses should be saved and forms should be autofilled with them." formatter_data="android_java">
     Includes information like phone numbers, email addresses, and shipping addresses
   </message>
@@ -230,6 +233,9 @@
       </message>
       <message name="IDS_AUTOFILL_PAYMENT_METHODS" desc="Title for the list of saved payment methods that can be used to fill in forms. Also used as the title for the Autofill settings page that allows user to manage their list of saved payment methods and Autofill preferences for payment methods. Sentence-Cased." formatter_data="android_java">
         Payment methods
+      </message>
+      <message name="IDS_AUTOFILL_PAYMENT_METHODS_TABLE_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="Aria label for the list of saved payment methods that can be used to fill in forms.">
+        Saved payment methods table
       </message>
       <message name="IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_LABEL" desc="Label for a toggle that allows users to control whether addresses should be saved and forms should be autofilled with them. Sentence-Cased." formatter_data="android_java">
         Save and fill addresses
