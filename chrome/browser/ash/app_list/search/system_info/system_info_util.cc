@@ -19,6 +19,7 @@
 
 namespace app_list {
 namespace {
+
 namespace healthd = ash::cros_healthd::mojom;
 
 constexpr int kMilliampsInAnAmp = 1000;

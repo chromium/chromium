@@ -4,11 +4,27 @@
 
 #include "chrome/browser/ash/app_list/search/system_info/system_info_card_provider.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/files/file.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/system/sys_info.h"
+#include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
+#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
@@ -18,8 +34,10 @@
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_string.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace app_list::test {
 namespace {
@@ -202,6 +220,38 @@ void SetPowerManagerProperties(
   chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(props);
 }
 
+// Get the path to file manager's test data directory.
+base::FilePath GetTestDataFilePath(const std::string& file_name) {
+  // Get the path to file manager's test data directory.
+  base::FilePath source_dir;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_dir));
+  base::FilePath test_data_dir = source_dir.AppendASCII("chrome")
+                                     .AppendASCII("test")
+                                     .AppendASCII("data")
+                                     .AppendASCII("chromeos")
+                                     .AppendASCII("file_manager");
+
+  // Return full test data path to the given |file_name|.
+  return test_data_dir.Append(base::FilePath::FromUTF8Unsafe(file_name));
+}
+
+// Copy a file from the file manager's test data directory to the specified
+// target_path.
+void AddFile(const std::string& file_name,
+             int64_t expected_size,
+             base::FilePath target_path) {
+  const base::FilePath entry_path = GetTestDataFilePath(file_name);
+  target_path = target_path.AppendASCII(file_name);
+  ASSERT_TRUE(base::CopyFile(entry_path, target_path))
+      << "Copy from " << entry_path.value() << " to " << target_path.value()
+      << " failed.";
+  // Verify file size.
+  base::stat_wrapper_t stat;
+  const int res = base::File::Lstat(target_path.value().c_str(), &stat);
+  ASSERT_FALSE(res < 0) << "Couldn't stat" << target_path.value();
+  ASSERT_EQ(expected_size, stat.st_size);
+}
+
 }  // namespace
 
 class SystemInfoCardProviderTest : public testing::Test {
@@ -215,12 +265,31 @@ class SystemInfoCardProviderTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     ash::cros_healthd::FakeCrosHealthd::Initialize();
 
+    // Initialize fake DBus clients.
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::SpacedClient::InitializeFake();
+
+    ash::disks::DiskMountManager::InitializeForTesting(
+        new file_manager::FakeDiskMountManager);
+
     // The storage handler requires an instance of ArcServiceManager
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
     provider_ = std::make_unique<SystemInfoCardProvider>(profile_.get());
     provider_->set_controller(search_controller_.get());
+
+    // Create and register My files directory.
+    // By emulating chromeos running, GetMyFilesFolderForProfile will return the
+    // profile's temporary location instead of $HOME/Downloads.
+    base::test::ScopedRunningOnChromeOS running_on_chromeos;
+    const base::FilePath my_files_path =
+        file_manager::util::GetMyFilesFolderForProfile(profile_.get());
+    CHECK(base::CreateDirectory(my_files_path));
+    CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        file_manager::util::GetDownloadsMountPointName(profile_.get()),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        my_files_path));
 
     Wait();
   }
@@ -232,6 +301,10 @@ class SystemInfoCardProviderTest : public testing::Test {
     arc_service_manager_.reset();
     ash::cros_healthd::FakeCrosHealthd::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
+    ash::SpacedClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }
@@ -428,6 +501,89 @@ TEST_F(SystemInfoCardProviderTest, battery) {
   ASSERT_EQ(updated_title.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(updated_title.GetText(), u"96% | 15 minutes until full");
   EXPECT_TRUE(updated_title.GetTextTags().empty());
+}
+
+TEST_F(SystemInfoCardProviderTest, storage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Get local filesystem storage statistics.
+  const base::FilePath mount_path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_.get());
+  const base::FilePath downloads_path =
+      file_manager::util::GetDownloadsFolderForProfile(profile_.get());
+
+  const base::FilePath android_files_path =
+      profile_->GetPath().Append("AndroidFiles");
+  const base::FilePath android_files_download_path =
+      android_files_path.Append("Download");
+
+  // Create directories.
+  CHECK(base::CreateDirectory(downloads_path));
+  CHECK(base::CreateDirectory(android_files_path));
+
+  // Register android files mount point.
+  CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      file_manager::util::GetAndroidFilesMountPointName(),
+      storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      android_files_path));
+
+  const int kMountPathBytes = 8092;
+  const int kAndroidPathBytes = 15271;
+  const int kDownloadsPathBytes = 59943;
+
+  // Add files in My files and android files.
+  AddFile("random.bin", kMountPathBytes, mount_path);          // ~7.9 KB
+  AddFile("tall.pdf", kAndroidPathBytes, android_files_path);  // ~14.9 KB
+  // Add file in Downloads and simulate bind mount with
+  // [android files]/Download.
+  AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~58.6 KB
+
+  int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
+  int64_t available_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+  int64_t rounded_total_size = ash::settings::RoundByteSize(total_bytes);
+
+  int64_t in_use_bytes = rounded_total_size - available_bytes;
+  std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
+  std::u16string total_size = ui::FormatBytes(rounded_total_size);
+  std::u16string result_title =
+      base::StrCat({in_use_size, u" in use / ", total_size});
+
+  StartSearch(u"storage");
+
+  Wait();
+
+  ASSERT_FALSE(results().empty());
+  EXPECT_EQ(results().size(), 1u);
+  EXPECT_EQ(results()[0]->display_type(),
+            ash::SearchResultDisplayType::kAnswerCard);
+  EXPECT_EQ(results()[0]->result_type(),
+            ash::AppListSearchResultType::kSystemInfo);
+  EXPECT_EQ(results()[0]->metrics_type(), ash::SYSTEM_INFO);
+  EXPECT_EQ(results()[0]->system_info_answer_card_data()->display_type,
+            ash::SystemInfoAnswerCardDisplayType::kMultiElementBarChart);
+  auto storage_type_to_size =
+      results()[0]->system_info_answer_card_data()->storage_type_to_size;
+  EXPECT_EQ(
+      ui::FormatBytes(
+          storage_type_to_size[ash::SearchResultSystemInfoStorageType::kTotal]),
+      total_size);
+  EXPECT_EQ(
+      ui::FormatBytes(storage_type_to_size
+                          [ash::SearchResultSystemInfoStorageType::kMyFiles]),
+      ui::FormatBytes(kMountPathBytes + kAndroidPathBytes +
+                      kDownloadsPathBytes));
+
+  ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
+  const auto& title = results()[0]->title_text_vector()[0];
+  ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(title.GetText(), result_title);
+  EXPECT_TRUE(title.GetTextTags().empty());
+
+  ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
+  const auto& details = results()[0]->details_text_vector()[0];
+  ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
+  EXPECT_EQ(details.GetText(), u"");
+  EXPECT_TRUE(details.GetTextTags().empty());
 }
 
 }  // namespace app_list::test

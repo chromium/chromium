@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/system_info/battery_answer_result.h"
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/power_utils.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"

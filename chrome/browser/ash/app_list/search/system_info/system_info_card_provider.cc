@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_answer_result.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/common/channel_info.h"
@@ -50,6 +51,7 @@ using ::ash::cros_healthd::mojom::TelemetryInfoPtr;
 using ::ash::string_matching::FuzzyTokenizedStringMatch;
 using ::ash::string_matching::TokenizedString;
 using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
+using ::chromeos::settings::mojom::kStorageSubpagePath;
 using AnswerCardInfo = ::ash::SystemInfoAnswerCardData;
 
 constexpr double kRelevanceThreshold = 0.64;
@@ -148,6 +150,8 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
       relevance_ = relevance;
       if (!calculation_state_.all()) {
         UpdateStorageInfo();
+      } else {
+        CreateStorageAnswerCard();
       }
       break;
     }
@@ -454,7 +458,6 @@ void SystemInfoCardProvider::OnStorageInfoUpdated() {
 
   int64_t total_bytes = storage_items_total_bytes_[total_space_index];
   int64_t available_bytes = storage_items_total_bytes_[free_disk_space_index];
-  int64_t in_use_bytes = total_bytes - available_bytes;
 
   if (total_bytes <= 0 || available_bytes < 0) {
     // We can't get useful information from the storage page if total_bytes <=
@@ -485,10 +488,55 @@ void SystemInfoCardProvider::OnStorageInfoUpdated() {
   const int system_space_index =
       static_cast<int>(SizeCalculator::CalculationType::kSystem);
   storage_items_total_bytes_[system_space_index] = system_bytes;
+
+  CreateStorageAnswerCard();
+}
+
+void SystemInfoCardProvider::CreateStorageAnswerCard() {
+  const int total_space_index =
+      static_cast<int>(SizeCalculator::CalculationType::kTotal);
+  const int free_disk_space_index =
+      static_cast<int>(SizeCalculator::CalculationType::kAvailable);
+  int64_t total_bytes = storage_items_total_bytes_[total_space_index];
+  int64_t available_bytes = storage_items_total_bytes_[free_disk_space_index];
+  int64_t in_use_bytes = total_bytes - available_bytes;
   std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
   std::u16string total_size = ui::FormatBytes(total_bytes);
-  // TODO(b/263994165): Add this string into an answer result.
-  std::u16string title = base::StrCat({in_use_size, u" in use / ", total_size});
+  std::u16string title = l10n_util::GetStringFUTF16(
+      IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_TITLE, in_use_size, total_size);
+  std::map<ash::SearchResultSystemInfoStorageType, int64_t>
+      storage_type_to_size = {
+          {ash::SearchResultSystemInfoStorageType::kMyFiles,
+           storage_items_total_bytes_[static_cast<int>(
+               SizeCalculator::CalculationType::kMyFiles)]},
+          {ash::SearchResultSystemInfoStorageType::kDriveOfflineFiles,
+           storage_items_total_bytes_[static_cast<int>(
+               SizeCalculator::CalculationType::kDriveOfflineFiles)]},
+          {ash::SearchResultSystemInfoStorageType::kBrowsingData,
+           storage_items_total_bytes_[static_cast<int>(
+               SizeCalculator::CalculationType::kBrowsingData)]},
+          {ash::SearchResultSystemInfoStorageType::kAppsExtensions,
+           storage_items_total_bytes_[static_cast<int>(
+               SizeCalculator::CalculationType::kAppsExtensions)]},
+          {ash::SearchResultSystemInfoStorageType::kCrostini,
+           storage_items_total_bytes_[static_cast<int>(
+               SizeCalculator::CalculationType::kCrostini)]},
+          {ash::SearchResultSystemInfoStorageType::kOtherUsers,
+           storage_items_total_bytes_[static_cast<int>(
+               SizeCalculator::CalculationType::kOtherUsers)]},
+          {ash::SearchResultSystemInfoStorageType::kSystem,
+           storage_items_total_bytes_[static_cast<int>(
+               SizeCalculator::CalculationType::kSystem)]},
+          {ash::SearchResultSystemInfoStorageType::kTotal, total_bytes}};
+
+  AnswerCardInfo answer_card_info(storage_type_to_size);
+  SearchProvider::Results new_results;
+  new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
+      profile_, last_query_, kStorageSubpagePath, os_settings_icon_, relevance_,
+      title,
+      /*description=*/u"",
+      SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info));
+  SwapResults(&new_results);
 }
 
 }  // namespace app_list

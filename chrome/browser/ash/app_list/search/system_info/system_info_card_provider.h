@@ -71,6 +71,7 @@ class SystemInfoCardProvider : public SearchProvider,
   void StartObservingCalculators();
   void OnStorageInfoUpdated();
   void StopObservingCalculators();
+  void CreateStorageAnswerCard();
 
   // Instances calculating the size of each storage items.
   ::ash::settings::TotalDiskSpaceCalculator total_disk_space_calculator_;
