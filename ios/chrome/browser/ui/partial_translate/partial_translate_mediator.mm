@@ -75,7 +75,7 @@ void ReportErrorOutcome(PartialTranslateError error, bool went_full) {
 
 // Character limit for the partial translate feature.
 // A string longer than that will trigger a full page translate.
-const NSUInteger kPartialTranslateCharactersLimit = 500;
+const NSUInteger kPartialTranslateCharactersLimit = 1000;
 
 }  // anonymous namespace
 

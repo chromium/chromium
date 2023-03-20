@@ -137,7 +137,7 @@ NSString* kPageHTMLTemplate =
 }
 
 - (NSUInteger)maximumCharacterLimit {
-  return 1000;
+  return 1100;
 }
 
 @end
