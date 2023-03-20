@@ -12,8 +12,10 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace ash {
@@ -26,10 +28,6 @@ class Clock;
 class TickClock;
 }  // namespace base
 
-namespace chromeos {
-class PowerManagerClient;
-}  // namespace chromeos
-
 namespace policy {
 
 class RebootNotificationsScheduler;
@@ -38,6 +36,7 @@ class RebootNotificationsScheduler;
 // go/cros-reboot-command-dd for detailed design. Handles the following cases:
 // * If the device was booted after the command was issued: does not reboot and
 //   reports success.
+// * If the power manager service is unavailable, reports failure.
 // * If the devices runs in a kiosk mode, reports success and reboots
 //   immediately.
 // * If the device runs in a regular mode:
@@ -45,7 +44,8 @@ class RebootNotificationsScheduler;
 //   * If a user is logged in, notifies the user, waits for a timeout, reports
 //     success and reboots.
 //   * If the user signs out during the timeout, reports success and reboots.
-class DeviceCommandRebootJob : public RemoteCommandJob {
+class DeviceCommandRebootJob : public RemoteCommandJob,
+                               public chromeos::PowerManagerClient::Observer {
  public:
   DeviceCommandRebootJob();
 
@@ -56,6 +56,9 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
 
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void PowerManagerBecameAvailable(bool available) override;
 
  protected:
   using GetBootTimeCallback = base::RepeatingCallback<base::TimeTicks()>;
@@ -77,8 +80,9 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
  private:
   // Posts a task with a callback. Command's callbacks cannot be run
   // synchronously from `RunImpl`.
-  static void RunAsyncSuccesCallback(CallbackWithResult callback,
-                                     base::Location from_where);
+  static void RunAsyncCallback(CallbackWithResult callback,
+                               ResultType result,
+                               base::Location from_where);
 
   // RemoteCommandJob:
   void RunImpl(CallbackWithResult result_callback) override;
@@ -102,12 +106,11 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
   // Unsubscribes from events that trigger reboot, e.g. in-session timer.
   void ResetTriggeringEvents();
 
-  // TODO(b/265784089): `DeviceCommandRebootJob` should track the availability
-  // status. The client might not be available at the time the command is
-  // executed. The issue is that the client reports available status when
-  // requested and not available status only when it is first requested. This
-  // may lead to the command waiting for the status forever.
+  // Sends the reboot request to power manager service. Unowned.
   const base::raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
+  // Checks the availability of `power_manager_client_`.
+  base::ScopedObservation<chromeos::PowerManagerClient, DeviceCommandRebootJob>
+      power_manager_availability_observation_{this};
 
   // Provides information about current logins status and device mode to
   // determine how to proceed with the reboot.

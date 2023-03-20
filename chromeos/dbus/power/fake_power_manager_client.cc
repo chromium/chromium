@@ -102,7 +102,9 @@ FakePowerManagerClient::~FakePowerManagerClient() {
 
 void FakePowerManagerClient::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  observer->PowerManagerBecameAvailable(true);
+  if (service_availability_.has_value()) {
+    observer->PowerManagerBecameAvailable(service_availability_.value());
+  }
   observer->PowerManagerInitialized();
 }
 
@@ -416,6 +418,19 @@ void FakePowerManagerClient::GetChargeHistoryForAdaptiveCharging(
     DBusMethodCallback<power_manager::ChargeHistoryState> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), charge_history_));
+}
+
+void FakePowerManagerClient::SetServiceAvailability(
+    absl::optional<bool> availability) {
+  service_availability_ = availability;
+
+  if (!service_availability_) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.PowerManagerBecameAvailable(service_availability_.value());
+  }
 }
 
 bool FakePowerManagerClient::PopVideoActivityReport() {

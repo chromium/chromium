@@ -755,22 +755,6 @@ TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
   EXPECT_EQ(device_scheduled_reboot_handler_->IsRebootSkippedForTest(), false);
 }
 
-// PowerManagerClient class that simulates delay in service availability.
-class DelayedFakePowerManagerClient : public chromeos::FakePowerManagerClient {
- public:
-  DelayedFakePowerManagerClient() = default;
-  ~DelayedFakePowerManagerClient() override { observer_ = nullptr; }
-  void AddObserver(chromeos::PowerManagerClient::Observer* observer) override {
-    observer_ = observer;
-  }
-  void NotifyServiceAvailability(bool is_available) {
-    observer_->PowerManagerBecameAvailable(is_available);
-  }
-
- protected:
-  chromeos::PowerManagerClient::Observer* observer_ = nullptr;
-};
-
 class ScheduledRebootDelayedServiceTest : public testing::Test {
  public:
   ScheduledRebootDelayedServiceTest()
@@ -783,7 +767,9 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
-    power_manager_ = new DelayedFakePowerManagerClient();
+    chromeos::PowerManagerClient::InitializeFake();
+    chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
+        /*availability=*/absl::nullopt);
     auto task_executor = std::make_unique<FakeScheduledTaskExecutor>(
         task_environment_.GetMockClock());
     scheduled_task_executor_ = task_executor.get();
@@ -808,7 +794,6 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
       device_scheduled_reboot_handler_;
   ash::ScopedTestingCrosSettings cros_settings_;
   FakeRebootNotificationsScheduler notifications_scheduler_;
-  DelayedFakePowerManagerClient* power_manager_;
   device::TestWakeLockProvider wake_lock_provider_;
   const base::Time start_time_;
 };
@@ -817,7 +802,8 @@ TEST_F(ScheduledRebootDelayedServiceTest, SimulateServiceIsAvailableLaterTest) {
   int expected_policy_processed_count = 0;
   EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
             expected_policy_processed_count);
-  power_manager_->NotifyServiceAvailability(true);
+  chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
+      /*availability=*/true);
   expected_policy_processed_count += 1;
   EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
             expected_policy_processed_count);
@@ -837,14 +823,16 @@ TEST_F(ScheduledRebootDelayedServiceTest,
       device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount();
 
   // Notify that the service is available and expect processing policy.
-  power_manager_->NotifyServiceAvailability(true);
+  chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
+      /*availability=*/true);
   expected_policy_processed_count += 1;
   EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
             expected_policy_processed_count);
 
   // Notify that the service stopped being available and verify that the state
   // is reset and that the policy is not processed.
-  power_manager_->NotifyServiceAvailability(false);
+  chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
+      /*availability=*/false);
   EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
             absl::nullopt);
   EXPECT_EQ(device_scheduled_reboot_handler_->IsRebootSkippedForTest(), false);

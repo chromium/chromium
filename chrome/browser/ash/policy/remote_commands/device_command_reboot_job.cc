@@ -111,20 +111,39 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult result_callback) {
   if (delta.is_positive()) {
     LOG(WARNING) << "Ignoring reboot command issued " << delta
                  << " before current boot time";
-    RunAsyncSuccesCallback(std::move(result_callback_), FROM_HERE);
-    return;
+    return RunAsyncCallback(std::move(result_callback_), ResultType::kSuccess,
+                            FROM_HERE);
+  }
+
+  if (!power_manager_client_) {
+    LOG(ERROR) << "Power manager is not initialized. Cannot reboot.";
+    return RunAsyncCallback(std::move(result_callback_), ResultType::kFailure,
+                            FROM_HERE);
+  }
+
+  // Make sure `power_manager_client_` is available before requesting reboot.
+  // Continue from `PowerManagerBecameAvailable`. If availability state is
+  // known, call is immediate and synchronous.
+  power_manager_availability_observation_.Observe(power_manager_client_);
+}
+
+void DeviceCommandRebootJob::PowerManagerBecameAvailable(bool available) {
+  power_manager_availability_observation_.Reset();
+
+  if (!available) {
+    LOG(ERROR) << "Power manager is not available. Cannot reboot.";
+    return RunAsyncCallback(std::move(result_callback_), ResultType::kFailure,
+                            FROM_HERE);
   }
 
   // The device is able to reboot immediately if it has no ongoing user session:
   // if it runs in kiosk mode or is on login screen.
   if (login_state_->IsKioskSession()) {
-    DoReboot(kKioskRebootDescription);
-    return;
+    return DoReboot(kKioskRebootDescription);
   }
 
   if (!login_state_->IsUserLoggedIn()) {
-    DoReboot(kLoginScreenRebootDescription);
-    return;
+    return DoReboot(kLoginScreenRebootDescription);
   }
 
   RebootUserSession();
@@ -151,7 +170,8 @@ void DeviceCommandRebootJob::RebootUserSession() {
 void DeviceCommandRebootJob::OnSignout() {
   // `session_termination_manager_` will initiate the reboot, just report the
   // command finished.
-  RunAsyncSuccesCallback(std::move(result_callback_), FROM_HERE);
+  RunAsyncCallback(std::move(result_callback_), ResultType::kSuccess,
+                   FROM_HERE);
 }
 
 void DeviceCommandRebootJob::OnRebootButtonClicked() {
@@ -185,17 +205,18 @@ void DeviceCommandRebootJob::DoReboot(const std::string& reason) {
   // commands executed simultaneously .
   // TODO(b/252980103): Come up with a mechanism to deliver the execution result
   // to DMServer.
-  RunAsyncSuccesCallback(std::move(result_callback_), FROM_HERE);
+  RunAsyncCallback(std::move(result_callback_), ResultType::kSuccess,
+                   FROM_HERE);
   power_manager_client_->RequestRestart(
       power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT, reason);
 }
 
 // static
-void DeviceCommandRebootJob::RunAsyncSuccesCallback(CallbackWithResult callback,
-                                                    base::Location from_where) {
+void DeviceCommandRebootJob::RunAsyncCallback(CallbackWithResult callback,
+                                              ResultType result,
+                                              base::Location from_where) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      from_where,
-      base::BindOnce(std::move(callback), ResultType::kSuccess, absl::nullopt));
+      from_where, base::BindOnce(std::move(callback), result, absl::nullopt));
 }
 
 }  // namespace policy

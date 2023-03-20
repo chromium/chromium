@@ -90,8 +90,10 @@ DeviceCommandRebootJobTestBase::CreateAndInitializeCommand(
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
 
+  // `PowerManagerClient` might be nullptr, use `PowerManagerClient::Get`
+  // instead of FakePowerManagerClient::Get which crashes.
   auto job = std::make_unique<DeviceCommandRebootJobForTesting>(
-      chromeos::FakePowerManagerClient::Get(), ash::LoginState::Get(),
+      chromeos::PowerManagerClient::Get(), ash::LoginState::Get(),
       &session_termination_manager_, fake_notifications_scheduler_.get(),
       task_environment_.GetMockClock(), task_environment_.GetMockTickClock(),
       /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {

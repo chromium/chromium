@@ -152,6 +152,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void GetChargeHistoryForAdaptiveCharging(
       DBusMethodCallback<power_manager::ChargeHistoryState> callback) override;
 
+  // Sets availability. If `availability` is present, notifies observers.
+  void SetServiceAvailability(absl::optional<bool> availability);
+
   // Pops the first report from |video_activity_reports_|, returning whether the
   // activity was fullscreen or not. There must be at least one report.
   bool PopVideoActivityReport();
@@ -234,6 +237,8 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void DeleteArcTimersInternal(const std::string& tag);
 
   base::ObserverList<Observer>::Unchecked observers_;
+
+  absl::optional<bool> service_availability_ = true;
 
   // Last policy passed to SetPolicy().
   power_manager::PowerManagementPolicy policy_;

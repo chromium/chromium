@@ -226,4 +226,66 @@ TEST_F(DeviceCommandRebootJobTest,
   EXPECT_EQ(fake_notifications_scheduler_->GetCloseNotificationCalls(), 2);
 }
 
+// Tests that the command delays execution until power manager availability is
+// known, and reboots once power manager is available.
+TEST_F(DeviceCommandRebootJobTest, RebootsWhenPowerManagerIsAvailable) {
+  auto scoped_login_state = ScopedLoginState::CreateKiosk();
+
+  chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
+      /*availability=*/absl::nullopt);
+
+  auto command = CreateAndInitializeCommand();
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  // Check that command is still running while power manager availability is
+  // unknown.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_EQ(command->status(), RemoteCommandJob::RUNNING);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
+      /*availability=*/true);
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::SUCCEEDED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
+
+// Tests that the command fails when power manager is not initialized.
+TEST_F(DeviceCommandRebootJobTest,
+       ReportsFailureWhenPowerManagerIsNotInitialized) {
+  auto scoped_login_state = ScopedLoginState::CreateKiosk();
+
+  chromeos::FakePowerManagerClient::Get()->Shutdown();
+  EXPECT_FALSE(chromeos::PowerManagerClient::Get());
+
+  auto command = CreateAndInitializeCommand();
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::FAILED);
+}
+
+// Tests that the command fails when power manager is unavailable.
+TEST_F(DeviceCommandRebootJobTest,
+       ReportsFailureWhenPowerManagerIsUnavailable) {
+  auto scoped_login_state = ScopedLoginState::CreateKiosk();
+
+  chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(
+      /*availability=*/false);
+
+  auto command = CreateAndInitializeCommand();
+  base::test::TestFuture<void> future;
+  command->Run(Now(), NowTicks(), future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(command->status(), RemoteCommandJob::FAILED);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+}
+
 }  // namespace policy
