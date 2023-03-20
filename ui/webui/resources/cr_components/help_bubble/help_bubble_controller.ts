@@ -6,7 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS, HelpBubbleElement} from './help_bubble.js';
-import {HelpBubbleParams} from './help_bubble.mojom-webui.js';
+import {HelpBubbleArrowPosition, HelpBubbleParams} from './help_bubble.mojom-webui.js';
 
 type Root = HTMLElement|ShadowRoot&{shadowRoot?: ShadowRoot};
 
@@ -19,6 +19,48 @@ interface Options {
   fixed: boolean;
 }
 
+// Return whether the current language is right-to-left
+function isRtlLang(element: HTMLElement) {
+  return window.getComputedStyle(element).direction === 'rtl';
+}
+
+// Reflect arrow position across y-axis
+function reflectArrowPosition(position: HelpBubbleArrowPosition) {
+  switch (position) {
+    case HelpBubbleArrowPosition.TOP_LEFT:
+      return HelpBubbleArrowPosition.TOP_RIGHT;
+
+    case HelpBubbleArrowPosition.TOP_RIGHT:
+      return HelpBubbleArrowPosition.TOP_LEFT;
+
+    case HelpBubbleArrowPosition.BOTTOM_LEFT:
+      return HelpBubbleArrowPosition.BOTTOM_RIGHT;
+
+    case HelpBubbleArrowPosition.BOTTOM_RIGHT:
+      return HelpBubbleArrowPosition.BOTTOM_LEFT;
+
+    case HelpBubbleArrowPosition.LEFT_TOP:
+      return HelpBubbleArrowPosition.RIGHT_TOP;
+
+    case HelpBubbleArrowPosition.LEFT_CENTER:
+      return HelpBubbleArrowPosition.RIGHT_CENTER;
+
+    case HelpBubbleArrowPosition.LEFT_BOTTOM:
+      return HelpBubbleArrowPosition.RIGHT_BOTTOM;
+
+    case HelpBubbleArrowPosition.RIGHT_TOP:
+      return HelpBubbleArrowPosition.LEFT_TOP;
+
+    case HelpBubbleArrowPosition.RIGHT_CENTER:
+      return HelpBubbleArrowPosition.LEFT_CENTER;
+
+    case HelpBubbleArrowPosition.RIGHT_BOTTOM:
+      return HelpBubbleArrowPosition.LEFT_BOTTOM;
+
+    default:
+      return position;
+  }
+}
 
 /**
  * HelpBubble controller class
@@ -199,7 +241,9 @@ export class HelpBubbleController {
 
     this.bubble_ = document.createElement('help-bubble');
     this.bubble_.nativeId = this.nativeId_;
-    this.bubble_.position = params.position;
+    this.bubble_.position = isRtlLang(this.anchor_) ?
+        reflectArrowPosition(params.position) :
+        params.position;
     this.bubble_.closeButtonAltText = params.closeButtonAltText;
     this.bubble_.bodyText = params.bodyText;
     this.bubble_.bodyIconName = params.bodyIconName || null;
