@@ -1562,7 +1562,7 @@ if (!is_ios) {
       "--ignore-default-expectations",
       "--additional-expectations",
       "@WrappedPath(../../third_party/blink/web_tests/WebGPUExpectations)",
-      "--isolated-script-test-filter=wpt_internal/webgpu/web_platform/reftests/*",
+      "--isolated-script-test-filter=wpt_internal/webgpu/*",
     ]
 
     data_deps = [

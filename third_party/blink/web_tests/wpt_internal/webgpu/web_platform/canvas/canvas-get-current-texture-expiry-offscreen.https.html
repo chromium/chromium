@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebGPU offscreen canvas getCurrentTexture expiry tests</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./canvas-get-current-texture-expiry.js"></script>
+<script>
+"use strict";
+setup({single_test: true});
+onload = async function() {
+  const canvas = new OffscreenCanvas(1, 1);
+
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
+  const ctx = canvas.getContext('webgpu');
+  assert_true(ctx instanceof GPUCanvasContext, 'Failed to get WebGPU context from canvas');
+
+  ctx.configure({
+      device: device,
+      format: navigator.gpu.getPreferredCanvasFormat(),
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
+  });
+
+  await test(ctx, device, 'runInNewCanvasFrame', true);
+  await test(ctx, device, 'runInNewCanvasFrame', false);
+  await test(ctx, device, 'requestAnimationFrame', true);
+  await test(ctx, device, 'requestAnimationFrame', false);
+  done();
+}
+
+</script>

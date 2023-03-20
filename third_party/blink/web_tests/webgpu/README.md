@@ -20,6 +20,8 @@ autoroller attempts to do.
 1. `third_party/blink/web_tests/wpt_internal/webgpu/web_platform/reftests/**/*.html` are the
 reftests and reference files which run on the web tests test infrastructure.
 
+There are dangling tests `third_party/blink/web_tests/wpt_internal/webgpu/web_platform/*.html` which are chrome specific and purposely made to avoid chrome behavior regressions besides the WebGPU CTS requirements.
+
 ### Running reftests through WPT (Blink web_tests)
 
 (If you want to test unlanded reftest changes to the WebGPU CTS, first check them out in
