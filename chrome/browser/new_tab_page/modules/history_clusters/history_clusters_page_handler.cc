@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -94,15 +95,17 @@ base::Time GetBeginTime() {
   return base::Time::Now() - base::Hours(hours_to_look_back);
 }
 
-history::ClusterVisit GenerateSampleVisit(history::VisitID visit_id,
-                                          const std::string& page_title,
-                                          const GURL& url,
-                                          bool has_url_keyed_image) {
+history::ClusterVisit GenerateSampleVisit(
+    history::VisitID visit_id,
+    const std::string& page_title,
+    const GURL& url,
+    bool has_url_keyed_image,
+    const base::Time visit_time = base::Time::Now()) {
   history::URLRow url_row = history::URLRow(url);
   url_row.set_title(base::UTF8ToUTF16(page_title));
   history::VisitRow visit_row;
   visit_row.visit_id = visit_id;
-  visit_row.visit_time = base::Time::Now();
+  visit_row.visit_time = visit_time;
   visit_row.is_known_to_sync = true;
   auto content_annotations = history::VisitContentAnnotations();
   content_annotations.has_url_keyed_image = has_url_keyed_image;
@@ -120,20 +123,29 @@ history::ClusterVisit GenerateSampleVisit(history::VisitID visit_id,
 }
 
 history::Cluster GenerateSampleCluster(int num_visits, int num_images) {
-  const std::vector<std::tuple<std::string, GURL>> kSampleUrlVisitData = {
-      {"Pixel 7", GURL("https://store.google.com/product/pixel_7?hl=en-US")},
-      {"Pixel Buds Pro",
-       GURL("https://store.google.com/product/pixel_buds_pro?hl=en-US")},
-      {"Pixel Watch",
-       GURL("https://store.google.com/product/google_pixel_watch?hl=en-US")}};
+  const base::Time current_time = base::Time::Now();
+  const std::vector<std::tuple<std::string, GURL, base::Time>>
+      kSampleUrlVisitData = {
+          {"Pixel 7 Pro - The all-pro Google phone.",
+           GURL("https://store.google.com/product/pixel_7?hl=en-US"),
+           current_time - base::Minutes(1)},
+          {"Pixel Buds Pro - How premium sounds.",
+           GURL("https://store.google.com/product/pixel_buds_pro?hl=en-US"),
+           current_time - base::Hours(1)},
+          {"Pixel Watch - Help by Google. Health by Fitbit.",
+           GURL("https://store.google.com/product/google_pixel_watch?hl=en-US"),
+           current_time - base::Hours(4)},
+          {"Next Door Bells - Know who's knocking.",
+           GURL("https://store.google.com/product/nest_doorbell?hl=en-US"),
+           current_time - base::Hours(8)}};
 
   std::vector<history::ClusterVisit> sample_visits;
   for (int i = 0; i < num_visits; i++) {
-    const std::tuple<std::string, GURL> kSampleData =
+    const std::tuple<std::string, GURL, base::Time> kSampleData =
         kSampleUrlVisitData.at(i % kSampleUrlVisitData.size());
-    sample_visits.push_back(GenerateSampleVisit(i, std::get<0>(kSampleData),
-                                                std::get<1>(kSampleData),
-                                                (i < num_images)));
+    sample_visits.push_back(GenerateSampleVisit(
+        i, std::get<0>(kSampleData), std::get<1>(kSampleData), (i < num_images),
+        std::get<2>(kSampleData)));
   }
 
   std::string kSampleSearchQuery = "google store products";
