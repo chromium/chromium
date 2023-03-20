@@ -33,8 +33,6 @@
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
 
 // Auto-generated for dlopen libv4l2 libraries
 #include "media/gpu/v4l2/v4l2_stubs.h"
@@ -279,48 +277,6 @@ EGLImageKHR GenericV4L2Device::CreateEGLImage(
   glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image);
 
   return egl_image;
-}
-
-scoped_refptr<gpu::GLImageNativePixmap> GenericV4L2Device::CreateGLImage(
-    const gfx::Size& size,
-    const Fourcc fourcc,
-    gfx::NativePixmapHandle handle,
-    GLenum target,
-    GLuint texture_id) const {
-  DVLOGF(3);
-  DCHECK(CanCreateEGLImageFrom(fourcc));
-
-  size_t num_planes = handle.planes.size();
-  DCHECK_LE(num_planes, 3u);
-
-  gfx::BufferFormat buffer_format = gfx::BufferFormat::BGRA_8888;
-  switch (fourcc.ToV4L2PixFmt()) {
-    case DRM_FORMAT_ARGB8888:
-      buffer_format = gfx::BufferFormat::BGRA_8888;
-      break;
-    case DRM_FORMAT_NV12:
-      buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-      break;
-    case DRM_FORMAT_YVU420:
-      buffer_format = gfx::BufferFormat::YVU_420;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  scoped_refptr<gfx::NativePixmap> pixmap =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmapFromHandle(0, size, buffer_format,
-                                         std::move(handle));
-
-  DCHECK(pixmap);
-
-  // TODO(b/220336463): plumb the right color space.
-  auto image = gpu::GLImageNativePixmap::Create(
-      size, buffer_format, std::move(pixmap), target, texture_id);
-  DCHECK(image);
-  return image;
 }
 
 EGLBoolean GenericV4L2Device::DestroyEGLImage(EGLDisplay egl_display,

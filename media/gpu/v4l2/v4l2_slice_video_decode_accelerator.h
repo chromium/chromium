@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/decode_surface_handler.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -140,6 +141,13 @@ class MEDIA_GPU_EXPORT V4L2SliceVideoDecodeAccelerator
 
   // Input format V4L2 fourccs this class supports.
   static const uint32_t supported_input_fourccs_[];
+
+  static scoped_refptr<gpu::GLImageNativePixmap> CreateGLImage(
+      const gfx::Size& size,
+      const Fourcc fourcc,
+      gfx::NativePixmapHandle handle,
+      GLenum target,
+      GLuint texture_id);
 
   //
   // Below methods are used by accelerator implementations.

@@ -13,7 +13,7 @@
 #include "ui/gl/gl_image.h"
 
 namespace media {
-class GenericV4L2Device;
+class V4L2SliceVideoDecodeAccelerator;
 class VaapiPictureNativePixmapOzone;
 }  // namespace media
 
@@ -54,7 +54,7 @@ class GPU_GLES2_EXPORT GLImageNativePixmap : public gl::GLImage {
 
  private:
   friend class gles2::GLES2DecoderImpl;
-  friend class media::GenericV4L2Device;
+  friend class media::V4L2SliceVideoDecodeAccelerator;
   friend class media::VaapiPictureNativePixmapOzone;
 
   // Overridden from GLImage:

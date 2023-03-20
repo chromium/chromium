@@ -28,7 +28,6 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
@@ -777,15 +776,6 @@ class MEDIA_GPU_EXPORT V4L2Device
                                      unsigned int buffer_index,
                                      const Fourcc fourcc,
                                      gfx::NativePixmapHandle handle) const = 0;
-
-  // Create a GLImageNativePixmap from provided |handle|, taking full ownership
-  // of it.
-  virtual scoped_refptr<gpu::GLImageNativePixmap> CreateGLImage(
-      const gfx::Size& size,
-      const Fourcc fourcc,
-      gfx::NativePixmapHandle handle,
-      GLenum target,
-      GLuint texture_id) const = 0;
 
   // Destroys the EGLImageKHR.
   virtual EGLBoolean DestroyEGLImage(EGLDisplay egl_display,

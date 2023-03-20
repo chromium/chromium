@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <libdrm/drm_fourcc.h>
 #include <linux/media.h>
 #include <linux/videodev2.h>
 #include <poll.h>
@@ -50,6 +51,8 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 
 #define NOTIFY_ERROR(x)                       \
   do {                                        \
@@ -141,6 +144,48 @@ V4L2SliceVideoDecodeAccelerator::PictureRecord::PictureRecord(
     : cleared(cleared), picture(picture) {}
 
 V4L2SliceVideoDecodeAccelerator::PictureRecord::~PictureRecord() {}
+
+// static
+scoped_refptr<gpu::GLImageNativePixmap>
+V4L2SliceVideoDecodeAccelerator::CreateGLImage(const gfx::Size& size,
+                                               const Fourcc fourcc,
+                                               gfx::NativePixmapHandle handle,
+                                               GLenum target,
+                                               GLuint texture_id) {
+  DVLOGF(3);
+
+  size_t num_planes = handle.planes.size();
+  DCHECK_LE(num_planes, 3u);
+
+  gfx::BufferFormat buffer_format = gfx::BufferFormat::BGRA_8888;
+  switch (fourcc.ToV4L2PixFmt()) {
+    case DRM_FORMAT_ARGB8888:
+      buffer_format = gfx::BufferFormat::BGRA_8888;
+      break;
+    case DRM_FORMAT_NV12:
+      buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+      break;
+    case DRM_FORMAT_YVU420:
+      buffer_format = gfx::BufferFormat::YVU_420;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmapFromHandle(0, size, buffer_format,
+                                         std::move(handle));
+
+  DCHECK(pixmap);
+
+  // TODO(b/220336463): plumb the right color space.
+  auto image = gpu::GLImageNativePixmap::Create(
+      size, buffer_format, std::move(pixmap), target, texture_id);
+  DCHECK(image);
+  return image;
+}
 
 V4L2SliceVideoDecodeAccelerator::V4L2SliceVideoDecodeAccelerator(
     scoped_refptr<V4L2Device> device,
@@ -1428,6 +1473,7 @@ void V4L2SliceVideoDecodeAccelerator::CreateGLImageFor(
   DVLOGF(3) << "index=" << buffer_index;
   DCHECK(child_task_runner_->BelongsToCurrentThread());
   DCHECK_NE(texture_id, 0u);
+  DCHECK(gl_device->CanCreateEGLImageFrom(fourcc));
   TRACE_EVENT1("media,gpu", "V4L2SVDA::CreateGLImageFor", "picture_buffer_id",
                picture_buffer_id);
 
@@ -1443,8 +1489,8 @@ void V4L2SliceVideoDecodeAccelerator::CreateGLImageFor(
   }
 
   scoped_refptr<gpu::GLImageNativePixmap> gl_image =
-      gl_device->CreateGLImage(visible_size, fourcc, std::move(handle),
-                               gl_device->GetTextureTarget(), texture_id);
+      CreateGLImage(visible_size, fourcc, std::move(handle),
+                    gl_device->GetTextureTarget(), texture_id);
   if (!gl_image) {
     LOG(ERROR) << "Could not create GLImage,"
                << " index=" << buffer_index << " texture_id=" << texture_id;
