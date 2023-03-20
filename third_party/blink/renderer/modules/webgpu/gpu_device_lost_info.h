@@ -24,12 +24,12 @@ class GPUDeviceLostInfo : public ScriptWrappable {
   GPUDeviceLostInfo& operator=(const GPUDeviceLostInfo&) = delete;
 
   // gpu_device_lost_info.idl
-  const String& message() const;
   const ScriptValue reason(ScriptState* script_state) const;
+  const String& message() const;
 
  private:
-  String message_;
   String reason_;
+  String message_;
 };
 
 }  // namespace blink

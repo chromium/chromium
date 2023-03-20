@@ -5,6 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 enum GPUDeviceLostReason {
+  "unknown",
   "destroyed"
 };
 
@@ -12,11 +13,7 @@ enum GPUDeviceLostReason {
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPUDeviceLostInfo {
+    [CallWith=ScriptState] readonly attribute GPUDeviceLostReason reason;
     readonly attribute DOMString message;
-    // TODO: The type should be (GPUDeviceLostReason or undefined) but
-    // the bindings can't handle it now although it should be valid type.
-    // As a workaround we make the type any and do custom handling in Blink
-    // until the bindings supports it. Refer to crbug.com/1293259.
-    [CallWith=ScriptState] readonly attribute any reason;
 };
 
