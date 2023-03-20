@@ -3911,12 +3911,6 @@ crbug.com/833658 media/video-controls-focus-movement-on-hide.html [ Failure Pass
 # Sheriff 2018-05-22
 crbug.com/845610 [ Win ] http/tests/inspector-protocol/target/target-browser-context.js [ Failure Pass ]
 
-crbug.com/843135 virtual/gpu/fast/canvas/canvas-arc-circumference-fill.html [ Failure Pass ]
-
-crbug.com/941429 virtual/gpu/fast/canvas/canvas-arc-circumference.html [ Failure ]
-crbug.com/941429 virtual/gpu/fast/canvas/canvas-ellipse-circumference-fill.html [ Failure ]
-crbug.com/941429 virtual/gpu/fast/canvas/canvas-ellipse-circumference.html [ Failure ]
-
 # Sheriff 2018-05-31
 crbug.com/848398 http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ Failure Pass Timeout ]
 
