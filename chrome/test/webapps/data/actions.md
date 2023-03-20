@@ -52,7 +52,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | create_shortcut | Site, WindowOptions |  | 29 | Implemented | Use the 'create shortcut' functionality at the given location using the "Create Shortcut" menu option (3-dot->"More Tools"->"Create Shortcut)  The WindowOption specified if the "Open in a window" checkbox should be selected. |  |
 | |
 | # Install |
-| install_locally | Site |  | 46 | Implemented | Find the app in the app list (chrome://apps) and install it by right-clicking on the app and selecting the 'install' option. Win/Mac/Linux only. |  |
 | install_omnibox_icon | InstallableSite |  | 31 | Implemented |  |  |
 | install_policy_app | Site, ShortcutOptions, WindowOptions, InstallMode |  | 32 | Implemented | Add a force-installed enterprise policy site to the user profile (must be managed profile). |  |
 | install_menu_option | InstallableSite |  | 47 | Implemented |  |  |
@@ -188,3 +187,4 @@ Actions that the user can take by going to chrome://apps and either left clickin
 | enable_run_on_os_login_from_app_home | Site |  | 151 | Implemented | Checks the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
 | disable_run_on_os_login_from_app_home | Site |  | 152 | Implemented | Unchecks the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
 | check_user_cannot_set_run_on_os_login_app_home | Site | | 157 | Implemented | Checks that the user cannot set the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
+| install_locally | Site |  | 46 | Implemented | Find the app in the app list (chrome://apps) and install it by right-clicking on the app and selecting the 'install' option. Win/Mac/Linux only. |  |

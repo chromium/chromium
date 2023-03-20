@@ -1146,19 +1146,12 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  content::TestWebUI test_web_ui;
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  DCHECK(web_contents);
-  test_web_ui.set_web_contents(web_contents);
-  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
-                                 &test_web_ui);
-  base::Value::List web_app_ids;
-  web_app_ids.Append(app_id);
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler();
 
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
-  handler.HandleInstallAppLocally(web_app_ids);
+  app_home_page_handler.InstallAppLocally(app_id);
   observer.Wait();
   AppReadinessWaiter(profile(), app_id).Await();
   AfterStateChangeAction();
