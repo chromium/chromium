@@ -228,6 +228,8 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
       triggered = std::min(triggered, index);
     }
 
+    RecordReplayEnsureOrdered(raw_waitables[triggered]->record_replay_ordered_lock_id_);
+
     if (raw_waitables[triggered]->policy_ == ResetPolicy::AUTOMATIC) {
       // The message needs to be dequeued to reset the event.
       PeekPort(raw_waitables[triggered]->receive_right_->Name(), true);
@@ -268,6 +270,7 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables, size_t count) {
     for (size_t i = 0; i < count; ++i) {
       WaitableEvent* event = raw_waitables[i];
       if (msg.header.msgh_local_port == event->receive_right_->Name()) {
+        RecordReplayEnsureOrdered(event->record_replay_ordered_lock_id_);
         if (event->policy_ == ResetPolicy::AUTOMATIC) {
           // The message needs to be dequeued to reset the event.
           PeekPort(msg.header.msgh_local_port, true);
