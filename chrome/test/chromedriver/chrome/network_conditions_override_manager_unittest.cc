@@ -32,9 +32,11 @@ void AssertNetworkConditionsCommand(
 }  // namespace
 
 TEST(NetworkConditionsOverrideManager, OverrideSendsCommand) {
+  // These must outlive `manager`.
   RecorderDevToolsClient client;
-  NetworkConditionsOverrideManager manager(&client);
   NetworkConditions network_conditions = {false, 100, 750*1024, 750*1024};
+
+  NetworkConditionsOverrideManager manager(&client);
   manager.OverrideNetworkConditions(network_conditions);
   ASSERT_EQ(3u, client.commands_.size());
   ASSERT_NO_FATAL_FAILURE(
@@ -48,12 +50,14 @@ TEST(NetworkConditionsOverrideManager, OverrideSendsCommand) {
 }
 
 TEST(NetworkConditionsOverrideManager, SendsCommandOnConnect) {
+  // These must outlive `manager`.
   RecorderDevToolsClient client;
+  NetworkConditions network_conditions = {false, 100, 750 * 1024, 750 * 1024};
+
   NetworkConditionsOverrideManager manager(&client);
   ASSERT_EQ(0u, client.commands_.size());
   ASSERT_EQ(kOk, manager.OnConnected(&client).code());
 
-  NetworkConditions network_conditions = {false, 100, 750*1024, 750*1024};
   manager.OverrideNetworkConditions(network_conditions);
   ASSERT_EQ(3u, client.commands_.size());
   ASSERT_EQ(kOk, manager.OnConnected(&client).code());
@@ -63,7 +67,10 @@ TEST(NetworkConditionsOverrideManager, SendsCommandOnConnect) {
 }
 
 TEST(NetworkConditionsOverrideManager, SendsCommandOnNavigation) {
+  // These must outlive `manager`.
   RecorderDevToolsClient client;
+  NetworkConditions network_conditions = {false, 100, 750 * 1024, 750 * 1024};
+
   NetworkConditionsOverrideManager manager(&client);
   base::Value::Dict main_frame_params;
   ASSERT_EQ(kOk,
@@ -71,7 +78,6 @@ TEST(NetworkConditionsOverrideManager, SendsCommandOnNavigation) {
                 .code());
   ASSERT_EQ(0u, client.commands_.size());
 
-  NetworkConditions network_conditions = {false, 100, 750*1024, 750*1024};
   manager.OverrideNetworkConditions(network_conditions);
   ASSERT_EQ(3u, client.commands_.size());
   ASSERT_EQ(kOk,
