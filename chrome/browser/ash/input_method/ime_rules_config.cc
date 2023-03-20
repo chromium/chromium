@@ -38,12 +38,13 @@ bool IsSubDomain(const GURL& url, const base::StringPiece domain) {
       net::registry_controlled_domains::GetRegistryLength(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  if (registryLength == 0) {
+  // Localhost is valid and we want to deny features on it but has not registry.
+  if (registryLength == 0 && domain != "localhost") {
     return false;
   }
   const base::StringPiece urlContent = url.host_piece();
-  const base::StringPiece urlDomain =
-      urlContent.substr(0, urlContent.length() - registryLength - 1);
+  const base::StringPiece urlDomain = urlContent.substr(
+      0, urlContent.length() - registryLength - (registryLength == 0 ? 0 : 1));
 
   return url::DomainIs(urlDomain, domain);
 }

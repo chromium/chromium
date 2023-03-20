@@ -159,6 +159,11 @@ const char* kDeniedUrlsForDiacritics[] = {
     "chrome-untrusted://crosh/",     // Crosh app
     "chrome-untrusted://terminal/",  // Terminal app
 };
+const char* kDeniedDomainsForDiacritics[] = {
+    "localhost",            // Lots of dev apps on localhost (e.g. code-server)
+    "cider.corp.google",    // Cider
+    "cider-v.corp.google",  // Cider-v
+};
 
 bool IsTestUrl(const absl::optional<GURL>& url) {
   if (!url)
@@ -275,6 +280,7 @@ void ReturnEnabledSuggestions(
     const absl::optional<GURL>& current_url) {
   // Deny-list (will block if matched, otherwise allow)
   bool diacritic_suggestions_allowed =
+      !IsMatchedSubDomain(kDeniedDomainsForDiacritics, current_url) &&
       !IsMatchedApp(kDeniedAppsForDiacritics, window_properties) &&
       !IsMatchedUrlWithPathPrefix(kDeniedDomainAndPathsForDiacritics,
                                   current_url) &&
