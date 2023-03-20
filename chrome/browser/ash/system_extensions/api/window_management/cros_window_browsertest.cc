@@ -209,7 +209,7 @@ class CrosWindowManagementTestHelper
   }
 
  private:
-  raw_ref<TestSystemWebAppInstallation> swa_installation_;
+  raw_ref<TestSystemWebAppInstallation, DanglingUntriaged> swa_installation_;
 };
 
 class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {

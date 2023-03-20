@@ -231,7 +231,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   std::unique_ptr<HibernateManager> hibernate_manager_;
   std::unique_ptr<MountPerformer> mount_performer_;
 
-  const base::raw_ptr<PrefService> local_state_;
+  const base::raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   base::WeakPtrFactory<AuthSessionAuthenticator> weak_factory_{this};
 };

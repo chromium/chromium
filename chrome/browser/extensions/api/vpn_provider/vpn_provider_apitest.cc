@@ -346,7 +346,7 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
     return crosapi::CrosapiManager::Get()->crosapi_ash()->vpn_service_ash();
   }
 
-  raw_ptr<TestShillThirdPartyVpnDriverClient> test_client_ =
+  raw_ptr<TestShillThirdPartyVpnDriverClient, DanglingUntriaged> test_client_ =
       nullptr;  // Unowned
 };
 #endif

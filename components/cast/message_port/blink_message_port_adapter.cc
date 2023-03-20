@@ -141,7 +141,7 @@ class MessagePortAdapter : public MessagePort::Receiver {
   }
 
   std::unique_ptr<MessagePort> port_;
-  raw_ptr<MessagePortAdapter> peer_ = nullptr;
+  raw_ptr<MessagePortAdapter, DanglingUntriaged> peer_ = nullptr;
   const PortType port_type_;
   const CreatePairRepeatingCallback create_pair_cb_;
 };

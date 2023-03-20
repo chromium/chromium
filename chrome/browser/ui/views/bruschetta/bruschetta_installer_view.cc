@@ -199,7 +199,7 @@ bool BruschettaInstallerView::Accept() {
     DCHECK(selected_config.has_value()) << "No install config selected";
     selected_config_ = *selected_config;
 
-    RemoveChildViewT(radio_button_container_);
+    RemoveChildViewT(radio_button_container_.get());
     radio_button_container_ = nullptr;
     radio_buttons_.clear();
   }

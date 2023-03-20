@@ -112,9 +112,10 @@ class BruschettaInstallerView
   raw_ptr<views::Label> primary_message_label_ = nullptr;
   raw_ptr<views::Label> secondary_message_label_ = nullptr;
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
-  raw_ptr<views::View> radio_button_container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> radio_button_container_ = nullptr;
 
-  base::flat_map<std::string, raw_ptr<views::RadioButton>> radio_buttons_;
+  base::flat_map<std::string, raw_ptr<views::RadioButton, DanglingUntriaged>>
+      radio_buttons_;
   std::string selected_config_;
 
   State state_ = State::kConfirmInstall;

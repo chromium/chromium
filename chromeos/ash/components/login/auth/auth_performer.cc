@@ -70,7 +70,8 @@ absl::optional<AuthSessionIntent> DeserializeIntent(
 
 }  // namespace
 
-AuthPerformer::AuthPerformer(base::raw_ptr<UserDataAuthClient> client)
+AuthPerformer::AuthPerformer(
+    base::raw_ptr<UserDataAuthClient, DanglingUntriaged> client)
     : client_(client) {
   DCHECK(client_);
 }

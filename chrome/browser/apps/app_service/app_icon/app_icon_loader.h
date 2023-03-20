@@ -228,7 +228,7 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // first fallback method attempted in MaybeLoadFallbackOrCompleteEmpty().
   // These members are only populated from LoadWebAppIcon or LoadExtensionIcon.
   GURL fallback_favicon_url_;
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   // If |fallback_icon_resource_| is not |kInvalidIconResource|, then it is the
   // second fallback method attempted in MaybeLoadFallbackOrCompleteEmpty()

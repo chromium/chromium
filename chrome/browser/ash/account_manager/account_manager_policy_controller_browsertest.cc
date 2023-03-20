@@ -135,7 +135,8 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
 
  private:
   base::ScopedTempDir temp_dir_;
-  raw_ptr<account_manager::AccountManager> account_manager_ = nullptr;
+  raw_ptr<account_manager::AccountManager, DanglingUntriaged> account_manager_ =
+      nullptr;
   raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =
       nullptr;
   std::unique_ptr<Profile> profile_;

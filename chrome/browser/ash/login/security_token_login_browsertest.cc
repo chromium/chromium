@@ -384,7 +384,8 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
 
   // Unowned (referencing a global singleton)
-  raw_ptr<ChallengeResponseFakeUserDataAuthClient> cryptohome_client_ = nullptr;
+  raw_ptr<ChallengeResponseFakeUserDataAuthClient, DanglingUntriaged>
+      cryptohome_client_ = nullptr;
   CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoginManagerMixin login_manager_mixin_{&mixin_host_,
                                          {},

@@ -7,7 +7,8 @@
 
 namespace ash {
 
-MockAuthPerformer::MockAuthPerformer(base::raw_ptr<UserDataAuthClient> client)
+MockAuthPerformer::MockAuthPerformer(
+    base::raw_ptr<UserDataAuthClient, DanglingUntriaged> client)
     : AuthPerformer(client) {}
 
 MockAuthPerformer::~MockAuthPerformer() = default;
