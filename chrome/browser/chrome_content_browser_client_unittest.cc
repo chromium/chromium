@@ -132,11 +132,16 @@ class ChromeContentBrowserClientTest : public testing::Test {
   TestingProfile profile_;
 };
 
+// Check that chrome-native: URLs do not assign a site for their
+// SiteInstances. This works because `kChromeNativeScheme` is registered as an
+// empty document scheme in ChromeContentClient.
 TEST_F(ChromeContentBrowserClientTest, ShouldAssignSiteForURL) {
-  ChromeContentBrowserClient client;
-  EXPECT_FALSE(client.ShouldAssignSiteForURL(GURL("chrome-native://test")));
-  EXPECT_TRUE(client.ShouldAssignSiteForURL(GURL("http://www.google.com")));
-  EXPECT_TRUE(client.ShouldAssignSiteForURL(GURL("https://www.google.com")));
+  EXPECT_FALSE(content::SiteInstance::ShouldAssignSiteForURL(
+      GURL("chrome-native://test")));
+  EXPECT_TRUE(content::SiteInstance::ShouldAssignSiteForURL(
+      GURL("http://www.google.com")));
+  EXPECT_TRUE(content::SiteInstance::ShouldAssignSiteForURL(
+      GURL("https://www.google.com")));
 }
 
 // BrowserWithTestWindowTest doesn't work on Android.

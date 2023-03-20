@@ -148,35 +148,6 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   EXPECT_EQ(page_process_id, worker_process_id);
 }
 
-namespace {
-
-// ContentBrowserClient that skips assigning a site URL for a given scheme.
-class DontAssignSiteContentBrowserClient
-    : public ContentBrowserTestContentBrowserClient {
- public:
-  // Any visit to |scheme_to_skip| will not cause the site to be assigned to the
-  // SiteInstance. This requires setting it as an empty document scheme.
-  explicit DontAssignSiteContentBrowserClient(const std::string& scheme_to_skip)
-      : scheme_to_skip_(scheme_to_skip) {
-    url::AddEmptyDocumentScheme(scheme_to_skip.c_str());
-  }
-
-  DontAssignSiteContentBrowserClient(
-      const DontAssignSiteContentBrowserClient&) = delete;
-  DontAssignSiteContentBrowserClient& operator=(
-      const DontAssignSiteContentBrowserClient&) = delete;
-
-  bool ShouldAssignSiteForURL(const GURL& url) override {
-    return url.scheme() != scheme_to_skip_;
-  }
-
- private:
-  std::string scheme_to_skip_;
-  url::ScopedSchemeRegistryForTests scheme_registry_;
-};
-
-}  // namespace
-
 // Tests whether a service worker and navigation share the same process in the
 // special case where the service worker starts before the navigation starts,
 // and the navigation transitions out of a page with no site URL. This special
@@ -186,9 +157,13 @@ class DontAssignSiteContentBrowserClient
 // https://crbug.com/1012143.
 IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
                        NavigateFromUnassignedSiteInstance) {
-  // Set up an empty page scheme whose URLs will have no site assigned.
-  DontAssignSiteContentBrowserClient content_browser_client("siteless");
+  // Set up an empty page scheme whose URLs will have no site assigned. This
+  // requires setting it as an empty document scheme.
+  url::ScopedSchemeRegistryForTests scheme_registry;
+  url::AddEmptyDocumentScheme("siteless");
+
   GURL empty_site_url = GURL("siteless://test");
+  EXPECT_FALSE(SiteInstanceImpl::ShouldAssignSiteForURL(empty_site_url));
 
   // Register the service worker.
   RegisterServiceWorker();

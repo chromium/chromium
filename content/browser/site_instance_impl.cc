@@ -309,14 +309,25 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForTesting(
 
 // static
 bool SiteInstanceImpl::ShouldAssignSiteForURL(const GURL& url) {
+  // Only empty document schemes can leave SiteInstances unassigned.
+  if (!base::Contains(url::GetEmptyDocumentSchemes(), url.scheme())) {
+    return true;
+  }
+
   // about:blank should not "use up" a new SiteInstance.  The SiteInstance can
   // still be used for a normal web site.
-  if (url.IsAboutBlank())
-    return false;
+  //
+  // TODO(alexmos):  Currently, we force other about: URLs to assign a site.
+  // This has been the legacy behavior, and it's unclear whether this matters
+  // one way or another, so we can consider changing this if there's a good
+  // motivation.
+  if (url.SchemeIs(url::kAboutScheme)) {
+    return !url.IsAboutBlank();
+  }
 
-  // The embedder will then have the opportunity to determine if the URL
-  // should "use up" the SiteInstance.
-  return GetContentClient()->browser()->ShouldAssignSiteForURL(url);
+  // Do not assign a site for other empty document schemes. One notable use of
+  // this is for Android's native NTP, which uses the chrome-native: scheme.
+  return false;
 }
 
 SiteInstanceId SiteInstanceImpl::GetId() {

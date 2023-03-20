@@ -305,10 +305,6 @@ bool ContentBrowserClient::EnforceSystemAudioEchoCancellation() {
   return false;
 }
 
-bool ContentBrowserClient::ShouldAssignSiteForURL(const GURL& url) {
-  return true;
-}
-
 std::vector<url::Origin>
 ContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
   return std::vector<url::Origin>();

@@ -2408,10 +2408,6 @@ bool ChromeContentBrowserClient::ShouldIsolateErrorPage(bool in_main_frame) {
   return in_main_frame;
 }
 
-bool ChromeContentBrowserClient::ShouldAssignSiteForURL(const GURL& url) {
-  return !url.SchemeIs(chrome::kChromeNativeScheme);
-}
-
 std::vector<url::Origin>
 ChromeContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
   std::vector<url::Origin> isolated_origin_list;

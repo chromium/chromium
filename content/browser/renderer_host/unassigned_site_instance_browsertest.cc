@@ -62,38 +62,6 @@ namespace {
 
 const std::string kEmptySchemeForTesting = "empty-scheme";
 
-// ContentBrowserClient that skips assigning a site URL for a given empty
-// document scheme. Also skips all URLs matching a given URL's scheme and host,
-// for non-empty cases.
-// TODO(https://crbug.com/1296173): Remove the non-empty document case.
-class DontAssignSiteContentBrowserClient
-    : public ContentBrowserTestContentBrowserClient {
- public:
-  // Any visit to |scheme_to_skip| or |url_to_skip| will not cause the site to
-  // be assigned to the SiteInstance.
-  explicit DontAssignSiteContentBrowserClient(const std::string& scheme_to_skip,
-                                              const GURL& url_to_skip)
-      : scheme_to_skip_(scheme_to_skip), url_to_skip_(url_to_skip) {}
-
-  DontAssignSiteContentBrowserClient(
-      const DontAssignSiteContentBrowserClient&) = delete;
-  DontAssignSiteContentBrowserClient& operator=(
-      const DontAssignSiteContentBrowserClient&) = delete;
-
-  bool ShouldAssignSiteForURL(const GURL& url) override {
-    // TODO(https://crbug.com/1296173): Remove url_to_skip_.
-    if (url.host() == url_to_skip_.host() &&
-        url.scheme() == url_to_skip_.scheme()) {
-      return false;
-    }
-    return url.scheme() != scheme_to_skip_;
-  }
-
- private:
-  std::string scheme_to_skip_;
-  GURL url_to_skip_;
-};
-
 void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
                                  bool enable_back_forward_cache) {
   if (enable_back_forward_cache) {
@@ -153,24 +121,9 @@ class UnassignedSiteInstanceBrowserTest
                              "Cross-Origin-Embedder-Policy: require-corp");
     unassigned_url_ = GURL("about:blank");
     embedder_defined_unassigned_url_ = GURL(kEmptySchemeForTesting + "://test");
-    embedder_defined_nonempty_unassigned_url_ =
-        https_server_.GetURL("b.test", "/title1.html");
 
     regular_http_url_ =
         embedded_test_server()->GetURL("a.test", "/title1.html");
-
-    // Set up a URL for which ShouldAssignSiteForURL will return false. The
-    // corresponding SiteInstance's site will be left unassigned, and its
-    // process won't be locked. Note that this applies to the entire site
-    // instead of the specific url, so we use b.test origin to keep a.test
-    // assigned.
-    content_browser_client_override_ =
-        std::make_unique<DontAssignSiteContentBrowserClient>(
-            kEmptySchemeForTesting, embedder_defined_nonempty_unassigned_url_);
-  }
-
-  void TearDownOnMainThread() override {
-    content_browser_client_override_.reset();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -217,14 +170,6 @@ class UnassignedSiteInstanceBrowserTest
     return embedder_defined_unassigned_url_;
   }
 
-  // Returns an url that commits actual content but that does not assign a site
-  // to the SiteInstance it lives in, as decided by the content embedder.
-  // TODO(https://crbug.com/1296173): Remove this ability and require all
-  // unassigned site URLs to be empty document schemes.
-  const GURL& embedder_defined_nonempty_unassigned_url() const {
-    return embedder_defined_nonempty_unassigned_url_;
-  }
-
   // Returns an url that assigns a site to the SiteInstance it lives in, and
   // that is served using HTTP.
   const GURL& regular_http_url() const { return regular_http_url_; }
@@ -237,15 +182,11 @@ class UnassignedSiteInstanceBrowserTest
   GURL cross_origin_isolated_url_;
   GURL unassigned_url_;
   GURL embedder_defined_unassigned_url_;
-  GURL embedder_defined_nonempty_unassigned_url_;
 
   // This is the only URL that uses HTTP instead of HTTPS, because
   // IsolateOriginsForTesting() has a hardcoded HTTP filter in it. It should
   // only be used for that specific purpose.
   GURL regular_http_url_;
-
-  std::unique_ptr<DontAssignSiteContentBrowserClient>
-      content_browser_client_override_;
 
   base::test::ScopedFeatureList feature_list_for_render_document_;
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
@@ -420,60 +361,6 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(initial_si->HasSite());
   EXPECT_EQ(unassigned_si, initial_si);
-}
-
-IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
-                       RendererInitiatedNavigationFrom_NonEmptyCustomUrl) {
-  // Get a base page without a site that commits content.
-  EXPECT_TRUE(NavigateToURL(web_contents(),
-                            embedder_defined_nonempty_unassigned_url()));
-  RenderFrameHostImpl* unassigned_url_rfh =
-      web_contents()->GetPrimaryMainFrame();
-  scoped_refptr<SiteInstanceImpl> unassigned_si =
-      unassigned_url_rfh->GetSiteInstance();
-  EXPECT_FALSE(unassigned_si->HasSite());
-
-  // Do a renderer-initiated navigation to an assigned url. We cannot reuse the
-  // unassigned SiteInstance because it has already been marked as used
-  // (unless Site Isolation is disabled and the regular url does not require a
-  // dedicated process).
-  // TODO(crbug.com/1296173): We also shouldn't let an embedder load arbitrary
-  // content without assigning a site. This should be restricted to empty
-  // schemes that do not load content into a renderer.
-  EXPECT_TRUE(NavigateToURLFromRenderer(unassigned_url_rfh, regular_url()));
-  scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_TRUE(initial_si->HasSite());
-  if (AreAllSitesIsolatedForTesting())
-    EXPECT_NE(unassigned_si, initial_si);
-  else
-    EXPECT_EQ(unassigned_si, initial_si);
-}
-
-IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
-                       BrowserInitiatedNavigationFrom_NonEmptyCustomUrl) {
-  // Get a base page without a site that commits content.
-  EXPECT_TRUE(NavigateToURL(web_contents(),
-                            embedder_defined_nonempty_unassigned_url()));
-  scoped_refptr<SiteInstanceImpl> unassigned_si =
-      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_FALSE(unassigned_si->HasSite());
-
-  // Do a browser-initiated navigation to an assigned url. We cannot reuse the
-  // unassigned SiteInstance because it has already been marked as used
-  // (unless Site Isolation is disabled and the regular url does not require a
-  // dedicated process).
-  // TODO(crbug.com/1296173): We also shouldn't let an embedder load arbitrary
-  // content without assigning a site. This should be restricted to empty
-  // schemes that do not load content into a renderer.
-  EXPECT_TRUE(NavigateToURL(shell(), regular_url()));
-  scoped_refptr<SiteInstanceImpl> initial_si =
-      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_TRUE(initial_si->HasSite());
-  if (AreAllSitesIsolatedForTesting())
-    EXPECT_NE(unassigned_si, initial_si);
-  else
-    EXPECT_EQ(unassigned_si, initial_si);
 }
 
 IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
@@ -670,121 +557,6 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   EXPECT_TRUE(initial_si->HasSite());
   EXPECT_TRUE(initial_si->IsCrossOriginIsolated());
   EXPECT_FALSE(initial_si->IsRelatedSiteInstance(unassigned_si.get()));
-}
-
-// Regression test for https://crbug.com/1324407.
-// TODO(https://crbug.com/1296173): Require unassigned SiteInstances to have
-// empty document schemes, making the bug exercised in this test impossible.
-// This test can then show what's expected for an empty document case.
-IN_PROC_BROWSER_TEST_P(
-    UnassignedSiteInstanceBrowserTest,
-    InPopup_RendererInitiatedNavigateFrom_NonEmptyCustomUrl) {
-  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
-    // Isolate a.test so that regular_url() is expected to be in a dedicated
-    // process, but also so that embedder_defined_nonempty_unassigned_url
-    // (i.e., b.test) does not expect a dedicated process on Android.
-    IsolateOriginsForTesting(https_server(), web_contents(), {"a.test"});
-  }
-
-  // Get a base page with an embedder-defined non-empty unassigned url.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedder_defined_nonempty_unassigned_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
-  scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
-  EXPECT_FALSE(original_si->HasSite());
-  RenderProcessHost* original_process = original_si->GetProcess();
-  EXPECT_TRUE(original_process->GetProcessLock().allows_any_site());
-
-  // Create a same-origin popup.
-  ShellAddedObserver shell_observer;
-  EXPECT_TRUE(ExecJs(original_rfh, "window.open()"));
-  WebContentsImpl* popup_web_contents =
-      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
-  scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_FALSE(popup_si->HasSite());
-  EXPECT_EQ(popup_si, original_si);
-
-  // In the popup, do a renderer-initiated navigation to a regular url. We use
-  // another related SiteInstance. Note that contrary to its main window
-  // counterpart, here we never swap BrowsingInstance, because
-  // ProactivelySwapBrowsingInstance never applies to popups.
-  //
-  // This used to reuse the unassigned SiteInstance, even though the process had
-  // already loaded a real page and the new URL requires a dedicated process.
-  EXPECT_TRUE(NavigateToURLFromRenderer(
-      popup_web_contents->GetPrimaryMainFrame(), regular_http_url()));
-  scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_NE(original_si, post_navigation_si);
-  EXPECT_NE(original_process, post_navigation_si->GetProcess());
-  EXPECT_FALSE(original_si->HasSite());
-  EXPECT_TRUE(post_navigation_si->HasSite());
-  RenderProcessHost* popup_process = post_navigation_si->GetProcess();
-  EXPECT_TRUE(popup_process->GetProcessLock().is_locked_to_site());
-
-  // Try to create a blob URL in the original document. This used to be in the
-  // same process as regular_url(), which is now locked to a different site,
-  // causing a renderer kill. Thus, a second ExecJS call would fail. (Just
-  // calling IsRenderFrameLive immediately after the first call may not fail.)
-  EXPECT_TRUE(ExecJs(original_rfh, "URL.createObjectURL(new Blob())"));
-  EXPECT_TRUE(ExecJs(original_rfh, "true"));
-  EXPECT_TRUE(original_rfh->IsRenderFrameLive());
-}
-
-// Regression test for https://crbug.com/1324407.
-// TODO(https://crbug.com/1296173): Require unassigned SiteInstances to have
-// empty document schemes, making the bug exercised in this test impossible.
-// This test can then show what's expected for an empty document case.
-IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
-                       InPopup_BrowserInitiatedNavigateFrom_NonEmptyCustomUrl) {
-  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
-    // Isolate a.test so that regular_url() is expected to be in a dedicated
-    // process, but also so that embedder_defined_nonempty_unassigned_url
-    // (i.e., b.test) does not expect a dedicated process on Android.
-    IsolateOriginsForTesting(embedded_test_server(), web_contents(),
-                             {"a.test"});
-  }
-
-  // Get a base page with an embedder-defined non-empty unassigned url.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedder_defined_nonempty_unassigned_url()));
-  RenderFrameHostImpl* original_rfh = web_contents()->GetPrimaryMainFrame();
-  scoped_refptr<SiteInstanceImpl> original_si = original_rfh->GetSiteInstance();
-  EXPECT_FALSE(original_si->HasSite());
-  RenderProcessHost* original_process = original_si->GetProcess();
-  EXPECT_TRUE(original_process->GetProcessLock().allows_any_site());
-
-  // Create a same-origin popup.
-  ShellAddedObserver shell_observer;
-  EXPECT_TRUE(ExecJs(original_rfh, "window.open()"));
-  WebContentsImpl* popup_web_contents =
-      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
-  scoped_refptr<SiteInstanceImpl> popup_si =
-      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_FALSE(popup_si->HasSite());
-  EXPECT_EQ(popup_si, original_si);
-
-  // In the popup, do a browser-initiated navigation to a regular url. This used
-  // to reuse the unassigned SiteInstance, even though the process had already
-  // loaded a real page and the new URL requires a dedicated process.
-  EXPECT_TRUE(NavigateToURL(popup_web_contents, regular_http_url()));
-  scoped_refptr<SiteInstanceImpl> post_navigation_si =
-      popup_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_NE(original_si, post_navigation_si);
-  EXPECT_NE(original_process, post_navigation_si->GetProcess());
-  EXPECT_FALSE(original_si->HasSite());
-  EXPECT_TRUE(post_navigation_si->HasSite());
-  RenderProcessHost* popup_process = post_navigation_si->GetProcess();
-  EXPECT_TRUE(popup_process->GetProcessLock().is_locked_to_site());
-
-  // Try to create a blob URL in the original document. This used to be in the
-  // same process as regular_url(), which is now locked to a different site,
-  // causing a renderer kill. Thus, a second ExecJS call would fail. (Just
-  // calling IsRenderFrameLive immediately after the first call may not fail.)
-  EXPECT_TRUE(ExecJs(original_rfh, "URL.createObjectURL(new Blob())"));
-  EXPECT_TRUE(ExecJs(original_rfh, "true"));
-  EXPECT_TRUE(original_rfh->IsRenderFrameLive());
 }
 
 IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,

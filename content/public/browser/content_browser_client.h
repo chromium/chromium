@@ -592,10 +592,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns true if error page should be isolated in its own process.
   virtual bool ShouldIsolateErrorPage(bool in_main_frame);
 
-  // Returns true if the passed in URL should be assigned as the site of the
-  // current SiteInstance, if it does not yet have a site.
-  virtual bool ShouldAssignSiteForURL(const GURL& url);
-
   // Allows the embedder to programmatically provide some origins that should be
   // opted into --isolate-origins mode of Site Isolation.
   virtual std::vector<url::Origin> GetOriginsRequiringDedicatedProcess();

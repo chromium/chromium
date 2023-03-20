@@ -4140,6 +4140,36 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
 
   subresource_loader_params_ = std::move(subresource_loader_params);
 
+  // Most cases where ShouldAssignSiteForURL() is false should never load
+  // actual content and reach this.  Since only empty document schemes are
+  // allowed to leave a SiteInstance's site unassigned, they should follow the
+  // !NeedsUrlLoader() path for committing the navigation early without ever
+  // making a network request, and hence they should never reach the response
+  // processing code here.
+  //
+  // The sole exception to this is about:blank URLs, since extensions are
+  // allowed to redirect to them after a regular network request/response has
+  // started.  Hence, about:blank is the only possible URL which both uses
+  // unassigned SiteInstances and can reach this point (via an extension
+  // redirect).
+  if (common_params_->url.IsAboutBlank()) {
+    // TODO(alexmos): Convert to a CHECK after verifying that this doesn't
+    // happen in practice.
+    if (!WasServerRedirect()) {
+      DVLOG(1) << "about:blank should only go through the network stack "
+               << "when an extension redirects to it.";
+      base::debug::DumpWithoutCrashing();
+    }
+  } else {
+    // TODO(alexmos): Convert to a CHECK after verifying that this doesn't
+    // happen in practice.
+    if (!SiteInstanceImpl::ShouldAssignSiteForURL(common_params_->url)) {
+      DVLOG(1) << "This URL was unexpectedly loaded through the network stack: "
+               << common_params_->url;
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+
   if (HasRenderFrameHost()) {
     // Set the site URL now if it hasn't been set already. If the site requires
     // a dedicated process, this will lock the process to that site, which will

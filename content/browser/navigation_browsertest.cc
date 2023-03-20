@@ -3160,10 +3160,6 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
                          std::move(pending_remote));
     }
 
-    bool ShouldAssignSiteForURL(const GURL& url) override {
-      return !url.SchemeIs(kNoAccessScheme);
-    }
-
     static bool RewriteUrl(GURL* url, BrowserContext* browser_context) {
       if (*url == GURL(kRewriteURL)) {
         *url = GURL(kNoAccessURL);
@@ -3179,6 +3175,10 @@ class NavigationUrlRewriteBrowserTest : public NavigationBaseBrowserTest {
   NavigationUrlRewriteBrowserTest() {
     url::AddStandardScheme(kNoAccessScheme, url::SCHEME_WITH_HOST);
     url::AddNoAccessScheme(kNoAccessScheme);
+
+    // This test needs to use an unassigned SiteInstance for kNoAccessScheme,
+    // which requires adding it as an empty document scheme.
+    url::AddEmptyDocumentScheme(kNoAccessScheme);
   }
 
   void SetUpOnMainThread() override {
