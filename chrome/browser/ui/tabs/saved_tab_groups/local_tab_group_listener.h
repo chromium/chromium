@@ -7,6 +7,7 @@
 
 #include "base/guid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
+#include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace content {
@@ -21,7 +22,8 @@ class TabStripModel;
 class LocalTabGroupListener {
  public:
   LocalTabGroupListener(
-      const SavedTabGroup& saved_tab_group,
+      tab_groups::TabGroupId local_id,
+      base::GUID saved_guid,
       SavedTabGroupModel* model,
       std::vector<std::pair<content::WebContents*, base::GUID>> mapping);
   virtual ~LocalTabGroupListener();
@@ -41,10 +43,13 @@ class LocalTabGroupListener {
   }
 
  private:
+  const SavedTabGroup* saved_group() const { return model_->Get(saved_guid_); }
+
   std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>
       web_contents_to_tab_id_map_;
   const raw_ptr<SavedTabGroupModel> model_;
-  const raw_ref<const SavedTabGroup> saved_group_;
+  const tab_groups::TabGroupId local_id_;
+  const base::GUID saved_guid_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_LOCAL_TAB_GROUP_LISTENER_H_
