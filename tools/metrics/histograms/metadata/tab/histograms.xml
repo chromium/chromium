@@ -1696,7 +1696,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.ScrubDistance" units="tabs" expires_after="2023-04-30">
+<histogram name="Tabs.ScrubDistance" units="tabs" expires_after="2024-03-20">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
