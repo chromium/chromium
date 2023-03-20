@@ -52,8 +52,8 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   // WebContentsObserver events.
   class Observer : public base::CheckedObserver {
    public:
-    // Called during destruction of the ContentAutofillDriverFactory. No
-    // members of `factory` should be accessed in this event handler.
+    // Called during destruction of the ContentAutofillDriverFactory. It can,
+    // e.g., be used to reset `ScopedObservation`s observing `this`.
     virtual void OnContentAutofillDriverFactoryDestroyed(
         ContentAutofillDriverFactory& factory) {}
 
