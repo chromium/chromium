@@ -2292,4 +2292,21 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(PasswordAutofillManagerTest, NoPreviewSuggestionWithAuthBeforeFilling) {
+  TestPasswordManagerClient client;
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+  NiceMock<MockAutofillClient> autofill_client;
+  client.SetDeviceAuthenticator(authenticator_);
+  InitializePasswordAutofillManager(&client, nullptr);
+
+  EXPECT_CALL(*client.mock_driver(), PreviewSuggestion).Times(0);
+  EXPECT_FALSE(
+      password_autofill_manager_->PreviewSuggestionForTest(test_username_));
+  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+}
+#endif
+
 }  // namespace password_manager
