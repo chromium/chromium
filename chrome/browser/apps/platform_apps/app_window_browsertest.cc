@@ -83,6 +83,11 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
 // Helper class for tests related to the Apps Window API (chrome.app.window).
 class AppWindowAPITest : public extensions::PlatformAppBrowserTest {
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(::switches::kForceDeviceScaleFactor, "1.0");
+  }
+
   bool RunAppWindowAPITest(const char* testName) {
     if (!BeginAppWindowAPITest(testName))
       return false;
