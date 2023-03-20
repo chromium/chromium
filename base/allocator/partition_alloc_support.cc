@@ -620,18 +620,19 @@ void DanglingRawPtrReleased(uintptr_t id) {
                << StringPrintf("0x%016" PRIxPTR, id) << ":\n"
                << dangling_signature << "\n\n"
                << "The memory was freed at:\n"
-               << free_info->stack_trace << free_info->task_trace << "\n"
+               << free_info->stack_trace << "\n"
+               << free_info->task_trace << "\n"
                << "The dangling raw_ptr was released at:\n"
-               << stack_trace_release << task_trace_release
-               << dangling_ptr_footer;
+               << stack_trace_release << "\n"
+               << task_trace_release << dangling_ptr_footer;
   } else {
     LOG(ERROR) << "Detected dangling raw_ptr with id="
                << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
                << dangling_signature << "\n\n"
                << "It was not recorded where the memory was freed.\n\n"
                << "The dangling raw_ptr was released at:\n"
-               << stack_trace_release << task_trace_release
-               << dangling_ptr_footer;
+               << stack_trace_release << "\n"
+               << task_trace_release << dangling_ptr_footer;
   }
 
   if constexpr (dangling_pointer_mode == features::DanglingPtrMode::kCrash) {
