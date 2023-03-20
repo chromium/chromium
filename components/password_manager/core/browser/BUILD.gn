@@ -302,6 +302,7 @@ static_library("browser") {
     "//components/autofill/core/common",
     "//components/autofill/core/common:features",
     "//components/autofill/core/common/mojom:mojo_types",
+    "//components/crash/core/common:crash_key",
     "//components/device_reauth",
     "//components/favicon/core",
     "//components/keyed_service/core",

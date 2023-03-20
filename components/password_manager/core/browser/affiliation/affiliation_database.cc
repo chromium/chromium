@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/parameter_pack.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -119,6 +120,11 @@ bool EnsureCurrentVersion(sql::Database* db,
   } else {
     return builder->CreateTable(db);
   }
+}
+
+void AddCrashKeys(const std::string& value) {
+  static crash_reporter::CrashKeyString<1024> crash_key("failure-reason");
+  crash_key.Set(value);
 }
 
 }  // namespace
@@ -330,15 +336,19 @@ bool AffiliationDatabase::Store(
       "VALUES (?, ?, ?)"));
 
   sql::Transaction transaction(sql_connection_.get());
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
+    AddCrashKeys("Failed to begin transaction");
     return false;
+  }
 
   statement_parent.BindTime(0, affiliated_facets.last_update_time);
   statement_parent.BindString(1, group.branding_info.name);
   statement_parent.BindString(
       2, group.branding_info.icon_url.possibly_invalid_spec());
-  if (!statement_parent.Run())
+  if (!statement_parent.Run()) {
+    AddCrashKeys("Failed to insert new set");
     return false;
+  }
 
   int64_t eq_class_id = sql_connection_->GetLastInsertRowId();
   for (const Facet& facet : affiliated_facets.facets) {
@@ -348,16 +358,21 @@ bool AffiliationDatabase::Store(
     statement_child.BindString(
         2, facet.branding_info.icon_url.possibly_invalid_spec());
     statement_child.BindInt64(3, eq_class_id);
-    if (!statement_child.Run())
+    if (!statement_child.Run()) {
+      AddCrashKeys("Failed to insert new affiliation: " +
+                   facet.uri.canonical_spec());
       return false;
+    }
   }
   for (const Facet& facet : group.facets) {
     statement_groups.Reset(true);
     statement_groups.BindString(0, facet.uri.canonical_spec());
     statement_groups.BindString(1, facet.main_domain);
     statement_groups.BindInt64(2, eq_class_id);
-    if (!statement_groups.Run())
+    if (!statement_groups.Run()) {
+      AddCrashKeys("Failed to insert new group: " + facet.uri.canonical_spec());
       return false;
+    }
   }
 
   return transaction.Commit();
