@@ -65,7 +65,6 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
 
   SimpleDevToolsProtocolClient devtools_client_;
   SimpleDevToolsProtocolClient browser_devtools_client_;
-  raw_ptr<content::WebContents> web_contents_;
   GURL target_url_;
   DoneCallback done_callback_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
