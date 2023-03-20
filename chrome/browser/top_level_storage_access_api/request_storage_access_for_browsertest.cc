@@ -425,6 +425,12 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        PermissionQueryDefault) {
   NavigateToPageWithFrame(kHostA);
   EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostB), "prompt");
+  // TODO(crbug.com/1414468): the `storage-access` permission seems to behave
+  // similarly on self-queries. This is a counterintuitive result, however. It
+  // does reflect the fact that the permission was never set, but it does not
+  // reflect the fact that the `kHostA` top-level page's access to cookies on
+  // `kHostA` is not actually blocked.
+  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostA), "prompt");
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
@@ -448,10 +454,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   // First, grant `kHostB` access.
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec()));
-  // TODO(crbug.com/1414468): this should be `granted`, but the override
-  // mechanism isn't currently implemented for queries. Switch this expectation
-  // once it is.
-  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostB), "prompt");
+  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostB), "granted");
 
   NavigateFrameTo(kHostD, "/");
 

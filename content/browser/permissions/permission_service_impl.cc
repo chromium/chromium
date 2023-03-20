@@ -240,6 +240,18 @@ PermissionStatus PermissionServiceImpl::GetPermissionStatus(
     ReceivedBadMessage();
     return PermissionStatus::DENIED;
   }
+  if (PermissionUtil::IsDomainOverride(permission) &&
+      context_->render_frame_host()) {
+    BrowserContext* browser_context = context_->GetBrowserContext();
+    if (browser_context &&
+        PermissionUtil::ValidateDomainOverride(
+            {type.value()}, context_->render_frame_host(), permission)) {
+      return PermissionControllerImpl::FromBrowserContext(browser_context)
+          ->GetPermissionStatusForEmbeddedRequester(
+              *type, context_->render_frame_host(),
+              PermissionUtil::ExtractDomainOverride(permission));
+    }
+  }
   return GetPermissionStatusFromType(*type);
 }
 
