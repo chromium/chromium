@@ -292,6 +292,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/first_run/android:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/fullscreen/android:java",
+      "//chrome/browser/gesturenav/android:java",
       "//chrome/browser/gsa:java",
       "//chrome/browser/history_clusters:java",
       "//chrome/browser/history_clusters:java_resources",

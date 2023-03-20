@@ -227,7 +227,7 @@ public class SwipeRefreshHandler
         if (mSwipeType == OverscrollAction.PULL_TO_REFRESH) {
             mSwipeRefreshLayout.pull(yDelta);
         } else if (mSwipeType == OverscrollAction.HISTORY_NAVIGATION) {
-            if (mNavigationCoordinator != null) mNavigationCoordinator.pull(xDelta);
+            if (mNavigationCoordinator != null) mNavigationCoordinator.pull(xDelta, yDelta);
         }
         TraceEvent.end("SwipeRefreshHandler.pull");
     }

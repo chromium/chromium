@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -30,6 +31,7 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     private final Callback<Boolean> mNavigateCallback;
 
     // Frame layout hosting the arrow puck UI.
+    @Nullable
     private SideSlideLayout mSideSlideLayout;
 
     // {@link NavigationGlow} object for native pages. Lazily created.
@@ -173,10 +175,10 @@ class HistoryNavigationLayout extends FrameLayout implements ViewGroup.OnHierarc
     }
 
     /**
-     * @return {@link SideSlideLayout} object.
+     * @return {@code true} if swiped long enough to trigger navigation upon release.
      */
-    SideSlideLayout getSideSlideLayout() {
-        return mSideSlideLayout;
+    boolean willNavigate() {
+        return mSideSlideLayout != null && mSideSlideLayout.willNavigate();
     }
 
     /**

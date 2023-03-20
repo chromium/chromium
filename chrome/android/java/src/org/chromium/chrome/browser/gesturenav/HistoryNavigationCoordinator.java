@@ -211,7 +211,8 @@ public class HistoryNavigationCoordinator
                 new PropertyModel.Builder(GestureNavigationProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
                 model, mNavigationLayout, GestureNavigationViewBinder::bind);
-        mNavigationHandler = new NavigationHandler(model, mNavigationLayout, mBackActionDelegate);
+        mNavigationHandler = new NavigationHandler(
+                model, mNavigationLayout, mBackActionDelegate, mNavigationLayout::willNavigate);
         mInitCallback.onResult(mNavigationHandler);
     }
 
@@ -266,11 +267,15 @@ public class HistoryNavigationCoordinator
 
     /**
      * Signals a pull update.
-     * @param delta The change in horizontal pull distance (positive if toward right,
-     *         negative if left).
+     *
+     * @param xDelta The change in horizontal pull distance (positive if toward right, negative if
+     * left).
+     * @param yDelta The change in vertical pull distance.
      */
-    public void pull(float delta) {
-        if (mNavigationHandler != null) mNavigationHandler.pull(delta);
+    public void pull(float xDelta, float yDelta) {
+        if (mNavigationHandler != null) {
+            mNavigationHandler.pull(xDelta, yDelta);
+        }
     }
 
     /**

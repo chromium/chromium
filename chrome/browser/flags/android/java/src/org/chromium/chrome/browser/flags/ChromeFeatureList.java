@@ -206,6 +206,7 @@ public abstract class ChromeFeatureList {
             "AutofillTouchToFillForCreditCardsAndroid";
     public static final String BACKGROUND_THREAD_POOL = "BackgroundThreadPool";
     public static final String BACK_FORWARD_CACHE = "BackForwardCache";
+    public static final String BACK_FORWARD_TRANSITIONS = "BackForwardTransitions";
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
     public static final String BACK_GESTURE_REFACTOR_ACTIVITY =
             "BackGestureRefactorActivityAndroid";

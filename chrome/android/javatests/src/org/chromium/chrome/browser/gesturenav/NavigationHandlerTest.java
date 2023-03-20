@@ -20,11 +20,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -45,6 +47,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -78,6 +81,7 @@ public class NavigationHandlerTest {
 
     @After
     public void tearDown() {
+        CompositorAnimationHandler.setTestingMode(false);
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
@@ -100,6 +104,7 @@ public class NavigationHandlerTest {
                                 Matchers.is(toUrl)));
         Assert.assertEquals(
                 "Didn't navigate back", toUrl, ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
+        Assert.assertEquals("Detected a wrong direction.", mNavigationHandler.fromLeftSide(), edge);
     }
 
     @Test
@@ -111,6 +116,8 @@ public class NavigationHandlerTest {
                 "Navigation Layout should be detached after use");
         Assert.assertEquals("Current page should not change", UrlConstants.NTP_URL,
                 ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
+        Assert.assertTrue(
+                "The gesture should start from the left side.", mNavigationHandler.fromLeftSide());
     }
 
     @Test
@@ -166,6 +173,18 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testSwipeNavigateOnRenderedPage() {
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
+        testSwipeNavigateOnRenderedPageInternal();
+    }
+
+    @Test
+    @SmallTest
+    public void testSwipeNavigateOnRenderedPage_withBackForwardTransition() {
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
+        testSwipeNavigateOnRenderedPageInternal();
+    }
+
+    private void testSwipeNavigateOnRenderedPageInternal() {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());
         mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
@@ -178,6 +197,18 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     public void testLeftEdgeSwipeClosesTabLaunchedFromLink() {
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, false));
+        testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
+    }
+
+    @Test
+    @SmallTest
+    public void testLeftEdgeSwipeClosesTabLaunchedFromLink_withBackForwardTransition() {
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.BACK_FORWARD_TRANSITIONS, true));
+        testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal();
+    }
+
+    private void testLeftEdgeSwipeClosesTabLaunchedFromLinkInternal() {
         Tab oldTab = currentTab();
         TabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mActivityTestRule.getActivity().getTabCreator(false));
@@ -191,6 +222,8 @@ public class NavigationHandlerTest {
 
         // Assert that the new tab was closed and the old tab is the current tab again.
         CriteriaHelper.pollUiThread(() -> !newTab.isInitialized());
+        Assert.assertNull("Not supposed to trigger an animation when closing tab",
+                mNavigationHandler.getTabOnBackGestureHandlerForTesting());
         Assert.assertEquals(oldTab, currentTab());
         Assert.assertEquals("Chrome should remain in foreground", ActivityState.RESUMED,
                 ApplicationStatus.getStateForActivity(mActivityTestRule.getActivity()));
