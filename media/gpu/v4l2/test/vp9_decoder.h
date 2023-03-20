@@ -70,7 +70,7 @@ class Vp9Decoder : public VideoDecoder {
   // |reusable_buffer_slots| to indicate which CAPTURE buffers can be reused
   // for VIDIOC_QBUF ioctl call.
   std::set<int> RefreshReferenceSlots(uint8_t refresh_frame_flags,
-                                      scoped_refptr<MmapedBuffer> buffer,
+                                      scoped_refptr<MmappedBuffer> buffer,
                                       uint32_t last_queued_buffer_id);
 
   // Parser for the IVF stream to decode.
@@ -83,7 +83,7 @@ class Vp9Decoder : public VideoDecoder {
   const bool supports_compressed_headers_;
 
   // Reference frames currently in use.
-  std::array<scoped_refptr<MmapedBuffer>, kVp9NumRefFrames> ref_frames_;
+  std::array<scoped_refptr<MmappedBuffer>, kVp9NumRefFrames> ref_frames_;
 };
 
 }  // namespace v4l2_test

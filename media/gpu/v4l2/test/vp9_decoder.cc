@@ -232,7 +232,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
 
 std::set<int> Vp9Decoder::RefreshReferenceSlots(
     uint8_t refresh_frame_flags,
-    scoped_refptr<MmapedBuffer> buffer,
+    scoped_refptr<MmappedBuffer> buffer,
     uint32_t last_queued_buffer_id) {
   const std::bitset<kVp9NumRefFrames> refresh_frame_slots(refresh_frame_flags);
 
@@ -450,9 +450,9 @@ void Vp9Decoder::CopyFrameData(const Vp9FrameHeader& frame_hdr,
   LOG_ASSERT(queue->num_planes() == 1)
       << "Number of planes is expected to be 1 for OUTPUT queue.";
 
-  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(0);
+  scoped_refptr<MmappedBuffer> buffer = queue->GetBuffer(0);
 
-  buffer->mmaped_planes()[0].CopyIn(frame_hdr.data, frame_hdr.frame_size);
+  buffer->mmapped_planes()[0].CopyIn(frame_hdr.data, frame_hdr.frame_size);
 }
 
 VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
@@ -523,24 +523,24 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
     LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
   }
 
-  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
+  scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
   if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
-    CHECK_EQ(buffer->mmaped_planes().size(), 1u)
+    CHECK_EQ(buffer->mmapped_planes().size(), 1u)
         << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
 
     ConvertNV12ToYUV(
         y_plane, u_plane, v_plane, size,
-        static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
+        static_cast<uint8_t*>(buffer->mmapped_planes()[0].start_addr),
         CAPTURE_queue_->coded_size());
   } else if (CAPTURE_queue_->fourcc() == v4l2_fourcc('M', 'M', '2', '1')) {
-    CHECK_EQ(buffer->mmaped_planes().size(), 2u)
+    CHECK_EQ(buffer->mmapped_planes().size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
 
     ConvertMM21ToYUV(
         y_plane, u_plane, v_plane, size,
-        static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
-        static_cast<uint8_t*>(buffer->mmaped_planes()[1].start_addr),
+        static_cast<uint8_t*>(buffer->mmapped_planes()[0].start_addr),
+        static_cast<uint8_t*>(buffer->mmapped_planes()[1].start_addr),
         CAPTURE_queue_->coded_size());
   } else {
     LOG(FATAL) << "Unsupported CAPTURE queue format";

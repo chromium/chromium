@@ -189,7 +189,7 @@ struct v4l2_vp8_segment FillV4L2VP8SegmentationHeader(
 // frames
 bool IsBufferSlotInUse(
     const media::Vp8FrameHeader& frame_hdr,
-    const std::array<scoped_refptr<media::v4l2_test::MmapedBuffer>,
+    const std::array<scoped_refptr<media::v4l2_test::MmappedBuffer>,
                      media::kNumVp8ReferenceBuffers>& ref_frames,
     size_t curr_ref_frame_index) {
   for (size_t i = 0; i < media::kNumVp8ReferenceBuffers; i++) {
@@ -460,7 +460,7 @@ void Vp8Decoder::UpdateReusableReferenceBufferSlots(
 
 std::set<int> Vp8Decoder::RefreshReferenceSlots(
     const Vp8FrameHeader& frame_hdr,
-    MmapedBuffer* buffer,
+    MmappedBuffer* buffer,
     std::set<uint32_t> queued_buffer_ids) {
   std::set<int> reusable_buffer_slots = {};
 
@@ -596,10 +596,10 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
 
   uint32_t buffer_id = 0;
   // Copies the frame data into the V4L2 buffer of OUTPUT |queue|.
-  scoped_refptr<MmapedBuffer> OUTPUT_queue_buffer =
+  scoped_refptr<MmappedBuffer> OUTPUT_queue_buffer =
       OUTPUT_queue_->GetBuffer(buffer_id);
-  OUTPUT_queue_buffer->mmaped_planes()[0].CopyIn(frame_hdr.data,
-                                                 frame_hdr.frame_size);
+  OUTPUT_queue_buffer->mmapped_planes()[0].CopyIn(frame_hdr.data,
+                                                  frame_hdr.frame_size);
   OUTPUT_queue_buffer->set_frame_number(frame_number);
 
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, buffer_id)) {
@@ -627,24 +627,24 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
     LOG(FATAL) << "VIDIOC_DQBUF failed for CAPTURE queue.";
   }
 
-  scoped_refptr<MmapedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
+  scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
   if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
-    CHECK_EQ(buffer->mmaped_planes().size(), 1u)
+    CHECK_EQ(buffer->mmapped_planes().size(), 1u)
         << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
 
     ConvertNV12ToYUV(
         y_plane, u_plane, v_plane, size,
-        static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
+        static_cast<uint8_t*>(buffer->mmapped_planes()[0].start_addr),
         CAPTURE_queue_->coded_size());
   } else if (CAPTURE_queue_->fourcc() == v4l2_fourcc('M', 'M', '2', '1')) {
-    CHECK_EQ(buffer->mmaped_planes().size(), 2u)
+    CHECK_EQ(buffer->mmapped_planes().size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
 
     ConvertMM21ToYUV(
         y_plane, u_plane, v_plane, size,
-        static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
-        static_cast<uint8_t*>(buffer->mmaped_planes()[1].start_addr),
+        static_cast<uint8_t*>(buffer->mmapped_planes()[0].start_addr),
+        static_cast<uint8_t*>(buffer->mmapped_planes()[1].start_addr),
         CAPTURE_queue_->coded_size());
   } else {
     LOG(FATAL) << "Unsupported CAPTURE queue format";

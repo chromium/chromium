@@ -134,7 +134,7 @@ class H264Decoder : public VideoDecoder {
   // Returns all CAPTURE buffer indexes that can be reused for a
   // VIDIOC_QBUF ioctl call.
   std::set<uint32_t> GetReusableReferenceSlots(
-      const MmapedBuffer& buffer,
+      const MmappedBuffer& buffer,
       std::set<uint32_t> queued_buffer_ids);
 
   const std::unique_ptr<H264Parser> parser_;

@@ -19,20 +19,20 @@ namespace media {
 
 namespace v4l2_test {
 
-// MmapedBuffer maintains |mmaped_planes_| for each buffer as well as
+// MmappedBuffer maintains |mmapped_planes_| for each buffer as well as
 // |buffer_id_|. |buffer_id_| is an index used for VIDIOC_REQBUFS ioctl call.
-class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
+class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
  public:
-  MmapedBuffer(const base::PlatformFile decode_fd,
-               const struct v4l2_buffer& v4l2_buffer);
+  MmappedBuffer(const base::PlatformFile decode_fd,
+                const struct v4l2_buffer& v4l2_buffer);
 
-  class MmapedPlane {
+  class MmappedPlane {
    public:
     void* start_addr;
     const size_t length;
     size_t bytes_used;
 
-    MmapedPlane(void* start, size_t len) : start_addr(start), length(len) {}
+    MmappedPlane(void* start, size_t len) : start_addr(start), length(len) {}
 
     void CopyIn(const uint8_t* frame_data, size_t frame_size) {
       LOG_ASSERT(frame_size < length)
@@ -42,9 +42,9 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
     }
   };
 
-  using MmapedPlanes = std::vector<MmapedPlane>;
+  using MmappedPlanes = std::vector<MmappedPlane>;
 
-  MmapedPlanes& mmaped_planes() { return mmaped_planes_; }
+  MmappedPlanes& mmapped_planes() { return mmapped_planes_; }
 
   uint32_t buffer_id() const { return buffer_id_; }
   void set_buffer_id(uint32_t buffer_id) { buffer_id_ = buffer_id; }
@@ -53,21 +53,21 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
   void set_frame_number(uint32_t frame_number) { frame_number_ = frame_number; }
 
  private:
-  friend class base::RefCounted<MmapedBuffer>;
+  friend class base::RefCounted<MmappedBuffer>;
 
-  ~MmapedBuffer();
-  MmapedBuffer(const MmapedBuffer&) = delete;
-  MmapedBuffer& operator=(const MmapedBuffer&) = delete;
+  ~MmappedBuffer();
+  MmappedBuffer(const MmappedBuffer&) = delete;
+  MmappedBuffer& operator=(const MmappedBuffer&) = delete;
 
-  MmapedPlanes mmaped_planes_;
+  MmappedPlanes mmapped_planes_;
   const uint32_t num_planes_;
   uint32_t buffer_id_;
-  // Indicates which frame in input bitstream corresponds to this MmapedBuffer
+  // Indicates which frame in input bitstream corresponds to this MmappedBuffer
   // in OUTPUT queue.
   uint32_t frame_number_;
 };
 
-using MmapedBuffers = std::vector<scoped_refptr<MmapedBuffer>>;
+using MmappedBuffers = std::vector<scoped_refptr<MmappedBuffer>>;
 
 // V4L2Queue class maintains properties of a queue.
 class V4L2Queue {
@@ -83,9 +83,9 @@ class V4L2Queue {
   V4L2Queue& operator=(const V4L2Queue&) = delete;
   ~V4L2Queue();
 
-  // Retrieves a mmaped buffer for the given |buffer_id|, which is a decoded
-  // surface, from MmapedBuffers.
-  scoped_refptr<MmapedBuffer> GetBuffer(const size_t buffer_id) const;
+  // Retrieves a mmapped buffer for the given |buffer_id|, which is a decoded
+  // surface, from MmappedBuffers.
+  scoped_refptr<MmappedBuffer> GetBuffer(const size_t buffer_id) const;
 
   enum v4l2_buf_type type() const { return type_; }
   uint32_t fourcc() const { return fourcc_; }
@@ -97,7 +97,7 @@ class V4L2Queue {
 
   enum v4l2_memory memory() const { return memory_; }
 
-  void set_buffers(MmapedBuffers& buffers) { buffers_ = buffers; }
+  void set_buffers(MmappedBuffers& buffers) { buffers_ = buffers; }
 
   uint32_t num_buffers() const { return num_buffers_; }
   void set_num_buffers(uint32_t num_buffers) { num_buffers_ = num_buffers; }
@@ -133,7 +133,7 @@ class V4L2Queue {
  private:
   const enum v4l2_buf_type type_;
   const uint32_t fourcc_;
-  MmapedBuffers buffers_;
+  MmappedBuffers buffers_;
   uint32_t num_buffers_;
   // The size of the image on the screen.
   gfx::Size display_size_;
