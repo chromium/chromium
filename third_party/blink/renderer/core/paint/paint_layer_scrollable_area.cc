@@ -1102,11 +1102,6 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     UpdateScrollbarProportions();
   }
 
-  hypothetical_horizontal_scrollbar_thickness_ =
-      ComputeHypotheticalScrollbarThickness(kHorizontalScrollbar, true);
-  hypothetical_vertical_scrollbar_thickness_ =
-      ComputeHypotheticalScrollbarThickness(kVerticalScrollbar, true);
-
   DelayableClampScrollOffsetAfterOverflowChange();
 
   if (!is_horizontal_scrollbar_frozen || !is_vertical_scrollbar_frozen)
@@ -1456,21 +1451,6 @@ static inline const LayoutObject& ScrollbarStyleSource(
 }
 
 int PaintLayerScrollableArea::HypotheticalScrollbarThickness(
-    ScrollbarOrientation orientation,
-    bool should_include_overlay_thickness) const {
-  // The cached values are updated after layout, use them if we're layout clean.
-  if (should_include_overlay_thickness &&
-      GetLayoutBox()->GetDocument().Lifecycle().GetState() >=
-          DocumentLifecycle::kLayoutClean) {
-    return orientation == kHorizontalScrollbar
-               ? hypothetical_horizontal_scrollbar_thickness_
-               : hypothetical_vertical_scrollbar_thickness_;
-  }
-  return ComputeHypotheticalScrollbarThickness(
-      orientation, should_include_overlay_thickness);
-}
-
-int PaintLayerScrollableArea::ComputeHypotheticalScrollbarThickness(
     ScrollbarOrientation orientation,
     bool should_include_overlay_thickness) const {
   Scrollbar* scrollbar = orientation == kHorizontalScrollbar

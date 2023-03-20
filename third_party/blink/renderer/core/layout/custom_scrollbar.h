@@ -44,10 +44,7 @@ class LayoutCustomScrollbarPart;
 // LayoutCustomScrollbarPart.
 class CORE_EXPORT CustomScrollbar final : public Scrollbar {
  public:
-  CustomScrollbar(ScrollableArea*,
-                  ScrollbarOrientation,
-                  Element* style_source,
-                  bool suppress_use_counters = false);
+  CustomScrollbar(ScrollableArea*, ScrollbarOrientation, Element* style_source);
   ~CustomScrollbar() override;
 
   // Return the thickness that a custom scrollbar would have, before actually
@@ -104,9 +101,6 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
 
   HeapHashMap<ScrollbarPart, Member<LayoutCustomScrollbarPart>> parts_;
   bool needs_position_scrollbar_parts_ = true;
-  // When constructing a CustomScrollbar solely for the purpose of computing
-  // hypothetical thickness, don't record feature usage.
-  bool suppress_use_counters_ = false;
 };
 
 template <>
