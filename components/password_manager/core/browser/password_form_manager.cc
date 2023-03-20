@@ -828,8 +828,10 @@ bool PasswordFormManager::ProvisionallySaveHttpAuthForm(
     const PasswordForm& submitted_form) {
   if (!IsHttpAuth())
     return false;
-  if (*observed_digest() != PasswordFormDigest(submitted_form))
+  CHECK(observed_digest());
+  if (*observed_digest() != PasswordFormDigest(submitted_form)) {
     return false;
+  }
 
   parsed_submitted_form_ = std::make_unique<PasswordForm>(submitted_form);
   is_submitted_ = true;
