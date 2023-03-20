@@ -377,8 +377,9 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   PermissionsManager::ExtensionSiteAccess extension_access;
 
   // Extension that cannot be affected by host permissions has no access.
-  if (!CanAffectExtension(extension))
+  if (!CanAffectExtension(extension)) {
     return extension_access;
+  }
 
   // Awkward holder object because permission sets are immutable, and when
   // return from prefs, ownership is passed.
@@ -452,6 +453,49 @@ bool PermissionsManager::CanAffectExtension(const Extension& extension) const {
   // host permissions.
   return !PermissionsParser::GetRequiredPermissions(&extension).IsEmpty() ||
          !PermissionsParser::GetOptionalPermissions(&extension).IsEmpty();
+}
+
+bool PermissionsManager::CanUserSelectSiteAccess(
+    const Extension& extension,
+    const GURL& url,
+    UserSiteAccess site_access) const {
+  // Extensions cannot run on sites restricted to them (ever), so no type of
+  // site access is selectable.
+  if (extension.permissions_data()->IsRestrictedUrl(url, /*error=*/nullptr)) {
+    return false;
+  }
+
+  // The "on click" option is enabled if the extension has active tab,
+  // regardless of its granted host permissions.
+  if (site_access == PermissionsManager::UserSiteAccess::kOnClick &&
+      HasActiveTabAndCanAccess(extension, url)) {
+    return true;
+  }
+
+  if (!CanAffectExtension(extension)) {
+    return false;
+  }
+
+  PermissionsManager::ExtensionSiteAccess extension_access =
+      GetSiteAccess(extension, url);
+  switch (site_access) {
+    case UserSiteAccess::kOnClick:
+      // The "on click" option is only enabled if the extension has active tab,
+      // previously handled, or wants to always run on the site without user
+      // interaction.
+      return extension_access.has_site_access ||
+             extension_access.withheld_site_access;
+    case UserSiteAccess::kOnSite:
+      // The "on site" option is only enabled if the extension wants to
+      // always run on the site without user interaction.
+      return extension_access.has_site_access ||
+             extension_access.withheld_site_access;
+    case UserSiteAccess::kOnAllSites:
+      // The "on all sites" option is only enabled if the extension wants to be
+      // able to run everywhere.
+      return extension_access.has_all_sites_access ||
+             extension_access.withheld_all_sites_access;
+  }
 }
 
 bool PermissionsManager::HasGrantedHostPermission(const Extension& extension,
@@ -609,8 +653,9 @@ PermissionsManager::GetEffectivePermissionsToGrant(
     return desired_permissions.Clone();
   }
 
-  if (desired_permissions.effective_hosts().is_empty())
+  if (desired_permissions.effective_hosts().is_empty()) {
     return desired_permissions.Clone();  // No hosts to withhold.
+  }
 
   // Determine if we should withhold host permissions. This is different for
   // extensions that are being newly-installed and extensions that have already

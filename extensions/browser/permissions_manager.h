@@ -176,6 +176,12 @@ class PermissionsManager : public KeyedService {
   // runtime host permissions.
   bool CanAffectExtension(const Extension& extension) const;
 
+  // Returns whether the user can select the `site_access` option for
+  // `extension` in `url`.
+  bool CanUserSelectSiteAccess(const Extension& extension,
+                               const GURL& gurl,
+                               UserSiteAccess site_access) const;
+
   // Returns true if the extension has been explicitly granted permission to run
   // on the origin of `url`. This will return true if any permission includes
   // access to the origin of |url|, even if the permission includes others

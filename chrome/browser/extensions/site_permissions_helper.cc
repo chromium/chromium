@@ -111,50 +111,6 @@ void SitePermissionsHelper::UpdateUserSiteSettings(
       site_setting);
 }
 
-bool SitePermissionsHelper::CanSelectSiteAccess(
-    const Extension& extension,
-    const GURL& url,
-    PermissionsManager::UserSiteAccess site_access) const {
-  // Extensions cannot run on sites restricted to them (ever), so no type of
-  // site access is selectable.
-  if (extension.permissions_data()->IsRestrictedUrl(url, /*error=*/nullptr)) {
-    return false;
-  }
-
-  // The "on click" option is enabled if the extension has active tab,
-  // regardless of its granted host permissions.
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile_);
-  if (site_access == PermissionsManager::UserSiteAccess::kOnClick &&
-      permissions_manager->HasActiveTabAndCanAccess(extension, url)) {
-    return true;
-  }
-
-  if (!permissions_manager->CanAffectExtension(extension)) {
-    return false;
-  }
-
-  PermissionsManager::ExtensionSiteAccess extension_access =
-      permissions_manager->GetSiteAccess(extension, url);
-  switch (site_access) {
-    case PermissionsManager::UserSiteAccess::kOnClick:
-      // The "on click" option is only enabled if the extension has active tab,
-      // previously handled, or wants to always run on the site without user
-      // interaction.
-      return extension_access.has_site_access ||
-             extension_access.withheld_site_access;
-    case PermissionsManager::UserSiteAccess::kOnSite:
-      // The "on site" option is only enabled if the extension wants to
-      // always run on the site without user interaction.
-      return extension_access.has_site_access ||
-             extension_access.withheld_site_access;
-    case PermissionsManager::UserSiteAccess::kOnAllSites:
-      // The "on all sites" option is only enabled if the extension wants to be
-      // able to run everywhere.
-      return extension_access.has_all_sites_access ||
-             extension_access.withheld_all_sites_access;
-  }
-}
-
 bool SitePermissionsHelper::HasBeenBlocked(
     const Extension& extension,
     content::WebContents* web_contents) const {

@@ -31,6 +31,7 @@ std::unique_ptr<KeyedService> SetTestingPermissionsManager(
 namespace extensions {
 
 using UserSiteSetting = PermissionsManager::UserSiteSetting;
+using UserSiteAccess = PermissionsManager::UserSiteAccess;
 
 class PermissionsManagerUnittest : public ExtensionsTest {
  public:
@@ -391,6 +392,83 @@ TEST_F(PermissionsManagerUnittest, CanAffectExtension_ByLocation) {
               test_case.can_be_affected)
         << test_case.location;
   }
+}
+
+TEST_F(PermissionsManagerUnittest, CanUserSelectSiteAccess_AllUrls) {
+  auto extension =
+      AddExtensionWithHostPermission("AllUrls Extension", "<all_urls>");
+
+  // Verify "on click", "on site" and "on all sites" site access can be selected
+  // for a non-restricted url.
+  const GURL url("http://www.example.com");
+  EXPECT_TRUE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                UserSiteAccess::kOnClick));
+  EXPECT_TRUE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                UserSiteAccess::kOnSite));
+  EXPECT_TRUE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                UserSiteAccess::kOnAllSites));
+
+  // Verify "on click", "on site" and "on all sites" cannot be selected for a
+  // restricted url.
+  const GURL chrome_url("chrome://settings");
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, chrome_url,
+                                                 UserSiteAccess::kOnClick));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, chrome_url,
+                                                 UserSiteAccess::kOnSite));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, chrome_url,
+                                                 UserSiteAccess::kOnAllSites));
+}
+
+TEST_F(PermissionsManagerUnittest, CanUserSelectSiteAccess_SpecificUrl) {
+  const GURL url_a("http://www.a.com");
+  auto extension = AddExtensionWithHostPermission("A Extension", url_a.spec());
+
+  // Verify "on click" and "on site" can be selected for the specific url, but
+  // "on all sites" cannot be selected.
+  EXPECT_TRUE(manager_->CanUserSelectSiteAccess(*extension, url_a,
+                                                UserSiteAccess::kOnClick));
+  EXPECT_TRUE(manager_->CanUserSelectSiteAccess(*extension, url_a,
+                                                UserSiteAccess::kOnSite));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url_a,
+                                                 UserSiteAccess::kOnAllSites));
+
+  // Verify "on click", "on site" and "on all sites" cannot be selected for any
+  // other url.
+  const GURL url_b("http://www.b.com");
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url_b,
+                                                 UserSiteAccess::kOnClick));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url_b,
+                                                 UserSiteAccess::kOnSite));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url_b,
+                                                 UserSiteAccess::kOnAllSites));
+}
+
+TEST_F(PermissionsManagerUnittest, CanUserSelectSiteAccess_NoHostPermissions) {
+  auto extension = AddExtension("Extension");
+
+  // Verify "on click", "on site" and "on all sites" cannot be selected for any
+  // url.
+  const GURL url("http://www.example.com");
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                 UserSiteAccess::kOnClick));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                 UserSiteAccess::kOnSite));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                 UserSiteAccess::kOnAllSites));
+}
+
+TEST_F(PermissionsManagerUnittest, CanUserSelectSiteAccess_ActiveTab) {
+  auto extension = AddExtensionWithActiveTab("ActiveTab Extension");
+
+  // Verify "on click" can be selected for the specific url, but "on site" and
+  // "on all sites" cannot be selected.
+  const GURL url("http://www.example.com");
+  EXPECT_TRUE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                UserSiteAccess::kOnClick));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                 UserSiteAccess::kOnSite));
+  EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url,
+                                                 UserSiteAccess::kOnAllSites));
 }
 
 class PermissionsManagerWithPermittedSitesUnitTest

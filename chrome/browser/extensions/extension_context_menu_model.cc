@@ -561,10 +561,9 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
       // these commands should be shown.
       const GURL& url = web_contents->GetLastCommittedURL();
       auto* permissions_manager = PermissionsManager::Get(profile_);
-      SitePermissionsHelper permissions_helper(profile_);
       DCHECK(permissions_manager->HasActiveTabAndCanAccess(extension, url) ||
              permissions_manager->CanAffectExtension(extension) &&
-                 permissions_helper.CanSelectSiteAccess(
+                 permissions_manager->CanUserSelectSiteAccess(
                      extension, url,
                      PermissionsManager::UserSiteAccess::kOnClick));
 
@@ -573,7 +572,7 @@ bool ExtensionContextMenuModel::IsPageAccessCommandEnabled(
       // and in execution of the command, there's a chance we'll find two
       // different URLs. This would be solved if we maintained the URL that the
       // menu was showing for.
-      return permissions_helper.CanSelectSiteAccess(
+      return permissions_manager->CanUserSelectSiteAccess(
           extension, url, CommandIdToSiteAccess(command_id));
   }
 
@@ -585,6 +584,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
     const Extension* extension,
     content::WebContents* web_contents) {
   auto url = web_contents->GetLastCommittedURL();
+  auto* permissions_manager = PermissionsManager::Get(profile_);
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
@@ -602,8 +602,8 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
     // only show the page access submenu with change extension settings options
     // if the site settings is set to "customize by extension". Otherwise, shows
     // a message that informs the user about the site setting.
-    auto site_setting = PermissionsManager::Get(profile_)->GetUserSiteSetting(
-        url::Origin::Create(url));
+    auto site_setting =
+        permissions_manager->GetUserSiteSetting(url::Origin::Create(url));
     switch (site_setting) {
       case PermissionsManager::UserSiteSetting::kGrantAllExtensions:
         AddItem(
@@ -626,7 +626,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
       case PermissionsManager::UserSiteSetting::kCustomizeByExtension:
         // The extension wants site access but cant't run on the page if it does
         // not have at least "on click" access.
-        if (!SitePermissionsHelper(profile_).CanSelectSiteAccess(
+        if (!permissions_manager->CanUserSelectSiteAccess(
                 *extension, url,
                 PermissionsManager::UserSiteAccess::kOnClick)) {
           AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
@@ -662,7 +662,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
   } else {
     // The extension wants site access but cant't run on the page if it does
     // not have at least "on click" access.
-    if (!SitePermissionsHelper(profile_).CanSelectSiteAccess(
+    if (!permissions_manager->CanUserSelectSiteAccess(
             *extension, url, PermissionsManager::UserSiteAccess::kOnClick)) {
       AddItemWithStringId(PAGE_ACCESS_CANT_ACCESS,
                           IDS_EXTENSIONS_CONTEXT_MENU_CANT_ACCESS_PAGE);
