@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
@@ -125,8 +126,8 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
   // Should be empty at destruction time because its elements are erased in
   // RenderFrameDeleted(). In case it is not empty, is must be destroyed before
   // |router_| because ~ContentAutofillDriver() may access |router_|.
-  std::unordered_map<content::RenderFrameHost*,
-                     std::unique_ptr<ContentAutofillDriver>>
+  base::flat_map<content::RenderFrameHost*,
+                 std::unique_ptr<ContentAutofillDriver>>
       driver_map_;
 
   base::ObserverList<Observer> observers_;
