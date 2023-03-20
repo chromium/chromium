@@ -10,6 +10,17 @@
 
 namespace password_manager {
 
+NSString* const kPasswordCheckupHeaderImageGreen =
+    @"password_checkup_header_green";
+
+NSString* const kPasswordCheckupHeaderImageLoading =
+    @"password_checkup_header_loading";
+
+NSString* const kPasswordCheckupHeaderImageRed = @"password_checkup_header_red";
+
+NSString* const kPasswordCheckupHeaderImageYellow =
+    @"password_checkup_header_yellow";
+
 const char kPasswordManagerHelpCenterChangeUnsafePasswordsURL[] =
     "https://support.google.com/accounts/answer/9457609";
 

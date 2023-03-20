@@ -4227,6 +4227,49 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
         Sync is not working. To start sync enter your passphrase.
       </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_COMPROMISED_PASSWORDS_TITLE" desc="Title for the compromised passwords item in the Password Checkup Homepage. [Length: 16em] [iOS only]">
+        {count, plural,
+          =0 {No Compromised Passwords}
+          =1 {{count} Compromised Password}
+          other {{count} Compromised Passwords}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_COMPROMISED_PASSWORDS_SUBTITLE" desc="Subitle for the compromised passwords item in the Password Checkup Homepage when there are no compromised passwords. [iOS only]">
+        If your passwords are compromised, we'll let you know
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_COMPROMISED_PASSWORDS_SUBTITLE" desc="Subitle for the compromised passwords item in the Password Checkup Homepage when there are compromised passwords. [iOS only]">
+        You should change these now
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_DISMISSED_WARNINGS_SUBTITLE" desc="Subitle for the compromised passwords item in the Password Checkup Homepage when there are dismissed compromised password warnings. [iOS only]">
+        {count, plural,
+          =1 {You dismissed {count} warning}
+          other {You dismissed {count} warnings}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_REUSED_PASSWORDS_TITLE" desc="Title for the reused passwords item in the Password Checkup Homepage when there are no reused passwords. [Length: 16em] [iOS only]">
+        Your Passwords are Unique
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_REUSED_PASSWORDS_TITLE" desc="Title for the reused passwords item in the Password Checkup Homepage when there are reused passwords. User can only have 2 or more reused passwords, so this string will always be plural. [Length: 16em] [iOS only]">
+        <ph name="COUNT">$1<ex>2</ex></ph> Reused Passwords
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_REUSED_PASSWORDS_SUBTITLE" desc="Subitle for the reused passwords item in the Password Checkup Homepage when there are no reused passwords. [iOS only]">
+        You're not reusing any passwords
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_REUSED_PASSWORDS_SUBTITLE" desc="Subitle for the reused passwords item in the Password Checkup Homepage when there are reused passwords. [iOS only]">
+        Create unique passwords
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_WEAK_PASSWORDS_TITLE" desc="Title for the weak passwords item in the Password Checkup Homepage when there are no weak passwords. [Length: 16em] [iOS only]">
+        Your Passwords look Strong
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_WEAK_PASSWORDS_TITLE" desc="Title for the weak passwords item in the Password Checkup Homepage when there are weak passwords. [Length: 16em] [iOS only]">
+        {count, plural,
+          =1 {{count} Weak Password}
+          other {{count} Weak Passwords}}
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_WEAK_PASSWORDS_SUBTITLE" desc="Subitle for the weak passwords item in the Password Checkup Homepage when there are no weak passwords. [iOS only]">
+        You're using passwords that look hard to guess
+      </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_WEAK_PASSWORDS_SUBTITLE" desc="Subitle for the weak passwords item in the Password Checkup Homepage when there are weak passwords. [iOS only]">
+        Create strong passwords
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_CHECK_AGAIN_BUTTON" desc="Label of a button which starts a new password Check [Length: 22em] [iOS only]">
         Check Again
       </message>

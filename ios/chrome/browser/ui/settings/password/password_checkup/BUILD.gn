@@ -32,6 +32,7 @@ source_set("password_checkup_ui") {
     "password_checkup_view_controller_delegate.h",
   ]
   deps = [
+    ":password_checkup_constants",
     ":password_checkup_utils",
     "resources:password_checkup_header_background_color",
     "resources:password_checkup_header_green",
@@ -42,6 +43,7 @@ source_set("password_checkup_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common/ui/colors",
@@ -81,6 +83,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":password_checkup",
+    ":password_checkup_constants",
     ":password_checkup_ui",
     ":password_checkup_utils",
     "//base",
@@ -99,6 +102,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public/test",
