@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "cc/base/region.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/slim/features.h"
@@ -567,6 +568,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
   auto ui_resource_layer = UIResourceLayer::Create();
   ui_resource_layer->SetBounds(viewport_.size());
   ui_resource_layer->SetIsDrawable(true);
+  ui_resource_layer->SetContentsOpaque(true);
   layer_tree_->SetRoot(ui_resource_layer);
 
   viz::ResourceId first_resource_id = viz::kInvalidResourceId;
@@ -690,6 +692,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
   auto nine_patch_layer = NinePatchLayer::Create();
   nine_patch_layer->SetBounds(viewport_.size());
   nine_patch_layer->SetIsDrawable(true);
+  nine_patch_layer->SetContentsOpaque(true);
   layer_tree_->SetRoot(nine_patch_layer);
 
   auto image_info =
@@ -784,6 +787,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SurfaceLayerAppendQuads) {
   auto surface_layer = SurfaceLayer::Create();
   surface_layer->SetBounds(viewport_.size());
   surface_layer->SetIsDrawable(true);
+  surface_layer->SetContentsOpaque(true);
   layer_tree_->SetRoot(surface_layer);
 
   {
@@ -1441,6 +1445,33 @@ TEST_F(SlimLayerTreeCompositorFrameTest, OcclusionWithRenderPass) {
                           // Occluded by child pass.
                           viz::HasVisibleRect(gfx::Rect(0, 50, 100, 50)))));
   }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, Guttering) {
+  auto root_layer = CreateSolidColorLayer(gfx::Size(50, 50), SkColors::kRed);
+  root_layer->SetPosition(gfx::PointF(25.0f, 25.0f));
+  layer_tree_->SetRoot(root_layer);
+  layer_tree_->set_background_color(SkColors::kBlue);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.front();
+  EXPECT_THAT(pass->quad_list,
+              ElementsAre(AllOf(viz::IsSolidColorQuad(SkColors::kRed),
+                                viz::HasRect(gfx::Rect(50, 50)),
+                                viz::HasVisibleRect(gfx::Rect(50, 50))),
+                          // Should require 4 gutter quads.
+                          viz::IsSolidColorQuad(SkColors::kBlue),
+                          viz::IsSolidColorQuad(SkColors::kBlue),
+                          viz::IsSolidColorQuad(SkColors::kBlue),
+                          viz::IsSolidColorQuad(SkColors::kBlue)));
+  EXPECT_FALSE(pass->has_transparent_background);
+
+  Region region;
+  for (auto& quad : frame.render_pass_list) {
+    region.Union(quad->output_rect);
+  }
+  EXPECT_TRUE(region.Contains(viewport_));
 }
 
 }  // namespace

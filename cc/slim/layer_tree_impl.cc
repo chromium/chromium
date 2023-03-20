@@ -12,6 +12,7 @@
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/region.h"
 #include "cc/slim/frame_data.h"
 #include "cc/slim/frame_sink_impl.h"
 #include "cc/slim/layer.h"
@@ -24,6 +25,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -393,7 +395,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
   // TODO(crbug.com/1408128): Only has a very simple and basic compositor frame
   // generation. Some missing features include:
   // * Damage tracking
-  // * Ensure entire viewport is covered by quads.
   TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
 
   for (auto& resource_request :
@@ -437,6 +438,35 @@ void LayerTreeImpl::GenerateCompositorFrame(
        /*parent_transform_to_target=*/gfx::Transform(),
        /*parent_clip_in_target=*/nullptr, gfx::RectF(device_viewport_rect_),
        /*opacity=*/1.0f);
+
+  if (background_color_.fA &&
+      !frame_data.occlusion_in_target.Contains(device_viewport_rect_)) {
+    // Quads does not cover entire viewport. Fill in the gutters.
+    bool background_opaque = background_color_.isOpaque();
+    render_pass->has_transparent_background = !background_opaque;
+    Region unoccluded_region(device_viewport_rect_);
+    for (size_t i = 0; i < frame_data.occlusion_in_target.GetRegionComplexity();
+         ++i) {
+      unoccluded_region.Subtract(frame_data.occlusion_in_target.GetRect(i));
+    }
+    if (!unoccluded_region.IsEmpty()) {
+      viz::SharedQuadState* quad_state =
+          render_pass->CreateAndAppendSharedQuadState();
+      gfx::Rect gutter_bounding_rect = unoccluded_region.bounds();
+      bool contents_opaque =
+          background_opaque && unoccluded_region.GetRegionComplexity() <= 1;
+      quad_state->SetAll(gfx::Transform(), gutter_bounding_rect,
+                         gutter_bounding_rect, gfx::MaskFilterInfo(),
+                         /*clip=*/absl::nullopt, contents_opaque,
+                         /*opacity_f=*/1.0f, SkBlendMode::kSrcOver, 0);
+      for (gfx::Rect unoccluded_rect : unoccluded_region) {
+        viz::SolidColorDrawQuad* quad =
+            render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+        quad->SetNew(quad_state, unoccluded_rect, unoccluded_rect,
+                     background_color_, /*anti_aliasing_off=*/false);
+      }
+    }
+  }
 
   render_pass->copy_requests = std::move(copy_requests_for_next_frame_);
   copy_requests_for_next_frame_.clear();
