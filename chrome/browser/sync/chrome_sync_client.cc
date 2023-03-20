@@ -260,12 +260,14 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
   account_password_store_ = AccountPasswordStoreFactory::GetForProfile(
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
+  // TODO(https://crbug.com/1404250): Pass AccountBookmarkSyncServiceFactory
+  //                                  when it is available.
   component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
       this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
       web_data_service_thread_, profile_web_data_service_,
       account_web_data_service_, profile_password_store_,
       account_password_store_,
-      BookmarkSyncServiceFactory::GetForProfile(profile_),
+      BookmarkSyncServiceFactory::GetForProfile(profile_), nullptr,
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_));
 
   signin::IdentityManager* identity_manager =

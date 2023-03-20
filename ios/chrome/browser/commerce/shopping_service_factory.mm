@@ -51,6 +51,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
           "ShoppingService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  // TODO(crbug.com/1425818): Add AccountBookmarkModelFactory support.
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SessionProtoDBFactory<

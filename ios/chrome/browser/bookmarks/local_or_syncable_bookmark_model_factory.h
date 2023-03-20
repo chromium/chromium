@@ -17,8 +17,7 @@ class BookmarkModel;
 }
 
 namespace ios {
-// Singleton that owns all BookmarkModels and associates them with
-// ChromeBrowserState.
+// Owns local/syncable BookmarkModels.
 class LocalOrSyncableBookmarkModelFactory
     : public BrowserStateKeyedServiceFactory {
  public:

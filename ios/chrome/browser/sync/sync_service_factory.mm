@@ -18,6 +18,8 @@
 #import "components/sync/driver/sync_service_impl.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -97,6 +99,8 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ConsentAuditorFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(ios::AboutSigninInternalsFactory::GetInstance());
+  DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
+  DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
   DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());

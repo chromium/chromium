@@ -90,6 +90,7 @@ HistoryServiceFactory::HistoryServiceFactory()
           "HistoryService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  // TODO(crbug.com/1425458): Add AccountBookmarkModelFactory support.
 }
 
 HistoryServiceFactory::~HistoryServiceFactory() {

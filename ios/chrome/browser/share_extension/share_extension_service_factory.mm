@@ -41,6 +41,7 @@ ShareExtensionServiceFactory::ShareExtensionServiceFactory()
           "ShareExtensionService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  // TODO(crbug.com/1425464): Add AccountBookmarkModelFactory support.
   DependsOn(ReadingListModelFactory::GetInstance());
 }
 

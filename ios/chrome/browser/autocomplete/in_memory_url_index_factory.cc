@@ -63,6 +63,7 @@ InMemoryURLIndexFactory::InMemoryURLIndexFactory()
           "InMemoryURLIndex",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  // TODO(crbug.com/1425459): Add AccountBookmarkModelFactory support.
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }

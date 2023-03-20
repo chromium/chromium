@@ -159,7 +159,9 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
         profile_password_store,
     const scoped_refptr<password_manager::PasswordStoreInterface>&
         account_password_store,
-    sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
+    sync_bookmarks::BookmarkSyncService*
+        local_or_syncable_bookmark_sync_service,
+    sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
     power_bookmarks::PowerBookmarkService* power_bookmark_service)
     : sync_client_(sync_client),
       channel_(channel),
@@ -173,7 +175,9 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
       web_data_service_in_memory_(web_data_service_in_memory),
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
-      bookmark_sync_service_(bookmark_sync_service),
+      local_or_syncable_bookmark_sync_service_(
+          local_or_syncable_bookmark_sync_service),
+      account_bookmark_sync_service_(account_bookmark_sync_service),
       power_bookmark_service_(power_bookmark_service) {
   DCHECK(sync_client_);
 }
@@ -309,13 +313,22 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     favicon::FaviconService* favicon_service =
         sync_client_->GetFaviconService();
     // Services can be null in tests.
-    if (bookmark_sync_service_ && favicon_service) {
-      controllers.push_back(std::make_unique<ModelTypeController>(
-          syncer::BOOKMARKS,
+    if (local_or_syncable_bookmark_sync_service_ && favicon_service) {
+      auto full_mode_delegate =
           std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-              bookmark_sync_service_
+              local_or_syncable_bookmark_sync_service_
                   ->GetBookmarkSyncControllerDelegate(favicon_service)
-                  .get())));
+                  .get());
+      auto transport_mode_delegate =
+          account_bookmark_sync_service_
+              ? std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+                    account_bookmark_sync_service_
+                        ->GetBookmarkSyncControllerDelegate(favicon_service)
+                        .get())
+              : nullptr;
+      controllers.push_back(std::make_unique<ModelTypeController>(
+          syncer::BOOKMARKS, std::move(full_mode_delegate),
+          std::move(transport_mode_delegate)));
     }
 
     if (!disabled_types.Has(syncer::POWER_BOOKMARK) &&
