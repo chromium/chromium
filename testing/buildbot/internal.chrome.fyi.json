@@ -400,7 +400,7 @@
       },
       {
         "args": [
-          "---force-device-scale-factor=1"
+          "--force-device-scale-factor=1"
         ],
         "isolate_profile_data": true,
         "merge": {

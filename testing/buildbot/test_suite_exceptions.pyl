@@ -1231,7 +1231,7 @@
         # Surface Pros aren't using 100% scaling, which some browser tests
         # rely on.
         'args': [
-          '---force-device-scale-factor=1',
+          '--force-device-scale-factor=1',
         ],
       },
       'win-asan': {
