@@ -211,6 +211,7 @@ bool PasswordFormManager::DoesManage(
     const PasswordManagerDriver* driver) const {
   if (driver != driver_.get())
     return false;
+  CHECK(observed_form());
   return observed_form()->unique_renderer_id == form_renderer_id;
 }
 
@@ -884,6 +885,7 @@ void PasswordFormManager::Fill() {
   // There are additional signals (server-side data) and parse results in
   // filling and saving mode might be different so it is better not to cache
   // parse result, but to parse each time again.
+  CHECK(observed_form());
   std::unique_ptr<PasswordForm> observed_password_form =
       ParseFormAndMakeLogging(*observed_form(), FormDataParser::Mode::kFilling);
   RecordMetricOnReadonly(parser_.readonly_status(), !!observed_password_form,
@@ -919,6 +921,7 @@ void PasswordFormManager::Fill() {
 void PasswordFormManager::FillForm(
     const FormData& observed_form_data,
     const std::map<FormSignature, FormPredictions>& predictions) {
+  CHECK(observed_form());
   uint32_t differences_bitmask =
       FindFormsDifferences(*observed_form(), observed_form_data);
   metrics_recorder_->RecordFormChangeBitmask(differences_bitmask);
@@ -967,6 +970,7 @@ bool PasswordFormManager::FormHasPossibleUsername(
   if (!possible_username) {
     return false;
   }
+  CHECK(observed_form());
   if (possible_username->driver_id == driver_id_) {
     for (const auto& field : observed_form()->fields) {
       if (field.unique_renderer_id == possible_username->renderer_id) {
@@ -1198,6 +1202,7 @@ bool PasswordFormManager::IsPasswordFormAfterSingleUsernameForm(
 
 void PasswordFormManager::UpdatePredictionsForObservedForm(
     const std::map<FormSignature, FormPredictions>& predictions) {
+  CHECK(observed_form());
   FormSignature observed_form_signature =
       CalculateFormSignature(*observed_form());
   auto it = predictions.find(observed_form_signature);
