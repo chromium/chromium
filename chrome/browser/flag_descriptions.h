@@ -2440,6 +2440,9 @@ extern const char kWebFeedOnboardingDescription[];
 extern const char kWebFeedSortName[];
 extern const char kWebFeedSortDescription[];
 
+extern const char kWebXrSharedBuffersName[];
+extern const char kWebXrSharedBuffersDescription[];
+
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
 

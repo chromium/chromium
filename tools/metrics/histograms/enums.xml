@@ -63523,6 +63523,7 @@ from previous Chrome versions.
   <int value="747391377" label="DesktopPWAsRunOnOsLogin:disabled"/>
   <int value="747477721" label="EolIncentive:disabled"/>
   <int value="747847237" label="PhysicalWeb:enabled"/>
+  <int value="749073102" label="WebXrSharedBuffers:disabled"/>
   <int value="749312701" label="ChromeOSAccountManager:disabled"/>
   <int value="749516419" label="DragToSnapInClamshellMode:disabled"/>
   <int value="749994865" label="MessagesForAndroidSyncError:enabled"/>
@@ -64995,6 +64996,7 @@ from previous Chrome versions.
   <int value="1591780364" label="EcheCustomWidget:disabled"/>
   <int value="1592391721" label="DesktopDetailedLanguageSettings:disabled"/>
   <int value="1592595046" label="HeuristicMemorySaver:enabled"/>
+  <int value="1592843279" label="WebXrSharedBuffers:enabled"/>
   <int value="1593720927" label="GamepadVibration:disabled"/>
   <int value="1593883073" label="OfflineIndicatorV2:disabled"/>
   <int value="1593917165" label="SimplifiedNTP:disabled"/>

@@ -6,10 +6,12 @@
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/android/web_xr_presentation_state.h"
+#include "device/vr/public/cpp/features.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -27,9 +29,11 @@ bool XrImageTransportBase::disable_shared_buffer_ = false;
 
 bool XrImageTransportBase::UseSharedBuffer() {
   // When available (Android O and up), use AHardwareBuffer-based shared
-  // images for frame transport, unless disabled due to bugs.
-  static bool val = base::AndroidHardwareBufferCompat::IsSupportAvailable();
-  return val && !XrImageTransportBase::disable_shared_buffer_;
+  // images for frame transport, unless disabled due to bugs or by the user.
+  static bool support_shared_buffer =
+      base::FeatureList::IsEnabled(features::kWebXrSharedBuffers) &&
+      base::AndroidHardwareBufferCompat::IsSupportAvailable();
+  return support_shared_buffer && !XrImageTransportBase::disable_shared_buffer_;
 }
 
 XrImageTransportBase::XrImageTransportBase(

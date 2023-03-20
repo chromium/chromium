@@ -133,5 +133,6 @@
   "wait-threshold-seconds-for-capabilities-api",
   "wallet-service-use-sandbox",
   "web-authentication-permit-enterprise-attestation",
-  "webxr-runtime"
+  "webxr-runtime",
+  "webxr-shared-buffers"
 ]

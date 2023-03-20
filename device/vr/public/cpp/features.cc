@@ -33,6 +33,15 @@ BASE_FEATURE(kWebXrOrientationSensorDevice,
 #endif
 );
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether or not SharedBuffer support is enabled. This is enabled by
+// default; but some platforms (e.g. below O) cannot support the feature; while
+// on other GPUs there may be quirks that prevent using the shared buffers.
+BASE_FEATURE(kWebXrSharedBuffers,
+             "WebXrSharedBuffers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(ENABLE_CARDBOARD)
 // Controls WebXR support for the Cardboard SDK Runtime. Note that enabling
 // this will also disable the GVR runtime.

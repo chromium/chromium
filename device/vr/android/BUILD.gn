@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//device/vr/buildflags/buildflags.gni")
+
+assert(enable_vr)
+
 static_library("vr_android") {
   defines = []
   sources = [
@@ -16,6 +20,7 @@ static_library("vr_android") {
 
   deps = [
     "//components/viz/common",
+    "//device/vr/public/cpp:features",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/common:common",
     "//ui/display",

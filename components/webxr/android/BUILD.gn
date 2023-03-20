@@ -18,41 +18,45 @@ source_set("android_utils") {
 }
 
 source_set("android") {
-  sources = [
-    "ar_compositor_delegate_provider.cc",
-    "ar_compositor_delegate_provider.h",
-    "xr_session_coordinator.cc",
-    "xr_session_coordinator.h",
-  ]
-
-  if (enable_arcore) {
-    sources += [
-      "arcore_device_provider.cc",
-      "arcore_device_provider.h",
-      "arcore_install_helper.cc",
-      "arcore_install_helper.h",
+  # TODO(https://crbug.com/1426233): Investigate why this cannot simply be an
+  # assert(enable_vr).
+  if (enable_vr) {
+    sources = [
+      "ar_compositor_delegate_provider.cc",
+      "ar_compositor_delegate_provider.h",
+      "xr_session_coordinator.cc",
+      "xr_session_coordinator.h",
     ]
+
+    if (enable_arcore) {
+      sources += [
+        "arcore_device_provider.cc",
+        "arcore_device_provider.h",
+        "arcore_install_helper.cc",
+        "arcore_install_helper.h",
+      ]
+    }
+
+    deps = [
+      ":android_utils",
+      ":xr_jni_headers",
+      "//base",
+      "//components/messages/android",
+      "//components/resources:android_resources",
+      "//components/strings",
+      "//components/webxr:webxr",
+      "//content/public/browser",
+      "//device/vr/android:vr_android",
+      "//ui/android",
+      "//ui/base",
+    ]
+
+    if (enable_arcore) {
+      deps += [ "//device/vr/android/arcore" ]
+    }
+
+    libs = [ "android" ]
   }
-
-  deps = [
-    ":android_utils",
-    ":xr_jni_headers",
-    "//base",
-    "//components/messages/android",
-    "//components/resources:android_resources",
-    "//components/strings",
-    "//components/webxr:webxr",
-    "//content/public/browser",
-    "//device/vr/android:vr_android",
-    "//ui/android",
-    "//ui/base",
-  ]
-
-  if (enable_arcore) {
-    deps += [ "//device/vr/android/arcore" ]
-  }
-
-  libs = [ "android" ]
 }
 
 # In order to be able to be included in WebView/WebLayer targets; though this

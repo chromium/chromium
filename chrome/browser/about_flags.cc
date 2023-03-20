@@ -4610,6 +4610,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"webxr-runtime", flag_descriptions::kWebXrForceRuntimeName,
      flag_descriptions::kWebXrForceRuntimeDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kWebXrForceRuntimeChoices)},
+#if BUILDFLAG(IS_ANDROID)
+    {"webxr-shared-buffers", flag_descriptions::kWebXrSharedBuffersName,
+     flag_descriptions::kWebXrSharedBuffersDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(device::features::kWebXrSharedBuffers)},
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // ENABLE_VR
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"disable-accelerated-mjpeg-decode",
