@@ -31,6 +31,7 @@ import './my_files.js';
 import './navigation.js';
 import './office.js';
 import './open_audio_media_app.js';
+import './open_hosted_files.js';
 import './open_image_media_app.js';
 import './open_sniffed_files.js';
 import './open_video_media_app.js';
