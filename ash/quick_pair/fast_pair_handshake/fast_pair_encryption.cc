@@ -20,12 +20,14 @@
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace {
 
-using ash::quick_pair::fast_pair_encryption::kBlockByteSize;
+using ash::quick_pair::fast_pair_encryption::kBlockSizeBytes;
 
 // Converts the public anti-spoofing key into an EC_Point.
 bssl::UniquePtr<EC_POINT> GetEcPointFromPublicAntiSpoofingKey(
@@ -130,21 +132,42 @@ absl::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
   return KeyPair(private_key, public_key);
 }
 
-const std::array<uint8_t, kBlockByteSize> EncryptBytes(
-    const std::array<uint8_t, kBlockByteSize>& aes_key_bytes,
-    const std::array<uint8_t, kBlockByteSize>& bytes_to_encrypt) {
+const std::array<uint8_t, kHmacSizeBytes> GenerateHmacSha256(
+    const std::array<uint8_t, kSecretKeySizeBytes>& secret_key,
+    std::array<uint8_t, kNonceSizeBytes> nonce,
+    const std::vector<uint8_t>& data) {
+  int nonce_data_concat_size = kNonceSizeBytes + data.size();
+  uint8_t nonce_data_concat[nonce_data_concat_size];
+  std::memcpy(nonce_data_concat, nonce.data(), kNonceSizeBytes);
+  std::memcpy(nonce_data_concat + kNonceSizeBytes, data.data(), data.size());
+
+  std::array<uint8_t, kHmacKeySizeBytes> K = {};
+  std::memcpy(K.data(), secret_key.data(), kSecretKeySizeBytes);
+
+  std::array<uint8_t, kHmacSizeBytes> output;
+  unsigned int output_size;
+  HMAC(/*evp_md=*/EVP_sha256(), /*key=*/&K,
+       /*key_len=*/kHmacKeySizeBytes, /*data=*/nonce_data_concat,
+       /*data_len=*/nonce_data_concat_size,
+       /*out=*/output.data(), /*out_len*/ &output_size);
+  return output;
+}
+
+const std::array<uint8_t, kBlockSizeBytes> EncryptBytes(
+    const std::array<uint8_t, kBlockSizeBytes>& aes_key_bytes,
+    const std::array<uint8_t, kBlockSizeBytes>& bytes_to_encrypt) {
   AES_KEY aes_key;
   int aes_key_was_set = AES_set_encrypt_key(aes_key_bytes.data(),
                                             aes_key_bytes.size() * 8, &aes_key);
   DCHECK(aes_key_was_set == 0) << "Invalid AES key size.";
-  std::array<uint8_t, kBlockByteSize> encrypted_bytes;
+  std::array<uint8_t, kBlockSizeBytes> encrypted_bytes;
   AES_encrypt(bytes_to_encrypt.data(), encrypted_bytes.data(), &aes_key);
   return encrypted_bytes;
 }
 
 const std::vector<uint8_t> EncryptAdditionalData(
-    const std::array<uint8_t, kSecretKeyByteSize>& secret_key,
-    std::array<uint8_t, kNonceByteSize> nonce,
+    const std::array<uint8_t, kSecretKeySizeBytes>& secret_key,
+    std::array<uint8_t, kNonceSizeBytes> nonce,
     const std::vector<uint8_t>& data) {
   if (data.empty()) {
     return {};
@@ -172,7 +195,7 @@ const std::vector<uint8_t> EncryptAdditionalData(
     int block_size =
         bytes_to_encrypt >= AES_BLOCK_SIZE ? AES_BLOCK_SIZE : bytes_to_encrypt;
     std::memset(ivec, 0, AES_BLOCK_SIZE);
-    std::memcpy(ivec + 8, nonce.data(), kNonceByteSize);
+    std::memcpy(ivec + 8, nonce.data(), kNonceSizeBytes);
     ivec[0] = i;
     uint offset = data.size() - bytes_to_encrypt;
     AES_ctr128_encrypt(/*in=*/data.data() + offset,
