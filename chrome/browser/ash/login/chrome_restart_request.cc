@@ -46,6 +46,7 @@
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
@@ -210,6 +211,7 @@ void DeriveCommandLine(const GURL& start_url,
     cc::switches::kSlowDownRasterScaleFactor,
     cc::switches::kUIEnableLayerLists,
     cc::switches::kUIShowFPSCounter,
+    extensions::switches::kLoadGuestModeTestExtension,
     switches::kArcAvailability,
     switches::kArcAvailable,
     switches::kArcScale,
