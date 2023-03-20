@@ -51,7 +51,39 @@ The test verifies functionality of querying style information for view-transitio
                                 name : display
                                 value : block
                             }
-                            [1] : {
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                text : :root
+                            }
+                        ]
+                        text : :root
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
                                 name : view-transition-name
                                 value : root
                             }

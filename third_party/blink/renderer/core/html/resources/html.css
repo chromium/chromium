@@ -25,6 +25,9 @@
 
 html {
     display: block;
+}
+
+:root {
     view-transition-name: root;
 }
 
