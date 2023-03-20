@@ -130,6 +130,7 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
 
 def _GetGpusFromTestConfig(test_config):
   """Generates all GPU dimension strings from a test config.
+
   Args:
     test_config: A dict containing a configuration for a specific test on a
         specific builder.
@@ -182,6 +183,12 @@ def GPUParallelJobs(test_config, _, tester_config):
         if is_webgpu_cts or gpu.startswith('8086:9bc5'):
           return ['--jobs=1']
         return ['--jobs=2']
+  # Similarly, the NVIDIA Macbooks are quite old and slow, so reduce the number
+  # of jobs there as well.
+  if os_type == 'mac' and is_webgl_cts:
+    for gpu in _GetGpusFromTestConfig(test_config):
+      if gpu.startswith('10de'):
+        return ['--jobs=3']
 
   if os_type in ['lacros', 'linux', 'mac', 'win']:
     return ['--jobs=4']

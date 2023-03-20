@@ -427,6 +427,9 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
+crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
+crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+
 ####################
 # Mac failures     #
 ####################
@@ -461,6 +464,8 @@ crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/mi
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
 
 ## Mac / Passthrough command decoder / Metal ##
+
+crbug.com/1363349 [ mac passthrough angle-metal ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
 
 ## Mac / M1 / OpenGL ##
 

@@ -213,6 +213,19 @@ crbug.com/1345782 [ mac amd-0x6821 passthrough angle-opengl ] deqp/functional/gl
 crbug.com/1345782 [ mac amd-0x679e passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Skip ]
 crbug.com/1345782 [ mac amd-0x67ef passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ Skip ]
 
+###############################
+# Permanent Slow Expectations #
+###############################
+# The "Slow" expectations in this section are expected to stick around, i.e.
+# they are not attributed to some known issue that needs resolving.
+
+# Seems to do enough JavaScript work that heartbeats are not reliably sent.
+[ android android-pixel-4 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -220,6 +233,19 @@ crbug.com/1345782 [ mac amd-0x67ef passthrough angle-opengl ] deqp/functional/gl
 
 crbug.com/891953 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
+
+# Can take a rather long time to load, during which heartbeats aren't sent.
+# TODO(crbug.com/1382796): Make this apply everywhere once it no longer
+# conflicts with the Android suppression.
+[ linux ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ mac ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ win ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ android android-nexus-5x ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ android android-pixel-2 ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ android android-pixel-6 ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ android android-shield-android-tv ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ android android-sm-a135m ] conformance2/sync/sync-webgl-specific.html [ Slow ]
+[ android android-sm-a235m ] conformance2/sync/sync-webgl-specific.html [ Slow ]
 
 # ========================
 # Conformance expectations
@@ -382,6 +408,8 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-rend
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_sizes_03.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/texturefiltering/cube_sizes_04.html [ Failure ]
 crbug.com/1298619 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
+
+crbug.com/1363349 [ mac passthrough angle-metal ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
 
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
@@ -711,7 +739,6 @@ crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1241183 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
 
 # Must investigate ChromeOS failures with passthrough command decoder.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]

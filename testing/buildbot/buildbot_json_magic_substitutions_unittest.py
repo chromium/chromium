@@ -178,9 +178,9 @@ class GPUParallelJobs(unittest.TestCase):
 
   def testWebGPUCTSWindowsIntelSerialJobs(self):
     intel_config = CreateConfigWithGpus(['8086:device1-driver'])
-    nvidia_config = CreateConfigWithGpus(['10de:device1-driver'])
+    amd_config = CreateConfigWithGpus(['1002:device1-driver'])
 
-    for gpu_config in [intel_config, nvidia_config]:
+    for gpu_config in [intel_config, amd_config]:
       for name, telemetry_test_name in [('webgpu_cts', None),
                                         (None, 'webgpu_cts')]:
         is_intel = intel_config == gpu_config
@@ -217,6 +217,27 @@ class GPUParallelJobs(unittest.TestCase):
                                                        {'os_type': os_type})
           if is_intel and os_type == 'win':
             self.assertEqual(retval, ['--jobs=2'])
+          else:
+            self.assertEqual(retval, ['--jobs=4'])
+
+  def testWebGLMacNvidiaParallelJobs(self):
+    amd_config = CreateConfigWithGpus(['1002:device1-driver'])
+    nvidia_config = CreateConfigWithGpus(['10de:device1-driver'])
+
+    for gpu_config in [nvidia_config, amd_config]:
+      for name, telemetry_test_name in [('webgl_conformance', None),
+                                        (None, 'webgl_conformance')]:
+        is_nvidia = gpu_config == nvidia_config
+        c = gpu_config.copy()
+        if name:
+          c['name'] = name
+        if telemetry_test_name:
+          c['telemetry_test_name'] = telemetry_test_name
+        for os_type in ['lacros', 'linux', 'mac', 'win']:
+          retval = magic_substitutions.GPUParallelJobs(c, None,
+                                                       {'os_type': os_type})
+          if is_nvidia and os_type == 'mac':
+            self.assertEqual(retval, ['--jobs=3'])
           else:
             self.assertEqual(retval, ['--jobs=4'])
 
