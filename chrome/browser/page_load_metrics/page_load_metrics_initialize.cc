@@ -28,7 +28,7 @@
 #include "chrome/browser/page_load_metrics/observers/optimization_guide_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/portal_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/prefetch_proxy_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/prefetch_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/protocol_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/scheme_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/security_state_page_load_metrics_observer.h"
@@ -131,8 +131,7 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     tracker->AddObserver(std::make_unique<ForegroundDurationUKMObserver>());
     tracker->AddObserver(
         std::make_unique<DocumentWritePageLoadMetricsObserver>());
-    tracker->AddObserver(
-        std::make_unique<PrefetchProxyPageLoadMetricsObserver>());
+    tracker->AddObserver(std::make_unique<PrefetchPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<MultiTabLoadingPageLoadMetricsObserver>());
     tracker->AddObserver(

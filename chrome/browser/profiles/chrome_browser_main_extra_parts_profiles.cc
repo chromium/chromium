@@ -116,7 +116,6 @@
 #include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/privacy/privacy_metrics_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -782,7 +781,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   policy::ManagementServiceFactory::GetInstance();
   PolicyBlocklistFactory::GetInstance();
   PredictionServiceFactory::GetInstance();
-  PrefetchProxyServiceFactory::GetInstance();
   PrimaryAccountPolicyManagerFactory::GetInstance();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   ProfileTokenWebSigninInterceptorFactory::GetInstance();

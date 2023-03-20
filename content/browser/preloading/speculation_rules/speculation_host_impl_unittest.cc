@@ -209,9 +209,7 @@ class TestSpeculationHostDelegate : public SpeculationHostDelegate {
 
   // SpeculationRulesDelegate implementation.
   void ProcessCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
-      base::WeakPtr<SpeculationHostDevToolsObserver> /*devtools_observer*/)
-      override {
+      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) override {
     candidates.clear();
   }
 };

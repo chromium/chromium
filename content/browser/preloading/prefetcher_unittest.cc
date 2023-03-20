@@ -28,9 +28,7 @@ class MockSpeculationHostDelegate : public SpeculationHostDelegate {
   ~MockSpeculationHostDelegate() override = default;
 
   void ProcessCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
-      base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer)
-      override {
+      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) override {
     for (auto&& candidate : candidates) {
       candidates_.push_back(std::move(candidate));
     }

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCHER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCHER_H_
 
+#include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/public/browser/speculation_host_delegate.h"
 
 namespace content {

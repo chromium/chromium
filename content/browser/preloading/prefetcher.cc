@@ -84,7 +84,7 @@ void Prefetcher::ProcessCandidatesForPrefetch(
 
   // Let `delegate_` process the candidates that it is interested in.
   if (delegate_)
-    delegate_->ProcessCandidates(candidates, weak_ptr_factory_.GetWeakPtr());
+    delegate_->ProcessCandidates(candidates);
 }
 
 }  // namespace content

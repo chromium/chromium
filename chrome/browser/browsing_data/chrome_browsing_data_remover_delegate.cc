@@ -61,9 +61,6 @@
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -526,12 +523,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
     if (optimization_guide_keyed_service)
       optimization_guide_keyed_service->ClearData();
-
-    PrefetchProxyService* prefetch_proxy_service =
-        PrefetchProxyServiceFactory::GetForProfile(profile_);
-    if (prefetch_proxy_service) {
-      prefetch_proxy_service->origin_decider()->OnBrowsingDataCleared();
-    }
 
     content::PrefetchServiceDelegate::ClearData(profile_);
 

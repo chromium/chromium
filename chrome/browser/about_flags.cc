@@ -48,8 +48,6 @@
 #include "chrome/browser/permissions/notifications_permission_revocation_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_features.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/share/share_features.h"

@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/browser/ui/login/login_handler_test_utils.h"

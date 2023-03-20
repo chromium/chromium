@@ -1511,6 +1511,7 @@ source_set("browser") {
     "preloading/prerenderer.h",
     "preloading/prerenderer_impl.cc",
     "preloading/prerenderer_impl.h",
+    "preloading/speculation_host_devtools_observer.h",
     "preloading/speculation_rules/speculation_host_impl.cc",
     "preloading/speculation_rules/speculation_host_impl.h",
     "presentation/presentation_service_impl.cc",

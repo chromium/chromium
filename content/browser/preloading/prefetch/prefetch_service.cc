@@ -1024,6 +1024,11 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchResponseStarted(
           net::HttpUtil::ParseRetryAfterHeader(
               retry_after_string, base::Time::Now(), &retry_after) &&
           delegate_) {
+        // Cap the retry after value to a maximum.
+        if (retry_after > PrefetchMaximumRetryAfterDelta()) {
+          retry_after = PrefetchMaximumRetryAfterDelta();
+        }
+
         delegate_->ReportOriginRetryAfter(prefetch_container->GetURL(),
                                           retry_after);
       }

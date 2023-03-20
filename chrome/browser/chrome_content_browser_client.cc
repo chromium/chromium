@@ -101,14 +101,10 @@
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/navigation_ablation_throttle.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_speculation_host_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/chrome_prefetch_service_delegate.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/chrome_speculation_host_delegate.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_features.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
-#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
+#include "chrome/browser/preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader_interceptor.h"
@@ -5948,14 +5944,6 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
       frame, type == URLLoaderFactoryType::kNavigation, request_initiator,
       factory_receiver);
 
-  auto* prefetch_proxy_service = PrefetchProxyServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
-  // |frame| is null when |type| is service worker.
-  if (frame && prefetch_proxy_service) {
-    use_proxy |= prefetch_proxy_service->MaybeProxyURLLoaderFactory(
-        frame, render_process_id, type, factory_receiver);
-  }
-
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   if (disable_secure_dns) {
     WebContents* web_contents = WebContents::FromRenderFrameHost(frame);
@@ -5991,11 +5979,6 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
       interceptors.push_back(std::move(pdf_interceptor));
   }
 #endif
-
-  if (base::FeatureList::IsEnabled(features::kIsolatePrerenders)) {
-    interceptors.push_back(std::make_unique<PrefetchProxyURLLoaderInterceptor>(
-        frame_tree_node_id));
-  }
 
   interceptors.push_back(
       std::make_unique<SearchPrefetchURLLoaderInterceptor>(frame_tree_node_id));
