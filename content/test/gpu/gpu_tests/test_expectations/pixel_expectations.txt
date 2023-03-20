@@ -306,6 +306,9 @@ crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
 # Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
 crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
 
+# Flakily times out on kevin devices.
+crbug.com/1426207 [ chromeos chromeos-board-kevin no-passthrough ] Pixel_Video_* [ Failure ]
+
 # Flaky on Fuchsia.
 crbug.com/1368748 [ fuchsia ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
