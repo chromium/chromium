@@ -207,7 +207,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const FormFieldData& field,
       base::WeakPtr<AutofillManager> autofill_manager) override;
   void HideFastCheckout(bool allow_further_runs) override;
-  bool IsFastCheckoutSupported() override;
+  bool IsFastCheckoutSupported(
+      const FormData& form,
+      const FormFieldData& field,
+      const AutofillManager& autofill_manager) override;
   bool IsShowingFastCheckoutUI() override;
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(

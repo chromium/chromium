@@ -232,7 +232,12 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (override));
   MOCK_METHOD(void, ScanCreditCard, (CreditCardScanCallback), (override));
-  MOCK_METHOD(bool, IsFastCheckoutSupported, (), (override));
+  MOCK_METHOD(bool,
+              IsFastCheckoutSupported,
+              (const autofill::FormData&,
+               const autofill::FormFieldData&,
+               const autofill::AutofillManager&),
+              (override));
   MOCK_METHOD(bool,
               TryToShowFastCheckout,
               (const autofill::FormData&,

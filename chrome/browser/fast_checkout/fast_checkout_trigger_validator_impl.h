@@ -24,12 +24,12 @@ class FastCheckoutTriggerValidatorImpl : public FastCheckoutTriggerValidator {
       const FastCheckoutTriggerValidatorImpl&) = delete;
 
   // FastCheckoutTriggerValidator:
-  bool ShouldRun(const autofill::FormData& form,
-                 const autofill::FormFieldData& field,
-                 const FastCheckoutUIState ui_state,
-                 const bool is_running,
-                 const base::WeakPtr<autofill::AutofillManager>
-                     autofill_manager) const override;
+  bool ShouldRun(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      const FastCheckoutUIState ui_state,
+      const bool is_running,
+      const autofill::AutofillManager& autofill_manager) const override;
   bool HasValidPersonalData() const override;
 
  private:

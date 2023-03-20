@@ -179,7 +179,7 @@ class MockFastCheckoutTriggerValidator : public FastCheckoutTriggerValidator {
                const autofill::FormFieldData&,
                const FastCheckoutUIState,
                const bool,
-               const base::WeakPtr<autofill::AutofillManager>),
+               const autofill::AutofillManager&),
               (const));
   MOCK_METHOD(bool, HasValidPersonalData, (), (const));
 };

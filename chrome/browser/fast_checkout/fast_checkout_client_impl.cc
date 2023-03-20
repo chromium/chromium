@@ -132,7 +132,7 @@ bool FastCheckoutClientImpl::TryToStart(
   }
 
   if (!trigger_validator_->ShouldRun(form, field, fast_checkout_ui_state_,
-                                     is_running_, autofill_manager)) {
+                                     is_running_, *autofill_manager)) {
     return false;
   }
 
@@ -617,6 +617,14 @@ void FastCheckoutClientImpl::OnNavigation(const GURL& url,
   } else if (!is_cart_or_checkout_url) {
     OnRunComplete(FastCheckoutRunOutcome::kNonCheckoutPage);
   }
+}
+
+bool FastCheckoutClientImpl::IsSupported(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& field,
+    const autofill::AutofillManager& autofill_manager) {
+  return trigger_validator_->ShouldRun(form, field, fast_checkout_ui_state_,
+                                       is_running_, autofill_manager);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FastCheckoutClientImpl);

@@ -50,6 +50,9 @@ class FastCheckoutClientImpl
   bool IsRunning() const override;
   bool IsShowing() const override;
   void OnNavigation(const GURL& url, bool is_cart_or_checkout_url) override;
+  bool IsSupported(const autofill::FormData& form,
+                   const autofill::FormFieldData& field,
+                   const autofill::AutofillManager& autofill_manager) override;
 
   // FastCheckoutControllerImpl::Delegate:
   void OnOptionsSelected(

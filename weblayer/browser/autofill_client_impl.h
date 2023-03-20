@@ -130,7 +130,10 @@ class AutofillClientImpl : public autofill::ContentAutofillClient,
       const autofill::FormFieldData& field,
       base::WeakPtr<autofill::AutofillManager> autofill_manager) override;
   void HideFastCheckout(bool allow_further_runs) override;
-  bool IsFastCheckoutSupported() override;
+  bool IsFastCheckoutSupported(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      const autofill::AutofillManager& autofill_manager) override;
   bool IsShowingFastCheckoutUI() override;
   bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(

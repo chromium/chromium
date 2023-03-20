@@ -269,7 +269,10 @@ void AutofillClientImpl::ScanCreditCard(CreditCardScanCallback callback) {
   NOTREACHED();
 }
 
-bool AutofillClientImpl::IsFastCheckoutSupported() {
+bool AutofillClientImpl::IsFastCheckoutSupported(
+    const autofill::FormData& form,
+    const autofill::FormFieldData& field,
+    const autofill::AutofillManager& autofill_manager) {
   return false;
 }
 

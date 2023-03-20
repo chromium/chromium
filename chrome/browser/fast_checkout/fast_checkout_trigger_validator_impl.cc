@@ -33,7 +33,7 @@ bool FastCheckoutTriggerValidatorImpl::ShouldRun(
     const autofill::FormFieldData& field,
     const FastCheckoutUIState ui_state,
     const bool is_running,
-    const base::WeakPtr<autofill::AutofillManager> autofill_manager) const {
+    const autofill::AutofillManager& autofill_manager) const {
   LogAutofillInternals(
       "Start of checking whether a Fast Checkout run should be permitted.");
 
@@ -89,7 +89,7 @@ bool FastCheckoutTriggerValidatorImpl::ShouldRun(
   }
 
   // Trigger only if the UI is available.
-  if (!autofill_manager->CanShowAutofillUi()) {
+  if (!autofill_manager.CanShowAutofillUi()) {
     LogUmaTriggerOutcome(
         FastCheckoutTriggerOutcome::kFailureCannotShowAutofillUi);
     LogAutofillInternals("not triggered because Autofill UI cannot be shown.");

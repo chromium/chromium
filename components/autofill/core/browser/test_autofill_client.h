@@ -382,7 +382,12 @@ class TestAutofillClientTemplate : public T {
 
   void HideFastCheckout(bool allow_further_runs) override {}
 
-  bool IsFastCheckoutSupported() override { return false; }
+  bool IsFastCheckoutSupported(
+      const FormData& form,
+      const FormFieldData& field,
+      const AutofillManager& autofill_manager) override {
+    return false;
+  }
 
   bool IsShowingFastCheckoutUI() override { return false; }
 

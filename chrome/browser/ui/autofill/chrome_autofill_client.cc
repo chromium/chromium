@@ -778,9 +778,14 @@ void ChromeAutofillClient::HideFastCheckout(bool allow_further_runs) {
 #endif
 }
 
-bool ChromeAutofillClient::IsFastCheckoutSupported() {
+bool ChromeAutofillClient::IsFastCheckoutSupported(
+    const FormData& form,
+    const FormFieldData& field,
+    const AutofillManager& autofill_manager) {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(::features::kFastCheckout);
+  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
+         FastCheckoutClient::GetOrCreateForWebContents(web_contents())
+             ->IsSupported(form, field, autofill_manager);
 #else
   return false;
 #endif

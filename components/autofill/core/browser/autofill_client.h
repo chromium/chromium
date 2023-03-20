@@ -665,7 +665,10 @@ class AutofillClient : public RiskDataLoader {
   // Returns true if the Fast Checkout feature is both supported by platform and
   // enabled.
   // TODO(crbug.com/1379149): Remove once bug is resolved.
-  virtual bool IsFastCheckoutSupported() = 0;
+  virtual bool IsFastCheckoutSupported(
+      const FormData& form,
+      const FormFieldData& field,
+      const AutofillManager& autofill_manager) = 0;
 
   // Returns whether the FC surface is currently being shown.
   virtual bool IsShowingFastCheckoutUI() = 0;

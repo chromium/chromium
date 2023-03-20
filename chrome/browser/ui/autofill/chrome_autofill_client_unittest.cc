@@ -14,6 +14,7 @@
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/prefs/pref_service.h"
@@ -163,10 +164,14 @@ TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeAutofillClientTest, IsFastCheckoutSupportedWithDisabledFeature) {
+  FormData form;
+  FormFieldData field;
   ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kFastCheckout);
+  auto manager = std::make_unique<BrowserAutofillManager>(autofill_driver(),
+                                                          client(), "en-US");
 
-  EXPECT_FALSE(client()->IsFastCheckoutSupported());
+  EXPECT_FALSE(client()->IsFastCheckoutSupported(form, field, *manager));
 }
 
 TEST_F(ChromeAutofillClientTest,

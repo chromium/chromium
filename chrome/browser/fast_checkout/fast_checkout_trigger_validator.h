@@ -22,12 +22,12 @@ class FastCheckoutTriggerValidator {
 
   // Returns `true` if a Fast Checkout run should be permitted, `false`
   // otherwise. Logs outcome to UMA and chrome://autofill-internals.
-  virtual bool ShouldRun(const autofill::FormData& form,
-                         const autofill::FormFieldData& field,
-                         const FastCheckoutUIState ui_state,
-                         const bool is_running,
-                         const base::WeakPtr<autofill::AutofillManager>
-                             autofill_manager) const = 0;
+  virtual bool ShouldRun(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      const FastCheckoutUIState ui_state,
+      const bool is_running,
+      const autofill::AutofillManager& autofill_manager) const = 0;
 
   // Returns `true` if the current profile has Autofill data enabled and at
   // least one valid Autofill profile and credit card stored, `false` otherwise.

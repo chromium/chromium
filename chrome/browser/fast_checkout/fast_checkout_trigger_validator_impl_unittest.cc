@@ -130,7 +130,7 @@ class FastCheckoutTriggerValidatorTest
 
   bool ShouldRun() {
     return validator()->ShouldRun(form_, field_, ui_state_, is_running_,
-                                  autofill_manager()->GetWeakPtr());
+                                  *autofill_manager());
   }
 
   // Protected for access in tests below.
