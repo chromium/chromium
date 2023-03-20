@@ -70,11 +70,17 @@
   _faviconContainerView = [[FaviconContainerView alloc] init];
   _localOnlyIcon = [[UIImageView alloc] init];
   _localOnlyIcon.image = CustomSymbolWithPointSize(kCloudSlashSymbol, 20);
-  [_localOnlyIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
+  _localOnlyIcon.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  [_localOnlyIcon setContentHuggingPriority:UILayoutPriorityRequired
                                     forAxis:UILayoutConstraintAxisHorizontal];
+  [_localOnlyIcon setContentHuggingPriority:UILayoutPriorityRequired
+                                    forAxis:UILayoutConstraintAxisVertical];
   [_localOnlyIcon
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
+  [_localOnlyIcon
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
   _localOnlyIcon.accessibilityIdentifier = kLocalOnlyPasswordIconId;
 
   _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
@@ -95,7 +101,7 @@
   horizontalStack.axis = UILayoutConstraintAxisHorizontal;
   horizontalStack.spacing = kTableViewSubViewHorizontalSpacing;
   horizontalStack.distribution = UIStackViewDistributionFill;
-  horizontalStack.alignment = UIStackViewAlignmentFill;
+  horizontalStack.alignment = UIStackViewAlignmentCenter;
 
   _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
