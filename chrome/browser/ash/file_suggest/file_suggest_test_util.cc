@@ -15,12 +15,43 @@ namespace ash {
 std::string CreateItemSuggestUpdateJsonString(
     const std::vector<SuggestItemMetadata>& item_data_array,
     const std::string& session_id) {
+  // JSON structure for each item is:
+  //
+  //   {
+  //     "itemId": "...",
+  //     "displayText": "...",
+  //     "justification": {
+  //       "unstructuredJustificationDescription": {
+  //         "textSegment": [
+  //           {
+  //             "text": "..."
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   }
+
   base::Value::List list_value;
   for (const auto& data : item_data_array) {
     base::Value::Dict dict_value;
     dict_value.Set("itemId", data.item_id);
     dict_value.Set("displayText", data.display_text);
-    dict_value.Set("predictionReason", data.prediction_reason);
+
+    base::Value::Dict text;
+    text.Set("text", data.prediction_reason);
+
+    base::Value::List text_segment;
+    text_segment.Append(std::move(text));
+
+    base::Value::Dict unstructured_description;
+    unstructured_description.Set("textSegment", std::move(text_segment));
+
+    base::Value::Dict justification;
+    justification.Set("unstructuredJustificationDescription",
+                      std::move(unstructured_description));
+
+    dict_value.Set("justification", std::move(justification));
+
     list_value.Append(std::move(dict_value));
   }
 

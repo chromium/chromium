@@ -50,12 +50,28 @@ constexpr char kValidJsonResponse[] = R"(
         {
           "itemId": "item id 2",
           "displayText": "display text 2",
-          "predictionReason": "prediction reason 2"
+          "justification": {
+            "unstructuredJustificationDescription": {
+              "textSegment": [
+                {
+                  "text": "prediction reason 2"
+                }
+              ]
+            }
+          }
         },
         {
           "itemId": "item id 3",
           "displayText": "display text 3",
-          "predictionReason": "prediction reason 3"
+          "justification": {
+            "unstructuredJustificationDescription": {
+              "textSegment": [
+                {
+                  "text": "prediction reason 3"
+                }
+              ]
+            }
+          }
         }
       ],
       "suggestionSessionId": "suggestion id 1"
@@ -399,7 +415,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheInvalidResponse) {
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName,
                                        /* sample= */ 14,
-                                       /* expected_count= */ 1);
+                                       /* expected_bucket_count= */ 1);
   histogram_tester_.ExpectUniqueSample(
       kStatusHistogramName, ItemSuggestCache::Status::kJsonParseFailure, 1);
 }
@@ -448,7 +464,7 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheConversionEmptyResults) {
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName,
                                        /* sample= */ 79,
-                                       /* expected_count= */ 1);
+                                       /* expected_bucket_count= */ 1);
   histogram_tester_.ExpectUniqueSample(
       kStatusHistogramName, ItemSuggestCache::Status::kNoResultsInResponse, 1);
 }
@@ -467,8 +483,8 @@ TEST_F(ItemSuggestCacheTest, UpdateCacheSavesResults) {
 
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectUniqueSample(kResponseSizeHistogramName,
-                                       /* sample= */ 477,
-                                       /* expected_count= */ 1);
+                                       /* sample= */ 716,
+                                       /* expected_bucket_count= */ 1);
   ResultsMatch(item_suggest_cache->GetResults(), "suggestion id 1",
                {{"item id 1", "display text 1", absl::nullopt},
                 {"item id 2", "display text 2", "prediction reason 2"},
