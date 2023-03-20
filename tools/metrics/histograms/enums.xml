@@ -60828,6 +60828,7 @@ from previous Chrome versions.
   <int value="-755776824" label="OmniboxRedoCurrentMatch:disabled"/>
   <int value="-755068996" label="AutofillEnableCardArtImage:disabled"/>
   <int value="-754726495" label="WebUITabStripContextMenuAfterTap:enabled"/>
+  <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
   <int value="-749550261" label="SeamlessRefreshRateSwitching:enabled"/>
@@ -61819,6 +61820,7 @@ from previous Chrome versions.
   <int value="-192962976" label="CCTResizableAlwaysShowNavBarButtons:enabled"/>
   <int value="-192919826" label="ViewsSimplifiedFullscreenUI:enabled"/>
   <int value="-192389983" label="NoStatePrefetch:enabled"/>
+  <int value="-190723154" label="AppLaunchAutomation:enabled"/>
   <int value="-189478545" label="ArcCustomTabsExperiment:enabled"/>
   <int value="-188439713" label="disable-video-capture-use-gpu-memory-buffer"/>
   <int value="-186707397" label="HideArcMediaNotifications:enabled"/>
