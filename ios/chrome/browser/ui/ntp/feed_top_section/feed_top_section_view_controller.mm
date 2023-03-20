@@ -172,7 +172,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   [NSLayoutConstraint activateConstraints:self.contentStackConstraints];
 }
 
-// Configures a creates a signin promo view.
+// Configures and creates a signin promo view.
 - (SigninPromoView*)createPromoView {
   DCHECK(self.signinPromoDelegate);
   SigninPromoView* promoView =

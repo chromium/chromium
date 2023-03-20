@@ -52,9 +52,10 @@
 // cropped first). Must only be called in the "Warm State" mode.
 - (void)setProfileImage:(UIImage*)image;
 
-// Sets the image in `imageView`. This image will be used as an alternative to
-// the chromium icon in "Cold State" mode. This image will not use
-// CircularImageFromImage(), instead it will be shown as is.
+// Sets the image in `imageView`. This image will be used as an
+// alternative to the chromium icon in "Cold State" mode. This image
+// will not use CircularImageFromImage(), instead it will be shown
+// as is.
 - (void)setNonProfileImage:(UIImage*)image;
 
 // Resets the view to be reused.
