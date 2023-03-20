@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/parsing_buildflags.h"
 #include "base/run_loop.h"
+#include "base/rust_buildflags.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
