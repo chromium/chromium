@@ -225,12 +225,6 @@ void WebAXObject::MarkAXObjectDirtyWithDetails(
       private_.Get(), subtree, event_from, event_from_action, event_intents);
 }
 
-bool WebAXObject::IsDirty() {
-  if (IsDetached())
-    return false;
-  return private_->AXObjectCache().IsDirty(*private_);
-}
-
 void WebAXObject::OnLoadInlineTextBoxes() const {
   if (IsDetached())
     return;

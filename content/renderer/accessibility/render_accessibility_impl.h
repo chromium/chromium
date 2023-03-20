@@ -133,7 +133,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
-  blink::WebDocument GetMainDocument();
+  blink::WebDocument GetMainDocument() const;
 
   blink::WebAXContext* GetAXContext() { return ax_context_.get(); }
 
@@ -287,7 +287,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
   PluginAXTreeSource* plugin_tree_source_;
-  blink::WebAXObject plugin_host_node_;
 
   // Nonzero if the browser requested we reset the accessibility state.
   // We need to return this token in the next IPC.

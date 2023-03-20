@@ -736,7 +736,7 @@ void RenderAccessibilityImpl::AXReadyCallback() {
   // due to an iframe returning 204 or window.stop() being called. In these
   // cases there will never be an AXTreeID as there is no commit, which will
   // prevent accessibility updates from ever being sent even if the rendering is
-  // fixed.
+  // fixed. See also other TODOs related to 1231184 in this file.
   if (!render_frame_->GetWebFrame()->GetAXTreeID().token()) {
     // This <frame> doesn't have a token yet, which would make it impossible
     // to connect to its parent "child tree owner" node.
@@ -819,7 +819,7 @@ void RenderAccessibilityImpl::LegacyScheduleSendPendingAccessibilityEvents(
   // due to an iframe returning 204 or window.stop() being called. In these
   // cases there will never be an AXTreeID as there is no commit, which will
   // prevent accessibility updates from ever being sent even if the rendering is
-  // fixed.
+  // fixed. See also other TODOs related to 1231184.
   if (!render_frame_->GetWebFrame()->GetAXTreeID().token()) {
     return;
   }
@@ -902,7 +902,12 @@ ui::AXTreeID RenderAccessibilityImpl::GetTreeIDForPluginHost() const {
   DCHECK(render_frame_->GetWebFrame())
       << "A render frame that contains an actively constructed plugin tree "
          "should be in the list of committed web frames.";
-  // TODO(nektar): Why are some frames without an embedding token?
+  // Note: the AXTreeID comes from an embedding token.
+  // TODO(1231184): There are some cases where no content is currently rendered,
+  // due to an iframe returning 204 or window.stop() being called. In these
+  // cases there will never be an AXTreeID as there is no commit, which will
+  // prevent accessibility updates from ever being sent even if the rendering is
+  // fixed. See also other TODOs related to 1231184 in this file.
   return render_frame_->GetWebFrame()->GetAXTreeID();
 }
 
@@ -948,7 +953,7 @@ void RenderAccessibilityImpl::ShowPluginContextMenu() {
   target->PerformAction(action_data);
 }
 
-WebDocument RenderAccessibilityImpl::GetMainDocument() {
+WebDocument RenderAccessibilityImpl::GetMainDocument() const {
   if (render_frame_ && render_frame_->GetWebFrame())
     return render_frame_->GetWebFrame()->GetDocument();
   return WebDocument();
@@ -1343,11 +1348,11 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   }
 #endif
 
-  // Keep track of if the host node for a plugin has been invalidated,
+  // Keep track of if the host document for a plugin has been invalidated,
   // because if so, the plugin subtree will need to be re-serialized.
   bool mark_plugin_subtree_dirty = false;
   if (plugin_tree_source_) {
-    mark_plugin_subtree_dirty = plugin_host_node_.IsDirty();
+    mark_plugin_subtree_dirty = WebAXObject::IsDirty(GetMainDocument());
   }
 
   // The serialized list of updates and events to send to the browser.
@@ -1530,8 +1535,6 @@ void RenderAccessibilityImpl::AddPluginTreeToUpdate(
 
   for (ui::AXNodeData& node : update->nodes) {
     if (node.role == ax::mojom::Role::kEmbeddedObject) {
-      plugin_host_node_ = WebAXObject::FromWebDocumentByID(document, node.id);
-
       const ui::AXNode* root = plugin_tree_source_->GetRoot();
       node.child_ids.push_back(root->id());
 
