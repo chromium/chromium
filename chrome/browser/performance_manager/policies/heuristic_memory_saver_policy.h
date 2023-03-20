@@ -22,15 +22,19 @@ class HeuristicMemorySaverPolicy : public GraphOwned {
   // `pmf_threshold_percent`: the amount of free memory this policy tries to
   // maintain, i.e. it will start discarding when the percentage available
   // memory < pmf_threshold_percent
-  // `heartbeat_interval`: the time interval at which this policy will check
-  // whether a tab should be discarded.
-  // `minimum_time_in_background`: the minimum amount of time a page must spend
-  // in the background before being considered eligible for discarding.
-  // `available_memory_cb` and `total_memory_cb` allow mocking memory
-  // measurements for testing.
+  // `threshold_reached_heartbeat_interval`: the time interval at which this
+  // policy will check whether a tab should be discarded, when the last check
+  // found that the threshold was reached.
+  // `threshold_not_reached_heartbeat_interval`: the time interval at which this
+  // policy will check whether a tab should be discarded, when the last check
+  // found that the threshold was not reached. `minimum_time_in_background`: the
+  // minimum amount of time a page must spend in the background before being
+  // considered eligible for discarding. `available_memory_cb` and
+  // `total_memory_cb` allow mocking memory measurements for testing.
   HeuristicMemorySaverPolicy(
       uint64_t pmf_threshold_percent,
-      base::TimeDelta heartbeat_interval,
+      base::TimeDelta threshold_reached_heartbeat_interval,
+      base::TimeDelta threshold_not_reached_heartbeat_interval,
       base::TimeDelta minimum_time_in_background,
       AvailableMemoryCallback available_memory_cb =
           base::BindRepeating(&HeuristicMemorySaverPolicy::
@@ -50,16 +54,18 @@ class HeuristicMemorySaverPolicy : public GraphOwned {
 
  private:
   void OnHeartbeatCallback();
+  void ScheduleNextHeartbeat(base::TimeDelta interval);
 
   static uint64_t DefaultGetAmountOfAvailablePhysicalMemory();
   static uint64_t DefaultGetAmountOfPhysicalMemory();
 
   uint64_t pmf_threshold_percent_;
-  base::TimeDelta heartbeat_interval_;
+  base::TimeDelta threshold_reached_heartbeat_interval_;
+  base::TimeDelta threshold_not_reached_heartbeat_interval_;
   base::TimeDelta minimum_time_in_background_;
 
   bool is_active_ = false;
-  base::RepeatingTimer heartbeat_timer_;
+  base::OneShotTimer heartbeat_timer_;
 
   AvailableMemoryCallback available_memory_cb_;
   TotalMemoryCallback total_memory_cb_;

@@ -14,7 +14,30 @@ const uint64_t kDefaultAvailableMemoryValue = 60;
 const uint64_t kDefaultTotalMemoryValue = 100;
 
 const base::TimeDelta kDefaultHeartbeatInterval = base::Seconds(10);
+const base::TimeDelta kLongHeartbeatInterval = base::Minutes(1);
 const base::TimeDelta kDefaultMinimumTimeInBackground = base::Seconds(11);
+
+class MemoryMetricsMocker {
+ public:
+  uint64_t GetAvailableMemory() {
+    ++available_memory_sampled_count;
+    return available_memory_;
+  }
+
+  uint64_t GetTotalMemory() { return total_memory_; }
+
+  void SetAvailableMemory(uint64_t available_memory) {
+    available_memory_ = available_memory;
+  }
+
+  void SetTotalMemory(uint64_t total_memory) { total_memory_ = total_memory; }
+
+  int available_memory_sampled_count = 0;
+
+ private:
+  uint64_t available_memory_ = 0;
+  uint64_t total_memory_ = 0;
+};
 
 class HeuristicMemorySaverPolicyTest
     : public testing::GraphTestHarnessWithMockDiscarder {
@@ -43,7 +66,8 @@ class HeuristicMemorySaverPolicyTest
   // always return 60 and 100.
   void CreatePolicy(
       uint64_t pmf_threshold_percent,
-      base::TimeDelta heartbeat_interval,
+      base::TimeDelta threshold_reached_heartbeat_interval,
+      base::TimeDelta threshold_not_reached_heartbeat_interval,
       base::TimeDelta minimum_time_in_background,
       HeuristicMemorySaverPolicy::AvailableMemoryCallback
           available_memory_callback = base::BindRepeating([]() {
@@ -52,7 +76,8 @@ class HeuristicMemorySaverPolicyTest
       HeuristicMemorySaverPolicy::TotalMemoryCallback total_memory_callback =
           base::BindRepeating([]() { return kDefaultTotalMemoryValue; })) {
     auto policy = std::make_unique<HeuristicMemorySaverPolicy>(
-        pmf_threshold_percent, heartbeat_interval, minimum_time_in_background,
+        pmf_threshold_percent, threshold_reached_heartbeat_interval,
+        threshold_not_reached_heartbeat_interval, minimum_time_in_background,
         available_memory_callback, total_memory_callback);
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
@@ -86,9 +111,11 @@ class HeuristicMemorySaverPolicyTest
 };
 
 TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfPolicyInactive) {
-  CreatePolicy(/*pmf_threshold_percent=*/100,
-               /*heartbeat_interval=*/kDefaultHeartbeatInterval,
-               /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
+  CreatePolicy(
+      /*pmf_threshold_percent=*/100,
+      /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
 
   policy()->SetActive(false);
 
@@ -108,9 +135,11 @@ TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfPolicyInactive) {
 }
 
 TEST_F(HeuristicMemorySaverPolicyTest, DiscardIfPolicyActive) {
-  CreatePolicy(/*pmf_threshold_percent=*/100,
-               /*heartbeat_interval=*/kDefaultHeartbeatInterval,
-               /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
+  CreatePolicy(
+      /*pmf_threshold_percent=*/100,
+      /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
 
   policy()->SetActive(true);
 
@@ -135,9 +164,11 @@ TEST_F(HeuristicMemorySaverPolicyTest, DiscardIfPolicyActive) {
 }
 
 TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfUnderThreshold) {
-  CreatePolicy(/*pmf_threshold_percent=*/30,
-               /*heartbeat_interval=*/kDefaultHeartbeatInterval,
-               /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
+  CreatePolicy(
+      /*pmf_threshold_percent=*/30,
+      /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*threshold_not_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground);
 
   policy()->SetActive(true);
 
@@ -154,6 +185,76 @@ TEST_F(HeuristicMemorySaverPolicyTest, NoDiscardIfUnderThreshold) {
                            kDefaultMinimumTimeInBackground);
   // No discard.
   ::testing::Mock::VerifyAndClearExpectations(discarder());
+}
+
+TEST_F(HeuristicMemorySaverPolicyTest, DifferentThresholds) {
+  MemoryMetricsMocker mocker;
+  mocker.SetAvailableMemory(60);
+  mocker.SetTotalMemory(100);
+
+  CreatePolicy(
+      /*pmf_threshold_percent=*/30,
+      /*threshold_reached_heartbeat_interval=*/kDefaultHeartbeatInterval,
+      /*threshold_not_reached_heartbeat_interval=*/kLongHeartbeatInterval,
+      /*minimum_time_in_background=*/kDefaultMinimumTimeInBackground,
+      /*available_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetAvailableMemory,
+                          base::Unretained(&mocker)),
+      /*total_memory_callback=*/
+      base::BindRepeating(&MemoryMetricsMocker::GetTotalMemory,
+                          base::Unretained(&mocker)));
+
+  policy()->SetActive(true);
+
+  // Advance the time just enough to get the first heartbeat
+  task_env().FastForwardBy(kDefaultHeartbeatInterval);
+  // No discard yet.
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  // The memory was sampled once in the callback.
+  EXPECT_EQ(1, mocker.available_memory_sampled_count);
+
+  // Simulate reaching the threshold so that the next heartbeat callback
+  // schedules the timer with the short interval.
+  mocker.SetAvailableMemory(10);
+  mocker.SetTotalMemory(100);
+
+  // Advance the time by one short heartbeat again. Memory shouldn't be sampled
+  // a second time because the next heartbeat was scheduled for the long
+  // interval (since we weren't past the threshold).
+  task_env().FastForwardBy(kDefaultHeartbeatInterval);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  EXPECT_EQ(1, mocker.available_memory_sampled_count);
+
+  // Advance by the difference between the long and short heartbeats, so that we
+  // just reach the long one. This should trigger the timer's callback, sample
+  // memory and see that we're above the threshold, and discard a tab + schedule
+  // the next check using the short interval.
+  EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
+      .WillOnce(::testing::Return(true));
+  task_env().FastForwardBy(kLongHeartbeatInterval - kDefaultHeartbeatInterval);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  EXPECT_EQ(2, mocker.available_memory_sampled_count);
+
+  // Simulate that the discard got us back under the threshold.
+  mocker.SetAvailableMemory(40);
+  mocker.SetTotalMemory(100);
+
+  // After the short interval, the memory is sampled again (and seen under the
+  // threshold). No tab is discarded and the next heartbeat is scheduled using
+  // the long interval.
+  task_env().FastForwardBy(kDefaultHeartbeatInterval);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  EXPECT_EQ(3, mocker.available_memory_sampled_count);
+
+  // Verify that there was no sampling after the short interval but there was
+  // one after the long interval.
+  task_env().FastForwardBy(kDefaultHeartbeatInterval);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  EXPECT_EQ(3, mocker.available_memory_sampled_count);
+
+  task_env().FastForwardBy(kLongHeartbeatInterval - kDefaultHeartbeatInterval);
+  ::testing::Mock::VerifyAndClearExpectations(discarder());
+  EXPECT_EQ(4, mocker.available_memory_sampled_count);
 }
 
 }  // namespace performance_manager::policies

@@ -88,8 +88,14 @@ extern const base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kHeuristicMemorySaver);
 
 // Controls the interval at which HeuristicMemorySaverPolicy checks whether the
-// amount of available memory is smaller than the discarding threshold.
-extern const base::FeatureParam<int> kHeuristicMemorySaverHeartbeatSeconds;
+// amount of available memory is smaller than the discarding threshold. The
+// "ThresholdReached" version is used when the device is past the threshold
+// specified by `kHeuristicMemorySaverAvailableMemoryThresholdPercent` and the
+// "ThresholdNotReached" version is used otherwise.
+extern const base::FeatureParam<int>
+    kHeuristicMemorySaverThresholdReachedHeartbeatSeconds;
+extern const base::FeatureParam<int>
+    kHeuristicMemorySaverThresholdNotReachedHeartbeatSeconds;
 
 // The percentage of available physical memory at which
 // HeuristicMemorySaverPolicy will start discarding tabs. For example, setting

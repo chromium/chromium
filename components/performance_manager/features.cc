@@ -92,8 +92,12 @@ BASE_FEATURE(kHeuristicMemorySaver,
              "HeuristicMemorySaver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kHeuristicMemorySaverHeartbeatSeconds{
-    &kHeuristicMemorySaver, "heartbeat_seconds", 10};
+const base::FeatureParam<int>
+    kHeuristicMemorySaverThresholdReachedHeartbeatSeconds{
+        &kHeuristicMemorySaver, "threshold_reached_heartbeat_seconds", 10};
+const base::FeatureParam<int>
+    kHeuristicMemorySaverThresholdNotReachedHeartbeatSeconds{
+        &kHeuristicMemorySaver, "threshold_not_reached_heartbeat_seconds", 60};
 
 const base::FeatureParam<int>
     kHeuristicMemorySaverAvailableMemoryThresholdPercent{

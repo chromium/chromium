@@ -186,8 +186,14 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
               performance_manager::policies::HeuristicMemorySaverPolicy>(
               performance_manager::features::
                   kHeuristicMemorySaverAvailableMemoryThresholdPercent.Get(),
-              base::Seconds(performance_manager::features::
-                                kHeuristicMemorySaverHeartbeatSeconds.Get()),
+              base::Seconds(
+                  performance_manager::features::
+                      kHeuristicMemorySaverThresholdReachedHeartbeatSeconds
+                          .Get()),
+              base::Seconds(
+                  performance_manager::features::
+                      kHeuristicMemorySaverThresholdNotReachedHeartbeatSeconds
+                          .Get()),
               base::Minutes(
                   performance_manager::features::
                       kHeuristicMemorySaverMinimumMinutesInBackground.Get())));
