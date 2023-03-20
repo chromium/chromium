@@ -27,6 +27,8 @@ const enum HistogramName {
   AMBIENT_OPTIN = 'Ash.Personalization.AmbientMode.OptIn',
   AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS =
       'Ash.Personalization.Ambient.GooglePhotosPreviewsLoadTime',
+  KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION =
+      'Ash.Personalization.KeyboardBacklight.OpenZoneCustomization',
 }
 
 function toMetricsEnum(path: Paths) {
@@ -68,4 +70,9 @@ export function logGooglePhotosPreviewsLoadTime() {
       HistogramName.AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS, timeMs);
   chrome.metricsPrivate.recordTime(
       HistogramName.AMBIENT_PERFORMANCE_GOOGLE_PHOTOS_PREVIEWS, timeMs);
+}
+
+export function logKeyboardBacklightOpenZoneCustomizationUMA() {
+  chrome.metricsPrivate.recordBoolean(
+      HistogramName.KEYBOARD_BACKLIGHT_OPEN_ZONE_CUSTOMIZATION, true);
 }

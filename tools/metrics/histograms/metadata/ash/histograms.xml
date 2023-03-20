@@ -4309,6 +4309,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Personalization.KeyboardBacklight.OpenZoneCustomization"
+    units="BooleanHit" expires_after="2024-03-20">
+  <owner>thuongphan@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Emitted every time the user selects 'Customize' button to open zone
+    customization dialog to view or set zone colors, even when no zone color
+    changed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid"
     enum="BooleanValid" expires_after="2023-08-20">
   <owner>jasontt@chromium.org</owner>
