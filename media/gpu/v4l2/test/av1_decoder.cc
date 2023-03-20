@@ -1023,12 +1023,9 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
         ref_frames_[current_frame_header.frame_to_show];
 
     size = CAPTURE_queue_->display_size();
-    ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
-                     static_cast<uint8_t*>(
-                         repeated_frame_buffer->mmapped_planes()[0].start_addr),
-                     static_cast<uint8_t*>(
-                         repeated_frame_buffer->mmapped_planes()[1].start_addr),
-                     CAPTURE_queue_->coded_size());
+    ConvertToYUV(y_plane, u_plane, v_plane, size,
+                 repeated_frame_buffer->mmapped_planes(),
+                 CAPTURE_queue_->coded_size(), CAPTURE_queue_->fourcc());
 
     // Repeated frames normally don't need to update reference frames. But in
     // this special case when the repeated frame is pointing to a key frame, all
@@ -1109,26 +1106,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
 
   scoped_refptr<MmappedBuffer> buffer = CAPTURE_queue_->GetBuffer(buffer_id);
   size = CAPTURE_queue_->display_size();
-  if (CAPTURE_queue_->fourcc() == V4L2_PIX_FMT_NV12) {
-    CHECK_EQ(buffer->mmapped_planes().size(), 1u)
-        << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
-
-    ConvertNV12ToYUV(
-        y_plane, u_plane, v_plane, size,
-        static_cast<uint8_t*>(buffer->mmapped_planes()[0].start_addr),
-        CAPTURE_queue_->coded_size());
-  } else if (CAPTURE_queue_->fourcc() == v4l2_fourcc('M', 'M', '2', '1')) {
-    CHECK_EQ(buffer->mmapped_planes().size(), 2u)
-        << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
-
-    ConvertMM21ToYUV(
-        y_plane, u_plane, v_plane, size,
-        static_cast<uint8_t*>(buffer->mmapped_planes()[0].start_addr),
-        static_cast<uint8_t*>(buffer->mmapped_planes()[1].start_addr),
-        CAPTURE_queue_->coded_size());
-  } else {
-    LOG(FATAL) << "Unsupported CAPTURE queue format";
-  }
+  ConvertToYUV(y_plane, u_plane, v_plane, size, buffer->mmapped_planes(),
+               CAPTURE_queue_->coded_size(), CAPTURE_queue_->fourcc());
 
   const std::set<int> reusable_buffer_ids = RefreshReferenceSlots(
       current_frame_header, current_frame, CAPTURE_queue_->GetBuffer(buffer_id),

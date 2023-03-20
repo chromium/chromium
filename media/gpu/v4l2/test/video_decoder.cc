@@ -114,6 +114,114 @@ void DetilePlane(std::vector<uint8_t>& dest,
   }
 }
 
+// Unpacks NV12 to I420 and optionally trims padding from source.
+// This expects a contiguous NV12 buffer, as specified by
+// V4L2_PIX_FMT_NV12.
+void ConvertNV12ToYUV(std::vector<uint8_t>& dest_y,
+                      std::vector<uint8_t>& dest_u,
+                      std::vector<uint8_t>& dest_v,
+                      const gfx::Size& dest_size,
+                      const uint8_t* src,
+                      const gfx::Size& src_size) {
+  CHECK(dest_size.width() <= src_size.width());
+  CHECK(dest_size.height() <= src_size.height());
+
+  // Copy Y plane
+  dest_y.reserve(dest_size.GetArea());
+  for (int i = 0; i < dest_size.height(); i++) {
+    dest_y.insert(dest_y.end(), src, src + dest_size.width());
+    src += src_size.width();
+  }
+
+  // Move to start of UV plane
+  if (dest_size.height() < src_size.height()) {
+    src += src_size.width() * (src_size.height() - dest_size.height());
+  }
+
+  // Pad size for U/V plane to handle odd dimensions
+  gfx::Size dest_aligned_size(base::bits::AlignUp(dest_size.width(), 2),
+                              base::bits::AlignUp(dest_size.height(), 2));
+  const int uv_height = dest_aligned_size.height() / 2;
+  const int uv_width = dest_aligned_size.width() / 2;
+
+  // Unpack UV plane
+  dest_u.reserve(dest_aligned_size.GetArea() / 4);
+  dest_v.reserve(dest_aligned_size.GetArea() / 4);
+
+  for (int i = 0; i < uv_height; i++) {
+    for (int j = 0; j < uv_width; j++) {
+      dest_u.push_back(src[0]);
+      dest_v.push_back(src[1]);
+      src += 2;
+    }
+
+    // Skip any trailing pixels on the line in the source image
+    // Skip is based on non-sub-sampled dimensions
+    if (dest_aligned_size.width() < src_size.width()) {
+      src += src_size.width() - dest_aligned_size.width();
+    }
+  }
+}
+
+void ConvertMM21ToYUV(std::vector<uint8_t>& dest_y,
+                      std::vector<uint8_t>& dest_u,
+                      std::vector<uint8_t>& dest_v,
+                      const gfx::Size& dest_size,
+                      uint8_t* src_y,
+                      uint8_t* src_uv,
+                      const gfx::Size& src_size) {
+  constexpr int kMM21TileWidth = 16;
+  constexpr int kMM21TileHeight = 32;
+
+  LOG_ASSERT(src_size.width() % kMM21TileWidth == 0)
+      << "Source buffer width (" << src_size.width()
+      << ") must be a multiple of " << kMM21TileWidth;
+  constexpr gfx::Size kYTileSize(kMM21TileWidth, kMM21TileHeight);
+  constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
+
+  // Detile and pad MM21's luma plane in a temporary |src_y_padded|.
+  std::vector<uint8_t> src_y_padded;
+  src_y_padded.reserve(src_size.GetArea());
+  DetilePlane(src_y_padded, src_size, src_y, src_size, kYTileSize);
+  dest_y =
+      CopyAndRemovePadding(src_y_padded.data(), src_size.width(), dest_size);
+
+  // Detile and pad MM21's chroma plane in a temporary |src_uv_padded|.
+  const gfx::Size src_uv_size(base::bits::AlignUp(src_size.width(), 2),
+                              base::bits::AlignUp(src_size.height(), 2) / 2);
+  std::vector<uint8_t> src_uv_padded;
+  src_uv_padded.reserve(src_uv_size.GetArea());
+  DetilePlane(src_uv_padded, src_uv_size, src_uv, src_uv_size, kUVTileSize);
+
+  // Round up plane dimensions for odd resolution bitstreams.
+  const size_t u_plane_padded_width =
+      base::bits::AlignUp(src_size.width(), 2) / 2;
+  const size_t v_plane_padded_width =
+      base::bits::AlignUp(src_size.width(), 2) / 2;
+  const size_t u_plane_padded_height =
+      base::bits::AlignUp(src_size.height(), 2) / 2;
+  const gfx::Size u_plane_padded_size(u_plane_padded_width,
+                                      u_plane_padded_height);
+
+  std::vector<uint8_t> src_u_padded;
+  std::vector<uint8_t> src_v_padded;
+  src_u_padded.reserve(src_uv_size.GetArea() / 2);
+  src_v_padded.reserve(src_uv_size.GetArea() / 2);
+
+  // Unpack NV12's UV plane into separate U and V planes.
+  UnpackUVPlane(src_u_padded, src_v_padded, src_uv_padded, u_plane_padded_size);
+
+  const gfx::Size src_u_padded_size(
+      base::bits::AlignUp(dest_size.width(), 2) / 2,
+      base::bits::AlignUp(dest_size.height(), 2) / 2);
+  const gfx::Size src_v_padded_size(
+      base::bits::AlignUp(dest_size.width(), 2) / 2,
+      base::bits::AlignUp(dest_size.height(), 2) / 2);
+  dest_u = CopyAndRemovePadding(src_u_padded.data(), u_plane_padded_width,
+                                src_u_padded_size);
+  dest_v = CopyAndRemovePadding(src_v_padded.data(), v_plane_padded_width,
+                                src_v_padded_size);
+}
 }  // namespace
 
 uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
@@ -240,111 +348,29 @@ VideoDecoder::Result VideoDecoder::HandleDynamicResolutionChange(
   return VideoDecoder::kOk;
 }
 
-// Unpacks NV12 to I420 and optionally trims padding from source.
-// This expects a contiguous NV12 buffer, as specified by
-// V4L2_PIX_FMT_NV12.
-void VideoDecoder::ConvertNV12ToYUV(std::vector<uint8_t>& dest_y,
-                                    std::vector<uint8_t>& dest_u,
-                                    std::vector<uint8_t>& dest_v,
-                                    const gfx::Size& dest_size,
-                                    const uint8_t* src,
-                                    const gfx::Size& src_size) {
-  CHECK(dest_size.width() <= src_size.width());
-  CHECK(dest_size.height() <= src_size.height());
+void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
+                                std::vector<uint8_t>& dest_u,
+                                std::vector<uint8_t>& dest_v,
+                                const gfx::Size& dest_size,
+                                const MmappedBuffer::MmappedPlanes& planes,
+                                const gfx::Size& src_size,
+                                uint32_t fourcc) {
+  if (fourcc == V4L2_PIX_FMT_NV12) {
+    CHECK_EQ(planes.size(), 1u)
+        << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
 
-  // Copy Y plane
-  dest_y.reserve(dest_size.GetArea());
-  for (int i = 0; i < dest_size.height(); i++) {
-    dest_y.insert(dest_y.end(), src, src + dest_size.width());
-    src += src_size.width();
+    ConvertNV12ToYUV(dest_y, dest_u, dest_v, dest_size,
+                     static_cast<uint8_t*>(planes[0].start_addr), src_size);
+  } else if (fourcc == v4l2_fourcc('M', 'M', '2', '1')) {
+    CHECK_EQ(planes.size(), 2u)
+        << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
+
+    ConvertMM21ToYUV(dest_y, dest_u, dest_v, dest_size,
+                     static_cast<uint8_t*>(planes[0].start_addr),
+                     static_cast<uint8_t*>(planes[1].start_addr), src_size);
+  } else {
+    LOG(FATAL) << "Unsupported CAPTURE queue format";
   }
-
-  // Move to start of UV plane
-  if (dest_size.height() < src_size.height())
-    src += src_size.width() * (src_size.height() - dest_size.height());
-
-  // Pad size for U/V plane to handle odd dimensions
-  gfx::Size dest_aligned_size(base::bits::AlignUp(dest_size.width(), 2),
-                              base::bits::AlignUp(dest_size.height(), 2));
-  const int uv_height = dest_aligned_size.height() / 2;
-  const int uv_width = dest_aligned_size.width() / 2;
-
-  // Unpack UV plane
-  dest_u.reserve(dest_aligned_size.GetArea() / 4);
-  dest_v.reserve(dest_aligned_size.GetArea() / 4);
-
-  for (int i = 0; i < uv_height; i++) {
-    for (int j = 0; j < uv_width; j++) {
-      dest_u.push_back(src[0]);
-      dest_v.push_back(src[1]);
-      src += 2;
-    }
-
-    // Skip any trailing pixels on the line in the source image
-    // Skip is based on non-sub-sampled dimensions
-    if (dest_aligned_size.width() < src_size.width())
-      src += src_size.width() - dest_aligned_size.width();
-  }
-}
-
-void VideoDecoder::ConvertMM21ToYUV(std::vector<uint8_t>& dest_y,
-                                    std::vector<uint8_t>& dest_u,
-                                    std::vector<uint8_t>& dest_v,
-                                    const gfx::Size& dest_size,
-                                    uint8_t* src_y,
-                                    uint8_t* src_uv,
-                                    const gfx::Size& src_size) {
-  constexpr int kMM21TileWidth = 16;
-  constexpr int kMM21TileHeight = 32;
-
-  LOG_ASSERT(src_size.width() % kMM21TileWidth == 0)
-      << "Source buffer width (" << src_size.width()
-      << ") must be a multiple of " << kMM21TileWidth;
-  constexpr gfx::Size kYTileSize(kMM21TileWidth, kMM21TileHeight);
-  constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
-
-  // Detile and pad MM21's luma plane in a temporary |src_y_padded|.
-  std::vector<uint8_t> src_y_padded;
-  src_y_padded.reserve(src_size.GetArea());
-  DetilePlane(src_y_padded, src_size, src_y, src_size, kYTileSize);
-  dest_y =
-      CopyAndRemovePadding(src_y_padded.data(), src_size.width(), dest_size);
-
-  // Detile and pad MM21's chroma plane in a temporary |src_uv_padded|.
-  const gfx::Size src_uv_size(base::bits::AlignUp(src_size.width(), 2),
-                              base::bits::AlignUp(src_size.height(), 2) / 2);
-  std::vector<uint8_t> src_uv_padded;
-  src_uv_padded.reserve(src_uv_size.GetArea());
-  DetilePlane(src_uv_padded, src_uv_size, src_uv, src_uv_size, kUVTileSize);
-
-  // Round up plane dimensions for odd resolution bitstreams.
-  const size_t u_plane_padded_width =
-      base::bits::AlignUp(src_size.width(), 2) / 2;
-  const size_t v_plane_padded_width =
-      base::bits::AlignUp(src_size.width(), 2) / 2;
-  const size_t u_plane_padded_height =
-      base::bits::AlignUp(src_size.height(), 2) / 2;
-  const gfx::Size u_plane_padded_size(u_plane_padded_width,
-                                      u_plane_padded_height);
-
-  std::vector<uint8_t> src_u_padded;
-  std::vector<uint8_t> src_v_padded;
-  src_u_padded.reserve(src_uv_size.GetArea() / 2);
-  src_v_padded.reserve(src_uv_size.GetArea() / 2);
-
-  // Unpack NV12's UV plane into separate U and V planes.
-  UnpackUVPlane(src_u_padded, src_v_padded, src_uv_padded, u_plane_padded_size);
-
-  const gfx::Size src_u_padded_size(
-      base::bits::AlignUp(dest_size.width(), 2) / 2,
-      base::bits::AlignUp(dest_size.height(), 2) / 2);
-  const gfx::Size src_v_padded_size(
-      base::bits::AlignUp(dest_size.width(), 2) / 2,
-      base::bits::AlignUp(dest_size.height(), 2) / 2);
-  dest_u = CopyAndRemovePadding(src_u_padded.data(), u_plane_padded_width,
-                                src_u_padded_size);
-  dest_v = CopyAndRemovePadding(src_v_padded.data(), v_plane_padded_width,
-                                src_v_padded_size);
 }
 
 std::vector<uint8_t> VideoDecoder::ConvertYUVToPNG(uint8_t* y_plane,

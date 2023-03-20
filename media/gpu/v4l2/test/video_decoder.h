@@ -64,22 +64,14 @@ class VideoDecoder {
                                               const gfx::Size& size);
 
  protected:
-  // Helper method for converting NV12 frames to I420.
-  static void ConvertNV12ToYUV(std::vector<uint8_t>& dest_y,
-                               std::vector<uint8_t>& dest_u,
-                               std::vector<uint8_t>& dest_v,
-                               const gfx::Size& dest_size,
-                               const uint8_t* src,
-                               const gfx::Size& src_size);
-
-  // Helper method for converting MM21 frames to I420.
-  static void ConvertMM21ToYUV(std::vector<uint8_t>& dest_y,
-                               std::vector<uint8_t>& dest_u,
-                               std::vector<uint8_t>& dest_v,
-                               const gfx::Size& dest_size,
-                               uint8_t* src_y,
-                               uint8_t* src_uv,
-                               const gfx::Size& src_size);
+  // Helper method for converting frames to YUV.
+  static void ConvertToYUV(std::vector<uint8_t>& dest_y,
+                           std::vector<uint8_t>& dest_u,
+                           std::vector<uint8_t>& dest_v,
+                           const gfx::Size& dest_size,
+                           const MmappedBuffer::MmappedPlanes& planes,
+                           const gfx::Size& src_size,
+                           uint32_t fourcc);
 
   // Wrapper for V4L2 ioctl requests.
   const std::unique_ptr<V4L2IoctlShim> v4l2_ioctl_;
