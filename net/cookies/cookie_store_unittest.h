@@ -1129,13 +1129,15 @@ TYPED_TEST_P(CookieStoreTest, TestTLD) {
 
   // Allow setting on "com", (but only as a host cookie).
   EXPECT_TRUE(this->SetCookie(cs, url, "a=1"));
-  // Domain cookies can't be set.
-  EXPECT_FALSE(this->SetCookie(cs, url, "b=2; domain=.com"));
+  // Domain is normalized by stripping leading `.` and lowercasing, so this
+  // still works.
+  EXPECT_TRUE(this->SetCookie(cs, url, "b=2; domain=.com"));
+  EXPECT_TRUE(this->SetCookie(cs, url, "c=3; domain=CoM"));
   // Exact matches between the domain attribute and the host are treated as
   // host cookies, not domain cookies.
-  EXPECT_TRUE(this->SetCookie(cs, url, "c=3; domain=com"));
+  EXPECT_TRUE(this->SetCookie(cs, url, "d=4; domain=com"));
 
-  this->MatchCookieLines("a=1; c=3", this->GetCookies(cs, url));
+  this->MatchCookieLines("a=1; b=2; c=3; d=4", this->GetCookies(cs, url));
 
   // Make sure they don't show up for a normal .com, they should be host,
   // domain, cookies.
@@ -1151,8 +1153,9 @@ TYPED_TEST_P(CookieStoreTest, TestTLDWithTerminalDot) {
   CookieStore* cs = this->GetCookieStore();
   GURL url("http://com./index.html");
   EXPECT_TRUE(this->SetCookie(cs, url, "a=1"));
-  EXPECT_FALSE(this->SetCookie(cs, url, "b=2; domain=.com."));
-  this->MatchCookieLines("a=1", this->GetCookies(cs, url));
+  EXPECT_TRUE(this->SetCookie(cs, url, "b=2; domain=.com."));
+  EXPECT_TRUE(this->SetCookie(cs, url, "c=3; domain=CoM."));
+  this->MatchCookieLines("a=1 b=2 c=3", this->GetCookies(cs, url));
   this->MatchCookieLines(
       std::string(),
       this->GetCookies(cs, GURL("http://hopefully-no-cookies.com./")));
@@ -1191,8 +1194,13 @@ TYPED_TEST_P(CookieStoreTest, TestSettingCookiesOnUnknownTLD) {
   CookieStore* cs = this->GetCookieStore();
   GURL url("http://b");
   EXPECT_TRUE(this->SetCookie(cs, url, "a=1"));
-  EXPECT_FALSE(this->SetCookie(cs, url, "b=2; domain=.b"));
-  this->MatchCookieLines("a=1", this->GetCookies(cs, url));
+  // Even though this syntax looks like a domain cookie, it is treated as a host
+  // cookie because `b` is treated as a public suffix.
+  EXPECT_TRUE(this->SetCookie(cs, url, "b=2; domain=.b"));
+  this->MatchCookieLines("a=1 b=2", this->GetCookies(cs, url));
+  // Verify that this is a host cookie and does not affect a subdomain.
+  GURL subdomain_url("http://a.b");
+  this->MatchCookieLines("", this->GetCookies(cs, subdomain_url));
 }
 
 // Exact matches between the domain attribute and an intranet host are

@@ -492,4 +492,91 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 }
 
+// Cookies for an eTLD should be stored (via JS) if they match the URL host,
+// even if they begin with `.` or have non-canonical capitalization.
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookies) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // This test uses `gov.br` as an example of an eTLD.
+  GURL http_url = embedded_test_server()->GetURL("gov.br", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  WebContentsImpl* web_contents_http =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHost* frame = web_contents_http->GetPrimaryMainFrame();
+
+  const char* kCases[] = {
+      // A host cookie.
+      "c=1",
+      // A cookie for this domain.
+      "c=1; domain=gov.br",
+      // Same, but with a preceding dot. This dot should be ignored.
+      "c=1; domain=.gov.br",
+      // Same, but with non-canonical case. This should be canonicalized.
+      "c=1; domain=gOv.bR",
+  };
+
+  for (const char* set_cookie : kCases) {
+    SCOPED_TRACE(set_cookie);
+    SetCookieFromJS(frame, set_cookie);
+    EXPECT_EQ("c=1", GetCookieFromJS(frame));
+    SetCookieFromJS(frame, "c=;expires=Thu, 01 Jan 1970 00:00:00 GMT");
+    EXPECT_EQ("", GetCookieFromJS(frame));
+  }
+}
+
+// Cookies for an eTLD should be stored (via header) if they match the URL host,
+// even if they begin with `.` or have non-canonical capitalization.
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookiesHeader) {
+  std::string got_cookie_on_request;
+  std::string set_cookie_on_response;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        if (request.headers.contains("Cookie")) {
+          got_cookie_on_request = request.headers.at("Cookie");
+        } else {
+          got_cookie_on_request = "";
+        }
+        if (set_cookie_on_response.size() != 0) {
+          response->AddCustomHeader("Set-Cookie", set_cookie_on_response);
+          set_cookie_on_response = "";
+        }
+        return std::move(response);
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // This test uses `gov.br` as an example of an eTLD.
+  GURL http_url = embedded_test_server()->GetURL("gov.br", "/empty.html");
+
+  const char* kCases[] = {
+      // A host cookie.
+      "c=1",
+      // A cookie for this domain.
+      "c=1; domain=gov.br",
+      // Same, but with a preceding dot. This dot should be ignored.
+      "c=1; domain=.gov.br",
+      // Same, but with non-canonical case. This should be canonicalized.
+      "c=1; domain=gOv.bR",
+  };
+
+  for (const char* set_cookie : kCases) {
+    SCOPED_TRACE(set_cookie);
+
+    set_cookie_on_response = set_cookie;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+    EXPECT_EQ("c=1", got_cookie_on_request);
+
+    set_cookie_on_response = "c=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+    EXPECT_EQ("", got_cookie_on_request);
+  }
+}
+
 }  // namespace content

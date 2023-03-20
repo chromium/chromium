@@ -465,6 +465,95 @@ TEST(CanonicalCookieTest, CreateWithInvalidDomain) {
       {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
 }
 
+// Creating a cookie for an eTLD is possible, but it must match the hostname and
+// be a host cookie.
+TEST(CanonicalCookieTest, CreateFromPublicSuffix) {
+  GURL url("http://com/path");
+  base::Time now = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  CookieInclusionStatus status;
+
+  // Host cookie can be created for an eTLD.
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+      url, "A=2", now, server_time, absl::nullopt, &status);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsHostCookie());
+  EXPECT_EQ("com", cookie->Domain());
+
+  // Attempting to create a domain cookie still yields a valid cookie, but only
+  // if the domain attribute is the same as the URL's host, and it becomes a
+  // host cookie only.
+  cookie = CanonicalCookie::Create(url, "A=2; domain=com", now, server_time,
+                                   absl::nullopt, &status);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsHostCookie());
+  EXPECT_EQ("com", cookie->Domain());
+
+  // Same thing if the domain attribute is specified with a dot.
+  cookie = CanonicalCookie::Create(url, "A=2; domain=.com", now, server_time,
+                                   absl::nullopt, &status);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsHostCookie());
+  EXPECT_EQ("com", cookie->Domain());
+
+  // Capitalization is ok because everything is canonicalized.
+  cookie = CanonicalCookie::Create(url, "A=2; domain=CoM", now, server_time,
+                                   absl::nullopt, &status);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsHostCookie());
+  EXPECT_EQ("com", cookie->Domain());
+
+  // Test an eTLD that is more than one label.
+  // If the domain attribute minus any leading dot is the same as the url's
+  // host, allow it to become a host cookie.
+  GURL multilabel_url = GURL("http://co.uk/path");
+  cookie = CanonicalCookie::Create(multilabel_url, "A=2", now, server_time,
+                                   absl::nullopt, &status);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsHostCookie());
+  EXPECT_EQ("co.uk", cookie->Domain());
+
+  cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=co.uk", now,
+                                   server_time, absl::nullopt, &status);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsHostCookie());
+  EXPECT_EQ("co.uk", cookie->Domain());
+
+  cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=.co.uk", now,
+                                   server_time, absl::nullopt, &status);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsHostCookie());
+  EXPECT_EQ("co.uk", cookie->Domain());
+
+  // Don't allow setting a domain cookie from a public suffix for a superdomain.
+  cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=uk", now,
+                                   server_time, absl::nullopt, &status);
+  EXPECT_EQ(nullptr, cookie.get());
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+
+  cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=.uk", now,
+                                   server_time, absl::nullopt, &status);
+  EXPECT_EQ(nullptr, cookie.get());
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+
+  // Don't allow setting a domain cookie for an unrelated domain.
+  cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=foo.com", now,
+                                   server_time, absl::nullopt, &status);
+  EXPECT_EQ(nullptr, cookie.get());
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+
+  // Don't allow setting a domain cookie for some other domain with no
+  // registrable domain.
+  cookie = CanonicalCookie::Create(multilabel_url, "A=2; domain=com", now,
+                                   server_time, absl::nullopt, &status);
+  EXPECT_EQ(nullptr, cookie.get());
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+}
+
 TEST(CanonicalCookieTest, CreateWithNonASCIIDomain) {
   GURL url("http://www.xn--xample-9ua.com/test/foo.html");
   base::Time now = base::Time::Now();
