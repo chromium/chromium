@@ -201,6 +201,6 @@ gfx::Size GetSampleBufferSize(CMSampleBufferRef sample_buffer) {
 
 BASE_FEATURE(kUseAVCaptureDeviceDiscoverySession,
              "UseAVCaptureDeviceDiscoverySession",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace media
