@@ -49,11 +49,12 @@ class TestRenderFrameHostCreationObserver : public WebContentsObserver {
 
   // WebContentsObserver implementation.
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
   RenderFrameHost* last_created_frame() const { return last_created_frame_; }
 
  private:
-  raw_ptr<RenderFrameHost> last_created_frame_;
+  raw_ptr<RenderFrameHost> last_created_frame_ = nullptr;
 };
 
 class TestRenderFrameHost : public RenderFrameHostImpl,

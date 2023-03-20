@@ -53,7 +53,7 @@ namespace content {
 
 TestRenderFrameHostCreationObserver::TestRenderFrameHostCreationObserver(
     WebContents* web_contents)
-    : WebContentsObserver(web_contents), last_created_frame_(nullptr) {}
+    : WebContentsObserver(web_contents) {}
 
 TestRenderFrameHostCreationObserver::~TestRenderFrameHostCreationObserver() =
     default;
@@ -61,6 +61,13 @@ TestRenderFrameHostCreationObserver::~TestRenderFrameHostCreationObserver() =
 void TestRenderFrameHostCreationObserver::RenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   last_created_frame_ = render_frame_host;
+}
+
+void TestRenderFrameHostCreationObserver::RenderFrameDeleted(
+    RenderFrameHost* render_frame_host) {
+  if (last_created_frame_ == render_frame_host) {
+    last_created_frame_ = nullptr;
+  }
 }
 
 TestRenderFrameHost::TestRenderFrameHost(
