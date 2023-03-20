@@ -15,6 +15,7 @@
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/processor_entity_tracker.h"
+#include "components/sync/protocol/model_type_state_helper.h"
 
 namespace syncer {
 
@@ -61,10 +62,15 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
       continue;
     }
 
-    LogNonReflectionUpdateFreshnessToUma(
-        type_,
-        /*remote_modification_time=*/
-        ProtoTimeToTime(entity->metadata().modification_time()));
+    // Log update freshness metrics only if the initial sync is fully done (for
+    // data types in ApplyUpdatesImmediatelyTypes(), it may only be
+    // PARTIALLY_DONE here).
+    if (IsInitialSyncDone(model_type_state.initial_sync_state())) {
+      LogNonReflectionUpdateFreshnessToUma(
+          type_,
+          /*remote_modification_time=*/
+          ProtoTimeToTime(entity->metadata().modification_time()));
+    }
 
     if (entity->storage_key().empty()) {
       // Storage key of this entity is not known yet. Don't update metadata, it

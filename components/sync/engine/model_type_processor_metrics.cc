@@ -35,13 +35,6 @@ void LogUpdatesReceivedByProcessorHistogram(ModelType model_type,
 
 void LogNonReflectionUpdateFreshnessToUma(ModelType type,
                                           base::Time remote_modification_time) {
-  // TODO(crbug.com/1417105): This metric is only meaningful for incremental
-  // updates, and currently ApplyUpdatesImmediatelyTypes() don't properly
-  // distinguish incremental vs initial/full updates.
-  if (ApplyUpdatesImmediatelyTypes().Has(type)) {
-    return;
-  }
-
   const base::TimeDelta freshness =
       base::Time::Now() - remote_modification_time;
 
