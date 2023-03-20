@@ -252,8 +252,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   [draggingItem setDraggingFrame:imageRect contents:image];
 
   _dragOperation = operationMask;
-  _dragOffset = offset;
-  _dragImageHeight = image.size.height;
 
   // Run the drag operation.
   [self beginDraggingSessionWithItems:@[ draggingItem ]
@@ -275,12 +273,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   if (!_host) {
     return;
   }
-
-  // Reconstruct the screen point by removing the offset. It seems like the
-  // underlying drag machinery is measuring from the corner of the dragged
-  // image.
-  screenPoint.x += _dragOffset.x;
-  screenPoint.y += _dragImageHeight - _dragOffset.y;
 
   NSPoint localPoint = NSZeroPoint;
   if (self.window) {
