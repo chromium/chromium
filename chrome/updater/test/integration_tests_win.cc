@@ -298,14 +298,28 @@ void CheckInstallation(UpdaterScope scope,
 
   const absl::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, base::Version(kUpdaterVersion));
-  EXPECT_TRUE(path);
+  ASSERT_TRUE(path);
   EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
                         return is_installed == base::PathExists(*path);
                       }),
                       base::BindLambdaForTesting([&]() {
                         VLOG(0) << "Still waiting for " << *path
                                 << " where is_installed=" << is_installed;
-                      })));
+                      })))
+      << base::JoinString(
+             [&path]() {
+               base::FileEnumerator it(*path, true,
+                                       base::FileEnumerator::FILES |
+                                           base::FileEnumerator::DIRECTORIES);
+               std::vector<base::FilePath::StringType> files;
+               for (base::FilePath name = it.Next(); !name.empty();
+                    name = it.Next()) {
+                 files.push_back(name.value());
+               }
+
+               return files;
+             }(),
+             FILE_PATH_LITERAL(","));
 }
 
 // Returns true if any updater process is found running in any session in the
