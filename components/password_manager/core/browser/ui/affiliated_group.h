@@ -35,6 +35,9 @@ class AffiliatedGroup {
   // Method that returns the icon URL for this affiliated group.
   const GURL& GetIconURL() const { return branding_info_.icon_url; }
 
+  // Fallback icon when icon returned by the affiliation service can't be used.
+  GURL GetFallbackIconURL() const;
+
  private:
   // The branding information for the affiliated group. Corresponds to the
   // `BrandingInfo` message in affiliation_api.proto.

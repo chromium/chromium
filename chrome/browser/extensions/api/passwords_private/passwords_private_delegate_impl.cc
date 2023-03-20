@@ -290,11 +290,14 @@ void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
 PasswordsPrivateDelegate::CredentialsGroups
 PasswordsPrivateDelegateImpl::GetCredentialGroups() {
   std::vector<api::passwords_private::CredentialGroup> groups;
+  bool sync_enabled = password_manager::sync_util::IsPasswordSyncEnabled(
+      SyncServiceFactory::GetForProfile(profile_));
   for (const password_manager::AffiliatedGroup& group :
        saved_passwords_presenter_.GetAffiliatedGroups()) {
     api::passwords_private::CredentialGroup group_api;
     group_api.name = group.GetDisplayName();
-    group_api.icon_url = group.GetIconURL().spec();
+    group_api.icon_url = sync_enabled ? group.GetIconURL().spec()
+                                      : group.GetFallbackIconURL().spec();
 
     DCHECK(!group.GetCredentials().empty());
     for (const CredentialUIEntry& credential : group.GetCredentials()) {

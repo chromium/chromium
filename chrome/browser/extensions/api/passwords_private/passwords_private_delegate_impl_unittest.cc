@@ -1301,7 +1301,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups) {
   EXPECT_EQ(1u, groups.size());
   EXPECT_EQ(2u, groups[0].entries.size());
   EXPECT_EQ("abc1.com", groups[0].name);
-  EXPECT_EQ("", groups[0].icon_url);
+  EXPECT_EQ("https://abc1.com/favicon.ico", groups[0].icon_url);
 
   api::passwords_private::PasswordUiEntry expected_entry1;
   expected_entry1.urls.link = "https://abc1.com/";
