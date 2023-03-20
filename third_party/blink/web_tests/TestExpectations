@@ -3708,9 +3708,6 @@ crbug.com/1399631 animations/interpolation/svg-stroke-interpolation.html [ Crash
 crbug.com/1399631 external/wpt/css/css-properties-values-api/at-property-animation.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 external/wpt/css/css-properties-values-api/register-property.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 external/wpt/css/css-sizing/animation/aspect-ratio-interpolation.html [ Crash Failure Pass Timeout ]
-crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-001.html [ Crash Failure Pass Timeout ]
-crbug.com/1399631 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-003.html [ Crash Failure Pass Timeout ]
-crbug.com/1399631 external/wpt/css/filter-effects/animation/filter-interpolation-003.html [ Crash Failure Pass Timeout ]
 crbug.com/1399631 transitions/unanimatable-properties.html [ Crash Failure Pass Timeout ]
 
 # Tests failing when enabling new modern media controls

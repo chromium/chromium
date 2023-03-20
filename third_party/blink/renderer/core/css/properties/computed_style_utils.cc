@@ -3020,10 +3020,9 @@ CSSValue* ComputedStyleUtils::ValueForFilter(
     FilterOperation* filter_operation = operation.Get();
     switch (filter_operation->GetType()) {
       case FilterOperation::OperationType::kReference:
-        filter_value = MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kUrl);
-        filter_value->Append(*MakeGarbageCollected<CSSStringValue>(
-            To<ReferenceFilterOperation>(filter_operation)->Url()));
-        break;
+        list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(AtomicString(
+            To<ReferenceFilterOperation>(filter_operation)->Url())));
+        continue;
       case FilterOperation::OperationType::kGrayscale:
         filter_value =
             MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kGrayscale);
