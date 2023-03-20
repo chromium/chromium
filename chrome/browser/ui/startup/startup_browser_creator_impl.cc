@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/headless/headless_command_processor.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -406,16 +409,11 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
         !SessionStartupPref::TypeHasRecommendedValue(profile_->GetPrefs());
   }
 
-  // TODO(https://crbug.com/1276034): Cleanup this code, in particular on Ash
-  // where the welcome flow is never shown.
-  bool welcome_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile_))
-    welcome_enabled = false;
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+  bool welcome_enabled = false;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   welcome_enabled =
       welcome::IsEnabled(profile_) && welcome::HasModulesToShow(profile_);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   const bool whats_new_enabled =
       whats_new::ShouldShowForState(local_state, promotional_tabs_enabled);
@@ -566,7 +564,14 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     if (!distribution_tabs.empty())
       return {std::move(distribution_tabs), launch_result};
 
-    StartupTabs onboarding_tabs;
+    // Whether a first run experience was or will be shown as part of this
+    // startup. Specifically, this refers to either chrome://welcome or the
+    // Desktop "For You" First Run Experience.
+    bool has_first_run_experience = false;
+    // Whether some tabs featuring the "welcome" experience (chrome://welcome)
+    // have been added to the startup tabs.
+    bool has_welcome_tabs = false;
+
     if (promotional_tabs_enabled) {
       StartupTabs welcome_back_tabs;
 #if BUILDFLAG(IS_WIN)
@@ -580,19 +585,36 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
       AppendTabs(welcome_back_tabs, &tabs);
 #endif  // BUILDFLAG(IS_WIN)
 
-      if (welcome_enabled) {
-        // Policies for welcome (e.g., first run) may show promotional and
-        // introductory content depending on a number of system status factors,
-        // including OS and whether or not this is First Run.
-        onboarding_tabs = provider.GetOnboardingTabs(profile_);
-        AppendTabs(onboarding_tabs, &tabs);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      if (is_first_run_ == chrome::startup::IsFirstRun::kYes &&
+          base::FeatureList::IsEnabled(kForYouFre)) {
+        // We just showed the first run experience in the Desktop FRE window,
+        // suppress the in-browser welcome.
+        has_first_run_experience = true;
+      } else if (welcome_enabled) {
+        if (is_first_run_ == chrome::startup::IsFirstRun::kYes &&
+            base::FeatureList::IsEnabled(kForYouFre)) {
+          // This is the first run and we already showed a welcome experience
+          // through the Desktop FRE.
+          has_first_run_experience = true;
+        } else {
+          // Policies for welcome (e.g., first run) may show promotional and
+          // introductory content depending on a number of system status
+          // factors, including OS and whether or not this is First Run.
+          StartupTabs onboarding_tabs = provider.GetOnboardingTabs(profile_);
+          AppendTabs(onboarding_tabs, &tabs);
+
+          has_welcome_tabs = !onboarding_tabs.empty();
+          has_first_run_experience = has_welcome_tabs;
+        }
       }
+#endif
 
       // Potentially add the What's New Page. Note that the What's New page
       // should never be shown in the same session as any first-run onboarding
       // tabs. It also shouldn't be shown with reset tabs or welcome back tabs
       // that are required to always be the first foreground tab.
-      if (onboarding_tabs.empty() && reset_tabs.empty() &&
+      if (!has_first_run_experience && reset_tabs.empty() &&
           welcome_back_tabs.empty()) {
         StartupTabs new_features_tabs;
         new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
@@ -608,16 +630,17 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
         provider.GetPreferencesTabs(*command_line_, profile_);
     AppendTabs(prefs_tabs, &tabs);
 
-    // Potentially add the New Tab Page. Onboarding content is designed to
-    // replace (and eventually funnel the user to) the NTP. Note
+    // Potentially add the New Tab Page. The welcome page (but not the FRE) is
+    // designed to replace (and eventually funnel the user to) the NTP. Note
     // URLs from preferences are explicitly meant to override showing the NTP.
-    if (onboarding_tabs.empty() && prefs_tabs.empty())
+    if (!has_welcome_tabs && prefs_tabs.empty()) {
       AppendTabs(provider.GetNewTabPageTabs(*command_line_, profile_), &tabs);
+    }
 
     // Potentially add a tab appropriate to display the Privacy Sandbox
     // confirmaton dialog on top of. Ideally such a tab will already exist
     // in |tabs|, and no additional tab will be required.
-    if (onboarding_tabs.empty() && privacy_sandbox_dialog_required &&
+    if (!has_welcome_tabs && privacy_sandbox_dialog_required &&
         launch_result == LaunchResult::kNormally) {
       AppendTabs(provider.GetPrivacySandboxTabs(profile_, tabs), &tabs);
     }

@@ -154,8 +154,9 @@ StartupTabs StartupTabProviderImpl::GetOnboardingTabs(Profile* profile) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return StartupTabs();
 #else
-  if (!profile)
+  if (!profile || base::FeatureList::IsEnabled(kForYouFre)) {
     return StartupTabs();
+  }
 
   StandardOnboardingTabsParams standard_params;
   standard_params.is_first_run = first_run::IsChromeFirstRun();
@@ -322,9 +323,6 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabs(
 bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,
                                             bool is_child_account,
                                             bool is_force_signin_enabled) {
-  if (base::FeatureList::IsEnabled(kForYouFre)) {
-    return false;
-  }
   return is_signin_allowed && !is_child_account && !is_force_signin_enabled;
 }
 
@@ -342,6 +340,8 @@ StartupTabs StartupTabProviderImpl::GetStandardOnboardingTabsForState(
   StartupTabs tabs;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  DCHECK(!base::FeatureList::IsEnabled(kForYouFre));
+
   if (CanShowWelcome(params.is_signin_allowed, params.is_child_account,
                      params.is_force_signin_enabled) &&
       ShouldShowWelcomeForOnboarding(params.has_seen_welcome_page,
@@ -487,8 +487,6 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 GURL StartupTabProviderImpl::GetWelcomePageUrl(bool use_later_run_variant) {
-  DCHECK(!base::FeatureList::IsEnabled(kForYouFre));
-
   GURL url(chrome::kChromeUIWelcomeURL);
   return use_later_run_variant
              ? net::AppendQueryParameter(url, "variant", "everywhere")

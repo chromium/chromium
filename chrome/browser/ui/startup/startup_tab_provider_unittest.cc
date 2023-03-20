@@ -63,30 +63,6 @@ TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState) {
     EXPECT_EQ(output[0].type, StartupTab::Type::kNormal);
   }
 }
-
-TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_WithFre) {
-  base::test::ScopedFeatureList scoped_feature_list{kForYouFre};
-
-  {
-    // No welcome page for new unauthenticated profile on first run.
-    StandardOnboardingTabsParams params;
-    params.is_first_run = true;
-    params.is_signin_allowed = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-
-    ASSERT_EQ(0U, output.size());
-  }
-  {
-    // No welcome page after first run.
-    StandardOnboardingTabsParams params;
-    params.is_signin_allowed = true;
-    StartupTabs output =
-        StartupTabProviderImpl::GetStandardOnboardingTabsForState(params);
-
-    ASSERT_EQ(0U, output.size());
-  }
-}
 #endif
 
 TEST(StartupTabProviderTest, GetStandardOnboardingTabsForState_Negative) {
@@ -342,6 +318,17 @@ TEST(StartupTabProviderTest, IncognitoProfile) {
   StartupTabs output = StartupTabProviderImpl().GetOnboardingTabs(incognito);
   EXPECT_TRUE(output.empty());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST(StartupTabProviderTest, ForYouFreEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{kForYouFre};
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  StartupTabs output = StartupTabProviderImpl().GetOnboardingTabs(&profile);
+  ASSERT_EQ(0U, output.size());
+}
+#endif
 
 TEST(StartupTabProviderTest, GetCommandLineTabs) {
   content::BrowserTaskEnvironment task_environment;
