@@ -147,12 +147,23 @@ PasswordCheckState IOSChromePasswordCheckManager::GetPasswordCheckState()
       bulk_leak_check_service_adapter_.GetBulkLeakCheckState());
 }
 
-base::Time IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
+absl::optional<base::Time>
+IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
+  if (!browser_state_->GetPrefs()->HasPrefPath(
+          password_manager::prefs::kLastTimePasswordCheckCompleted)) {
+    return last_completed_weak_or_reuse_check_;
+  }
+
   base::Time last_password_check =
       base::Time::FromDoubleT(browser_state_->GetPrefs()->GetDouble(
           password_manager::prefs::kLastTimePasswordCheckCompleted));
 
-  return std::max(last_password_check, last_completed_weak_or_reuse_check_);
+  if (!last_completed_weak_or_reuse_check_.has_value()) {
+    return last_password_check;
+  }
+
+  return std::max(last_password_check,
+                  last_completed_weak_or_reuse_check_.value());
 }
 
 std::vector<CredentialUIEntry>

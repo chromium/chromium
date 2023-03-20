@@ -220,7 +220,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, GetPasswordCheckStatusIdle) {
 // treated as no completed run yet.
 TEST_F(IOSChromePasswordCheckManagerTest,
        LastTimePasswordCheckCompletedNotSet) {
-  EXPECT_EQ(base::Time(), manager().GetLastPasswordCheckTime());
+  EXPECT_FALSE(manager().GetLastPasswordCheckTime().has_value());
 }
 
 // Checks that a transition into the idle state after starting a check results

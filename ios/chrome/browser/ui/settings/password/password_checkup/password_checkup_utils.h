@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/observer_list.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -73,7 +74,8 @@ std::vector<password_manager::CredentialUIEntry> GetPasswordsForWarningType(
 // check finished less than 1 minute ago string will look "Last check just
 // now.", otherwise "Last check X minutes/hours... ago.". If check never run
 // string will be "Check never run.".
-NSString* FormatElapsedTimeSinceLastCheck(base::Time last_completed_check);
+NSString* FormatElapsedTimeSinceLastCheck(
+    absl::optional<base::Time> last_completed_check);
 
 }  // namespace password_manager
 

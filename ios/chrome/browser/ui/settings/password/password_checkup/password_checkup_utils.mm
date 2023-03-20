@@ -116,14 +116,14 @@ int GetPasswordCountForWarningType(
 
 // TODO(crbug.com/1406540): Title case and update returned string for Password
 // Checkup homepage.
-NSString* FormatElapsedTimeSinceLastCheck(base::Time last_completed_check) {
-  // `last_completed_check` is 0.0 when the check has never completely run
-  // before.
-  if (last_completed_check == base::Time()) {
+NSString* FormatElapsedTimeSinceLastCheck(
+    absl::optional<base::Time> last_completed_check) {
+  if (!last_completed_check.has_value()) {
     return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
   }
 
-  base::TimeDelta elapsed_time = base::Time::Now() - last_completed_check;
+  base::TimeDelta elapsed_time =
+      base::Time::Now() - last_completed_check.value();
 
   std::u16string timestamp;
   // If check finished in less than `kJustCheckedTimeThreshold` show

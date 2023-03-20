@@ -135,7 +135,7 @@ using password_manager::InsecurePasswordCounts;
 }
 
 - (NSString*)formattedElapsedTimeSinceLastCheck {
-  base::Time lastCompletedCheck =
+  absl::optional<base::Time> lastCompletedCheck =
       _passwordCheckManager->GetLastPasswordCheckTime();
   return password_manager::FormatElapsedTimeSinceLastCheck(lastCompletedCheck);
 }

@@ -58,8 +58,8 @@ class IOSChromePasswordCheckManager
   // Returns the current state of the password check.
   PasswordCheckState GetPasswordCheckState() const;
 
-  // The elapsed time since the last full password check was performed.
-  base::Time GetLastPasswordCheckTime() const;
+  // The elapsed time since one of the insecure checks was last performed.
+  absl::optional<base::Time> GetLastPasswordCheckTime() const;
 
   // Obtains all insecure credentials that are present in the password store.
   std::vector<password_manager::CredentialUIEntry> GetInsecureCredentials()
@@ -131,7 +131,7 @@ class IOSChromePasswordCheckManager
   base::Time start_time_;
 
   // Store when the last weak or reuse check was completed.
-  base::Time last_completed_weak_or_reuse_check_;
+  absl::optional<base::Time> last_completed_weak_or_reuse_check_;
 
   // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,
