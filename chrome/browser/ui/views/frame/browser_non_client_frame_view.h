@@ -14,7 +14,6 @@
 
 class BrowserView;
 class TabSearchBubbleHost;
-class WebAppFrameToolbarView;
 
 // Type used for functions whose return values depend on the active state of
 // the frame.
@@ -135,20 +134,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   // views::NonClientFrameView:
   using views::NonClientFrameView::ShouldPaintAsActive;
-  void Layout() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
-  int NonClientHitTest(const gfx::Point& point) override;
-
-  // TODO(https://crbug.com/1407240): Remove these methods (and all other
-  // WebAppFrameToolbarView access/usage) from this class once work to refactor
-  // ownership has been completed.
-  WebAppFrameToolbarView* web_app_frame_toolbar(base::PassKey<BrowserView>) {
-    return web_app_frame_toolbar_;
-  }
-  const WebAppFrameToolbarView* web_app_frame_toolbar(
-      base::PassKey<BrowserView>) const {
-    return web_app_frame_toolbar_;
-  }
 
   // Gets the TabSearchBubbleHost if present in the NonClientFrameView. Can
   // return null.
@@ -194,9 +180,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
       BrowserFrameActiveState active_state =
           BrowserFrameActiveState::kUseCurrent) const;
 
-  // views::NonClientFrameView:
-  void ChildPreferredSizeChanged(views::View* child) override;
-
   // ProfileAttributesStorage::Observer:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnProfileWasRemoved(const base::FilePath& profile_path,
@@ -204,17 +187,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
   void OnProfileHighResAvatarLoaded(
       const base::FilePath& profile_path) override;
-
-  void set_web_app_frame_toolbar(
-      WebAppFrameToolbarView* web_app_frame_toolbar) {
-    web_app_frame_toolbar_ = web_app_frame_toolbar;
-  }
-  WebAppFrameToolbarView* web_app_frame_toolbar() {
-    return web_app_frame_toolbar_;
-  }
-  const WebAppFrameToolbarView* web_app_frame_toolbar() const {
-    return web_app_frame_toolbar_;
-  }
 
  private:
 #if BUILDFLAG(IS_WIN)
@@ -230,10 +202,6 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   // The BrowserView hosted within this View.
   const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
-
-  // Menu button and page status icons. Only used by web-app windows.
-  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
-      nullptr;
 
   base::CallbackListSubscription paint_as_active_subscription_ =
       frame_->RegisterPaintAsActiveChangedCallback(

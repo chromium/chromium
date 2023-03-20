@@ -843,8 +843,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   tabstrip_controller_ptr->InitFromModel(tabstrip_);
   top_container_ = AddChildView(std::make_unique<TopContainerView>(this));
 
-  if (GetIsWebAppType() && base::FeatureList::IsEnabled(
-                               features::kWebAppFrameToolbarInBrowserView)) {
+  if (GetIsWebAppType()) {
     web_app_frame_toolbar_ = top_container_->AddChildView(
         std::make_unique<WebAppFrameToolbarView>(this));
     if (ShouldShowWindowTitle()) {
@@ -4724,25 +4723,11 @@ void BrowserView::OnInstallableWebAppStatusUpdated() {
 }
 
 WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
-  if (web_app_frame_toolbar_) {
-    return web_app_frame_toolbar_;
-  }
-  if (frame_ && frame_->GetFrameView()) {
-    return frame_->GetFrameView()->web_app_frame_toolbar(
-        base::PassKey<BrowserView>());
-  }
-  return nullptr;
+  return web_app_frame_toolbar_;
 }
 
 const WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() const {
-  if (web_app_frame_toolbar_) {
-    return web_app_frame_toolbar_;
-  }
-  if (frame_ && frame_->GetFrameView()) {
-    return frame_->GetFrameView()->web_app_frame_toolbar(
-        base::PassKey<BrowserView>());
-  }
-  return nullptr;
+  return web_app_frame_toolbar_;
 }
 
 void BrowserView::PaintAsActiveChanged() {

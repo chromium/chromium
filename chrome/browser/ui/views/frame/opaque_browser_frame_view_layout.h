@@ -13,7 +13,6 @@
 #include "ui/views/window/frame_buttons.h"
 
 class CaptionButtonPlaceholderContainer;
-class WebAppFrameToolbarView;
 class OpaqueBrowserFrameViewLayoutDelegate;
 
 namespace views {
@@ -246,9 +245,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   raw_ptr<views::View> window_icon_;
   raw_ptr<views::Label, DanglingUntriaged> window_title_;
-
-  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
-      nullptr;
 
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;

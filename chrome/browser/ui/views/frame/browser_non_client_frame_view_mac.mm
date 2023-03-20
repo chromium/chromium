@@ -28,10 +28,8 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
-#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -85,26 +83,9 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
   }
 
   if (browser_view->GetIsWebAppType()) {
-    if (!base::FeatureList::IsEnabled(
-            features::kWebAppFrameToolbarInBrowserView)) {
-      set_web_app_frame_toolbar(
-          AddChildView(std::make_unique<WebAppFrameToolbarView>(browser_view)));
-    }
-
     if (browser_view->IsWindowControlsOverlayEnabled()) {
       caption_button_placeholder_container_ =
           AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
-    }
-
-    // The window title appears above the web app frame toolbar (if present),
-    // which surrounds the title with minimal-ui buttons on the left,
-    // and other controls (such as the app menu button) on the right.
-    if (browser_view->ShouldShowWindowTitle() &&
-        !base::FeatureList::IsEnabled(
-            features::kWebAppFrameToolbarInBrowserView)) {
-      window_title_ = AddChildView(
-          std::make_unique<views::Label>(browser_view->GetWindowTitle()));
-      window_title_->SetID(VIEW_ID_WINDOW_TITLE);
     }
   }
 }
@@ -201,14 +182,6 @@ void BrowserNonClientFrameViewMac::LayoutWebAppWindowTitle(
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
-  if (web_app_frame_toolbar()) {
-    DCHECK(browser_view()->GetIsWebAppType());
-    if (ShouldHideTopUIForFullscreen())
-      return 0;
-    return web_app_frame_toolbar()->GetPreferredSize().height() +
-           kWebAppMenuMargin * 2;
-  }
-
   if (!browser_view()->GetTabStripVisible())
     return 0;
 
@@ -304,10 +277,6 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
   // Re-layout if toolbar style changes in fullscreen mode.
   if (frame()->IsFullscreen()) {
     browser_view()->Layout();
-    // The web frame toolbar is visible in fullscreen mode on Mac and thus
-    // requires a re-layout when in fullscreen and shown.
-    if (web_app_frame_toolbar() && !ShouldHideTopUIForFullscreen())
-      InvalidateLayout();
   }
 }
 
@@ -387,14 +356,6 @@ void BrowserNonClientFrameViewMac::GetWindowMask(const gfx::Size& size,
 void BrowserNonClientFrameViewMac::UpdateWindowIcon() {
 }
 
-void BrowserNonClientFrameViewMac::UpdateWindowTitle() {
-  if (window_title_) {
-    DCHECK(browser_view()->GetIsWebAppType());
-    window_title_->SetText(browser_view()->GetWindowTitle());
-    Layout();
-  }
-}
-
 void BrowserNonClientFrameViewMac::SizeConstraintsChanged() {
 }
 
@@ -465,12 +426,6 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
   SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
   canvas->DrawColor(frame_color);
 
-  if (window_title_) {
-    window_title_->SetBackgroundColor(frame_color);
-    window_title_->SetEnabledColor(
-        GetCaptionColor(BrowserFrameActiveState::kUseCurrent));
-  }
-
   auto* theme_service =
       ThemeServiceFactory::GetForProfile(browser_view()->browser()->profile());
   if (!theme_service->UsingSystemTheme())
@@ -480,8 +435,6 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
 void BrowserNonClientFrameViewMac::Layout() {
   if (browser_view()->IsWindowControlsOverlayEnabled())
     LayoutWindowControlsOverlay();
-  else
-    LayoutTitleBarForWebApp();
   NonClientFrameView::Layout();
 }
 
@@ -546,24 +499,6 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
          (menu_bar_height + title_bar_height);
 }
 
-void BrowserNonClientFrameViewMac::LayoutTitleBarForWebApp() {
-  if (!web_app_frame_toolbar())
-    return;
-
-  gfx::Rect title_bar_bounds(0, 0, width(), GetTopInset(true));
-  gfx::Rect available_space = title_bar_bounds;
-  available_space.Inset(GetCaptionButtonInsets());
-  available_space = web_app_frame_toolbar()->LayoutInContainer(available_space);
-
-  const int title_padding =
-      base::checked_cast<int>(std::round(width() * kTitlePaddingWidthFraction));
-  available_space.Inset(gfx::Insets::TLBR(0, title_padding, 0, title_padding));
-
-  window_title_->SetBoundsRect(
-      GetCenteredTitleBounds(title_bar_bounds, available_space,
-                             window_title_->CalculatePreferredSize().width()));
-}
-
 gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
     const gfx::Rect& frame,
     const gfx::Insets& caption_button_insets) {
@@ -578,10 +513,8 @@ gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
 
 void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
   int frame_available_height =
-      base::FeatureList::IsEnabled(features::kWebAppFrameToolbarInBrowserView)
-          ? browser_view()->GetWebAppFrameToolbarPreferredSize().height() +
-                2 * kWebAppMenuMargin
-          : GetTopInset(false);
+      browser_view()->GetWebAppFrameToolbarPreferredSize().height() +
+      2 * kWebAppMenuMargin;
   gfx::Rect frame_available_bounds(0, 0, width(), frame_available_height);
 
   // Pad the width of caption_button_placeholder_container so the button on the
@@ -595,38 +528,6 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
   // lights.
   caption_button_placeholder_container_->SetBoundsRect(
       caption_button_container_bounds);
-
-  if (web_app_frame_toolbar()) {
-    // Remove caption buttons from remaining available bounds, and layout
-    // WebAppFrameToolbarView.
-    frame_available_bounds.Inset(caption_button_insets);
-
-    web_app_frame_toolbar()->LayoutForWindowControlsOverlay(
-        frame_available_bounds);
-
-    content::WebContents* web_contents = browser_view()->GetActiveWebContents();
-    // WebContents can be null when an app window is first launched.
-    if (web_contents) {
-      // Subtract WebAppFrameToolbarView from remaining available bounds to
-      // determine space available for web contents.
-      frame_available_bounds.Subtract(web_app_frame_toolbar()->bounds());
-
-      if (frame_available_bounds.IsEmpty()) {
-        web_contents->UpdateWindowControlsOverlay(gfx::Rect());
-      } else {
-        web_contents->UpdateWindowControlsOverlay(
-            GetMirroredRect(frame_available_bounds));
-      }
-    }
-
-    // WebAppFrameToolbarView visible property needs to be explicitly shown
-    // based on the fullscreen preference and also after exiting fullscreen.
-    // Otherwise upon exiting fullscreen when the toolbar is set to be hidden,
-    // the WebAppFrameToolbarView does not get added back. See
-    // crbug.com/1351179.
-    web_app_frame_toolbar()->SetVisible(!browser_view()->IsFullscreen() ||
-                                        !ShouldHideTopUIForFullscreen());
-  }
 }
 
 void BrowserNonClientFrameViewMac::

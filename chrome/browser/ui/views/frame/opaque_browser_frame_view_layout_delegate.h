@@ -104,8 +104,7 @@ class OpaqueBrowserFrameViewLayoutDelegate {
 #endif
 
   // Returns the (preferred) heights of buttons in the web app frame toolbar. If
-  // the toolbar isn't visible, or if features::kWebAppFrameToolbarInBrowserView
-  // isn't enabled, this returns 0.
+  // the toolbar isn't visible, this returns 0.
   virtual int WebAppButtonHeight() const = 0;
 
  protected:

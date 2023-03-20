@@ -23,9 +23,7 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -216,17 +214,9 @@ void OpaqueBrowserFrameView::InitViews() {
                      .Build());
   }
 
-  if (controller && !base::FeatureList::IsEnabled(
-                        features::kWebAppFrameToolbarInBrowserView)) {
-    set_web_app_frame_toolbar(
-        AddChildView(std::make_unique<WebAppFrameToolbarView>(browser_view())));
-  }
-
-  // If kWebappFrameToolbarInBrowserView is enabled and this is a web app
-  // window, the window title will be part of the BrowserView and thus we don't
-  // need to create another one here.
-  if (!controller || !base::FeatureList::IsEnabled(
-                         features::kWebAppFrameToolbarInBrowserView)) {
+  // If this is a web app window, the window title will be part of the
+  // BrowserView and thus we don't need to create another one here.
+  if (!controller) {
     // The window title appears above the web app frame toolbar (if present),
     // which surrounds the title with minimal-ui buttons on the left,
     // and other controls (such as the app menu button) on the right.
@@ -557,14 +547,11 @@ int OpaqueBrowserFrameView::GetTopAreaHeight() const {
                  GetBoundsForTabStripRegion(GetTabstripMinimumSize()).bottom() -
                      GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView)) {
     gfx::Rect web_app_toolbar_bounds = GetBoundsForWebAppFrameToolbar(
         browser_view()->GetWebAppFrameToolbarPreferredSize());
     if (!web_app_toolbar_bounds.IsEmpty()) {
       top_height = std::max(top_height, web_app_toolbar_bounds.bottom());
     }
-  }
   return top_height;
 }
 

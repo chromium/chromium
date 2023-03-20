@@ -25,10 +25,8 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/win/titlebar_config.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -100,29 +98,14 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserFrame* frame,
                      .Build());
   }
 
-  if (browser_view->GetIsWebAppType() &&
-      !base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView)) {
-    set_web_app_frame_toolbar(
-        AddChildView(std::make_unique<WebAppFrameToolbarView>(browser_view)));
-  }
-
-  // If kWebappFrameToolbarInBrowserView is enabled and this is a web app
-  // window, the window title will be part of the BrowserView and thus we don't
-  // need to create another one here.
-  if (!browser_view->GetIsWebAppType() ||
-      !base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView)) {
-    // The window title appears above the web app frame toolbar (if present),
-    // which surrounds the title with minimal-ui buttons on the left,
-    // and other controls (such as the app menu button) on the right.
-    if (browser_view->GetSupportsTitle()) {
-      window_title_ = new views::Label(browser_view->GetWindowTitle());
-      window_title_->SetSubpixelRenderingEnabled(false);
-      window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-      window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-      AddChildView(window_title_.get());
-    }
+  // If this is a web app window, the window title will be part of the
+  // BrowserView and thus we don't need to create another one here.
+  if (!browser_view->GetIsWebAppType() && browser_view->GetSupportsTitle()) {
+    window_title_ = new views::Label(browser_view->GetWindowTitle());
+    window_title_->SetSubpixelRenderingEnabled(false);
+    window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    window_title_->SetID(VIEW_ID_WINDOW_TITLE);
+    AddChildView(window_title_.get());
   }
 
   caption_button_container_ =
@@ -443,9 +426,7 @@ void BrowserFrameViewWin::Layout() {
   TRACE_EVENT0("views.frame", "BrowserFrameViewWin::Layout");
 
   LayoutCaptionButtons();
-  if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    LayoutWindowControlsOverlay();
-  } else {
+  if (!browser_view()->IsWindowControlsOverlayEnabled()) {
     LayoutTitleBar();
   }
   LayoutClientView();
@@ -552,14 +533,7 @@ int BrowserFrameViewWin::TitlebarMaximizedVisualHeight() const {
   // Adding 2 dip of vertical padding puts at least 1 dip of space on the top
   // and bottom of the element.
   constexpr int kVerticalPadding = 2;
-  if (web_app_frame_toolbar()) {
-    maximized_height = std::max(
-        maximized_height, web_app_frame_toolbar()->GetPreferredSize().height() +
-                              kVerticalPadding);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView) &&
-      !browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
+  if (!browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
     maximized_height =
         std::max(maximized_height,
                  browser_view()->GetWebAppFrameToolbarPreferredSize().height() +
@@ -720,12 +694,7 @@ void BrowserFrameViewWin::LayoutTitleBar() {
   if (window_title_) {
     window_title_->SetVisible(show_title);
   }
-  if (!show_icon && !show_title &&
-      (!web_app_frame_toolbar() || frame()->IsFullscreen())) {
-    // TODO(crbug.com/1132767): The "frame()->IsFullscreen()" term is required
-    // because we cannot currently lay out the toolbar in fullscreen mode
-    // without breaking a bunch of bubble anchoring. Please remove when the
-    // issue is resolved.
+  if (!show_icon && !show_title) {
     return;
   }
 
@@ -751,18 +720,6 @@ void BrowserFrameViewWin::LayoutTitleBar() {
   if (show_icon) {
     window_icon_->SetBoundsRect(window_icon_bounds);
     next_leading_x = window_icon_bounds.right() + kIconTitleSpacing;
-  }
-
-  if (web_app_frame_toolbar() &&
-      !browser_view()->IsWindowControlsOverlayEnabled()) {
-    const int web_app_titlebar_height =
-        caption_button_container_->size().height();
-    std::pair<int, int> remaining_bounds =
-        web_app_frame_toolbar()->LayoutInContainer(
-            next_leading_x, next_trailing_x, WindowTopY(),
-            web_app_titlebar_height);
-    next_leading_x = remaining_bounds.first;
-    next_trailing_x = remaining_bounds.second;
   }
 
   if (show_title && window_title_) {
@@ -796,13 +753,8 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
   // is smaller than our preferred button size.
   if (IsWebUITabStrip() && IsMaximized()) {
     height = std::min(height, TitlebarMaximizedVisualHeight());
-  } else if (web_app_frame_toolbar()) {
-    height = IsMaximized() ? TitlebarMaximizedVisualHeight()
-                           : TitlebarHeight(false) - WindowTopY();
   }
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView) &&
-      !browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
+  if (!browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
     height = IsMaximized() ? TitlebarMaximizedVisualHeight()
                            : TitlebarHeight(false) - WindowTopY();
   }
@@ -811,37 +763,10 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
                                        height);
 }
 
-void BrowserFrameViewWin::LayoutWindowControlsOverlay() {
-  if (!web_app_frame_toolbar()) {
-    return;
-  }
-
-  // Layout WebAppFrameToolbarView.
-  int overlay_height = caption_button_container_->size().height();
-  auto available_space =
-      gfx::Rect(0, WindowTopY(), MinimizeButtonX(), overlay_height);
-  web_app_frame_toolbar()->LayoutForWindowControlsOverlay(available_space);
-
-  content::WebContents* web_contents = browser_view()->GetActiveWebContents();
-  // WebContents can be null when an app window is first launched.
-  if (web_contents) {
-    int overlay_width = web_app_frame_toolbar()->size().width() +
-                        caption_button_container_->size().width();
-    int bounding_rect_width = width() - overlay_width;
-    auto bounding_rect =
-        GetMirroredRect(gfx::Rect(0, 0, bounding_rect_width, overlay_height));
-    web_contents->UpdateWindowControlsOverlay(bounding_rect);
-  }
-}
-
 void BrowserFrameViewWin::LayoutClientView() {
   client_view_bounds_ = GetLocalBounds();
   int top_inset = GetTopInset(false);
-  if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    top_inset = frame()->IsFullscreen() ? 0 : WindowTopY();
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView) &&
+  if (browser_view()->IsWindowControlsOverlayEnabled() ||
       !browser_view()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
     top_inset = frame()->IsFullscreen() ? 0 : WindowTopY();
   }

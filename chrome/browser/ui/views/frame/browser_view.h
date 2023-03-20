@@ -184,8 +184,7 @@ class BrowserView : public BrowserWindow,
 
   // Returns the preferred size of the Web App Frame Toolbar. Used for example
   // to determine the height of the title bar.
-  // Returns an empty size if this browser is not for a web app, or if
-  // features::kWebAppFrameToolbarInBrowserView is disabled.
+  // Returns an empty size if this browser is not for a web app.
   gfx::Size GetWebAppFrameToolbarPreferredSize() const;
 
   // Container for the tabstrip, toolbar, etc.

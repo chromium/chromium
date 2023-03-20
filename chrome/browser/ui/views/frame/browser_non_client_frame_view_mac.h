@@ -60,7 +60,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   int NonClientHitTest(const gfx::Point& point) override;
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
   void UpdateWindowIcon() override;
-  void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   void UpdateMinimumSize() override;
   void WindowControlsOverlayEnabledChanged() override;
@@ -102,7 +101,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   // Calculate the y offset the top UI needs to shift down due to showing the
   // slide down menu bar at the very top in full screen.
   int TopUIFullscreenYOffset() const;
-  void LayoutTitleBarForWebApp();
   void LayoutWindowControlsOverlay();
 
   void UpdateCaptionButtonPlaceholderContainerBackground();
@@ -123,8 +121,6 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       always_show_toolbar_in_fullscreen_observation_{this};
-
-  raw_ptr<views::Label> window_title_ = nullptr;
 
   // A placeholder container that lies on top of the traffic lights to indicate
   // NonClientArea. Only for PWAs with window controls overlay display override.

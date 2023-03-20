@@ -98,7 +98,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -872,14 +871,7 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
   EXPECT_TRUE(web_app_frame_toolbar_->GetVisible());
 
   StartOverview();
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView)) {
-    // This RunScheduledLayout call should be done unconditionally, but as it
-    // turns out this causes this test to fail when
-    // WebAppFrameToolbarInBrowserView is disabled, because in that case Layout
-    // incorrectly causes the toolbar to be made visible again.
-    views::test::RunScheduledLayout(browser_view_);
-  }
+  views::test::RunScheduledLayout(browser_view_);
   EXPECT_FALSE(web_app_frame_toolbar_->GetVisible());
   EndOverview();
   views::test::RunScheduledLayout(browser_view_);

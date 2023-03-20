@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -67,11 +66,6 @@ BrowserNonClientFrameView::~BrowserNonClientFrameView() {
     g_browser_process->profile_manager()->
         GetProfileAttributesStorage().RemoveObserver(this);
   }
-
-  // WebAppFrameToolbarView::ToolbarButtonContainer is an
-  // ImmersiveModeController::Observer, so it must be destroyed before the
-  // BrowserView destroys the ImmersiveModeController.
-  delete web_app_frame_toolbar_;
 }
 
 void BrowserNonClientFrameView::OnBrowserViewInitViewsComplete() {
@@ -196,17 +190,6 @@ absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
 
 void BrowserNonClientFrameView::UpdateMinimumSize() {}
 
-void BrowserNonClientFrameView::Layout() {
-  // BrowserView updates most UI visibility on layout based on fullscreen
-  // state. However, it doesn't have access to |web_app_frame_toolbar_|. Do
-  // it here. This is necessary since otherwise the visibility of ink drop
-  // layers won't be updated; see crbug.com/964215.
-  if (web_app_frame_toolbar_)
-    web_app_frame_toolbar_->SetVisible(!frame_->IsFullscreen());
-
-  NonClientFrameView::Layout();
-}
-
 void BrowserNonClientFrameView::VisibilityChanged(views::View* starting_from,
                                                   bool is_visible) {
   // UpdateTaskbarDecoration() calls DrawTaskbarDecoration(), but that does
@@ -215,17 +198,6 @@ void BrowserNonClientFrameView::VisibilityChanged(views::View* starting_from,
   // the window becomes visible.
   if (is_visible)
     OnProfileAvatarChanged(base::FilePath());
-}
-
-int BrowserNonClientFrameView::NonClientHitTest(const gfx::Point& point) {
-  if (!web_app_frame_toolbar_)
-    return HTNOWHERE;
-  int web_app_component =
-      views::GetHitTestComponent(web_app_frame_toolbar_, point);
-  if (web_app_component != HTNOWHERE)
-    return web_app_component;
-
-  return HTNOWHERE;
 }
 
 TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
@@ -284,11 +256,6 @@ gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
   return tp->HasCustomImage(frame_overlay_image_id)
              ? *tp->GetImageSkiaNamed(frame_overlay_image_id)
              : gfx::ImageSkia();
-}
-
-void BrowserNonClientFrameView::ChildPreferredSizeChanged(views::View* child) {
-  if (browser_view()->initialized() && child == web_app_frame_toolbar_)
-    Layout();
 }
 
 void BrowserNonClientFrameView::OnProfileAdded(

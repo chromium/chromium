@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/insets.h"
@@ -452,20 +451,17 @@ std::vector<views::View*> BrowserViewLayout::GetChildViewsInPaintOrder(
     const views::View* host) const {
   std::vector<views::View*> result =
       views::LayoutManager::GetChildViewsInPaintOrder(host);
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView)) {
-    // Make sure `top_container_` is last in paint order when this is a window
-    // using WindowControlsOverlay, to make sure the window controls are in fact
-    // drawn on top of anything else.
-    if (delegate_->IsWindowControlsOverlayEnabled()) {
-      auto iter = base::ranges::find(result, top_container_);
-      // When in Immersive Fullscreen `top_container_` might not be one of our
-      // children at all. While Window Controls Overlay shouldn't be enabled in
-      // fullscreen either, during the transition there is a moment where both
-      // could be true at the same time.
-      if (iter != result.end()) {
-        std::rotate(iter, iter + 1, result.end());
-      }
+  // Make sure `top_container_` is last in paint order when this is a window
+  // using WindowControlsOverlay, to make sure the window controls are in fact
+  // drawn on top of anything else.
+  if (delegate_->IsWindowControlsOverlayEnabled()) {
+    auto iter = base::ranges::find(result, top_container_);
+    // When in Immersive Fullscreen `top_container_` might not be one of our
+    // children at all. While Window Controls Overlay shouldn't be enabled in
+    // fullscreen either, during the transition there is a moment where both
+    // could be true at the same time.
+    if (iter != result.end()) {
+      std::rotate(iter, iter + 1, result.end());
     }
   }
   return result;

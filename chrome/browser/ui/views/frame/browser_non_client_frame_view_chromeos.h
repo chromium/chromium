@@ -185,8 +185,6 @@ class BrowserNonClientFrameViewChromeOS
 
   void UpdateBorderlessModeEnabled();
 
-  void LayoutWindowControlsOverlay();
-
   // Returns whether this window is currently in the overview list.
   bool GetOverviewMode() const;
 

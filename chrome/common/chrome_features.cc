@@ -1378,13 +1378,6 @@ BASE_FEATURE(kUserActivityEventLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When this feature is enabled, the toolbar for Web App windows will be hosted
-// inside the BrowserView, rather than in the BrowserNonClientFrameView. This
-// makes Web App windows work more similarly to regular browser windows.
-BASE_FEATURE(kWebAppFrameToolbarInBrowserView,
-             "WebAppFrameToolbarInBrowserView",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebAppManifestIconUpdating,
              "WebAppManifestIconUpdating",

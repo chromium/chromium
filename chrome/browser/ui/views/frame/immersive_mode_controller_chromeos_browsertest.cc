@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -363,41 +362,38 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
           ->immersive_mode_controller();
   immersive_mode_controller->SetEnabled(true);
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppFrameToolbarInBrowserView)) {
-    // Since a bubble was visible and anchored to the header, the header should
-    // have been automatically revealed.
-    EXPECT_TRUE(immersive_mode_controller->IsRevealed());
-    EXPECT_TRUE(bubble_dialog->GetAnchorView());
+  // Since a bubble was visible and anchored to the header, the header should
+  // have been automatically revealed.
+  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
+  EXPECT_TRUE(bubble_dialog->GetAnchorView());
 
-    // Closing the bubble should cause the header to no longer be revealed.
-    bubble_dialog->AcceptDialog();
-    EXPECT_FALSE(immersive_mode_controller->IsRevealed());
+  // Closing the bubble should cause the header to no longer be revealed.
+  bubble_dialog->AcceptDialog();
+  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
-    // Make sure the old permission prompt fully goes away before opening a new
-    // prompt.
-    // TODO(https://crbug.com/1317865): Change from RunUntilIdle to a more
-    // explicit notification.
-    base::RunLoop().RunUntilIdle();
-    ASSERT_FALSE(test_api->GetPromptWindow());
+  // Make sure the old permission prompt fully goes away before opening a new
+  // prompt.
+  // TODO(https://crbug.com/1317865): Change from RunUntilIdle to a more
+  // explicit notification.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(test_api->GetPromptWindow());
 
-    // Opening a new permission bubble should not cause the header to reveal.
-    test_api->AddSimpleRequest(browser()
-                                   ->tab_strip_model()
-                                   ->GetActiveWebContents()
-                                   ->GetPrimaryMainFrame(),
-                               permissions::RequestType::kMicStream);
+  // Opening a new permission bubble should not cause the header to reveal.
+  test_api->AddSimpleRequest(browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame(),
+                             permissions::RequestType::kMicStream);
 
-    // The permission prompt is shown asynchronously.
-    // TODO(https://crbug.com/1317865): Change from RunUntilIdle to a more
-    // explicit notification.
-    base::RunLoop().RunUntilIdle();
-    prompt_widget = test_api->GetPromptWindow();
-    ASSERT_TRUE(prompt_widget);
-    ASSERT_TRUE(prompt_widget->widget_delegate());
-    bubble_dialog = prompt_widget->widget_delegate()->AsBubbleDialogDelegate();
-    ASSERT_TRUE(bubble_dialog);
-  }
+  // The permission prompt is shown asynchronously.
+  // TODO(https://crbug.com/1317865): Change from RunUntilIdle to a more
+  // explicit notification.
+  base::RunLoop().RunUntilIdle();
+  prompt_widget = test_api->GetPromptWindow();
+  ASSERT_TRUE(prompt_widget);
+  ASSERT_TRUE(prompt_widget->widget_delegate());
+  bubble_dialog = prompt_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ASSERT_TRUE(bubble_dialog);
 
   // The app menu button is hidden from
   // sight so the anchor should be null. The bubble will get placed in the top
