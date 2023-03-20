@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices;
 
 import static org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappGeolocationBridge.EXTRA_NEW_LOCATION_ERROR_CALLBACK;
 
+import android.app.ActivityOptions;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -30,6 +31,7 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 import androidx.browser.trusted.TrustedWebActivityService;
 import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
@@ -245,7 +247,10 @@ public class TrustedWebActivityClient {
                 Intent extraIntent = new Intent();
                 extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
                 try {
-                    pendingIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent);
+                    ActivityOptions options = ActivityOptions.makeBasic();
+                    ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+                    pendingIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent, null,
+                            null, null, options.toBundle());
                 } catch (PendingIntent.CanceledException e) {
                     Log.e(TAG, "The PendingIntent was canceled.", e);
                 }

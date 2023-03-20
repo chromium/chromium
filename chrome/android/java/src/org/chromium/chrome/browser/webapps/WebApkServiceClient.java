@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -22,6 +23,7 @@ import android.os.RemoteException;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -141,7 +143,10 @@ public class WebApkServiceClient {
             Intent extraIntent = new Intent();
             extraIntent.putExtra(EXTRA_MESSENGER, new Messenger(handler));
             try {
-                permissionRequestIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent);
+                ActivityOptions options = ActivityOptions.makeBasic();
+                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+                permissionRequestIntent.send(ContextUtils.getApplicationContext(), 0, extraIntent,
+                        null, null, null, options.toBundle());
             } catch (PendingIntent.CanceledException e) {
                 Log.e(TAG, "The PendingIntent was canceled.", e);
             }
