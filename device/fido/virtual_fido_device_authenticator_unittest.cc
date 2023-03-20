@@ -118,10 +118,10 @@ TEST_F(VirtualFidoDeviceAuthenticatorTest,
     authenticator_->GetPlatformCredentialInfoForRequest(
         request, CtapGetAssertionOptions(), callback.callback());
     callback.WaitForCallback();
-    DiscoverableCredentialMetadata expected1 =
-        DiscoverableCredentialMetadata(kRpId, id1, user1);
-    DiscoverableCredentialMetadata expected2 =
-        DiscoverableCredentialMetadata(kRpId, id2, user2);
+    DiscoverableCredentialMetadata expected1 = DiscoverableCredentialMetadata(
+        AuthenticatorType::kOther, kRpId, id1, user1);
+    DiscoverableCredentialMetadata expected2 = DiscoverableCredentialMetadata(
+        AuthenticatorType::kOther, kRpId, id2, user2);
     EXPECT_THAT(std::get<0>(*callback.result()),
                 testing::UnorderedElementsAre(expected1, expected2));
     EXPECT_EQ(

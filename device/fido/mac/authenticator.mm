@@ -78,7 +78,7 @@ void TouchIdAuthenticator::GetPlatformCredentialInfoForRequest(
     // as for empty allow lists.
     for (const auto& credential : *credentials) {
       result.emplace_back(
-          request.rp_id, credential.credential_id,
+          AuthenticatorType::kTouchID, request.rp_id, credential.credential_id,
           credential.metadata.ToPublicKeyCredentialUserEntity());
     }
   }

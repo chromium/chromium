@@ -96,6 +96,7 @@ enum class AuthenticatorType {
   kWinNative,  // i.e. webauthn.dll
   kTouchID,    // the Chrome-native Touch ID integration on macOS
   kChromeOS,   // the platform authenticator on Chrome OS
+  kPhone,      // the credential can be exercised via hybrid CTAP
   kOther,
 };
 

@@ -430,6 +430,7 @@ TEST_F(PasskeysHandlerTest, TestHandleEdit) {
                        callback) {
         std::vector<device::DiscoverableCredentialMetadata> credential_metadata{
             device::DiscoverableCredentialMetadata{
+                device::AuthenticatorType::kOther,
                 "a.com",
                 {0},
                 device::PublicKeyCredentialUserEntity(

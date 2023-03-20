@@ -151,10 +151,16 @@ std::string SetToString(base::flat_set<T> s) {
   return base::JoinString(names, ", ");
 }
 
-const device::DiscoverableCredentialMetadata
-    kCred1("rp.com", {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
-const device::DiscoverableCredentialMetadata
-    kCred2("rp.com", {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
+const device::DiscoverableCredentialMetadata kCred1(
+    device::AuthenticatorType::kOther,
+    "rp.com",
+    {0},
+    device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
+const device::DiscoverableCredentialMetadata kCred2(
+    device::AuthenticatorType::kOther,
+    "rp.com",
+    {1},
+    device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
 
 }  // namespace
 
@@ -1063,12 +1069,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   transports_info.available_transports = kAllTransports;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
-  device::DiscoverableCredentialMetadata cred_1(
-      "rp.com", {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
-  device::DiscoverableCredentialMetadata cred_2(
-      "rp.com", {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
-  transports_info.recognized_platform_authenticator_credentials = {cred_1,
-                                                                   cred_2};
+  transports_info.recognized_platform_authenticator_credentials = {kCred1,
+                                                                   kCred2};
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
@@ -1078,7 +1080,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
 
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
-  model.OnAccountPreselected(cred_1.cred_id);
+  model.OnAccountPreselected(kCred1.cred_id);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);
@@ -1166,13 +1168,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
   transports_info.has_empty_allow_list = true;
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
-  constexpr char kRpId[] = "example.com";
-  device::DiscoverableCredentialMetadata cred_1(
-      kRpId, {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
-  device::DiscoverableCredentialMetadata cred_2(
-      kRpId, {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
-  transports_info.recognized_platform_authenticator_credentials = {cred_1,
-                                                                   cred_2};
+  transports_info.recognized_platform_authenticator_credentials = {kCred1,
+                                                                   kCred2};
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/false,
                   /*prefer_native_api=*/false);
@@ -1181,7 +1178,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
 
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
-  model.OnAccountPreselected(cred_1.cred_id);
+  model.OnAccountPreselected(kCred1.cred_id);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);

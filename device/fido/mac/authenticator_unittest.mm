@@ -58,7 +58,8 @@ TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_RK) {
                             fido::mac::TouchIdCredentialStore::kDiscoverable)
           ->first;
   DiscoverableCredentialMetadata credential_metadata(
-      kRp1, credential.credential_id, std::move(user));
+      AuthenticatorType::kTouchID, kRp1, credential.credential_id,
+      std::move(user));
 
   // Inject a non resident credential for RP 2. This one should be ignored.
   PublicKeyCredentialUserEntity user2(kUserId2);
@@ -102,7 +103,8 @@ TEST_P(TouchIdAuthenticatorTest, GetPlatformCredentialInfoForRequest_NonRK) {
                             fido::mac::TouchIdCredentialStore::kNonDiscoverable)
           ->first;
   DiscoverableCredentialMetadata credential_metadata(
-      kRp1, credential.credential_id, std::move(user));
+      AuthenticatorType::kTouchID, kRp1, credential.credential_id,
+      std::move(user));
 
   {
     // RP 1 should report the credential if it is in the allow list but not

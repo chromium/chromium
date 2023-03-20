@@ -162,10 +162,10 @@ class ChromeWebAuthnCredentialsDelegateTest
 // present.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(kRpId, CredId1(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
                      device::PublicKeyCredentialUserEntity(
                          UserId1(), UserName1(), DisplayName1()));
-  users.emplace_back(kRpId, CredId2(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId2(),
                      device::PublicKeyCredentialUserEntity(
                          UserId2(), UserName2(), DisplayName2()));
 
@@ -188,10 +188,10 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
 // afterward.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(kRpId, CredId1(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
                      device::PublicKeyCredentialUserEntity(
                          UserId1(), UserName1(), DisplayName1()));
-  users.emplace_back(kRpId, CredId2(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId2(),
                      device::PublicKeyCredentialUserEntity(
                          UserId2(), UserName2(), DisplayName2()));
 
@@ -225,7 +225,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   const std::u16string kErrorLabel =
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(kRpId, CredId1(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
                      device::PublicKeyCredentialUserEntity(
                          UserId1(), absl::nullopt, DisplayName1()));
 
@@ -243,10 +243,10 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
 // Testing selection of a credential.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(kRpId, CredId1(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
                      device::PublicKeyCredentialUserEntity(
                          UserId1(), UserName1(), DisplayName1()));
-  users.emplace_back(kRpId, CredId2(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId2(),
                      device::PublicKeyCredentialUserEntity(
                          UserId2(), UserName2(), DisplayName2()));
 
@@ -273,7 +273,7 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
 // Test aborting a request.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
   std::vector<device::DiscoverableCredentialMetadata> users;
-  users.emplace_back(kRpId, CredId1(),
+  users.emplace_back(device::AuthenticatorType::kOther, kRpId, CredId1(),
                      device::PublicKeyCredentialUserEntity(
                          UserId1(), UserName1(), DisplayName1()));
   credentials_delegate_->OnCredentialsReceived(users);

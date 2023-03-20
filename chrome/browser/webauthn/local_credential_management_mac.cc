@@ -46,7 +46,8 @@ void LocalCredentialManagementMac::Enumerate(
   credential_metadata.reserve(credentials->size());
   for (auto& credential : *credentials) {
     credential_metadata.emplace_back(
-        credential.rp_id, credential.credential_id,
+        device::AuthenticatorType::kTouchID, credential.rp_id,
+        credential.credential_id,
         credential.metadata.ToPublicKeyCredentialUserEntity());
   }
   std::sort(credential_metadata.begin(), credential_metadata.end(),

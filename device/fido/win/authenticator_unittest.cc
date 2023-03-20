@@ -90,8 +90,8 @@ TEST_F(WinAuthenticatorTest,
       std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
-  DiscoverableCredentialMetadata expected =
-      DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
+  DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{expected});
   EXPECT_EQ(
@@ -164,8 +164,8 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Unsupported) {
       std::move(request), CtapGetAssertionOptions(), callback.callback());
   callback.WaitForCallback();
 
-  DiscoverableCredentialMetadata expected =
-      DiscoverableCredentialMetadata(kRpId, kCredentialId, user);
+  DiscoverableCredentialMetadata expected = DiscoverableCredentialMetadata(
+      AuthenticatorType::kWinNative, kRpId, kCredentialId, user);
   EXPECT_EQ(std::get<0>(*callback.result()),
             std::vector<DiscoverableCredentialMetadata>{});
   EXPECT_EQ(std::get<1>(*callback.result()),
@@ -284,6 +284,7 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
       std::move(std::get<0>(callback.TakeResult()));
   ASSERT_EQ(creds.size(), 1u);
   const DiscoverableCredentialMetadata& cred = creds[0];
+  EXPECT_EQ(cred.source, AuthenticatorType::kWinNative);
   EXPECT_EQ(cred.rp_id, kRpId);
   EXPECT_EQ(cred.cred_id, kCredentialId);
   EXPECT_EQ(cred.user.name, kUserName);

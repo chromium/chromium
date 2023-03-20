@@ -362,7 +362,7 @@ WinCredentialDetailsListToCredentialMetadata(
     WEBAUTHN_USER_ENTITY_INFORMATION* user = credential->pUserInformation;
     WEBAUTHN_RP_ENTITY_INFORMATION* rp = credential->pRpInformation;
     DiscoverableCredentialMetadata metadata(
-        base::WideToUTF8(rp->pwszId),
+        AuthenticatorType::kWinNative, base::WideToUTF8(rp->pwszId),
         std::vector<uint8_t>(
             credential->pbCredentialID,
             credential->pbCredentialID + credential->cbCredentialID),
