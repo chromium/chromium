@@ -388,6 +388,7 @@ Browser::CreateParams Browser::CreateParams::CreateForAppBase(
   params.app_name = app_name;
   params.trusted_source = trusted_source;
   params.initial_bounds = window_bounds;
+  params.are_tab_groups_enabled = false;
 
   return params;
 }

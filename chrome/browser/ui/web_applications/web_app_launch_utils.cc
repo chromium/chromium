@@ -423,7 +423,6 @@ Browser* CreateWebApplicationWindow(Profile* profile,
   browser_params.omit_from_session_restore = omit_from_session_restore;
   browser_params.can_resize = can_resize;
   browser_params.can_maximize = can_maximize;
-  browser_params.are_tab_groups_enabled = false;
   Browser* browser = Browser::Create(browser_params);
   MaybeAddPinnedHomeTab(browser, app_id);
   return browser;
