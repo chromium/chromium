@@ -167,8 +167,12 @@ export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConse
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
+export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
+export {OsSettingsPageElement} from './os_settings_page/os_settings_page.js';
+export {OsSettingsSectionElement} from './os_settings_page/os_settings_section.js';
 export {routes} from './os_settings_routes.js';
 export {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
+export {OsSettingsUiElement} from './os_settings_ui/os_settings_ui.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.js';
 export {SettingsParentalControlsPageElement} from './parental_controls_page/parental_controls_page.js';
 export {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_page/personalization_hub_browser_proxy.js';

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrSettingsPrefs} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assert} from 'chrome://resources/ash/common/assert.js';
+import {CrSettingsPrefs, OsSettingsMainElement, OsSettingsPageElement, OsSettingsSectionElement, OsSettingsUiElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /** @fileoverview Suite of tests for the OS Settings ui and main page. */
 
 suite('OSSettingsUi', function() {
-  let settingsMain = null;
-  let settingsPage = null;
-  let ui;
+  let ui: OsSettingsUiElement;
+  let settingsMain: OsSettingsMainElement|null;
+  let settingsPage: OsSettingsPageElement|null;
 
   suiteSetup(async function() {
     document.body.innerHTML = '';
@@ -24,22 +24,18 @@ suite('OSSettingsUi', function() {
     flush();
 
     await CrSettingsPrefs.initialized;
-    settingsMain = document.querySelector('os-settings-ui')
-                       .shadowRoot.querySelector('os-settings-main');
+    settingsMain = ui.shadowRoot!.querySelector('os-settings-main');
+    assert(settingsMain);
 
-    settingsMain = document.querySelector('os-settings-ui')
-                       .shadowRoot.querySelector('os-settings-main');
-    assert(!!settingsMain);
-
-    settingsPage = settingsMain.shadowRoot.querySelector('os-settings-page');
-    assertTrue(!!settingsPage);
+    settingsPage = settingsMain.shadowRoot!.querySelector('os-settings-page');
+    assert(settingsPage);
 
     // Simulate Kerberos enabled.
     settingsPage.showKerberosSection = true;
 
-    const idleRender = settingsMain.shadowRoot.querySelector('os-settings-page')
-                           .shadowRoot.querySelector('settings-idle-load');
-    assert(!!idleRender);
+    const idleRender =
+        settingsPage.shadowRoot!.querySelector('settings-idle-load');
+    assert(idleRender);
     await idleRender.get();
     flush();
   });
@@ -47,20 +43,20 @@ suite('OSSettingsUi', function() {
   /**
    * Verifies the section has a visible #main element and that any possible
    * sub-pages are hidden.
-   * @param {!Node} The DOM node for the section.
    */
-  function verifySubpagesHidden(section) {
+  function verifySubpagesHidden(section: OsSettingsSectionElement): void {
     // Check if there are any sub-pages to verify, being careful to filter out
     // any dom-if and template noise when we search.
-    const pages = section.querySelector(`:not(dom-if, template)`)
-                      .shadowRoot.querySelector('os-settings-animated-pages');
+    const pages = section.firstElementChild!.shadowRoot!.querySelector(
+        'settings-animated-pages');
     if (!pages) {
       return;
     }
 
-    const children = pages.shadowRoot.querySelector('slot')
-                         .assignedNodes({flatten: true})
-                         .filter(n => n.nodeType === Node.ELEMENT_NODE);
+    const children =
+        pages.shadowRoot!.querySelector('slot')!.assignedNodes({flatten: true})
+            .filter(n => n.nodeType === Node.ELEMENT_NODE) as HTMLElement[];
+
     const stampedChildren = children.filter(function(element) {
       return element.tagName !== 'TEMPLATE';
     });
@@ -70,9 +66,9 @@ suite('OSSettingsUi', function() {
       return element.getAttribute('route-path') === 'default';
     });
     assertEquals(
-        main.length, 1,
+        1, main.length,
         'default card not found for section ' + section.section);
-    assertGT(main[0].offsetHeight, 0);
+    assertGT(main[0]!.offsetHeight, 0);
 
     // Any other stamped subpages should not be visible.
     const subpages = stampedChildren.filter(function(element) {
@@ -80,7 +76,7 @@ suite('OSSettingsUi', function() {
     });
     for (const subpage of subpages) {
       assertEquals(
-          subpage.offsetHeight, 0,
+          0, subpage.offsetHeight,
           'Expected subpage #' + subpage.id + ' in ' + section.section +
               ' not to be visible.');
     }
@@ -100,8 +96,9 @@ suite('OSSettingsUi', function() {
     ];
 
     for (const name of sectionNames) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `os-settings-section[section=${name}]`);
+      const section =
+          settingsPage!.shadowRoot!.querySelector<OsSettingsSectionElement>(
+              `os-settings-section[section=${name}]`);
       assertTrue(!!section, 'Did not find ' + name);
       verifySubpagesHidden(section);
     }
@@ -109,6 +106,7 @@ suite('OSSettingsUi', function() {
 
   test('AdvancedSections', async function() {
     // Open the Advanced section.
+    assert(settingsMain);
     settingsMain.advancedToggleExpanded = true;
     flush();
     await flushTasks();
@@ -123,8 +121,9 @@ suite('OSSettingsUi', function() {
     ];
 
     for (const name of sectionNames) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `os-settings-section[section=${name}]`);
+      const section =
+          settingsPage!.shadowRoot!.querySelector<OsSettingsSectionElement>(
+              `os-settings-section[section=${name}]`);
       assertTrue(!!section, 'Did not find ' + name);
       verifySubpagesHidden(section);
     }
@@ -132,18 +131,19 @@ suite('OSSettingsUi', function() {
 
   test('Guest mode', async function() {
     // Simulate guest mode.
-    settingsPage.isGuestMode_ = true;
+    settingsPage!.set('isGuestMode_', true);
 
     // Ensure Advanced is open.
-    settingsMain.advancedToggleExpanded = true;
+    settingsMain!.advancedToggleExpanded = true;
     flush();
     await flushTasks();
 
     const hiddenSections = ['multidevice', 'osPeople', 'personalization'];
     for (const name of hiddenSections) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `os-settings-section[section=${name}]`);
-      assertFalse(!!section, 'Found unexpected section ' + name);
+      const section =
+          settingsPage!.shadowRoot!.querySelector<OsSettingsSectionElement>(
+              `os-settings-section[section=${name}]`);
+      assertEquals(null, section, 'Found unexpected section ' + name);
     }
 
     const visibleSections = [
@@ -161,47 +161,51 @@ suite('OSSettingsUi', function() {
       'osAccessibility',
     ];
     for (const name of visibleSections) {
-      const section = settingsPage.shadowRoot.querySelector(
-          `os-settings-section[section=${name}]`);
+      const section =
+          settingsPage!.shadowRoot!.querySelector<OsSettingsSectionElement>(
+              `os-settings-section[section=${name}]`);
       assertTrue(!!section, 'Expected section ' + name);
     }
   });
 
   test('Update required end of life banner visibility', function() {
     flush();
-    assertFalse(settingsPage.showUpdateRequiredEolBanner_);
-    assertFalse(
-        !!settingsPage.shadowRoot.querySelector('#updateRequiredEolBanner'));
+    assert(settingsPage);
+    assertEquals(
+        null,
+        settingsPage.shadowRoot!.querySelector('#updateRequiredEolBanner'));
 
-    settingsPage.showUpdateRequiredEolBanner_ = true;
+    settingsPage!.set('showUpdateRequiredEolBanner_', true);
     flush();
     assertTrue(
-        !!settingsPage.shadowRoot.querySelector('#updateRequiredEolBanner'));
+        !!settingsPage.shadowRoot!.querySelector('#updateRequiredEolBanner'));
   });
 
   test('Update required end of life banner close button click', function() {
-    settingsPage.showUpdateRequiredEolBanner_ = true;
+    assert(settingsPage);
+    settingsPage.set('showUpdateRequiredEolBanner_', true);
     flush();
-    const banner =
-        settingsPage.shadowRoot.querySelector('#updateRequiredEolBanner');
+    const banner = settingsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#updateRequiredEolBanner');
     assertTrue(!!banner);
 
-    const closeButton = assert(
-        settingsPage.shadowRoot.querySelector('#closeUpdateRequiredEol'));
+    const closeButton = settingsPage.shadowRoot!.querySelector<HTMLElement>(
+        '#closeUpdateRequiredEol');
+    assert(closeButton);
     closeButton.click();
     flush();
-    assertFalse(settingsPage.showUpdateRequiredEolBanner_);
     assertEquals('none', banner.style.display);
   });
 
   test('clicking icon closes drawer', async () => {
     flush();
-    const drawer = ui.shadowRoot.querySelector('#drawer');
+    const drawer = ui.shadowRoot!.querySelector<CrDrawerElement>('#drawer');
+    assert(drawer);
     drawer.openDrawer();
     await eventToPromise('cr-drawer-opened', drawer);
 
     // Clicking the drawer icon closes the drawer.
-    ui.shadowRoot.querySelector('#iconButton').click();
+    ui.shadowRoot!.querySelector<HTMLElement>('#iconButton')!.click();
     await eventToPromise('close', drawer);
     assertFalse(drawer.open);
     assertTrue(drawer.wasCanceled());

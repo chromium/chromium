@@ -411,7 +411,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
- ['OsSettingsUi', 'os_settings_ui_test.js'],
+ ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  /*
    Flaky failures: https://crbug.com/1373052
    ['OsSettingsUi2', 'os_settings_ui_test_2.js'],

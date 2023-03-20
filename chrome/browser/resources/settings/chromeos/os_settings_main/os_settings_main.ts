@@ -33,7 +33,7 @@ interface MainPageVisibility {
   settings: boolean;
 }
 
-interface OsSettingsMainElement {
+export interface OsSettingsMainElement {
   $: {
     overscroll: HTMLDivElement,
   };
@@ -41,7 +41,7 @@ interface OsSettingsMainElement {
 
 const OsSettingsMainElementBase = RouteObserverMixin(PolymerElement);
 
-class OsSettingsMainElement extends OsSettingsMainElementBase {
+export class OsSettingsMainElement extends OsSettingsMainElementBase {
   static get is() {
     return 'os-settings-main';
   }

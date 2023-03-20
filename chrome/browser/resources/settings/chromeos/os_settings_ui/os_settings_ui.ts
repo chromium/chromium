@@ -65,7 +65,7 @@ assert(
     !window.settings || !defaultResourceLoaded,
     'os_settings_ui.js was executed twice. You probably have an invalid import.');
 
-interface OsSettingsUiElement {
+export interface OsSettingsUiElement {
   $: {
     container: HTMLDivElement,
     prefs: SettingsPrefsElement,
@@ -79,7 +79,7 @@ const OsSettingsUiElementBase =
     RouteObserverMixin(
         FindShortcutMixin(CrContainerShadowMixin(PolymerElement)));
 
-class OsSettingsUiElement extends OsSettingsUiElementBase {
+export class OsSettingsUiElement extends OsSettingsUiElementBase {
   static get is() {
     return 'os-settings-ui';
   }

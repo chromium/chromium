@@ -122,7 +122,6 @@ test_files = [
   "os_settings_page_test.js",
   "os_settings_search_box_test.js",
   "os_settings_ui_test_2.js",
-  "os_settings_ui_test.js",
   "os_sync_controls_subpage_test.js",
   "people_page_account_manager_subpage_test.js",
   "per_device_keyboard_subsection_test.js",
@@ -233,6 +232,8 @@ test_files = [
   "os_files_page/office_page_test.ts",
 
   "os_people_page/add_user_dialog_tests.ts",
+
+  "os_settings_ui/os_settings_ui_test.ts",
 
   "parental_controls_page/parental_controls_page_test.ts",
   "parental_controls_page/test_parental_controls_browser_proxy.ts",
