@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
 @protocol ApplicationCommands;
 class Browser;
@@ -70,6 +71,7 @@ class TabUsageRecorderBrowserAgent;
 class ReadingListModel;
 class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
+@protocol VoiceSearchController;
 class WebNavigationBrowserAgent;
 
 namespace signin {
@@ -100,15 +102,16 @@ typedef struct {
   id<FindInPageCommands> findInPageCommandsHandler;
   id<ToolbarCommands> toolbarCommandsHandler;
   id<LoadQueryCommands> loadQueryCommandsHandler;
+  LayoutGuideCenter* layoutGuideCenter;
   id<OmniboxCommands> omniboxCommandsHandler;
   BOOL isOffTheRecord;
   ReadingListModel* readingModel;
   signin::IdentityManager* identityManager;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
+  id<VoiceSearchController> voiceSearchController;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
   WebNavigationBrowserAgent* webNavigationBrowserAgent;
-  LayoutGuideCenter* layoutGuideCenter;
   base::WeakPtr<WebStateList> webStateList;
 } BrowserViewControllerDependencies;
 

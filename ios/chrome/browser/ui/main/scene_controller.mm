@@ -2266,10 +2266,11 @@ void InjectNTP(Browser* browser) {
                                                   : self.mainInterface.bvc;
   // TODO(crbug.com/1329104): playingTTS will be removed as an API from the BVC
   // and something else will be used instead.
-  if (backgroundBVC.playingTTS)
+  if (backgroundBVC.playingTTS) {
     [backgroundBVC startVoiceSearch];
-  else
+  } else {
     [self.currentInterface.bvc startVoiceSearch];
+  }
 }
 
 - (void)startQRCodeScanner {

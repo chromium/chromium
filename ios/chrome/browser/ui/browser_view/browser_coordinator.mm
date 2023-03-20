@@ -186,6 +186,8 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -444,6 +446,8 @@ enum class ToolbarKind {
   absl::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
   BOOL _isOffTheRecord;
+  // Used to display the Voice Search UI.  Nil if not visible.
+  id<VoiceSearchController> _voiceSearchController;
 }
 
 #pragma mark - ChromeCoordinator
@@ -809,6 +813,17 @@ enum class ToolbarKind {
   _findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
   _toolbarCommandsHandler = HandlerForProtocol(_dispatcher, ToolbarCommands);
+  // TODO(crbug.com/1413769) Typecast should be performed using
+  // HandlerForProtocol method. PrimaryToolbarCoordinator isn't started yet, so
+  // LocationBarCoordinator is not created at this point and therefore not
+  // dispatching LoadQueryCommands.
+  id<LoadQueryCommands> _loadQueryCommandsHandler =
+      static_cast<id<LoadQueryCommands>>(_dispatcher);
+  _voiceSearchController =
+      ios::provider::CreateVoiceSearchController(self.browser);
+  if (_primaryToolbarCoordinator) {
+    _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
+  }
 
   // SnackbarCoordinator is not created yet and therefore not dispatching
   // SnackbarCommands.
@@ -846,10 +861,8 @@ enum class ToolbarKind {
   _viewControllerDependencies.findInPageCommandsHandler =
       _findInPageCommandsHandler;
   _viewControllerDependencies.toolbarCommandsHandler = _toolbarCommandsHandler;
-  // TODO(crbug.com/1413769) Typecast should be performed using
-  // HandlerForProtocol method.
   _viewControllerDependencies.loadQueryCommandsHandler =
-      static_cast<id<LoadQueryCommands>>(_dispatcher);
+      _loadQueryCommandsHandler;
   // TODO(crbug.com/1413769) Typecast should be performed using
   // HandlerForProtocol method.
   _viewControllerDependencies.omniboxCommandsHandler =
@@ -874,6 +887,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.identityManager =
       IdentityManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
+  _viewControllerDependencies.voiceSearchController = _voiceSearchController;
 }
 
 - (void)updateViewControllerDependencies {
@@ -933,6 +947,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.omniboxCommandsHandler = nil;
   _viewControllerDependencies.readingModel = nil;
   _viewControllerDependencies.identityManager = nil;
+  _viewControllerDependencies.voiceSearchController = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

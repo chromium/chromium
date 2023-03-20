@@ -103,8 +103,6 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
-#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
-#import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
@@ -225,8 +223,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   PrerenderService* _prerenderService;
 
   // Used to display the Voice Search UI.  Nil if not visible.
-  // TODO(crbug.com/1329104): Move voice search controller/coordinator to
-  // BrowserCoordinator
   id<VoiceSearchController> _voiceSearchController;
 
   // YES if new tab is animating in.
@@ -507,6 +503,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _webStateList = dependencies.webStateList;
     _readingModel = dependencies.readingModel;
     _identityManager = dependencies.identityManager;
+    _voiceSearchController = dependencies.voiceSearchController;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -838,9 +835,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.textZoomHandler closeTextZoom];
   [[self viewForWebState:self.currentWebState] endEditing:NO];
 
-  // Ensure that voice search objects are created.
-  [self ensureVoiceSearchControllerCreated];
-
   // Present voice search.
   [_voiceSearchController
       startRecognitionOnViewController:self
@@ -987,7 +981,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.secondaryToolbarCoordinator = nil;
   _sideSwipeController = nil;
   [_voiceSearchController disconnect];
-  _voiceSearchController = nil;
   _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -2092,22 +2085,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       .appState.lastTappedWindow = view.window;
 }
 
-#pragma mark - Private Methods: Voice Search
-
-// Lazily instantiates `_voiceSearchController`.
-- (void)ensureVoiceSearchControllerCreated {
-  if (_voiceSearchController)
-    return;
-
-  // TODO(crbug.com/1329104): Move voice search controller to
-  // BrowserCoordinator, potentially refactoring to a coordinator.
-  _voiceSearchController =
-      ios::provider::CreateVoiceSearchController(self.browser);
-  if (self.primaryToolbarCoordinator) {
-    _voiceSearchController.dispatcher = self.loadQueryCommandsHandler;
-  }
-}
-
 #pragma mark - Private Methods: Reading List
 // TODO(crbug.com/1272540): Remove these methods from the BVC.
 
@@ -3004,7 +2981,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)preloadVoiceSearch {
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
-  [self ensureVoiceSearchControllerCreated];
   [_voiceSearchController prepareToAppear];
 }
 
