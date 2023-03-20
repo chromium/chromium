@@ -59,10 +59,10 @@ The first step involves creating a new `.mojom` file with an interface
 definition, like so:
 
 ``` cpp
-// src/example/public/mojom/ping_responder.mojom
+// src/example/public/mojom/pingable.mojom
 module example.mojom;
 
-interface PingResponder {
+interface Pingable {
   // Receives a "Ping" and responds with a random integer.
   Ping() => (int32 random);
 };
@@ -75,7 +75,7 @@ definition here:
 # src/example/public/mojom/BUILD.gn
 import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
-  sources = [ "ping_responder.mojom" ]
+  sources = [ "pingable.mojom" ]
 }
 ```
 
@@ -94,13 +94,13 @@ for the InterfaceRequest endpoint to be transferred or bound anywhere.
 This code would be placed somewhere in the renderer:
 
 ```cpp
-// src/third_party/blink/example/public/ping_responder.h
-mojo::Remote<example::mojom::PingResponder> ping_responder;
-mojo::PendingReceiver<example::mojom::PingResponder> receiver =
-    ping_responder.BindNewPipeAndPassReceiver();
+// src/third_party/blink/example/public/pingable.h
+mojo::Remote<example::mojom::Pingable> pingable;
+mojo::PendingReceiver<example::mojom::Pingable> receiver =
+    pingable.BindNewPipeAndPassReceiver();
 ```
 
-In this example, ```ping_responder``` is the `Remote`, and ```receiver```
+In this example, ```pingable``` is the `Remote`, and ```receiver```
 is a `PendingReceiver`, which is a `Receiver` precursor that will eventually
 be turned into a `Receiver`. `BindNewPipeAndPassReceiver` is the most common way to create
 a message pipe: it yields the `PendingReceiver` as the return
@@ -118,14 +118,14 @@ expects to be bound by a `Receiver` of the same interface type.
 Finally, we can call the `Ping()` method on our `Remote` to send a message:
 
 ```cpp
-// src/third_party/blink/example/public/ping_responder.h
-ping_responder->Ping(base::BindOnce(&OnPong));
+// src/third_party/blink/example/public/pingable.h
+pingable->Ping(base::BindOnce(&OnPong));
 ```
 
 *** aside
 **IMPORTANT:** If we want to receive the response, we must keep the
-`ping_responder` object alive until `OnPong` is invoked. After all,
-`ping_responder` *owns* its message pipe endpoint. If it's destroyed then so is
+`pingable` object alive until `OnPong` is invoked. After all,
+`pingable` *owns* its message pipe endpoint. If it's destroyed then so is
 the endpoint, and there will be nothing to receive the response message.
 ***
 
@@ -171,26 +171,26 @@ implementation. More on that below.
 
 ### Implementing the Interface
 
-Finally, we need a browser-side implementation of our `PingResponder` interface.
+Finally, we need a browser-side implementation of our `Pingable` interface.
 
 ```cpp
-#include "example/public/mojom/ping_responder.mojom.h"
+#include "example/public/mojom/pingable.mojom.h"
 
-class PingResponderImpl : example::mojom::PingResponder {
+class PingableImpl : example::mojom::Pingable {
  public:
-  explicit PingResponderImpl(mojo::PendingReceiver<example::mojom::PingResponder> receiver)
+  explicit PingableImpl(mojo::PendingReceiver<example::mojom::Pingable> receiver)
       : receiver_(this, std::move(receiver)) {}
-  PingResponderImpl(const PingResponderImpl&) = delete;
-  PingResponderImpl& operator=(const PingResponderImpl&) = delete;
+  PingableImpl(const PingableImpl&) = delete;
+  PingableImpl& operator=(const PingableImpl&) = delete;
 
-  // example::mojom::PingResponder:
+  // example::mojom::Pingable:
   void Ping(PingCallback callback) override {
     // Respond with a random 4, chosen by fair dice roll.
     std::move(callback).Run(4);
   }
 
  private:
-  mojo::Receiver<example::mojom::PingResponder> receiver_;
+  mojo::Receiver<example::mojom::Pingable> receiver_;
 };
 ```
 
@@ -202,34 +202,34 @@ the handler previously registered for this specific interface.
 // render_frame_host_impl.h
 class RenderFrameHostImpl
   ...
-  void GetPingResponder(mojo::PendingReceiver<example::mojom::PingResponder> receiver);
+  void GetPingable(mojo::PendingReceiver<example::mojom::Pingable> receiver);
   ...
  private:
   ...
-  std::unique_ptr<PingResponderImpl> ping_responder_;
+  std::unique_ptr<PingableImpl> pingable_;
   ...
 };
 
 // render_frame_host_impl.cc
-void RenderFrameHostImpl::GetPingResponder(
-    mojo::PendingReceiver<example::mojom::PingResponder> receiver) {
-  ping_responder_ = std::make_unique<PingResponderImpl>(std::move(receiver));
+void RenderFrameHostImpl::GetPingable(
+    mojo::PendingReceiver<example::mojom::Pingable> receiver) {
+  pingable_ = std::make_unique<PingableImpl>(std::move(receiver));
 }
 
 // browser_interface_binders.cc
 void PopulateFrameBinders(RenderFrameHostImpl* host,
                           mojo::BinderMap* map) {
 ...
-  // Register the handler for PingResponder.
-  map->Add<example::mojom::PingResponder>(base::BindRepeating(
-    &RenderFrameHostImpl::GetPingResponder, base::Unretained(host)));
+  // Register the handler for Pingable.
+  map->Add<example::mojom::Pingable>(base::BindRepeating(
+    &RenderFrameHostImpl::GetPingable, base::Unretained(host)));
 }
 ```
 
 And we're done. This setup is sufficient to plumb a new interface connection
 between a renderer frame and its browser-side host object!
 
-Assuming we kept our `ping_responder` object alive in the renderer long enough,
+Assuming we kept our `pingable` object alive in the renderer long enough,
 we would eventually see its `OnPong` callback invoked with the totally random
 value of `4`, as defined by the browser-side implementation above.
 
