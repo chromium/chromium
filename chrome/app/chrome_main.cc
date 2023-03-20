@@ -25,6 +25,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/app/notification_metrics.h"
+#include <dlfcn.h>
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
