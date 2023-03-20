@@ -99,11 +99,13 @@ bool FormContainsFieldWithName(const FormData& form,
                                const std::u16string& element) {
   if (element.empty())
     return false;
-  for (const auto& field : form.fields) {
-    if (base::EqualsCaseInsensitiveASCII(field.name, element))
-      return true;
-  }
-  return false;
+
+  auto equals_element_case_insensitive =
+      [&element](const std::u16string& name) {
+        return base::EqualsCaseInsensitiveASCII(name, element);
+      };
+  return base::ranges::any_of(form.fields, equals_element_case_insensitive,
+                              &FormFieldData::name);
 }
 
 bool IsPhished(const PasswordForm& credentials) {
