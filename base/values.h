@@ -874,8 +874,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // SetPath(...) call.
   //
   // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
-  Value* SetBoolPath(StringPiece path, bool value);
-  // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetIntPath(StringPiece path, int value);
   // DEPRECATED: Use `Value::Dict::SetByDottedPath()`.
   Value* SetDoublePath(StringPiece path, double value);

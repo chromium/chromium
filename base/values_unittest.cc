@@ -1155,26 +1155,6 @@ TEST(ValuesTest, SetPath) {
   EXPECT_FALSE(found);
 }
 
-TEST(ValuesTest, SetBoolPath) {
-  Value::Dict root;
-  Value* inserted = root.SetByDottedPath("foo.bar", true);
-  Value* found = root.FindByDottedPath("foo.bar");
-  ASSERT_TRUE(found);
-  EXPECT_EQ(inserted, found);
-  ASSERT_TRUE(found->is_bool());
-  EXPECT_TRUE(found->GetBool());
-
-  // Overwrite with a different value.
-  root.SetByDottedPath("foo.bar", false);
-  found = root.FindByDottedPath("foo.bar");
-  ASSERT_TRUE(found);
-  ASSERT_TRUE(found->is_bool());
-  EXPECT_FALSE(found->GetBool());
-
-  // Can't change existing non-dictionary keys.
-  ASSERT_FALSE(root.SetByDottedPath("foo.bar.zoo", true));
-}
-
 TEST(ValuesTest, SetIntPath) {
   Value::Dict root;
   Value* inserted = root.SetByDottedPath("foo.bar", 123);
