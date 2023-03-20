@@ -68,25 +68,38 @@
   #icon.sheets,
   #icon.slides,
   #icon.office {
-    background: no-repeat center var(--cros-bg-color-elevation-3);
-    background-size: 20px;
     border: 1px solid var(--cros-separator-color);
   }
 
+  #icon.office {
+    background: no-repeat center var(--cros-bg-color-elevation-3);
+    background-image: url(../icons/office.svg);
+    background-size: 20px;
+  }
+
+  #icon.docs,
+  #icon.sheets,
+  #icon.slides {
+    background: no-repeat var(--cros-bg-color-elevation-3);
+  }
+
   #icon.docs {
-    background-image: url(../icons/docs.svg);
+    /**
+    The format for requesting an icon is:
+        chrome://app-icon/<app_id>/<icon_size>
+    **/
+    background-image: url(
+      chrome://app-icon/mpnpojknpmmopombnjdcgaaiekajbnjb/32);
   }
 
   #icon.sheets {
-    background-image: url(../icons/sheets.svg);
+    background-image: url(
+      chrome://app-icon/fhihpiojkbmbpdjeoajapmgkhlnakfjf/32);
   }
 
   #icon.slides {
-    background-image: url(../icons/slides.svg);
-  }
-
-  #icon.office {
-    background-image: url(../icons/office.svg);
+    background-image: url(
+      chrome://app-icon/kefjledonklijopmnomlcbpllchaibag/32);
   }
 
   #title {

@@ -10,13 +10,10 @@ build_webui("build") {
   static_files = [
     "icons/check.svg",
     "icons/chevron.svg",
-    "icons/docs.svg",
     "icons/download.svg",
     "icons/error.svg",
     "icons/list_check.svg",
     "icons/office.svg",
-    "icons/sheets.svg",
-    "icons/slides.svg",
     "images/connect_one_drive_app_icon.svg",
     "images/connect_one_drive.svg",
     "images/install_office_app_icon.svg",
