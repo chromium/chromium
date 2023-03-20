@@ -46,23 +46,23 @@ constexpr int chromeOmniboxClientId = 6;
 //       }
 //     }
 std::string BuildDocumentSuggestionRequest(const std::u16string& query) {
-  base::Value root(base::Value::Type::DICT);
-  root.SetKey("query", base::Value(query));
+  base::Value::Dict root;
+  root.Set("query", base::Value(query));
   // The API supports pagination. We're always concerned with the first N
   // results on the first page.
-  root.SetKey("start", base::Value(0));
-  root.SetKey("pageSize", base::Value(10));
+  root.Set("start", base::Value(0));
+  root.Set("pageSize", base::Value(10));
 
-  base::Value request_options(base::Value::Type::DICT);
-  request_options.SetKey("searchApplicationId",
-                         base::Value("searchapplications/chrome"));
+  base::Value::Dict request_options;
+  request_options.Set("searchApplicationId",
+                      base::Value("searchapplications/chrome"));
   // While the searchApplicationId is a specific config being used by a client
   // and can be shared among multiple clients in some instances, clientId
   // identifies a client uniquely.
-  request_options.SetKey("clientId", base::Value(chromeOmniboxClientId));
-  request_options.SetKey("languageCode",
-                         base::Value(base::i18n::GetConfiguredLocale()));
-  root.SetKey("requestOptions", std::move(request_options));
+  request_options.Set("clientId", base::Value(chromeOmniboxClientId));
+  request_options.Set("languageCode",
+                      base::Value(base::i18n::GetConfiguredLocale()));
+  root.Set("requestOptions", std::move(request_options));
 
   std::string result;
   base::JSONWriter::Write(root, &result);
