@@ -13,10 +13,13 @@
 
 namespace content {
 
+constexpr const char* kStartupTracingTriggerName = "startup";
+
 // Observes for startup tracing config and sets up preferences to trace on next
 // startup.
-class CONTENT_EXPORT BackgroundStartupTracingObserver
-    : public BackgroundTracingManagerImpl::EnabledStateObserver {
+// TODO(crbug.com/1418116): Rename this class since this is no longer an
+// observer of anything.
+class CONTENT_EXPORT BackgroundStartupTracingObserver {
  public:
   // Delegate to store and read application preferences for startup tracing, to
   // isolate the feature for testing.
@@ -38,11 +41,6 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
   static const BackgroundTracingRule* FindStartupRuleInConfig(
       const BackgroundTracingConfigImpl& config);
 
-  // BackgroundTracingManagerImpl::EnabledStateObserver implementation.
-  void OnScenarioActivated(const BackgroundTracingConfigImpl* config) override;
-  void OnScenarioAborted() override;
-  void OnTracingEnabled() override;
-
   // Reads the preference for startup tracing set on the previous startup and
   // includes config for startup tracing if enabled. Also sets or resets the
   // preference for next session based on current config containing startup
@@ -61,7 +59,7 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
 
  private:
   BackgroundStartupTracingObserver();
-  ~BackgroundStartupTracingObserver() override;
+  ~BackgroundStartupTracingObserver();
 
   bool enabled_in_current_session_;
 

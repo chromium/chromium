@@ -19,6 +19,7 @@
 namespace content {
 
 class BackgroundTracingConfigImpl;
+class BackgroundTracingRule;
 
 class BackgroundTracingActiveScenario {
  public:
@@ -47,13 +48,7 @@ class BackgroundTracingActiveScenario {
   State state() const { return scenario_state_; }
   base::WeakPtr<BackgroundTracingActiveScenario> GetWeakPtr();
 
-  void TriggerNamedEvent(
-      BackgroundTracingManager::TriggerHandle handle,
-      BackgroundTracingManager::StartedFinalizingCallback callback);
-  void OnHistogramTrigger(const std::string& histogram_name);
-  void OnRuleTriggered(
-      const BackgroundTracingRule* triggered_rule,
-      BackgroundTracingManager::StartedFinalizingCallback callback);
+  bool OnRuleTriggered(const BackgroundTracingRule* triggered_rule);
 
   // Called by TracingSession when the final trace data is ready for proto
   // traces.
@@ -75,11 +70,7 @@ class BackgroundTracingActiveScenario {
 
  private:
   bool StartTracing();
-  void BeginFinalizing(
-      BackgroundTracingManager::StartedFinalizingCallback callback);
-
-  BackgroundTracingRule* GetRuleAbleToTriggerTracing(
-      const std::string& trigger_name);
+  void BeginFinalizing();
 
   void SetState(State new_state);
 
@@ -90,9 +81,7 @@ class BackgroundTracingActiveScenario {
   State scenario_state_ = State::kIdle;
   base::RepeatingClosure rule_triggered_callback_for_testing_;
   BackgroundTracingManager::ReceiveCallback receive_callback_;
-  BackgroundTracingManager::TriggerHandle triggered_named_event_handle_ = -1;
   base::OnceClosure on_aborted_callback_;
-  base::OnceClosure started_finalizing_closure_;
 
   class TracingTimer;
   std::unique_ptr<TracingTimer> tracing_timer_;

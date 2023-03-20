@@ -25,6 +25,21 @@ class BackgroundTracingManager {
 
   CONTENT_EXPORT static const char kContentTriggerConfig[];
 
+  // Enabled state observers get a callback when the state of background tracing
+  // changes.
+  class CONTENT_EXPORT EnabledStateTestObserver {
+   public:
+    // In case the scenario was aborted before or after tracing was enabled.
+    virtual void OnScenarioAborted() = 0;
+
+    // Called after tracing is enabled on all processes because the rule was
+    // triggered.
+    virtual void OnTracingEnabled() = 0;
+
+   protected:
+    ~EnabledStateTestObserver() = default;
+  };
+
   // If a ReceiveCallback is set it will be called on the UI thread every time
   // the BackgroundTracingManager finalizes a trace. The first parameter of
   // this callback is the trace data. The second is metadata that was generated
@@ -88,23 +103,11 @@ class BackgroundTracingManager {
   using IdleCallback = base::RepeatingCallback<void()>;
   virtual void WhenIdle(IdleCallback idle_callback) = 0;
 
-  using StartedFinalizingCallback = base::OnceCallback<void(bool)>;
-  using TriggerHandle = int;
-
-  // Notifies that a manual trigger event has occurred, and we may need to
-  // either begin recording or finalize the trace, depending on the config.
-  // If the trigger specified isn't active in the config, this will do nothing.
-  virtual void TriggerNamedEvent(
-      TriggerHandle trigger_handle,
-      StartedFinalizingCallback started_callback) = 0;
-
-  // Registers a manual trigger handle, and returns a TriggerHandle which can
-  // be passed to DidTriggerHappen().
-  virtual TriggerHandle RegisterTriggerType(base::StringPiece trigger_name) = 0;
-
-  // Returns the name associated with the given trigger handle.
-  virtual const std::string& GetTriggerNameFromHandle(
-      TriggerHandle trigger_handle) = 0;
+  // Notifies that a manual trigger event has occurred. Returns true if the
+  // trigger caused a scenario to either begin recording or finalize the trace
+  // depending on the config, or false if the trigger had no effect. If the
+  // trigger specified isn't active in the config, this will do nothing.
+  virtual bool EmitNamedTrigger(const std::string& trigger_name) = 0;
 
   virtual bool HasActiveScenario() = 0;
 

@@ -9,7 +9,6 @@
 
 #include "base/values.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
-#include "content/public/browser/background_tracing_manager.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
 
 namespace content {
@@ -18,6 +17,10 @@ class BackgroundTracingRule {
  public:
   using MetadataProto =
       perfetto::protos::pbzero::BackgroundTracingMetadata::TriggerRule;
+  // Returns true if the trigger caused a scenario to either begin recording or
+  // finalize the trace depending on the config.
+  using RuleTriggeredCallback =
+      base::RepeatingCallback<bool(const BackgroundTracingRule*)>;
 
   BackgroundTracingRule();
   explicit BackgroundTracingRule(int trigger_delay);
@@ -27,10 +30,10 @@ class BackgroundTracingRule {
 
   virtual ~BackgroundTracingRule();
 
-  virtual void Install() {}
+  virtual void Install(RuleTriggeredCallback);
+  virtual void Uninstall();
   virtual base::Value::Dict ToDict() const;
   virtual void GenerateMetadataProto(MetadataProto* out) const;
-  virtual bool ShouldTriggerNamedEvent(const std::string& named_event) const;
 
   // Seconds from the rule is triggered to finalization should start.
   virtual int GetTraceDelay() const;
@@ -48,9 +51,17 @@ class BackgroundTracingRule {
  protected:
   virtual std::string GetDefaultRuleId() const;
 
+  virtual void DoInstall() = 0;
+  virtual void DoUninstall() = 0;
+  bool OnRuleTriggered() const;
+
+  bool installed() const { return installed_; }
+
  private:
   void Setup(const base::Value::Dict& dict);
 
+  RuleTriggeredCallback trigger_callback_;
+  bool installed_ = false;
   double trigger_chance_ = 1.0;
   int trigger_delay_ = -1;
   std::string rule_id_;

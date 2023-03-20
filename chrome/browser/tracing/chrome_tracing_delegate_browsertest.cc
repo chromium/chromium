@@ -36,16 +36,39 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
+#include "content/public/test/background_tracing_test_support.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
+namespace {
+
+class TestBackgroundTracingHelper
+    : public content::BackgroundTracingManager::EnabledStateTestObserver {
+ public:
+  TestBackgroundTracingHelper() {
+    content::AddBackgroundTracingEnabledStateObserverForTesting(this);
+  }
+
+  ~TestBackgroundTracingHelper() {
+    content::RemoveBackgroundTracingEnabledStateObserverForTesting(this);
+  }
+
+  void OnTracingEnabled() override {}
+
+  void OnScenarioAborted() override { wait_for_scenario_aborted_.Quit(); }
+
+  void WaitForScenarioAborted() { wait_for_scenario_aborted_.Run(); }
+
+ private:
+  base::RunLoop wait_for_scenario_aborted_;
+};
+
+}  // namespace
+
 class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
  public:
-  ChromeTracingDelegateBrowserTest()
-      : receive_count_(0),
-        started_finalizations_count_(0),
-        last_on_started_finalizing_success_(false) {}
+  ChromeTracingDelegateBrowserTest() : receive_count_(0) {}
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -95,32 +118,18 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
 
   bool StartPreemptiveScenarioWithCrash(
       content::BackgroundTracingManager::DataFiltering data_filtering,
-      base::StringPiece scenario_name = "TestScenario") {
+      const std::string& scenario_name = "TestScenario") {
     return StartPreemptiveScenario(data_filtering, scenario_name,
                                    /*with_crash_scenario=*/true);
   }
 
-  void TriggerPreemptiveScenario(
-      base::OnceClosure on_started_finalization_callback,
-      base::StringPiece trigger_name = "test") {
-    on_started_finalization_callback_ =
-        std::move(on_started_finalization_callback);
-    trigger_handle_ =
-        content::BackgroundTracingManager::GetInstance().RegisterTriggerType(
-            trigger_name);
-
-    content::BackgroundTracingManager::StartedFinalizingCallback
-        started_finalizing_callback = base::BindOnce(
-            &ChromeTracingDelegateBrowserTest::OnStartedFinalizing,
-            base::Unretained(this));
-    content::BackgroundTracingManager::GetInstance().TriggerNamedEvent(
-        trigger_handle_, std::move(started_finalizing_callback));
+  void TriggerPreemptiveScenario(const std::string& trigger_name = "test") {
+    content::BackgroundTracingManager::GetInstance().EmitNamedTrigger(
+        trigger_name);
   }
 
-  void TriggerPreemptiveScenarioWithCrash(
-      base::OnceClosure on_started_finalization_callback) {
-    TriggerPreemptiveScenario(std::move(on_started_finalization_callback),
-                              "test_crash");
+  void TriggerPreemptiveScenarioWithCrash() {
+    TriggerPreemptiveScenario("test_crash");
   }
 
   void WaitForUpload() {
@@ -134,29 +143,9 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   int get_receive_count() const { return receive_count_; }
-  bool get_started_finalizations() const {
-    return started_finalizations_count_;
-  }
-  bool get_last_started_finalization_success() const {
-    return last_on_started_finalizing_success_;
-  }
 
  private:
-  void OnStartedFinalizing(bool success) {
-    started_finalizations_count_++;
-    last_on_started_finalizing_success_ = success;
-
-    if (!on_started_finalization_callback_.is_null()) {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, std::move(on_started_finalization_callback_));
-    }
-  }
-
-  base::OnceClosure on_started_finalization_callback_;
   int receive_count_;
-  int started_finalizations_count_;
-  content::BackgroundTracingManager::TriggerHandle trigger_handle_;
-  bool last_on_started_finalizing_success_;
 };
 
 std::string GetSessionStateJson() {
@@ -174,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
 
-  TriggerPreemptiveScenario(base::OnceClosure());
+  TriggerPreemptiveScenario();
 
   WaitForUpload();
   EXPECT_TRUE(get_receive_count() == 1);
@@ -272,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
       R"({"scenario":"TestingScenario","time":"*"}]})"))
       << "Actual: " << state;
 
-  TriggerPreemptiveScenario(base::OnceClosure());
+  TriggerPreemptiveScenario();
 
   WaitForUpload();
   EXPECT_TRUE(get_receive_count() == 1);
@@ -313,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
 
-  TriggerPreemptiveScenario(base::OnceClosure());
+  TriggerPreemptiveScenario();
 
   WaitForUpload();
   EXPECT_EQ(get_receive_count(), 1);
@@ -331,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   // crash scenario.
   EXPECT_TRUE(StartPreemptiveScenarioWithCrash(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
-  TriggerPreemptiveScenarioWithCrash(base::OnceClosure());
+  TriggerPreemptiveScenarioWithCrash();
 
   WaitForUpload();
   EXPECT_EQ(get_receive_count(), 2);
@@ -345,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
 
-  TriggerPreemptiveScenario(base::OnceClosure());
+  TriggerPreemptiveScenario();
 
   WaitForUpload();
   EXPECT_EQ(get_receive_count(), 1);
@@ -364,12 +353,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(StartPreemptiveScenarioWithCrash(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
 
-  base::RunLoop wait_for_finalization_start;
-  TriggerPreemptiveScenario(wait_for_finalization_start.QuitClosure());
-  wait_for_finalization_start.Run();
-
-  EXPECT_EQ(get_started_finalizations(), 1);
-  EXPECT_FALSE(get_last_started_finalization_success());
+  TestBackgroundTracingHelper background_tracing_helper;
+  TriggerPreemptiveScenario();
+  background_tracing_helper.WaitForScenarioAborted();
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
@@ -462,12 +448,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
   EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
 
-  base::RunLoop wait_for_finalization_start;
-  TriggerPreemptiveScenario(wait_for_finalization_start.QuitClosure());
-  wait_for_finalization_start.Run();
-
-  EXPECT_TRUE(get_started_finalizations() == 1);
-  EXPECT_FALSE(get_last_started_finalization_success());
+  TestBackgroundTracingHelper background_tracing_helper;
+  TriggerPreemptiveScenario();
+  background_tracing_helper.WaitForScenarioAborted();
 }
 
 // If we need a PII-stripped trace, any OTR session that starts and ends during
@@ -482,12 +465,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   CloseBrowserSynchronously(incognito_browser);
   EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserActive());
 
-  base::RunLoop wait_for_finalization_start;
-  TriggerPreemptiveScenario(wait_for_finalization_start.QuitClosure());
-  wait_for_finalization_start.Run();
-
-  EXPECT_TRUE(get_started_finalizations() == 1);
-  EXPECT_FALSE(get_last_started_finalization_success());
+  TestBackgroundTracingHelper background_tracing_helper;
+  TriggerPreemptiveScenario();
+  background_tracing_helper.WaitForScenarioAborted();
 }
 
 namespace {
@@ -554,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   EXPECT_EQ(GetSessionStateJson(), R"({"state":1,"upload_times":[]})");
 
-  TriggerPreemptiveScenario(base::OnceClosure());
+  TriggerPreemptiveScenario();
 
   // This updates the upload time for the test scenario to current time.
   WaitForUpload();
@@ -614,7 +594,7 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
         output_path_, base::FilePathWatcher::Type::kNonRecursive,
         base::BindLambdaForTesting(
             [&run_loop](const base::FilePath&, bool) { run_loop.Quit(); }));
-    TriggerPreemptiveScenario(base::OnceClosure());
+    TriggerPreemptiveScenario();
     run_loop.Run();
   }
 

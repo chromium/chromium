@@ -14,7 +14,6 @@
 namespace content {
 namespace {
 
-const char kStartupTracingConfig[] = "startup-config";
 const char kStartupTracingRuleId[] = "org.chromium.background_tracing.startup";
 
 class PreferenceManagerImpl
@@ -59,29 +58,6 @@ BackgroundStartupTracingObserver::BackgroundStartupTracingObserver()
 
 BackgroundStartupTracingObserver::~BackgroundStartupTracingObserver() {}
 
-void BackgroundStartupTracingObserver::OnScenarioActivated(
-    const BackgroundTracingConfigImpl* config) {
-  if (!enabled_in_current_session_)
-    return;
-  const BackgroundTracingRule* startup_rule = FindStartupRuleInConfig(*config);
-  DCHECK(startup_rule);
-
-  // Post task to avoid reentrancy.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BackgroundTracingManagerImpl::OnRuleTriggered,
-          base::Unretained(&BackgroundTracingManagerImpl::GetInstance()),
-          base::Unretained(startup_rule),
-          BackgroundTracingManager::StartedFinalizingCallback()));
-}
-
-void BackgroundStartupTracingObserver::OnScenarioAborted() {
-  enabled_in_current_session_ = false;
-}
-
-void BackgroundStartupTracingObserver::OnTracingEnabled() {}
-
 void BackgroundStartupTracingObserver::SetPreferenceManagerForTesting(
     std::unique_ptr<PreferenceManager> preferences) {
   preferences_ = std::move(preferences);
@@ -120,7 +96,7 @@ BackgroundStartupTracingObserver::IncludeStartupConfigIfNeeded(
 
   base::Value::Dict rules_dict;
   rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict.Set("trigger_name", kStartupTracingConfig);
+  rules_dict.Set("trigger_name", kStartupTracingTriggerName);
   rules_dict.Set("trigger_delay", 30);
   rules_dict.Set("rule_id", kStartupTracingRuleId);
 

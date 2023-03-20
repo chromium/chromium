@@ -33,17 +33,10 @@ void FireBackgroundTracingTriggerOnUI(
   if (!manager.HasActiveScenario())
     return;
 
-  static content::BackgroundTracingManager::TriggerHandle trigger_handle = -1;
-  if (trigger_handle == -1) {
-    trigger_handle = manager.RegisterTriggerType(
-        content::BackgroundTracingManager::kContentTriggerConfig);
-  }
-
   // Actually fire the trigger. We don't need to know when the trace is being
   // finalized so pass an empty callback.
-  manager.TriggerNamedEvent(
-      trigger_handle,
-      content::BackgroundTracingManager::StartedFinalizingCallback());
+  manager.EmitNamedTrigger(
+      content::BackgroundTracingManager::kContentTriggerConfig);
 }
 
 }  // namespace

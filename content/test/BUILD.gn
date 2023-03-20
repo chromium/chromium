@@ -144,6 +144,8 @@ static_library("test_support") {
     "../public/test/background_color_change_waiter.h",
     "../public/test/background_sync_test_util.cc",
     "../public/test/background_sync_test_util.h",
+    "../public/test/background_tracing_test_support.cc",
+    "../public/test/background_tracing_test_support.h",
     "../public/test/blink_test_environment.cc",
     "../public/test/blink_test_environment.h",
     "../public/test/bluetooth_test_utils.cc",

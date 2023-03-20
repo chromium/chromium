@@ -38,9 +38,8 @@ namespace content {
 
 class BackgroundTracingActiveScenario::TracingTimer {
  public:
-  TracingTimer(BackgroundTracingActiveScenario* scenario,
-               BackgroundTracingManager::StartedFinalizingCallback callback)
-      : scenario_(scenario), callback_(std::move(callback)) {
+  explicit TracingTimer(BackgroundTracingActiveScenario* scenario)
+      : scenario_(scenario) {
     DCHECK_NE(scenario->GetConfig()->tracing_mode(),
               BackgroundTracingConfigImpl::SYSTEM);
   }
@@ -58,11 +57,10 @@ class BackgroundTracingActiveScenario::TracingTimer {
   }
 
  private:
-  void TracingTimerFired() { scenario_->BeginFinalizing(std::move(callback_)); }
+  void TracingTimerFired() { scenario_->BeginFinalizing(); }
 
   raw_ptr<BackgroundTracingActiveScenario> scenario_;
   base::OneShotTimer tracing_timer_;
-  BackgroundTracingManager::StartedFinalizingCallback callback_;
 };
 
 class BackgroundTracingActiveScenario::TracingSession {
@@ -220,11 +218,17 @@ BackgroundTracingActiveScenario::BackgroundTracingActiveScenario(
       on_aborted_callback_(std::move(on_aborted_callback)) {
   DCHECK(config_ && !config_->rules().empty());
   for (const auto& rule : config_->rules()) {
-    rule->Install();
+    rule->Install(
+        base::BindRepeating(&BackgroundTracingActiveScenario::OnRuleTriggered,
+                            base::Unretained(this)));
   }
 }
 
-BackgroundTracingActiveScenario::~BackgroundTracingActiveScenario() = default;
+BackgroundTracingActiveScenario::~BackgroundTracingActiveScenario() {
+  for (const auto& rule : config_->rules()) {
+    rule->Uninstall();
+  }
+}
 
 const BackgroundTracingConfigImpl* BackgroundTracingActiveScenario::GetConfig()
     const {
@@ -308,18 +312,12 @@ bool BackgroundTracingActiveScenario::StartTracing() {
   return true;
 }
 
-void BackgroundTracingActiveScenario::BeginFinalizing(
-    BackgroundTracingManager::StartedFinalizingCallback callback) {
+void BackgroundTracingActiveScenario::BeginFinalizing() {
   DCHECK_NE(config_->tracing_mode(), BackgroundTracingConfigImpl::SYSTEM);
-  triggered_named_event_handle_ = -1;
   tracing_timer_.reset();
 
-  // |callback| is only run once, but we need 2 callbacks pointing to it.
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-
   base::OnceClosure on_begin_finalization_success = base::BindOnce(
-      [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this,
-         BackgroundTracingManager::StartedFinalizingCallback callback) {
+      [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this) {
         if (!weak_this) {
           return;
         }
@@ -327,17 +325,11 @@ void BackgroundTracingActiveScenario::BeginFinalizing(
         weak_this->SetState(State::kFinalizing);
         BackgroundTracingManagerImpl::RecordMetric(
             Metrics::FINALIZATION_ALLOWED);
-        DCHECK(!weak_this->started_finalizing_closure_);
-        if (!callback.is_null()) {
-          weak_this->started_finalizing_closure_ = base::BindOnce(
-              std::move(callback), /*is_allowed_finalization=*/true);
-        }
       },
-      weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.first));
+      weak_ptr_factory_.GetWeakPtr());
 
   base::OnceClosure on_begin_finalization_failure = base::BindOnce(
-      [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this,
-         BackgroundTracingManager::StartedFinalizingCallback callback) {
+      [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this) {
         if (!weak_this) {
           return;
         }
@@ -345,12 +337,8 @@ void BackgroundTracingActiveScenario::BeginFinalizing(
         BackgroundTracingManagerImpl::RecordMetric(
             Metrics::FINALIZATION_DISALLOWED);
         weak_this->SetState(State::kAborted);
-
-        if (!callback.is_null()) {
-          std::move(callback).Run(false);
-        }
       },
-      weak_ptr_factory_.GetWeakPtr(), std::move(split_callback.second));
+      weak_ptr_factory_.GetWeakPtr());
 
   tracing_session_->BeginFinalizing(std::move(on_begin_finalization_success),
                                     std::move(on_begin_finalization_failure),
@@ -369,10 +357,6 @@ void BackgroundTracingActiveScenario::OnProtoDataComplete(
   DCHECK(receive_callback_.is_null());
   BackgroundTracingManagerImpl::GetInstance().SetTraceToUpload(
       std::move(proto_trace));
-
-  if (started_finalizing_closure_) {
-    std::move(started_finalizing_closure_).Run();
-  }
 }
 
 void BackgroundTracingActiveScenario::OnDataForLocalOutputComplete(
@@ -387,10 +371,6 @@ void BackgroundTracingActiveScenario::OnDataForLocalOutputComplete(
       std::move(file_contents),
       base::BindOnce(&BackgroundTracingActiveScenario::OnFinalizeComplete,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  if (started_finalizing_closure_) {
-    std::move(started_finalizing_closure_).Run();
-  }
 }
 
 void BackgroundTracingActiveScenario::OnFinalizeComplete(bool success) {
@@ -408,6 +388,9 @@ void BackgroundTracingActiveScenario::OnFinalizeComplete(bool success) {
 }
 
 void BackgroundTracingActiveScenario::AbortScenario() {
+  for (const auto& rule : config_->rules()) {
+    rule->Uninstall();
+  }
   if (tracing_session_) {
     tracing_session_->AbortScenario(base::BindRepeating(
         [](base::WeakPtr<BackgroundTracingActiveScenario> weak_this) {
@@ -428,55 +411,9 @@ void BackgroundTracingActiveScenario::AbortScenario() {
   }
 }
 
-void BackgroundTracingActiveScenario::TriggerNamedEvent(
-    BackgroundTracingManager::TriggerHandle handle,
-    BackgroundTracingManager::StartedFinalizingCallback callback) {
-  std::string trigger_name =
-      BackgroundTracingManagerImpl::GetInstance().GetTriggerNameFromHandle(
-          handle);
-  auto* triggered_rule = GetRuleAbleToTriggerTracing(trigger_name);
-  if (!triggered_rule) {
-    if (!callback.is_null()) {
-      std::move(callback).Run(false);
-    }
-    return;
-  }
-
-  // A different reactive config than the running one tried to trigger.
-  if ((config_->tracing_mode() == BackgroundTracingConfigImpl::REACTIVE &&
-       (state() == State::kTracing) &&
-       triggered_named_event_handle_ != handle)) {
-    if (!callback.is_null()) {
-      std::move(callback).Run(false);
-    }
-    return;
-  }
-
-  triggered_named_event_handle_ = handle;
-  OnRuleTriggered(triggered_rule, std::move(callback));
-}
-
-void BackgroundTracingActiveScenario::OnHistogramTrigger(
-    const std::string& histogram_name) {
-  for (const auto& rule : config_->rules()) {
-    if (rule->ShouldTriggerNamedEvent(histogram_name)) {
-      OnRuleTriggered(rule.get(),
-                      BackgroundTracingManager::StartedFinalizingCallback());
-    }
-  }
-}
-
-void BackgroundTracingActiveScenario::OnRuleTriggered(
-    const BackgroundTracingRule* triggered_rule,
-    BackgroundTracingManager::StartedFinalizingCallback callback) {
+bool BackgroundTracingActiveScenario::OnRuleTriggered(
+    const BackgroundTracingRule* triggered_rule) {
   DCHECK_NE(state(), State::kAborted);
-  double trigger_chance = triggered_rule->trigger_chance();
-  if (trigger_chance < 1.0 && base::RandDouble() > trigger_chance) {
-    if (!callback.is_null()) {
-      std::move(callback).Run(false);
-    }
-    return;
-  }
 
   last_triggered_rule_ = triggered_rule;
 
@@ -491,13 +428,10 @@ void BackgroundTracingActiveScenario::OnRuleTriggered(
       if (state() != State::kTracing) {
         // It was not already tracing, start a new trace.
         if (!StartTracing()) {
-          return;
+          return false;
         }
       } else {
-        if (!callback.is_null()) {
-          std::move(callback).Run(false);
-        }
-        return;
+        return false;
       }
       break;
     case BackgroundTracingConfigImpl::SYSTEM:
@@ -507,19 +441,13 @@ void BackgroundTracingActiveScenario::OnRuleTriggered(
       if (!rule_triggered_callback_for_testing_.is_null()) {
         rule_triggered_callback_for_testing_.Run();
       }
-      // We drop |callback| on the floor because we won't know when the system
-      // service starts finalizing the trace and the callback isn't relevant to
-      // this scenario.
-      return;
+      return true;
     case BackgroundTracingConfigImpl::PREEMPTIVE:
       // In preemptive mode, a trigger starts finalizing a trace if one is
       // running and we haven't got a finalization timer running,
       // otherwise we do nothing.
       if ((state() != State::kTracing) || tracing_timer_) {
-        if (!callback.is_null()) {
-          std::move(callback).Run(false);
-        }
-        return;
+        return false;
       }
 
       BackgroundTracingManagerImpl::RecordMetric(Metrics::PREEMPTIVE_TRIGGERED);
@@ -527,32 +455,16 @@ void BackgroundTracingActiveScenario::OnRuleTriggered(
   }
 
   if (trace_delay < 0) {
-    BeginFinalizing(std::move(callback));
+    BeginFinalizing();
   } else {
-    tracing_timer_ = std::make_unique<TracingTimer>(this, std::move(callback));
+    tracing_timer_ = std::make_unique<TracingTimer>(this);
     tracing_timer_->StartTimer(trace_delay);
   }
 
   if (!rule_triggered_callback_for_testing_.is_null()) {
     rule_triggered_callback_for_testing_.Run();
   }
-}
-
-BackgroundTracingRule*
-BackgroundTracingActiveScenario::GetRuleAbleToTriggerTracing(
-    const std::string& trigger_name) {
-  // If the last trace is still uploading, we don't allow a new one to trigger.
-  if (state() == State::kFinalizing) {
-    return nullptr;
-  }
-
-  for (const auto& rule : config_->rules()) {
-    if (rule->ShouldTriggerNamedEvent(trigger_name)) {
-      return rule.get();
-    }
-  }
-
-  return nullptr;
+  return true;
 }
 
 base::Value::Dict BackgroundTracingActiveScenario::GenerateMetadataDict() {

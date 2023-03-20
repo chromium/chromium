@@ -87,9 +87,8 @@ void BackgroundTracingManagerImpl::ActivateForProcess(
 }
 
 BackgroundTracingManagerImpl::BackgroundTracingManagerImpl()
-    : delegate_(GetContentClient()->browser()->GetTracingDelegate()),
-      trigger_handle_ids_(0) {
-  AddEnabledStateObserver(&BackgroundStartupTracingObserver::GetInstance());
+    : delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
+  BackgroundStartupTracingObserver::GetInstance();
 }
 
 BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() = default;
@@ -175,9 +174,9 @@ bool BackgroundTracingManagerImpl::SetActiveScenarioWithReceiveCallback(
       base::BindOnce(&BackgroundTracingManagerImpl::OnScenarioAborted,
                      base::Unretained(this)));
 
-  // Notify observers before starting tracing.
-  for (auto* observer : background_tracing_observers_) {
-    observer->OnScenarioActivated(active_scenario_->GetConfig());
+  if (BackgroundStartupTracingObserver::GetInstance()
+          .enabled_in_current_session()) {
+    EmitNamedTrigger(kStartupTracingTriggerName);
   }
 
   active_scenario_->StartTracingIfConfigNeedsIt();
@@ -222,8 +221,8 @@ std::string BackgroundTracingManagerImpl::GetLatestTraceToUpload() {
   return ret;
 }
 
-void BackgroundTracingManagerImpl::AddEnabledStateObserver(
-    EnabledStateObserver* observer) {
+void BackgroundTracingManagerImpl::AddEnabledStateObserverForTesting(
+    BackgroundTracingManager::EnabledStateTestObserver* observer) {
   // Ensure that this code is called on the UI thread, except for
   // tests where a UI thread might not have been initialized at this point.
   DCHECK(
@@ -232,8 +231,8 @@ void BackgroundTracingManagerImpl::AddEnabledStateObserver(
   background_tracing_observers_.insert(observer);
 }
 
-void BackgroundTracingManagerImpl::RemoveEnabledStateObserver(
-    EnabledStateObserver* observer) {
+void BackgroundTracingManagerImpl::RemoveEnabledStateObserverForTesting(
+    BackgroundTracingManager::EnabledStateTestObserver* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   background_tracing_observers_.erase(observer);
 }
@@ -331,71 +330,29 @@ BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
   return BackgroundTracingConfig::FromDict(std::move(*value).TakeDict());
 }
 
-void BackgroundTracingManagerImpl::OnHistogramTrigger(
-    const std::string& histogram_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (active_scenario_) {
-    active_scenario_->OnHistogramTrigger(histogram_name);
+void BackgroundTracingManagerImpl::SetNamedTriggerCallback(
+    const std::string& trigger_name,
+    base::RepeatingCallback<bool()> callback) {
+  if (!callback) {
+    named_trigger_callbacks_.erase(trigger_name);
+  } else {
+    named_trigger_callbacks_.emplace(trigger_name, std::move(callback));
   }
 }
 
-void BackgroundTracingManagerImpl::TriggerNamedEvent(
-    BackgroundTracingManagerImpl::TriggerHandle handle,
-    StartedFinalizingCallback callback) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BackgroundTracingManagerImpl::TriggerNamedEvent,
-                       base::Unretained(this), handle, std::move(callback)));
-    return;
-  }
-
-  if (!active_scenario_ || !IsTriggerHandleValid(handle)) {
-    if (!callback.is_null()) {
-      std::move(callback).Run(false);
-    }
-    return;
-  }
-
-  active_scenario_->TriggerNamedEvent(handle, std::move(callback));
-}
-
-void BackgroundTracingManagerImpl::OnRuleTriggered(
-    const BackgroundTracingRule* triggered_rule,
-    StartedFinalizingCallback callback) {
-  // The active scenario can be null here if scenario was aborted during
-  // validation and the rule was triggered just before validation. If validation
-  // kicked in after this point, we still check before uploading.
-  if (active_scenario_) {
-    active_scenario_->OnRuleTriggered(triggered_rule, std::move(callback));
-  }
-}
-
-BackgroundTracingManagerImpl::TriggerHandle
-BackgroundTracingManagerImpl::RegisterTriggerType(
-    base::StringPiece trigger_name) {
+bool BackgroundTracingManagerImpl::EmitNamedTrigger(
+    const std::string& trigger_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  trigger_handle_ids_ += 1;
-  trigger_handles_.insert(
-      std::pair<TriggerHandle, std::string>(trigger_handle_ids_, trigger_name));
-
-  return static_cast<TriggerHandle>(trigger_handle_ids_);
+  auto it = named_trigger_callbacks_.find(trigger_name);
+  if (it == named_trigger_callbacks_.end()) {
+    return false;
+  }
+  return it->second.Run();
 }
 
-bool BackgroundTracingManagerImpl::IsTriggerHandleValid(
-    BackgroundTracingManager::TriggerHandle handle) const {
-  return trigger_handles_.find(handle) != trigger_handles_.end();
-}
-
-const std::string& BackgroundTracingManagerImpl::GetTriggerNameFromHandle(
-    BackgroundTracingManager::TriggerHandle handle) {
-  CHECK(IsTriggerHandleValid(handle));
-  return trigger_handles_.find(handle)->second;
-}
-
-void BackgroundTracingManagerImpl::InvalidateTriggerHandlesForTesting() {
-  trigger_handles_.clear();
+void BackgroundTracingManagerImpl::InvalidateTriggersCallbackForTesting() {
+  named_trigger_callbacks_.clear();
 }
 
 void BackgroundTracingManagerImpl::OnStartTracingDone() {

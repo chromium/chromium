@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -43,7 +44,8 @@ void BackgroundTracingAgentClientImpl::OnInitialized() {
 
 void BackgroundTracingAgentClientImpl::OnTriggerBackgroundTrace(
     const std::string& name) {
-  BackgroundTracingManagerImpl::GetInstance().OnHistogramTrigger(name);
+  BackgroundTracingManagerImpl::GetInstance().EmitNamedTrigger(
+      base::StrCat({"org.chromium.background_tracing.", name}));
 }
 
 void BackgroundTracingAgentClientImpl::OnAbortBackgroundTrace() {
