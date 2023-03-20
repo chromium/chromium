@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, PasswordSettingsAccountStorageState) {
   PasswordSettingsAccountStorageStateOptedIn,
   // User is opted out of account storage.
   PasswordSettingsAccountStorageStateOptedOut,
+  // Toggle disabled due to an enterprise policy.
+  PasswordSettingsAccountStorageStateDisabledByPolicy,
 };
 
 // State of on-device encryption.

@@ -634,7 +634,8 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       return;
     }
     case PasswordSettingsAccountStorageStateOptedIn:
-    case PasswordSettingsAccountStorageStateOptedOut: {
+    case PasswordSettingsAccountStorageStateOptedOut:
+    case PasswordSettingsAccountStorageStateDisabledByPolicy: {
       if (!hadItem) {
         [self.tableViewModel addItem:self.accountStorageItem
              toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
@@ -642,6 +643,9 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
       self.accountStorageItem.on = self.accountStorageState ==
                                    PasswordSettingsAccountStorageStateOptedIn;
+      self.accountStorageItem.enabled =
+          self.accountStorageState !=
+          PasswordSettingsAccountStorageStateDisabledByPolicy;
 
       if (self.modelLoadStatus != ModelLoadComplete) {
         return;
