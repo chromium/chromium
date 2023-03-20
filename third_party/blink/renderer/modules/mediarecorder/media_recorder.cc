@@ -453,10 +453,10 @@ void MediaRecorder::StopRecording() {
     return;
   }
   // Make sure that starting the recorder again yields an onstart event.
-  first_write_received_ = false;
   state_ = State::kInactive;
 
   recorder_handler_->Stop();
+  first_write_received_ = false;
 
   WriteData(nullptr /* data */, 0 /* length */, true /* lastInSlice */,
             base::Time::Now().ToDoubleT() * 1000.0);
