@@ -175,6 +175,7 @@ source_set("content_suggestions_ui") {
     "resources:content_suggestions_no_image",
     "resources:content_suggestions_offline",
     "resources:ntp_search_icon",
+    "resources:sign_out_icon",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",

@@ -52,6 +52,7 @@ using base::UserMetricsAction;
 namespace {
 
 NSString* const kScribbleFakeboxElementId = @"fakebox";
+NSString* const kSignOutIdentityIconName = @"sign_out_icon";
 
 }  // namespace
 
@@ -679,9 +680,12 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (void)setSignedOutAccountImage {
   if (base::FeatureList::IsEnabled(switches::kIdentityStatusConsistency)) {
-    self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
-        kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
-
+    if (UseSymbols()) {
+      self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
+          kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
+    } else {
+      self.identityDiscImage = [UIImage imageNamed:kSignOutIdentityIconName];
+    }
     self.identityDiscAccessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT);
   } else {

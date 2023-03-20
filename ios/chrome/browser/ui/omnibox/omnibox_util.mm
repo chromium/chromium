@@ -84,8 +84,14 @@ UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
 
 // Returns the asset with "always template" rendering mode.
 UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType iconType) {
-  return DefaultSymbolTemplateWithPointSize(
-      GetLocationBarSecuritySymbolName(iconType), kSymbolLocationBarPointSize);
+  if (UseSymbols()) {
+    return DefaultSymbolTemplateWithPointSize(
+        GetLocationBarSecuritySymbolName(iconType),
+        kSymbolLocationBarPointSize);
+  }
+  NSString* imageName = GetLocationBarSecurityIconTypeAssetName(iconType);
+  return [[UIImage imageNamed:imageName]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 // Converts the `security_level` to an appropriate security icon type.

@@ -163,9 +163,17 @@ UIImageView* CreateMagnifyingGlassView() {
   image_view.contentMode = UIViewContentModeScaleAspectFit;
   image_view.userInteractionEnabled = NO;
 
-  UIImage* magnifying_glass_image = DefaultSymbolWithPointSize(
-      kMagnifyingglassSymbol, kSymbolContentSuggestionsPointSize);
-  image_view.tintColor = [UIColor colorNamed:kGrey500Color];
+  UIImage* magnifying_glass_image;
+  if (UseSymbols()) {
+    magnifying_glass_image = DefaultSymbolWithPointSize(
+        kMagnifyingglassSymbol, kSymbolContentSuggestionsPointSize);
+    image_view.tintColor = [UIColor colorNamed:kGrey500Color];
+  } else {
+    magnifying_glass_image =
+        [[UIImage imageNamed:@"location_bar_magnifyingglass"]
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    image_view.tintColor = [UIColor colorNamed:kGrey500Color];
+  }
 
   [image_view setImage:magnifying_glass_image];
   return image_view;
@@ -196,9 +204,16 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [voice_search_button setAdjustsImageWhenHighlighted:NO];
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
-  UIImage* mic_image = DefaultSymbolWithPointSize(
-      kMicrophoneSymbol, kSymbolContentSuggestionsPointSize);
-  voice_search_button.tintColor = [UIColor colorNamed:kGrey600Color];
+  UIImage* mic_image;
+  if (UseSymbols()) {
+    mic_image = DefaultSymbolWithPointSize(kMicrophoneSymbol,
+                                           kSymbolContentSuggestionsPointSize);
+    voice_search_button.tintColor = [UIColor colorNamed:kGrey600Color];
+  } else {
+    mic_image = [[UIImage imageNamed:@"location_bar_voice"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    voice_search_button.tintColor = [UIColor colorNamed:kGrey600Color];
+  }
 
   [voice_search_button setImage:mic_image forState:UIControlStateNormal];
   [voice_search_button setAccessibilityLabel:l10n_util::GetNSString(
@@ -222,8 +237,12 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   lens_button.adjustsImageWhenHighlighted = NO;
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 
-  UIImage* camera_image = CustomSymbolWithPointSize(
-      kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
+  UIImage* camera_image =
+      UseSymbols() ? CustomSymbolWithPointSize(
+                         kCameraLensSymbol, kSymbolContentSuggestionsPointSize)
+                   : [UIImage imageNamed:@"location_bar_camera_lens"];
+  camera_image =
+      [camera_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
   [lens_button setImage:camera_image forState:UIControlStateNormal];
   lens_button.tintColor = [UIColor colorNamed:kGrey600Color];

@@ -1,0 +1,19 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "location_bar_magnifyingglass@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "location_bar_magnifyingglass@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}
+

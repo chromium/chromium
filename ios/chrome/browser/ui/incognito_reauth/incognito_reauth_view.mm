@@ -57,7 +57,12 @@ const CGFloat kVerticalContentPadding = 70.0f;
     blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     AddSameConstraints(self, blurBackgroundView);
 
-    UIImage* incognitoLogo = CustomSymbolWithPointSize(kIncognitoSymbol, 28);
+    UIImage* incognitoLogo;
+    if (UseSymbols()) {
+      incognitoLogo = CustomSymbolWithPointSize(kIncognitoSymbol, 28);
+    } else {
+      incognitoLogo = [UIImage imageNamed:@"incognito_logo_reauth"];
+    }
     _logoView = [[UIImageView alloc] initWithImage:incognitoLogo];
     _logoView.tintColor = UIColor.whiteColor;
     _logoView.translatesAutoresizingMaskIntoConstraints = NO;
