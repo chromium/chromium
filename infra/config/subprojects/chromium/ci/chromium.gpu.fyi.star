@@ -340,7 +340,7 @@ ci.gpu.linux_builder(
         ),
         run_tests_serially = True,
         skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "lacros-arm64-generic-rel-skylab-try",
+            gs_bucket = "chromium-ci-skylab",
             gs_extra = "chromeos_gpu",
         ),
     ),

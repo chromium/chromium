@@ -121,6 +121,21 @@
       "use_remoteexec": true
     }
   },
+  "gpu-fyi-try-chromeos-skylab-kevin": {
+    "args_file": "//build/args/chromeos/kevin.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chromeos_device": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_skylab": true,
+      "ozone_platform_headless": true,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_remoteexec": true
+    }
+  },
   "lacros-amd64-generic-rel": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {

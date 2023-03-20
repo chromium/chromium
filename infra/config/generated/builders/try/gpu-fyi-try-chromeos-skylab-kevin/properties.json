@@ -47,18 +47,12 @@
           "builder": "ChromeOS FYI Release Skylab (kevin)",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "gpu-fyi-try-chromeos-skylab-kevin",
-          "group": "tryserver.chromium.chromiumos"
-        }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -68,10 +62,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.gpu.fyi",
-  "perf_dashboard_machine_group": "ChromiumGPUFYI",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium.gpu"
-  ]
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium_trybot"
 }

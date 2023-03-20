@@ -125,6 +125,14 @@ gpu_chromeos_builder(
     pool = "luci.chromium.gpu.chromeos.kevin.try",
 )
 
+gpu_chromeos_builder(
+    name = "gpu-fyi-try-chromeos-skylab-kevin",
+    mirrors = [
+        "ci/ChromeOS FYI Release Skylab (kevin)",
+    ],
+    pool = "luci.chromium.gpu.chromeos.kevin.try",
+)
+
 def gpu_linux_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
