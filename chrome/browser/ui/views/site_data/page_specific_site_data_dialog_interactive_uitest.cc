@@ -8,25 +8,33 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/collected_cookies_views.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
+#include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/page_info/core/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -314,6 +322,85 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
       CheckRowLabel(kMixedPartitionedRow,
                     IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE),
       Do(ExpectActionCount(PageSpecificSiteDataDialogAction::kSiteAllowed, 1)));
+}
+
+class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
+    : public PageSpecificSiteDataDialogInteractiveUiTest {
+ public:
+  PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest() = default;
+  ~PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest() override =
+      default;
+
+ protected:
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeatures(
+        {page_info::kPageSpecificSiteDataDialog,
+         page_info::kPageInfoCookiesSubpage, features::kIsolatedWebApps,
+         features::kIsolatedWebAppDevMode},
+        {});
+  }
+
+  Browser* InstallAndLaunchIsolatedWebApp() {
+    Profile* profile = browser()->profile();
+    auto iwa_dev_server = web_app::CreateAndStartDevServer(
+        FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+    auto iwa_url_info = web_app::InstallDevModeProxyIsolatedWebApp(
+        profile, iwa_dev_server->GetOrigin());
+    content::RenderFrameHost* iwa_frame =
+        web_app::OpenIsolatedWebApp(profile, iwa_url_info.app_id());
+
+    CHECK(content::ExecJs(iwa_frame, "localStorage.setItem('key', 'value')"));
+
+    return chrome::FindBrowserWithWebContents(
+        content::WebContents::FromRenderFrameHost(iwa_frame));
+  }
+
+  // Installs and launches an IWA, then opens the PageSpecificSiteData dialog.
+  MultiStep NavigateAndOpenDialog(Browser* iwa_browser,
+                                  ui::ElementIdentifier section_id) {
+    return Steps(
+        InstrumentTab(kWebContentsElementId,
+                      /*tab_index=*/absl::nullopt, iwa_browser),
+        PressButton(kAppMenuButtonElementId),
+        WithView(
+            kAppMenuButtonElementId, base::BindOnce([](AppMenuButton* button) {
+              CHECK(button->IsMenuShowing());
+              button->app_menu()->ExecuteCommand(IDC_WEB_APP_MENU_APP_INFO, 0);
+            })),
+        PressButton(PageInfoMainView::kCookieButtonElementId),
+        PressButton(PageInfoCookiesContentView::kCookieDialogButton),
+        InAnyContext(AfterShow(
+            section_id,
+            ExpectActionCount(PageSpecificSiteDataDialogAction::kDialogOpened,
+                              1))));
+  }
+
+  // Returns a test step that verifies that the hostname for `row` is equal to
+  // `string`.
+  auto CheckHostnameLabel(ElementSpecifier row, const std::u16string& string) {
+    return CheckView(row, base::BindOnce([](SiteDataRowView* row) {
+                       return row->hostname_label_for_testing()->GetText();
+                     }),
+                     string);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest,
+    AppNameIsDisplayedInsteadOfHostname) {
+  Browser* iwa_browser = InstallAndLaunchIsolatedWebApp();
+  RunTestSequenceInContext(
+      iwa_browser->window()->GetElementContext(),
+      NavigateAndOpenDialog(iwa_browser,
+                            kPageSpecificSiteDataDialogFirstPartySection),
+      // Name the first row in the first-party section.
+      InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,
+                                 kFirstPartyAllowedRow, 0)),
+      // Verify no empty state label is present.
+      EnsureNotPresent(kPageSpecificSiteDataDialogEmptyStateLabel,
+                       /* in_any_context =*/true),
+      // Verify the hostname label.
+      CheckHostnameLabel(kFirstPartyAllowedRow, u"Simple Isolated App"));
 }
 
 class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
