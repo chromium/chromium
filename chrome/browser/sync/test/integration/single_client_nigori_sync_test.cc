@@ -1300,6 +1300,10 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(
       "Sync.TrustedVaultErrorShownOnStartup.MigratedLastDay",
       /*count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultErrorShownOnFirstTimeSync",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(

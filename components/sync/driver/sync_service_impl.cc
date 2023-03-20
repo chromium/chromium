@@ -1044,6 +1044,14 @@ void SyncServiceImpl::CryptoRequiredUserActionChanged() {
           "Sync.TrustedVaultErrorShownOnStartup",
           user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes(),
           engine_->GetDetailedStatus());
+
+      if (is_first_time_sync_configure_) {
+        // A 'first time sync configure' is an indication that the account was
+        // added to the browser recently (sign in).
+        base::UmaHistogramBoolean(
+            "Sync.TrustedVaultErrorShownOnFirstTimeSync",
+            user_settings_->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+      }
     }
   }
 }

@@ -1529,6 +1529,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultErrorShownOnFirstTimeSync" enum="Boolean"
+    expires_after="2023-09-15">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether user action was required to fetch trusted vault keys upon
+    first sync (i.e. after signin). Recorded only if trusted vault passphrase
+    type is used and at most once per browser/profile lifetime.
+  </summary>
+</histogram>
+
 <histogram
     name="Sync.TrustedVaultErrorShownOnStartup{TrustedVaultTimeSinceMigrationSuffix}"
     enum="Boolean" expires_after="2023-07-15">
