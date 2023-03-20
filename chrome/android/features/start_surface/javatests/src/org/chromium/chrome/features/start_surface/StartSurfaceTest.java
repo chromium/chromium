@@ -557,7 +557,6 @@ public class StartSurfaceTest {
             assertEquals(0, START_SURFACE_RETURN_TIME_SECONDS.getValue());
         }
 
-        Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
         Assert.assertEquals(isSingleTabSwitcher,
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
         StartSurfaceTestUtils.waitForStartSurfaceVisible(mLayoutChangedCallbackHelper,

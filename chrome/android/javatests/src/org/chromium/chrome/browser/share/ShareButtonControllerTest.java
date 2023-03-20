@@ -127,7 +127,6 @@ public final class ShareButtonControllerTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:start_surface_variation/single"})
     @Restriction(
             {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @DisabledTest(message = "crbug.com/1381572")

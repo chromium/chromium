@@ -178,8 +178,7 @@ public class ReturnToChromeUtilTest {
     @SmallTest
     @Feature({"ReturnToChrome", "RenderTest"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/" + START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0"
-            + "/start_surface_variation/single"})
+    @CommandLineFlags.Add({BASE_PARAMS})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisabledTest(message = "https://crbug.com/1023079, crbug.com/1063984")
     public void testInitialScrollIndex() throws Exception {

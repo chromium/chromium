@@ -164,7 +164,6 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
-                StartSurfaceConfiguration.START_SURFACE_VARIATION,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE,
                 StartSurfaceConfiguration.USER_CLICK_THRESHOLD,
                 TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION,

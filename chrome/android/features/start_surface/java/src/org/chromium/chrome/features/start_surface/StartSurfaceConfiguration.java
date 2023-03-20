@@ -25,9 +25,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
  */
 public class StartSurfaceConfiguration {
     private static final String TAG = "StartSurfaceConfig";
-    public static final StringCachedFieldTrialParameter START_SURFACE_VARIATION =
-            new StringCachedFieldTrialParameter(
-                    ChromeFeatureList.START_SURFACE_ANDROID, "start_surface_variation", "single");
     public static final BooleanCachedFieldTrialParameter
             START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB =
                     new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
@@ -125,13 +122,6 @@ public class StartSurfaceConfiguration {
      */
     public static boolean isStartSurfaceFlagEnabled() {
         return ChromeFeatureList.sStartSurfaceAndroid.isEnabled() && !SysUtils.isLowEndDevice();
-    }
-
-    /**
-     * @return Whether the Start Surface SinglePane is enabled.
-     */
-    public static boolean isStartSurfaceSinglePaneEnabled() {
-        return isStartSurfaceFlagEnabled() && START_SURFACE_VARIATION.getValue().equals("single");
     }
 
     /**
