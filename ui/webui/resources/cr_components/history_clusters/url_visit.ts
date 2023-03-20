@@ -30,7 +30,6 @@ import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
  */
 const annotationToStringId: Map<number, string> = new Map([
   [Annotation.kBookmarked, 'bookmarked'],
-  [Annotation.kTabGrouped, 'savedInTabGroup'],
 ]);
 
 declare global {

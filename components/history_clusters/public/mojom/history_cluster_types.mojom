@@ -12,9 +12,6 @@ enum Annotation {
   // Indicates that the visited URL was added to the bookmarks or was already
   // bookmarked.
   kBookmarked,
-  // Indicates that the visited URL was added to a tab group or was already in a
-  // tab group.
-  kTabGrouped,
   // Indicates that the visited URL was the search results page of the default
   // search provider.
   kSearchResultsPage,

@@ -58,10 +58,6 @@ mojom::URLVisitPtr VisitToMojom(const TemplateURLService* template_url_service,
   visit_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
       base::Time::Now() - annotated_visit.visit_row.visit_time));
-  if (annotated_visit.context_annotations.is_existing_part_of_tab_group ||
-      annotated_visit.context_annotations.is_placed_in_tab_group) {
-    visit_mojom->annotations.push_back(mojom::Annotation::kTabGrouped);
-  }
   if (annotated_visit.context_annotations.is_existing_bookmark ||
       annotated_visit.context_annotations.is_new_bookmark) {
     visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
