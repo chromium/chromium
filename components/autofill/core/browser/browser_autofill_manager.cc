@@ -3430,12 +3430,14 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     LogEventCountsUMAMetric(form_structure);
   }
 
-  // Log FieldInfo UKM event.
+  // ShouldUploadUkm reduces the UKM load by ignoring e.g. search boxes at best
+  // effort.
+  bool should_upload_ukm = base::FeatureList::IsEnabled(
+                               features::kAutofillLogUKMEventsWithSampleRate) &&
+                           ShouldUploadUkm(form_structure);
+
   for (const auto& autofill_field : form_structure) {
-    // This reduces the UKM load by ignoring e.g. search boxes at best effort.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillLogUKMEventsWithSampleRate) &&
-        ShouldUploadUKM(form_structure)) {
+    if (should_upload_ukm) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
           form_structure, *autofill_field);
     }
@@ -3447,9 +3449,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   }
 
   // Log FormSummary UKM event.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillLogUKMEventsWithSampleRate) &&
-      ShouldUploadUKM(form_structure)) {
+  if (should_upload_ukm) {
     AutofillMetrics::FormEventSet form_events;
     form_events.insert_all(
         address_form_event_logger_->GetFormEvents(form_structure.global_id()));
@@ -3462,25 +3462,35 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   }
 }
 
-bool BrowserAutofillManager::ShouldUploadUKM(
+bool BrowserAutofillManager::ShouldUploadUkm(
     const FormStructure& form_structure) {
   if (!form_structure.ShouldBeParsed()) {
     return false;
   }
 
-  // If the form contains a single field which contains the string "search" in
-  // its name/id/placeholder, the function return false and the form is not
-  // recorded into UKM.
-  if (form_structure.field_count() == 1 &&
-      (base::ToLowerASCII(form_structure.field(0)->placeholder)
-               .find(u"search") != std::string::npos ||
-       base::ToLowerASCII(form_structure.field(0)->name).find(u"search") !=
-           std::string::npos ||
-       base::ToLowerASCII(form_structure.field(0)->label).find(u"search") !=
-           std::string::npos ||
-       base::ToLowerASCII(form_structure.field(0)->aria_label)
-               .find(u"search") != std::string::npos)) {
+  auto is_text_field = [](const std::unique_ptr<AutofillField>& field) {
+    return field->IsTextInputElement();
+  };
+
+  size_t num_text_fields =
+      base::ranges::count_if(form_structure.fields(), is_text_field);
+  if (num_text_fields == 0) {
     return false;
+  }
+
+  // If the form contains a single text field and this contains the string
+  // "search" in its name/id/placeholder, the function return false and the form
+  // is not recorded into UKM. The form is considered a search box.
+  if (num_text_fields == 1) {
+    auto it = base::ranges::find_if(form_structure.fields(), is_text_field);
+    if (base::ToLowerASCII((*it)->placeholder).find(u"search") !=
+            std::string::npos ||
+        base::ToLowerASCII((*it)->name).find(u"search") != std::string::npos ||
+        base::ToLowerASCII((*it)->label).find(u"search") != std::string::npos ||
+        base::ToLowerASCII((*it)->aria_label).find(u"search") !=
+            std::string::npos) {
+      return false;
+    }
   }
 
   return true;

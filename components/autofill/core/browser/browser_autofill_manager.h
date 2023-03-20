@@ -725,10 +725,10 @@ class BrowserAutofillManager : public AutofillManager,
   // destruction time (whatever comes first).
   void LogEventCountsUMAMetric(const FormStructure& form_structure);
 
-  // When the forms that meet certain criteria are identified as useless to
-  // Autofill, the function should return false and the forms are not recorded
-  // into UKM.
-  bool ShouldUploadUKM(const FormStructure& form_structure);
+  // Returns whether the form is considered parseable and meets a couple of
+  // other requirements which makes uploading UKM data worthwhile. E.g. the
+  // form should not be a search form.
+  bool ShouldUploadUkm(const FormStructure& form_structure);
 
   // Delegates to perform external processing (display, selection) on
   // our behalf.
