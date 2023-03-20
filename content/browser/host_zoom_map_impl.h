@@ -81,7 +81,11 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SetDefaultZoomLevelPrefCallback(
       HostZoomMap::DefaultZoomChangedCallback callback) override;
   HostZoomMap::DefaultZoomChangedCallback* GetDefaultZoomLevelPrefCallback();
-  double GetDesktopSiteZoomScale(WebContents* web_contents);
+  double GetDesktopSiteZoomScale(bool is_overriding_user_agent);
+  double GetZoomLevelForHostAndScheme(const std::string& scheme,
+                                      const std::string& host,
+                                      bool is_overriding_user_agent) override;
+  void SetSystemFontScaleForTesting(float scale);
 #endif
 
  private:
