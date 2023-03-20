@@ -36,8 +36,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "is_skylab": true,
-      "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "lacros-amd64-generic-chrome-fyi": {

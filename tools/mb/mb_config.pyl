@@ -899,7 +899,7 @@
     'internal.chromeos.fyi': {
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
-      'chromeos-octopus-chrome-skylab-fyi': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab',
+      'chromeos-octopus-chrome-skylab-fyi': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab_reclient',
       'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
       'lacros-arm-generic-chrome-fyi': 'chromeos_arm-generic_lacros_official_skylab_reclient',
     },
@@ -2273,6 +2273,10 @@
     ],
     'chromeos_octopus_include_unwind_tables_official_dchecks_skylab': [
       'chromeos_device', 'octopus', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
+    ],
+
+    'chromeos_octopus_include_unwind_tables_official_dchecks_skylab_reclient': [
+      'chromeos_device_reclient', 'octopus', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
     ],
 
     'chromeos_reven_include_unwind_tables_official_dchecks': [
