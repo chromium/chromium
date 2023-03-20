@@ -671,3 +671,33 @@ testcase.searchFromMyFiles = async () => {
     ENTRIES.debPackage,
   ]));
 };
+
+/**
+ * Checks that the selection path correctly reflects paths of elements found by
+ * search.
+ */
+testcase.selectionPath = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  // Search for files containing 'e'; should be three of those.
+  await remoteCall.typeSearchText(appId, 'e');
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.hello,
+    ENTRIES.desktop,
+    ENTRIES.beautiful,
+  ]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
+  const singleSelectionPath = await remoteCall.waitForElement(appId, [
+    'xf-path-display',
+  ]);
+  chrome.test.assertEq(
+      'My files/Downloads/hello.txt', singleSelectionPath.attributes.path);
+  // Select now the desktop entry, too.
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${ENTRIES.desktop.nameText}"]`,
+      {shift: true});
+  const multiSelectionPath = await remoteCall.waitForElement(appId, [
+    'xf-path-display',
+  ]);
+  chrome.test.assertEq(
+      'Multiple file locations', multiSelectionPath.attributes.path);
+};

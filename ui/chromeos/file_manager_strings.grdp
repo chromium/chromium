@@ -865,6 +865,9 @@
   <message name="IDS_FILE_BROWSER_SEARCH_V2_EDUCATION_NUDGE" desc="Educational text that appears next to the search query to inform the user about existence of new search features.">
     New search features available
   </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_RESULTS_MULTIPLE_SELECTION" desc="Text shown when multiple search results are displayed and we cannot show their paths">
+    Multiple file locations
+  </message>
 
   <message name="IDS_FILE_BROWSER_SEARCH_A11Y_CLEAR_SEARCH" desc="Text spoken by ChromeVox/screen reader when a search term has been cleared">
     Search text cleared, showing all files and folders.

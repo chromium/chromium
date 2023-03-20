@@ -280,6 +280,9 @@ export class SearchContainer extends EventTarget {
     if (!keys) {
       return '';
     }
+    if (keys.length > 1) {
+      return str('SEARCH_RESULTS_MULTIPLE_SELECTION');
+    }
     const fileData = state.allEntries[keys[0]!];
     if (!fileData) {
       return '';
