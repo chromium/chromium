@@ -9,7 +9,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -44,7 +44,8 @@ enum class Status {
 };
 
 void LogStatus(Status status) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveSearchProvider.Status", status);
+  base::UmaHistogramEnumeration("Apps.AppList.DriveSearchProvider.Status",
+                                status);
 }
 
 // Stats each file to retrieve its last accessed time.
@@ -157,6 +158,10 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   if (!drive_service_->IsMounted())
     return;
 
+  base::UmaHistogramTimes("Apps.AppList.DriveSearchProvider.DriveFSLatency",
+                          base::TimeTicks::Now() - query_start_time_);
+  results_returned_time_ = base::TimeTicks::Now();
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&GetFileInfo, std::move(items),
@@ -192,8 +197,10 @@ void DriveSearchProvider::SetSearchResults(
 
   SwapResults(&results);
   LogStatus(Status::kOk);
-  UMA_HISTOGRAM_TIMES("Apps.AppList.DriveSearchProvider.Latency",
-                      base::TimeTicks::Now() - query_start_time_);
+  base::UmaHistogramTimes("Apps.AppList.DriveSearchProvider.FileInfoLatency",
+                          base::TimeTicks::Now() - results_returned_time_);
+  base::UmaHistogramTimes("Apps.AppList.DriveSearchProvider.Latency",
+                          base::TimeTicks::Now() - query_start_time_);
 }
 
 std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(

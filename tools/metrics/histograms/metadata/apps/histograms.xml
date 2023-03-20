@@ -487,14 +487,38 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
+<histogram name="Apps.AppList.DriveSearchProvider.DriveFSLatency" units="ms"
+    expires_after="2024-02-01">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    How long it takes DriveFS to return search results. This is the first half
+    of the I/O logic of the Drive provider. Logged once per Drive search query.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.DriveSearchProvider.FileInfoLatency" units="ms"
+    expires_after="2024-02-01">
+  <owner>wrong@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    How long it takes to generate on-disk file paths for search results. This is
+    the second half of the I/O logic of the Drive provider. Logged once per
+    Drive search query.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.DriveSearchProvider.Latency" units="ms"
-    expires_after="2023-07-30">
+    expires_after="2024-02-01">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
     Latency in milliseconds from the beginning of a launcher search query to
-    Drive file results being returned. Logged once per Drive search query.
+    Drive file results being returned. Logged once per Drive search query. This
+    should roughly equal DriveFSLatency + FileInfoLatency for each query.
   </summary>
 </histogram>
 

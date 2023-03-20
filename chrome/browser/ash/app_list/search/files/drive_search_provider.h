@@ -63,7 +63,11 @@ class DriveSearchProvider : public SearchProvider {
       FileResult::Type type,
       const absl::optional<std::string>& drive_id);
 
+  // When the query began.
   base::TimeTicks query_start_time_;
+  // When DriveFS returned results for the query.
+  base::TimeTicks results_returned_time_;
+
   std::u16string last_query_;
   absl::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
