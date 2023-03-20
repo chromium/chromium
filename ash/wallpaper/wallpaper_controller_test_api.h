@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -34,6 +35,9 @@ class ASH_EXPORT WallpaperControllerTestApi {
   // WallpaperController. Cancels any ongoing requests to calculate wallpaper
   // colors.
   void SetCalculatedColors(const WallpaperCalculatedColors& calculated_colors);
+
+  // Set a default wallpaper info to simplify testing.
+  void SetDefaultWallpaper(const AccountId& account_id);
 
  private:
   WallpaperControllerImpl* controller_;

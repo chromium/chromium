@@ -7,19 +7,73 @@
 #include <vector>
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
 
+namespace {
+
+constexpr char kDataUrlPrefix[] = "data:image/png;base64,";
+
+// Images used in test must have a unique `asset_id` for Personalization App to
+// function correctly. Make sure that the fake `collection_id` values used in
+// browser tests map to unique `asset_id` values.
+int GetStartingAssetId(const std::string& collection_id) {
+  if (collection_id == "fake_collection_id_0") {
+    return 10;
+  } else if (collection_id == "fake_collection_id_1") {
+    return 20;
+  } else if (collection_id == "fake_collection_id_2") {
+    return 30;
+  } else {
+    return 100;
+  }
+}
+
+backdrop::Collection GenerateFakeBackdropCollection(int number) {
+  backdrop::Collection collection;
+  collection.set_collection_id(
+      base::StringPrintf("fake_collection_id_%i", number));
+  collection.set_collection_name(
+      base::StringPrintf("Test Collection %i", number));
+  backdrop::Image* image = collection.add_preview();
+  // Needs a data url so that it loads
+  image->set_image_url(kDataUrlPrefix);
+  return collection;
+}
+
+backdrop::Image GenerateFakeBackdropImage(const std::string& collection_id,
+                                          int asset_id) {
+  backdrop::Image image;
+  image.set_asset_id(asset_id);
+  image.set_image_url(kDataUrlPrefix + base::NumberToString(asset_id));
+  for (auto line = 0; line < 2; line++) {
+    image.add_attribution()->set_text(
+        base::StringPrintf("fake_attribution_%s_asset_id_%i_line_%i",
+                           collection_id.c_str(), asset_id, line));
+  }
+  image.set_unit_id(asset_id);
+  image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_UNKNOWN);
+  return image;
+}
+
+}  // namespace
+
 MockBackdropCollectionInfoFetcher::MockBackdropCollectionInfoFetcher() {
   ON_CALL(*this, Start).WillByDefault([](OnCollectionsInfoFetched callback) {
+    std::vector<backdrop::Collection> collections;
+    for (auto i = 0; i < 3; i++) {
+      collections.push_back(GenerateFakeBackdropCollection(i));
+    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*success=*/false,
-                                  std::vector<backdrop::Collection>()));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), /*success=*/true, collections));
   });
 }
 
@@ -31,10 +85,16 @@ MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
     : BackdropImageInfoFetcher(collection_id) {
   ON_CALL(*this, Start)
       .WillByDefault([&collection_id](OnImagesInfoFetched callback) {
+        std::vector<backdrop::Image> images;
+        const auto starting_asset_id = GetStartingAssetId(collection_id);
+        for (auto asset_id = starting_asset_id;
+             asset_id < starting_asset_id + 3; asset_id++) {
+          images.push_back(GenerateFakeBackdropImage(collection_id, asset_id));
+        }
+
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(callback), /*success=*/false,
-                           collection_id, std::vector<backdrop::Image>()));
+            FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
+                                      collection_id, images));
       });
 }
 

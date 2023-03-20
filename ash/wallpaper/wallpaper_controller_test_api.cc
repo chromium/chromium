@@ -10,6 +10,8 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 #include "base/functional/bind.h"
+#include "base/time/time.h"
+#include "components/account_id/account_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/size.h"
@@ -68,6 +70,15 @@ void WallpaperControllerTestApi::SetCalculatedColors(
     controller_->color_calculator_.reset();
   }
   controller_->SetCalculatedColors(calculated_colors);
+}
+
+void WallpaperControllerTestApi::SetDefaultWallpaper(
+    const AccountId& account_id) {
+  base::Time::Exploded exploded{
+      .year = 2023, .month = 2, .day_of_month = 13, .hour = 4};
+  base::Time time;
+  CHECK(base::Time::FromUTCExploded(exploded, &time));
+  controller_->SetDefaultWallpaperInfo(account_id, time);
 }
 
 }  // namespace ash

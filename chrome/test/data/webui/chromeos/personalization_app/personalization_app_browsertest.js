@@ -16,10 +16,6 @@ GEN('#include "content/public/test/browser_test.h"');
 const ROOT_PAGE = 'chrome://personalization/';
 const WALLPAPER_SUBPAGE = 'chrome://personalization/wallpaper';
 
-// Must be kept in sync with fake_personalization_app_wallpaper_provider.cc.
-const FAKE_ASSET_ID = 77;
-const FAKE_COLLECTION_ID = 'fake_collection_id';
-
 const DEFAULT_WALLPAPER_NAME = 'Default Wallpaper';
 
 class PersonalizationAppBrowserTest extends testing.Test {
@@ -263,11 +259,11 @@ TEST_F('WallpaperSubpageBrowserTest', 'SelectWallpaper', async () => {
       textContainer.querySelector('#imageTitle').textContent.trim(),
       'default wallpaper is shown at first');
 
-  // Select the last wallpaper collection tile.
+  // Select the last `online` wallpaper collection tile.
   Array
       .from(subpage.shadowRoot.querySelector('wallpaper-collections')
                 .shadowRoot.querySelectorAll(
-                    `wallpaper-grid-item[aria-disabled='false']`))
+                    `wallpaper-grid-item[aria-disabled='false'][data-online]`))
       .at(-1)
       .click();
 
@@ -285,7 +281,7 @@ TEST_F('WallpaperSubpageBrowserTest', 'SelectWallpaper', async () => {
 
   const gridItem = await waitUntil(
       () => wallpaperImages.shadowRoot.querySelector(
-          'wallpaper-grid-item:not([placeholder])'),
+          'wallpaper-grid-item:not([placeholder]):nth-of-type(2)'),
       'failed waiting for grid items to load');
 
   assertFalse(gridItem.selected, 'wallpaper tile does not start selected');
@@ -293,11 +289,11 @@ TEST_F('WallpaperSubpageBrowserTest', 'SelectWallpaper', async () => {
 
   await waitUntil(
       () => textContainer.querySelector('#imageTitle').textContent.trim() ===
-          FAKE_COLLECTION_ID,
+          'fake_attribution_fake_collection_id_2_asset_id_31_line_0',
       'failed waiting for text to update after selecting wallpaper');
 
   assertEquals(
-      FAKE_ASSET_ID.toString(),
+      'fake_attribution_fake_collection_id_2_asset_id_31_line_1',
       textContainer.querySelector('span:last-of-type').textContent.trim());
 
   assertTrue(gridItem.selected, 'wallpaper tile is selected after click');

@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/wallpaper/test_wallpaper_image_downloader.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -22,18 +24,20 @@ class TestPersonalizationAppWebUIProvider
 
 class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
  public:
-  PersonalizationAppBrowserTestFixture() = default;
+  PersonalizationAppBrowserTestFixture();
 
   PersonalizationAppBrowserTestFixture(
       const PersonalizationAppBrowserTestFixture&) = delete;
   PersonalizationAppBrowserTestFixture& operator=(
       const PersonalizationAppBrowserTestFixture&) = delete;
 
-  ~PersonalizationAppBrowserTestFixture() override = default;
+  ~PersonalizationAppBrowserTestFixture() override;
 
+  void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
  private:
+  raw_ptr<TestWallpaperImageDownloader> test_wallpaper_image_downloader_;
   TestChromeWebUIControllerFactory test_factory_;
   TestPersonalizationAppWebUIProvider test_web_ui_provider_;
   content::ScopedWebUIControllerFactoryRegistration

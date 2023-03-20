@@ -19,7 +19,8 @@ TestBackdropFetcherDelegate::~TestBackdropFetcherDelegate() = default;
 
 std::unique_ptr<BackdropCollectionInfoFetcher>
 TestBackdropFetcherDelegate::CreateBackdropCollectionInfoFetcher() const {
-  return std::make_unique<testing::NiceMock<BackdropCollectionInfoFetcher>>();
+  return std::make_unique<
+      testing::NiceMock<MockBackdropCollectionInfoFetcher>>();
 }
 
 std::unique_ptr<BackdropImageInfoFetcher>
