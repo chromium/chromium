@@ -167,7 +167,6 @@
 <translation id="114721135501989771">‏Chrome میں Google کی اسمارٹ سروسز حاصل کریں</translation>
 <translation id="1147322039136785890">اب <ph name="SUPERVISED_USER_NAME" /> کی باری ہے</translation>
 <translation id="1147991416141538220">رسائی طلب کرنے کے لیے، اس آلہ کے منتظم سے رابطہ کریں۔</translation>
-<translation id="1148063863818152153">‏آپ کے آلے کی EID</translation>
 <translation id="1148624853678088576">آپ پوری طرح سے تیار ہیں!</translation>
 <translation id="1149401351239820326">میعاد کے اختتام کا مہینہ</translation>
 <translation id="1149483087970735785">اعانت یافتہ ٹیکنالوجی</translation>
@@ -1212,7 +1211,6 @@
 <translation id="2045969484888636535">کوکیز کو مسدود کرنا جاری رکھیں</translation>
 <translation id="204622017488417136">‏آپ کا آلہ Chrome کے پچھلے انسٹال کردہ ورژن پر لوٹا دیا جائے گا۔ سبھی صارفین کے اکاؤنٹس اور مقامی ڈیٹا کو ہٹا دیا جائے گا۔ اسے کالعدم نہیں کیا جا سکتا ہے۔</translation>
 <translation id="2046702855113914483">رامین</translation>
-<translation id="2046770133657639077">‏آلہ کا EID دکھائیں</translation>
 <translation id="204706822916043810">ورچوئل مشین کو چیک کیا جا رہا ہے</translation>
 <translation id="2048182445208425546">اپنے نیٹ ورک ٹریفک تک رسائی حاصل کریں</translation>
 <translation id="2048554637254265991">کنٹینر مینیجر کو شروع کرنے میں خرابی۔ دوبارہ کوشش کریں۔</translation>
@@ -1777,7 +1775,6 @@
 <translation id="2502719318159902502">مکمل رسائی</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{اسکرین #}other{اسکرین #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> از <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">‏آپ کے آلہ کا EID <ph name="EID_NUMBER" /> ہے۔ سروس فعال کرنے میں آپ کی مدد کرنے کیلئے کسٹمر سروس کا نمائندہ EID نمبر کا استعمال کر سکتا ہے۔</translation>
 <translation id="250704661983564564">ڈسپلے کا انتظام</translation>
 <translation id="2507253002925770350">ٹکٹ کو ہٹا دیا گیا</translation>
 <translation id="2508428939232952663">‏Google Play اسٹور اکاؤنٹ</translation>
@@ -7897,7 +7894,6 @@
 <translation id="8044899503464538266">سست</translation>
 <translation id="8045253504249021590">‏مطابقت پذیری کو Google ڈیش بورڈ کے ذریعے روک دیا گیا ہے۔</translation>
 <translation id="8045923671629973368">‏ایپلیکیشن ID یا ویب اسٹور URL درج کریں</translation>
-<translation id="8046132381940444654">‏سروس فعال کرنے میں آپ کی مدد کرنے کیلئے کسٹمر سروس کا نمائندہ اس EID نمبر کا استعمال کر سکتا ہے</translation>
 <translation id="8047242494569930800">‏‫Google اکاؤنٹ میں منتقل کریں؟</translation>
 <translation id="804786196054284061">انتہائی صارف کے لائسنس کا اقرار نامہ</translation>
 <translation id="8048728378294435881">اپنے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں</translation>

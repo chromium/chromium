@@ -1215,6 +1215,7 @@
 <translation id="7026338066939101231">Намалување</translation>
 <translation id="7029814467594812963">Излези од сесијата</translation>
 <translation id="7032161822340700104">Дозволени се само 6 шаблони. Отстранете шаблон за да зачувате нов.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" />. Вклучете го физичкиот прекинувач за <ph name="DEVICE_NAME" /> на вашиот уред.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, „Помошник на Google“</translation>
 <translation id="7042322267639375032">Собери ја статусната област</translation>
 <translation id="7045033600005038336">Да се замени шаблонот?</translation>
@@ -1385,6 +1386,7 @@
 <translation id="793716872548410480">Притиснете <ph name="SHORTCUT_KEY_NAME" /> + V за да ја видите привремената меморија. Последните 5 ставки што сте ги копирале се зачувани во привремената меморија.</translation>
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7944023924886109030">Видете ги сите денешни настани</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" /></translation>
 <translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
 <translation id="797512352675305461">Вклучете/исклучете ја лупата на цел екран</translation>

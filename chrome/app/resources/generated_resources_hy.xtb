@@ -167,7 +167,6 @@
 <translation id="114721135501989771">Google-ի տեխնոլոգիաներ Chrome-ում</translation>
 <translation id="1147322039136785890">Այժմ <ph name="SUPERVISED_USER_NAME" />-ի հերթն է</translation>
 <translation id="1147991416141538220">Օգտագործելու թույլտվություն խնդրելու համար կապվեք այս սարքի ադմինիստրատորի հետ:</translation>
-<translation id="1148063863818152153">Ձեր սարքի EID համարը</translation>
 <translation id="1148624853678088576">Պատրա՛ստ է:</translation>
 <translation id="1149401351239820326">Ժամկետի սպառման ամիսը</translation>
 <translation id="1149483087970735785">Օժանդակ տեխնոլոգիա</translation>
@@ -1209,7 +1208,6 @@
 <translation id="2045969484888636535">Շարունակել քուքիների արգելափակումը</translation>
 <translation id="204622017488417136">Սարքը կվերադարձվի Chrome-ի նախկինում տեղադրված տարբերակին: Բոլոր օգտատերերի հաշիվները և տեղային տվյալները կհեռացվեն: Գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2046702855113914483">Ռամեն</translation>
-<translation id="2046770133657639077">Ցույց տալ սարքի EID համարը</translation>
 <translation id="204706822916043810">Վիրտուալ մեքենան ստուգվում է</translation>
 <translation id="2048182445208425546">Դիտել ձեր ցանցի տվյալների հոսքը</translation>
 <translation id="2048554637254265991">Չհաջողվեց գործարկել կոնտեյներների կառավարիչը։ Նորից փորձեք։</translation>
@@ -1770,7 +1768,6 @@
 <translation id="2502719318159902502">Ամբողջական հասանելիություն</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Էկրան #}one{Էկրան #}other{Էկրան #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Ձեր սարքի EID համարն է՝ <ph name="EID_NUMBER" />։ Հաճախորդների սպասարկման մասնագետը կարող է EID համարի միջոցով օգնել ձեզ ակտիվացնել ծառայությունը։</translation>
 <translation id="250704661983564564">Էկրանի տեղադրություն</translation>
 <translation id="2507253002925770350">Տոմսը հեռացվել է</translation>
 <translation id="2508428939232952663">Google Play Խանութի հաշիվ</translation>
@@ -7866,7 +7863,6 @@
 <translation id="8044899503464538266">Դանդաղ</translation>
 <translation id="8045253504249021590">Համաժամացումը դադարեցվել է Google Dashboard-ի միջոցով:</translation>
 <translation id="8045923671629973368">Մուտքագրեք հավելվածի ID-ն կամ վեբ խանութի URL-ը</translation>
-<translation id="8046132381940444654">Հաճախորդների սպասարկման մասնագետը կարող է այս EID համարի միջոցով օգնել ձեզ ակտիվացնել ծառայությունը</translation>
 <translation id="8047242494569930800">Տեղափոխել Google հաշիվ</translation>
 <translation id="804786196054284061">Վերջնական օգտատիրոջ արտոնագրային պայմանագիր</translation>
 <translation id="8048728378294435881">Պահուստավորեք ձեր տվյալները և օգտագործեք դրանք ցանկացած սարքում</translation>

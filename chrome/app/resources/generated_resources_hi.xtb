@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chrome में Google स्मार्ट पाएं</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
 <translation id="1147991416141538220">ऐक्सेस मांगने के लिए, इस डिवाइस के एडमिन से संपर्क करें.</translation>
-<translation id="1148063863818152153">आपके डिवाइस का ईआईडी नंबर</translation>
 <translation id="1148624853678088576">आप बिलकुल तैयार हैं!</translation>
 <translation id="1149401351239820326">समाप्ति माह</translation>
 <translation id="1149483087970735785">सहायक टेक्नोलॉजी की सेटिंग पर जाएं</translation>
@@ -1224,7 +1223,6 @@
 <translation id="2045969484888636535">कुकी अवरोधित करना जारी रखें</translation>
 <translation id="204622017488417136">आपके डिवाइस को Chrome के इसे पहले इंस्‍टॉल किए गए वर्शन पर वापस ले जाया जाएगा. सभी उपयोगकर्ता खाते और स्‍थानीय डेटा हटा दिइ जाएंगे. इसे पहले जैसा नहीं किया जा सकता.</translation>
 <translation id="2046702855113914483">रेमन</translation>
-<translation id="2046770133657639077">डिवाइस का ईआईडी दिखाएं</translation>
 <translation id="204706822916043810">वर्चुअल मशीन की जांच हो रही है</translation>
 <translation id="2048182445208425546">अपने नेटवर्क ट्रैफ़िक को ऐक्‍सेस करें</translation>
 <translation id="2048554637254265991">कंटेनर मैनेजर शुरू होने के दौरान कोई गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
@@ -1790,7 +1788,6 @@
 <translation id="2502719318159902502">पूरा ऐक्सेस</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{स्क्रीन #}one{स्क्रीन #}other{स्क्रीन #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> में से <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">आपके डिवाइस का ईआईडी <ph name="EID_NUMBER" /> है. ग्राहक सेवा प्रतिनिधि इस ईआईडी नंबर का इस्तेमाल, सेवा को आपके लिए चालू करने में कर सकता है.</translation>
 <translation id="250704661983564564">डिसप्ले की सेटिंग</translation>
 <translation id="2507253002925770350">टिकट हटाया गया</translation>
 <translation id="2508428939232952663">Google Play Store खाता</translation>
@@ -4246,6 +4243,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड़ें</translation>
 <translation id="4711638718396952945">सेटिंग फिर से स्थापित करें</translation>
 <translation id="4713409221649555176">सभी विंडो बंद करने पर डेटा मिटाएं</translation>
+<translation id="4715631922189108923">उपयोगकर्ता नाम में बदलाव करें</translation>
 <translation id="47158868804223727">ग्रुप को बड़ा या छोटा करने के लिए, उसके नाम पर क्लिक करें</translation>
 <translation id="4716483597559580346">अतिरिक्त सुरक्षा के लिए Powerwash करें</translation>
 <translation id="471759229191973607">थीम बदलें</translation>
@@ -7909,7 +7907,6 @@
 <translation id="8044899503464538266">धीमी</translation>
 <translation id="8045253504249021590">सिंक को Google डैशबोर्ड के माध्यम से बंद कर दिया गया है.</translation>
 <translation id="8045923671629973368">ऐप्लिकेशन आईडी या वेबस्टोर यूआरएल डालें</translation>
-<translation id="8046132381940444654">ग्राहक सेवा प्रतिनिधि इस ईआईडी नंबर का इस्तेमाल, सेवा को आपके लिए चालू करने में कर सकता है</translation>
 <translation id="8047242494569930800">पासवर्ड को Google खाते में ले जाएं</translation>
 <translation id="804786196054284061">असली उपयोगकर्ता के लाइसेंस का समझौता</translation>
 <translation id="8048728378294435881">अपने डेटा का बैक अप लें और इसे किसी भी डिवाइस पर इस्तेमाल करें</translation>
@@ -8093,6 +8090,7 @@
 <translation id="8203732864715032075">आपको सूचनाएं भेजती है और यह याद रखती है कि मैसेज के लिए यह कंप्यूटर डिफ़ॉल्ट है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">आपके डिसप्ले और सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) कुछ देर में रीसेट हो सकते हैं. इस बदलाव को पूरा करने के लिए, अपने सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) को प्लग से निकालें और दोबारा लगाएं.</translation>
 <translation id="820568752112382238">सबसे ज़्यादा देखी गई साइटें</translation>
+<translation id="8206267832882844324">नोट में बदलाव करें</translation>
 <translation id="8206745257863499010">ब्‍लुसी</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8207404892907560325">कोई पासकी चुनें</translation>

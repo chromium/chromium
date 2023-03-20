@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">Taong may kape</translation>
 <translation id="2251368349685848079">I-restore mula sa trash</translation>
+<translation id="2278133026967558505">Access sa file ng lahat ng website at URL</translation>
 <translation id="2282155092769082568">Autoconfiguration URL:</translation>
 <translation id="2284767815536050991">naaalis na storage</translation>
 <translation id="2288278176040912387">Record player</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Nawawala ang 'Tugma ng alternatibong pangalan ng paksa' o 'Tugma ng domain suffix' para i-validate ang pagkakakilanlan ng server ng pag-authenticate</translation>
 <translation id="7165320105431587207">Nabigong ma-configure ang network</translation>
 <translation id="7170041865419449892">Wala sa sakop</translation>
+<translation id="7179579940054351344">Access sa file ng lahat ng website at URL maliban sa <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">I-save ang file bilang</translation>

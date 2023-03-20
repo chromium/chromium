@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Έξυπνες λειτουργίες Google στο Chrome</translation>
 <translation id="1147322039136785890">Τώρα είναι η σειρά του χρήστη <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Για να ζητήσετε πρόσβαση, επικοινωνήστε με τον διαχειριστή αυτής της συσκευής.</translation>
-<translation id="1148063863818152153">Ο αριθμός EID της συσκευής σας</translation>
 <translation id="1148624853678088576">Είστε έτοιμοι!</translation>
 <translation id="1149401351239820326">Μήνας λήξης</translation>
 <translation id="1149483087970735785">Τεχνολογία υποβοήθησης</translation>
@@ -1224,7 +1223,6 @@
 <translation id="2045969484888636535">Συνέχεια αποκλεισμού cookie</translation>
 <translation id="204622017488417136">Η συσκευή σας θα πρέπει να επανέλθει στην προηγούμενη εγκατεστημένη έκδοση του Chrome. Θα καταργηθούν όλοι οι λογαριασμοί χρηστών και τα τοπικά δεδομένα. Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</translation>
 <translation id="2046702855113914483">Ράμεν</translation>
-<translation id="2046770133657639077">Εμφάνιση αριθμού EID συσκευής</translation>
 <translation id="204706822916043810">Έλεγχος της εικονικής μηχανής</translation>
 <translation id="2048182445208425546">Πρόσβαση στην επισκεψιμότητά σας δικτύου</translation>
 <translation id="2048554637254265991">Σφάλμα κατά την έναρξη του διαχειριστή κοντέινερ. Δοκιμάστε ξανά.</translation>
@@ -1790,7 +1788,6 @@
 <translation id="2502719318159902502">Πλήρης πρόσβαση</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Οθόνη #}other{Οθόνη  #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> από <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Ο αριθμός EID της συσκευής σας είναι <ph name="EID_NUMBER" />. Ένας αντιπρόσωπος της εξυπηρέτησης πελατών μπορεί να χρησιμοποιήσει τον αριθμό EID για να σας βοηθήσει να ενεργοποιήσετε την υπηρεσία.</translation>
 <translation id="250704661983564564">Διάταξη οθόνης</translation>
 <translation id="2507253002925770350">Το εισιτήριο καταργήθηκε.</translation>
 <translation id="2508428939232952663">Λογαριασμός Google Play Store</translation>
@@ -7914,7 +7911,6 @@
 <translation id="8044899503464538266">Αργά</translation>
 <translation id="8045253504249021590">Ο συγχρονισμός έχει διακοπεί μέσω του Πίνακα ελέγχου Google.</translation>
 <translation id="8045923671629973368">Εισαγάγετε αναγνωριστικό εφαρμογής ή URL στο webstore</translation>
-<translation id="8046132381940444654">Ένας αντιπρόσωπος της εξυπηρέτησης πελατών μπορεί να χρησιμοποιήσει αυτόν τον αριθμό EID για να σας βοηθήσει να ενεργοποιήσετε την υπηρεσία</translation>
 <translation id="8047242494569930800">Μεταφορά σε Λογαριασμό Google</translation>
 <translation id="804786196054284061">Άδεια χρήσης τελικού χρήστη</translation>
 <translation id="8048728378294435881">Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας και χρησιμοποιήστε τα σε οποιαδήποτε συσκευή</translation>

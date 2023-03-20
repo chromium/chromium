@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chrome-д Google smarts авах</translation>
 <translation id="1147322039136785890">Одоо <ph name="SUPERVISED_USER_NAME" />-н ээлж</translation>
 <translation id="1147991416141538220">Хандалт хүсэхийн тулд энэ төхөөрөмжийн администратортай холбоо барина уу.</translation>
-<translation id="1148063863818152153">Таны төхөөрөмжийн EID</translation>
 <translation id="1148624853678088576">Бүх зүйл бэлэн боллоо!</translation>
 <translation id="1149401351239820326">Хугацаа дуусах сар</translation>
 <translation id="1149483087970735785">Тусламжийн технологи</translation>
@@ -1219,7 +1218,6 @@
 <translation id="2045969484888636535">Үүсмэл мэдээллийг үргэ</translation>
 <translation id="204622017488417136">Таны төхөөрөмж Chrome-ийн өмнөх суулгасан хувилбар руу буцаагдана. Бүх хэрэглэгчийн данс болон суурин өгөгдлүүд устгагдах бөгөөд энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2046702855113914483">Рамен</translation>
-<translation id="2046770133657639077">Төхөөрөмжийн EID-г харуулах</translation>
 <translation id="204706822916043810">Виртуал машиныг шалгаж байна</translation>
 <translation id="2048182445208425546">Сүлжээнийхээ ачааллагдсан мэдээлэл рүү нэвтэр</translation>
 <translation id="2048554637254265991">Контейнерын менежерийг эхлүүлэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
@@ -1785,7 +1783,6 @@
 <translation id="2502719318159902502">Бүрэн хандалт</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{# дэлгэц}other{# дэлгэц}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />-ийн <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">Таны төхөөрөмжийн EID <ph name="EID_NUMBER" /> юм. Танд үйлчилгээг идэвхжүүлэхэд туслахын тулд хэрэглэгчийн үйлчилгээний төлөөлөгч EID дугаарыг ашиглаж болно.</translation>
 <translation id="250704661983564564">Дэлгэцийн зохион байгуулалт</translation>
 <translation id="2507253002925770350">Тасалбарыг хассан</translation>
 <translation id="2508428939232952663">Google Play Дэлгүүрийн бүртгэл</translation>
@@ -4241,6 +4238,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
 <translation id="4711638718396952945">Тохиргоог дахин сэргээх</translation>
 <translation id="4713409221649555176">Таныг бүх цонхыг хаахад устгана</translation>
+<translation id="4715631922189108923">Хэрэглэгчийн нэрийг засах</translation>
 <translation id="47158868804223727">Бүлгийг дэлгэх эсвэл хураахын тулд нэрийг нь товшино уу</translation>
 <translation id="4716483597559580346">Хамгаалалтыг сайжруулахын тулд powerwash хийх</translation>
 <translation id="471759229191973607">Загвар өөрчлөх</translation>
@@ -7900,7 +7898,6 @@
 <translation id="8044899503464538266">Удаан</translation>
 <translation id="8045253504249021590">Google Хяналтын самбар синкийг зогсоосон байна.</translation>
 <translation id="8045923671629973368">Аппын ID эсвэл веб дэлгүүрийн URL-г оруулах</translation>
-<translation id="8046132381940444654">Танд үйлчилгээг идэвхжүүлэхэд туслахын тулд хэрэглэгчийн үйлчилгээний төлөөлөгч энэ EID дугаарыг ашиглаж болно</translation>
 <translation id="8047242494569930800">Google Бүртгэл рүү зөөх</translation>
 <translation id="804786196054284061">Эцсийн хэрэглэгчийн лицензийн гэрээ</translation>
 <translation id="8048728378294435881">Зүйлсээ хуулбарлаж, үүнийг дурын төхөөрөмж дээр ашиглана уу</translation>
@@ -8084,6 +8081,7 @@
 <translation id="8203732864715032075">Энэ компьютерийг Мессежэд санахын тулд танд мэдэгдэл болон өгөгдмөлийг илгээнэ. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Таны дэлгэц болон нэмэлт хэрэгслийг богино хугацаанд шинэчилж магадгүй. Энэ өөрчлөлтийг хэрэгжүүлэхийн тулд нэмэлт хэрэгслийг салгаад, дахин залгана уу.</translation>
 <translation id="820568752112382238">Хамгийн их зочилсон сайт</translation>
+<translation id="8206267832882844324">Тэмдэглэл засах</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8207404892907560325">Passkey сонгоно уу</translation>

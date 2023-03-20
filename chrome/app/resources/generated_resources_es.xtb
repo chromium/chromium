@@ -167,7 +167,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="114721135501989771">Obtén funciones inteligentes en Chrome</translation>
 <translation id="1147322039136785890">Ahora le toca a <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acceso, ponte en contacto con el administrador de este dispositivo.</translation>
-<translation id="1148063863818152153">EID de tu dispositivo</translation>
 <translation id="1148624853678088576">¡Todo listo!</translation>
 <translation id="1149401351239820326">Mes de caducidad</translation>
 <translation id="1149483087970735785">Tecnología asistencial</translation>
@@ -1211,7 +1210,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2045969484888636535">Continuar bloqueando las cookies</translation>
 <translation id="204622017488417136">Se restaurará la versión de Chrome instalada previamente en el dispositivo y se eliminarán todas las cuentas de usuario y todos los datos locales. Esta acción no se puede deshacer.</translation>
 <translation id="2046702855113914483">Fideos</translation>
-<translation id="2046770133657639077">Mostrar EID del dispositivo</translation>
 <translation id="204706822916043810">Comprobando la máquina virtual</translation>
 <translation id="2048182445208425546">Acceder a tu tráfico de red</translation>
 <translation id="2048554637254265991">Se ha producido un problema al iniciar el gestor de contenedores. Inténtalo de nuevo.</translation>
@@ -1775,7 +1773,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2502719318159902502">Acceso completo</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Pantalla #}other{Pantalla #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">El EID de tu dispositivo es <ph name="EID_NUMBER" />. Un representante del servicio de atención al cliente puede usar el número EID para ayudarte a activar el servicio.</translation>
 <translation id="250704661983564564">Disposición de las pantallas</translation>
 <translation id="2507253002925770350">Ticket eliminado</translation>
 <translation id="2508428939232952663">Cuenta de Google Play Store</translation>
@@ -4230,6 +4227,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
 <translation id="4713409221649555176">Eliminar al cerrar todas las ventanas</translation>
+<translation id="4715631922189108923">Editar nombre de usuario</translation>
 <translation id="47158868804223727">Haz clic en el nombre del grupo para ampliarlo o contraerlo</translation>
 <translation id="4716483597559580346">Powerwash para mayor seguridad</translation>
 <translation id="471759229191973607">Cambiar tema</translation>
@@ -7892,7 +7890,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8044899503464538266">Lenta</translation>
 <translation id="8045253504249021590">La sincronización se ha detenido mediante el Panel de Control de Google.</translation>
 <translation id="8045923671629973368">Introducir el ID de la aplicación o la URL de Chrome Web Store</translation>
-<translation id="8046132381940444654">Un representante del servicio de atención al cliente puede usar este número EID para ayudarte a activar el servicio</translation>
 <translation id="8047242494569930800">Mover a cuenta de Google</translation>
 <translation id="804786196054284061">Contrato de licencia de usuario final</translation>
 <translation id="8048728378294435881">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo</translation>
@@ -8076,6 +8073,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8203732864715032075">Recibir notificaciones en este ordenador y establecerlo como predeterminado para enviar y recibir mensajes. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Puede que las pantallas y los periféricos se restablezcan brevemente. Para que se aplique este cambio, desenchufa y vuelve a enchufar los periféricos.</translation>
 <translation id="820568752112382238">Sitios web más visitados</translation>
+<translation id="8206267832882844324">Editar nota</translation>
 <translation id="8206745257863499010">Música</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8207404892907560325">Elige una clave de acceso</translation>

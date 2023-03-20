@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Добијте ги паметните опции на Google во Chrome</translation>
 <translation id="1147322039136785890">Сега <ph name="SUPERVISED_USER_NAME" /> е на ред</translation>
 <translation id="1147991416141538220">За да побарате пристап, контактирајте со администраторот на уредов.</translation>
-<translation id="1148063863818152153">EID-број на вашиот уред</translation>
 <translation id="1148624853678088576">Подготвени сте!</translation>
 <translation id="1149401351239820326">Месец на истекување</translation>
 <translation id="1149483087970735785">Помошна технологија</translation>
@@ -1224,7 +1223,6 @@
 <translation id="2045969484888636535">Продолжи да блокираш колачиња</translation>
 <translation id="204622017488417136">Уредот ќе се врати на претходно инсталираната верзија на Chrome. Сите кориснички сметки и локални податоци ќе се отстранат. Ова не може да се врати назад.</translation>
 <translation id="2046702855113914483">Рамен</translation>
-<translation id="2046770133657639077">Прикажи го EID-бројот на уредот</translation>
 <translation id="204706822916043810">Се проверува виртуелната машина</translation>
 <translation id="2048182445208425546">Пристап до вашиот мрежен сообраќај</translation>
 <translation id="2048554637254265991">Грешка при стартувањето на управувачот со контејнери. Обидете се повторно.</translation>
@@ -1790,7 +1788,6 @@
 <translation id="2502719318159902502">Целосен пристап</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Екран #}one{Екран #}other{Екран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> од <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID-бројот на вашиот уред е <ph name="EID_NUMBER" />. Претставникот на службата за корисници може да го употреби овој EID-број за да ви помогне да ја активирате услугата.</translation>
 <translation id="250704661983564564">Подредување на екранот</translation>
 <translation id="2507253002925770350">Билетот е отстранет</translation>
 <translation id="2508428939232952663">Сметка на Google Play Store</translation>
@@ -4247,6 +4244,7 @@
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Обнови поставки</translation>
 <translation id="4713409221649555176">Бриши при затворање на сите прозорци</translation>
+<translation id="4715631922189108923">Изменете го корисничкото име</translation>
 <translation id="47158868804223727">Кликнете на името на групата за да го проширите или соберете</translation>
 <translation id="4716483597559580346">Фабричко ресетирање за дополнителна безбедност</translation>
 <translation id="471759229191973607">Променете ја темата</translation>
@@ -7910,7 +7908,6 @@
 <translation id="8044899503464538266">Бавно</translation>
 <translation id="8045253504249021590">Синхронизацијата беше запрена преку „Контролната табла на Google“.</translation>
 <translation id="8045923671629973368">Внеси ID на апликација или URL на веб-продавница</translation>
-<translation id="8046132381940444654">Претставникот на службата за корисници може да го употреби овој EID-број за да ви помогне да ја активирате услугата</translation>
 <translation id="8047242494569930800">Премести во сметката на Google</translation>
 <translation id="804786196054284061">Договор за лиценца со краен корисник</translation>
 <translation id="8048728378294435881">Направете бекап од вашите работи и користете ги на сите уреди</translation>
@@ -8094,6 +8091,7 @@
 <translation id="8203732864715032075">Ви испраќа известувања и стандардни вредности за запомнување на компјутеров за Messages. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Екраните и периферните уреди може да се ресетираат накратко. За да се изврши променава, исклучете ги и повторно вклучете ги во струја периферните уреди.</translation>
 <translation id="820568752112382238">Најпосетувани веб-сајтови</translation>
+<translation id="8206267832882844324">Изменете ја белешката</translation>
 <translation id="8206745257863499010">Блузист</translation>
 <translation id="8206859287963243715">Мобилен</translation>
 <translation id="8207404892907560325">Изберете криптографски клуч</translation>

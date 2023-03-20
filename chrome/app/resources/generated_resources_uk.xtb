@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Розумні функції в Chrome</translation>
 <translation id="1147322039136785890">Тепер <ph name="SUPERVISED_USER_NAME" /> може отримати пристрій</translation>
 <translation id="1147991416141538220">Щоб отримати доступ, зверніться до адміністратора цього пристрою.</translation>
-<translation id="1148063863818152153">Номер EID пристрою</translation>
 <translation id="1148624853678088576">Готово!</translation>
 <translation id="1149401351239820326">Місяць закінчення терміну дії</translation>
 <translation id="1149483087970735785">Технологія для людей з обмеженими можливостями</translation>
@@ -1226,7 +1225,6 @@
 <translation id="2045969484888636535">Продовжити блокування файлів cookie</translation>
 <translation id="204622017488417136">Ваш пристрій повернеться до попередньо встановленої версії Chrome. Усі облікові записи користувачів і локальні дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="2046702855113914483">Рамен</translation>
-<translation id="2046770133657639077">Показати номер EID пристрою</translation>
 <translation id="204706822916043810">Перевірка віртуальної машини</translation>
 <translation id="2048182445208425546">Отримувати доступ до трафіку мережі</translation>
 <translation id="2048554637254265991">Не вдалося запустити менеджер контейнера. Повторіть спробу.</translation>
@@ -1792,7 +1790,6 @@
 <translation id="2502719318159902502">Повний доступ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Екран #}one{Екран #}few{Екран #}many{Екран #}other{Екран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> із <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Номер EID вашого пристрою – <ph name="EID_NUMBER" />. Спеціаліст з обслуговування клієнтів може запитати його, щоб активувати сервіс.</translation>
 <translation id="250704661983564564">Розміщення дисплея</translation>
 <translation id="2507253002925770350">Квиток видалено</translation>
 <translation id="2508428939232952663">Обліковий запис Google Play</translation>
@@ -7914,7 +7911,6 @@
 <translation id="8044899503464538266">Повільна</translation>
 <translation id="8045253504249021590">Синхронізацію припинено за допомогою Інформаційної панелі Google.</translation>
 <translation id="8045923671629973368">Введіть ідентифікатор додатка або URL-адресу веб-магазину</translation>
-<translation id="8046132381940444654">Спеціаліст з обслуговування клієнтів може запитати цей номер EID, щоб активувати сервіс</translation>
 <translation id="8047242494569930800">Перемістити в обліковий запис Google</translation>
 <translation id="804786196054284061">Ліцензійна угода кінцевого користувача</translation>
 <translation id="8048728378294435881">Створюйте резервні копії даних і використовуйте їх на будь-якому пристрої</translation>

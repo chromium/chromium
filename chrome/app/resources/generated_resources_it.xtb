@@ -167,7 +167,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="114721135501989771">Tutta l'intelligenza Google in Chrome</translation>
 <translation id="1147322039136785890">È il turno di <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Per richiedere l'accesso, contatta l'amministratore del dispositivo.</translation>
-<translation id="1148063863818152153">Numero EID del dispositivo</translation>
 <translation id="1148624853678088576">Fatto.</translation>
 <translation id="1149401351239820326">Mese di scadenza</translation>
 <translation id="1149483087970735785">Tecnologie per la disabilità</translation>
@@ -864,6 +863,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1744108098763830590">pagina di sfondo</translation>
 <translation id="1745732479023874451">Gestisci contatti</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Aprire e modificare # file in questa app web?}}</translation>
+<translation id="1748329107062243374">Usa una passkey di <ph name="DEVICE_NAME" /> per accedere al sito <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Puoi salvare questa password nel tuo Account Google o solo su questo dispositivo</translation>
 <translation id="1749733017156547309">È necessaria una password.</translation>
 <translation id="1750172676754093297">Questo token di sicurezza non supporta la memorizzazione di impronte</translation>
@@ -1211,7 +1211,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2045969484888636535">Continua a bloccare i cookie</translation>
 <translation id="204622017488417136">Sul dispositivo verrà ripristinata la versione di Chrome installata precedentemente. Tutti gli account utente e i dati locali verranno rimossi. L'operazione non può essere annullata.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Mostra EID del dispositivo</translation>
 <translation id="204706822916043810">Controllo della macchina virtuale</translation>
 <translation id="2048182445208425546">Accesso al traffico di rete</translation>
 <translation id="2048554637254265991">Errore durante l'avvio del gestore di container. Riprova.</translation>
@@ -1774,7 +1773,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2502719318159902502">Accesso completo</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Schermo #}other{Schermo #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> di <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Il numero EID del tuo dispositivo è <ph name="EID_NUMBER" />. Un rappresentante dell'assistenza clienti potrebbe usare questo numero EID per aiutarti ad attivare il servizio.</translation>
 <translation id="250704661983564564">Disposizione del display</translation>
 <translation id="2507253002925770350">Richiesta rimossa</translation>
 <translation id="2508428939232952663">Account Google Play Store</translation>
@@ -3741,6 +3739,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4275397969489577657">Abilita la registrazione del flusso di eventi</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4277434192562187284">Origine della configurazione XML</translation>
+<translation id="4277529130885813215">Usa un altro dispositivo</translation>
 <translation id="4278390842282768270">Consentita</translation>
 <translation id="4278498748067682896">Utilizzerai un upgrade Kiosk e segnaletica che consente l'esecuzione del dispositivo solo in modalità kiosk o segnaletica. Se vuoi che gli utenti accedano al dispositivo, torna indietro ed esegui la registrazione utilizzando Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Questa procedura potrebbe richiedere alcuni minuti. È in corso il download dei file.</translation>
@@ -4642,6 +4641,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5108967062857032718">Impostazioni - Rimuovi app Android</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Rimuovi <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Apri il gruppo in una nuova finestra</translation>
 <translation id="5111646998522066203">Esci dalla modalità in incognito</translation>
 <translation id="5111692334209731439">&amp;Gestione Preferiti</translation>
 <translation id="5111794652433847656">Non sono presenti passkey per <ph name="APP_NAME" /> su questo dispositivo</translation>
@@ -7564,6 +7564,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7762243782113123335">Si è verificato un problema. Invia un feedback con #bruschetta nella descrizione. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> da <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Apri il gruppo in una nuova finestra</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7765507180157272835">Bluetooth e Wi-Fi necessari</translation>
 <translation id="7766082757934713382">Contribuisce a ridurre l'utilizzo dei dati di rete mettendo in pausa gli aggiornamenti automatici di sistema e delle app</translation>
@@ -7890,7 +7891,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8044899503464538266">Lento</translation>
 <translation id="8045253504249021590">La sincronizzazione è stata interrotta tramite Google Dashboard.</translation>
 <translation id="8045923671629973368">Inserisci l'ID applicazione o l'URL del webstore</translation>
-<translation id="8046132381940444654">Un rappresentante dell'assistenza clienti potrebbe usare questo numero EID per aiutarti ad attivare il servizio</translation>
 <translation id="8047242494569930800">Sposta nell'Account Google</translation>
 <translation id="804786196054284061">Contratto di licenza con l'utente finale</translation>
 <translation id="8048728378294435881">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo</translation>
@@ -8683,6 +8683,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
           &lt;p&gt;Puoi comunque eseguire la configurazione tramite la riga di comando. Consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; per avere ulteriori informazioni su contrassegni e variabili di ambiente.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Svolgimento di attività relative alla sicurezza per la tua organizzazione, ad esempio gestire le chiavi e i certificati memorizzati sul dispositivo</translation>
 <translation id="8755376271068075440">Più &amp;grande</translation>
+<translation id="8755584192133371929">Seleziona una scheda da condividere</translation>
 <translation id="875604634276263540">L'URL dell'immagine non è valido</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
 <translation id="8757203080302669031">Questa scheda sta eseguendo attivamente la ricerca dei dispositivi Bluetooth.</translation>

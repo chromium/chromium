@@ -374,6 +374,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3595252146048399851">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="3603009562372709545">링크 URL 복사</translation>
 <translation id="3607167657931203000">데이터 자동 완성</translation>
+<translation id="3608008480985212611">환경설정을 관리하려면 로그인하세요.</translation>
 <translation id="3609785682760573515">동기화 중...</translation>
 <translation id="3631443864840848029">사이트의 현재 비밀번호를 저장해 두시기 바랍니다.</translation>
 <translation id="3638472932233958418">웹페이지 미리 로드하기</translation>
@@ -541,6 +542,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="48274138579728272">읽음으로 표시</translation>
 <translation id="4833686396768033263">최근 탭을 사용할 수 없음</translation>
 <translation id="4833786495304741580">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
+<translation id="4834499902900503484">Chrome에 로그인하면 저장한 비밀번호가 내 Google 계정에 저장됩니다. 이 기능을 사용 중지하려면 <ph name="BEGIN_LINK" />설정으로 이동하세요<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">북마크, 방문 기록, 비밀번호 등이 더 이상 Google 계정과 동기화되지 않습니다.</translation>
 <translation id="4844899002472726590">관심 주제를 보고 수정합니다.</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" />의 비밀번호를 삭제하시겠습니까?</translation>
@@ -684,6 +686,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5899314093904173337">근처에 있는 사용자와 공유하려면 상대방에게 카메라나 QR 스캐너 앱으로 QR 코드를 스캔해 달라고 요청하세요.</translation>
 <translation id="5911030830365207728">Google 번역</translation>
 <translation id="5913600720976431809">페이지 번역 옵션</translation>
+<translation id="5922999516621365983">탭을 고정하려면 여기로 드래그하세요</translation>
 <translation id="5938160824633642847">기기의 저장용량이 거의 가득 찼습니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
 <translation id="5948291296578561264">이렇게 하면 사진 라이브러리에 사진을 저장할 수 있습니다.</translation>
 <translation id="5951816930277761335">링크 공유</translation>

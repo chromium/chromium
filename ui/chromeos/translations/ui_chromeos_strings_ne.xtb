@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">कफी भएको कप समातिरहेका व्यक्ति</translation>
 <translation id="2251368349685848079">ट्र्यासबाट रिस्टोर गर्नुहोस्</translation>
+<translation id="2278133026967558505">सबै वेबसाइट र URL मार्फत फाइल प्रयोग गर्न सकिन्छ</translation>
 <translation id="2282155092769082568">स्वतः कन्फिगुरेसनको URL:</translation>
 <translation id="2284767815536050991">हटाउन मिल्ने भण्डारण</translation>
 <translation id="2288278176040912387">रेकर्ड प्लेयर</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">"विषयको वैकल्पिक नामसँग मिल्दोजुल्दो" वा "डोमेन सफिक्ससँग मिल्दोजुल्दो" जानकारी छुटेको हुनाले प्रमाणीकरण सर्भरको पहिचान पुष्टि गर्न सकिएन</translation>
 <translation id="7165320105431587207">नेटवर्क कन्फिगर गर्न असफल</translation>
 <translation id="7170041865419449892">सीमाभन्दा बाहिर</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> बाहेक सबै वेबसाइट र URL मार्फत फाइल प्रयोग गर्न सकिन्छ</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> जि.बि.</translation>
 <translation id="7191454237977785534">यसको रूपमा फाइल बचत गर्नुहोस्</translation>

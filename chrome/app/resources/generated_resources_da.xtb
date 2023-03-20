@@ -169,7 +169,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="114721135501989771">Få Googles smarte funktioner i Chrome</translation>
 <translation id="1147322039136785890">Nu er enheden klar til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Hvis du vil anmode om adgang, skal du kontakte administratoren af denne enhed.</translation>
-<translation id="1148063863818152153">Din enheds EID-nummer</translation>
 <translation id="1148624853678088576">Så er du klar</translation>
 <translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1149483087970735785">Hjælpeteknologi</translation>
@@ -1218,14 +1217,13 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2040460856718599782">Ups! Noget gik galt under forsøget på at godkende dig. Kontrollér dine loginoplysninger, og prøv igen.</translation>
 <translation id="2040894699575719559">Stedet er blokeret</translation>
 <translation id="2042279886444479655">Aktive profiler</translation>
-<translation id="2044014337866019681">Sørg for, at du bekræfter <ph name="ACCOUNT" /> for at låse sessionen op.</translation>
+<translation id="2044014337866019681">Sørg for, at du verificerer <ph name="ACCOUNT" /> for at låse sessionen op.</translation>
 <translation id="204497730941176055">Navn på skabelon til Microsoft-certifikat</translation>
 <translation id="2045117674524495717">Hjælp til tastaturgenveje</translation>
 <translation id="2045211794962848221">Du får ikke vist denne specifikke meddelelse igen</translation>
 <translation id="2045969484888636535">Fortsæt med at blokere cookies</translation>
 <translation id="204622017488417136">Enheden nulstilles til sin forrige installerede version af Chrome. Alle brugerkonti og lokale data fjernes. Du kan ikke fortryde denne handling.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Vis enheds-EID</translation>
 <translation id="204706822916043810">Tjekker den virtuelle maskine</translation>
 <translation id="2048182445208425546">Få adgang til din netværkstrafik</translation>
 <translation id="2048554637254265991">Fejl i opstart af containeradministration. Prøv igen.</translation>
@@ -1791,7 +1789,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2502719318159902502">Fuld adgang</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skærm #}one{Skærm #}other{Skærm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> af <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Dit enheds-EID er <ph name="EID_NUMBER" />. En kundeservicemedarbejder kan bruge EID-nummeret til at hjælpe dig med at aktivere tjenesten.</translation>
 <translation id="250704661983564564">Visningsopstilling</translation>
 <translation id="2507253002925770350">Billetten blev fjernet</translation>
 <translation id="2508428939232952663">Google Play Butik-konto</translation>
@@ -3929,7 +3926,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4426464032773610160">Kom godt i gang ved at tjekke, at din USB- eller Bluetooth-kontakt har forbindelse til din Chromebook. Du kan også bruge tasterne på et tastatur.</translation>
 <translation id="4426508677408162512">Alle bogmærker</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
-<translation id="4427365070557649936">Godkender bekræftelseskode...</translation>
+<translation id="4427365070557649936">Verificerer bekræftelseskode...</translation>
 <translation id="4429163740524851942">Fysisk tastaturlayout</translation>
 <translation id="4430019312045809116">Lydstyrke</translation>
 <translation id="443031431654216610">Brug kun tal</translation>
@@ -4985,7 +4982,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5413640305322530561">Få flere oplysninger om diagnostik- og brugsdata</translation>
 <translation id="5414198321558177633">Profillisten opdateres. Dette kan tage et par minutter.</translation>
 <translation id="5414566801737831689">Læs ikonerne for de websites, du besøger</translation>
-<translation id="5414836363063783498">Bekræfter...</translation>
+<translation id="5414836363063783498">Verificerer...</translation>
 <translation id="5417312524372586921">Browsertemaer</translation>
 <translation id="541737483547792035">Forstør skærm</translation>
 <translation id="5419405654816502573">Voice Match</translation>
@@ -6442,7 +6439,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6737393581255281855">Vil du rydde de viste data?</translation>
 <translation id="6737663862851963468">Fjern Kerberos-billet</translation>
 <translation id="6738180164164974883">Giv tilladelse til at gemme tredjepartscookies</translation>
-<translation id="6738430949033571771">Bekræfter kontoen...</translation>
+<translation id="6738430949033571771">Verificerer kontoen...</translation>
 <translation id="6739923123728562974">Vis genvej på skrivebordet</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> er sat på pause</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Din administrator<ph name="END_LINK" /> har deaktiveret Beskyttet browsing</translation>
@@ -6914,7 +6911,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7156231244155528270">Konverter billede til tekst</translation>
 <translation id="7159953856712257647">Installeret som standard</translation>
 <translation id="7160182524506337403">Du kan nu se din telefons notifikationer</translation>
-<translation id="7163202347044721291">Bekræfter aktiveringskode...</translation>
+<translation id="7163202347044721291">Verificerer aktiveringskode...</translation>
 <translation id="716640248772308851">"<ph name="EXTENSION" />" har læserettigheder til billed-, video- og lydfiler på de markerede placeringer.</translation>
 <translation id="7166815366658507447">Hotspot er aktiveret</translation>
 <translation id="7167327771183668296">Automatiske klik</translation>
@@ -7914,7 +7911,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8044899503464538266">Langsom</translation>
 <translation id="8045253504249021590">Synkronisering er blevet stoppet via Google Kontrolpanel.</translation>
 <translation id="8045923671629973368">Angiv et app-id eller webadressen til Chrome Webshop</translation>
-<translation id="8046132381940444654">En kundeservicemedarbejder kan bruge dette EID-nummer til at hjælpe dig med at aktivere tjenesten</translation>
 <translation id="8047242494569930800">Flyt til Google-konto</translation>
 <translation id="804786196054284061">Slutbrugerlicensaftale</translation>
 <translation id="8048728378294435881">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed</translation>

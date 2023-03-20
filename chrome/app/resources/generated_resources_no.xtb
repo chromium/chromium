@@ -169,7 +169,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="114721135501989771">Få Googles smarte funksjoner i Chrome</translation>
 <translation id="1147322039136785890">Nå kan du gi enheten til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">For å be om tilgang, kontakt administratoren for denne enheten.</translation>
-<translation id="1148063863818152153">EID-nummeret til enheten din</translation>
 <translation id="1148624853678088576">Du er klar.</translation>
 <translation id="1149401351239820326">Utløpsmåned</translation>
 <translation id="1149483087970735785">Assisterende teknologi</translation>
@@ -494,6 +493,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1427269577154060167">Land</translation>
 <translation id="142765311413773645">Lisensen for <ph name="APP_NAME" /> er utløpt</translation>
 <translation id="1428373049397869723">Du kan åpne og redigere støttede filer med denne appen i Finder eller andre apper. For å styre hvilke filer som åpner denne appen som standard, <ph name="BEGIN_LINK" />finn ut hvordan du angir standardapper på enheten<ph name="END_LINK" />.</translation>
+<translation id="1428657116642077141">Du har lagret en merknad for et passord på dette nettstedet. For å se den, administrer passordene dine i søke- og adressefeltet.</translation>
 <translation id="1428770807407000502">Vil du slå av synkronisering?</translation>
 <translation id="1429300045468813835">Fjernet alle</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
@@ -1218,7 +1218,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2045969484888636535">Fortsett blokkering av informasjonskapsler</translation>
 <translation id="204622017488417136">Enheten blir tilbakestilt til den tidligere installerte versjonen av Chrome. Alle brukerkontoer og lokale data fjernes. Dette kan ikke gjøres om.</translation>
 <translation id="2046702855113914483">Nudler</translation>
-<translation id="2046770133657639077">Vis enhets-EID</translation>
 <translation id="204706822916043810">Kontrollerer den virtuelle maskinen</translation>
 <translation id="2048182445208425546">Få tilgang til nettverkstrafikken din</translation>
 <translation id="2048554637254265991">Feil ved oppstart av beholderbehandling. Prøv på nytt.</translation>
@@ -1245,6 +1244,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Klikk for å installere utvidelsen}other{Klikk for å installere disse utvidelsene}}</translation>
 <translation id="2073496667646280609">Du har kanskje ikke nok ledig plass på enheten eller den valgte plasseringen for sikkerhetskopien. Prøv å frigjøre plass eller velge en annen plassering.</translation>
 <translation id="2073505299004274893">Bruk maksimalt <ph name="CHARACTER_LIMIT" /> tegn</translation>
+<translation id="2074060876831574159">Lagrede passord vises her.  &lt;a target='_blank' href='chrome://password-manager/'&gt;Importer passord&lt;/a&gt;</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="2076269580855484719">Skjul dette programtillegget</translation>
 <translation id="2076672359661571384">Middels (anbefalt)</translation>
@@ -1491,6 +1491,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     <ph name="BEGIN_PARAGRAPH2" />Når installasjonen er startet, kan den ikke avbrytes.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Utveksle data med en hvilken som helst enhet på domenene <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Tilordne bryter for «Velg»</translation>
+<translation id="2271986192355138465">Finn ut hvordan du installerer nettprogrammer</translation>
 <translation id="2272430695183451567">0 brytere er tilordnet</translation>
 <translation id="2272570998639520080">Martiniglass</translation>
 <translation id="2273119997271134996">Problem med videoporten på dokken</translation>
@@ -1784,7 +1785,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2502719318159902502">Full tilgang</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skjerm #}other{Skjerm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> av <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Enhets-EID-en din er <ph name="EID_NUMBER" />. En kundeservicerepresentant kan bruke EID-nummeret til å hjelpe deg med å aktivere tjenesten.</translation>
 <translation id="250704661983564564">Skjermoppsett</translation>
 <translation id="2507253002925770350">Saken er fjernet</translation>
 <translation id="2508428939232952663">Google Play Butikk-konto</translation>
@@ -3137,6 +3137,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3728188878314831180">Speil varsler fra telefonen din</translation>
 <translation id="3728681439294129328">Konfigurer nettverksadressen</translation>
 <translation id="3729506734996624908">Tillatte nettsteder</translation>
+<translation id="3729957991398443677">For å se passordet ditt eller legge til en merknad om det, administrer passordene dine i søke- og adressefeltet</translation>
 <translation id="3730076362938942381">App for skriving med pekepenn</translation>
 <translation id="3732078975418297900">Feil på linje <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">PIN-koden kan ikke ha mer enn 63 tegn</translation>
@@ -5844,6 +5845,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6200151268994853226">Administrer utvidelsen</translation>
 <translation id="6201608810045805374">Vil du fjerne denne kontoen?</translation>
 <translation id="6202304368170870640">Du kan bruke PIN-koden til å logge på eller låse opp enheten.</translation>
+<translation id="6203247599828309566">Du har lagret en merknad for et passord på dette nettstedet. For å se den, klikk på nøkkelikonet.</translation>
 <translation id="6205314730813004066">Annonsepersonvern</translation>
 <translation id="6206199626856438589">Du blir logget av nettstedene som vises, også på faner som er åpne</translation>
 <translation id="6206311232642889873">&amp;Kopier bilde</translation>
@@ -6630,6 +6632,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6903022061658753260">Dataene dine synkroniseres mellom alle Chrome-nettlesere hvor du har slått på synkronisering for denne kontoen. For å finne alternativer for ChromeOS-synkronisering, gå til <ph name="LINK_BEGIN" />ChromeOS-innstillingene<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Åpne alle (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Slå på synkronisering</translation>
+<translation id="6903916726032521638">Søk etter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Opphev filtilgangen</translation>
 <translation id="6904655473976120856">Trykk på appknappen for å avslutte</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{For å beskytte passordene dine låses Google Passordlagring etter 1 minutt uten aktivitet}other{For å beskytte passordene dine låses Google Passordlagring etter {NUM_MINS} minutter uten aktivitet}}</translation>
@@ -6949,6 +6952,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Lukk siden}other{Lukk sidene}}</translation>
 <translation id="7207457272187520234">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne innstillingen håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="7207631048330366454">Søk etter apper</translation>
+<translation id="7210257969463271891">Nettprogrammer du installerer, vises her</translation>
 <translation id="7210471695184432500">For å importere passord til Google Passordlagring på denne enheten, velg en CSV-fil</translation>
 <translation id="7210499381659830293">Utvidelsesskrivere</translation>
 <translation id="7211783048245131419">Ingen bryter er tilordnet ennå</translation>
@@ -7903,7 +7907,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8044899503464538266">Lav</translation>
 <translation id="8045253504249021590">Synkronisering er stoppet via Google-oversikten.</translation>
 <translation id="8045923671629973368">Skriv inn app-ID-en eller nettadressen til nettbutikken</translation>
-<translation id="8046132381940444654">En kundeservicerepresentant kan bruke dette EID-nummeret til å hjelpe deg med å aktivere tjenesten</translation>
 <translation id="8047242494569930800">Flytt til Google-kontoen</translation>
 <translation id="804786196054284061">Brukerlisensavtale</translation>
 <translation id="8048728378294435881">Sikkerhetskopier tingene dine og bruk dem på alle enheter</translation>
@@ -8706,6 +8709,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> trenger en oppdatering</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Vis alle søk etter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Oppdater Chrome automatisk for alle brukere</translation>
 <translation id="8770406935328356739">Rotkatalog for utvidelser</translation>
 <translation id="8771300903067484968">Bakgrunnen på startsiden er tilbakestilt til standardbakgrunnen.</translation>
@@ -9184,6 +9188,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9179524979050048593">Brukernavn på påloggingsskjermen</translation>
 <translation id="9180281769944411366">Denne prosessen kan ta noen minutter. Starter Linux-beholderen.</translation>
 <translation id="9180380851667544951">Nettstedet kan dele skjermen din</translation>
+<translation id="9180847522826713506">For å se passordet ditt eller legge til en merknad om det, klikk på nøkkelikonet</translation>
 <translation id="9182556968660520230">Ikke la nettsteder spille av beskyttet innhold</translation>
 <translation id="9183331776983279456">Chrome sletter automatisk nettsteder som er eldre enn fire uker. Et nettsted som du besøker på nytt, kan havne på listen igjen. Du kan også blokkere et nettsted fra å foreslå annonser for deg.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apper}}</translation>

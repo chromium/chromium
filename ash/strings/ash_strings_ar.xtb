@@ -1225,6 +1225,7 @@
 <translation id="7026338066939101231">تناقص</translation>
 <translation id="7029814467594812963">إنهاء الجلسة</translation>
 <translation id="7032161822340700104">يجب ألا يزيد عدد النماذج عن 6 نماذج. يُرجى إزالة أحدها لحفظ نموذج جديد.</translation>
+<translation id="7034025838182392395">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />. عليك تشغيل <ph name="DEVICE_NAME" /> باستخدام الزر اليدوي على جهازك.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، "مساعد Google"</translation>
 <translation id="7042322267639375032">تصغير منطقة الحالة</translation>
 <translation id="7045033600005038336">هل تريد استبدال النموذج؟</translation>
@@ -1393,6 +1394,7 @@
 <translation id="793716872548410480">‏يُرجى الضغط على <ph name="SHORTCUT_KEY_NAME" /> + V للاطّلاع على الحافظة. تم حفظ آخر 5 عناصر نسختها إلى الحافظة.</translation>
 <translation id="7942349550061667556">أحمر</translation>
 <translation id="7944023924886109030">عرض جميع الأحداث لهذا اليوم</translation>
+<translation id="7947798320695032612">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />.</translation>
 <translation id="7951630946012935453">تعتيم لوحة المفاتيح</translation>
 <translation id="7963992254934562106">من <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">اختيار مجلد...</translation>

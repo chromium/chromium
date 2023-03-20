@@ -1217,6 +1217,7 @@
 <translation id="7026338066939101231">कम</translation>
 <translation id="7029814467594812963">सत्र से बाहर निकलें</translation>
 <translation id="7032161822340700104">सिर्फ़ छह टेंप्लेट सेव किए जा सकते हैं. नए टेंप्लेट को सेव करने के लिए, पहले से सेव किसी टेंप्लेट को हटाएं.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> को <ph name="DEVICE_NAME" /> इस्तेमाल करना है. अपने डिवाइस का फ़िज़िकल <ph name="DEVICE_NAME" /> स्विच चालू करें.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">स्टेटस बताने वाली जगह को छोटा करें</translation>
 <translation id="7045033600005038336">क्या आपको टेंप्लेट का नाम बदलना है?</translation>
@@ -1387,6 +1388,7 @@
 <translation id="793716872548410480">क्लिपबोर्ड देखने के लिए, <ph name="SHORTCUT_KEY_NAME" /> + V दबाएं. आपके कॉपी किए गए आखिरी पांच आइटम, क्लिपबोर्ड पर सेव किए गए.</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7944023924886109030">आज के सभी इवेंट देखें</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> को आपका <ph name="DEVICE_NAME" /> इस्तेमाल करना है</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> से</translation>
 <translation id="7968693143708939792">फ़ोल्डर को चुनें...</translation>
 <translation id="797512352675305461">फ़ुलस्क्रीन मोड में ज़ूम करने की सुविधा को चालू या बंद करने के लिए</translation>

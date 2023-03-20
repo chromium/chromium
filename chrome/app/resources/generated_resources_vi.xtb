@@ -169,7 +169,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="114721135501989771">Trải nghiệm Google thông minh trong Chrome</translation>
 <translation id="1147322039136785890">Bây giờ, <ph name="SUPERVISED_USER_NAME" /> có thể dùng thiết bị</translation>
 <translation id="1147991416141538220">Để yêu cầu quyền truy cập, hãy liên hệ với quản trị viên của thiết bị này.</translation>
-<translation id="1148063863818152153">EID thiết bị</translation>
 <translation id="1148624853678088576">Bạn đã hoàn tất!</translation>
 <translation id="1149401351239820326">Tháng hết hạn</translation>
 <translation id="1149483087970735785">Công nghệ hỗ trợ</translation>
@@ -1224,7 +1223,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2045969484888636535">Tiếp tục chặn cookie</translation>
 <translation id="204622017488417136">Thiết bị của bạn sẽ được quay lại phiên bản Chrome đã cài đặt trước đó. Tất cả các tài khoản người dùng và dữ liệu cục bộ sẽ bị xóa. Không thể hoàn tác thao tác này.</translation>
 <translation id="2046702855113914483">Mỳ tôm</translation>
-<translation id="2046770133657639077">Hiện số EID thiết bị</translation>
 <translation id="204706822916043810">Đang kiểm tra máy ảo</translation>
 <translation id="2048182445208425546">Truy cập lưu lượng mạng của bạn</translation>
 <translation id="2048554637254265991">Lỗi khi khởi động dịch vụ quản lý vùng chứa. Vui lòng thử lại.</translation>
@@ -1790,7 +1788,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2502719318159902502">Toàn quyền truy cập</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Màn hình #}other{Màn hình #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> của <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Số EID thiết bị của bạn là <ph name="EID_NUMBER" />. Người đại diện bộ phận dịch vụ khách hàng có thể dùng số EID để giúp bạn kích hoạt dịch vụ.</translation>
 <translation id="250704661983564564">Sắp xếp màn hình</translation>
 <translation id="2507253002925770350">Đã xóa phiếu</translation>
 <translation id="2508428939232952663">Tài khoản Cửa hàng Google Play</translation>
@@ -7914,7 +7911,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8044899503464538266">Chậm</translation>
 <translation id="8045253504249021590">Đã ngừng đồng bộ hóa qua Trang tổng quan của Google.</translation>
 <translation id="8045923671629973368">Hãy nhập ID ứng dụng hoặc URL cửa hàng trực tuyến</translation>
-<translation id="8046132381940444654">Người đại diện bộ phận dịch vụ khách hàng có thể dùng số EID này để giúp bạn kích hoạt dịch vụ</translation>
 <translation id="8047242494569930800">Di chuyển sang Tài khoản Google</translation>
 <translation id="804786196054284061">Thỏa thuận cấp phép người dùng cuối</translation>
 <translation id="8048728378294435881">Sao lưu và sử dụng dữ liệu của bạn trên mọi thiết bị</translation>

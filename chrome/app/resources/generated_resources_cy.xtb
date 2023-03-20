@@ -169,7 +169,6 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="114721135501989771">Cael buddion Google yn Chrome</translation>
 <translation id="1147322039136785890">Nawr, tro <ph name="SUPERVISED_USER_NAME" /> yw hi</translation>
 <translation id="1147991416141538220">I ofyn am fynediad, cysylltwch â gweinyddwr y ddyfais hon.</translation>
-<translation id="1148063863818152153">Eich dyfais EID</translation>
 <translation id="1148624853678088576">Rydych yn barod i fynd!</translation>
 <translation id="1149401351239820326">Mis darfod</translation>
 <translation id="1149483087970735785">Technoleg gynorthwyol</translation>
@@ -1226,7 +1225,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2045969484888636535">Parhau i rwystro cwcis</translation>
 <translation id="204622017488417136">Bydd eich dyfais yn cael ei dychwelyd i'r fersiwn a osodwyd yn flaenorol o Chrome. Bydd yr holl gyfrifon defnyddwyr a data lleol yn cael eu tynnu. Nid oes modd dadwneud hyn.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Dangos EID y ddyfais</translation>
 <translation id="204706822916043810">Wrthi'n gwirio'r peiriant rhithwir</translation>
 <translation id="2048182445208425546">Cyrchwch draffig eich rhwydwaith</translation>
 <translation id="2048554637254265991">Gwall wrth gychwyn y rheolwr cynwysyddion. Rhowch gynnig arall arni.</translation>
@@ -1792,7 +1790,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2502719318159902502">Mynediad llawn</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Sgrîn #}zero{Sgrîn #}two{Sgrîn #}few{Sgrîn #}many{Sgrîn #}other{Sgrîn #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> o <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID eich dyfais yw <ph name="EID_NUMBER" />. Gall cynrychiolydd gwasanaeth cwsmeriaid ddefnyddio'r rhif EID i'ch helpu i weithredu gwasanaeth.</translation>
 <translation id="250704661983564564">Trefniant sgriniau</translation>
 <translation id="2507253002925770350">Tynnwyd tocyn</translation>
 <translation id="2508428939232952663">Cyfrif Google Play Store</translation>
@@ -7918,7 +7915,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8044899503464538266">Araf</translation>
 <translation id="8045253504249021590">Mae cysoni wedi'i atal drwy Ddangosfwrdd Google.</translation>
 <translation id="8045923671629973368">Rhowch rif adnabod yr ap neu URL Web Store</translation>
-<translation id="8046132381940444654">Gall cynrychiolydd gwasanaeth cwsmeriaid ddefnyddio'r rhif EID hwn i'ch helpu i weithredu gwasanaeth.</translation>
 <translation id="8047242494569930800">Symud i Gyfrif Google</translation>
 <translation id="804786196054284061">Cytundeb Trwydded Defnyddiwr Terfynol</translation>
 <translation id="8048728378294435881">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais</translation>

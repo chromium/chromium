@@ -1216,6 +1216,7 @@ Baru diinstal</translation>
 <translation id="7026338066939101231">Pengurangan</translation>
 <translation id="7029814467594812963">Hentikan sesi</translation>
 <translation id="7032161822340700104">Hanya 6 template yang diizinkan. Hapus satu template untuk menambahkan yang baru.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> ingin menggunakan <ph name="DEVICE_NAME" />. Aktifkan tombol <ph name="DEVICE_NAME" /> fisik perangkat.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asisten Google</translation>
 <translation id="7042322267639375032">Ciutkan area status</translation>
 <translation id="7045033600005038336">Ganti template?</translation>
@@ -1386,6 +1387,7 @@ Baru diinstal</translation>
 <translation id="793716872548410480">Tekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk menampilkan papan klip. Lima item terakhir yang disalin akan disimpan ke papan klip.</translation>
 <translation id="7942349550061667556">Merah</translation>
 <translation id="7944023924886109030">Lihat semua acara hari ini</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> ingin menggunakan <ph name="DEVICE_NAME" /></translation>
 <translation id="7963992254934562106">Dari <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Pilih folder ...</translation>
 <translation id="797512352675305461">Aktifkan atau nonaktifkan kaca pembesar layar penuh</translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Keš Google diska je obrisan.</translation>
 <translation id="2239068707900391003">Osoba sa kafom</translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
+<translation id="2278133026967558505">Pristup fajlu preko svih veb-sajtova i URL-ova</translation>
 <translation id="2282155092769082568">URL za automatsku konfiguraciju:</translation>
 <translation id="2284767815536050991">prenosiva memorija</translation>
 <translation id="2288278176040912387">Gramofon</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Nedostaje „Podudaranje alternativnog imena subjekta“ ili „Podudaranje sufiksa domena“ da bi se potvrdio identitet servera za potvrdu identiteta</translation>
 <translation id="7165320105431587207">Konfiguracija mreže nije uspela</translation>
 <translation id="7170041865419449892">Izvan opsega</translation>
+<translation id="7179579940054351344">Pristup fajlu preko svih veb-sajtova i URL-ova osim <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Sačuvaj datoteku kao</translation>

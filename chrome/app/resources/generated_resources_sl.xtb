@@ -169,7 +169,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="114721135501989771">Prejmite Googlove pametne rešitve v Chromu</translation>
 <translation id="1147322039136785890">Zdaj je na vrsti <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Če želite zahtevati dostop, se obrnite na skrbnika naprave.</translation>
-<translation id="1148063863818152153">Številka EID naprave</translation>
 <translation id="1148624853678088576">Pripravljeni ste!</translation>
 <translation id="1149401351239820326">Mesec poteka</translation>
 <translation id="1149483087970735785">Podporna tehnologija</translation>
@@ -1226,7 +1225,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2045969484888636535">Še naprej blokiraj piškotke</translation>
 <translation id="204622017488417136">Naprava bo povrnjena na prej nameščeno različico Chroma. Vsi uporabniški računi in lokalni podatki bodo odstranjeni. Tega ni mogoče razveljaviti.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Prikaz številke EID naprave</translation>
 <translation id="204706822916043810">Preverjanje navideznega računalnika</translation>
 <translation id="2048182445208425546">Dostop do vašega omrežnega prometa</translation>
 <translation id="2048554637254265991">Napaka pri zagonu upravitelja vsebnikov. Poskusite znova.</translation>
@@ -1792,7 +1790,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2502719318159902502">Polni dostop</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Zaslon #}one{Zaslon #}two{Zaslon #}few{Zaslon #}other{Zaslon #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> od <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID naprave je <ph name="EID_NUMBER" />. Zastopnik za pomoč strankam vam lahko na podlagi številke EID pomaga aktivirati storitev.</translation>
 <translation id="250704661983564564">Razporeditev prikaza</translation>
 <translation id="2507253002925770350">Kartonček je odstranjen</translation>
 <translation id="2508428939232952663">Račun za Trgovino Google Play</translation>
@@ -7919,7 +7916,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8044899503464538266">Počasi</translation>
 <translation id="8045253504249021590">Sinhronizacija je bila ustavljena prek Google Nadzorne plošče.</translation>
 <translation id="8045923671629973368">Vnesite ID aplikacije ali URL spletne trgovine</translation>
-<translation id="8046132381940444654">Osebje za pomoč strankam vam lahko na podlagi te številke EID pomaga aktivirati storitev.</translation>
 <translation id="8047242494569930800">Premakni v račun Google</translation>
 <translation id="804786196054284061">Licenčna pogodba za končnega uporabnika</translation>
 <translation id="8048728378294435881">Varnostno kopirajte vsebino in jo uporabljajte v poljubni napravi.</translation>

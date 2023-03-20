@@ -1217,6 +1217,7 @@ Nueva instalación</translation>
 <translation id="7026338066939101231">Disminuir</translation>
 <translation id="7029814467594812963">Salir de la sesión</translation>
 <translation id="7032161822340700104">Se permiten únicamente 6 plantillas. Quita una plantilla para guardar una nueva.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" />. Activa el interruptor físico de tu <ph name="DEVICE_NAME" /> en el dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistente de Google</translation>
 <translation id="7042322267639375032">Contraer el área de estado</translation>
 <translation id="7045033600005038336">¿Deseas reemplazar la plantilla?</translation>
@@ -1387,6 +1388,7 @@ Nueva instalación</translation>
 <translation id="793716872548410480">Presiona <ph name="SHORTCUT_KEY_NAME" /> + V para ver el contenido de tu portapapeles. Los últimos 5 elementos que copiaste se guardan en el portapapeles.</translation>
 <translation id="7942349550061667556">Rojo</translation>
 <translation id="7944023924886109030">Ver todos los eventos de hoy</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7963992254934562106">De <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar carpeta…</translation>
 <translation id="797512352675305461">Activar o desactivar la lupa de pantalla completa</translation>

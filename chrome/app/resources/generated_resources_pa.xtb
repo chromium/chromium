@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chrome ਵਿੱਚ Google ਸਮਾਰਟ ਲਓ</translation>
 <translation id="1147322039136785890">ਹੁਣ <ph name="SUPERVISED_USER_NAME" /> ਦੀ ਵਾਰੀ ਹੈ</translation>
 <translation id="1147991416141538220">ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕਰਨ ਲਈ, ਇਸ ਡੀਵਾਈਸ ਦੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
-<translation id="1148063863818152153">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ EID ਨੰਬਰ</translation>
 <translation id="1148624853678088576">ਤੁਸੀਂ ਸਾਰਾ ਸੈਟ ਕਰ ਲਿਆ ਹੈ!</translation>
 <translation id="1149401351239820326">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਮਹੀਨਾ</translation>
 <translation id="1149483087970735785">ਸਹਿਯੋਗਮਈ ਤਕਨਾਲੋਜੀ</translation>
@@ -1224,7 +1223,6 @@
 <translation id="2045969484888636535">ਕੁਕੀਜ਼ ਬਲੌਕ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="204622017488417136">ਤੁਹਾਡਾ ਡੀਵਾਈਸ Chrome ਦੇ ਪਹਿਲਾਂ ਸਥਾਪਤ ਕੀਤੇ ਵਰਜਨ 'ਤੇ ਵਾਪਸ ਚਲਾ ਜਾਵੇਗਾ। ਸਾਰੇ ਵਰਤੋਂਕਾਰ ਖਾਤੇ ਅਤੇ ਸਥਾਨਕ ਡਾਟਾ ਹਟਾ ਦਿੱਤੇ ਜਾਣਗੇ। ਇਸਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="2046702855113914483">ਰੈਮਨ</translation>
-<translation id="2046770133657639077">ਡੀਵਾਈਸ EID ਦਿਖਾਓ</translation>
 <translation id="204706822916043810">ਆਭਾਸੀ ਮਸ਼ੀਨ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="2048182445208425546">ਆਪਣੇ ਨੈੱਟਵਰਕ ਟ੍ਰੈਫਿਕ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="2048554637254265991">ਕੰਟੇਨਰ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸ਼ੁਰੂ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -1790,7 +1788,6 @@
 <translation id="2502719318159902502">ਪੂਰੀ ਪਹੁੰਚ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ਸਕ੍ਰੀਨ #}one{ਸਕ੍ਰੀਨ #}other{ਸਕ੍ਰੀਨ #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> ਦਾ <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">ਤੁਹਾਡਾ ਡੀਵਾਈਸ EID <ph name="EID_NUMBER" /> ਹੈ। ਸੇਵਾ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਲਈ ਗਾਹਕ ਸੇਵਾ ਪ੍ਰਤੀਨਿਧੀ EID ਨੰਬਰ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="250704661983564564">ਡਿਸਪਲੇ ਦਾ ਪ੍ਰਬੰਧ</translation>
 <translation id="2507253002925770350">ਟਿਕਟ ਹਟਾਈ ਗਈ</translation>
 <translation id="2508428939232952663">Google Play Store ਖਾਤਾ</translation>
@@ -7909,7 +7906,6 @@
 <translation id="8044899503464538266">ਹੌਲੀ ਕਰੋ</translation>
 <translation id="8045253504249021590">ਸਿੰਕ Google ਡੈਸ਼ਬੋਰਡ ਰਾਹੀਂ ਰੋਕ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8045923671629973368">ਐਪਲੀਕੇਸ਼ਨ ਆਈ.ਡੀ. ਜਾਂ ਵੈੱਬਸਟੋਰ URL ਦਾਖਲ ਕਰੋ</translation>
-<translation id="8046132381940444654">ਸੇਵਾ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਲਈ ਗਾਹਕ ਸੇਵਾ ਪ੍ਰਤੀਨਿਧੀ ਇਸ EID ਨੰਬਰ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8047242494569930800">Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="804786196054284061">ਵਰਤੋਂਕਾਰ ਦਾ ਲਾਇਸੰਸ ਇਕਰਾਰਨਾਮਾ</translation>
 <translation id="8048728378294435881">ਆਪਣੀ ਸਮੱਗਰੀ ਦਾ ਬੈਕਅੱਪ ਲਓ ਅਤੇ ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਵਰਤੋ</translation>

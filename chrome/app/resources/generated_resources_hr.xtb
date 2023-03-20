@@ -167,7 +167,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="114721135501989771">Googleove značajke za Chrome</translation>
 <translation id="1147322039136785890">Sada je na redu: <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Da biste zatražili pristup, obratite se administratoru ovog uređaja.</translation>
-<translation id="1148063863818152153">EID vašeg uređaja</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
 <translation id="1149401351239820326">Mjesec isteka</translation>
 <translation id="1149483087970735785">Asistivna tehnologija</translation>
@@ -1214,7 +1213,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2045969484888636535">Nastavi blokirati kolačiće</translation>
 <translation id="204622017488417136">Uređaj će se vratiti na prethodno instaliranu verziju Chromea, a svi korisnički računi i lokalni podaci bit će uklonjeni. Tu radnju nije moguće poništiti.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Prikaži EID uređaja</translation>
 <translation id="204706822916043810">Provjeravanje virtualnog računala</translation>
 <translation id="2048182445208425546">pristupiti vašem mrežnom prometu</translation>
 <translation id="2048554637254265991">Došlo je do pogreške prilikom pokretanja upravitelja spremnika. Pokušajte ponovo.</translation>
@@ -1778,7 +1776,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2502719318159902502">Potpuni pristup</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Zaslon #}one{Zaslon #}few{Zaslon #}other{Zaslon #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> od <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID vašeg uređaja je <ph name="EID_NUMBER" />. Predstavnik korisničke službe može upotrijebiti EID broj kako bi vam pomogao da aktivirate uslugu.</translation>
 <translation id="250704661983564564">Raspored na zaslonu</translation>
 <translation id="2507253002925770350">Tiket uklonjen</translation>
 <translation id="2508428939232952663">Račun Trgovine Google Play</translation>
@@ -7902,7 +7899,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8044899503464538266">Sporo</translation>
 <translation id="8045253504249021590">Sinkronizacija je zaustavljena putem Google nadzorne ploče.</translation>
 <translation id="8045923671629973368">Unesite ID aplikacije ili URL web-trgovine</translation>
-<translation id="8046132381940444654">Predstavnik korisničke službe može upotrijebiti taj EID broj kako bi vam pomogao da aktivirate uslugu</translation>
 <translation id="8047242494569930800">Premjesti na Google račun</translation>
 <translation id="804786196054284061">Licencni ugovor za krajnjeg korisnika</translation>
 <translation id="8048728378294435881">Sigurnosno kopirajte svoje sadržaje i upotrebljavajte ih na bilo kojem uređaju</translation>

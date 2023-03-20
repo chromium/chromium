@@ -167,7 +167,6 @@
 <translation id="114721135501989771">Google zekası Chrome'da</translation>
 <translation id="1147322039136785890">Şimdi sıra <ph name="SUPERVISED_USER_NAME" /> adlı kullanıcıda</translation>
 <translation id="1147991416141538220">Erişim izni istemek için bu cihazın yöneticisiyle iletişime geçin.</translation>
-<translation id="1148063863818152153">Cihazınızın EID numarası</translation>
 <translation id="1148624853678088576">Hazırsınız!</translation>
 <translation id="1149401351239820326">Son kullanım tarihinin ayı</translation>
 <translation id="1149483087970735785">Yardımcı teknolojiler</translation>
@@ -1211,7 +1210,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2045969484888636535">Çerezleri engellemeye devam et</translation>
 <translation id="204622017488417136">Cihazınız Chrome'un bundan önce yüklenmiş olan sürümüne geri dönecektir. Tüm kullanıcı hesapları ve yerel veriler silinecektir. Bu işlem geri alınamaz.</translation>
 <translation id="2046702855113914483">Japon eriştesi</translation>
-<translation id="2046770133657639077">Cihazın EID numarasını göster</translation>
 <translation id="204706822916043810">Sanal makine kontrol ediliyor</translation>
 <translation id="2048182445208425546">Ağ trafiğinize erişme</translation>
 <translation id="2048554637254265991">Kapsayıcı yöneticisi başlatılırken hata oluştu. Lütfen tekrar deneyin.</translation>
@@ -1772,7 +1770,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2502719318159902502">Tam erişim</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#. Ekran}other{#. Ekran}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807"><ph name="EID_NUMBER" />, cihazınızın EID numarasıdır. Müşteri hizmetleri temsilcisi, hizmeti etkinleştirmeye yardımcı olmak için bu EID numarasını kullanabilir.</translation>
 <translation id="250704661983564564">Ekran düzenlemesi</translation>
 <translation id="2507253002925770350">Bilet kaldırıldı</translation>
 <translation id="2508428939232952663">Google Play Store Hesabı</translation>
@@ -7891,7 +7888,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8044899503464538266">Yavaş</translation>
 <translation id="8045253504249021590">Senkronizasyon Google Hesap Özeti tarafından durduruldu.</translation>
 <translation id="8045923671629973368">Uygulama kimliğini veya web mağazası URL'sini girin</translation>
-<translation id="8046132381940444654">Müşteri hizmetleri temsilcisi, hizmeti etkinleştirmeye yardımcı olmak için bu EID numarasını kullanabilir</translation>
 <translation id="8047242494569930800">Google Hesabına taşı</translation>
 <translation id="804786196054284061">Son Kullanıcı Lisans Sözleşmesi</translation>
 <translation id="8048728378294435881">Verilerinizi yedekleyin ve istediğiniz cihazda kullanın</translation>

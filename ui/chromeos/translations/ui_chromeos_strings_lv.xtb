@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Jūsu Google diska kešatmiņa tika notīrīta.</translation>
 <translation id="2239068707900391003">Persona ar kafiju</translation>
 <translation id="2251368349685848079">Atjaunot no atkritnes</translation>
+<translation id="2278133026967558505">Piekļuve failiem visās vietnēs un vietrāžos URL</translation>
 <translation id="2282155092769082568">Automātiskās konfigurācijas vietrādis URL</translation>
 <translation id="2284767815536050991">noņemama atmiņas ierīce</translation>
 <translation id="2288278176040912387">Ierakstu atskaņotājs</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Nevar apstiprināt autentifikācijas servera identitāti, jo nav aizpildīts lauks “Subjekta alternatīvā nosaukuma atbilstība” vai “Domēna sufiksa atbilstība”.</translation>
 <translation id="7165320105431587207">Neizdevās konfigurēt tīklu</translation>
 <translation id="7170041865419449892">Ārpus diapazona</translation>
+<translation id="7179579940054351344">Piekļuve failiem visās vietnēs un vietrāžos URL, izņemot <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Saglabāt failu kā</translation>

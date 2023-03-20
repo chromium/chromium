@@ -374,6 +374,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3595252146048399851">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3603009562372709545">Copiază adresa URL a linkului</translation>
 <translation id="3607167657931203000">Datele de completare automată</translation>
+<translation id="3608008480985212611">Conectează-te pentru a-ți gestiona preferințele.</translation>
 <translation id="3609785682760573515">Se sincronizează...</translation>
 <translation id="3631443864840848029">Salvează parola actuală pentru acest site.</translation>
 <translation id="3638472932233958418">Preîncarcă pagini</translation>
@@ -541,6 +542,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="48274138579728272">Marchează ca citit</translation>
 <translation id="4833686396768033263">Nu sunt disponibile file recente</translation>
 <translation id="4833786495304741580">Trimite automat statistici de utilizare și rapoarte de blocare la Google.</translation>
+<translation id="4834499902900503484">Dacă te-ai conectat la Chrome, parolele pe care le salvezi vor fi păstrate în Contul tău Google. Pentru a dezactiva opțiunea, <ph name="BEGIN_LINK" />accesează setările<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Marcajele, istoricul, parolele și alte setări nu vor mai fi sincronizate cu Contul Google.</translation>
 <translation id="4844899002472726590">Vezi și editează subiectele care te interesează</translation>
 <translation id="4848999860252535517">Ștergi parola pentru <ph name="WEBSITE" />?</translation>
@@ -684,6 +686,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5899314093904173337">Ca să le permiți accesul persoanelor din apropiere, solicită-le să scaneze acest cod QR folosind camera sau aplicația de scanat coduri QR</translation>
 <translation id="5911030830365207728">Google Traducere</translation>
 <translation id="5913600720976431809">Opțiuni pentru a traduce pagina</translation>
+<translation id="5922999516621365983">Trage fila aici pentru a o fixa.</translation>
 <translation id="5938160824633642847">Dispozitivul este aproape plin. Eliberează spațiu și încearcă din nou.</translation>
 <translation id="5948291296578561264">Astfel, poți să salvezi fotografiile în fototecă.</translation>
 <translation id="5951816930277761335">Trimite linkul</translation>

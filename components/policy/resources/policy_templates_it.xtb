@@ -4004,6 +4004,23 @@ Se questo criterio viene disattivato, la funzionalità di protezione dei downloa
 Se viene disattivato, all'utente non viene mostrata la promozione dell'estensione fornitore di credenziali.</translation>
 <translation id="4768446404233019970">Attiva le suite di crittografia 3DES in TLS</translation>
 <translation id="4770334626033858263">La configurazione usata per generare e verificare il codice accesso genitori.</translation>
+<translation id="4771861383714907912">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Se il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.
+
+      Quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> esegue le azioni configurate in questo criterio.
+
+      Se questo criterio è vuoto o se non viene configurato, il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
+
+      Le azioni supportate sono:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo. Azione non supportata su Android.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo. Azione non supportata su Android.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi il criterio <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
+
+      Per le azioni "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />" è necessario impostare il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su true.</translation>
 <translation id="4773997835955617342">Consente di modificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
 
       Se questo criterio viene attivato, il valore del criterio "KerberosCustomPrefilledConfig" viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos.
@@ -5041,6 +5058,7 @@ Se il criterio non viene configurato, tutti i domini non possono accedere agli U
 <translation id="5722577409367087850">Carica l'estensione</translation>
 <translation id="5728154254076636808">Consente la creazione di copie di roaming per i dati dei profili <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">La password Kerberos. Il segnaposto <ph name="PASSWORD_PLACEHOLDER" /> viene sostituito dalla password di accesso.</translation>
+<translation id="573183812760497142">Blocca il partizionamento dello spazio di archiviazione di terze parti per queste origini</translation>
 <translation id="5732972008943405952">Importa i dati della compilazione automatica dei moduli dal browser predefinito alla prima esecuzione</translation>
 <translation id="5733040281451845496">Se il criterio viene impostato su Attivato, i ritardi di gestione dell'alimentazione e i limiti di durata delle sessioni iniziano soltanto dopo il rilevamento della prima attività dell'utente in una sessione.
 
@@ -6217,6 +6235,11 @@ Il criterio verrà rimosso da <ph name="PRODUCT_NAME" /> in futuro.</translation
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, non viene inviata alcuna informazione relativa all'utilizzo.</translation>
 <translation id="6823711520976094072">La mancata configurazione o l'impostazione del criterio su valori inferiori a 1 MB implica l'utilizzo da parte di <ph name="PRODUCT_OS_NAME" /> della dimensione predefinita, corrispondente a 256 MiB, per le estensioni e le app di memorizzazione nella cache per l'installazione da parte di più utenti di un singolo dispositivo. In questo modo, non è necessario scaricare nuovamente tutte le app o estensioni per ogni utente.</translation>
+<translation id="6828729771894228555">Consente di impostare un elenco di pattern URL che specificano origini di primo livello (l'URL nella barra degli indirizzi della scheda) che bloccano il partizionamento dello spazio di archiviazione di terze parti (partizionamento dello spazio di archiviazione di iframe multiorigine).
+          Se questo criterio non viene configurato o se non esiste un'origine di primo livello corrispondente, verrà utilizzato il valore del criterio <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+          Per informazioni dettagliate sui pattern validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+          Tieni presente che i pattern elencati qui vengono considerati come origini, non URL, quindi non dovresti specificare un percorso.
+          Per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti, visita la pagina https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Questo criterio consente di controllare il recente refactoring delle API Graphics3D nel plug-in PPAPI.
 
 La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
@@ -7415,6 +7438,7 @@ Questo criterio aziendale consente agli amministratori di stabilire se gli utent
 <translation id="7962093600142350905">Questo criterio controlla se vengono mostrate agli utenti eventuali stampanti Privet disponibili nella finestra di dialogo dell'anteprima di stampa.
       Se viene impostato su Attivato, le stampanti Privet disponibili vengono mostrate.
       Se viene impostato su Disattivato o se non viene configurato, le stampanti Privet non vengono mostrate nell'anteprima di stampa, poiché questo metodo di stampa è deprecato.</translation>
+<translation id="7970660709107174905">Impostazioni di partizionamento dello spazio di archiviazione di terze parti</translation>
 <translation id="7972642710812569707">Forza la riattivazione di WebSQL in contesti di terze parti.</translation>
 <translation id="7973609468423251675">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -7904,6 +7928,10 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="838870586332499308">Attiva roaming dati</translation>
 <translation id="8392478748777481636">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Solo criteri piattaforma</translation>
+<translation id="8394518861160238324">Il partizionamento dello spazio di archiviazione di terze parti è attivo per impostazione predefinita per alcuni utenti a partire dalla versione M113, ma può essere disattivato tramite il flag di Chrome.
+          Se questo criterio viene impostato su <ph name="ALLOW_PARTITIONING_VALUE" /> o se non viene configurato, il partizionamento dello spazio di archiviazione di terze parti potrebbe essere attivato.
+          Se questo criterio viene impostato su <ph name="BLOCK_PARTITIONING_VALUE" />, non è possibile attivare il partizionamento dello spazio di archiviazione di terze parti.
+          Per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti, visita la pagina https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Timeout di inattività della schermata di blocco utente del salvaschermo.</translation>
 <translation id="8395749934754392549">Consente di gestire le impostazioni relative al container Android (ARC) e alle app Android.</translation>
 <translation id="8398952282584132331">Attiva Schermata sulla privacy</translation>

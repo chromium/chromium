@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Disk-bufferen din er tømt.</translation>
 <translation id="2239068707900391003">Person med kaffe</translation>
 <translation id="2251368349685848079">Gjenopprett fra papirkurven</translation>
+<translation id="2278133026967558505">Filtilgang for alle nettsteder og nettadresser</translation>
 <translation id="2282155092769082568">Nettadresse for automatisk konfigurering:</translation>
 <translation id="2284767815536050991">flyttbar lagring</translation>
 <translation id="2288278176040912387">Platespiller</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Mangler «Alternativt samsvar for emnenavn» eller «Domenesuffikssamsvar» for å validere autentiseringstjenerens identitet</translation>
 <translation id="7165320105431587207">Kunne ikke konfigurere nettverket</translation>
 <translation id="7170041865419449892">Utenfor rekkevidde</translation>
+<translation id="7179579940054351344">Filtilgang for alle nettsteder og nettadresser unntatt <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Lagre filen som</translation>

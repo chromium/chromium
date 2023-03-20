@@ -1216,6 +1216,7 @@ Jauna instalācija</translation>
 <translation id="7026338066939101231">Samazināt</translation>
 <translation id="7029814467594812963">Iziet no sesijas</translation>
 <translation id="7032161822340700104">Ir atļautas tikai 6 veidnes. Noņemiet kādu veidni, lai saglabātu jaunu veidni.</translation>
+<translation id="7034025838182392395">Lietotne <ph name="APP_NAME" /> pieprasa atļauju izmantot šo ierīci: <ph name="DEVICE_NAME" />. Ieslēdziet ierīces (<ph name="DEVICE_NAME" />) fizisko slēdzi.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google asistents</translation>
 <translation id="7042322267639375032">Sakļaut statusa apgabalu</translation>
 <translation id="7045033600005038336">Vai aizstāt veidni?</translation>
@@ -1386,6 +1387,7 @@ Jauna instalācija</translation>
 <translation id="793716872548410480">Lai skatītu starpliktuvi, nospiediet <ph name="SHORTCUT_KEY_NAME" /> + V. Pēdējie pieci nokopētie vienumi ir saglabāti starpliktuvē.</translation>
 <translation id="7942349550061667556">Sarkana</translation>
 <translation id="7944023924886109030">Skatīt visus šodienas pasākumus</translation>
+<translation id="7947798320695032612">Lietotne <ph name="APP_NAME" /> pieprasa atļauju izmantot šo ierīci: <ph name="DEVICE_NAME" />.</translation>
 <translation id="7963992254934562106">No <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Atlasīt mapi…</translation>
 <translation id="797512352675305461">Ieslēgt vai izslēgt pilnekrāna lupu</translation>

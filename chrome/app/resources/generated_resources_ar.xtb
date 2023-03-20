@@ -167,7 +167,6 @@
 <translation id="114721135501989771">‏الحصول على ميزات Google الذكية في Chrome</translation>
 <translation id="1147322039136785890">يستطيع <ph name="SUPERVISED_USER_NAME" /> الآن استخدام الجهاز</translation>
 <translation id="1147991416141538220">لطلب إذن الوصول إلى التطبيق، يُرجى التواصل مع مشرف هذا الجهاز.</translation>
-<translation id="1148063863818152153">‏رقم EID لجهازك</translation>
 <translation id="1148624853678088576">اكتملت المهمة</translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1149483087970735785">التكنولوجيا المساعِدة</translation>
@@ -1212,7 +1211,6 @@
 <translation id="2045969484888636535">متابعة حظر تشغيل ملفات تعريف الارتباط</translation>
 <translation id="204622017488417136">‏سيتم إرجاع جهازك إلى إصدار Chrome المثبت مسبقًا. ستتم إزالة كل حسابات المستخدمين والبيانات المحلية. ولا يمكن التراجع عن ذلك.</translation>
 <translation id="2046702855113914483">رامن</translation>
-<translation id="2046770133657639077">‏إظهار رقم EID للجهاز</translation>
 <translation id="204706822916043810">جارٍ التحقُّق من الآلة الافتراضية</translation>
 <translation id="2048182445208425546">الدخول إلى عدد زيارات شبكتك</translation>
 <translation id="2048554637254265991">حدث خطأ في تشغيل مدير الحاويات. يُرجى إعادة المحاولة.</translation>
@@ -1774,7 +1772,6 @@
 <translation id="2502719318159902502">الوصول الكامل</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{شاشة #}zero{شاشة #}two{شاشة #}few{شاشة #}many{شاشة #}other{شاشة #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> من <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">‏رقم EID لجهازك هو <ph name="EID_NUMBER" />. يمكن أن يستخدم ممثِّل خدمة العملاء رقم EID لمساعدتك في تفعيل الخدمة.</translation>
 <translation id="250704661983564564">ترتيب العرض</translation>
 <translation id="2507253002925770350">تمت إزالة التذكرة</translation>
 <translation id="2508428939232952663">‏حساب متجر Google Play</translation>
@@ -4221,6 +4218,7 @@
 <translation id="4708849949179781599">إنهاء <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">استعادة الإعدادات</translation>
 <translation id="4713409221649555176">حذف البيانات عند إغلاق جميع النوافذ</translation>
+<translation id="4715631922189108923">تعديل اسم المستخدم</translation>
 <translation id="47158868804223727">انقر على اسم المجموعة لتوسيعها أو تصغيرها.</translation>
 <translation id="4716483597559580346">‏Powerwash لمزيد من الأمان</translation>
 <translation id="471759229191973607">تغيير المظهر</translation>
@@ -7879,7 +7877,6 @@
 <translation id="8044899503464538266">بطيء</translation>
 <translation id="8045253504249021590">‏تم إيقاف المزامنة عبر لوحة تحكم Google.</translation>
 <translation id="8045923671629973368">‏إدخال معرّف التطبيق أو عنوان URL للسوق الإلكتروني</translation>
-<translation id="8046132381940444654">‏يمكن أن يستخدم ممثِّل خدمة العملاء رقم EID هذا لمساعدتك في تفعيل الخدمة.</translation>
 <translation id="8047242494569930800">‏نقل كلمات المرور إلى حساب Google</translation>
 <translation id="804786196054284061">اتفاقية ترخيص المستخدم</translation>
 <translation id="8048728378294435881">الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز</translation>
@@ -8062,6 +8059,7 @@
 <translation id="8205432712228803050">قد تتم إعادة ضبط الشاشات والأجهزة الملحقة لفترة قصيرة. يُرجى فصل أجهزتك الملحقة ثم إعادة توصيلها حتى يسري مفعول هذا التغيير.</translation>
 <translation id="820568752112382238">المواقع الإلكترونية الأكثر زيارة
 </translation>
+<translation id="8206267832882844324">تعديل الملاحظة</translation>
 <translation id="8206745257863499010">موسيقي</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8207404892907560325">اختيار مفتاح مرور</translation>

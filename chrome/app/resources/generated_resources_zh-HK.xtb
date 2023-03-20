@@ -169,7 +169,6 @@
 <translation id="114721135501989771">在 Chrome 中體驗 Google 的智能功能</translation>
 <translation id="1147322039136785890">現在可交由<ph name="SUPERVISED_USER_NAME" />使用</translation>
 <translation id="1147991416141538220">如要求存取權，請聯絡此裝置的管理員。</translation>
-<translation id="1148063863818152153">您的裝置 EID</translation>
 <translation id="1148624853678088576">您已完成全部設定！</translation>
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1149483087970735785">輔助科技</translation>
@@ -874,6 +873,7 @@
 <translation id="1744108098763830590">背景頁面</translation>
 <translation id="1745732479023874451">管理聯絡人</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{要在這個網頁應用程式中開啟並編輯 # 個檔案嗎？}}</translation>
+<translation id="1748329107062243374">使用「<ph name="DEVICE_NAME" />」的密鑰登入 <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">您可將此密碼儲存在 Google 帳戶中，或只儲存在此裝置上</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="1750172676754093297">您的安全密鑰無法儲存指紋</translation>
@@ -1223,7 +1223,6 @@
 <translation id="2045969484888636535">繼續封鎖 Cookie</translation>
 <translation id="204622017488417136">您的裝置將被重設為上次安裝的 Chrome 版本，且所有使用者帳戶和本機資料都會被移除。這項操作無法復原。</translation>
 <translation id="2046702855113914483">拉麵</translation>
-<translation id="2046770133657639077">顯示裝置 EID</translation>
 <translation id="204706822916043810">正在檢查虛擬機器</translation>
 <translation id="2048182445208425546">存取您的網絡流量</translation>
 <translation id="2048554637254265991">啟動容器管理員時發生錯誤。請再試一次。</translation>
@@ -1789,7 +1788,6 @@
 <translation id="2502719318159902502">完整存取權</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{螢幕 #}other{螢幕 #}}</translation>
 <translation id="2505402373176859469">已收到 <ph name="RECEIVED_AMOUNT" />，共 <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">你嘅裝置 EID 係 <ph name="EID_NUMBER" />。客戶服務專員可以用 EID 號碼嚟幫你啟用服務。</translation>
 <translation id="250704661983564564">顯示安排</translation>
 <translation id="2507253002925770350">已移除票證</translation>
 <translation id="2508428939232952663">Google Play 商店帳戶</translation>
@@ -3756,6 +3754,7 @@
 <translation id="4275397969489577657">啟用活動串流記錄</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277434192562187284">XML 設定來源</translation>
+<translation id="4277529130885813215">改用其他裝置</translation>
 <translation id="4278390842282768270">已允許</translation>
 <translation id="4278498748067682896">您將使用「Kiosk 和標牌升級」授權，此授權只允許裝置在 Kiosk 或標牌模式下運作。如果您想使用者登入裝置，請返回並使用「Chrome Enterprise 升級」註冊。</translation>
 <translation id="4278779213160967034">此程序可能需時幾分鐘。正在下載檔案。</translation>
@@ -4658,6 +4657,7 @@
 <translation id="5108967062857032718">設定 - 移除 Android 應用程式</translation>
 <translation id="5109044022078737958">咪咪</translation>
 <translation id="5109816792918100764">移除<ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">在新視窗中開啟分頁群組</translation>
 <translation id="5111646998522066203">結束無痕模式</translation>
 <translation id="5111692334209731439">書籤管理員(&amp;B)</translation>
 <translation id="5111794652433847656">此裝置上沒有「<ph name="APP_NAME" />」的任何密鑰</translation>
@@ -7582,6 +7582,7 @@
 <translation id="7762243782113123335">抱歉，發生錯誤。請提供意見，並在說明中加上 #bruschetta。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">新增地址</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> (來源網域：<ph name="DOWNLOAD_DOMAIN" />)</translation>
+<translation id="7764527477537408401">在新視窗中開啟分頁群組</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7765507180157272835">需要藍牙和 Wi-Fi</translation>
 <translation id="7766082757934713382">暫停自動應用程式和系統更新，有助減少網絡數據用量</translation>
@@ -7908,7 +7909,6 @@
 <translation id="8044899503464538266">慢</translation>
 <translation id="8045253504249021590">已透過「Google 資訊主頁」停用同步功能。</translation>
 <translation id="8045923671629973368">請輸入應用程式 ID 或網上商店網址</translation>
-<translation id="8046132381940444654">客戶服務專員可以使用此 EID 號碼協助您啟用服務</translation>
 <translation id="8047242494569930800">移至 Google 帳戶</translation>
 <translation id="804786196054284061">使用者授權協議</translation>
 <translation id="8048728378294435881">將資料備份，並在任何裝置上使用</translation>
@@ -8701,6 +8701,7 @@
         &lt;p&gt;然而，您仍然可以透過命令列設定。如需標幟及環境變數的詳細資料，請參閱 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;。&lt;/p&gt;</translation>
 <translation id="8755175579224030324">為您的機構進行安全性相關的工作，例如管理儲存在裝置上的憑證和金鑰</translation>
 <translation id="8755376271068075440">放大(&amp;L)</translation>
+<translation id="8755584192133371929">選取要分享的分頁</translation>
 <translation id="875604634276263540">圖片網址無效</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8757203080302669031">此分頁正在持續掃瞄藍牙裝置。</translation>

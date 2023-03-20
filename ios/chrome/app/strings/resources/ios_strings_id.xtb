@@ -541,6 +541,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="48274138579728272">Tandai sebagai Telah Dibaca</translation>
 <translation id="4833686396768033263">Tab Terbaru Tidak Tersedia</translation>
 <translation id="4833786495304741580">Otomatis mengirim statistik penggunaan dan laporan kerusakan ke Google.</translation>
+<translation id="4834499902900503484">Saat Anda login ke Chrome, sandi yang Anda simpan akan disimpan di Akun Google Anda. Untuk menonaktifkannya, <ph name="BEGIN_LINK" />buka setelan<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Bookmark, histori, sandi, dan informasi Anda lainnya tidak akan lagi disinkronkan ke Akun Google Anda.</translation>
 <translation id="4844899002472726590">Melihat dan mengedit topik yang menarik bagi Anda</translation>
 <translation id="4848999860252535517">Hapus Sandi untuk <ph name="WEBSITE" />?</translation>
@@ -684,6 +685,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5899314093904173337">Untuk berbagi dengan orang-orang di sekitar, izinkan mereka memindai kode QR ini dengan kamera atau aplikasi pemindai QR</translation>
 <translation id="5911030830365207728">Google Terjemahan</translation>
 <translation id="5913600720976431809">Opsi untuk Menerjemahkan halaman</translation>
+<translation id="5922999516621365983">Tarik tab ke sini untuk menyematkannya.</translation>
 <translation id="5938160824633642847">Perangkat Anda hampir penuh. Kosongkan ruang penyimpanan dan coba lagi.</translation>
 <translation id="5948291296578561264">Tindakan ini memungkinkan Anda menyimpan foto ke koleksi foto.</translation>
 <translation id="5951816930277761335">Bagikan Link</translation>

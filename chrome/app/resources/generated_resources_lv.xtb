@@ -167,7 +167,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="114721135501989771">Google viedās tehnoloģijas pārlūkā Chrome</translation>
 <translation id="1147322039136785890">Tagad <ph name="SUPERVISED_USER_NAME" /> var izmantot ierīci</translation>
 <translation id="1147991416141538220">Lai pieprasītu piekļuvi, sazinieties ar šīs ierīces administratoru.</translation>
-<translation id="1148063863818152153">Jūsu ierīces EID</translation>
 <translation id="1148624853678088576">Gatavs!</translation>
 <translation id="1149401351239820326">Derīguma termiņa mēnesis</translation>
 <translation id="1149483087970735785">Atbalsta tehnoloģija</translation>
@@ -1213,7 +1212,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2045969484888636535">Turpināt bloķēt sīkfailus</translation>
 <translation id="204622017488417136">Ierīcē tiks atjaunota iepriekš instalētā Chrome versija. Visi lietotāju konti un ierīcē glabātie dati tiks noņemti. Šo darbību nevar atsaukt.</translation>
 <translation id="2046702855113914483">Nūdeļu zupa</translation>
-<translation id="2046770133657639077">Rādīt ierīces EID</translation>
 <translation id="204706822916043810">Virtuālās mašīnas pārbaude</translation>
 <translation id="2048182445208425546">Piekļūt jūsu tīkla datplūsmai</translation>
 <translation id="2048554637254265991">Startējot konteineru pārvaldnieku, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
@@ -1776,7 +1774,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2502719318159902502">Pilna piekļuve</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#. ekrāns}zero{#. ekrāns}one{#. ekrāns}other{#. ekrāns}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> no <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Jūsu ierīces EID ir <ph name="EID_NUMBER" />. Klientu apkalpošanas dienesta pārstāvis var izmantot EID numuru, lai palīdzētu jums aktivizēt pakalpojumu.</translation>
 <translation id="250704661983564564">Displeja izkārtojums</translation>
 <translation id="2507253002925770350">Biļete noņemta</translation>
 <translation id="2508428939232952663">Google Play veikala konts</translation>
@@ -4232,6 +4229,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4708849949179781599">Aizvērt programmu <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Atjaunot iestatījumus</translation>
 <translation id="4713409221649555176">Dzēst, kad aizverat visus logus</translation>
+<translation id="4715631922189108923">Rediģēt lietotājvārdu</translation>
 <translation id="47158868804223727">Lai grupu izvērstu vai sakļautu, noklikšķiniet uz grupas nosaukuma</translation>
 <translation id="4716483597559580346">Powerwash, lai uzlabotu drošību</translation>
 <translation id="471759229191973607">Mainīt tēmu</translation>
@@ -6623,6 +6621,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6903022061658753260">Jūsu dati tiks sinhronizēti visos pārlūkos Chrome, kuros esat ieslēdzis šī konta sinhronizāciju. Lai skatītu Chrome OS sinhronizācijas opcijas, pārejiet uz <ph name="LINK_BEGIN" />Chrome OS iestatījumiem<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Atvērt visus vietrāžus (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Ieslēgt sinhronizāciju</translation>
+<translation id="6903916726032521638">Meklēt vaicājumu “<ph name="QUERY_CLUSTER_NAME" />”</translation>
 <translation id="6904344821472985372">Atsaukt piekļuvi failiem</translation>
 <translation id="6904655473976120856">Lai izietu, nospiediet lietotņu pogu</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Lai aizsargātu jūsu paroles, Google paroļu pārvaldnieks tiek bloķēts 1 minūti pēc neaktivitātes.}zero{Lai aizsargātu jūsu paroles, Google paroļu pārvaldnieks tiek bloķēts {NUM_MINS} minūtes pēc neaktivitātes.}one{Lai aizsargātu jūsu paroles, Google paroļu pārvaldnieks tiek bloķēts {NUM_MINS} minūti pēc neaktivitātes.}other{Lai aizsargātu jūsu paroles, Google paroļu pārvaldnieks tiek bloķēts {NUM_MINS} minūtes pēc neaktivitātes.}}</translation>
@@ -7894,7 +7893,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8044899503464538266">Lēns</translation>
 <translation id="8045253504249021590">Sinhronizācija tika pārtraukta, izmantojot Google informācijas paneli.</translation>
 <translation id="8045923671629973368">Ievadiet lietojumprogrammas ID vai interneta veikala URL</translation>
-<translation id="8046132381940444654">Klientu apkalpošanas dienesta pārstāvis var izmantot šo EID numuru, lai palīdzētu jums aktivizēt pakalpojumu</translation>
 <translation id="8047242494569930800">Pārvietot uz Google kontu</translation>
 <translation id="804786196054284061">Galalietotāja licences līgums</translation>
 <translation id="8048728378294435881">Dublējiet savus failus un izmantojiet tos jebkurā ierīcē.</translation>
@@ -8078,6 +8076,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8203732864715032075">Jums tiks sūtīti paziņojumi, un pēc noklusējuma šis dators tiks iestatīts īsziņu saņemšanai. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8205432712228803050">Jūsu displeji un perifērās ierīces var tikt atiestatītas. Tas aizņems īsu brīdi. Lai šīs izmaiņas stātos spēkā, atvienojiet un atkārtoti pievienojiet perifērās ierīces.</translation>
 <translation id="820568752112382238">Biežāk apmeklētās vietnes</translation>
+<translation id="8206267832882844324">Rediģēt piezīmi</translation>
 <translation id="8206745257863499010">Blūzs</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8207404892907560325">Izvēlieties piekļuves atslēgu</translation>
@@ -8695,6 +8694,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8762886931014513155">Ierīcei <ph name="DEVICE_TYPE" /> nepieciešams atjauninājums</translation>
 <translation id="8763927697961133303">USB ierīce</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Rādīt visus meklēšanas vienumus vaicājumam “<ph name="QUERY_CLUSTER_NAME" />”</translation>
 <translation id="8767621466733104912">Automātiski atjaunināt pārlūku Chrome visiem lietotājiem</translation>
 <translation id="8770406935328356739">Paplašinājuma saknes direktorijs</translation>
 <translation id="8771300903067484968">Sākumlapas fons ir atiestatīts uz noklusējuma fonu.</translation>

@@ -129,6 +129,7 @@
 <translation id="1576623706766186887">ซูมออกเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="1586324912145647027">ไปที่เดสก์ 1 ถึง 8</translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
+<translation id="1604857178818051494">หยุดสื่อชั่วคราว</translation>
 <translation id="1610778689852195798">"เลิกทำ"</translation>
 <translation id="1611993646327628135">เปิด</translation>
 <translation id="1618835956950524778">ไฮไลต์ปุ่ม Launcher บนแถบ</translation>
@@ -190,6 +191,7 @@
 <translation id="1862380676329487333">อัปเดตและออกจากระบบ</translation>
 <translation id="1864454756846565995">อุปกรณ์ USB-C (พอร์ตด้านหลัง)</translation>
 <translation id="1869497990620230175">ไฟล์ด่วน</translation>
+<translation id="1871023081802165724">เล่นสื่อ</translation>
 <translation id="1879018240766558464">ขณะนี้ยังไม่รองรับหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="1882814835921407042">ไม่มีเครือข่ายมือถือ</translation>
 <translation id="1882897271359938046">กำลังแสดงผลไปที่ <ph name="DISPLAY_NAME" /></translation>
@@ -241,6 +243,7 @@
 <translation id="2132302418721800944">บันทึกแบบเต็มหน้าจอ</translation>
 <translation id="2135456203358955318">แว่นขยายหน้าจอบางส่วน</translation>
 <translation id="2148716181193084225">วันนี้</translation>
+<translation id="2149229036084364364">ไปที่แทร็กก่อนหน้า</translation>
 <translation id="2161132820593978283">ลองใช้การจัดเฟรมกล้องเพื่อให้คุณอยู่ตรงกลางหน้าจอของวิดีโอคอล เปิดได้ในการตั้งค่าด่วน</translation>
 <translation id="2170530631236737939">ใช้ 3 นิ้วเลื่อนลงเพื่อออกจาก "ภาพรวม"</translation>
 <translation id="2185166372312820725">ไปที่แท็บก่อนหน้า</translation>
@@ -370,6 +373,7 @@
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
 <translation id="2872353916818027657">สลับหน้าจอหลัก</translation>
 <translation id="2872961005593481000">ปิด</translation>
+<translation id="2876338922445400217">ซูมเข้าบนหน้าจอ</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
 <translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="2891209721153296020">"ยกเลิกการเลือก"</translation>
@@ -394,6 +398,7 @@
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="301282384882049174">แชร์โดยผู้ดูแลระบบ</translation>
+<translation id="3018135054368884502">กรอสื่อไปข้างหน้า</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">เปิดไฟล์</translation>
@@ -497,6 +502,7 @@
 <translation id="353086728817903341">เชื่อมต่ออยู่กับอุปกรณ์ <ph name="NUM_DEVICES" /> เครื่อง</translation>
 <translation id="3533126039236445965">แอปในแถบ</translation>
 <translation id="3542066395059568317">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถคลิกขวาหากต้องการนำคำแนะนำออก</translation>
+<translation id="3546121235777416274">โฟกัสหน้าต่างการแสดงภาพซ้อนภาพ</translation>
 <translation id="3552189655002856821">Wi-Fi ปิดอยู่</translation>
 <translation id="3554637740840164787">ปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
 <translation id="3558768885091059911">เปิดการเข้าถึงกล้องและไมโครโฟนไหม</translation>
@@ -572,6 +578,7 @@
 <translation id="3891340733213178823">กด Ctrl+Shift+Q 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="3893630138897523026">ChromeVox (การตอบสนองด้วยเสียง)</translation>
 <translation id="3897533311200664389">เริ่มการค้นหาด้วยข้อความ</translation>
+<translation id="3898464793473355515">หมุนหน้าจอ 90 องศาตามเข็มนาฬิกา</translation>
 <translation id="3899995891769452915">ป้อนข้อมูลด้วยเสียง</translation>
 <translation id="3900355044994618856">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
@@ -741,6 +748,7 @@
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4706121060329443414">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google ก่อนในขณะนี้</translation>
 <translation id="470644585772471629">การกลับสี</translation>
+<translation id="4708065238214351979">เพิ่มแสงแป้นพิมพ์</translation>
 <translation id="4717575069099566988">สาย USB-C ที่ใช้ไม่รองรับ USB4 และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="4730374152663651037">แอปที่ใช้บ่อย</translation>
 <translation id="4731797938093519117">การเข้าถึงของผู้ปกครอง</translation>
@@ -767,6 +775,7 @@
 <translation id="4849058404725798627">ไฮไลต์วัตถุที่มีโฟกัสแป้นพิมพ์</translation>
 <translation id="485592688953820832">ไม่มีการดำเนินการ (หยุดชั่วคราว)</translation>
 <translation id="485634149294284819">ป้อนเมนูแป้นพิมพ์</translation>
+<translation id="485806788160414322">เล่นหรือหยุดสื่อชั่วคราว</translation>
 <translation id="4860284199500934869">ตรวจสอบการเชื่อมต่อเครือข่ายเพื่อดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="4864369630010738180">กำลังลงชื่อเข้าใช้...</translation>
 <translation id="4864648187878336334">เดสก์ที่ 15</translation>
@@ -786,6 +795,7 @@
 <translation id="492453977506755176">แป้นสำหรับโหมดจับภาพ</translation>
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="4929163402621253029">คุณพูดอยู่ใช่ไหม คุณปิดเสียงอยู่ ดูข้อมูลเพิ่มเติม</translation>
+<translation id="493076006037866439">ซูมออกนอกหน้าจอ</translation>
 <translation id="4936329710968938986">ทุกคน ปิดอยู่</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
@@ -794,6 +804,7 @@
 <translation id="4952936045814352993">ระบุตำแหน่งของโทรศัพท์ไม่ได้เมื่อปิดเสียงการปลุกไว้</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> กำหนดให้คุณต้องย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
+<translation id="4966431234408005599">เพิ่มระดับเสียง</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ชม. <ph name="MINUTES" /> นาที <ph name="SECONDS" /> วินาที</translation>
 <translation id="4975771730019223894">การติดป้ายแอป</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -817,6 +828,7 @@
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
+<translation id="5092436659250499817">เปิด/ปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="509790653408515442">เมื่อคุณสตรีมแอปของโทรศัพท์ แอปจะปรากฏที่นี่</translation>
 <translation id="5098537242461068432">เดสก์และหน้าต่างเปิดอีกครั้งแล้ว</translation>
 <translation id="5104236669533825617">สร้าง Screencast ไม่ได้</translation>
@@ -841,6 +853,7 @@
 <translation id="5208059991603368177">เปิด</translation>
 <translation id="5216991270656129561">ปิดจนถึง <ph name="TIME" /></translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
+<translation id="5229343007215035173">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="5234764350956374838">ปิด</translation>
 <translation id="523505283826916779">การตั้งค่าสำหรับการเข้าถึง</translation>
 <translation id="5245201184978705914">สร้างข้อความถอดเสียงไม่ได้</translation>
@@ -954,6 +967,7 @@
 <translation id="576341972084747908">ดาวน์โหลด <ph name="FILENAME" /> ที่เป็นอันตราย</translation>
 <translation id="5763928712329149804">Shelf Party ปิดอยู่</translation>
 <translation id="576453121877257266">แสงตอนกลางคืนเปิดอยู่</translation>
+<translation id="5764569119212455782">เปลี่ยนไปใช้ภาษาล่าสุดที่เลือก</translation>
 <translation id="5769373120130404283">หน้าจอส่วนตัว</translation>
 <translation id="5773950591113557721">การดำเนินการนี้ช่วยให้ <ph name="APP_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้</translation>
 <translation id="5774295353725270860">เปิดแอปพลิเคชันไฟล์</translation>
@@ -965,6 +979,7 @@
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
+<translation id="5841296711770970362">ไปที่แทร็กถัดไป</translation>
 <translation id="584525477304726060">กดค้างเพื่อขยายใหญ่สุด</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> ไม่ได้เปิดใช้งาน</translation>
 <translation id="5860033963881614850">ปิด</translation>
@@ -1100,6 +1115,7 @@
 <translation id="6497418457565568043">ฟีเจอร์ห้ามรบกวนเปิดอยู่</translation>
 <translation id="6500896621837555595">อัปเดต</translation>
 <translation id="6501401484702599040">กำลังแคสต์หน้าจอไปยัง <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507618042428827377">เปลี่ยนไปใช้วิธีการป้อนข้อมูลถัดไปที่มีอยู่</translation>
 <translation id="6508923215158854599">ตรวจสอบว่า Chromebook อยู่ในเครือข่าย Wi-Fi เดียวกับอุปกรณ์ Chromecast</translation>
 <translation id="6515727200518652613">กล้องขาดการเชื่อมต่อ กำลังพยายามเชื่อมต่ออีกครั้ง</translation>
 <translation id="6520517963145875092">เลือกหน้าต่างที่จะจับภาพ</translation>
@@ -1384,6 +1400,7 @@
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7944023924886109030">ดูกิจกรรมทั้งหมดของวันนี้</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ต้องการใช้ <ph name="DEVICE_NAME" /></translation>
+<translation id="7951630946012935453">หรี่แสงแป้นพิมพ์</translation>
 <translation id="7963992254934562106">จาก <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">เลือกโฟลเดอร์...</translation>
 <translation id="797512352675305461">เปิดหรือปิดแว่นขยายแบบเต็มหน้าจอ</translation>
@@ -1515,10 +1532,12 @@
 <translation id="8598235756057743477">จัดเรียงแอปตามชื่อหรือสี</translation>
 <translation id="8609384513243082612">เปิดแท็บใหม่</translation>
 <translation id="8614517853887502247">การแจ้งเตือนของ <ph name="APP_1_TITLE" /> และ <ph name="APP_2_TITLE" /> ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
+<translation id="8619138598101195078">ลดระดับเสียง</translation>
 <translation id="8627191004499078455">เชื่อมต่อ<ph name="DEVICE_NAME" />แล้ว</translation>
 <translation id="8630991711272431708">ปิดการเข้าถึงกล้อง</translation>
 <translation id="8631727435199967028">การตั้งค่าการช่วยเหลือพิเศษ</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
+<translation id="8638637208069328956">เปิด/ปิดไมโครโฟน</translation>
 <translation id="8639760480004882931">เหลือ <ph name="PERCENTAGE" />%</translation>
 <translation id="8641805545866562088">กำลังรีเฟรชรายการโปรไฟล์ รอสักครู่</translation>
 <translation id="8646417893960517480">ตัวจับเวลา <ph name="TOTAL_TIME" /></translation>
@@ -1537,6 +1556,7 @@
 <translation id="8717459106217102612">เลือกคำหรืออักษรก่อนหน้า</translation>
 <translation id="8721053961083920564">สลับเปิด/ปิดระดับเสียง <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">จับภาพแบบเต็มหน้าจอ</translation>
+<translation id="8725214031272624704">แสดงรายการวิธีการป้อนข้อมูลที่มีอยู่</translation>
 <translation id="8731487213223706745">สิ้นสุดเวลา <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">แป้นพิมพ์นี้อาจพยายามขโมยการกดแป้นพิมพ์ของคุณ</translation>
 <translation id="8735678380411481005">สีไฟแบ็กไลต์ของแป้นพิมพ์</translation>

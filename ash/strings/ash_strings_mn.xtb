@@ -1215,6 +1215,7 @@
 <translation id="7026338066939101231">Decrement</translation>
 <translation id="7029814467594812963">Идэвхтэй үеэс гарах</translation>
 <translation id="7032161822340700104">Зөвхөн 6 загварыг зөвшөөрдөг. Шинэ загвар хадгалахын тулд аль нэгийг нь хасна уу.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" />-г ашиглах хүсэлтэй байна. Төхөөрөмжийнхөө биет <ph name="DEVICE_NAME" />-н унтраалгыг асаана уу.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Туслах</translation>
 <translation id="7042322267639375032">Төлөв байдал илэрхийлэгчийг буулгах</translation>
 <translation id="7045033600005038336">Загварыг солих уу?</translation>
@@ -1385,6 +1386,7 @@
 <translation id="793716872548410480">Түр санах ойгоо харахын тулд <ph name="SHORTCUT_KEY_NAME" /> + V дээр дарна уу. Таны хуулсан сүүлийн 5 зүйлийг таны түр санах ойд хадгалсан байна.</translation>
 <translation id="7942349550061667556">Улаан</translation>
 <translation id="7944023924886109030">Өнөөдрийн бүх арга хэмжээг харах</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> таны <ph name="DEVICE_NAME" />-г ашиглах хүсэлтэй байна</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-с</translation>
 <translation id="7968693143708939792">Фолдер сонгох...</translation>
 <translation id="797512352675305461">Бүтэн дэлгэцийн томруулагчийг асаах эсвэл унтраах</translation>

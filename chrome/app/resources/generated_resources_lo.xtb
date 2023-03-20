@@ -169,7 +169,6 @@
 <translation id="114721135501989771">ມີ Google ອັດສະລິຍະໃນ Chrome</translation>
 <translation id="1147322039136785890">ດຽວນີ້ມັນເປັນຜຽນຂອງ <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">ເພື່ອຂໍສິດເຂົ້າເຖິງ, ກະລຸນາຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້.</translation>
-<translation id="1148063863818152153">EID ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1148624853678088576">ທ່ານຕັ້ງຮຽບຮ້ອຍໝົດແລ້ວ!</translation>
 <translation id="1149401351239820326">ເດືອນ​ໝົດອາຍຸ</translation>
 <translation id="1149483087970735785">ເທັກໂນໂລຢີຊ່ວຍເຫຼືອ</translation>
@@ -873,6 +872,7 @@
 <translation id="1744108098763830590">ຫນ້າ​ພື້ນຫຼັງ</translation>
 <translation id="1745732479023874451">ຈັດການລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{ເປີດ ແລະ ແກ້ໄຂ # ໄຟລ໌ໃນເວັບແອັບນີ້ບໍ?}}</translation>
+<translation id="1748329107062243374">ໃຊ້ກະແຈຜ່ານຈາກ <ph name="DEVICE_NAME" /> ເພື່ອເຂົ້າສູ່ລະບົບຫາ <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ ຫຼື ໃນອຸປະກອນນີ້ໄດ້ເທົ່ານັ້ນ</translation>
 <translation id="1749733017156547309">ຕ້ອງໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="1750172676754093297">ກະແຈຄວາມປອດໄພຂອງທ່ານບໍ່ສາມາດເກັບຮັກສາລາຍນິ້ວມືໄວ້ໄດ້</translation>
@@ -1220,7 +1220,6 @@
 <translation id="2045969484888636535">ສືບຕໍ່ບລັອກຄຸກກີ້</translation>
 <translation id="204622017488417136">ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານຈະ​ກັບ​ຄືນ​ໄປ​ສູ່ Chrome ລຸ້ນ​ທີ່​ຕິດ​ຕັ້ງ​ໄວ້​ຜ່ານ​ມາ. ທຸກ​ບັນ​ຊີ​ຜູ້​ໃຊ້ ແລະ​ຂໍ້​ມູນ​ກັບ​ທີ່​ຂອງ​ທ່ານ​ຈະ​ຖືກ​ເອົາ​ອອກ​ໄປ. ອັນ​ນີ້​ບໍ່​ສາ​ມາດເຮັດ​ກັບ​ຄືນ​ໄດ້.</translation>
 <translation id="2046702855113914483">ຣາເມັງ</translation>
-<translation id="2046770133657639077">ສະແດງ EID ອຸປະກອນ</translation>
 <translation id="204706822916043810">ກຳລັງກວດເບິ່ງເຄື່ອງສະເໝືອນ</translation>
 <translation id="2048182445208425546">ເຂົ້າ​ຫາ​ການ​ຈາ​ລະ​ຈອນ​ເຄືອ​ຂ່າຍ​ຂອງ​ທ່ານ</translation>
 <translation id="2048554637254265991">ເກີດຜິດພາດໃນການເລີ່ມຕົວຈັດການກ່ອງບັນຈຸ. ກະລຸນາລອງໃໝ່.</translation>
@@ -1788,7 +1787,6 @@
 <translation id="2502719318159902502">ສິດເຂົ້າເຖິງເຕັມຮູບແບບ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ໜ້າຈໍ #}other{ໜ້າຈໍ #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> ຈາກ <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID ອຸປະກອນຂອງທ່ານແມ່ນ <ph name="EID_NUMBER" />. ພະນັກງານບໍລິການລູກຄ້າສາມາດໃຊ້ໝາຍເລກ EID ເພື່ອຊ່ວຍທ່ານເປີດໃຊ້ບໍລິການໄດ້.</translation>
 <translation id="250704661983564564">ການຈັດວາງຈໍສະແດງຜົນ</translation>
 <translation id="2507253002925770350">ລຶບປີ້ອອກແລ້ວ</translation>
 <translation id="2508428939232952663">ບັນຊີ Google Play Store</translation>
@@ -3755,6 +3753,7 @@
 <translation id="4275397969489577657">ເປີດນຳໃຊ້ການບັນທຶກການຖ່າຍທອດເຫດການ</translation>
 <translation id="4275830172053184480">ເລີ່ມຕົ້ນອຸປະກອນຂອງທ່ານໃໝ່</translation>
 <translation id="4277434192562187284">ແຫຼ່ງທີ່ມາການຕັ້ງຄ່າ XML</translation>
+<translation id="4277529130885813215">ໃຊ້ອຸປະກອນອື່ນ</translation>
 <translation id="4278390842282768270">ອະນຸຍາດແລ້ວ</translation>
 <translation id="4278498748067682896">ທ່ານຈະໃຊ້ອັບເກຣດຄີອອສ ແລະ ປ້າຍເຊິ່ງອະນຸຍາດໃຫ້ອຸປະກອນເອີ້ນໃຊ້ໃນໂໝດຄີອອສ ຫຼື ປ້າຍເທົ່ານັ້ນ. ຫາກທ່ານຢາກໃຫ້ຜູ້ໃຊ້ເຂົ້າສູ່ລະບົບຫາອຸປະກອນ, ກະລຸນາກັບຄືນໄປແລ້ວລົງທະບຽນໂດຍໃຊ້ Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ. ກຳລັງດາວໂຫຼດໄຟລ໌.</translation>
@@ -4657,6 +4656,7 @@
 <translation id="5108967062857032718">ການຕັ້ງຄ່າ - ເອົາແອັບ Android ອອກ</translation>
 <translation id="5109044022078737958">ເມັຍ</translation>
 <translation id="5109816792918100764">ລຶບ <ph name="LANGUAGE_NAME" /> ອອກ</translation>
+<translation id="5111326646107464148">ເປີດກຸ່ມໃນໜ້າຈໍໃໝ່</translation>
 <translation id="5111646998522066203">ອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="5111692334209731439">ຕົວຈັດການບຸກມາກຄ໌</translation>
 <translation id="5111794652433847656">ບໍ່ມີກະແຈຜ່ານໃດໆສຳລັບ <ph name="APP_NAME" /> ຢູ່ອຸປະກອນນີ້</translation>
@@ -6635,6 +6635,7 @@
 <translation id="6903022061658753260">ຂໍ້ມູນຂອງທ່ານຈະຖືກຊິ້ງຂໍ້ມູນໃນໂປຣແກຣມທ່ອງເວັບ Chrome ທັງໝົດທີ່ທ່ານໄດ້ເປີດໃຊ້ການຊິ້ງຂໍ້ມູນສຳລັບບັນຊີນີ້ໄວ້. ສຳລັບຕົວເລືອກການຊິ້ງຂໍ້ມູນ ChromeOS, ກະລຸນາເຂົ້າໄປ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">ເປີດທັງໝົດ (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">ເປີດການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="6903916726032521638">ຊອກຫາ <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">ຖອນ​ການ​ເຂົ້າ​ໃຊ້ໄຟລ​໌ຄືນ</translation>
 <translation id="6904655473976120856">ກົດປຸ່ມແອັບເພື່ອອອກ</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{ເພື່ອຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ, ຕົວຈັດການລະຫັດຜ່ານ Google ຈະລັອກຫຼັງຈາກບໍ່ມີການເຄື່ອນໄຫວ 1 ນາທີ}other{ເພື່ອຮັກສາລະຫັດຜ່ານຂອງທ່ານໃຫ້ປອດໄພ, ຕົວຈັດການລະຫັດຜ່ານ Google Password ຈະລັອກຫຼັງຈາກບໍ່ມີການເຄື່ອນໄຫວ {NUM_MINS} ນາທີ}}</translation>
@@ -7581,6 +7582,7 @@
 <translation id="7762243782113123335">ຂໍອະໄພ, ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາສົ່ງຄຳຕິຊົມພ້ອມໃສ່ #bruschetta ໃນຄຳອະທິບາຍ. ລະຫັດຂໍ້ຜິດພາດແມ່ນ <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">ເພີ່ມ​ທີ່​ຢູ່</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> ຈາກ <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">ເປີດກຸ່ມໃນໜ້າຈໍໃໝ່</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7765507180157272835">ຈຳເປັນຕ້ອງເປີດ Bluetooth ແລະ Wi-Fi</translation>
 <translation id="7766082757934713382">ຊ່ວຍຫຼຸດການນຳໃຊ້ອິນເຕີເນັດເຄືອຂ່າຍໂດຍການຢຸດການອັບເດດແອັບ ແລະ ລະບົບອັດຕະໂນມັດໄວ້ຊົ່ວຄາວ</translation>
@@ -7905,7 +7907,6 @@
 <translation id="8044899503464538266">ຊ້າ</translation>
 <translation id="8045253504249021590">ການຊິ້ງຂໍ້ມູນໄດ້ຖືກຢຸດຜ່ານ Google Dashboard ແລ້ວ.</translation>
 <translation id="8045923671629973368">ປ້ອນ ID ແອັບພລິເຄຊັນ ຫຼື URL ຮ້ານຄ້າເວັບ</translation>
-<translation id="8046132381940444654">ພະນັກງານ​ບໍ​ລິ​ການ​ລູກ​ຄ້າສາມາດໃຊ້ໝາຍເລກ EID ນີ້ເພື່ອຊ່ວຍທ່ານເປີດໃຊ້ບໍລິການ</translation>
 <translation id="8047242494569930800">ຍ້າຍໄປຍັງບັນຊີ Google</translation>
 <translation id="804786196054284061">ຂໍ້ຕົກລົງໃບອະນຸຍາດຜູ້ໃຊ້ສຸດທ້າຍ</translation>
 <translation id="8048728378294435881">ສຳຮອງຂໍ້ມູນຂອງທ່ານ ແລະ ໃຊ້ມັນຢູ່ອຸປະກອນໃດກໍໄດ້</translation>
@@ -8698,6 +8699,7 @@
           &lt;p&gt;ແຕ່ທ່ານຍັງສາມາດກຳ​ນົດຄ່າໄດ້ຜ່ານແຖວຄໍາສັ່ງ. ກະລຸນາເບິ່ງ &lt;code&gt;ຄູ່​ມື <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; ສຳ​ລັບ​ຂໍ້​ມູນ​ເພີ່ມ​ເຕີມ​ກ່ຽວ​ກັບ​ທຸງ ແລະ​ຕົວ​ລັບ​ສະ​ພາບ​ແວດ​ລ້ອມ.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">ດຳເນີນໜ້າວຽກທີ່ກ່ຽວຂ້ອງກັບຄວາມປອດໄພສຳລັບອົງການຂອງທ່ານ ເຊັ່ນ: ຈັດການໃບຮັບຮອງ ແລະ ລະຫັດທີ່ເກັບໄວ້ໃນອຸປະກອນ</translation>
 <translation id="8755376271068075440">&amp;ໃຫຍ່ກວ່າ</translation>
+<translation id="8755584192133371929">ເລືອກແຖບເພື່ອແບ່ງປັນ</translation>
 <translation id="875604634276263540">URL ຮູບບໍ່ຖືກຕ້ອງ</translation>
 <translation id="8756969031206844760">ອັບເດດລະຫັດຜ່ານບໍ?</translation>
 <translation id="8757203080302669031">ແຖບນີ້ກຳລັງສະແກນຫາອຸປະກອນ Bluetooth ຢ່າງຈິງຈັງ.</translation>
@@ -8707,6 +8709,7 @@
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> ຂອງທ່ານຈຳເປັນຕ້ອງມີການອັບເດດ</translation>
 <translation id="8763927697961133303">ອຸປະກອນ USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">ສະແດງການຊອກຫາທັງໝົດສຳລັບ <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">ອັບເດດ Chrome ໂດຍອັດຕະໂນມັດສຳລັບຜູ້ໃຊ້ທຸກຄົນ</translation>
 <translation id="8770406935328356739">ໄດເຣັກທໍຣີພື້ນຖານຂອງສ່ວນຂະຫຍາຍ</translation>
 <translation id="8771300903067484968">ພາບພື້ນຫຼັງຂອງໜ້າເລີ່ມຕົ້ນໄດ້ຖືກຣີເຊັດເປັນພາບພື້ນຫຼັງເລີ່ມຕົ້ນແລ້ວ.</translation>

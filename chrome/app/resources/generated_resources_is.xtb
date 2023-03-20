@@ -169,7 +169,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="114721135501989771">Fá Google snjalltæki í Chrome</translation>
 <translation id="1147322039136785890">Nú er komið að <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Hafðu samband við stjórnanda þessa tækis til að óska eftir aðgangi.</translation>
-<translation id="1148063863818152153">EID-númer tækis</translation>
 <translation id="1148624853678088576">Allt er til reiðu!</translation>
 <translation id="1149401351239820326">Fyrningarmánuður</translation>
 <translation id="1149483087970735785">Hjálpartækni</translation>
@@ -1224,7 +1223,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2045969484888636535">Halda áfram að útiloka fótspor</translation>
 <translation id="204622017488417136">Tækið verður fært aftur í áður uppsetta útgáfu af Chrome. Allir notendareikningar og staðbundin gögn verða fjarlægð. Ekki er hægt að afturkalla þessa aðgerð.</translation>
 <translation id="2046702855113914483">Ramen-núðlur</translation>
-<translation id="2046770133657639077">Sýna EID-númer tækis</translation>
 <translation id="204706822916043810">Athugar sýndarvélina</translation>
 <translation id="2048182445208425546">Fá aðgang að netumferð</translation>
 <translation id="2048554637254265991">Villa við að ræsa geymisstjórnandann. Reyndu aftur.</translation>
@@ -1790,7 +1788,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2502719318159902502">Fullur aðgangur</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skjár #}one{Skjár #}other{Skjár #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> af <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID-númer tækis er <ph name="EID_NUMBER" />. Starfsmaður í þjónustudeild getur notað þetta EID-númer til að hjálpa þér að virkja þjónustu.</translation>
 <translation id="250704661983564564">Uppröðun skjáa</translation>
 <translation id="2507253002925770350">Miði fjarlægður</translation>
 <translation id="2508428939232952663">Google Play Store reikningur</translation>
@@ -7910,7 +7907,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8044899503464538266">Hægt</translation>
 <translation id="8045253504249021590">Samstilling var stöðvuð í gegnum stjórnborð Google.</translation>
 <translation id="8045923671629973368">Sláðu inn auðkenni forrits eða vefslóð vefverslunar</translation>
-<translation id="8046132381940444654">Starfsmaður í þjónustudeild getur notað þetta EID-númer til að hjálpa þér að virkja þjónustu</translation>
 <translation id="8047242494569930800">Færa á Google reikning</translation>
 <translation id="804786196054284061">Leyfissamningur notanda</translation>
 <translation id="8048728378294435881">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er</translation>

@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1014750484722996375">Darbalaukiai</translation>
 <translation id="1018219910092211213">Nepavyko priskirti DNS</translation>
 <translation id="1018656279737460067">Atšaukta</translation>
+<translation id="1022433422498218992">Bendrieji valdikliai</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
 <translation id="1059913517121127803">Nepavyko pradėti nuskaitymo</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Sustabdyta – baigėsi rašalas</translation>
 <translation id="1664796644829245314">Peržiūrėti kalendorių „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Įtaisytasis VPN</translation>
+<translation id="1669047024429367828">Matomumas</translation>
 <translation id="1672499492233627739">Žiniatinklio kameros vaizdo įrašo sklaidos kanalas</translation>
 <translation id="1676557873873341166">Fiksuojamas vaizdo įrašas</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
+<translation id="1710499924611012470">Pritaikomumo naršymas</translation>
 <translation id="1715359911173058521">Užmezgant ryšį su skaitytuvu kilo problema. Patikrinkite tinklo arba USB ryšį ir bandykite dar kartą.</translation>
 <translation id="1717874160321062422">Tvarko <ph name="FIRST_MANAGER" /> ir <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Pavadinimų serveriai</translation>
@@ -135,6 +139,7 @@
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2085089206770112532">Sumažinti ekrano šviesumą</translation>
+<translation id="2102231663024125441">Teksto redagavimas</translation>
 <translation id="2105810540595158374">Įrenginys yra žaidimų valdiklis.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="2126937207024182736">Pasiekiama: <ph name="AVAILABLE_MEMORY" /> GB iš <ph name="TOTAL_MEMORY" /> GB</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Kritinis naujinys</translation>
 <translation id="2860473693272905224">Padėkite kitą puslapį ant skaitytuvo</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
+<translation id="2873483161362553159">Naršyklės naršymas</translation>
 <translation id="2874939134665556319">Ankstesnis takelis</translation>
 <translation id="2878387241690264070">Išsikrovė: <ph name="RATE" /> per <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="2902312830803030883">Daugiau veiksmų</translation>
@@ -660,6 +666,7 @@
 <translation id="6766275201586212568">Nepavykę DNS nustatymo veiksmai</translation>
 <translation id="6768237774506518020">Aukštas DNS nustatymo trikčių rodiklis</translation>
 <translation id="6791471867139427246">klaviatūros šviesos spalva</translation>
+<translation id="6798678288485555829">Teksto naršymas</translation>
 <translation id="680983167891198932">Raktas</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
 <translation id="6838167112108853532">Šio APN išjungti arba pašalinti negalima. Įsitikinkite, kad įgalinti pridėti APN yra išjungti ar pašalinti.</translation>

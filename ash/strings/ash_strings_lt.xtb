@@ -576,6 +576,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3846575436967432996">Nėra tinklo informacijos</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="385300504083504382">Pradžia</translation>
+<translation id="3859364108019690">Nepavyko perduoti programų srautu</translation>
 <translation id="3861651314799684201">Paspauskite „Enter“, kad įrašytumėte visą ekraną</translation>
 <translation id="3871092408932389764">Žemiausias</translation>
 <translation id="3886872229787704059">Atidaryta šiandien</translation>
@@ -692,6 +693,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4424159417645388645">5 darbalaukis</translation>
 <translation id="4430019312045809116">Apimtis</translation>
 <translation id="4435022394553622295">Peržiūrėkite telefono pranešimus ir programas „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
+<translation id="4440032176046152627">Šis tinklas nepalaiko srautinio perdavimo programų iš telefono. Pabandykite įjungti telefono viešosios interneto prieigos tašką. Sužinokite daugiau.</translation>
 <translation id="4441283832827406317">Programos rūšiuojamos pagal pavadinimą</translation>
 <translation id="4445159312344259901">Atrakinti prisijungus</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 svarbus pranešimas}one{# svarbus pranešimas}few{# svarbūs pranešimai}many{# svarbaus pranešimo}other{# svarbių pranešimų}}</translation>
@@ -1318,6 +1320,9 @@ Naujas įdiegimas</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Fotoaparato kadravimo funkcija įjungta.</translation>
+<translation id="7519649142417630956">Kai išjungsite, administratorius bus atjungtas ir negalės valdyti jūsų įrenginio.
+
+Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrenginio maitinimo mygtuką.</translation>
 <translation id="7526573455193969409">Tinklas gali būti stebimas</translation>
 <translation id="7536035074519304529">IP adresas: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">„Linux“ programos ir inkognito langai šiuo metu nepalaikomi. Kitos programos bus išsaugotos.</translation>
@@ -1671,6 +1676,7 @@ Naujas įdiegimas</translation>
 <translation id="938963181863597773">„What's on my calendar?“ (Kas mano kalendoriuje?)</translation>
 <translation id="945522503751344254">Siųsti atsiliepimą</translation>
 <translation id="951991426597076286">Atmesti</translation>
+<translation id="953431725143473984">Išjungti įrenginį?</translation>
 <translation id="954052413789300507">Nepakanka vietos failui „<ph name="FILENAME" />“. Atlaisvinkite vietos.</translation>
 <translation id="974545358917229949">Pagal užklausą „<ph name="QUERY" />“ pateikiama rezultatų: <ph name="RESULT_COUNT" /></translation>
 <translation id="98120814841227350">Eiti į dokumento pabaigą</translation>

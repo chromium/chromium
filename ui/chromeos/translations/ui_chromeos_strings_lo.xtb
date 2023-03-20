@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">ແຄສ Google Drive ຂອງທ່ານໄດ້ຖືກອະນາໄມແລ້ວ.</translation>
 <translation id="2239068707900391003">ຄົນກັບກາເຟ</translation>
 <translation id="2251368349685848079">ກູ້ຄືນຈາກຖັງຂີ້ເຫຍື້ອ</translation>
+<translation id="2278133026967558505">ສິດເຂົ້າເຖິງໄຟລ໌ຈາກເວັບໄຊ ແລະ URL ທັງໝົດ</translation>
 <translation id="2282155092769082568">URL ການກຳນົດຄ່າອັດໂນມັດ:</translation>
 <translation id="2284767815536050991">ບ່ອນຈັດເກັບຂໍ້ມູນແບບຖອດອອກໄດ້</translation>
 <translation id="2288278176040912387">ເຄື່ອງຫຼິ້ນ​ບັນ​ທຶກ</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">ບໍ່ມີ 'ການຈັບຄູ່ຊື່ສຳຮອງຂອງຫົວຂໍ້' ຫຼື 'ການຈັບຄູ່ຄຳຕໍ່ທ້າຍໂດເມນ' ເພື່ອກວດສອບຕົວຕົນເຊີບເວີການພິສູດຢືນຢັນ</translation>
 <translation id="7165320105431587207">ປັບຕັ້ງເຄືອ​ຂ່າຍບໍ່ສໍາເລັດ</translation>
 <translation id="7170041865419449892">ຢູ່ນອກຂອບເຂດ</translation>
+<translation id="7179579940054351344">ສິດເຂົ້າເຖິງໄຟລ໌ຈາກເວັບໄຊ ແລະ URL ທັງໝົດຍົກເວັ້ນ <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ບັນທຶກໄຟລ໌ເປັນ</translation>

@@ -481,6 +481,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4474494258097106883">Dla Twojego iPhone'a</translation>
 <translation id="4476574785019001431">Ustawienia</translation>
 <translation id="448433063499977729">Synchronizacja została wyłączona</translation>
+<translation id="4489536976005181779">{count,plural, =1{Dodano stronę do listy Do przeczytania na koncie {email}}few{Dodano strony do listy Do przeczytania na koncie {email}}many{Dodano strony do listy Do przeczytania na koncie {email}}other{Dodano strony do listy Do przeczytania na koncie {email}}}</translation>
 <translation id="4496373720959965247">Dodaj karty i przełączaj się między stronami</translation>
 <translation id="4502566650163919158">Sprawdź teraz</translation>
 <translation id="4505980578794259603">Ostatnio sprawdzano <ph name="TIME" /></translation>

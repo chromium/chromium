@@ -373,6 +373,7 @@
 <translation id="3595252146048399851">同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="3603009562372709545">リンクのURLをコピー</translation>
 <translation id="3607167657931203000">自動入力のデータ</translation>
+<translation id="3608008480985212611">設定を管理するにはログインしてください。</translation>
 <translation id="3609785682760573515">同期しています...</translation>
 <translation id="3631443864840848029">このサイトの現在のパスワードを保存していることをご確認ください。</translation>
 <translation id="3638472932233958418">ウェブページのプリロード</translation>
@@ -540,6 +541,7 @@
 <translation id="48274138579728272">既読にする</translation>
 <translation id="4833686396768033263">最近使ったタブは使用できません</translation>
 <translation id="4833786495304741580">使用統計情報や障害レポートを Google に自動送信します。</translation>
+<translation id="4834499902900503484">Chrome にログインすると、保存したパスワードが Google アカウントに保存されます。この機能をオフにするには、<ph name="BEGIN_LINK" />[設定] に移動<ph name="END_LINK" />します。</translation>
 <translation id="4840495572919996524">ブックマーク、履歴、パスワードなどの設定は Google アカウントと同期されなくなります。</translation>
 <translation id="4844899002472726590">関心のあるトピックの表示と編集</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> のパスワードを削除しますか？</translation>
@@ -683,6 +685,7 @@
 <translation id="5899314093904173337">近くのユーザーと共有するには、カメラまたは QR スキャンアプリで、この QR コードをスキャンしてもらいます</translation>
 <translation id="5911030830365207728">Google 翻訳</translation>
 <translation id="5913600720976431809">ページ翻訳のオプション</translation>
+<translation id="5922999516621365983">ここにタブをドラッグして固定します。</translation>
 <translation id="5938160824633642847">デバイスの空き容量が少なくなっています。空き容量を増やしてからもう一度お試しください。</translation>
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
 <translation id="5951816930277761335">リンクを共有します</translation>

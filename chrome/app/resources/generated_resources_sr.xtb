@@ -167,7 +167,6 @@
 <translation id="114721135501989771">Паметне Google функције</translation>
 <translation id="1147322039136785890">Сада је на реду <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Да бисте затражили приступ, обратите се администратору овог уређаја.</translation>
-<translation id="1148063863818152153">EID уређаја</translation>
 <translation id="1148624853678088576">Спремни сте!</translation>
 <translation id="1149401351239820326">Месец истека</translation>
 <translation id="1149483087970735785">Технологија за помоћ особама са инвалидитетом</translation>
@@ -1211,7 +1210,6 @@
 <translation id="2045969484888636535">Настави са блокирањем колачића</translation>
 <translation id="204622017488417136">Уређај ће бити враћен на претходно инсталирану верзију Chrome-а. Сви кориснички налози и локални подаци ће бити уклоњени. Ова радња не може да се опозове.</translation>
 <translation id="2046702855113914483">Рамен</translation>
-<translation id="2046770133657639077">Прикажи EID уређаја</translation>
 <translation id="204706822916043810">Проверава се виртуелна машина</translation>
 <translation id="2048182445208425546">Приступ мрежном саобраћају</translation>
 <translation id="2048554637254265991">Грешка при покретању менаџера контејнера. Пробајте поново.</translation>
@@ -1774,7 +1772,6 @@
 <translation id="2502719318159902502">Комплетан приступ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Екран #}one{Екран #}few{Екран #}other{Екран #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> од <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID уређаја је <ph name="EID_NUMBER" />. Представник корисничке подршке може да користи EID број да би вам помогао да активирате услугу.</translation>
 <translation id="250704661983564564">Распоред приказа</translation>
 <translation id="2507253002925770350">Тикет је уклоњен</translation>
 <translation id="2508428939232952663">Налог Google Play продавнице</translation>
@@ -6627,6 +6624,7 @@
 <translation id="6903022061658753260">Подаци ће се синхронизовати у свим Chrome прегледачима у којима сте укључили синхронизацију за овај налог. Опције синхронизовања Chrome ОС-а потражите у <ph name="LINK_BEGIN" />подешавањима Chrome OS-а<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Отвори све (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Укључи синхронизацију</translation>
+<translation id="6903916726032521638">Потражите <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Опозови приступ датотекама</translation>
 <translation id="6904655473976120856">Притисните дугме за апликацију да бисте изашли</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Да би заштитио лозинке, Google менаџер лозинки се закључава после 1 минута неактивности}one{Да би заштитио лозинке, Google менаџер лозинки се закључава после {NUM_MINS} минута неактивности}few{Да би заштитио лозинке, Google менаџер лозинки се закључава после {NUM_MINS} минута неактивности}other{Да би заштитио лозинке, Google менаџер лозинки се закључава после {NUM_MINS} минута неактивности}}</translation>
@@ -7900,7 +7898,6 @@
 <translation id="8044899503464538266">Споро</translation>
 <translation id="8045253504249021590">Синхронизација је заустављена преко Google контролне табле.</translation>
 <translation id="8045923671629973368">Унесите ИД апликације или URL веб-продавнице</translation>
-<translation id="8046132381940444654">Представник корисничке подршке може да користи овај EID број да би вам помогао да активирате услугу</translation>
 <translation id="8047242494569930800">Премести на Google налог</translation>
 <translation id="804786196054284061">Уговор о лиценцирању са крајњим корисником</translation>
 <translation id="8048728378294435881">Правите резервне копије садржаја и користите га на било ком уређају</translation>
@@ -8703,6 +8700,7 @@
 <translation id="8762886931014513155">Треба да ажурирате <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">USB уређај</translation>
 <translation id="8766796754185931010">Котоери</translation>
+<translation id="8767069439158587614">Приказује све претраге за <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Аутоматски ажурирај Chrome за све кориснике</translation>
 <translation id="8770406935328356739">Основни директоријум додатка</translation>
 <translation id="8771300903067484968">Позадина почетне странице је ресетована на подразумевану позадину.</translation>

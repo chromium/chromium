@@ -167,7 +167,6 @@
 <translation id="114721135501989771">在 Chrome 中畅享 Google 的智能技术</translation>
 <translation id="1147322039136785890">现在轮到<ph name="SUPERVISED_USER_NAME" />使用了</translation>
 <translation id="1147991416141538220">要申请访问权限，请与此设备的管理员联系。</translation>
-<translation id="1148063863818152153">您的设备 EID</translation>
 <translation id="1148624853678088576">搞定了！</translation>
 <translation id="1149401351239820326">过期月份</translation>
 <translation id="1149483087970735785">辅助技术</translation>
@@ -1205,7 +1204,6 @@
 <translation id="2045969484888636535">继续拦截 Cookie</translation>
 <translation id="204622017488417136">您的设备将还原到之前安装的 Chrome 版本。所有用户帐号和本地数据都将移除。此操作无法撤消。</translation>
 <translation id="2046702855113914483">拉面</translation>
-<translation id="2046770133657639077">显示设备 EID</translation>
 <translation id="204706822916043810">正在检查虚拟机</translation>
 <translation id="2048182445208425546">获取您的网络流量数据</translation>
 <translation id="2048554637254265991">启动容器管理器时出错。请重试。</translation>
@@ -1768,7 +1766,6 @@
 <translation id="2502719318159902502">完全访问权限</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{屏幕 #}other{屏幕 #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />，共 <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">您的设备 EID 为 <ph name="EID_NUMBER" />。客户服务代表可使用此 EID 号码帮助您激活服务。</translation>
 <translation id="250704661983564564">显示屏排列方式</translation>
 <translation id="2507253002925770350">票据已移除</translation>
 <translation id="2508428939232952663">Google Play 商店帐号</translation>
@@ -7884,7 +7881,6 @@
 <translation id="8044899503464538266">慢</translation>
 <translation id="8045253504249021590">已通过 Google 信息中心阻止同步。</translation>
 <translation id="8045923671629973368">输入应用 ID 或网上应用店网址</translation>
-<translation id="8046132381940444654">客户服务代表可使用此 EID 号码帮助您激活服务</translation>
 <translation id="8047242494569930800">移至 Google 帐号</translation>
 <translation id="804786196054284061">最终用户许可协议</translation>
 <translation id="8048728378294435881">备份您的资料，以便在任意设备上使用</translation>

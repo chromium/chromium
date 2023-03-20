@@ -387,6 +387,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1822540298136254167">Svetainės, kuriose lankotės, ir jose praleidžiamas laikas</translation>
 <translation id="1824402189105105503">Aštuntas ritinėlis</translation>
 <translation id="1826516787628120939">Tikrinama</translation>
+<translation id="1826968372364864056">Valyti formą</translation>
 <translation id="1828959155404624835">Automobilių nuoma</translation>
 <translation id="1834321415901700177">Šioje svetainėje yra kenkėjiškų programų</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
@@ -1970,6 +1971,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5786044859038896871">Ar norite, kad būtų įvesta jūsų kredito kortelės informacija?</translation>
 <translation id="578633867165174378">„Chrome“ aptiko, kad slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Rekomenduojame dabar pakeisti šį slaptažodį.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Nėra}=1{vienos paskyros prisijungimo duomenys}one{# paskyros prisijungimo duomenys}few{# paskyrų prisijungimo duomenys}many{# paskyros prisijungimo duomenys}other{# paskyrų prisijungimo duomenys}}</translation>
 <translation id="580241730938216256">Pradėti atnaujinimą</translation>
 <translation id="5803412860119678065">Ar norite, kad būtų įvesta <ph name="CARD_DETAIL" /> informacija?</translation>
 <translation id="5804241973901381774">Leidimai</translation>
@@ -2525,6 +2527,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7201591969684833065">Administratorius gali peržiūrėti:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad būtų atidarytas naujas privataus naršymo inkognito skirtukas</translation>
 <translation id="7203375778433816396">Nustatyti „Chrome“ kaip numatytąją sistemos naršyklę</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Nėra}=1{Vienas „passkey“}one{# „passkey“}few{# „passkey“}many{# „passkey“}other{# „passkey“}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> nesilaikoma saugos standartų.</translation>
 <translation id="7210993021468939304">„Linux“ veikla sudėtiniame rodinyje; ir gali įdiegti ir paleisti „Linux“ programas sudėtiniame rodinyje</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /> apie šią problemą.</translation>

@@ -167,7 +167,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="114721135501989771">Lortu Google eginbide aurreratuak Chrome-n</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> erabiltzailearen txanda da orain</translation>
 <translation id="1147991416141538220">Erabiltzeko baimena eskatzeko, jarri gailuaren administratzailearekin harremanetan.</translation>
-<translation id="1148063863818152153">Gailuaren EID zenbakia</translation>
 <translation id="1148624853678088576">Prest zaude!</translation>
 <translation id="1149401351239820326">Iraungitze-hilabetea</translation>
 <translation id="1149483087970735785">Laguntza-teknologiak</translation>
@@ -1208,7 +1207,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2045969484888636535">Jarraitu cookieak blokeatzen</translation>
 <translation id="204622017488417136">Gailua aurrez instalatutako Chrome bertsiora itzuliko da. Erabiltzaile-kontu eta tokiko datu guztiak kendu egingo dira. Ekintza hau ezin da desegin.</translation>
 <translation id="2046702855113914483">Ramen-a</translation>
-<translation id="2046770133657639077">Erakutsi gailuaren EID zenbakia</translation>
 <translation id="204706822916043810">Makina birtuala egiaztatzen</translation>
 <translation id="2048182445208425546">Atzitu sareko trafikoa</translation>
 <translation id="2048554637254265991">Errore bat gertatu da edukiontzi-kudeatzailea abiaraztean. Saiatu berriro.</translation>
@@ -1769,7 +1767,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2502719318159902502">Sarbide osoa</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{# pantaila}other{# pantaila}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />/<ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807"><ph name="EID_NUMBER" /> da gailuaren EID zenbakia. Bezeroarentzako laguntza-zerbitzuko ordezkari batek zerbitzua aktibatzen laguntzeko erabil dezake zenbaki hori.</translation>
 <translation id="250704661983564564">Pantailaren antolaketa</translation>
 <translation id="2507253002925770350">Kendu da zerbitzu-eskaera</translation>
 <translation id="2508428939232952663">Google Play Store kontua</translation>
@@ -7869,7 +7866,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8044899503464538266">Motela</translation>
 <translation id="8045253504249021590">Sinkronizazioa gelditu egin da Google-ren Panela atalean.</translation>
 <translation id="8045923671629973368">Idatzi aplikazioaren IDa edo sareko dendaren URLa</translation>
-<translation id="8046132381940444654">Bezeroarentzako laguntza-zerbitzuko ordezkari batek zerbitzua aktibatzen laguntzeko erabil dezake zenbaki hori</translation>
 <translation id="8047242494569930800">Eraman Google-ko kontura</translation>
 <translation id="804786196054284061">Azken erabiltzailearen lizentzia-kontratua</translation>
 <translation id="8048728378294435881">Egin zure gauzen babeskopiak, edozein gailutan erabil ditzazun</translation>

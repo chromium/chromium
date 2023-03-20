@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chrome-এ Google স্মার্ট পান</translation>
 <translation id="1147322039136785890">এবার <ph name="SUPERVISED_USER_NAME" /> ব্যবহার করতে পারবেন</translation>
 <translation id="1147991416141538220">অ্যাক্সেস করার অনুমতি চাইতে এই ডিভাইস অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
-<translation id="1148063863818152153">আপনার ডিভাইসের EID</translation>
 <translation id="1148624853678088576">আপনার সমস্ত সেট আছে!</translation>
 <translation id="1149401351239820326">মেয়াদ শেষের মাস</translation>
 <translation id="1149483087970735785">সহায়ক প্রযুক্তি</translation>
@@ -1225,7 +1224,6 @@
 <translation id="2045969484888636535">কুকিজ অবরুদ্ধ করা চালিয়ে যান</translation>
 <translation id="204622017488417136">আপনার ডিভাইসটি পূর্বে ইনস্টল করা Chrome-এর ভার্সনে নিয়ে যাওয়া হবে। সকল ব্যবহারকারীর অ্যাকাউন্ট এবং স্থানীয় ডেটা মুছে ফেলা হবে। এটিকে পূর্বাবস্থায় ফেরানো যাবে না।</translation>
 <translation id="2046702855113914483">রামেন</translation>
-<translation id="2046770133657639077">ডিভাইসের EID দেখুন</translation>
 <translation id="204706822916043810">ভার্চুয়াল মেশিন চেক করে দেখা হচ্ছে</translation>
 <translation id="2048182445208425546">আপনার নেটওয়ার্ক ট্রাফিক অ্যাক্সেস করে</translation>
 <translation id="2048554637254265991">কন্টেনার ম্যানেজার শুরু হওয়ার সময় কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
@@ -1791,7 +1789,6 @@
 <translation id="2502719318159902502">সম্পূর্ণ অ্যাক্সেস</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{স্ক্রিন #}one{স্ক্রিন #}other{স্ক্রিন #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />-এর <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">আপনার ডিভাইসের EID হল <ph name="EID_NUMBER" />। গ্রাহক পরিষেবা প্রতিনিধি এই EID নম্বর ব্যবহার করে পরিষেবা চালু করার ব্যাপারে আপনাকে সাহায্য করতে পারেন।</translation>
 <translation id="250704661983564564">ডিসপ্লে সেট করা</translation>
 <translation id="2507253002925770350">টিকিট সরানো হয়েছে</translation>
 <translation id="2508428939232952663">Google Play Store অ্যাকাউন্ট</translation>
@@ -7917,7 +7914,6 @@
 <translation id="8044899503464538266">মন্থর</translation>
 <translation id="8045253504249021590">Google ড্যাশবোর্ড মারফত সিঙ্ক থামানো হয়েছে।</translation>
 <translation id="8045923671629973368">অ্যাপ্লিকেশান আইডি বা ওয়েবস্টোরের URL লিখুন</translation>
-<translation id="8046132381940444654">কাস্টমার সার্ভিস প্রতিনিধি এই EID নম্বর ব্যবহার করে পরিষেবা চালু করার ব্যাপারে আপনাকে সাহায্য করতে পারেন</translation>
 <translation id="8047242494569930800">Google অ্যাকাউন্টে সরান</translation>
 <translation id="804786196054284061">এন্ড ইউজার লাইসেন্স এগ্রিমেন্ট</translation>
 <translation id="8048728378294435881">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন</translation>

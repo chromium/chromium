@@ -129,6 +129,7 @@
 <translation id="1576623706766186887">Уменьшить, когда включена лупа</translation>
 <translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
+<translation id="1604857178818051494">Приостановить воспроизведение</translation>
 <translation id="1610778689852195798">"Отменить"</translation>
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1618835956950524778">Выделить кнопку запуска на панели запуска</translation>
@@ -190,6 +191,7 @@
 <translation id="1862380676329487333">Обновить и выйти</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
 <translation id="1869497990620230175">Быстрый доступ к файлам</translation>
+<translation id="1871023081802165724">Воспроизвести медиаконтент</translation>
 <translation id="1879018240766558464">Окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
@@ -241,6 +243,7 @@
 <translation id="2132302418721800944">Запись видео со всего экрана</translation>
 <translation id="2135456203358955318">Закрепленная лупа</translation>
 <translation id="2148716181193084225">Сегодня</translation>
+<translation id="2149229036084364364">Перейти к предыдущему треку</translation>
 <translation id="2161132820593978283">Используйте автомасштабирование, чтобы во время видеовстреч оставаться в центре экрана. Эту функцию можно включить в быстрых настройках.</translation>
 <translation id="2170530631236737939">Чтобы выйти из режима обзора, проведите тремя пальцами вниз.</translation>
 <translation id="2185166372312820725">Перейти на предыдущую вкладку</translation>
@@ -370,6 +373,7 @@
 <translation id="2865888419503095837">Информация о сети</translation>
 <translation id="2872353916818027657">Переключить основной монитор</translation>
 <translation id="2872961005593481000">Завершить работу</translation>
+<translation id="2876338922445400217">Увеличить масштаб</translation>
 <translation id="2878884018241093801">Недавних окон нет.</translation>
 <translation id="2885950158625301909">Подробнее</translation>
 <translation id="2891209721153296020">"Отменить выбор"</translation>
@@ -394,6 +398,7 @@
 <translation id="3009178788565917040">Выход</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="301282384882049174">Доступ предоставлен администратором.</translation>
+<translation id="3018135054368884502">Перемотать вперед</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Объединить с рабочим столом <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Открытие файлов</translation>
@@ -497,6 +502,7 @@
 <translation id="353086728817903341">Подключенных устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Приложения на панели запуска</translation>
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
+<translation id="3546121235777416274">Переключиться на окно "Картинка в картинке"</translation>
 <translation id="3552189655002856821">Wi-Fi отключен</translation>
 <translation id="3554637740840164787">Объект "<ph name="ITEM_TITLE" />" закреплен</translation>
 <translation id="3558768885091059911">Разрешить доступ к камере и микрофону?</translation>
@@ -576,6 +582,7 @@
 <translation id="3891340733213178823">Чтобы выйти, дважды нажмите Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосовое сопровождение)</translation>
 <translation id="3897533311200664389">Введите запрос</translation>
+<translation id="3898464793473355515">Повернуть экран на 90 градусов по часовой стрелке</translation>
 <translation id="3899995891769452915">Голосовой ввод</translation>
 <translation id="3900355044994618856">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Подключение к <ph name="NAME" /></translation>
@@ -745,6 +752,7 @@
 <translation id="4702647871202761252">Экран конфиденциальности отключен</translation>
 <translation id="4706121060329443414">Повторное скачивание запустится позже. Сейчас запись речи будет передана для обработки в Google.</translation>
 <translation id="470644585772471629">Инверсия цветов</translation>
+<translation id="4708065238214351979">Увеличить яркость подсветки клавиатуры</translation>
 <translation id="4717575069099566988">Кабель USB-C не поддерживает интерфейс USB4. Производительность устройства может быть ограничена.</translation>
 <translation id="4730374152663651037">ЧАСТО ИСПОЛЬЗУЕМЫЕ</translation>
 <translation id="4731797938093519117">Родительский доступ</translation>
@@ -771,6 +779,7 @@
 <translation id="4849058404725798627">Выделять элементы, выбранные с помощью клавиатуры</translation>
 <translation id="485592688953820832">Отсутствие действий (пауза)</translation>
 <translation id="485634149294284819">Открыть меню клавиатуры</translation>
+<translation id="485806788160414322">Начать или приостановить воспроизведение</translation>
 <translation id="4860284199500934869">Чтобы скачать файл <ph name="FILENAME" />, проверьте подключение к сети.</translation>
 <translation id="4864369630010738180">Вход в систему...</translation>
 <translation id="4864648187878336334">Рабочий стол 15</translation>
@@ -790,6 +799,7 @@
 <translation id="492453977506755176">Клавиша режима съемки</translation>
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="4929163402621253029">Вы говорите? У вас выключен звук. Подробнее</translation>
+<translation id="493076006037866439">Уменьшить масштаб</translation>
 <translation id="4936329710968938986">Доступно всем: отключено</translation>
 <translation id="4938176435186993759">Скрыть все подсказки</translation>
 <translation id="4945196315133970626">Отключить уведомления</translation>
@@ -798,6 +808,7 @@
 <translation id="4952936045814352993">Функция "Найти телефон" недоступна, так как отключены сигналы оповещений</translation>
 <translation id="4960324571663582548">Согласно требованиям <ph name="MANAGER" /> вам нужно выполнить откат на устройстве <ph name="DEVICE_TYPE" />. Настройки устройства будут сброшены, а все данные – удалены.</translation>
 <translation id="4961318399572185831">Трансляция экрана</translation>
+<translation id="4966431234408005599">Увеличить громкость</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> мин. <ph name="SECONDS" /> сек.</translation>
 <translation id="4975771730019223894">Число уведомлений на значке приложения</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -821,6 +832,7 @@
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
+<translation id="5092436659250499817">Включить/отключить подсветку клавиатуры</translation>
 <translation id="509790653408515442">Приложения, которые вы транслируете с телефона, появляются здесь.</translation>
 <translation id="5098537242461068432">Рабочий стол и окна открыты повторно</translation>
 <translation id="5104236669533825617">Не удалось создать скринкаст</translation>
@@ -845,6 +857,7 @@
 <translation id="5208059991603368177">Включено</translation>
 <translation id="5216991270656129561">Выкл. до <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Выйти</translation>
+<translation id="5229343007215035173">Включить/отключить экран конфиденциальности</translation>
 <translation id="5234764350956374838">Закрыть</translation>
 <translation id="523505283826916779">Настройки специальных возможностей</translation>
 <translation id="5245201184978705914">Не удается создать расшифровку.</translation>
@@ -958,6 +971,7 @@
 <translation id="576341972084747908">Скачивание опасного файла <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Режим отключен.</translation>
 <translation id="576453121877257266">Ночная подсветка включена</translation>
+<translation id="5764569119212455782">Переключиться на последний выбранный язык</translation>
 <translation id="5769373120130404283">Экран конфиденциальности</translation>
 <translation id="5773950591113557721">Доступ будет предоставлен приложению "<ph name="APP_NAME" />", а также всем приложениям и сайтам с разрешениями "Камера" и "Микрофон".</translation>
 <translation id="5774295353725270860">Открыть приложение "Файлы"</translation>
@@ -969,6 +983,7 @@
 <translation id="5805809050170488595">Нажмите, чтобы активировать <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Настройки подключенных устройств</translation>
 <translation id="5837036133683224804">Остановить трансляцию <ph name="ROUTE_TITLE" /> на устройство "<ph name="RECEIVER_NAME" />"</translation>
+<translation id="5841296711770970362">Перейти к следующему треку</translation>
 <translation id="584525477304726060">Чтобы развернуть окно, удерживайте его</translation>
 <translation id="5856638668464565213">Сеть "<ph name="NETWORK_NAME" />" не активирована.</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
@@ -1104,6 +1119,7 @@
 <translation id="6497418457565568043">Режим "Не беспокоить" включен</translation>
 <translation id="6500896621837555595">Обновить</translation>
 <translation id="6501401484702599040">Трансляция содержимого экрана: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507618042428827377">Переключиться на следующий доступный способ ввода</translation>
 <translation id="6508923215158854599">Убедитесь, что устройства Chromebook и Chromecast подключены к одной сети Wi-Fi.</translation>
 <translation id="6515727200518652613">Попытка переподключения после потери связи с камерой.</translation>
 <translation id="6520517963145875092">Выберите окно для снимка</translation>
@@ -1386,6 +1402,7 @@
 <translation id="793716872548410480">Чтобы посмотреть содержимое буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. В буфере сохраняются пять последних скопированных объектов.</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7944023924886109030">Посмотреть все мероприятия на сегодня</translation>
+<translation id="7951630946012935453">Уменьшить яркость подсветки клавиатуры</translation>
 <translation id="7963992254934562106">С <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбрать папку</translation>
 <translation id="797512352675305461">Включить или отключить полноэкранную лупу</translation>
@@ -1517,10 +1534,12 @@
 <translation id="8598235756057743477">Упорядочить приложения по названию или цвету</translation>
 <translation id="8609384513243082612">Открыть новую вкладку</translation>
 <translation id="8614517853887502247">Уведомления "<ph name="APP_1_TITLE" />" и "<ph name="APP_2_TITLE" />" скрыты, потому что включен режим безопасного просмотра.</translation>
+<translation id="8619138598101195078">Уменьшить громкость</translation>
 <translation id="8627191004499078455">Подключено устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="8630991711272431708">Запретить доступ к камере</translation>
 <translation id="8631727435199967028">Настройки специальных возможностей</translation>
 <translation id="8637598503828012618">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
+<translation id="8638637208069328956">Включить/отключить микрофон</translation>
 <translation id="8639760480004882931">Батарея заряжена на <ph name="PERCENTAGE" /></translation>
 <translation id="8641805545866562088">Список профилей обновляется. Подождите несколько минут.</translation>
 <translation id="8646417893960517480">Таймер на <ph name="TOTAL_TIME" /></translation>
@@ -1539,6 +1558,7 @@
 <translation id="8717459106217102612">Выбрать предыдущее слово или букву</translation>
 <translation id="8721053961083920564">Включить или выключить звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Запись всего экрана</translation>
+<translation id="8725214031272624704">Показать доступные способы ввода</translation>
 <translation id="8731487213223706745">Окончание: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
 <translation id="8735678380411481005">Цвет подсветки клавиатуры</translation>

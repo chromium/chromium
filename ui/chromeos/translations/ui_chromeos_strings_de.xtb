@@ -940,6 +940,7 @@
 <translation id="8492972329130824181">Heimnetzwerk ist nicht verfügbar. Mobiles Daten-Roaming muss aktiviert sein, um eine Verbindung herzustellen.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> Elemente werden extrahiert...</translation>
 <translation id="8502913769543567768">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Nach Geräteeinrichtung aktivieren, Von deinem Administrator verwaltet</translation>
+<translation id="8512483403832814140">Beliebiger Zeitraum</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Französisch (Frankreich)</translation>
 <translation id="8540608333167683902">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>

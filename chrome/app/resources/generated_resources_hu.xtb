@@ -169,7 +169,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="114721135501989771">Google-funkciók a Chrome-ban</translation>
 <translation id="1147322039136785890">Most <ph name="SUPERVISED_USER_NAME" /> jön</translation>
 <translation id="1147991416141538220">Hozzáférés kéréséhez forduljon az eszköz adminisztrátorához.</translation>
-<translation id="1148063863818152153">Az eszköz EID-száma</translation>
 <translation id="1148624853678088576">Máris elkészült!</translation>
 <translation id="1149401351239820326">Lejárat hónapja</translation>
 <translation id="1149483087970735785">Segítő technológia</translation>
@@ -1223,7 +1222,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2045969484888636535">Cookie-k tiltásának folytatása</translation>
 <translation id="204622017488417136">Eszköze visszatér a Chrome korábban telepített példányához. A rendszer minden felhasználói fiókot és helyi adatot eltávolít. A műveletet nem lehet visszavonni.</translation>
 <translation id="2046702855113914483">Rámen</translation>
-<translation id="2046770133657639077">Eszköz EID-számának megjelenítése</translation>
 <translation id="204706822916043810">Virtuális gép ellenőrzése</translation>
 <translation id="2048182445208425546">A hálózati forgalom elérése</translation>
 <translation id="2048554637254265991">Hiba történt a tárolókezelő indításakor. Próbálja újra.</translation>
@@ -1789,7 +1787,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2502719318159902502">Teljes hozzáférés</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#. képernyő}other{#. képernyő}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" />, összesen: <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Eszköze EID-száma a következő: <ph name="EID_NUMBER" />. Az ügyfélszolgálati munkatárs az EID-szám használatával segíthet a szolgáltatás aktiválásában:</translation>
 <translation id="250704661983564564">Kijelzőelrendezés</translation>
 <translation id="2507253002925770350">Jegy eltávolítva</translation>
 <translation id="2508428939232952663">Google Play Áruház-fiók</translation>
@@ -7913,7 +7910,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8044899503464538266">Lassú</translation>
 <translation id="8045253504249021590">A szinkronizálást a Google Irányítópulton keresztül leállították.</translation>
 <translation id="8045923671629973368">Adja meg az alkalmazás azonosítóját vagy internetes áruházi URL-jét</translation>
-<translation id="8046132381940444654">Az ügyfélszolgálati munkatárs ennek az EID-számnak a használatával segíthet a szolgáltatás aktiválásában</translation>
 <translation id="8047242494569930800">Áthelyezés Google-fiókba</translation>
 <translation id="804786196054284061">Végfelhasználói licencszerződés</translation>
 <translation id="8048728378294435881">Biztonsági másolatot készíthet adatairól, és bármely eszközön használatja őket.</translation>

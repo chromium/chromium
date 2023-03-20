@@ -169,7 +169,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="114721135501989771">Google'i nutikus Chrome'is</translation>
 <translation id="1147322039136785890">Nüüd on kasutaja <ph name="SUPERVISED_USER_NAME" /> kord</translation>
 <translation id="1147991416141538220">Juurdepääsu palumiseks võtke ühendust selle seadme administraatoriga.</translation>
-<translation id="1148063863818152153">Teie seadme EID</translation>
 <translation id="1148624853678088576">Teil on kõik seadistatud!</translation>
 <translation id="1149401351239820326">Aegumiskuu</translation>
 <translation id="1149483087970735785">Tugitehnoloogia</translation>
@@ -1215,7 +1214,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2045969484888636535">Jätka küpsiste blokeerimist</translation>
 <translation id="204622017488417136">Teie seadmes taastatakse varem installitud Chrome'i versioon. Kõik kasutajakontod ja kohalikud andmed kustutatakse. Seda ei saa tagasi võtta.</translation>
 <translation id="2046702855113914483">Rāmen</translation>
-<translation id="2046770133657639077">Kuva seadme EID</translation>
 <translation id="204706822916043810">Virtuaalmasina kontrollimine</translation>
 <translation id="2048182445208425546">Juurdepääs võrguliiklusele</translation>
 <translation id="2048554637254265991">Viga konteineri halduri käivitamisel. Proovige uuesti.</translation>
@@ -1781,7 +1779,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2502719318159902502">Täielik juurdepääs</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{#. ekraan}other{#. ekraan}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Teie seadme EID on <ph name="EID_NUMBER" />. Klienditeeninduse esindaja saab EID-numbrit kasutada, et aidata teil teenus aktiveerida.</translation>
 <translation id="250704661983564564">Kuva paigutus</translation>
 <translation id="2507253002925770350">Pilet eemaldati</translation>
 <translation id="2508428939232952663">Google Play poe konto</translation>
@@ -7902,7 +7899,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8044899503464538266">Aeglane</translation>
 <translation id="8045253504249021590">Sünkroonimine on Google Dashboardi kaudu peatatud.</translation>
 <translation id="8045923671629973368">Sisestage rakenduse ID või veebipoe URL</translation>
-<translation id="8046132381940444654">Klienditeeninduse esindaja saab seda EID-numbrit kasutada, et aidata teil teenus aktiveerida</translation>
 <translation id="8047242494569930800">Teisalda Google'i kontole</translation>
 <translation id="804786196054284061">Lõppkasutaja litsentsileping</translation>
 <translation id="8048728378294435881">Varundage oma andmed ja kasutage neid ükskõik millises seadmes</translation>

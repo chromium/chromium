@@ -167,7 +167,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="114721135501989771">Chromedagi Google texnologiyalari</translation>
 <translation id="1147322039136785890">Qurilmani farzandingizga (<ph name="SUPERVISED_USER_NAME" />) bering</translation>
 <translation id="1147991416141538220">Ruxsat olish uchun bu qurilma administratoriga murojaat qiling.</translation>
-<translation id="1148063863818152153">Qurilmangiz EID raqami</translation>
 <translation id="1148624853678088576">Tayyor!</translation>
 <translation id="1149401351239820326">Muddati tugaydigan oy</translation>
 <translation id="1149483087970735785">Yordamchi texnologiyalar</translation>
@@ -1211,7 +1210,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2045969484888636535">Cookie-fayllari saqlanishini doim bloklash</translation>
 <translation id="204622017488417136">Qurilmangiz Chrome’ning avvalgi versiyasiga qaytariladi. Barcha foydalanuvchilar hisoblari va mahalliy ma’lumotlar o‘chib ketadi. Buni ortga qaytarib bo‘lmaydi.</translation>
 <translation id="2046702855113914483">Ramyon</translation>
-<translation id="2046770133657639077">Qurilma EID raqamini chiqarish</translation>
 <translation id="204706822916043810">Virtual mashina tekshirilmoqda</translation>
 <translation id="2048182445208425546">Tarmoq trafigiga ruxsat</translation>
 <translation id="2048554637254265991">Konteynerlar menejeri ishga tushmadi. Qayta urining.</translation>
@@ -1777,7 +1775,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2502719318159902502">Toʻliq ruxsat</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekran #}other{Ekran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Qurilmangiz EID raqami: <ph name="EID_NUMBER" />. Mijozlarga xizmat koʻrsatish xodimi sizga xizmatni faollashtirishda yordam berish uchun EID raqamdan foydalanishi mumkin.</translation>
 <translation id="250704661983564564">Displey joylashuv tartibi</translation>
 <translation id="2507253002925770350">Chipta olib tashlandi</translation>
 <translation id="2508428939232952663">Google Play Market hisobi</translation>
@@ -4235,6 +4232,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />’dan chiqish</translation>
 <translation id="4711638718396952945">Dastlabki sozlamalarni tiklash</translation>
 <translation id="4713409221649555176">Barcha oynalar yopilganda oʻchirilsin</translation>
+<translation id="4715631922189108923">Foydalanuvchi nomini tahrirlash</translation>
 <translation id="47158868804223727">Guruh nomini bosib, uni yoyish yoki yigʻish mumkin</translation>
 <translation id="4716483597559580346">Xavfsizlikni oshirish uchun qurilmani zavod sozlamalariga qaytaring</translation>
 <translation id="471759229191973607">Mavzuni almashtirish</translation>
@@ -7898,7 +7896,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8044899503464538266">Sekin</translation>
 <translation id="8045253504249021590">Sinxronizatsiya Google Shaxsiy kabinet orqali to‘xtatildi.</translation>
 <translation id="8045923671629973368">Dastur identifikatori yoki internet-do‘kon URL manzilini kiriting</translation>
-<translation id="8046132381940444654">Mijozlarga xizmat koʻrsatish xodimi sizga xizmatni faollashtirishda yordam berish uchun bu EID raqamdan foydalanishi mumkin</translation>
 <translation id="8047242494569930800">Google hisobingizga koʻchirilsinmi?</translation>
 <translation id="804786196054284061">Yakuniy foydalanuvchi litsenziyasi kelishuvi</translation>
 <translation id="8048728378294435881">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching</translation>
@@ -8082,6 +8079,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8203732864715032075">Bu kompyuter xabarlashuv uchun birlamchi bo‘lishi uchun sizga bildirishnoma yuborildi. <ph name="LINK_BEGIN" />Batafsil axborot<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Ekran va tashqi qurilmalaringiz qayta ishga tushirilishi mumkin. Bu oʻzgarish kuchga kirishi uchun tashqi qurilmalarni uzib, qayta ishga tushiring.</translation>
 <translation id="820568752112382238">Eng koʻp ochilgan saytlar</translation>
+<translation id="8206267832882844324">Qaydni tahrirlash</translation>
 <translation id="8206745257863499010">Blyuz</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8207404892907560325">Kodni tanlash</translation>

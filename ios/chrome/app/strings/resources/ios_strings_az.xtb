@@ -374,6 +374,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3595252146048399851">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="3603009562372709545">Link URL kopyalayın</translation>
 <translation id="3607167657931203000">Datanı avtomatik doldurun</translation>
+<translation id="3608008480985212611">Tərcihləri idarə etmək üçün daxil olun.</translation>
 <translation id="3609785682760573515">Sinxronlaşdırılır...</translation>
 <translation id="3631443864840848029">Bu sayt üçün cari parolunuzu saxladığınıza əmin olun.</translation>
 <translation id="3638472932233958418">Əvvəldən yüklənilən Veb səhifələr</translation>
@@ -541,6 +542,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="48274138579728272">Oxunmuş kimi qeyd edin</translation>
 <translation id="4833686396768033263">Son tablar əlçatan deyil</translation>
 <translation id="4833786495304741580">İstifadə statistikası və xəta raportlarını avtomatik Google'a göndərir.</translation>
+<translation id="4834499902900503484">Chrome-a daxil olduqda yadda saxlanmış parollar Google Hesabında qeyd olunacaq. Deaktiv etmək üçün <ph name="BEGIN_LINK" />ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="4840495572919996524">Əlfəcin, tarixçə, parol və sair artıq Google Hesabınıza sinxronizasiya olunmayacaq</translation>
 <translation id="4844899002472726590">Maraqlandığınız mövzulara baxın və redaktə edin</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> parolu silinsin?</translation>
@@ -684,6 +686,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5899314093904173337">Yaxınlıqdakı insanlarla paylaşmaq üçün onlara bu QR kodu öz kameraları və ya QR skaner tətbiqi ilə skanlamaq icazəsi verin</translation>
 <translation id="5911030830365207728">Google Tərcümə</translation>
 <translation id="5913600720976431809">Səhifəni tərcümə etmək seçimləri</translation>
+<translation id="5922999516621365983">Tabı buraya sürüşdürərək bərkidin.</translation>
 <translation id="5938160824633642847">Cihaz doludur. Yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="5948291296578561264">Bu fotoları foto kitabxanada saxlamağa icazə verir.</translation>
 <translation id="5951816930277761335">Keçidi paylaşın</translation>

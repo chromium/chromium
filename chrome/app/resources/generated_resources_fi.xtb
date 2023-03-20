@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Googlen älykkäitä ratkaisuja Chromeen</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> voi nyt ottaa ohjat</translation>
 <translation id="1147991416141538220">Jos haluat pyytää käyttöoikeutta, ota yhteyttä laitteen järjestelmänvalvojaan.</translation>
-<translation id="1148063863818152153">Laitteen EID-numero</translation>
 <translation id="1148624853678088576">Kaikki on valmista!</translation>
 <translation id="1149401351239820326">Viimeinen voimassaolokuukausi</translation>
 <translation id="1149483087970735785">Avustusteknologia</translation>
@@ -1222,7 +1221,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2045969484888636535">Estä evästeet edelleen</translation>
 <translation id="204622017488417136">Laitteeseesi palautetaan aiemmin asennettu Chromen versio. Kaikki käyttäjätilit ja paikalliset tiedot poistetaan. Tätä ei voi kumota.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Näytä laitteen EID-koodi</translation>
 <translation id="204706822916043810">Tarkistetaan virtuaalikonetta</translation>
 <translation id="2048182445208425546">Käyttää verkkoliikennettäsi</translation>
 <translation id="2048554637254265991">Virhe säilönhallinnan käynnistyksessä. Yritä uudelleen.</translation>
@@ -1788,7 +1786,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2502719318159902502">Täydet käyttöoikeudet</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Näyttö #}other{Näyttö #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Laitteesi EID-numero on <ph name="EID_NUMBER" />. Asiakaspalvelija voi käyttää EID-numeroa auttaakseen palvelun aktivoinnissa.</translation>
 <translation id="250704661983564564">Näyttöasettelu</translation>
 <translation id="2507253002925770350">Tukipyyntö poistettu</translation>
 <translation id="2508428939232952663">Google Play Kauppa ‑tili</translation>
@@ -7904,7 +7901,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8044899503464538266">Hidas</translation>
 <translation id="8045253504249021590">Synkronointi on keskeytetty Google Hallintapaneelin kautta.</translation>
 <translation id="8045923671629973368">Anna sovellustunnus tai verkkokaupan URL-osoite.</translation>
-<translation id="8046132381940444654">Asiakaspalvelija voi käyttää EID-numeroa auttaakseen palvelun aktivoinnissa</translation>
 <translation id="8047242494569930800">Siirrä Google-tilille</translation>
 <translation id="804786196054284061">Käyttölupasopimus</translation>
 <translation id="8048728378294435881">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella</translation>

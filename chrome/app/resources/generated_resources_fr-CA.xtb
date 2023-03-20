@@ -167,7 +167,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="114721135501989771">Fonctionnalités intelligentes Google dans Chrome</translation>
 <translation id="1147322039136785890">C'est maintenant au tour de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Pour demander l'accès, communiquez avec l'administrateur de cet appareil.</translation>
-<translation id="1148063863818152153">Le numéro EID de votre appareil</translation>
 <translation id="1148624853678088576">Vous êtes prêt(e)!</translation>
 <translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1149483087970735785">Technologies d'assistance</translation>
@@ -1212,7 +1211,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2045969484888636535">Continuer à bloquer les témoins</translation>
 <translation id="204622017488417136">Votre appareil reviendra à la version précédemment installée de Chrome. La totalité des comptes d'utilisateur et des données locales sera supprimée. Cette opération est définitive.</translation>
 <translation id="2046702855113914483">Nouille ramen</translation>
-<translation id="2046770133657639077">Afficher le numéro EID de l'appareil</translation>
 <translation id="204706822916043810">Vérification de la machine virtuelle en cours…</translation>
 <translation id="2048182445208425546">Accéder à votre trafic réseau</translation>
 <translation id="2048554637254265991">Une erreur s'est produite lors du démarrage du gestionnaire de conteneur. Veuillez réessayer.</translation>
@@ -1775,7 +1773,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2502719318159902502">Accès complet</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Écran #}one{Écran #}other{Écran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Le numéro EID de votre appareil est <ph name="EID_NUMBER" />. Un représentant du service à la clientèle peut utiliser ce numéro EID pour vous aider à activer votre service.</translation>
 <translation id="250704661983564564">Position des écrans</translation>
 <translation id="2507253002925770350">Ticket supprimé</translation>
 <translation id="2508428939232952663">Compte Google Play Store</translation>
@@ -7896,7 +7893,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8044899503464538266">Lent</translation>
 <translation id="8045253504249021590">La synchronisation a été arrêtée dans Google Tableau de bord.</translation>
 <translation id="8045923671629973368">Entrer l'identifiant de l'application ou l'URL de la boutique en ligne</translation>
-<translation id="8046132381940444654">Un représentant du service à la clientèle peut utiliser ce numéro EID pour vous aider à activer votre service</translation>
 <translation id="8047242494569930800">Déplacer vers le compte Google</translation>
 <translation id="804786196054284061">Contrat de licence pour utilisateur final</translation>
 <translation id="8048728378294435881">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>

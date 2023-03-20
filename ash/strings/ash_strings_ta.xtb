@@ -1213,6 +1213,7 @@
 <translation id="7026338066939101231">குறை</translation>
 <translation id="7029814467594812963">அமர்விலிருந்து வெளியேறவும்</translation>
 <translation id="7032161822340700104">ஆறு டெம்ப்ளேட்டுகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க, ஒரு டெம்ப்ளேட்டை அகற்றவும்.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் <ph name="DEVICE_NAME" /> ஐப் பயன்படுத்த விரும்புகிறது. உங்கள் சாதனத்தின் <ph name="DEVICE_NAME" /> சுவிட்ச்சை இயக்கவும்.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google அசிஸ்டண்ட்</translation>
 <translation id="7042322267639375032">நிலைப் பகுதியை சுருக்கும்</translation>
 <translation id="7045033600005038336">டெம்ப்ளேட்டை மாற்றியமைக்கவா?</translation>
@@ -1382,6 +1383,7 @@
 <translation id="793716872548410480">கிளிப்போர்டைப் பார்க்க, <ph name="SHORTCUT_KEY_NAME" /> + V ஆகிய விசைகளைச் சேர்த்து அழுத்தவும். நீங்கள் நகலெடுத்த கடைசி 5 உள்ளடக்கம் கிளிப்போர்டில் சேமிக்கப்பட்டிருக்கும்.</translation>
 <translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7944023924886109030">இன்றைக்கான எல்லா நிகழ்வுகளையும் காட்டும்</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> ஆப்ஸ் உங்கள் <ph name="DEVICE_NAME" /> ஐப் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> இலிருந்து</translation>
 <translation id="7968693143708939792">ஃபோல்டரைத் தேர்ந்தெடு...</translation>
 <translation id="797512352675305461">முழுத்திரை மேக்னிஃபயரை இயக்கு அல்லது முடக்கு</translation>

@@ -387,6 +387,7 @@
 <translation id="1822540298136254167">Кірген веб-сайттар және онда өткізген уақыт</translation>
 <translation id="1824402189105105503">Сегізінші орам</translation>
 <translation id="1826516787628120939">Тексеру</translation>
+<translation id="1826968372364864056">Үлгіні тазарту</translation>
 <translation id="1828959155404624835">Көлік жалдау</translation>
 <translation id="1834321415901700177">Бұл сайтта зиянды бағдарламалар бар</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
@@ -1968,6 +1969,7 @@
 <translation id="5786044859038896871">Карта ақпаратын толтырғыңыз келе ме?</translation>
 <translation id="578633867165174378">Chrome деректер қолды болған кезде пайдаланылған құпия сөзді тапты. Құпия сөзді қазір өзгертуге кеңес береміз.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Жоқ}=1{1 аккаунтқа кіру деректері}other{# аккаунтқа кіру деректері}}</translation>
 <translation id="580241730938216256">Жаңартуды бастау</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> картасының мәліметтерін толтырғыңыз келе ме?</translation>
 <translation id="5804241973901381774">Рұқсаттар</translation>
@@ -2523,6 +2525,7 @@
 <translation id="7201591969684833065">Әкімші келесілерді көреді:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Жаңа инкогнито қойындысын ашу үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="7203375778433816396">Chrome-ды жүйенің әдепкі браузері етіп орнату</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Жоқ}=1{1 кіру кілті}other{# кіру кілті}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> қауіпсіздік стандарттарына сай емес.</translation>
 <translation id="7210993021468939304">Linux-тің контейнердегі әрекетін көреді, сондай-ақ контейнерден Linux қолданбаларын орната және іске қоса алады.</translation>
 <translation id="721197778055552897">Бұл ақау туралы <ph name="BEGIN_LINK" />толығырақ<ph name="END_LINK" />.</translation>

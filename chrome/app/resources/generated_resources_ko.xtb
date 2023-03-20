@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Google로 Chrome을 더욱 스마트하게</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" />님의 차례입니다</translation>
 <translation id="1147991416141538220">액세스 권한을 요청하려면 기기 관리자에게 문의하세요.</translation>
-<translation id="1148063863818152153">기기 EID</translation>
 <translation id="1148624853678088576">모든 설정이 완료되었습니다.</translation>
 <translation id="1149401351239820326">유효기간 월</translation>
 <translation id="1149483087970735785">보조 기술</translation>
@@ -875,6 +874,7 @@
 <translation id="1744108098763830590">백그라운드 페이지</translation>
 <translation id="1745732479023874451">연락처 관리</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{이 웹 앱에서 # 파일을 열고 수정하시겠습니까?}}</translation>
+<translation id="1748329107062243374"><ph name="DEVICE_NAME" />의 패스키로 <ph name="WEBSITE" />에 로그인하세요</translation>
 <translation id="1748563609363301860">이 비밀번호는 Google 계정이나 이 기기에만 저장할 수 있습니다.</translation>
 <translation id="1749733017156547309">비밀번호를 입력해야 합니다.</translation>
 <translation id="1750172676754093297">보안 키에 지문을 저장할 수 없습니다.</translation>
@@ -1224,7 +1224,6 @@
 <translation id="2045969484888636535">쿠키 계속 차단</translation>
 <translation id="204622017488417136">기기가 이전에 설치된 버전의 Chrome으로 돌아갑니다. 사용자 계정과 로컬 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
 <translation id="2046702855113914483">라면</translation>
-<translation id="2046770133657639077">기기 EID 표시</translation>
 <translation id="204706822916043810">가상 머신 확인 중</translation>
 <translation id="2048182445208425546">네트워크 트래픽에 액세스</translation>
 <translation id="2048554637254265991">컨테이너 관리자 시작 중에 오류가 발생했습니다. 다시 시도해 주세요.</translation>
@@ -1791,7 +1790,6 @@
 <translation id="2502719318159902502">전체 액세스</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{화면 #}other{화면 #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />중 <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">기기 EID는 <ph name="EID_NUMBER" />입니다. 이 EID 번호를 사용하여 고객 서비스 담당자는 서비스를 활성화하도록 도와줄 수 있습니다.</translation>
 <translation id="250704661983564564">디스플레이 배치</translation>
 <translation id="2507253002925770350">티켓 삭제됨</translation>
 <translation id="2508428939232952663">Google Play 스토어 계정</translation>
@@ -3756,6 +3754,7 @@
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4277434192562187284">XML 구성 소스</translation>
+<translation id="4277529130885813215">다른 기기 사용</translation>
 <translation id="4278390842282768270">허용됨</translation>
 <translation id="4278498748067682896">기기가 키오스크 또는 사이니지 모드로만 실행되도록 하는 키오스크 및 사이니지 업그레이드를 사용합니다. 사용자가 기기에 로그인할 수 있게 하려면 뒤로 돌아가서 Chrome Enterprise 업그레이드를 사용해 등록하세요.</translation>
 <translation id="4278779213160967034">이 과정은 몇 분 정도 걸릴 수 있습니다. 파일 다운로드 중</translation>
@@ -4246,6 +4245,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
 <translation id="4711638718396952945">설정값 복원</translation>
 <translation id="4713409221649555176">모든 창을 닫으면 삭제</translation>
+<translation id="4715631922189108923">사용자 이름 수정</translation>
 <translation id="47158868804223727">그룹 이름을 클릭하여 펼치거나 접습니다.</translation>
 <translation id="4716483597559580346">파워워시를 사용하여 보안 강화</translation>
 <translation id="471759229191973607">테마 변경</translation>
@@ -4657,6 +4657,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5108967062857032718">설정 - Android 앱 삭제</translation>
 <translation id="5109044022078737958">미미</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> 삭제</translation>
+<translation id="5111326646107464148">새 창에서 그룹 열기</translation>
 <translation id="5111646998522066203">시크릿 모드 종료</translation>
 <translation id="5111692334209731439">북마크 관리자(&amp;B)</translation>
 <translation id="5111794652433847656">이 기기에 <ph name="APP_NAME" />의 패스키가 없습니다.</translation>
@@ -7582,6 +7583,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7762243782113123335">죄송합니다. 문제가 발생했습니다. 설명에 의견을 작성하고 #bruschetta라고 표시하여 제출해 주세요. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="7764225426217299476">주소 추가</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />에서 <ph name="DOWNLOAD_RECEIVED" />을(를) 다운로드함</translation>
+<translation id="7764527477537408401">새 창에서 그룹 열기</translation>
 <translation id="7765158879357617694">이동</translation>
 <translation id="7765507180157272835">블루투스 및 Wi-Fi 필요</translation>
 <translation id="7766082757934713382">자동 앱 및 시스템 업데이트를 일시중지하여 네트워크 데이터 사용량을 줄일 수 있습니다.</translation>
@@ -7909,7 +7911,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8044899503464538266">느리게</translation>
 <translation id="8045253504249021590">Google 대시보드를 통해 동기화가 중지되었습니다.</translation>
 <translation id="8045923671629973368">애플리케이션 ID 또는 웹 스토어 URL 입력</translation>
-<translation id="8046132381940444654">이 EID 번호를 사용하여 고객 서비스 담당자는 서비스를 활성화하도록 도와줄 수 있습니다.</translation>
 <translation id="8047242494569930800">Google 계정으로 이동</translation>
 <translation id="804786196054284061">최종 사용자 라이선스 계약</translation>
 <translation id="8048728378294435881">콘텐츠를 백업하고 어느 기기에서나 사용하세요.</translation>
@@ -8093,6 +8094,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8203732864715032075">알림을 보내고 메시지에서 이 컴퓨터를 기억하도록 기본값으로 설정합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">디스플레이와 주변기기가 초기화될 수 있으며 초기화는 금방 완료됩니다. 이 변경사항을 적용하려면 주변기기를 분리했다가 다시 연결하세요.</translation>
 <translation id="820568752112382238">자주 방문한 사이트</translation>
+<translation id="8206267832882844324">메모 수정</translation>
 <translation id="8206745257863499010">음악</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8207404892907560325">패스키 선택</translation>
@@ -8701,6 +8703,7 @@ https://support.google.com/chromebook/?p=sm</translation>
         &lt;p&gt;이 경우 명령줄을 사용하여 설정할 수 있습니다.  플래그와 환경 변수에 대한 자세한 내용은 &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;을(를) 참조하세요.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">기기에 저장된 인증서 및 키 관리와 같은 조직의 보안 관련 작업 실행</translation>
 <translation id="8755376271068075440">크게(&amp;L)</translation>
+<translation id="8755584192133371929">공유할 탭 선택</translation>
 <translation id="875604634276263540">이미지 URL이 유효하지 않습니다.</translation>
 <translation id="8756969031206844760">비밀번호를 업데이트하시겠습니까?</translation>
 <translation id="8757203080302669031">이 탭은 현재 블루투스 기기를 검사하고 있습니다.</translation>

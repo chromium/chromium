@@ -169,7 +169,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="114721135501989771">A tecnologia Google no Chrome</translation>
 <translation id="1147322039136785890">Agora, entregue o dispositivo para <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acesso, entre em contato com o administrador deste dispositivo.</translation>
-<translation id="1148063863818152153">EID do seu dispositivo</translation>
 <translation id="1148624853678088576">Está tudo pronto!</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1149483087970735785">Tecnologia adaptativa</translation>
@@ -1225,7 +1224,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2045969484888636535">Continuar bloqueando cookies</translation>
 <translation id="204622017488417136">Seu dispositivo voltará à versão do Google Chrome instalada anteriormente. Todas as contas de usuário e dados locais serão removidos. Esta ação não pode ser desfeita.</translation>
 <translation id="2046702855113914483">Lámen</translation>
-<translation id="2046770133657639077">Mostrar EID do dispositivo</translation>
 <translation id="204706822916043810">Verificando a máquina virtual</translation>
 <translation id="2048182445208425546">Acesse seu tráfego de rede</translation>
 <translation id="2048554637254265991">Erro ao iniciar o administrador de contêiner. Tente novamente.</translation>
@@ -1791,7 +1789,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2502719318159902502">Acesso total</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Tela #}one{Tela #}other{Tela #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">O EID do dispositivo é <ph name="EID_NUMBER" />. Um representante de atendimento ao cliente pode usar o número EID para ajudar você a ativar o serviço.</translation>
 <translation id="250704661983564564">Disposição da tela</translation>
 <translation id="2507253002925770350">Tíquete removido</translation>
 <translation id="2508428939232952663">Conta da Google Play Store</translation>
@@ -7918,7 +7915,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8044899503464538266">Lento</translation>
 <translation id="8045253504249021590">A sincronização foi interrompida por meio do Painel do Google.</translation>
 <translation id="8045923671629973368">Informe o ID do aplicativo ou o URL da loja on-line</translation>
-<translation id="8046132381940444654">Um representante de atendimento ao cliente pode usar esse número EID para ajudar você a ativar o serviço</translation>
 <translation id="8047242494569930800">Mover para a Conta do Google</translation>
 <translation id="804786196054284061">Contrato de licença do usuário final</translation>
 <translation id="8048728378294435881">Faça backup e use seus dados em qualquer dispositivo</translation>

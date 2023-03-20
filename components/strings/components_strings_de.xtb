@@ -152,6 +152,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="132301787627749051">Nach Bild aus Zwischenablage suchen</translation>
 <translation id="1323433172918577554">Mehr anzeigen</translation>
 <translation id="132390688737681464">Adressen speichern und ausfüllen</translation>
+<translation id="1329916999021038454">Bericht senden</translation>
 <translation id="1330449323196174374">Linksseitige Fensterfaltung</translation>
 <translation id="1333745675627230582">Chrome Dino spielen</translation>
 <translation id="1333989956347591814">Deine Aktivität <ph name="BEGIN_EMPHASIS" />bleibt eventuell sichtbar<ph name="END_EMPHASIS" /> für:
@@ -527,6 +528,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="219906046732893612">Heimwerken</translation>
 <translation id="2202020181578195191">Gib ein gültiges Ablaufjahr ein</translation>
 <translation id="2202627062836089804">Rückseite deiner Karte</translation>
+<translation id="2204482073374652408">Update abgeschlossen.</translation>
 <translation id="22081806969704220">Fach 3</translation>
 <translation id="2210794033760923560">Bericht hochladen</translation>
 <translation id="2212579473415663542">Diese Adresse ist in deinem Google-Konto (<ph name="ACCOUNT" />) gespeichert. Du kannst sie auf deinen Geräten in allen Google-Produkten verwenden.</translation>
@@ -615,6 +617,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2441854154602066476">Zahlungsmethoden, die bei Berührung ausgefüllt werden. Tastatur ausgeblendet.</translation>
 <translation id="2448295565072560657">An dieses Gerät angeschlossene Peripheriegeräte, während du angemeldet bist</translation>
 <translation id="2450021089947420533">Recherchen</translation>
+<translation id="2456755709261364512">Der Akku muss mindestens zu <ph name="REQUIRED_BATTERY_PRECENT" /> % geladen sein</translation>
 <translation id="2463739503403862330">Ausfüllen</translation>
 <translation id="2465655957518002998">Lieferoption auswählen</translation>
 <translation id="2465688316154986572">Heften</translation>
@@ -661,6 +664,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Von jetzt an Displaysperre verwenden, um Karten zu bestätigen</translation>
 <translation id="2553853292994445426">Prüfe die Einstellungen für sichere DNS-Abfragen. Du hast möglicherweise einen sicheren DNS-Server konfiguriert, zu dem keine Verbindung aufgebaut werden kann.</translation>
+<translation id="255497580849974774">Lass dein Gerät während des Updates an ein Ladegerät angeschlossen.</translation>
 <translation id="2556876185419854533">&amp;Bearbeiten rückgängig machen</translation>
 <translation id="2557417190997681027">Geschäftsreise</translation>
 <translation id="2562087035394240049">Anleitungen und Expertenwissen</translation>
@@ -892,6 +896,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="320323717674993345">Zahlung abbrechen</translation>
 <translation id="3203366800380907218">Aus dem Web</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
+<translation id="3208701679386778924">Bitte sende einen Bericht, damit wir ChromeOS-Updates weiter verbessern können.</translation>
 <translation id="3209034400446768650">Auf der Seite wird möglicherweise Geld verlangt</translation>
 <translation id="3212581601480735796">Deine Aktivität auf <ph name="HOSTNAME" /> wird überwacht</translation>
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
@@ -1115,6 +1120,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3715545959749027023">Wenn Chrome Sicherheitshinweise meldet, werden relevante Informationen an deinen Administrator gesendet. Dazu gehören z. B. URLs der von dir in Chrome besuchten Seiten, Dateinamen oder Metadaten, Browser- oder Tab-Abstürze sowie der Nutzername, den du zum Anmelden in Webanwendungen, auf deinem Gerät und in Chrome verwendest.</translation>
 <translation id="3715597595485130451">WLAN-Verbindung herstellen</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, Firewall und DNS-Konfiguration prüfen<ph name="END_LINK" /></translation>
+<translation id="3723663469265383848">Während des Updates kannst du dein Gerät bis zu 10 Minuten lang nicht verwenden.</translation>
 <translation id="372429172604983730">Anwendungen, die diesen Fehler verursachen können, sind Antivirensoftware, Firewalls, Webfilter- oder Proxy-Software.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Präsentation in Google Präsentationen zu erstellen</translation>
 <translation id="3733139489341305600">Selbstfahrende Autos</translation>
@@ -1152,6 +1158,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3807366285948165054">X-Verschiebung des Bilds</translation>
 <translation id="3807873520724684969">Schädliche Inhalte blockiert.</translation>
 <translation id="3810973564298564668">Verwalten</translation>
+<translation id="3812398568375898177">Mit diesem wichtigen Update wird die Leistung von Android-Apps unter ChromeOS verbessert.</translation>
 <translation id="3815434930383843058">8 × 12 Zoll</translation>
 <translation id="3816482573645936981">Wert (ersetzt)</translation>
 <translation id="3823019343150397277">IBAN</translation>
@@ -1256,6 +1263,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4110652170750985508">Zahlung überprüfen</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
+<translation id="4113354056388982663">Wichtiges Android-Leistungsupdate</translation>
 <translation id="4114146879518089587">Weiter zur Website</translation>
 <translation id="4116663294526079822">Auf dieser Website immer zulassen</translation>
 <translation id="4116701314593212016">JIS B7</translation>
@@ -1436,6 +1444,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um diese Seite mit Google Übersetzer übersetzen zu lassen</translation>
 <translation id="4514308731478712184">„Recherchen“ deaktivieren</translation>
 <translation id="4515275063822566619">Karten und Adressen stammen aus Chrome und aus deinem Google-Konto (<ph name="ACCOUNT_EMAIL" />). Du kannst sie in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> verwalten.</translation>
+<translation id="4519245469315452746">Das Update wurde unterbrochen.</translation>
 <translation id="4520048001084013693">Die Administratorrichtlinie blockiert das Herunterladen dieser Datei</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
 <translation id="4521280267704259211">Umschlag Monarch</translation>
@@ -1525,6 +1534,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4738601419177586157">Suchvorschlag: <ph name="TEXT" /></translation>
 <translation id="4742407542027196863">Passwörter verwalten…</translation>
+<translation id="4743275772928623722">Dein System wurde aktualisiert, aber einige deiner Apps und Dateien konnten nicht wiederhergestellt werden. Deine Apps werden automatisch wieder heruntergeladen.</translation>
 <translation id="4744514002166662487">Präsentation erstellen</translation>
 <translation id="4744603770635761495">Programmdateipfad</translation>
 <translation id="4749011317274908093">Du befindest dich jetzt im Inkognitomodus</translation>
@@ -2227,6 +2237,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="646793340882508547">Abenteuerspiele</translation>
 <translation id="6468485451923838994">Schriftarten</translation>
 <translation id="647261751007945333">Geräterichtlinien</translation>
+<translation id="647330291963761005">Updates werden installiert</translation>
 <translation id="6475672344094591109">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Werbeanzeigen messen zu können. Chrome trägt zum Schutz deiner Daten bei, indem die Informationen beschränkt werden, die Websites miteinander teilen können.</translation>
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6486200200930923183">Dokumentarfilme</translation>
@@ -2300,6 +2311,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6688775486821967877">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte versuche es später noch einmal</translation>
 <translation id="6689249931105087298">Relativ mit Schwarzpunktkompensation</translation>
 <translation id="6689271823431384964">Chrome bietet dir die Möglichkeit, die Karten in deinem Google-Konto zu speichern, weil du angemeldet bist. Du kannst dies in den Einstellungen ändern. Der Name des Karteninhabers stammt aus deinem Konto.</translation>
+<translation id="6691397311652656001">Mindestens <ph name="REQUIRED_FREE_DISK_SPACE" /> Speicherplatz freigeben</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um dein Gerät im Google-Konto zu finden</translation>
 <translation id="6696588630955820014">Schaltfläche „Tab teilen“ – drücke die Eingabetaste, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen</translation>
 <translation id="6698381487523150993">Erstellt:</translation>
@@ -2363,6 +2375,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Verbraucherressourcen</translation>
 <translation id="6865412394715372076">Diese Karte kann momentan nicht geprüft werden</translation>
+<translation id="6868573634057275953">Update fortsetzen</translation>
 <translation id="6869334554832814367">Privatkredite</translation>
 <translation id="6873456682041376666">Oberes Fach</translation>
 <translation id="6874604403660855544">&amp;Hinzufügen wiederholen</translation>
@@ -2519,9 +2532,11 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="722454870747268814">Neuer Inkognitotab</translation>
 <translation id="7233592378249864828">Bestätigungsblatt drucken</translation>
 <translation id="7234638337680728591">Treibstoffpreise und Kraftstoffe für Fahrzeuge</translation>
+<translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % abgeschlossen | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237492777898608035">Diese Meldung für diese Website nicht mehr anzeigen</translation>
 <translation id="7238585580608191973">SHA-256-Fingerabdruck</translation>
 <translation id="7240120331469437312">Alternativer Name für den Zertifikatsinhaber</translation>
+<translation id="7241863998525879494">Inhalt</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# Übereinstimmung}other{# Übereinstimmungen}}</translation>
@@ -2742,6 +2757,7 @@ Weitere Details:
 <translation id="7698864304447945242">Google Play-Dienste für AR aktualisieren?</translation>
 <translation id="7699293099605015246">Momentan sind keine Artikel verfügbar</translation>
 <translation id="7701040980221191251">Keine</translation>
+<translation id="7701544340847569275">Update mit Fehlern abgeschlossen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Weiter zu <ph name="SITE" /> (unsicher)<ph name="END_LINK" /></translation>
 <translation id="770607638235926858">Ski- und Snowboardfahren</translation>
 <translation id="7706689436519265630">Dateien, die du kopierst oder verschiebst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß den Unternehmensrichtlinien gespeichert werden.</translation>

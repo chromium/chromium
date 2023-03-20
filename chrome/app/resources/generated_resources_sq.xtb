@@ -167,7 +167,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="114721135501989771">Merr funksionet inteligjente të Google në Chrome</translation>
 <translation id="1147322039136785890">Tani është radha e <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Për të kërkuar qasjen, kontakto me administratorin e kësaj pajisjeje.</translation>
-<translation id="1148063863818152153">Numri EID i pajisjes sate</translation>
 <translation id="1148624853678088576">Je gati!</translation>
 <translation id="1149401351239820326">Muaji i skadimit</translation>
 <translation id="1149483087970735785">Teknologjia ndihmëse</translation>
@@ -1208,7 +1207,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2045969484888636535">Vazhdo bllokimin e kukive</translation>
 <translation id="204622017488417136">Pajisja do të kthehet në versionin e instaluar më parë të Chrome. Të gjitha llogaritë e përdoruesit dhe të dhënat lokale do të hiqen. Kjo nuk mund të zhbëhet.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Shfaq EID e pajisjes</translation>
 <translation id="204706822916043810">Po kontrollon pajisjen virtuale</translation>
 <translation id="2048182445208425546">Qasu te trafiku i rrjetit</translation>
 <translation id="2048554637254265991">Gabim gjatë nisjes së menaxherit të kontejnerit. Provo përsëri.</translation>
@@ -1772,7 +1770,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2502719318159902502">Qasje e plotë</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekrani #}other{Ekrani #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> nga <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID i pajisjes tënde është <ph name="EID_NUMBER" />. Një përfaqësues i shërbimit të klientit mund ta përdorë numrin EID për të të ndihmuar të aktivizosh shërbimin.</translation>
 <translation id="250704661983564564">Sistemimi i ekranit</translation>
 <translation id="2507253002925770350">Bileta u hoq</translation>
 <translation id="2508428939232952663">Llogaria në "Dyqanin e Google Play"</translation>
@@ -7888,7 +7885,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8044899503464538266">I ngadaltë</translation>
 <translation id="8045253504249021590">Sinkronizimi është ndaluar nëpërmjet "Panelit të Google".</translation>
 <translation id="8045923671629973368">Fut ID-në e aplikacionit ose URL-në e dyqanit të uebit</translation>
-<translation id="8046132381940444654">Një përfaqësues i shërbimit të klientit mund ta përdorë këtë numër EID për të të ndihmuar të aktivizosh shërbimin</translation>
 <translation id="8047242494569930800">Zhvendose te "Llogaria e Google"</translation>
 <translation id="804786196054284061">Marrëveshje Licence për Përdoruesin</translation>
 <translation id="8048728378294435881">Rezervo gjërat e tua dhe përdori në çdo pajisje</translation>

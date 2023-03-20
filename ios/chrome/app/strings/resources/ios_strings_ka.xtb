@@ -480,6 +480,7 @@
 <translation id="4474494258097106883">შექმნილია თქვენი iPhone-ისთვის</translation>
 <translation id="4476574785019001431">პარამეტრები</translation>
 <translation id="448433063499977729">სინქრონიზაცია გამორთულია</translation>
+<translation id="4489536976005181779">{count,plural, =1{გვერდი დაემატა თქვენს საკითხავ სიას თქვენს ანგარიშში ({email})}other{გვერდები დაემატა თქვენს საკითხავ სიას თქვენს ანგარიშში ({email})}}</translation>
 <translation id="4496373720959965247">დაამატეთ ჩანართები და გადაერთეთ გვერდებს შორის</translation>
 <translation id="4502566650163919158">ახლავე შემოწმება</translation>
 <translation id="4505980578794259603">ბოლო შემოწმება: <ph name="TIME" />.</translation>

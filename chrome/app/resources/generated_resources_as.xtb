@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chromeত Googleৰ সেৱা পাওক</translation>
 <translation id="1147322039136785890">এতিয়া <ph name="SUPERVISED_USER_NAME" />ৰ পাল</translation>
 <translation id="1147991416141538220">এক্সেছ বিচাৰিবলৈ এই ডিভাইচটোৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
-<translation id="1148063863818152153">আপোনাৰ ডিভাইচৰ ইআইডি</translation>
 <translation id="1148624853678088576">আপুনি সম্পূৰ্ণ সাজু!</translation>
 <translation id="1149401351239820326">ম্যাদ উকলা মাহ</translation>
 <translation id="1149483087970735785">সহায়ক প্ৰযুক্তিবিদ্যা</translation>
@@ -1222,7 +1221,6 @@
 <translation id="2045969484888636535">কুকি অৱৰোধ কৰি থাকক</translation>
 <translation id="204622017488417136">আপোনাৰ ডিভাইচটো পূর্বে ইনষ্টল কৰা Chromeৰ সংস্কৰণলৈ উভতাই অনা হ’ব। সকলো ব্যৱহাৰকাৰী একাউণ্ট আৰু স্থানীয় ডেটা আঁতৰোৱা হ’ব। এই কাৰ্যটো আনডু কৰিব নোৱাৰি।</translation>
 <translation id="2046702855113914483">ৰামেন</translation>
-<translation id="2046770133657639077">ডিভাইচৰ ইআইডি দেখুৱাওক</translation>
 <translation id="204706822916043810">ভাৰ্ছুৱেল মেচিনটো পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="2048182445208425546">আপোনাৰ নেটৱৰ্কৰ ট্ৰেফিক এক্সেছ কৰক</translation>
 <translation id="2048554637254265991">কণ্টেইনাৰ মেনেজাৰটো আৰম্ভ কৰোঁতে আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।</translation>
@@ -1788,7 +1786,6 @@
 <translation id="2502719318159902502">সম্পূৰ্ণ এক্সেছ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{স্ক্ৰীন #}one{স্ক্ৰীন #}other{স্ক্ৰীন #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />ৰ <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">আপোনাৰ ডিভাইচৰ ইআইডি হৈছে <ph name="EID_NUMBER" />। কোনো গ্ৰাহক সেৱা প্ৰতিনিধিয়ে সেৱা সক্ৰিয় কৰাত আপোনাক সহায় কৰিবলৈ ইআইডি নম্বৰটো ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="250704661983564564">ডিছপ্লে’ৰ ব্যৱস্থাপনা</translation>
 <translation id="2507253002925770350">টিকেট আঁতৰোৱা হ’ল</translation>
 <translation id="2508428939232952663">Google Play Store একাউণ্ট</translation>
@@ -4245,6 +4242,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> বাহিৰ হওক</translation>
 <translation id="4711638718396952945">ছেটিংসমূহ পুনঃস্থাপন কৰক</translation>
 <translation id="4713409221649555176">আপুনি আটাইবোৰ ৱিণ্ড’ বন্ধ কৰিলে মচক</translation>
+<translation id="4715631922189108923">ব্যৱহাৰকাৰীৰ নাম সম্পাদনা কৰক</translation>
 <translation id="47158868804223727">গোটটো বিস্তাৰ অথবা সংকুচিত কৰিবলৈ গোটটোৰ নামত ক্লিক কৰক</translation>
 <translation id="4716483597559580346">অতিৰিক্ত সুৰক্ষাৰ বাবে পাৱাৰৱাশ্ব কৰক</translation>
 <translation id="471759229191973607">থীম সলনি কৰক</translation>
@@ -7910,7 +7908,6 @@
 <translation id="8044899503464538266">মন্থৰ</translation>
 <translation id="8045253504249021590">Google Dashboardৰ জৰিয়তে ছিংক বন্ধ কৰা হৈছে।</translation>
 <translation id="8045923671629973368">এপ্লিকেশ্বন আইডি বা ৱেবষ্ট’ৰৰ URL দিয়ক</translation>
-<translation id="8046132381940444654">কোনো গ্ৰাহক সেৱা প্ৰতিনিধিয়ে সেৱা সক্ৰিয় কৰাত আপোনাক সহায় কৰিবলৈ এই ইআইডি নম্বৰটো ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="8047242494569930800">Google একাউণ্টলৈ স্থানান্তৰ কৰক</translation>
 <translation id="804786196054284061">অন্তিম ব্যৱহাৰকাৰীৰ অনুজ্ঞাপত্ৰৰ চুক্তি</translation>
 <translation id="8048728378294435881">আপোনাৰ বস্তুবোৰৰ বেক আপ লওক আৰু সেইবোৰ যিকোনো ডিভাইচত ব্যৱহাৰ কৰক</translation>
@@ -8094,6 +8091,7 @@
 <translation id="8203732864715032075">আপোনালৈ জাননী পঠিয়াই আৰু বার্তাৰ বাবে এই কম্পিউটাৰক ডিফ’ল্ট হিচাপে মনত ৰাখে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">আপোনাৰ ডিছপ্লে’ আৰু পৰিধীয় আহিলাসমূহ ক্ষন্তেক সময়ৰ বাবে ৰিছেট হ’ব পাৰে। এই সালসলনিটো প্ৰযোজ্য হ'বলৈ, আপোনাৰ পৰিধীয় আহিলাসমূহ আনপ্লাগ কৰি পুনৰ প্লাগ কৰক।</translation>
 <translation id="820568752112382238">সকলোতকৈ বেছিকৈ চোৱা ছাইটসমূহ</translation>
+<translation id="8206267832882844324">টোকা সম্পাদনা কৰক</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8207404892907560325">এটা পাছকী বাছনি কৰক</translation>

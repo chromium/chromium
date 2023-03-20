@@ -477,6 +477,7 @@ Tokeny prywatności zwiększają prywatność w sieci i nie można za ich pomo
 <translation id="3587596251841506391">Pomóż poprawić bezpieczeństwo w sieci</translation>
 <translation id="3597179440835065298">Otrzymuj lepsze sugestie</translation>
 <translation id="3602290021589620013">Podgląd</translation>
+<translation id="360901359071773787">Usunąć ostatnie 15 minut?</translation>
 <translation id="3616113530831147358">Dźwięk</translation>
 <translation id="3622349720008044802">Zarządzaj oknami</translation>
 <translation id="3631987586758005671">Udostępniam urządzeniu <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5517095782334947753">Masz zakładki, historię, hasła i inne ustawienia z konta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Gdy testy są włączone i w wyniku losowego wyboru Chrome obejmuje Cię aktywny test, Twoja historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania.</translation>
 <translation id="5524843473235508879">Przekierowanie zostało zablokowane.</translation>
+<translation id="554297709083131118">Te dane z ostatnich 15 minut zostaną usunięte</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
 <translation id="5555525474779371165">Wybierz poziom ochrony Bezpiecznego przeglądania</translation>
 <translation id="5556459405103347317">Odśwież</translation>
@@ -1076,6 +1078,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6824899148643461612">Wybrano kartę <ph name="TAB_TITLE" /></translation>
 <translation id="6828070228333235514">Przestań monitorować cenę</translation>
 <translation id="6830728435402077660">Niezabezpieczona</translation>
+<translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6833996806551876956">Okres próbny piaskownicy prywatności</translation>
 <translation id="6836206421467243968">Przywróć grupę kart <ph name="TITLE_OF_GROUP" /> jako nową grupę kart w tle.</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>

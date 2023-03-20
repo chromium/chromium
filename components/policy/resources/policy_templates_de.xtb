@@ -223,7 +223,10 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien fes
 
       Wenn sie auf "False" gesetzt oder nicht konfiguriert ist, können Webseiten die WebGL API und Plug-ins die Pepper 3D API nutzen, doch bei den Standardeinstellungen des Browsers kann es weiterhin erforderlich sein, dass zur Verwendung dieser APIs Argumente über die Befehlszeile eingegeben werden müssen.</translation>
 <translation id="1202216683470826356">Karten auf der „Neuer Tab“-Seite anzeigen</translation>
+<translation id="120314092766637918">Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, wird von <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> der clientseitige Phishing-Schutz für <ph name="PRODUCT_NAME" /> gesteuert. Wenn <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> auf <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_STANDARD" /> oder <ph name="SAFE_BROWSING_PROTECTION_LEVEL_VALUE_ENHANCED" /> gesetzt ist, führt der clientseitige Phishing-Schutz ein lokales Modell aus, um Seiten auf Phishing zu überprüfen. Wenn ein Phishing-Versuch festgestellt wird, sendet <ph name="PRODUCT_NAME" /> eine Anfrage an Google.
+Wenn diese Richtlinie deaktiviert ist, bietet der clientseitige Phishing-Schutz keinen Schutz und sendet keine Daten zur Überprüfung an Google.</translation>
 <translation id="1204263402976895730">Aktivierte Unternehmensdrucker</translation>
+<translation id="1207301487141109411">Auswahl des Nutzeravatars aus lokalem Dateisystem, Kamera und Google-Profil verhindern</translation>
 <translation id="1209065772997672966">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Pop-ups öffnen dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
@@ -553,6 +556,7 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 <translation id="1515230621229117540">Aktiviert das unverankerte Menü für Bedienungshilfen</translation>
 <translation id="1515824657887788963">Einer Seite erlauben, während des Schließens synchrone XHR-Anfragen auszuführen.</translation>
 <translation id="1516486219683984217">Verwendung von Systembenachrichtigungen nicht zulassen</translation>
+<translation id="1519092983270375506">Standardeinstellung für die Drittanbieter-Speicherpartitionierung</translation>
 <translation id="1522425503138261032">Ermittlung des physischen Standorts des Nutzers durch Websites zulassen</translation>
 <translation id="1523587744262636189">Port 10080 (Blockierung kann bis 01.04.2022 aufgehoben werden)</translation>
 <translation id="1523774894176285446">Für konfigurierte Websites soll ein alternativer Browser geöffnet werden.</translation>
@@ -675,6 +679,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1634989431648355062">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" für diese Websites zulassen</translation>
 <translation id="1635748761015837179">Schreiben auf externen Speichergeräten zulassen</translation>
 <translation id="1639468541408865385">Globales HTTP-Authentication-Cache aktivieren</translation>
+<translation id="1639673466479276550">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
 <translation id="1641117061932613266">Dienst <ph name="PRODUCT_NAME" /> Version 2 aktivieren</translation>
 <translation id="1641394008743444477">Ermöglicht die Zusammenstellung einer Liste mit <ph name="PRODUCT_OS_NAME" />-Funktionen, die deaktiviert werden sollen.
 
@@ -930,6 +935,7 @@ Diese Richtlinie gilt nur für Erweiterungen, die über den Chrome Web Store ins
 Ist die Richtlinie auf <ph name="ALLOW_UNPUBLISHED" /> (0) gesetzt oder nicht konfiguriert, sind nicht im Chrome Web Store veröffentlichte Erweiterungen zulässig.
 Wenn die Richtlinie auf <ph name="DISABLE_UNPUBLISHED" /> (1) gesetzt ist, sind nicht im Chrome Web Store veröffentlichte Erweiterungen im deaktiviert.</translation>
 <translation id="1905061765326052857">Nicht zulassen, dass nicht verknüpfte Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
+<translation id="1907696459350079081">Bildschirmschoner auf dem Anmeldebildschirm nicht aktivieren.</translation>
 <translation id="1910704279188129272">Mit dieser Richtlinie kannst du Nutzungsbeschränkungen für Apps hinzufügen.
         Nutzungsbeschränkungen können für die unter <ph name="PRODUCT_OS_NAME" /> installierten Apps für den jeweiligen Nutzer angewendet werden.
         Die Beschränkungen sollten in die |app_limits|-Liste übernommen werden. Pro App ist nur ein Eintrag zulässig. Für Apps außerhalb der Liste gelten keine Beschränkungen.
@@ -1081,6 +1087,11 @@ Wenn die Richtlinie auf <ph name="DISABLE_UNPUBLISHED" /> (1) gesetzt ist, sind 
 <translation id="2018425641414671849">Nicht zulassen, dass Nutzer Medien abspielen, wenn das Gerät gesperrt ist</translation>
 <translation id="2021087124402050619">Chrome Cleanup Tool darf regelmäßig Scans ausführen und manuelle Scans sind erlaubt</translation>
 <translation id="2024476116966025075">Erforderlichen Domainnamen für Remotezugriff-Clients konfigurieren</translation>
+<translation id="2026749017601510117">Dadurch wird festgelegt, wie viele Sekunden das Gerät inaktiv bleibt, bevor der Bildschirmschoner auf dem Anmeldebildschirm angezeigt wird.
+
+Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 7 Sekunden.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="2029985289397958781">Kameragestützte Suche mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> für Unternehmensnutzer deaktivieren</translation>
 <translation id="2030905906517501646">Suchbegriff der Standardsuchmaschine</translation>
 <translation id="203096360153626918">Diese Richtlinie hat keine Auswirkungen auf die Android-Apps. Der Vollbildmodus kann aktiviert werden, auch wenn diese Richtlinie auf <ph name="FALSE" /> gesetzt ist.</translation>
@@ -1112,6 +1123,7 @@ Wenn die Richtlinie auf <ph name="DISABLE_UNPUBLISHED" /> (1) gesetzt ist, sind 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="2043749682619281558">Hiermit wird die Funktion "Mauscursor hervorheben" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="2043770014371753404">Deaktivierte Unternehmensdrucker</translation>
+<translation id="2054093043033461396">Der Bildschirmschoner für den Anmeldebildschirm des Geräts ist aktiviert.</translation>
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
 <translation id="2058055310819710697">Entwicklermodus für isolierte Apps aktivieren</translation>
 <translation id="205807990145127714">Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden.</translation>
@@ -1615,6 +1627,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2506865562891982662">Zulassen, dass Nutzer im <ph name="PRODUCT_NAME" />-Menü Übertragungsgeräte mit einem Zugriffscode oder einem QR-Code auswählen.</translation>
 <translation id="2509748672176727116">Der Nutzer ist zu Netzwerkpaketaufnahmen berechtigt</translation>
 <translation id="2509919237512982967">Verwende alte Formularsteuerelemente bis M84.</translation>
+<translation id="251050607781210155">Clientseitigen Phishing-Schutz von Safe Browsing zulassen</translation>
 <translation id="2512972020817284317">Zusammenführung von Cloud-Richtlinien auf Nutzerebene aktivieren.</translation>
 <translation id="2515699738406900920">Verfügbarkeit von Profil-Picker beim Start</translation>
 <translation id="251594860034549963">Wenn die Richtlinie aktiviert ist, werden Browserfenster vom zuletzt verwendeten Gerät des aktuellen Nutzers bei der Anmeldung automatisch geöffnet.
@@ -1739,6 +1752,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="264252574246191885">Nicht gelistet</translation>
 <translation id="2647069081229792812">Bearbeitung von Lesezeichen aktivieren oder deaktivieren</translation>
 <translation id="264771271300359481">Keiner Website erlauben, die Zwischenablage zu verwenden</translation>
+<translation id="2649537800219643135">Bildquelle für den Bildschirmschoner auf dem Sperrbildschirm des Nutzers.</translation>
 <translation id="2649896281375932517">Nutzer entscheiden lassen</translation>
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
 <translation id="2656559539624760733">Chrome Root Store nicht verwenden.</translation>
@@ -1753,6 +1767,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2672012807430078509">Steuerung, durch die NTLM als Authentifizierungsprotokoll für SMB-Bereitstellungen aktiviert wird</translation>
 <translation id="2673363037046384711">Der Endnutzer kann den Modus für hohe Effizienz aktivieren oder deaktivieren.</translation>
 <translation id="2678503605767349615">Erforderliche geräteübergreifende Clientzertifikate</translation>
+<translation id="268134026533587276">Der Bildschirmschoner für den Sperrbildschirm des Nutzers ist aktiviert.</translation>
 <translation id="268577405881275241">Funktion für Datenkomprimierungs-Proxy aktivieren</translation>
 <translation id="268695908564263739">Mit dieser Richtlinie wird die Einstellung „Modus für hohe Effizienz“ aktiviert oder deaktiviert. Die Einstellung bewirkt, dass Tabs nach einer bestimmten Zeit im Hintergrund geschlossen werden, um Arbeitsspeicher freizugeben.
       Wenn die Richtlinie nicht konfiguriert ist, kann der Endnutzer diese Einstellung unter chrome://settings/performance verwalten.
@@ -1828,6 +1843,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Ist diese Richtlinie auf "false" gesetzt oder nicht konfiguriert, sind die Symbole sichtbar.</translation>
 <translation id="2744751866269053547">Protokoll-Handler registrieren</translation>
+<translation id="2745150813292162313">Aktivieren der Drittanbieter-Speicherpartitionierung zulassen.</translation>
 <translation id="2746016768603629042">Diese Richtlinie wurde eingestellt. Als Ersatz kann die Richtlinie „DefaultJavaScriptSetting“ verwendet werden.
 
       Hiermit kann JavaScript in <ph name="PRODUCT_NAME" /> deaktiviert werden.
@@ -1913,6 +1929,7 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
 <translation id="2853649500575897584">Keine alten Erweiterungspunkte im Browserprozess blockieren</translation>
 <translation id="285480231336205327">Modus mit hohem Kontrast aktivieren</translation>
 <translation id="285627849510728211">Tageskonfiguration für den intelligenten Akkulademodus festlegen</translation>
+<translation id="28600673996840076">Anpassen von Nutzer-Avatarbildern über Google-Profilbilder oder lokale Bilder zulassen.</translation>
 <translation id="2864207379891420023">Zulassungsliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="2866387633548787857">„Fast Transition“ deaktivieren</translation>
 <translation id="2866619962692161453">Typ der Metarichtlinie</translation>
@@ -2131,6 +2148,9 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
           Wird sie nicht konfiguriert, ist der große Cursor auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3027837632741099453">Der Energiesparmodus wird aktiviert, wenn das Gerät über den Akku betrieben wird.</translation>
 <translation id="3030000825273123558">Messdatenberichte aktivieren</translation>
+<translation id="3030232909811556512">Wenn diese Richtlinie deaktiviert ist, kann das <ph name="PRODUCT_OS_NAME" />-Avatarbild des Nutzers nicht über lokale Dateien, die Gerätekamera oder das Google-Profilbild des Nutzers geändert werden.
+
+Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über eine der genannten Optionen anpassen.</translation>
 <translation id="3031796805169553856">Zulassen, dass WebAssembly-Module ursprungsübergreifend gesendet werden</translation>
 <translation id="3032322294267258117">Legt die Einstellungen für Nutzer fest, die über GAIA ohne SAML authentifiziert werden.</translation>
 <translation id="3034855514833090741">Wenn die Richtlinie aktiviert ist, kann der Ablauf "Voice Match mit Google Assistant" während der Ersteinrichtung angezeigt werden. Wenn die Richtlinie deaktiviert ist, kann der Ablauf "Voice Match mit Google Assistant" während der Ersteinrichtung nicht angezeigt werden.
@@ -2460,6 +2480,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
       Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim Absturz des Browsers oder Betriebssystems, werden die Browserdaten beim nächsten Laden des Profils gelöscht.</translation>
 <translation id="3264793472749429012">Standardsuchmaschinen-Codierungen</translation>
+<translation id="3269198556438453775">Verbindungen zu diesem Computer per Remote-Unterstützung von Unternehmensadministratoren verhindern</translation>
 <translation id="3273221114520206906">JavaScript-Standardeinstellung</translation>
 <translation id="3278042410658310805">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, es vorübergehend zu aktivieren</translation>
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
@@ -2626,6 +2647,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3435796032110614169">Zulassen, dass der Druckauftragsverlauf gelöscht wird</translation>
 <translation id="3436217793443508863">Zeitraum ohne Nutzereingabe im Akkubetrieb, nach dem der Bildschirm gesperrt wird, angegeben in Millisekunden.</translation>
 <translation id="3437924696598384725">Zulassen, dass der Nutzer VPN-Verbindungen verwaltet</translation>
+<translation id="3441664787678256816">Verbindungen zu diesem Computer per Remote-Unterstützung von Unternehmen erlauben</translation>
 <translation id="3442269905344976871">Wenn die Richtlinie aktiviert und <ph name="WILCO_NAME" /> Diagnostics and Telemetry Controller (DTC) auf dem Gerät verfügbar ist, wird die Erhebung, Verarbeitung und Meldung von Telemetrie- und Diagnosedaten aktiviert.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird DTC ausgeschaltet und kann keine Telemetrie- und Diagnosedaten von dem Gerät erheben, verarbeiten oder melden.</translation>
@@ -2700,6 +2722,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Wenn sie auf SAML_INTERSTITIAL festgelegt ist, wird die Anmeldung automatisch zum SAML-Identitätsanbieter weitergeleitet. Der Nutzer kann weiterhin zum normalen GAIA-Anmeldevorgang zurückkehren.
 
       Hinweis: Der zusätzliche Bestätigungsbildschirm, der Nutzern bis zur Version 99 in <ph name="PRODUCT_NAME" /> angezeigt wurde, wird nicht mehr eingeblendet. Wenn der SAML-Identitätsanbieter nicht konfiguriert und diese Richtlinie auf SAML_INTERSTITIAL gesetzt ist, schlägt die Weiterleitung mit der Fehlermeldung „400“ fehl.</translation>
+<translation id="3523630512885826906">Anzeigeintervall für den Bildschirmschoner auf dem Sperrbildschirms des Nutzers.</translation>
 <translation id="3524204464536655762">Websites dürfen nie Zugriff auf USB-Geräte über die WebUSB API anfordern</translation>
 <translation id="3526752951628474302">Nur Schwarz-Weiß-Druck</translation>
 <translation id="3528000905991875314">Alternative Fehlerseiten aktivieren</translation>
@@ -3612,6 +3635,16 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 <translation id="441686537793821907">Installation externer Erweiterungen blockieren</translation>
 <translation id="4423597592074154136">Proxy-Einstellungen manuell angeben</translation>
 <translation id="4424004842303301809">Berichte zur Verhinderung von Datenlecks deaktivieren</translation>
+<translation id="4426288704078471820"><ph name="WEBVIEW_TAG_NAME" /> für Chrome-Apps ermöglicht ein Verhalten, das derzeit aus <ph name="PRODUCT_NAME" /> entfernt wird.
+
+Das bisherige Verhalten bestand darin, eine Interstitial-Seite einzublenden, wenn <ph name="WEBVIEW_TAG_NAME" /> eine Seite mit einem ungültigen SSL-Zertifikat aufgerufen hat. Über dieses Interstitial konnte der Nutzer trotz Sicherheitswarnung fortfahren. Beim neuen Verhalten wird eine Fehlerseite angezeigt und keine Möglichkeit angeboten, trotzdem fortzufahren.
+
+Das bisherige Verhalten ermöglicht dem <ph name="NEWWINDOW_EVENT_NAME" />-Ereignis (https://developer.chrome.com/docs/extensions/reference/webviewTag/#event-newwindow) des <ph name="WEBVIEW_TAG_NAME" />-Tags auch, das neue Fenster an ein <ph name="WEBVIEW_TAG_NAME" />-Tag in einem separaten App-Fenster des entstehenden <ph name="WEBVIEW_TAG_NAME" />-Tags anzufügen. Mit dem neuen Verhalten ist dieses Anfügen weiterhin zulässig, der vom Aufruf an „<ph name="WINDOW_OPEN_NAME" />“ zurückgegebene Fensterverweis im entstehenden <ph name="WEBVIEW_TAG_NAME" />-Tag wird jedoch ungültig.
+
+Wenn diese Option aktiviert ist, wird das bisherige Verhalten verwendet.
+Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die Verhaltensänderung wirksam, während sie über den <ph name="PRODUCT_NAME" />-Veröffentlichungsprozess eingeführt wird.
+
+Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass diese Änderungen zu Ausfällen in Unternehmen führen. Diese Richtlinie wird in Version 117 entfernt.</translation>
 <translation id="4426601693403743089">Screencast-Dogfood für Family Link-Nutzer deaktivieren</translation>
 <translation id="4427173305799125784">Mit dem PDF-Viewer können PDFs nicht mit Anmerkungen versehen werden</translation>
 <translation id="4432762137771104529">Erweiterte Berichterstellung bei der Verwendung von Safe Browsing aktivieren</translation>
@@ -3674,6 +3707,13 @@ WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
 <translation id="4491607814095953976">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für die Anzeigenanalyse deaktiviert werden kann</translation>
 <translation id="4492287494009043413">Aufnahme von Screenshots deaktivieren</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
+<translation id="449419757874646879">Wenn diese Richtlinie deaktiviert ist, können über die Admin-Konsole keine Remote-Supportsitzungen gestartet werden.
+
+Diese Richtlinie wirkt sich nicht auf den Remotezugriff aus.
+
+Sie hindert Unternehmensadministratoren daran, eine Verbindung zu verwalteten <ph name="PRODUCT_OS_NAME" />-Geräten herzustellen.
+
+Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder nicht konfiguriert wird.</translation>
 <translation id="449423975179525290">Richtlinien für <ph name="PLUGIN_VM_NAME" /> konfigurieren.</translation>
 <translation id="4495390552861857186">Hiermit aktivierst du <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs.
 
@@ -3911,6 +3951,11 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 <translation id="471360812659157054">window.webkitStorageInfo ist nicht verfügbar.</translation>
 <translation id="4715773950737036924">Verfügbarkeit von Erweiterungen steuern, die nicht im Chrome Web Store veröffentlicht sind</translation>
 <translation id="4722122254122249791">Website-Isolierung für angegebene Ursprünge aktivieren</translation>
+<translation id="4722761845551711583">Dadurch wird festgelegt, für wie viele Sekunden ein Bild angezeigt wird, wenn für den Bildschirmschoner des Anmeldebildschirms mehrere Bilder verwendet werden.
+
+Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 60 Sekunden.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="4723829699367336876">Firewallausnahme über Client für Remotezugriff aktivieren</translation>
 <translation id="4725528134735324213">Android Backup Service aktivieren</translation>
 <translation id="4725691087141147920">Einwilligung zur Synchronisierung während der Anmeldung anzeigen</translation>
@@ -4359,6 +4404,15 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien fes
 Wird sie auf „True“ gesetzt oder nicht konfiguriert, kann <ph name="PRODUCT_NAME" /> Systembenachrichtigungen verwenden.
 
 Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /> keine Systembenachrichtigungen. Das Message Center von <ph name="PRODUCT_NAME" /> wird als Fallback genutzt.</translation>
+<translation id="5207700504551161524">Mit dieser Richtlinie wird eine Liste der Bilder konfiguriert, die als Bildschirmschoner auf dem Anmeldebildschirm angezeigt werden sollen.
+
+Jedes Element muss eine URL sein, die auf eine Bilddatei verweist. Es muss sich um JPEG-Dateien mit einer maximalen Dateigröße von 8 MB handeln. Ungültige URLs und nicht unterstützte Bilder werden ignoriert. Das <ph name="PRODUCT_OS_NAME" />-Gerät lädt diese Bilder herunter und speichert sie in einem lokalen Cache.
+
+Es können maximal 25 Bilder als Bildschirmschoner angezeigt werden. Es werden nur die ersten 25 URL-Einträge aus der Liste berücksichtigt.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.
+
+Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bildverweise enthält, wird der Bildschirmschoner auf dem Anmeldebildschirm unabhängig von dem in der Richtlinie <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> festgelegten Wert nicht angezeigt.</translation>
 <translation id="5208675398826212411">Mit dieser Richtlinie wird das Verhalten für die Intranet-Weiterleitung durch DNS-Abfangprüfungen konfiguriert. Durch die Prüfungen wird ermittelt, ob sich der Browser hinter einem Proxy befindet, der unbekannte Hostnamen weiterleitet.
 
       Wenn diese Richtlinie nicht konfiguriert ist, verwendet der Browser das Standardverhalten für DNS-Abfangprüfungen und Vorschläge zu Intranet-Weiterleitungen. In M88 sind diese Prüfungen standardmäßig aktiviert. In zukünftigen Versionen werden sie jedoch standardmäßig deaktiviert sein.
@@ -4847,6 +4901,7 @@ Wenn die Richtlinie nicht konfiguriert ist, können keine Domains auf „file://
 <translation id="5638334542697444045">Nutzer dürfen Instant Tethering nicht verwenden</translation>
 <translation id="5639454129004500060">Wenn diese Richtlinie aktiviert ist, enthält sie Informationen zum Herunterladen einer Desktopvorlagendatei.  Die Datei enthält eine Desktopvorlage, die für den aktuellen Nutzer bereitgestellt wird.
       Wenn die Richtlinie nicht aktiviert ist, wird keine vorkonfigurierte Desktopvorlage in die Liste der Desktopvorlagen aufgenommen.  Diese Richtlinie ist nur wirksam, wenn die Richtlinie „<ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME" />“ auf „true“ festgelegt ist.</translation>
+<translation id="5644038505105689131">Bildquelle für den Bildschirmschoner auf dem Anmeldebildschirm des Geräts.</translation>
 <translation id="5645779841392247734">Cookies auf diesen Websites zulassen</translation>
 <translation id="5646234199535103501">Konfigurationsrichtlinie für den Chrome Enterprise Connector "OnBulkDataEntry"</translation>
 <translation id="5648016151508002741">Ausführung von Onlineprüfungen von <ph name="OCSP_CRL_LABEL" />-verhindern</translation>
@@ -4873,6 +4928,7 @@ Wenn die Richtlinie nicht konfiguriert ist, können keine Domains auf „file://
 <translation id="5657752663637568277">Mit dieser Richtlinie wird festgelegt, ob Nutzern Warnungen zu veralteten Funktionen von <ph name="CLOUD_PRINT_NAME" /> im "Druckvorschau"-Dialogfeld oder auf den Einstellungsseiten angezeigt werden.
       Wenn diese Richtlinie auf "true" gesetzt wird, werden die Warnungen zu veralteten Funktionen ausgeblendet.
       Wenn diese Richtlinie auf "false" oder gesetzt oder nicht konfiguriert wird, werden die Warnungen zu veralteten Funktionen angezeigt.</translation>
+<translation id="5660228672907979869">Aktivierung der Drittanbieter-Speicherpartitionierung verhindern.</translation>
 <translation id="5666457529647159548">Nutzern erlauben, installierte Clientzertifikate zu verwalten.</translation>
 <translation id="5670286392821164294">Diese Richtlinie bietet eine Möglichkeit, die Liste der Sets zu überschreiben, die der Browser für First-Party-Set-Funktionen verwendet.
 
@@ -5313,6 +5369,15 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6131803221304830537">Renderer-Codeintegrität deaktivieren</translation>
 <translation id="6132506775968708399">Drittanbieter-Cookies blockieren</translation>
 <translation id="6133088669883929098">Schlüsselgenerierung für alle Websites zulassen</translation>
+<translation id="6134295464078457940">Mit dieser Richtlinie wird eine Liste der Bilder konfiguriert, die als Bildschirmschoner auf dem Sperrbildschirm angezeigt werden sollen.
+
+Jedes Element muss eine URL sein, die auf eine Bilddatei verweist. Es muss sich um JPEG-Dateien mit einer maximalen Dateigröße von 8 MB handeln. Ungültige URLs und nicht unterstützte Bilder werden ignoriert. Das <ph name="PRODUCT_OS_NAME" />-Gerät lädt diese Bilder herunter und speichert sie in einem lokalen Cache.
+
+Es können maximal 25 Bilder als Bildschirmschoner angezeigt werden. Es werden nur die ersten 25 URL-Einträge aus der Liste berücksichtigt.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.
+
+Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bildverweise enthält, wird der Bildschirmschoner auf dem Sperrbildschirm unabhängig von dem in der Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> festgelegten Wert nicht angezeigt.</translation>
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
 <translation id="6135552820180449830">Crosh (wird seit Version 99 unterstützt)</translation>
 <translation id="6138636318340561140">Safe Browsing-Status von URLs in Echtzeit prüfen</translation>
@@ -5359,6 +5424,15 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6158324314836466367">Unternehmens-Web-Store-Name (veraltet)</translation>
 <translation id="6164441518097008843">Anmeldung auf eine Liste von Nutzern beschränken</translation>
 <translation id="6169768162756928771">GAIA-Einstellungen zur Verwaltung der Nutzeridentität</translation>
+<translation id="6172110090237528457">Mit dieser Richtlinie wird der Bildschirmschoner auf Geräteebene für den Anmeldebildschirm konfiguriert.
+
+Wenn diese Richtlinie auf „true“ gesetzt ist, wird bei Inaktivität auf dem <ph name="PRODUCT_OS_NAME" />-Gerät ein Bildschirmschoner auf dem Anmeldebildschirm angezeigt.
+
+Ist die Richtlinie auf „false“ gesetzt oder nicht konfiguriert, wird kein Bildschirmschoner auf dem Anmeldebildschirm angezeigt.
+
+Der Bildschirmschoner auf dem Gerät zeigt die Bilder an, auf die in der Richtlinie <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" /> verwiesen wird. Wenn <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IMAGES_POLICY_NAME" /> nicht konfiguriert oder auf eine leere Liste bzw. eine Liste ohne gültige Bilder festgelegt ist, wird kein Bildschirmschoner auf dem Anmeldebildschirm angezeigt.
+
+Das Zeitlimit bei Inaktivität bis zum Start des Bildschirmschoners und das Intervall, in dem ein Bild angezeigt wird, können jeweils mit den Richtlinien <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> und <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> geändert werden. Wenn eine dieser Richtlinien nicht konfiguriert ist, werden stattdessen die Standardwerte verwendet.</translation>
 <translation id="6172896675583897796">Wenn die Richtlinie aktiviert ist, erhält Google Assistant die Berechtigung, auf den Bildschirmkontext zuzugreifen und Daten an einen Server zu senden. Ist die Richtlinie deaktiviert, darf Google Assistant nicht auf den Bildschirmkontext zugreifen.
 
       Ist die Richtlinie nicht konfiguriert, können Nutzer diese Funktion aktivieren oder deaktivieren.</translation>
@@ -5571,6 +5645,7 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
         Zugriffe auf solche URLs werden nicht auf die Chrome-Zeitbeschränkung angerechnet.
         Wenn du URLs auf die Zulassungsliste setzen möchtest, die mit den regulären Ausdrücken auf der Liste übereinstimmen, füge |url_list| reguläre Ausdrücke hinzu.
         Wenn du eine App auf die Zulassungsliste setzen möchtest, füge sie unter Angabe der |app_id| und des |app_type| |app_list| hinzu.</translation>
+<translation id="6334397544347592516">Verbindungen zu diesem Computer per Remote-Unterstützung von Unternehmensadministratoren zulassen</translation>
 <translation id="6337782882143073193">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen "<ph name="URL_BLOCKLIST_POLICY_NAME" />".
 
       Deaktiviert die aufgeführten Protokollschemas in <ph name="PRODUCT_NAME" />.
@@ -5744,6 +5819,15 @@ Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POL
 <translation id="6506486086262398387">Wenn die Richtlinie aktiviert ist, verwendet die Funktion zur Netzwerkfreigabe für <ph name="PRODUCT_OS_NAME" /> bei Bedarf NTLM zur Authentifizierung gegenüber SMB-Freigaben. Ist die Richtlinie deaktiviert, wird die NTLM-Authentifizierung gegenüber SMB-Freigaben ausgeschaltet.
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
+<translation id="6509376413448002446">Dadurch wird der Bildschirmschoner des Nutzers für den Sperrbildschirm konfiguriert.
+
+Wenn diese Richtlinie auf „true“ gesetzt ist, wird bei Inaktivität auf dem <ph name="PRODUCT_OS_NAME" />-Gerät ein Bildschirmschoner auf dem Sperrbildschirm angezeigt.
+
+Ist die Richtlinie auf „false“ gesetzt oder nicht konfiguriert, wird kein Bildschirmschoner auf dem Sperrbildschirm angezeigt.
+
+Der Bildschirmschoner des Nutzers zeigt die Bilder an, auf die in der Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_IMAGES_POLICY_NAME" /> verwiesen wird. Wenn <ph name="SCREENSAVER_LOCK_SCREEN_IMAGES_POLICY_NAME" /> nicht konfiguriert oder auf eine leere Liste bzw. eine Liste ohne gültige Bilder festgelegt ist, wird kein Bildschirmschoner auf dem Sperrbildschirm angezeigt.
+
+Das Zeitlimit bei Inaktivität bis zum Start Bildschirmschoners und das Intervall, in dem ein Bild angezeigt wird, können jeweils mit den Richtlinien <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> und <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> geändert werden. Wenn eine dieser Richtlinien nicht konfiguriert ist, werden stattdessen die Standardwerte verwendet.</translation>
 <translation id="651248769129998376">Keine Installationsanfragen für Erweiterungen erstellen und in der Admin-Konsole hochladen</translation>
 <translation id="6513453889192806240">HTTPS-Latenz</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-Bild</translation>
@@ -5792,6 +5876,7 @@ Weitere Informationen findest du in der Richtlinie <ph name="HTTPS_ONLY_MODE_POL
 
       Hinweis: Automatische Neustarts können derzeit nur stattfinden, wenn der Anmeldebildschirm angezeigt wird oder eine Kiosk-App-Sitzung läuft.</translation>
 <translation id="6556586932263358975">Sperren des Bildschirms zulassen</translation>
+<translation id="6557178935482719861">Clientseitigen Phishing-Schutz von Safe Browsing deaktivieren</translation>
 <translation id="6558013557780651644">Verzögerung vor Ausführung von Aktionen bei Inaktivität</translation>
 <translation id="6559057113164934677">Keine Website darf auf meine Kamera oder mein Mikrofon zugreifen</translation>
 <translation id="65591220958874949">Integrierten DNS-Client für Windows, macOS, Android und ChromeOS verwenden</translation>
@@ -7069,6 +7154,7 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 
       Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="7719808201797990069">URL-Muster-Ausnahmen für das Verwerfen von Tabs</translation>
+<translation id="7721018062743758054">Der clientseitige Phishing-Schutz von Safe Browsing wird durch die Richtlinie <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> gesteuert</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" />-Nutzer-ID</translation>
 <translation id="7724161903134898864">Wenn die Richtlinie auf "1" gesetzt ist, können Websites Pop-ups anzeigen. Wenn die Richtlinie auf "2" gesetzt ist, werden Pop-ups blockiert.
 
@@ -7240,6 +7326,11 @@ werden abgelehnt.</translation>
           Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7906983682927840536">Fetch-Keepalive-Dauer beim Herunterfahren</translation>
 <translation id="7908384265697653397">Zeitraum in Tagen, nach dem der Nutzer abgemeldet wird, wenn die Version von <ph name="PRODUCT_OS_NAME" /> niedriger ist als der angegebene <ph name="CHROMEOS_VERSION_PROPERTY_NAME" />-Wert.</translation>
+<translation id="7911685775490889216">Dadurch wird festgelegt, für wie viele Sekunden ein Bild angezeigt wird, wenn für den Bildschirmschoner des Sperrbildschirms mehrere Bilder verwendet werden.
+
+Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 60 Sekunden.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="7912255076272890813">Zulässige App- bzw. Erweiterungstypen konfigurieren</translation>
 <translation id="791267408364877739">Sicherheitswarnungen anzeigen, wenn potenziell schädliche Befehlszeilen-Flags verwendet werden</translation>
 <translation id="79156801312131034">Mit dieser Richtlinie kannst du festlegen, wie sich das System beim Start verhält. Wenn diese Einstellung deaktiviert ist, hat das den gleichen Effekt, als wäre sie nicht konfiguriert, da <ph name="PRODUCT_NAME" /> ein festgelegtes Verhalten beim Start benötigt.
@@ -7436,6 +7527,11 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8102913158860568230">Standardeinstellung für MediaStream</translation>
 <translation id="8104962233214241919">Client-Zertifikate für diese Websites automatisch auswählen</translation>
 <translation id="8109762054721090517">Vorlage für <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
+<translation id="8111331908123507719">Dadurch wird festgelegt, wie viele Sekunden das Gerät inaktiv bleibt, bevor der Bildschirmschoner auf dem Sperrbildschirm angezeigt wird.
+
+Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 7 Sekunden.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVER_LOCK_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="8113731369695819720">„Mono-Audio“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="8114382167597081590">Eingeschränkten Modus auf YouTube nicht erzwingen</translation>
 <translation id="8117662664312039036">Geräten nicht erlauben, PluginVm zu verwenden</translation>
@@ -7800,6 +7896,7 @@ Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deak
 <translation id="838870586332499308">Daten-Roaming aktivieren</translation>
 <translation id="8392478748777481636">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="8393850527597048037">Nur Plattform</translation>
+<translation id="8395350646076131800">Zeitlimit für die Inaktivität für den Bildschirmschoner auf dem Sperrbildschirm des Nutzers.</translation>
 <translation id="8395749934754392549">Legt die Einstellungen für den Android-Container (ARC) und Android-Apps fest.</translation>
 <translation id="8398952282584132331">Datenschutzbildschirm aktivieren</translation>
 <translation id="8402079500086185021">PDF-Dateien immer extern öffnen</translation>
@@ -8193,6 +8290,7 @@ Die Richtlinie ist eine Zuordnung von Konfigurations-IDs zu VM-Konfigurationen. 
 <translation id="8768528324886802059">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, welche nativen Nachrichtenhosts nicht der Liste der blockierten nativen Hosts unterliegen. Der Wert <ph name="WILDCARD_VALUE" /> in der Liste der blockierten nativen Hosts gibt an, dass alle nativen Nachrichtenhosts gesperrt sind, sofern sie nicht ausdrücklich zugelassen wurden.
 
       Standardmäßig sind alle nativen Nachrichtenhosts zulässig. Wurden jedoch alle nativen Nachrichtenhosts durch eine Richtlinie gesperrt, kann der Administrator diese Richtlinie mithilfe der Zulassungsliste ändern.</translation>
+<translation id="877101880914876353">Anzeigeintervall von Bildern für den Bildschirmschoner auf dem Anmeldebildschirm des Geräts.</translation>
 <translation id="8772900888819482215">Safe Browsing-Downloadschutz in Echtzeit deaktivieren</translation>
 <translation id="877557628527387598">Passwortanmeldung</translation>
 <translation id="8777369558049831576">Kästchen für "Immer öffnen" auf Bestätigungsaufforderung anzeigen</translation>
@@ -8553,6 +8651,7 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 <translation id="9112727953998243860">Unternehmensdrucker-Konfigurationsdatei</translation>
 <translation id="9113058104383612727">Kiosk-Tools zur Fehlerbehebung aktivieren</translation>
 <translation id="9113065986946552397">Ergebnisse der Bereinigung durch das Chrome Cleanup Tool werden immer an Google weitergegeben</translation>
+<translation id="9113262510565261950">Zeitlimit für die Inaktivität für den Bildschirmschoner auf dem Anmeldebildschirm des Geräts.</translation>
 <translation id="911605919007170833">Sicherheitsstatus melden</translation>
 <translation id="9117826695152538214">Wenn du die Richtlinie auf "True" setzt, bleibt die Einfingerbedienung aktiviert. Wenn du die Richtlinie auf "False" setzt, bleibt die Einfingerbedienung deaktiviert.
 
@@ -8580,6 +8679,7 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
 <translation id="9123464369663964441">Nutzern erlauben, Ausnahmen hinzuzufügen, um gemischte Inhalte zuzulassen</translation>
 <translation id="9124770007620653639">Daten zur Domainzuverlässigkeit nie an Google senden</translation>
 <translation id="9125694642546254164">Nutzung der Entwicklertools für Apps und Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, nicht zulassen, aber in anderen Kontexten zulassen</translation>
+<translation id="9126331659955304300">Auswahl des Nutzeravatars aus lokalem Dateisystem, Kamera und Google-Profil zulassen</translation>
 <translation id="9126491667911789829">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch – also ohne Interaktion des Nutzers – installiert werden und vom Nutzer weder deinstalliert noch deaktiviert werden können.
 
       Jedes Listenelement der Richtlinie ist ein Objekt, das aus der erforderlichen Komponente

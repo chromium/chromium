@@ -167,7 +167,6 @@
 <translation id="114721135501989771">Chrome で Google の最先端技術を活用</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
 <translation id="1147991416141538220">アクセスをリクエストするには、このデバイスの管理者にご連絡ください。</translation>
-<translation id="1148063863818152153">デバイスの EID</translation>
 <translation id="1148624853678088576">設定完了。</translation>
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1149483087970735785">支援技術</translation>
@@ -863,6 +862,7 @@
 <translation id="1744108098763830590">バックグラウンド ページ</translation>
 <translation id="1745732479023874451">連絡先を管理</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# 件のファイルをこのウェブアプリで開いて編集しますか？}}</translation>
+<translation id="1748329107062243374"><ph name="DEVICE_NAME" /> のパスキーを使用して <ph name="WEBSITE" /> にログインする</translation>
 <translation id="1748563609363301860">このパスワードは、Google アカウントまたはこのデバイスのみに保存できます。</translation>
 <translation id="1749733017156547309">パスワードを入力してください</translation>
 <translation id="1750172676754093297">セキュリティ キーにフィンガープリントを保存できません</translation>
@@ -1208,7 +1208,6 @@
 <translation id="2045969484888636535">Cookie のブロックを続行する</translation>
 <translation id="204622017488417136">以前インストールしたバージョンの Chrome にデバイスを戻します。すべてのユーザー アカウントとローカルデータは削除されます。この操作は元に戻せません。</translation>
 <translation id="2046702855113914483">ラーメン</translation>
-<translation id="2046770133657639077">デバイスの EID を表示</translation>
 <translation id="204706822916043810">仮想マシンを確認しています</translation>
 <translation id="2048182445208425546">ユーザーのネットワーク トラフィックへのアクセス</translation>
 <translation id="2048554637254265991">コンテナ マネージャーの起動中にエラーが発生しました。もう一度お試しください。</translation>
@@ -1769,7 +1768,6 @@
 <translation id="2502719318159902502">すべてのアクセス</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{画面 #}other{画面 #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> 中 <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">デバイスの EID は <ph name="EID_NUMBER" /> です。カスタマー サービスの担当者はこの EID 番号を使用してサービスを有効化できます。</translation>
 <translation id="250704661983564564">ディスプレイの配置</translation>
 <translation id="2507253002925770350">チケットを削除しました</translation>
 <translation id="2508428939232952663">Google Play ストア アカウント</translation>
@@ -3734,6 +3732,7 @@
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
+<translation id="4277529130885813215">別のデバイスを使用</translation>
 <translation id="4278390842282768270">許可</translation>
 <translation id="4278498748067682896">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>
@@ -4222,6 +4221,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
 <translation id="4711638718396952945">設定を復元</translation>
 <translation id="4713409221649555176">すべてのウィンドウを閉じるときに削除する</translation>
+<translation id="4715631922189108923">ユーザー名を編集</translation>
 <translation id="47158868804223727">グループ名をクリックして展開または折りたたむことができます</translation>
 <translation id="4716483597559580346">セキュリティ強化に向けて Powerwash を実行する</translation>
 <translation id="471759229191973607">テーマを変更</translation>
@@ -4633,6 +4633,7 @@
 <translation id="5108967062857032718">設定 - Android アプリの削除</translation>
 <translation id="5109044022078737958">ミア</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> を削除</translation>
+<translation id="5111326646107464148">新しいウィンドウでグループを開く</translation>
 <translation id="5111646998522066203">シークレット モードを終了</translation>
 <translation id="5111692334209731439">ブックマーク マネージャ(&amp;B)</translation>
 <translation id="5111794652433847656">このデバイスに <ph name="APP_NAME" /> のパスキーがありません</translation>
@@ -6607,6 +6608,7 @@
 <translation id="6903022061658753260">このアカウントで同期をオンにしたすべての Chrome ブラウザでデータが同期されます。Chrome OS の同期オプションについては、<ph name="LINK_BEGIN" />Chrome OS の設定<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="6903590427234129279">すべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
 <translation id="6903907808598579934">同期を有効にする</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> を検索</translation>
 <translation id="6904344821472985372">ファイル アクセス権を取り消す</translation>
 <translation id="6904655473976120856">終了するには [アプリ] ボタンを押します</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{パスワードの安全性を維持するため、1 分間操作がないと、Google パスワード マネージャーにより操作がロックされます}other{パスワードの安全性を維持するため、{NUM_MINS} 分間操作がないと、Google パスワード マネージャーにより操作がロックされます}}</translation>
@@ -7551,6 +7553,7 @@
 <translation id="7762243782113123335">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />（<ph name="DOWNLOAD_DOMAIN" /> から）</translation>
+<translation id="7764527477537408401">新しいウィンドウでグループを開く</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7765507180157272835">Bluetooth と Wi-Fi が必要です</translation>
 <translation id="7766082757934713382">アプリとシステムの自動アップデートを一時的に停止することで、ネットワークのデータ使用量を減らします。</translation>
@@ -7876,7 +7879,6 @@
 <translation id="8044899503464538266">遅い</translation>
 <translation id="8045253504249021590">同期は Google ダッシュボードで停止されています。</translation>
 <translation id="8045923671629973368">アプリケーション ID またはウェブストアの URL を入力します</translation>
-<translation id="8046132381940444654">カスタマー サービスの担当者はこの EID 番号を使用してサービスを有効化できます</translation>
 <translation id="8047242494569930800">Google アカウントに移動</translation>
 <translation id="804786196054284061">エンドユーザー使用許諾契約</translation>
 <translation id="8048728378294435881">データをバックアップして、他のデバイスで使用</translation>
@@ -8060,6 +8062,7 @@
 <translation id="8203732864715032075">デフォルトでこのパソコンにメッセージの通知を送信する<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">ディスプレイと周辺機器が一時的にリセットされる場合があります。この変更を有効にするには、周辺機器の電源を抜いてからもう一度接続してください。</translation>
 <translation id="820568752112382238">よくアクセスするサイト</translation>
+<translation id="8206267832882844324">メモを編集</translation>
 <translation id="8206745257863499010">ブルース</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8207404892907560325">パスキーを選択する</translation>
@@ -8668,6 +8671,7 @@
           &lt;p&gt;コマンドラインからの設定は可能です。フラグや環境変数について詳しくは、&lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; を実行してご確認ください。&lt;/p&gt;</translation>
 <translation id="8755175579224030324">デバイスに保存された証明書やキーの管理など、組織のセキュリティ関連のタスクを実行する</translation>
 <translation id="8755376271068075440">拡大(&amp;L)</translation>
+<translation id="8755584192133371929">共有するタブを選択してください</translation>
 <translation id="875604634276263540">画像の URL は無効です</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>
 <translation id="8757203080302669031">このタブでは Bluetooth デバイスのスキャンを実行中です。</translation>
@@ -8677,6 +8681,7 @@
 <translation id="8762886931014513155">ご利用の <ph name="DEVICE_TYPE" /> は更新が必要です</translation>
 <translation id="8763927697961133303">USB デバイス</translation>
 <translation id="8766796754185931010">ことえり</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> のすべての検索を表示</translation>
 <translation id="8767621466733104912">すべてのユーザーに対して Chrome を自動的に更新</translation>
 <translation id="8770406935328356739">拡張機能のルート ディレクトリ</translation>
 <translation id="8771300903067484968">スタートページの背景をデフォルトの背景にリセットしました。</translation>

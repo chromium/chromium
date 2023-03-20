@@ -169,7 +169,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="114721135501989771">Dapatkan kecanggihan Google di Chrome</translation>
 <translation id="1147322039136785890">Sekarang saatnya <ph name="SUPERVISED_USER_NAME" /> yang menggunakan perangkat</translation>
 <translation id="1147991416141538220">Untuk meminta akses, hubungi administrator perangkat ini.</translation>
-<translation id="1148063863818152153">EID perangkat Anda</translation>
 <translation id="1148624853678088576">Anda sudah siap!</translation>
 <translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1149483087970735785">Teknologi pendukung</translation>
@@ -1223,7 +1222,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2045969484888636535">Lanjutkan pemblokiran cookie</translation>
 <translation id="204622017488417136">Perangkat Anda akan dikembalikan ke versi Chrome yang terpasang sebelumnya. Semua akun pengguna dan data lokal akan dihapus. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Tampilkan EID perangkat</translation>
 <translation id="204706822916043810">Memeriksa mesin virtual</translation>
 <translation id="2048182445208425546">Mengakses lalu lintas jaringan Anda</translation>
 <translation id="2048554637254265991">Error saat memulai pengelola penampung. Coba lagi.</translation>
@@ -1789,7 +1787,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2502719318159902502">Akses penuh</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Layar #}other{Layar #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> dari <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID perangkat Anda adalah <ph name="EID_NUMBER" />. Perwakilan layanan pelanggan dapat menggunakan nomor EID tersebut untuk membantu Anda mengaktifkan layanan.</translation>
 <translation id="250704661983564564">Pengaturan tampilan</translation>
 <translation id="2507253002925770350">Tiket dihapus</translation>
 <translation id="2508428939232952663">Akun Google Play Store</translation>
@@ -4246,6 +4243,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4708849949179781599">Berhenti <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Pulihkan setelan</translation>
 <translation id="4713409221649555176">Hapus saat Anda menutup semua jendela</translation>
+<translation id="4715631922189108923">Edit nama pengguna</translation>
 <translation id="47158868804223727">Klik nama grup untuk memperluas atau menciutkannya</translation>
 <translation id="4716483597559580346">Powerwash untuk keamanan tambahan</translation>
 <translation id="471759229191973607">Ubah tema</translation>
@@ -7908,7 +7906,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8044899503464538266">Lambat</translation>
 <translation id="8045253504249021590">Sinkronisasi telah dihentikan melalui Dasbor Google.</translation>
 <translation id="8045923671629973368">Masukan ID aplikasi atau URL toko web</translation>
-<translation id="8046132381940444654">Perwakilan layanan pelanggan dapat menggunakan nomor EID ini untuk membantu Anda mengaktifkan layanan</translation>
 <translation id="8047242494569930800">Pindahkan ke Akun Google</translation>
 <translation id="804786196054284061">Perjanjian Lisensi Pengguna Akhir</translation>
 <translation id="8048728378294435881">Cadangkan data Anda dan gunakan di perangkat mana pun</translation>
@@ -8092,6 +8089,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8203732864715032075">Mengirim notifikasi dan secara default mengingat komputer ini untuk Message. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Layar dan periferal dapat direset sesaat. Agar perubahan ini dapat diterapkan, cabut dan colokkan kembali periferal Anda.</translation>
 <translation id="820568752112382238">Situs yang paling sering dikunjungi</translation>
+<translation id="8206267832882844324">Edit catatan</translation>
 <translation id="8206745257863499010">Jazzy</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8207404892907560325">Pilih kunci sandi</translation>

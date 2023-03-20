@@ -169,7 +169,6 @@
 <translation id="114721135501989771">‏תכונות חכמות של Google</translation>
 <translation id="1147322039136785890">עכשיו התור של <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">כדי לבקש גישה, צריך לפנות למנהל של המכשיר הזה.</translation>
-<translation id="1148063863818152153">‏מספר ה-EID של המכשיר</translation>
 <translation id="1148624853678088576">הכל מוכן!</translation>
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1149483087970735785">טכנולוגיה מסייעת</translation>
@@ -1218,7 +1217,6 @@
 <translation id="2045969484888636535">‏המשך לחסום קובצי Cookie</translation>
 <translation id="204622017488417136">‏המכשיר שלך יוחזר לגרסה הקודמת המותקנת של Chrome. כל חשבונות המשתמשים והנתונים המקומיים יוסרו. לא ניתן לבטל פעולה זו.</translation>
 <translation id="2046702855113914483">ראמן</translation>
-<translation id="2046770133657639077">‏הצגת מספר ה-EID של המכשיר</translation>
 <translation id="204706822916043810">המערכת בודקת את המכונה הווירטואלית</translation>
 <translation id="2048182445208425546">גישה לתנועת הרשת שלך</translation>
 <translation id="2048554637254265991">שגיאה בהפעלת מנהל המאגר. יש לנסות שוב.</translation>
@@ -1783,7 +1781,6 @@
 <translation id="2502719318159902502">גישה מלאה</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{מסך #}one{מסך #}two{מסך #}other{מסך #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> מתוך <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">‏מספר ה-EID של המכשיר הוא <ph name="EID_NUMBER" />. נציג משירות הלקוחות יכול להשתמש במספר ה-EID כדי לעזור לך להפעיל את השירות.</translation>
 <translation id="250704661983564564">פריסת מסכים</translation>
 <translation id="2507253002925770350">הכרטיס הוסר</translation>
 <translation id="2508428939232952663">‏חשבון בחנות Google Play</translation>
@@ -7884,7 +7881,6 @@
 <translation id="8044899503464538266">איטי</translation>
 <translation id="8045253504249021590">‏הסנכרון הושבת באמצעות מרכז השליטה של Google.</translation>
 <translation id="8045923671629973368">‏יש להזין מזהה אפליקציה או כתובת URL של חנות אינטרנט</translation>
-<translation id="8046132381940444654">‏נציג משירות הלקוחות יכול להשתמש במספר ה-EID הזה כדי לעזור לך להפעיל את השירות</translation>
 <translation id="8047242494569930800">‏העברה לחשבון Google</translation>
 <translation id="804786196054284061">הסכם רישיון למשתמש קצה</translation>
 <translation id="8048728378294435881">כדאי לגבות את הנתונים כדי להשתמש בהם בכל מכשיר</translation>

@@ -169,7 +169,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="114721135501989771">Kry Google-slimhede in Chrome</translation>
 <translation id="1147322039136785890">Dis nou <ph name="SUPERVISED_USER_NAME" /> se beurt</translation>
 <translation id="1147991416141538220">Kontak die administrateur van hierdie toestel om vir toegang te vra.</translation>
-<translation id="1148063863818152153">Jou toestel-EID</translation>
 <translation id="1148624853678088576">Jy's gereed!</translation>
 <translation id="1149401351239820326">Vervalmaand</translation>
 <translation id="1149483087970735785">Bystandstegnologie</translation>
@@ -1224,7 +1223,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2045969484888636535">Hou aan om webkoekies te blokkeer</translation>
 <translation id="204622017488417136">Jou toestel sal na die vorige geïnstalleerde weergawe van Chrome teruggestel word. Alle gebruikerrekeninge en plaaslike data sal verwyder word. Dit kan nie ontdoen word nie.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Wys toestel-EID</translation>
 <translation id="204706822916043810">Gaan tans die virtuele masjien na</translation>
 <translation id="2048182445208425546">Kry toegang tot jou netwerkverkeer</translation>
 <translation id="2048554637254265991">Kon nie die houerbestuurder begin nie. Probeer weer.</translation>
@@ -1790,7 +1788,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2502719318159902502">Volle toegang</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skerm #}other{Skerm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> van <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Jou toestel-EID is <ph name="EID_NUMBER" />. 'n Kliëntediensverteenwoordiger kan die EID-nommer gebruik om jou te help om die diens te aktiveer.</translation>
 <translation id="250704661983564564">Vertoonrangskikking</translation>
 <translation id="2507253002925770350">Kaartjie is verwyder</translation>
 <translation id="2508428939232952663">Google Play Winkel-rekening</translation>
@@ -7913,7 +7910,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8044899503464538266">Stadig</translation>
 <translation id="8045253504249021590">Sinkronisering is deur die Google Dashboard gestop.</translation>
 <translation id="8045923671629973368">Voer program-ID of webwinkel-URL in</translation>
-<translation id="8046132381940444654">'n Kliëntediensverteenwoordiger kan hierdie EID-nommer gebruik om jou te help om die diens te aktiveer</translation>
 <translation id="8047242494569930800">Skuif na Google-rekening toe</translation>
 <translation id="804786196054284061">Lisensie-ooreenkoms vir eindgebruikers</translation>
 <translation id="8048728378294435881">Rugsteun jou goed en gebruik dit op enige toestel</translation>

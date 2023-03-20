@@ -167,7 +167,6 @@
 <translation id="114721135501989771">Google ዘመናዊ ነገሮችን በChrome ላይ ያግኙ</translation>
 <translation id="1147322039136785890">አሁን የ<ph name="SUPERVISED_USER_NAME" /> ተራ ነው</translation>
 <translation id="1147991416141538220">መዳረሻን ለመጠየቅ የዚህ መሣሪያ አስተዳዳሪውን ያነጋግሩ።</translation>
-<translation id="1148063863818152153">የእርስዎ መሣሪያ EID</translation>
 <translation id="1148624853678088576">ተዘጋጅተዋል!</translation>
 <translation id="1149401351239820326">ጊዜው የሚያልፍበት ወር</translation>
 <translation id="1149483087970735785">ረዳት ቴክኖሎጂ</translation>
@@ -1220,7 +1219,6 @@
 <translation id="2045969484888636535">ኩኪዎች ማገዱን ይቀጥሉ</translation>
 <translation id="204622017488417136">የእርስዎ መሣሪያ ወደ ቀደም ሲል ተጭኖ የነበረው የChrome ስሪት እንዲመለስ ይደረጋል። ሁሉም የተጠቃሚ መለያዎች እና የአካባቢ ውሂብ ይወገዳሉ። ይህ አንዴ ከተደረገ በኋላ ሊቀለበስ አይችልም።</translation>
 <translation id="2046702855113914483">ራመን</translation>
-<translation id="2046770133657639077">የመሣሪያ EIDን አሳይ</translation>
 <translation id="204706822916043810">ምናባዊ ማሽኑን በመፈተሽ ላይ</translation>
 <translation id="2048182445208425546">የእርስዎን የአውታረ መረብ ትራፊክ ይድረስበት</translation>
 <translation id="2048554637254265991">የመያዣ አስተዳዳሪውን ማስጀመር ላይ ስህተት። እባክዎ እንደገና ይሞክሩ።</translation>
@@ -1784,7 +1782,6 @@
 <translation id="2502719318159902502">ሙሉ መዳረሻ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ማያ ገጽ #}one{ማያ ገጽ #}other{ማያ ገጽ #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> ከ <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">የእርስዎ መሣሪያ EID <ph name="EID_NUMBER" /> ነው። የደንበኛ አገልግሎት ተወካይ እርስዎ ይህን አገልግሎት እንዲያገብሩ የEID ቁጥር ሊጠቀም ይችላል።</translation>
 <translation id="250704661983564564">የማሳያ አደራደር</translation>
 <translation id="2507253002925770350">ቲኬት ተወግዷል</translation>
 <translation id="2508428939232952663">የGoogle Play መደብር መለያ</translation>
@@ -7910,7 +7907,6 @@ nil</translation>
 <translation id="8044899503464538266">ቀስ</translation>
 <translation id="8045253504249021590">ስምረት በGoogle ዳሽቦርዱ በኩል ቆሟል።</translation>
 <translation id="8045923671629973368">የመተግበሪያ መታወቂያ ወይም የድር መደብር ዩአርኤል ያስገቡ</translation>
-<translation id="8046132381940444654">የደንበኛ አገልግሎት ተወካይ ይህን EID ቁጥር እርስዎ ይህን አገልግሎት እንዲያገብሩ ሊጠቀም ይችላል፦</translation>
 <translation id="8047242494569930800">ወደ Google መለያ ይወሰድ?</translation>
 <translation id="804786196054284061">የመጨረሻ ተጠቃሚ የፍቃድ ስምምነት</translation>
 <translation id="8048728378294435881">የንብረትዎን ምትክ ያስቀምጡ እና በማንኛውም መሣሪያ ላይ ይጠቀሙበት</translation>

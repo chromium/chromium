@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">ล้างแคช Google ไดรฟ์แล้ว</translation>
 <translation id="2239068707900391003">คนกับกาแฟ</translation>
 <translation id="2251368349685848079">กู้คืนจากถังขยะ</translation>
+<translation id="2278133026967558505">การเข้าถึงไฟล์จากเว็บไซต์และ URL ทั้งหมด</translation>
 <translation id="2282155092769082568">URL การกำหนดค่าอัตโนมัติ:</translation>
 <translation id="2284767815536050991">พื้นที่เก็บข้อมูลแบบถอดได้</translation>
 <translation id="2288278176040912387">เครื่องเล่นแผ่นเสียง</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">ไม่มี "การจับคู่ชื่อสำรองของหัวเรื่อง" หรือ "การจับคู่ส่วนต่อท้ายโดเมน" ซึ่งใช้ในการยืนยันตัวตนของเซิร์ฟเวอร์การตรวจสอบสิทธิ์</translation>
 <translation id="7165320105431587207">ล้มเหลวในการกำหนดค่าเครือข่าย</translation>
 <translation id="7170041865419449892">อยู่นอกระยะสัญญาณ</translation>
+<translation id="7179579940054351344">การเข้าถึงไฟล์จากเว็บไซต์และ URL ทั้งหมด ยกเว้น <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">บันทึกแฟ้มเป็น</translation>

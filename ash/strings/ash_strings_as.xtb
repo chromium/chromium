@@ -1229,6 +1229,7 @@
 <translation id="7026338066939101231">হ্ৰাস</translation>
 <translation id="7029814467594812963">ছেশ্বনৰ পৰা প্ৰস্থান</translation>
 <translation id="7032161822340700104">কেৱল ৬ খন টেমপ্লে’টৰ অনুমতি আছে। এখন নতুন টেমপ্লে’ট ছেভ কৰিবলৈ অন্য এখন আঁতৰাওক।</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" />এ <ph name="DEVICE_NAME" /> ব্যৱহাৰ কৰিব বিচাৰে। আপোনাৰ ডিভাইচৰ কায়িক <ph name="DEVICE_NAME" /> ছুইচটো অন কৰক।</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">বিভিন্ন স্থিতি দেখুওৱা ঠাই সংকোচন কৰক</translation>
 <translation id="7045033600005038336">টেমপ্লে’টটো সলনি কৰিবনে?</translation>
@@ -1399,6 +1400,7 @@
 <translation id="793716872548410480">আপোনাৰ ক্লিপব’ৰ্ড চাবলৈ <ph name="SHORTCUT_KEY_NAME" /> + ভি টিপক। আপুনি প্ৰতিলিপি কৰা অন্তিম ৫ টা বস্তু আপোনাৰ ক্লিপব’ৰ্ডত ছেভ কৰা হৈছে।</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
 <translation id="7944023924886109030">আজিৰ বাবে আটাইবোৰ আমন্ত্ৰণ চাওক</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" />এ আপোনাৰ <ph name="DEVICE_NAME" /> ব্যৱহাৰ কৰিব বিচাৰে</translation>
 <translation id="7951630946012935453">কীব’ৰ্ডৰ পোহৰ কমাওক</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />ৰ পৰা</translation>
 <translation id="7968693143708939792">ফ’ল্ডাৰ বাছনি কৰক...</translation>

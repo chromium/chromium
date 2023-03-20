@@ -169,7 +169,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="114721135501989771">Get Google smarts in Chrome</translation>
 <translation id="1147322039136785890">Now it's <ph name="SUPERVISED_USER_NAME" />'s turn</translation>
 <translation id="1147991416141538220">To ask for access, contact the administrator of this device.</translation>
-<translation id="1148063863818152153">Your device EID</translation>
 <translation id="1148624853678088576">You’re all set!</translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1149483087970735785">Assistive technology</translation>
@@ -1225,7 +1224,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2045969484888636535">Continue blocking cookies</translation>
 <translation id="204622017488417136">Your device will be returned to the previously installed version of Chrome. All user accounts and local data will be removed. This cannot be undone.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Show device EID</translation>
 <translation id="204706822916043810">Checking the virtual machine</translation>
 <translation id="2048182445208425546">Access your network traffic</translation>
 <translation id="2048554637254265991">Error starting the container manager. Please try again.</translation>
@@ -1793,7 +1791,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2502719318159902502">Full access</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Screen #}other{Screen #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> of <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Your device EID is <ph name="EID_NUMBER" />. A customer service rep can use the EID number to help you activate the service.</translation>
 <translation id="250704661983564564">Display arrangement</translation>
 <translation id="2507253002925770350">Ticket removed</translation>
 <translation id="2507491234071975894">Speaker</translation>
@@ -7932,7 +7929,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8044899503464538266">Slow</translation>
 <translation id="8045253504249021590">Sync has been stopped via the Google Dashboard.</translation>
 <translation id="8045923671629973368">Enter application ID or web store URL</translation>
-<translation id="8046132381940444654">A customer service rep can use this EID number to help you activate the service</translation>
 <translation id="8047242494569930800">Move to Google Account</translation>
 <translation id="804786196054284061">End User Licence Agreement</translation>
 <translation id="8048728378294435881">Back up your stuff and use it on any device</translation>

@@ -167,7 +167,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="114721135501989771">Pametne Google funkcije</translation>
 <translation id="1147322039136785890">Sada je na redu <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Da biste zatražili pristup, obratite se administratoru ovog uređaja.</translation>
-<translation id="1148063863818152153">EID uređaja</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
 <translation id="1149401351239820326">Mesec isteka</translation>
 <translation id="1149483087970735785">Tehnologija za pomoć osobama sa invaliditetom</translation>
@@ -1211,7 +1210,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2045969484888636535">Nastavi sa blokiranjem kolačića</translation>
 <translation id="204622017488417136">Uređaj će biti vraćen na prethodno instaliranu verziju Chrome-a. Svi korisnički nalozi i lokalni podaci će biti uklonjeni. Ova radnja ne može da se opozove.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Prikaži EID uređaja</translation>
 <translation id="204706822916043810">Proverava se virtuelna mašina</translation>
 <translation id="2048182445208425546">Pristup mrežnom saobraćaju</translation>
 <translation id="2048554637254265991">Greška pri pokretanju menadžera kontejnera. Probajte ponovo.</translation>
@@ -1774,7 +1772,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2502719318159902502">Kompletan pristup</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekran #}one{Ekran #}few{Ekran #}other{Ekran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> od <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID uređaja je <ph name="EID_NUMBER" />. Predstavnik korisničke podrške može da koristi EID broj da bi vam pomogao da aktivirate uslugu.</translation>
 <translation id="250704661983564564">Raspored prikaza</translation>
 <translation id="2507253002925770350">Tiket je uklonjen</translation>
 <translation id="2508428939232952663">Nalog Google Play prodavnice</translation>
@@ -6627,6 +6624,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6903022061658753260">Podaci će se sinhronizovati u svim Chrome pregledačima u kojima ste uključili sinhronizaciju za ovaj nalog. Opcije sinhronizovanja Chrome OS-a potražite u <ph name="LINK_BEGIN" />podešavanjima Chrome OS-a<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Otvori sve (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
+<translation id="6903916726032521638">Potražite <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Opozovi pristup datotekama</translation>
 <translation id="6904655473976120856">Pritisnite dugme za aplikaciju da biste izašli</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Da bi zaštitio lozinke, Google menadžer lozinki se zaključava posle 1 minuta neaktivnosti}one{Da bi zaštitio lozinke, Google menadžer lozinki se zaključava posle {NUM_MINS} minuta neaktivnosti}few{Da bi zaštitio lozinke, Google menadžer lozinki se zaključava posle {NUM_MINS} minuta neaktivnosti}other{Da bi zaštitio lozinke, Google menadžer lozinki se zaključava posle {NUM_MINS} minuta neaktivnosti}}</translation>
@@ -7900,7 +7898,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8044899503464538266">Sporo</translation>
 <translation id="8045253504249021590">Sinhronizacija je zaustavljena preko Google kontrolne table.</translation>
 <translation id="8045923671629973368">Unesite ID aplikacije ili URL veb-prodavnice</translation>
-<translation id="8046132381940444654">Predstavnik korisničke podrške može da koristi ovaj EID broj da bi vam pomogao da aktivirate uslugu</translation>
 <translation id="8047242494569930800">Premesti na Google nalog</translation>
 <translation id="804786196054284061">Ugovor o licenciranju sa krajnjim korisnikom</translation>
 <translation id="8048728378294435881">Pravite rezervne kopije sadržaja i koristite ga na bilo kom uređaju</translation>
@@ -8703,6 +8700,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8762886931014513155">Treba da ažurirate <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">USB uređaj</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Prikazuje sve pretrage za <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Automatski ažuriraj Chrome za sve korisnike</translation>
 <translation id="8770406935328356739">Osnovni direktorijum dodatka</translation>
 <translation id="8771300903067484968">Pozadina početne stranice je resetovana na podrazumevanu pozadinu.</translation>

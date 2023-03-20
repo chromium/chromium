@@ -96,6 +96,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1407069428457324124">Dunkles Design</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> – Mit den Pfeiltasten kannst du zwischen den Datumsangaben wechseln.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installierte App</translation>
+<translation id="1414919006379339073">Aktuelles Fenster schließen</translation>
 <translation id="1415846719612499304">Netzwerkliste anzeigen. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Wenn du die Benachrichtigungsaktion ausführen möchtest, entsperre das Gerät</translation>
 <translation id="1420408895951708260">Nachtlicht an/aus. <ph name="STATE_TEXT" /></translation>
@@ -324,6 +325,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2621713457727696555">Gesichert</translation>
 <translation id="263399434338050016">„Alles auswählen“</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2647092942972307022"><ph name="USED_MEMORY" /> von <ph name="TOTAL_MEMORY" /> verfügbar</translation>
 <translation id="2653019840645008922">Fensteraufnahme</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2658778018866295321">Klicken und ziehen</translation>
@@ -615,6 +617,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
 <translation id="4114315158543974537">Phone Hub aktivieren</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="411881149140864134">Desktop links aktivieren</translation>
 <translation id="412298498316631026">Fenster</translation>
 <translation id="4123259114412175274">Prüfe zum Entsperren deines Chromebooks, ob Bluetooth auf dem Smartphone aktiviert ist</translation>
 <translation id="4125970834901680537">Apps können im Tabletmodus nicht gestreamt werden. Bitte versuch es noch einmal im Laptopmodus.</translation>
@@ -627,6 +630,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4165275524535002941">Kabel unterstützt keine Bildschirme</translation>
 <translation id="4177913004758410636">{0,plural, =1{Gerät innerhalb eines Tages neu starten}other{Gerät innerhalb von # Tagen neu starten}}</translation>
 <translation id="4181841719683918333">Sprachen</translation>
+<translation id="4185671786623711291">Aktives Fenster in den rechten Desktop verschieben</translation>
 <translation id="4192112279662688596">oder</translation>
 <translation id="4193857202545160520">Klicks und Tastenkombinationen anzeigen</translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
@@ -705,6 +709,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="453661520163887813">Voll geladen in <ph name="TIME" /> h</translation>
 <translation id="4538824937723742295">Screenshot vom ganzen Bildschirm machen</translation>
 <translation id="4544483149666270818">Fenster für die Aufnahme auswählen</translation>
+<translation id="4548482551627849548">Aktives Fenster in den linken Desktop verschieben</translation>
 <translation id="4560576029703263363">An</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
@@ -1093,6 +1098,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> erfordert, dass dein Gerät (<ph name="DEVICE_TYPE" />) vor Ablauf der Frist aktualisiert wird</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>
+<translation id="6495322433318104734">Bildschirmschoner wird angezeigt. Drücke zum Beenden eine beliebige Taste.</translation>
 <translation id="6495400115277918834">„Bild im Bild“ gestartet, zum Hervorheben Alt + Umschalttaste + V drücken</translation>
 <translation id="6497418457565568043">„Bitte nicht stören“ ist aktiviert</translation>
 <translation id="6500896621837555595">Aktualisieren</translation>
@@ -1209,6 +1215,7 @@ Neuinstallation</translation>
 <translation id="7026338066939101231">Verringern</translation>
 <translation id="7029814467594812963">Sitzung beenden</translation>
 <translation id="7032161822340700104">Es sind maximal sechs Vorlagen erlaubt. Entferne eine Vorlage, um eine neue zu speichern.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> möchte dein Gerät „<ph name="DEVICE_NAME" />“ verwenden. Aktiviere den physischen Schalter deines Geräts „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Statusbereich minimieren</translation>
 <translation id="7045033600005038336">Vorlage ersetzen?</translation>
@@ -1284,6 +1291,7 @@ Neuinstallation</translation>
 <translation id="746232733191930409">Modus zur Aufzeichnung des Bildschirms</translation>
 <translation id="7466449121337984263">Berühre den Sensor</translation>
 <translation id="7477793887173910789">Musik, Videos und andere Medien steuern</translation>
+<translation id="7489261257412536105">Vollbildmodus starten oder beenden</translation>
 <translation id="7490360161041035804">Du kannst wichtige Dateien anpinnen, auch Google Drive-Dateien. Bewege dazu den Mauszeiger auf ein Element oder öffne die App „Dateien“ und klicke mit der rechten Maustaste auf ein Element.</translation>
 <translation id="7497767806359279797">Sprache und Tastatur auswählen</translation>
 <translation id="7508690557411636492">Im letzten Monat geöffnet</translation>
@@ -1378,6 +1386,7 @@ Neuinstallation</translation>
 <translation id="793716872548410480">Drücke „<ph name="SHORTCUT_KEY_NAME" /> + V“, um die Zwischenablage zu öffnen. In der Zwischenablage werden immer die letzten fünf Elemente, die du kopiert hast, gespeichert.</translation>
 <translation id="7942349550061667556">Rot</translation>
 <translation id="7944023924886109030">Alle heutigen Termine anzeigen</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> möchte dein Gerät „<ph name="DEVICE_NAME" />“ verwenden.</translation>
 <translation id="7963992254934562106">Von <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Ordner auswählen...</translation>
 <translation id="797512352675305461">Vollbildlupe aktivieren oder deaktivieren</translation>
@@ -1440,6 +1449,7 @@ Neuinstallation</translation>
 <translation id="8230305195727960608">Farbumkehrmodus</translation>
 <translation id="8233140502441622270">App „Tastenkombinationen“ öffnen</translation>
 <translation id="8236042855478648955">Zeit für eine Pause</translation>
+<translation id="8239034820133090126">Desktop rechts aktivieren</translation>
 <translation id="8246282815785366524">Willkommen zurück, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, Smartphone-Akku bei <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, App</translation>
@@ -1489,6 +1499,7 @@ Neuinstallation</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="8496402167048257517">Nearby Share-Einstellungen anzeigen</translation>
 <translation id="8507563469658346379">Alle, <ph name="REMAINING_TIME" /></translation>
+<translation id="8511123073331775246">Neuen Desktop erstellen</translation>
 <translation id="85123341071060231">Auf deinem Chromebook ist Bluetooth deaktiviert. Gib zum Entsperren das Passwort ein.</translation>
 <translation id="8513108775083588393">Autom. drehen</translation>
 <translation id="851458219935658693">Fenster des aktuellen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
@@ -1499,6 +1510,7 @@ Neuinstallation</translation>
 <translation id="8546059259582788728">Sortierung rückgängig gemacht</translation>
 <translation id="8551588720239073785">Datums- und Uhrzeiteinstellungen</translation>
 <translation id="8553395910833293175">Ist bereits allen Desktops zugewiesen.</translation>
+<translation id="8555757996376137129">Aktuellen Desktop entfernen</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> empfiehlt, dein Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren</translation>
 <translation id="8563862697512465947">Benachrichtigungseinstellungen</translation>
 <translation id="857201607579416096">Menü wurde nach rechts unten auf dem Bildschirm verschoben.</translation>

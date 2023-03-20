@@ -167,7 +167,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="114721135501989771">Inteligentne rozwiązania Google w Chrome</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> może teraz odebrać urządzenie</translation>
 <translation id="1147991416141538220">Aby uzyskać dostęp, skontaktuj się z administratorem tego urządzenia.</translation>
-<translation id="1148063863818152153">Numer EID urządzenia</translation>
 <translation id="1148624853678088576">Wszystko gotowe</translation>
 <translation id="1149401351239820326">Miesiąc utraty ważności</translation>
 <translation id="1149483087970735785">Technologia wspomagająca osoby z niepełnosprawnością</translation>
@@ -494,6 +493,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1427269577154060167">Kraj</translation>
 <translation id="142765311413773645">Licencja aplikacji <ph name="APP_NAME" /> wygasła</translation>
 <translation id="1428373049397869723">W tej aplikacji możesz otwierać i edytować obsługiwane pliki, do których uzyskujesz dostęp za pomocą Findera lub innych aplikacji. Aby określić, które pliki powinny się domyślnie otwierać w tej aplikacji, <ph name="BEGIN_LINK" />dowiedz się, jak ustawić domyślne aplikacje na urządzeniu<ph name="END_LINK" />.</translation>
+<translation id="1428657116642077141">Zapisano notatkę dotyczącą hasła do tej strony. Aby ją wyświetlić, na pasku wyszukiwania i adresu wybierz Zarządzaj hasłami.</translation>
 <translation id="1428770807407000502">Wyłączyć synchronizację?</translation>
 <translation id="1429300045468813835">Wyczyszczono wszystko</translation>
 <translation id="1430915738399379752">Drukuj</translation>
@@ -1210,7 +1210,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2045969484888636535">Nadal blokuj pliki cookie</translation>
 <translation id="204622017488417136">Na Twoim urządzeniu zostanie przywrócona poprzednia wersja Chrome. Wszystkie zapisane lokalnie konta użytkowników i dane zostaną usunięte. Tej czynności nie można cofnąć.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Pokaż numer EID urządzenia</translation>
 <translation id="204706822916043810">Sprawdzam maszynę wirtualną</translation>
 <translation id="2048182445208425546">Dostęp do ruchu sieciowego</translation>
 <translation id="2048554637254265991">Błąd uruchamiania menedżera kontenerów. Spróbuj ponownie.</translation>
@@ -1237,6 +1236,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Kliknij, by zainstalować rozszerzenie}few{Kliknij, by zainstalować te rozszerzenia}many{Kliknij, by zainstalować te rozszerzenia}other{Kliknij, by zainstalować te rozszerzenia}}</translation>
 <translation id="2073496667646280609">Możliwe, że na Twoim urządzeniu lub w wybranej lokalizacji kopii zapasowej jest za mało wolnego miejsca. Zwolnij miejsce lub wybierz inną lokalizację.</translation>
 <translation id="2073505299004274893">Użyj maksymalnie <ph name="CHARACTER_LIMIT" /> znaków</translation>
+<translation id="2074060876831574159">Tutaj będą wyświetlane zapisane hasła.  &lt;a target='_blank' href='chrome://password-manager/'&gt;Importuj hasła&lt;/a&gt;</translation>
 <translation id="2075474481720804517">Bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076269580855484719">Ukryj wtyczkę</translation>
 <translation id="2076672359661571384">Średni (zalecany)</translation>
@@ -1480,6 +1480,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
     <ph name="BEGIN_PARAGRAPH2" />Rozpoczętej instalacji nie będzie można anulować.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Wymiana danych z dowolnym urządzeniem w domenach: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Przypisywanie przełącznika do czynności „Wybierz”</translation>
+<translation id="2271986192355138465">Dowiedz się, jak instalować aplikacje internetowe</translation>
 <translation id="2272430695183451567">Nie przypisano żadnych przełączników</translation>
 <translation id="2272570998639520080">Kieliszek do martini</translation>
 <translation id="2273119997271134996">Problem z portem wideo stacji dokującej</translation>
@@ -1762,7 +1763,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2502719318159902502">Pełny dostęp</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ekran #}few{Ekran #}many{Ekran #}other{Ekran #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> z <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Numer EID urządzenia to <ph name="EID_NUMBER" />. Pracownik obsługi klienta może użyć numeru EID do aktywowania usługi.</translation>
 <translation id="250704661983564564">Rozmieszczanie wyświetlaczy</translation>
 <translation id="2507253002925770350">Zgłoszenie zostało usunięte</translation>
 <translation id="2508428939232952663">Konto w Sklepie Google Play</translation>
@@ -3115,6 +3115,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3728188878314831180">Pokazuj powiadomienia z telefonu</translation>
 <translation id="3728681439294129328">Skonfiguruj adres sieci</translation>
 <translation id="3729506734996624908">Dozwolone witryny</translation>
+<translation id="3729957991398443677">Aby wyświetlić hasło lub dodać notatkę na jego temat, na pasku wyszukiwania i adresu wybierz Zarządzaj hasłami</translation>
 <translation id="3730076362938942381">Aplikacja do pisania rysikiem</translation>
 <translation id="3732078975418297900">Błąd w wierszu <ph name="ERROR_LINE" /></translation>
 <translation id="3732530910372558017">Kod PIN może mieć maksymalnie 63 znaki</translation>
@@ -5824,6 +5825,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6200151268994853226">Zarządzaj rozszerzeniem</translation>
 <translation id="6201608810045805374">Usunąć to konto?</translation>
 <translation id="6202304368170870640">Kodu PIN możesz używać do logowania się lub do odblokowywania urządzenia.</translation>
+<translation id="6203247599828309566">Zapisano notatkę dotyczącą hasła do tej strony. Aby ją wyświetlić, kliknij ikonę klucza.</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6206199626856438589">Wylogujemy Cię z wyświetlonych stron, także na otwartych kartach</translation>
 <translation id="6206311232642889873">Kop&amp;iuj grafikę</translation>
@@ -6932,6 +6934,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
 <translation id="7207457272187520234">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="7207631048330366454">Szukaj aplikacji</translation>
+<translation id="7210257969463271891">Tutaj pojawią się aplikacje internetowe, które zainstalujesz</translation>
 <translation id="7210471695184432500">Aby zaimportować hasła do Menedżera haseł Google na tym urządzeniu, wybierz plik CSV</translation>
 <translation id="7210499381659830293">Drukarki dostępne za pomocą rozszerzeń</translation>
 <translation id="7211783048245131419">Jeszcze nie przypisano żadnego przełącznika</translation>
@@ -7886,7 +7889,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8044899503464538266">Powoli</translation>
 <translation id="8045253504249021590">Synchronizacja została zatrzymana przez Panel Google.</translation>
 <translation id="8045923671629973368">Wpisz identyfikator aplikacji lub URL sklepu internetowego</translation>
-<translation id="8046132381940444654">Pracownik obsługi klienta może użyć tego numeru EID do aktywowania usługi</translation>
 <translation id="8047242494569930800">Przenieś na konto Google</translation>
 <translation id="804786196054284061">Umowa licencyjna użytkownika</translation>
 <translation id="8048728378294435881">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu</translation>
@@ -9165,6 +9167,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9179524979050048593">Nazwa użytkownika na ekranie logowania</translation>
 <translation id="9180281769944411366">Może to potrwać kilka minut. Uruchamiam kontener Linuksa.</translation>
 <translation id="9180380851667544951">Strona może udostępniać ekran</translation>
+<translation id="9180847522826713506">Aby wyświetlić hasło lub dodać notatkę na jego temat, kliknij ikonę klucza</translation>
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>
 <translation id="9183331776983279456">Chrome automatycznie usuwa witryny starsze niż 4 tygodnie. Witryna, którą odwiedzisz ponownie, może pojawić się znów na liście. Możesz też zablokować witrynie możliwość sugerowania reklam.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>

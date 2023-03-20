@@ -519,6 +519,7 @@ Deine Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Gib dies
 <translation id="4737560986434232178">Auf zuletzt geöffneten Tabs suchen</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4747097190499141774">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay. Nur Personen mit deiner Passphrase können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du sie vergessen hast oder diese Einstellung ändern möchtest, musst du die Synchronisierung zurücksetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, nur auf diesem Gerät, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Neuer Inkognitotab</translation>
 <translation id="4766112107778026136">Discover &amp; Mitlesen</translation>
 <translation id="4775879719735953715">Standardbrowser</translation>
@@ -540,6 +541,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="48274138579728272">Als gelesen markieren</translation>
 <translation id="4833686396768033263">„Kürzlich angesehene Tabs“ ist nicht verfügbar</translation>
 <translation id="4833786495304741580">Nutzungsstatistiken und Absturzberichte werden automatisch an Google gesendet.</translation>
+<translation id="4834499902900503484">Wenn du in Chrome angemeldet bist, werden Passwörter, die du speicherst, in deinem Google-Konto gespeichert. Du kannst dies <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
 <translation id="4840495572919996524">Deine Lesezeichen, der Verlauf, deine Passwörter und andere Einstellungen werden nicht mehr mit deinem Google-Konto synchronisiert.</translation>
 <translation id="4844899002472726590">Hier kannst du Themen sehen und bearbeiten, die dich interessieren</translation>
 <translation id="4848999860252535517">Passwort für <ph name="WEBSITE" /> löschen?</translation>
@@ -683,6 +685,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5899314093904173337">Um diesen Inhalt mit Leuten in deiner Nähe zu teilen, bitte sie, den QR-Code mit ihrer Kamera oder einer entsprechenden App zu scannen.</translation>
 <translation id="5911030830365207728">Google Übersetzer</translation>
 <translation id="5913600720976431809">Optionen zum Übersetzen der Seite</translation>
+<translation id="5922999516621365983">Ziehe den Tab zum Anpinnen hierher.</translation>
 <translation id="5938160824633642847">Der Speicher deines Geräts ist fast voll. Gib Speicherplatz frei und versuche es dann noch einmal.</translation>
 <translation id="5948291296578561264">Dadurch kannst du Fotos in der Fotogalerie speichern.</translation>
 <translation id="5951816930277761335">Link teilen</translation>
@@ -943,6 +946,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
 <translation id="7603852183842204213">Pop-ups blockiert (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Passwort löschen</translation>
+<translation id="7611459119367035420">Die angepinnten Tabs findest du hier.</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
 <translation id="7646263789464975852">Menü → Einstellungen → Sicherheitscheck</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
@@ -955,6 +959,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7720410380936703141">WIEDERHOLEN</translation>
 <translation id="7726702057919861819">„Menü“ → „Verlauf“ → „Browserdaten löschen“</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Nur auf diesem Gerät.</translation>
 <translation id="7738120385185846461">Problem melden…</translation>
 <translation id="7741325291586284254">Seite „Neuer Inkognitotab“</translation>
 <translation id="7744394900930577716">Passwörter in anderen Apps</translation>

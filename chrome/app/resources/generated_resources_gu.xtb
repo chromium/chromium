@@ -167,7 +167,6 @@
 <translation id="114721135501989771">Chromeમાં Google સ્માર્ટ મેળવો</translation>
 <translation id="1147322039136785890">હવે <ph name="SUPERVISED_USER_NAME" />નો વારો છે</translation>
 <translation id="1147991416141538220">ઍક્સેસ વિશે પૂછવા માટે આ ડિવાઇસના વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
-<translation id="1148063863818152153">તમારા ડિવાઇસનો EID</translation>
 <translation id="1148624853678088576">તમે બધું સેટ કરી લીધું!</translation>
 <translation id="1149401351239820326">સમય સમાપ્તિ મહિનો</translation>
 <translation id="1149483087970735785">સહાયક ટેક્નોલોજી</translation>
@@ -861,6 +860,7 @@
 <translation id="1744108098763830590">બૅકગ્રાઉન્ડ પેજ</translation>
 <translation id="1745732479023874451">સંપર્કો મેનેજ કરો</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{# ફાઇલને આ વેબ ઍપમાં ખોલીને તેમાં ફેરફાર કરીએ?}other{# ફાઇલને આ વેબ ઍપમાં ખોલીને તેમાં ફેરફાર કરીએ?}}</translation>
+<translation id="1748329107062243374"><ph name="WEBSITE" />માં સાઇન ઇન કરવા માટે, <ph name="DEVICE_NAME" />ની કોઈ પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1748563609363301860">તમે આ પાસવર્ડને તમારા Google એકાઉન્ટમાં અથવા માત્ર આ ડિવાઇસ પર સાચવી શકો છો</translation>
 <translation id="1749733017156547309">પાસવર્ડ જરૂરી છે</translation>
 <translation id="1750172676754093297">તમારી સુરક્ષા કી કોઈ ફિંગરપ્રિન્ટને સ્ટોર કરી શકતી નથી</translation>
@@ -1208,7 +1208,6 @@
 <translation id="2045969484888636535">કૂકીઝ અવરોધિત કરવાનું ચાલુ રાખો</translation>
 <translation id="204622017488417136">તમારું ડિવાઇસ Chromeના અગાઉ ઇન્ટોલ કરેલા વર્ઝન પર પરત ફરશે. તમામ વપરાશકર્તા એકાઉન્ટ અને સ્થાનિક ડેટા દૂર કરવામાં આવશે. આ પહેલાંના જેવું કરી શકાતું નથી.</translation>
 <translation id="2046702855113914483">રામેન - જાપાનના એક પ્રકારના નૂડલ</translation>
-<translation id="2046770133657639077">ડિવાઇસનું EID બતાવો</translation>
 <translation id="204706822916043810">વર્ચ્યુઅલ મશીન ચેક કરી રહ્યાં છીએ</translation>
 <translation id="2048182445208425546">તમારા નેટવર્ક ટ્રાફિકની ઍક્સેસ</translation>
 <translation id="2048554637254265991">કન્ટેનર મેનેજર શરૂ થવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
@@ -1772,7 +1771,6 @@
 <translation id="2502719318159902502">સંપૂર્ણ ઍક્સેસ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{સ્ક્રીન #}one{સ્ક્રીન #}other{સ્ક્રીન #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> માંથી <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">તમારા ડિવાઇસનું EID <ph name="EID_NUMBER" /> છે. સેવા સક્રિય કરવામાં તમારી સહાય કરવા માટે, કોઈ ગ્રાહક સેવા પ્રતિનિધિ આ EID નંબરનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="250704661983564564">ડિસ્પ્લેની ગોઠવણી</translation>
 <translation id="2507253002925770350">ટિકિટ કાઢી નાખી</translation>
 <translation id="2508428939232952663">Google Play Store એકાઉન્ટ</translation>
@@ -3739,6 +3737,7 @@
 <translation id="4275397969489577657">ઇવેન્ટ સ્ટ્રીમ લૉગિંગ ચાલુ કરો</translation>
 <translation id="4275830172053184480">તમારું ઉપકરણ પુનઃપ્રારંભ કરો</translation>
 <translation id="4277434192562187284">XML કન્ફિગ્યુરેશન સૉર્સ</translation>
+<translation id="4277529130885813215">કોઈ અન્ય ડિવાઇસનો ઉપયોગ કરો</translation>
 <translation id="4278390842282768270">મંજૂર</translation>
 <translation id="4278498748067682896">તમે 'કિઓસ્ક અને સાઇનેજ અપગ્રેડ'નો ઉપયોગ કરશો, જે ડિવાઇસને ફક્ત કિઓસ્ક અને સાઇનેજ મોડમાં ચલાવવાની મંજૂરી આપે છે. જો તમે ઇચ્છતા હો કે વપરાશકર્તાઓ ડિવાઇસમાં સાઇન ઇન કરે, તો કૃપા કરીને પાછા જાઓ અને Chrome Enterprise Upgradeનો ઉપયોગ કરીને નોંધણી કરો.</translation>
 <translation id="4278779213160967034">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. ફાઇલ ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
@@ -4639,6 +4638,7 @@
 <translation id="5108967062857032718">સેટિંગ - Android ઍપ કાઢી નાખો</translation>
 <translation id="5109044022078737958">મિઆ</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> કાઢી નાખો</translation>
+<translation id="5111326646107464148">નવી વિન્ડોમાં ગ્રૂપ ખોલો</translation>
 <translation id="5111646998522066203">છૂપા મોડથી બહાર નીકળો</translation>
 <translation id="5111692334209731439">&amp;બુકમાર્ક વ્યવસ્થાપક</translation>
 <translation id="5111794652433847656"><ph name="APP_NAME" /> માટે આ ડિવાઇસ પર કોઈપણ પાસકી ઉપલબ્ધ નથી</translation>
@@ -7568,6 +7568,7 @@ USB ડિવાઇસ</translation>
 <translation id="7762243782113123335">માફ કરશો, કંઈક ખોટું થયું. કૃપા કરીને વર્ણનમાં #bruschetta સાથે પ્રતિસાદ ફાઇલ કરો. ભૂલનો કોડ <ph name="ERROR" /> છે.</translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> પરથી <ph name="DOWNLOAD_RECEIVED" /> પ્રાપ્ત કર્યું</translation>
+<translation id="7764527477537408401">નવી વિન્ડોમાં ગ્રૂપ ખોલો</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7765507180157272835">બ્લૂટૂથ અને વાઇ-ફાઇ જરૂરી છે</translation>
 <translation id="7766082757934713382">ઑટોમૅટિક રીતે થતી ઍપ અને સિસ્ટમ અપડેટ થોભાવીને નેટવર્કના ડેટા વપરાશને ઘટાડી શકાય છે</translation>
@@ -7888,7 +7889,6 @@ USB ડિવાઇસ</translation>
 <translation id="8044899503464538266">ધીમું</translation>
 <translation id="8045253504249021590">સિંક, Google ડૅશબોર્ડ દ્વારા અટકાવવામાં આવ્યું છે.</translation>
 <translation id="8045923671629973368">ઍપ્લિકેશન ID અથવા વેબસ્ટોર URL દાખલ કરો</translation>
-<translation id="8046132381940444654">સેવા સક્રિય કરવામાં તમારી સહાય કરવા માટે, કોઈ ગ્રાહક સેવા પ્રતિનિધિ આ EID નંબરનો ઉપયોગ કરી શકે છે</translation>
 <translation id="8047242494569930800">Google એકાઉન્ટમાં ખસેડો</translation>
 <translation id="804786196054284061">વાપરનાર લાઇસન્સ કરાર</translation>
 <translation id="8048728378294435881">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો</translation>
@@ -8680,6 +8680,7 @@ USB ડિવાઇસ</translation>
          &lt;p&gt;પણ તમે કમાન્ડ લાઇન દ્વારા હજી પણ ગોઠવી શકો છો. કૃપા કરીને ફ્લેગ અને વાતાવરણ વેરિએબલ પર વધુ માહિતી માટે &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; જુઓ.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">તમારી સંસ્થા માટે સુરક્ષા સંબંધિત કાર્યો કરો, જેમ કે ડિવાઇસ પર સ્ટોર કરેલા પ્રમાણપત્રો અને કી મેનેજ કરવા</translation>
 <translation id="8755376271068075440">&amp;વધુ મોટું</translation>
+<translation id="8755584192133371929">શેર કરવા માટે, કોઈ ટૅબ પસંદ કરો</translation>
 <translation id="875604634276263540">છબીનું url અમાન્ય છે</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="8757203080302669031">આ ટૅબ સક્રિય રીતે બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરી રહ્યું છે.</translation>

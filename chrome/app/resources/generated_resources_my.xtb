@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chrome တွင် Google ကို ပို၍အဆင့်မြင့်လာအောင် ပြုလုပ်ခြင်း</translation>
 <translation id="1147322039136785890">ယခု <ph name="SUPERVISED_USER_NAME" /> ၏ အလှည့်ပါ</translation>
 <translation id="1147991416141538220">ဝင်ကြည့်ခွင့်တောင်းရန် ဤစက်၏ စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
-<translation id="1148063863818152153">သင့်စက်၏ EID</translation>
 <translation id="1148624853678088576">အဆင်သင့်ဖြစ်ပြီ!</translation>
 <translation id="1149401351239820326">သက်တမ်းကုန်ဆုံးမည့်လ</translation>
 <translation id="1149483087970735785">ပံ့ပိုးမှု နည်းပညာ</translation>
@@ -1222,7 +1221,6 @@
 <translation id="2045969484888636535">ကွတ်ကီများကို ဆက်လက် ပိတ်ဆို့မည်</translation>
 <translation id="204622017488417136">ဤစက်ကိရိယာသည် ယခင်က သွင်းယူထားသည့် Chrome ဗားရှင်းသို့ ပြန်ရောက်သွားမည်။ သုံးသူအကောင့်များနှင့် စက်တွင်းရှိ အချက်အလက်များအားလုံး ဖယ်ရှားခံရမည်။ ပြန်မရယူနိုင်ပါ။</translation>
 <translation id="2046702855113914483">ခေါက်ဆွဲ</translation>
-<translation id="2046770133657639077">စက် EID ပြရန်</translation>
 <translation id="204706822916043810">ပကတိအသွင်စက်ကို စစ်ဆေးနေသည်</translation>
 <translation id="2048182445208425546">သင်၏ ကွန်ရက် အသုံးပြုမှုကို ရယူသုံးရန်</translation>
 <translation id="2048554637254265991">ကွန်တိန်နာမန်နေဂျာကို စတင်ရာတွင် အမှားရှိသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
@@ -1788,7 +1786,6 @@
 <translation id="2502719318159902502">အကန့်အသတ်မရှိ အသုံးပြုခွင့်</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{မျက်နှာပြင် #}other{မျက်နှာပြင် #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />ထဲက <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">သင့်စက် EID သည် <ph name="EID_NUMBER" /> ဖြစ်သည်။ ဝန်ဆောင်မှုကို သင်စသုံးနိုင်ရန် ဝန်ဆောင်မှုဌာနကိုယ်စားလှယ်က EID နံပါတ်ကို အသုံးပြုနိုင်သည်။</translation>
 <translation id="250704661983564564">ဖန်သားပြင်ပြသမှု အစီအစဉ်</translation>
 <translation id="2507253002925770350">လက်မှတ်ကို ဖယ်ရှားထားသည်</translation>
 <translation id="2508428939232952663">Google Play စတိုးအကောင့်</translation>
@@ -7908,7 +7905,6 @@
 <translation id="8044899503464538266">နှေး</translation>
 <translation id="8045253504249021590">Google Dashboard မှတစ်ဆင့် စင့်ခ်လုပ်ခြင်းကို ရပ်တန့်လိုက်ပါပြီ။</translation>
 <translation id="8045923671629973368">အပလီကေးရှင်း ID သို့မဟုတ် ဝဘ်စတိုး URL ကို ထည့်ပါ</translation>
-<translation id="8046132381940444654">ဝန်ဆောင်မှုကို သင်စသုံးနိုင်ရန် ဝန်ဆောင်မှုဌာနကိုယ်စားလှယ်က ဤ EID နံပါတ်ကို အသုံးပြုနိုင်သည်</translation>
 <translation id="8047242494569930800">Google Account သို့ ရွှေ့ရန်</translation>
 <translation id="804786196054284061">အသုံးပြုသူ လိုင်စင် သဘောတူညီချက်</translation>
 <translation id="8048728378294435881">သင့်အချက်အလက်များကို အရန်သိမ်းပြီး စက်တိုင်းတွင် သုံးနိုင်သည်</translation>

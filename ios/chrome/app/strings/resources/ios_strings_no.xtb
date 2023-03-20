@@ -481,6 +481,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4474494258097106883">Laget for iPhonen din</translation>
 <translation id="4476574785019001431">Innstillinger</translation>
 <translation id="448433063499977729">Synkronisering er avslått</translation>
+<translation id="4489536976005181779">{count,plural, =1{Siden er lagt til på leselisten i kontoen din, {email}}other{Sidene er lagt til på leselisten i kontoen din, {email}}}</translation>
 <translation id="4496373720959965247">Legg til faner, og bytt mellom sider</translation>
 <translation id="4502566650163919158">Sjekk nå</translation>
 <translation id="4505980578794259603">Sist sjekket <ph name="TIME" />.</translation>

@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chromeமில் Google ஸ்மார்ட்களை பெறுக</translation>
 <translation id="1147322039136785890">சாதனத்தைப் பயன்படுத்துவதற்கான <ph name="SUPERVISED_USER_NAME" /> இன் முறை வந்துவிட்டது</translation>
 <translation id="1147991416141538220">அணுகலைக் கோர இந்தச் சாதனத்தின் நிர்வாகியைத் தொடர்பு கொள்ளவும்.</translation>
-<translation id="1148063863818152153">உங்கள் சாதனத்தின் EID</translation>
 <translation id="1148624853678088576">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்!</translation>
 <translation id="1149401351239820326">காலாவதியாகும் மாதம்</translation>
 <translation id="1149483087970735785">உதவிக்கான தொழில்நுட்பம்</translation>
@@ -1222,7 +1221,6 @@
 <translation id="2045969484888636535">தொடர்ந்து குக்கீகளைத் தடுக்கவும்</translation>
 <translation id="204622017488417136">ஏற்கனவே நிறுவப்பட்ட Chrome இன் பதிப்பிற்கு உங்கள் சாதனம் மாற்றியமைக்கப்படும். எல்லா பயனர் கணக்குகளும் அகத் தரவும் அகற்றப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="2046702855113914483">ரேமன்</translation>
-<translation id="2046770133657639077">சாதனத்தின் EIDயைக் காட்டு</translation>
 <translation id="204706822916043810">விர்ச்சுவல் மெஷினைச் சரிபார்க்கிறது</translation>
 <translation id="2048182445208425546">உங்கள் நெட்வொர்க் ட்ராஃபிக்கை அணுகுதல்</translation>
 <translation id="2048554637254265991">கண்டெய்னர் நிர்வாகியைத் தொடங்குவதில் பிழை. மீண்டும் முயலவும்.</translation>
@@ -1788,7 +1786,6 @@
 <translation id="2502719318159902502">முழு அணுகல்</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{திரை #}other{திரை #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> இல் <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">உங்கள் சாதனத்தின் EID: <ph name="EID_NUMBER" />. சேவையை இயக்க, EID எண்ணை வாடிக்கையாளர் சேவைப் பிரதிநிதி பயன்படுத்தலாம்.</translation>
 <translation id="250704661983564564">டிஸ்ப்ளேவை ஒழுங்கமைத்தல்</translation>
 <translation id="2507253002925770350">டிக்கெட் அகற்றப்பட்டது</translation>
 <translation id="2508428939232952663">Google Play Store கணக்கு</translation>
@@ -4245,6 +4242,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
 <translation id="4711638718396952945">அமைப்புகளை மீட்டெடு</translation>
 <translation id="4713409221649555176">சாளரங்கள் அனைத்தையும் மூடும்போது நீக்கு</translation>
+<translation id="4715631922189108923">பயனர்பெயரைத் திருத்தலாம்</translation>
 <translation id="47158868804223727">விரிவாக்கவோ சுருக்கவோ குழுவின் பெயரைக் கிளிக் செய்யவும்</translation>
 <translation id="4716483597559580346">கூடுதல் பாதுகாப்பிற்கு, பவர்வாஷ் செய்யவும்</translation>
 <translation id="471759229191973607">தீமினை மாற்று</translation>
@@ -7899,7 +7897,6 @@
 <translation id="8044899503464538266">மெதுவான</translation>
 <translation id="8045253504249021590">Google Dashboard மூலம் ஒத்திசைத்தல் நிறுத்தப்பட்டுள்ளது.</translation>
 <translation id="8045923671629973368">ஆப்ஸ் ஐடி அல்லது இணைய அங்காடி URLஐ உள்ளிடவும்</translation>
-<translation id="8046132381940444654">சேவையை இயக்க, இந்த EID எண்ணை வாடிக்கையாளர் சேவைப் பிரதிநிதி பயன்படுத்தலாம்</translation>
 <translation id="8047242494569930800">Google கணக்கிற்கு நகர்த்து</translation>
 <translation id="804786196054284061">இறுதிப் பயனர் உரிம ஒப்பந்தம்</translation>
 <translation id="8048728378294435881">உங்கள் தரவைக் காப்புப் பிரதி எடுத்து எந்தச் சாதனத்தில் வேண்டுமானாலும் பயன்படுத்தலாம்</translation>
@@ -8083,6 +8080,7 @@
 <translation id="8203732864715032075">இந்தக் கம்ப்யூட்டரை இயல்பாக நினைவில் வைத்து, மெசேஜஸ் அறிவிப்புகளை அனுப்பும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">உங்கள் டிஸ்பிளேக்களும் சாதனங்களும் விரைவில் மீட்டமைக்கப்படக்கூடும். இதைச் செயல்படுத்த, சாதனங்களின் இணைப்பைத் துண்டித்துவிட்டு மீண்டும் இணைக்கவும்.</translation>
 <translation id="820568752112382238">அதிகம் பார்த்த தளங்கள்</translation>
+<translation id="8206267832882844324">குறிப்பைத் திருத்தலாம்</translation>
 <translation id="8206745257863499010">ப்ளூஸி</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8207404892907560325">கடவுச்சாவியைத் தேர்வுசெய்யுங்கள்</translation>

@@ -169,7 +169,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="114721135501989771">Google pintar di Chrome</translation>
 <translation id="1147322039136785890">Kini giliran <ph name="SUPERVISED_USER_NAME" /> pula</translation>
 <translation id="1147991416141538220">Untuk meminta akses, hubungi pentadbir peranti ini.</translation>
-<translation id="1148063863818152153">EID peranti anda</translation>
 <translation id="1148624853678088576">Anda telah bersedia!</translation>
 <translation id="1149401351239820326">Bulan tamat tempoh</translation>
 <translation id="1149483087970735785">Teknologi bantuan</translation>
@@ -1224,7 +1223,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2045969484888636535">Terus menyekat kuki</translation>
 <translation id="204622017488417136">Peranti anda akan kembali ke versi Chrome yang dipasang sebelum ini. Semua akaun pengguna dan data setempat akan dialih keluar. Proses ini tidak boleh dibuat asal.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Paparkan EID peranti</translation>
 <translation id="204706822916043810">Menyemak mesin maya</translation>
 <translation id="2048182445208425546">Akses trafik rangkaian anda</translation>
 <translation id="2048554637254265991">Ralat semasa memulakan pengurus bekas. Sila cuba lagi.</translation>
@@ -1790,7 +1788,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2502719318159902502">Akses penuh</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skrin #}other{Skrin #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> daripada <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID peranti anda ialah <ph name="EID_NUMBER" />. Wakil khidmat pelanggan boleh menggunakan nombor EID ini untuk membantu anda mengaktifkan perkhidmatan.</translation>
 <translation id="250704661983564564">Susunan paparan</translation>
 <translation id="2507253002925770350">Tiket dialih keluar</translation>
 <translation id="2508428939232952663">Akaun Gedung Google Play</translation>
@@ -6640,6 +6637,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6903022061658753260">Data anda akan disegerakkan merentas semua penyemak imbas Chrome tempat anda telah menghidupkan penyegerakan untuk akaun ini. Untuk mendapatkan pilihan penyegerakan Chrome OS, pergi ke <ph name="LINK_BEGIN" />tetapan Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Buka semua (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Hidupkan penyegerakan</translation>
+<translation id="6903916726032521638">Cari <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Batalkan Akses Fail</translation>
 <translation id="6904655473976120856">Tekan butang Apl untuk keluar</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Untuk memastikan kata laluan anda selamat, Google Password Manager dikunci selepas 1 minit tidak aktif}other{Untuk memastikan kata laluan anda selamat, Google Password Manager dikunci selepas {NUM_MINS} minit tidak aktif}}</translation>
@@ -7913,7 +7911,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8044899503464538266">Perlahan</translation>
 <translation id="8045253504249021590">Penyegerakan telah dihentikan melalui Papan Pemuka Google.</translation>
 <translation id="8045923671629973368">Masukkan ID aplikasi atau URL gedung web</translation>
-<translation id="8046132381940444654">Wakil khidmat pelanggan boleh menggunakan nombor EID ini untuk membantu anda mengaktifkan perkhidmatan</translation>
 <translation id="8047242494569930800">Alihkan ke Akaun Google</translation>
 <translation id="804786196054284061">Perjanjian Lesen Pengguna Akhir</translation>
 <translation id="8048728378294435881">Sandarkan data anda dan gunakannya pada mana-mana peranti</translation>
@@ -8717,6 +8714,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> anda memerlukan kemas kini</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Paparkan semua carian untuk <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Kemas kini Chrome untuk semua pengguna secara automatik</translation>
 <translation id="8770406935328356739">Direktori akar sambungan</translation>
 <translation id="8771300903067484968">Latar belakang halaman mula telah ditetapkan semula kepada latar belakang lalai.</translation>

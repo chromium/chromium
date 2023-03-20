@@ -167,7 +167,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="114721135501989771">Získejte do Chromu chytré funkce Google</translation>
 <translation id="1147322039136785890">Teď je na řadě <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Chcete-li požádat o přístup, kontaktujte administrátora tohoto zařízení.</translation>
-<translation id="1148063863818152153">EID zařízení</translation>
 <translation id="1148624853678088576">Vše je nastaveno!</translation>
 <translation id="1149401351239820326">Měsíc vypršení platnosti</translation>
 <translation id="1149483087970735785">Asistenční technologie</translation>
@@ -1213,7 +1212,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2045969484888636535">Pokračovat v blokování souborů cookie</translation>
 <translation id="204622017488417136">V zařízení bude obnovena předchozí verze prohlížeče Chrome. Budou odstraněny všechny uživatelské účty a místní data. Tuto operaci nelze vrátit zpět.</translation>
 <translation id="2046702855113914483">Polévka ramen</translation>
-<translation id="2046770133657639077">Zobrazit EID zařízení</translation>
 <translation id="204706822916043810">Kontrola virtuálního počítače</translation>
 <translation id="2048182445208425546">Přístup k provozu na síti</translation>
 <translation id="2048554637254265991">Správce kontejneru se nepodařilo spustit. Zkuste to znovu.</translation>
@@ -1776,7 +1774,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2502719318159902502">Plný přístup</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Obrazovka #}few{Obrazovka #}many{Obrazovka #}other{Obrazovka #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> z <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">EID vašeho zařízení je <ph name="EID_NUMBER" />. Zástupce služeb zákazníkům vám za pomoci tohoto čísla EID může aktivovat službu.</translation>
 <translation id="250704661983564564">Uspořádání displejů</translation>
 <translation id="2507253002925770350">Lístek byl odstraněn</translation>
 <translation id="2508428939232952663">Účet Obchodu Google Play</translation>
@@ -7894,7 +7891,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8044899503464538266">Pomalu</translation>
 <translation id="8045253504249021590">Synchronizace byla zastavena prostřednictvím Hlavního panelu Google.</translation>
 <translation id="8045923671629973368">Zadejte identifikátor aplikace nebo URL internetového obchodu</translation>
-<translation id="8046132381940444654">Zástupce služeb zákazníkům vám za pomoci tohoto čísla EID může aktivovat službu</translation>
 <translation id="8047242494569930800">Přesunout do účtu Google</translation>
 <translation id="804786196054284061">Licenční smlouva s koncovým uživatelem</translation>
 <translation id="8048728378294435881">Zálohujte si data a používejte je na jakémkoli zařízení</translation>

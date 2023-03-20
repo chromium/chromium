@@ -374,6 +374,7 @@
 <translation id="3595252146048399851">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
+<translation id="3608008480985212611">如要管理偏好設定，請登入帳戶。</translation>
 <translation id="3609785682760573515">同步處理中...</translation>
 <translation id="3631443864840848029">請確認要儲存你目前在這個網站使用的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
@@ -541,6 +542,7 @@
 <translation id="48274138579728272">標示為已讀取</translation>
 <translation id="4833686396768033263">無法使用最近開啟的分頁</translation>
 <translation id="4833786495304741580">自動將使用統計資料和當機報告傳送給 Google。</translation>
+<translation id="4834499902900503484">登入 Chrome 後，密碼將儲存在 Google 帳戶中。如要關閉這項功能，請<ph name="BEGIN_LINK" />前往設定<ph name="END_LINK" />。</translation>
 <translation id="4840495572919996524">你的書籤、歷史記錄、密碼等資料將停止同步到你的 Google 帳戶。</translation>
 <translation id="4844899002472726590">查看及編輯你感興趣的主題</translation>
 <translation id="4848999860252535517">要刪除 <ph name="WEBSITE" /> 的密碼嗎？</translation>
@@ -684,6 +686,7 @@
 <translation id="5899314093904173337">如要與附近的使用者分享，請讓對方使用相機或 QR 掃描器應用程式掃描這個 QR code</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5913600720976431809">網頁翻譯選項</translation>
+<translation id="5922999516621365983">將分頁拖曳到這裡即可固定。</translation>
 <translation id="5938160824633642847">你的裝置空間即將用盡，請在釋出空間後再試一次。</translation>
 <translation id="5948291296578561264">可讓你將相片儲存至相片庫。</translation>
 <translation id="5951816930277761335">分享連結</translation>

@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chrome-ൽ Google സ്‌മാർട്‌സ് നേടുക</translation>
 <translation id="1147322039136785890">ഇനി <ph name="SUPERVISED_USER_NAME" />' എന്ന കുട്ടിയുടെ ഊഴമാണ്</translation>
 <translation id="1147991416141538220">ആക്സസ് ആവശ്യപ്പെടാൻ, ഈ ഉപകരണത്തിന്റെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
-<translation id="1148063863818152153">നിങ്ങളുടെ ഉപകരണ EID</translation>
 <translation id="1148624853678088576">നിങ്ങൾ എല്ലാം സജ്ജീകരിച്ചു!</translation>
 <translation id="1149401351239820326">കാലാവധി കഴിയുന്ന മാസം</translation>
 <translation id="1149483087970735785">സഹായ സാങ്കേതിക വിദ്യ</translation>
@@ -1211,7 +1210,6 @@
 <translation id="2045969484888636535">കുക്കികളെ തടയുന്നത് തുടരുക</translation>
 <translation id="204622017488417136">നിങ്ങളുടെ ഉപകരണം Chrome-ന്റെ മുമ്പ് ഇൻസ്‌റ്റാൾ ചെയ്‌ത പതിപ്പിലേക്ക് മടങ്ങും. എല്ലാ ഉപയോക്തൃ അക്കൗണ്ടുകളും പ്രാദേശിക ഡാറ്റയും നീക്കംചെയ്യും. ഇത് പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="2046702855113914483">റാമെൻ</translation>
-<translation id="2046770133657639077">ഉപകരണ EID കാണിക്കുക</translation>
 <translation id="204706822916043810">വെർച്വൽ മെഷീൻ പരിശോധിക്കുന്നു</translation>
 <translation id="2048182445208425546">നിങ്ങളുടെ നെറ്റ്‌വർക്ക് ട്രാഫിക്ക് ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="2048554637254265991">കണ്ടെയ്‌നർ മാനേജർ ആരംഭിക്കുന്നതിൽ പിശക്. വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -1774,7 +1772,6 @@
 <translation id="2502719318159902502">പൂർണ്ണമായ ആക്സസ്</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{സ്‌ക്രീൻ #}other{സ്‌ക്രീൻ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ന്റെ <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">നിങ്ങളുടെ ഉപകരണ EID <ph name="EID_NUMBER" /> ആണ്. സേവനം സജീവമാക്കാൻ നിങ്ങളെ സഹായിക്കുന്നതിന് കസ്‌റ്റമർ സർവീസ് പ്രതിനിധിക്ക് ഈ EID നമ്പർ ഉപയോഗിക്കാം.</translation>
 <translation id="250704661983564564">ഡിസ്പ്ലേ ക്രമീകരണം</translation>
 <translation id="2507253002925770350">ടിക്കറ്റ് നീക്കം ചെയ്‌തു</translation>
 <translation id="2508428939232952663">Google Play Store അക്കൗണ്ട്</translation>
@@ -7898,7 +7895,6 @@
 <translation id="8044899503464538266">പതുക്കെ</translation>
 <translation id="8045253504249021590">Google ഡാഷ്‌ബോർഡ് വഴിയുള്ള സമന്വയിപ്പിക്കൽ നിർത്തി.</translation>
 <translation id="8045923671629973368">ആപ്പ് ഐഡി അല്ലെങ്കിൽ വെബ്സ്റ്റോർ URL നൽകുക</translation>
-<translation id="8046132381940444654">സേവനം സജീവമാക്കാൻ നിങ്ങളെ സഹായിക്കുന്നതിന് കസ്‌റ്റമർ സർവീസ് പ്രതിനിധിക്ക് ഈ EID നമ്പർ ഉപയോഗിക്കാം</translation>
 <translation id="8047242494569930800">Google അക്കൗണ്ടിലേക്ക് നീക്കുക</translation>
 <translation id="804786196054284061">അന്തിമ ഉപയോക്തൃ ലൈസൻസ് ഉടമ്പടി</translation>
 <translation id="8048728378294435881">നിങ്ങളുടെ ഇനങ്ങൾ ബാക്കപ്പ് ചെയ്‌ത്, ഏത് ഉപകരണത്തിലും അവ ഉപയോഗിക്കുക</translation>

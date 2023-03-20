@@ -167,7 +167,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="114721135501989771">Obtén las mejores funciones de Google en Chrome</translation>
 <translation id="1147322039136785890">Ahora es el turno de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar el acceso, comunícate con el administrador de este dispositivo.</translation>
-<translation id="1148063863818152153">El EID de tu dispositivo</translation>
 <translation id="1148624853678088576">Todo listo</translation>
 <translation id="1149401351239820326">Mes de vencimiento</translation>
 <translation id="1149483087970735785">Tecnología de accesibilidad</translation>
@@ -1208,7 +1207,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2045969484888636535">Continuar bloqueando las cookies</translation>
 <translation id="204622017488417136">El dispositivo volverá a la versión de Chrome instalada anteriormente. Se eliminarán todas las cuentas de usuario y los datos locales. Esta acción no se puede deshacer.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Mostrar el EID del device</translation>
 <translation id="204706822916043810">Revisando la máquina virtual</translation>
 <translation id="2048182445208425546">Acceder al tráfico de la red</translation>
 <translation id="2048554637254265991">Se produjo un error al iniciar el administrador de contenedores. Vuelve a intentarlo.</translation>
@@ -1771,7 +1769,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2502719318159902502">Acceso total</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Pantalla #}other{Pantalla #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">El EID de tu dispositivo es <ph name="EID_NUMBER" />. Un representante de atención al cliente puede usar el número EID para ayudarte a activar un servicio.</translation>
 <translation id="250704661983564564">Disposición de la pantalla</translation>
 <translation id="2507253002925770350">Se quitó el ticket</translation>
 <translation id="2508428939232952663">Cuenta de Google Play Store</translation>
@@ -4227,6 +4224,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4708849949179781599">Salir <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
 <translation id="4713409221649555176">Borrar cuando cierras todas las ventanas</translation>
+<translation id="4715631922189108923">Editar nombre de usuario</translation>
 <translation id="47158868804223727">Haz clic en el nombre del grupo para expandirlo o contraerlo</translation>
 <translation id="4716483597559580346">Powerwash para mejorar la seguridad</translation>
 <translation id="471759229191973607">Cambiar tema</translation>
@@ -7889,7 +7887,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8044899503464538266">Lenta</translation>
 <translation id="8045253504249021590">La sincronización se detuvo mediante el Panel de control de Google.</translation>
 <translation id="8045923671629973368">Ingresa el ID de aplicación o la URL de la tienda web</translation>
-<translation id="8046132381940444654">Un representante de atención al cliente puede usar este número EID para ayudarte a activar un servicio</translation>
 <translation id="8047242494569930800">Mover a la Cuenta de Google</translation>
 <translation id="804786196054284061">Acuerdo de licencia de usuario final</translation>
 <translation id="8048728378294435881">Crea una copia de seguridad de tus datos y úsalos en cualquier dispositivo.</translation>
@@ -8073,6 +8070,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8203732864715032075">Te envía notificaciones y establece esta computadora como la opción predeterminada para la app de Mensajes. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Es posible que tus pantallas y dispositivos periféricos se reinicien en breve. Para que se aplique este cambio, desconecta los dispositivos periféricos y vuelve a conectarlos.</translation>
 <translation id="820568752112382238">Sitios más visitados</translation>
+<translation id="8206267832882844324">Editar nota</translation>
 <translation id="8206745257863499010">Musical</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8207404892907560325">Elige una llave de acceso</translation>

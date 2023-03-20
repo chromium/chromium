@@ -476,6 +476,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3587596251841506391">Pahusayin ang seguridad sa web</translation>
 <translation id="3597179440835065298">Makakuha ng mas magandang suhestyon</translation>
 <translation id="3602290021589620013">I-preview</translation>
+<translation id="360901359071773787">I-delete ang huling 15 minuto?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Pamahalaan ang mga window</translation>
 <translation id="3631987586758005671">Ibinabahagi sa <ph name="DEVICE_NAME" /></translation>
@@ -821,6 +822,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5517095782334947753">Mayroon kang mga bookmark, history, password at iba pang mga setting mula sa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Kapag naka-on ang mga trial at kung random kang inilagay ng Chrome sa isang aktibong trial, maaapektuhan ng iyong history ng pag-browse ang mga ad na makikita mo at ang mga interes tulad ng itinantya sa ibaba. Para protektahan ang iyong privacy, ide-delete ng Chrome ang mga interes mo sa rolling na paraan bawat buwan.</translation>
 <translation id="5524843473235508879">Na-block ang pag-redirect.</translation>
+<translation id="554297709083131118">Made-delete ang sumusunod na data mula sa huling 15 minuto</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
 <translation id="5555525474779371165">Piliin ang iyong proteksyon sa Ligtas na Pag-browse</translation>
 <translation id="5556459405103347317">I-reload</translation>
@@ -1075,6 +1077,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, tab, napili</translation>
 <translation id="6828070228333235514">Ihinto ang pagsubaybay ng presyo</translation>
 <translation id="6830728435402077660">Hindi secure</translation>
+<translation id="6831043979455480757">Isalin</translation>
 <translation id="6833996806551876956">Trial ng Privacy Sandbox</translation>
 <translation id="6836206421467243968">I-restore ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> bilang bagong background na grupo ng tab.</translation>
 <translation id="6846298663435243399">Naglo-load…</translation>

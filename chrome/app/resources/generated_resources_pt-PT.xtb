@@ -167,7 +167,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="114721135501989771">Inteligên. Google no Chrome</translation>
 <translation id="1147322039136785890">Agora é a vez de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147991416141538220">Para solicitar acesso, contacte o administrador deste dispositivo.</translation>
-<translation id="1148063863818152153">O EID do seu dispositivo</translation>
 <translation id="1148624853678088576">Está tudo pronto!</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1149483087970735785">Tecnologia de assistência</translation>
@@ -1213,7 +1212,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2045969484888636535">Continuar a bloquear cookies</translation>
 <translation id="204622017488417136">O dispositivo regressa à versão do Chrome instalada anteriormente. Todos os dados locais e as contas de utilizador são removidos. Não é possível anular esta ação.</translation>
 <translation id="2046702855113914483">Ramen</translation>
-<translation id="2046770133657639077">Mostrar EID do dispositivo</translation>
 <translation id="204706822916043810">A verificar a máquina virtual…</translation>
 <translation id="2048182445208425546">Aceder ao tráfego da sua rede</translation>
 <translation id="2048554637254265991">Erro ao iniciar o gestor de contentores. Tente novamente.</translation>
@@ -1778,7 +1776,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2502719318159902502">Acesso completo</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Ecrã #}other{Ecrãs #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> de <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">O EID do dispositivo é <ph name="EID_NUMBER" />. Um representante do serviço de apoio ao cliente pode utilizar o número EID para ajudar a ativar o serviço.</translation>
 <translation id="250704661983564564">Posicionamento do ecrã</translation>
 <translation id="2507253002925770350">Permissão removida</translation>
 <translation id="2508428939232952663">Conta da Google Play Store</translation>
@@ -7906,7 +7903,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8044899503464538266">Lento</translation>
 <translation id="8045253504249021590">A sincronização foi interrompida através do Painel de Controlo Google.</translation>
 <translation id="8045923671629973368">Introduza o ID da app ou o URL da loja online.</translation>
-<translation id="8046132381940444654">Um representante do serviço de apoio ao cliente pode utilizar este número EID para ajudar a ativar o serviço</translation>
 <translation id="8047242494569930800">Mover para a Conta Google</translation>
 <translation id="804786196054284061">Contrato de Licença de Utilizador Final</translation>
 <translation id="8048728378294435881">Faça uma cópia de segurança dos seus itens e use-os em qualquer dispositivo</translation>

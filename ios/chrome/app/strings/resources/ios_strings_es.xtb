@@ -541,6 +541,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="48274138579728272">Marcar como leído</translation>
 <translation id="4833686396768033263">Las pestañas recientes no están disponibles</translation>
 <translation id="4833786495304741580">Envía automáticamente estadísticas de uso e informes sobre fallos a Google.</translation>
+<translation id="4834499902900503484">Si has iniciado sesión en Chrome, las contraseñas que guardes se añadirán a tu cuenta de Google. Para desactivar esta opción, <ph name="BEGIN_LINK" />ve a la configuración<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Tus marcadores, el historial, las contraseñas y otros datos dejarán de sincronizarse con tu cuenta de Google.</translation>
 <translation id="4844899002472726590">Consulta y edita los temas que te interesan</translation>
 <translation id="4848999860252535517">¿Eliminar la contraseña de <ph name="WEBSITE" />?</translation>
@@ -684,6 +685,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5899314093904173337">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR con su aplicación de cámara o de escáner de códigos QR</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5913600720976431809">Opciones para traducir la página</translation>
+<translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
 <translation id="5938160824633642847">Tu dispositivo está casi lleno. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="5948291296578561264">Esta acción te permite guardar fotos en tu biblioteca.</translation>
 <translation id="5951816930277761335">Comparte el enlace</translation>

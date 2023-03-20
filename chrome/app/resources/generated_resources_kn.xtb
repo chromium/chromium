@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chrome ನಲ್ಲಿ Google ಸ್ಮಾರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1147322039136785890">ಇದೀಗ <ph name="SUPERVISED_USER_NAME" /> ಅವರ ಸರದಿ</translation>
 <translation id="1147991416141538220">ಪ್ರವೇಶಕ್ಕಾಗಿ ಕೇಳಲು, ಈ ಸಾಧನದ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
-<translation id="1148063863818152153">ನಿಮ್ಮ ಸಾಧನದ EID</translation>
 <translation id="1148624853678088576">ನೀವು ಎಲ್ಲ ರೀತಿಯಲ್ಲಿಯೂ ಸಿದ್ಧರಾಗಿರುವಿರಿ!</translation>
 <translation id="1149401351239820326">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
 <translation id="1149483087970735785">ಸಹಾಯಕ ತಂತ್ರಜ್ಞಾನ</translation>
@@ -1217,7 +1216,6 @@
 <translation id="2045969484888636535">ಕುಕೀಸ್ ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸು</translation>
 <translation id="204622017488417136">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಹಿಂದೆ ಸ್ಥಾಪಿಸಲಾದ Chrome ನ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗಿಸಲಾಗುತ್ತದೆ. ಎಲ್ಲ ಬಳಕೆದಾರರ ಖಾತೆಗಳು ಮತ್ತು ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಇದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="2046702855113914483">ರಾಮೆನ್</translation>
-<translation id="2046770133657639077">ಸಾಧನದ EID ತೋರಿಸಿ</translation>
 <translation id="204706822916043810">ವರ್ಚುವಲ್ ಯಂತ್ರವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2048182445208425546">ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಟ್ರ್ಯಾಫಿಕ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="2048554637254265991">ಕಂಟೇನರ್ ನಿರ್ವಾಹಕರನ್ನು ಪ್ರಾರಂಭಿಸುವಾಗ ದೋಷ ಎದುರಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1783,7 +1781,6 @@
 <translation id="2502719318159902502">ಪೂರ್ಣ ಪ್ರವೇಶ</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{ಸ್ಕ್ರೀನ್ #}one{ಸ್ಕ್ರೀನ್ #}other{ಸ್ಕ್ರೀನ್ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> ರಲ್ಲಿ <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">ನಿಮ್ಮ ಸಾಧನದ EID ಯು <ph name="EID_NUMBER" /> ಆಗಿದೆ. ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ಗ್ರಾಹಕ ಸೇವೆ ಪ್ರತಿನಿಧಿಯೊಬ್ಬರು ನಿಮ್ಮ EID ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="250704661983564564">ಡಿಸ್‌ಪ್ಲೇ ಜೋಡಣೆ</translation>
 <translation id="2507253002925770350">ಟಿಕೆಟ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="2508428939232952663">Google Play Store  ಖಾತೆ</translation>
@@ -4241,6 +4238,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="4711638718396952945">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪುನಃಸ್ಥಾಪಿಸು</translation>
 <translation id="4713409221649555176">ನೀವು ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿದಾಗ ಅಳಿಸಿ</translation>
+<translation id="4715631922189108923">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="47158868804223727">ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಲು ಅಥವಾ ಕುಗ್ಗಿಸಲು, ಅದರ ಹೆಸರಿನ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4716483597559580346">ಹೆಚ್ಚುವರಿ ಸುರಕ್ಷತೆಗಾಗಿ ಪವರ್‌ವಾಶ್</translation>
 <translation id="471759229191973607">ಥೀಮ್ ಬದಲಾಯಿಸಿ</translation>
@@ -6636,6 +6634,7 @@
 <translation id="6903022061658753260">ನೀವು ಈ ಖಾತೆಗಾಗಿ ಸಿಂಕ್ ಆನ್ ಮಾಡಿರುವ ಎಲ್ಲಾ Chrome ಬ್ರೌಸರ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. ChromeOS ಸಿಂಕ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ, <ph name="LINK_BEGIN" />ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="LINK_END" /> ಹೋಗಿ.</translation>
 <translation id="6903590427234129279">ಎಲ್ಲವನ್ನೂ (<ph name="URL_COUNT" />) ತೆರೆಯಿರಿ</translation>
 <translation id="6903907808598579934">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> ಅನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6904344821472985372">ಫೈಲ್ ಪ್ರವೇಶವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6904655473976120856">ನಿರ್ಗಮಿಸಲು ಅಪ್ಲಿಕೇಶನ್ ಬಟನ್‌ ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, 1 ನಿಮಿಷದ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ Google Password Manager ಲಾಕ್ ಆಗುತ್ತದೆ}one{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, {NUM_MINS} ನಿಮಿಷಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ Google Password Manager ಲಾಕ್ ಆಗುತ್ತದೆ}other{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, {NUM_MINS} ನಿಮಿಷಗಳ ನಿಷ್ಕ್ರಿಯತೆಯ ನಂತರ Google Password Manager ಲಾಕ್ ಆಗುತ್ತದೆ}}</translation>
@@ -7906,7 +7905,6 @@
 <translation id="8044899503464538266">ನಿಧಾನ</translation>
 <translation id="8045253504249021590">Google ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಮೂಲಕ ಸಿಂಕ್ ಅನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="8045923671629973368">ಅಪ್ಲಿಕೇಶನ್ ಐಡಿ ಅಥವಾ ವೆಬ್‌ಅಂಗಡಿ URL ನಮೂದಿಸಿ</translation>
-<translation id="8046132381940444654">ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ಗ್ರಾಹಕ ಸೇವೆ ಪ್ರತಿನಿಧಿಯೊಬ್ಬರು ನಿಮ್ಮ EID ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="8047242494569930800">Google ಖಾತೆಗೆ ಸರಿಸಿ</translation>
 <translation id="804786196054284061">ಅಂತಿಮ ಬಳಕೆದಾರ ಪರವಾನಗಿ ಒಪ್ಪಂದ</translation>
 <translation id="8048728378294435881">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಮತ್ತು ಅದನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಿ</translation>
@@ -8090,6 +8088,7 @@
 <translation id="8203732864715032075">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸುತ್ತದೆ ಮತ್ತು ಸಂದೇಶಗಳನ್ನು ನೆನಪಿನಲ್ಲಿಟ್ಟುಕೊಳ್ಳಲು ಈ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಪೂರ್ವನಿಯೋಜಿಸಲಾಗಿರುತ್ತದೆ.<ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">ನಿಮ್ಮ ಡಿಸ್‌ಪ್ಲೇಗಳು ಮತ್ತು ಬಾಹ್ಯ ಸಾಧನಗಳನ್ನು ಸಕ್ಷಿಪ್ತವಾಗಿ ರೀಸೆಟ್ ಮಾಡಬಹುದು. ಈ ಬದಲಾವಣೆಯು ಜಾರಿಗೆ ಬರಲು, ನಿಮ್ಮ ಬಾಹ್ಯ ಸಾಧನಗಳನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ ಹಾಗೂ ಮರು-ಪ್ಲಗ್ ಮಾಡಿ.</translation>
 <translation id="820568752112382238">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
+<translation id="8206267832882844324">ಟಿಪ್ಪಣಿಯನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8206745257863499010">ಬ್ಲೂಸಿ</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8207404892907560325">ಪಾಸ್‌ಕೀ ಒಂದನ್ನು ಆರಿಸಿ</translation>
@@ -8708,6 +8707,7 @@
 <translation id="8762886931014513155">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಅಪ್‌ಡೇಟ್‌ ಒಂದರ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8763927697961133303">USB ಸಾಧನ</translation>
 <translation id="8766796754185931010">ಕೊಟೇರಿ</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಎಲ್ಲಾ ಹುಡುಕಾಟಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8767621466733104912">ಎಲ್ಲಾ ಬಳಕೆದಾರರಿಗಾಗಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="8770406935328356739">ವಿಸ್ತರಣೆ ಮೂಲ ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="8771300903067484968">ಆರಂಭಿಕ ಪುಟದ ಹಿನ್ನೆಲೆಯನ್ನು ಡೀಫಾಲ್ಟ್ ಹಿನ್ನೆಲೆಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>

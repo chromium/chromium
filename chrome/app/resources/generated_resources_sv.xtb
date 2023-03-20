@@ -169,7 +169,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="114721135501989771">Få Google-teknik i Chrome</translation>
 <translation id="1147322039136785890">Nu kan <ph name="SUPERVISED_USER_NAME" /> ta över</translation>
 <translation id="1147991416141538220">Kontakta enhetens administratör om du vill ha åtkomst.</translation>
-<translation id="1148063863818152153">Enhetens EID</translation>
 <translation id="1148624853678088576">Nu är det klart!</translation>
 <translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1149483087970735785">Hjälpmedelsteknik</translation>
@@ -1223,7 +1222,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2045969484888636535">Fortsätt att blockera cookies</translation>
 <translation id="204622017488417136">Enheten kommer att återgå till den tidigare installerade versionen av Chrome. Alla användarkonton och lokala uppgifter kommer att tas bort. Det går inte att ångra åtgärden.</translation>
 <translation id="2046702855113914483">Ramen (nudelsoppa)</translation>
-<translation id="2046770133657639077">Visa enhetens EID</translation>
 <translation id="204706822916043810">Den virtuella maskinen kontrolleras</translation>
 <translation id="2048182445208425546">Åtkomst till din nätverkstrafik</translation>
 <translation id="2048554637254265991">Ett fel uppstod när hanteraren av behållare skulle startas. Försök igen.</translation>
@@ -1789,7 +1787,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2502719318159902502">Fullständig åtkomst</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Skärm #}other{Skärm #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> av <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">Enhetens EID är <ph name="EID_NUMBER" />. Kundtjänsten kan använda detta EID-nummer för att hjälpa dig att aktivera tjänsten.</translation>
 <translation id="250704661983564564">Skärmuppställning</translation>
 <translation id="2507253002925770350">Biljetten har tagits bort</translation>
 <translation id="2508428939232952663">Konto i Google Play Butik</translation>
@@ -7908,7 +7905,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8044899503464538266">Långsam</translation>
 <translation id="8045253504249021590">Synkronisering har stoppats via Google Översikt.</translation>
 <translation id="8045923671629973368">Ange program-id eller adress i webbutik</translation>
-<translation id="8046132381940444654">Kundtjänsten kan använda detta EID-nummer för att hjälpa dig att aktivera tjänsten</translation>
 <translation id="8047242494569930800">Flytta lösenordet till Google-kontot</translation>
 <translation id="804786196054284061">Licensavtal för slutanvändare</translation>
 <translation id="8048728378294435881">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>

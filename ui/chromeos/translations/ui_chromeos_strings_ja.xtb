@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google ドライブのキャッシュを削除しました。</translation>
 <translation id="2239068707900391003">コーヒーを持っている人</translation>
 <translation id="2251368349685848079">ゴミ箱から復元</translation>
+<translation id="2278133026967558505">すべてのウェブサイトと URL によるファイル アクセス</translation>
 <translation id="2282155092769082568">自動設定 URL:</translation>
 <translation id="2284767815536050991">リムーバブル ストレージ</translation>
 <translation id="2288278176040912387">レコード プレーヤー</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">認証サーバーの ID を検証するための「サブジェクト代替名マッチ」または「ドメイン サフィックス マッチ」がありません</translation>
 <translation id="7165320105431587207">ネットワークを設定できませんでした</translation>
 <translation id="7170041865419449892">圏外</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> を除く、すべてのウェブサイトと URL によるファイル アクセス</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">名前を付けて保存</translation>

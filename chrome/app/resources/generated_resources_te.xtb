@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chromeలో Google స్మార్ట్‌లను పొందండి</translation>
 <translation id="1147322039136785890">ఇప్పుడు దీనిని <ph name="SUPERVISED_USER_NAME" /> ఉపయోగించవచ్చు</translation>
 <translation id="1147991416141538220">యాక్సెస్‌ను అడగడానికి, ఈ పరికరం యొక్క నిర్వాహకులను సంప్రదించండి.</translation>
-<translation id="1148063863818152153">మీ పరికర EID</translation>
 <translation id="1148624853678088576">మీరు అంతా పూర్తి చేశారు!</translation>
 <translation id="1149401351239820326">గడువు ముగింపు నెల</translation>
 <translation id="1149483087970735785">సహాయకర టెక్నాలజీ</translation>
@@ -1222,7 +1221,6 @@
 <translation id="2045969484888636535">కుకీలను నిరోధించడాన్ని కొనసాగించండి</translation>
 <translation id="204622017488417136">మీ పరికరం మునుపు ఇన్‌స్టాల్ చేసిన Chrome వెర్షన్‌కు తిరిగి మార్చబడింది. అన్ని వినియోగదారు ఖాతాలు మరియు స్థానిక డేటా తీసివేయబడుతుంది. దీన్ని రద్దు చేయడం సాధ్యపడదు.</translation>
 <translation id="2046702855113914483">రామెన్</translation>
-<translation id="2046770133657639077">పరికర EIDని చూపండి</translation>
 <translation id="204706822916043810">వర్చువల్ మెషిన్‌ను చెక్ చేస్తోంది</translation>
 <translation id="2048182445208425546">మీ నెట్‌వర్క్ ట్రాఫిక్‌ను యాక్సెస్ చేయండి</translation>
 <translation id="2048554637254265991">కంటైనర్ మేనేజర్‌ను ప్రారంభించడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
@@ -1788,7 +1786,6 @@
 <translation id="2502719318159902502">పూర్తి యాక్సెస్</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{స్క్రీన్ #}other{స్క్రీన్ #}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" />లో <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">మీ పరికర EID <ph name="EID_NUMBER" />. మీకు సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయం చేయడానికి, కస్టమర్ సర్వీస్ ప్రతినిధి EID నంబర్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="250704661983564564">డిస్‌ప్లే అమరిక</translation>
 <translation id="2507253002925770350">టిక్కెట్ తీసివేయబడింది</translation>
 <translation id="2508428939232952663">Google Play Store ఖాతా</translation>
@@ -7907,7 +7904,6 @@
 <translation id="8044899503464538266">నెమ్మదిగా</translation>
 <translation id="8045253504249021590">Google డ్యాష్‌బోర్డ్ ద్వారా సింక్‌ ఆపివేయబడింది.</translation>
 <translation id="8045923671629973368">అప్లికేషన్ id లేదా వెబ్‌స్టోర్ URLను నమోదు చేయండి</translation>
-<translation id="8046132381940444654">మీకు సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయం చేయడానికి, కస్టమర్ సర్వీస్ ప్రతినిధి ఈ EID నంబర్‌ను ఉపయోగించవచ్చు</translation>
 <translation id="8047242494569930800">Google ఖాతాకు తరలించు</translation>
 <translation id="804786196054284061">తుది వినియోగదారు లైసెన్స్ ఒప్పందం</translation>
 <translation id="8048728378294435881">మీ అంశాలను బ్యాకప్ చేసి, వాటిని ఏ పరికరంలోనైనా ఉపయోగించండి</translation>

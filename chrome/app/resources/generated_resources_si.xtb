@@ -169,7 +169,6 @@
 <translation id="114721135501989771">Chromeවල Google ස්මාට් ගන්න</translation>
 <translation id="1147322039136785890">දැන් <ph name="SUPERVISED_USER_NAME" />ගේ වාරයයි</translation>
 <translation id="1147991416141538220">ප්‍රවේශය ඉල්ලීමට, මෙම උපාංගයේ පරිපාලකයා සම්බන්ධ කර ගන්න.</translation>
-<translation id="1148063863818152153">ඔබේ උපාංග EID</translation>
 <translation id="1148624853678088576">ඔබ සියල්ල සූදානම්!</translation>
 <translation id="1149401351239820326">කල් ඉකුත් වන මාසය</translation>
 <translation id="1149483087970735785">උපකාරක තාක්ෂණය</translation>
@@ -1212,7 +1211,6 @@
 <translation id="2045969484888636535">කුකීස් අවහිර කිරීම දිගටම කරන්න</translation>
 <translation id="204622017488417136">ඔබේ උපාංගය පෙර ස්ථාපිත Chrome අනුවාදනය වෙත යළි පත්වේ. සියළු පරිශීලක ගිනුම් හා දේශීය දත්ත ඉවත් වේ. මෙය අවලංගු කළ නොහැක.</translation>
 <translation id="2046702855113914483">රාමෙන්</translation>
-<translation id="2046770133657639077">උපාංග EID පෙන්වන්න</translation>
 <translation id="204706822916043810">අතත්‍ය යන්ත්‍රය පරීක්ෂා කිරීම</translation>
 <translation id="2048182445208425546">ඔබගේ ජාල ගමනාගමනය ප්‍රවේශ කරන්න</translation>
 <translation id="2048554637254265991">බහාලුම් කළමනාකරු ආරම්භ කිරීමේ දෝෂයකි. කරුණාකර නැවත උත්සාහ කරන්න.</translation>
@@ -1778,7 +1776,6 @@
 <translation id="2502719318159902502">පූර්ණ ප්‍රවේශය</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{තිරය #}one{තිරය ​​#}other{තිරය ​​#}}</translation>
 <translation id="2505402373176859469"><ph name="TOTAL_SIZE" /> කින් <ph name="RECEIVED_AMOUNT" /></translation>
-<translation id="2505669838803949807">ඔබගේ උපාංග EID <ph name="EID_NUMBER" /> වේ. සේවාව සක්‍රිය කිරීමට ඔබට උදව් වීම සඳහා පාරිභෝගික සේවා නියෝජිතයකු EID අංකය භාවිත කළ හැකිය.</translation>
 <translation id="250704661983564564">සංදර්ශක පිළියෙළ</translation>
 <translation id="2507253002925770350">ප්‍රවේශපත්‍රය ඉවත් කළා</translation>
 <translation id="2508428939232952663">Google Play Store ගිණුම</translation>
@@ -7896,7 +7893,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8044899503464538266">මන්දගාමී</translation>
 <translation id="8045253504249021590">සමමුහුර්ත කිරීම Google උපකරණ පුවරුව හරහා නතර කර ඇත.</translation>
 <translation id="8045923671629973368">යෙදුම් ID හෝ වෙබ් අලෙවිසැල් URL ඇතුළු කරන්න</translation>
-<translation id="8046132381940444654">ඔබට සේවාව සක්‍රිය කිරීමට උදව් වීමට පාරිභෝගික සේවා නියෝජිතයකු මෙම EID අංකය භාවිත කළ හැකිය</translation>
 <translation id="8047242494569930800">Google ගිණුමට ගෙන යන්න</translation>
 <translation id="804786196054284061">අවසන් පරිශීලක වරපත් ගිවිසුම</translation>
 <translation id="8048728378294435881">ඔබේ දේවල් උපස්ථ කර එය ඕනෑම උපාංගයක භාවිතා කරන්න</translation>

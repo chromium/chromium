@@ -165,7 +165,6 @@
 <translation id="114721135501989771">Chrome मा Google स्मार्ट प्राप्त गर्नुहोस्‌</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> को पालो</translation>
 <translation id="1147991416141538220">पहुँच माग्न यस डिभाइसका प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
-<translation id="1148063863818152153">तपाईंको डिभाइसको EID नम्बर</translation>
 <translation id="1148624853678088576">तपाइँ तैयार हुनुहुन्छ!</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1149483087970735785">सहायक प्रविधि</translation>
@@ -1209,7 +1208,6 @@
 <translation id="2045969484888636535">कुकीहरू ब्लकिङ जारी राख्नुहोस्</translation>
 <translation id="204622017488417136">तपाईँको उपकरणलाई पहिलो स्थापना गरिएको Chrome संस्करणमा फर्काइनेछ। सबै प्रयोगकर्ता खाता र स्थानीय डेटा हटाइने छ। यो पूर्ववत गर्न मिल्दैन।</translation>
 <translation id="2046702855113914483">रामेन</translation>
-<translation id="2046770133657639077">डिभाइसको EID देखाइयोस्</translation>
 <translation id="204706822916043810">भर्चुअल मेसिन छ, छैन जाँच गरिँदै छ</translation>
 <translation id="2048182445208425546">तपाईँको सञ्जाल ट्राफिक पहुँच गर्नुहोस्</translation>
 <translation id="2048554637254265991">कन्टेनर म्यानेजर सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
@@ -1772,7 +1770,6 @@
 <translation id="2502719318159902502">पूर्ण पहुँच</translation>
 <translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{स्क्रिन #}other{स्क्रिन #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> को <ph name="TOTAL_SIZE" /></translation>
-<translation id="2505669838803949807">तपाईंको डिभाइसको EID <ph name="EID_NUMBER" /> हो। कुनै ग्राहक सेवा प्रतिनिधिले तपाईंलाई सेवा सक्रिय गर्न सघाउन यो EID नम्बर प्रयोग गर्न सक्छन्।</translation>
 <translation id="250704661983564564">डिस्प्लेका सेटिङ</translation>
 <translation id="2507253002925770350">टिकट हटाइयो</translation>
 <translation id="2508428939232952663">Google Play Store खाता</translation>
@@ -6620,6 +6617,7 @@
 <translation id="6903022061658753260">तपाईंले यो खाताका हकमा डेटा सिंक गर्ने सुविधा अन गर्नुभएका सबै Chrome ब्राउजरहरूमा तपाईंको डेटा सिंक गरिने छ। ChromeOS मा डेटा सिंक गर्ने सुविधासम्बन्धी विकल्पहरू हेर्न <ph name="LINK_BEGIN" />ChromeOS का सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
 <translation id="6903590427234129279">सबै (<ph name="URL_COUNT" />) URL खोल्नुहोस्</translation>
 <translation id="6903907808598579934">सिंकलाई अन गर्नुहोस्</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> खोज्नुहोस्</translation>
 <translation id="6904344821472985372">फाइल पहुँच रद्द गर्नुहोस्</translation>
 <translation id="6904655473976120856">बाहिर निस्कनका लागि एप बटन थिच्नुहोस्</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Google पासवर्ड म्यानेजरले तपाईंका पासवर्डहरू सुरक्षित राख्ने प्रयोजनका लागि कुनै साइट १ मिनेटसम्म निष्क्रिय भएपछि सो साइट लक गर्छ}other{Google पासवर्ड म्यानेजरले तपाईंका पासवर्डहरू सुरक्षित राख्ने प्रयोजनका लागि कुनै साइट {NUM_MINS} मिनेटसम्म निष्क्रिय भएपछि सो साइट लक गर्छ}}</translation>
@@ -7892,7 +7890,6 @@
 <translation id="8044899503464538266">मन्द</translation>
 <translation id="8045253504249021590">Google Dashboard मार्फत सिंक असक्षम पारिएको छ।</translation>
 <translation id="8045923671629973368">एपको ID वा वेबस्टोरको URL प्रविष्टि गर्नुहोस्</translation>
-<translation id="8046132381940444654">कुनै ग्राहक सेवा प्रतिनिधिले तपाईंलाई सेवा सक्रिय गर्न सघाउन यो EID नम्बर प्रयोग गर्न सक्छन्</translation>
 <translation id="8047242494569930800">पासवर्ड सारेर Google खातामा लैजानुहोस्</translation>
 <translation id="804786196054284061">प्रयोगकर्ताको इजाजतपत्रसम्बन्धी सम्झौता</translation>
 <translation id="8048728378294435881">आफ्नो डेटा ब्याकअप गर्नुहोस् र जुनसुकै डिभाइसमा सो डेटा प्रयोग गर्नुहोस्</translation>
@@ -8695,6 +8692,7 @@
 <translation id="8762886931014513155">तपाईंको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्नु आवश्यक छ</translation>
 <translation id="8763927697961133303">USB यन्त्र</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> का सबै खोजहरू देखाइयोस्</translation>
 <translation id="8767621466733104912">सबै प्रयोगकर्ताहरूको Chrome स्वतः अपडेट गर्नुहोस्</translation>
 <translation id="8770406935328356739">विस्तारको मूल निर्देशिका</translation>
 <translation id="8771300903067484968">सुरुको पृष्ठको पृष्ठभूमिलाई डिफल्ट पृष्ठभूमिका रूपमा पुनः सेट गरिएको छ।</translation>

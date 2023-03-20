@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Кеш Google диска је обрисан.</translation>
 <translation id="2239068707900391003">Особа са кафом</translation>
 <translation id="2251368349685848079">Врати из отпада</translation>
+<translation id="2278133026967558505">Приступ фајлу преко свих веб-сајтова и URL-ова</translation>
 <translation id="2282155092769082568">URL за аутоматску конфигурацију:</translation>
 <translation id="2284767815536050991">преносива меморија</translation>
 <translation id="2288278176040912387">Грамофон</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Недостаје „Подударање алтернативног имена субјекта“ или „Подударање суфикса домена“ да би се потврдио идентитет сервера за потврду идентитета</translation>
 <translation id="7165320105431587207">Конфигурација мреже није успела</translation>
 <translation id="7170041865419449892">Изван опсега</translation>
+<translation id="7179579940054351344">Приступ фајлу преко свих веб-сајтова и URL-ова осим <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Сачувај датотеку као</translation>
