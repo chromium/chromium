@@ -29,6 +29,7 @@
 import re
 import sys
 
+from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import ScriptError
 
 
@@ -76,6 +77,7 @@ class PlatformInfo:
     def is_freebsd(self):
         return self.os_name == 'freebsd'
 
+    @memoized
     def is_highdpi(self):
         if self.is_mac():
             output = self._executive.run_command(
@@ -86,6 +88,7 @@ class PlatformInfo:
                 return True
         return False
 
+    @memoized
     def is_running_rosetta(self):
         if self.is_mac():
             # If we are running under Rosetta, platform.machine() is
@@ -110,6 +113,7 @@ class PlatformInfo:
         # Windows-2008ServerR2-6.1.7600
         return self._platform_module.platform()
 
+    @memoized
     def total_bytes_memory(self):
         if self.is_mac():
             return int(
@@ -164,6 +168,7 @@ class PlatformInfo:
 
         return 'unknown'
 
+    @memoized
     def _raw_mac_version(self, platform_module):
         """Read this Mac's version string (starts with "<major>.<minor>")."""
         try:
@@ -237,6 +242,7 @@ class PlatformInfo:
 
         return self._win_version_tuple_from_cmd()
 
+    @memoized
     def _win_version_tuple_from_cmd(self):
         # Note that this should only ever be called on windows, so this should always work.
         ver_output = self._executive.run_command(['cmd', '/c', 'ver'],
