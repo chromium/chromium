@@ -181,14 +181,19 @@
 
 <template is="dom-if" if="[[showLocalCreditCardRemoveConfirmationDialog_]]"
     restamp>
-  <settings-local-credit-card-remove-confirmation-dialog
+  <settings-simple-confirmation-dialog id="localCardDeleteConfirmDialog"
+      title-text="$i18n{removeLocalCreditCardConfirmationTitle}"
+      body-text="$i18n{removeLocalPaymentMethodConfirmationDescription}"
+      confirm-text="$i18n{delete}"
       on-close="onLocalCreditCardRemoveConfirmationDialogClose_">
-  </setting-local-credit-card-remove-confirmation-dialog>
+  </settings-simple-confirmation-dialog>
 </template>
 
-<template is="dom-if" if="[[showLocalIbanRemoveConfirmationDialog_]]"
-    restamp>
-  <settings-local-iban-remove-confirmation-dialog
+<template is="dom-if" if="[[showLocalIbanRemoveConfirmationDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="localIbanDeleteConfirmationDialog"
+      title-text="$i18n{removeLocalIbanConfirmationTitle}"
+      body-text="$i18n{removeLocalPaymentMethodConfirmationDescription}"
+      confirm-text="$i18n{delete}"
       on-close="onLocalIbanRemoveConfirmationDialogClose_">
-  </setting-local-iban-remove-confirmation-dialog>
+  </settings-simple-confirmation-dialog>
 </template>

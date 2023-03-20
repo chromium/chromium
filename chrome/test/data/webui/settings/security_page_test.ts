@@ -352,8 +352,8 @@ suite('SecurityPage_SafeBrowsing', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
-        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!
-            .$.confirm.click();
+        page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
+            .confirm.click();
         flush();
 
         // Wait for onDisableSafebrowsingDialogClose_ to finish.
@@ -376,14 +376,14 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .confirm.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
     await flushTasks();
 
-    assertFalse(isChildVisible(page, 'settings-disable-safebrowsing-dialog'));
+    assertFalse(isChildVisible(page, 'settings-simple-confirmation-dialog'));
 
     assertFalse(page.$.safeBrowsingEnhanced.checked);
     assertFalse(page.$.safeBrowsingStandard.checked);
@@ -404,14 +404,14 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .cancel.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
     await flushTasks();
 
-    assertFalse(isChildVisible(page, 'settings-disable-safebrowsing-dialog'));
+    assertFalse(isChildVisible(page, 'settings-simple-confirmation-dialog'));
 
     assertTrue(page.$.safeBrowsingEnhanced.checked);
     assertFalse(page.$.safeBrowsingStandard.checked);
@@ -432,14 +432,14 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .cancel.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
     await flushTasks();
 
-    assertFalse(isChildVisible(page, 'settings-disable-safebrowsing-dialog'));
+    assertFalse(isChildVisible(page, 'settings-simple-confirmation-dialog'));
 
     assertFalse(page.$.safeBrowsingEnhanced.checked);
     assertTrue(page.$.safeBrowsingStandard.checked);
@@ -482,7 +482,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .confirm.click();
     flush();
 
@@ -503,7 +503,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .confirm.click();
     flush();
 
@@ -537,7 +537,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .confirm.click();
     flush();
 
@@ -633,7 +633,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .cancel.click();
     flush();
     const [disableDeniedResult, disableDeniedAction] = await Promise.all([
@@ -656,7 +656,7 @@ suite('SecurityPage_SafeBrowsing', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+    page.shadowRoot!.querySelector('settings-simple-confirmation-dialog')!.$
         .confirm.click();
     flush();
     const [disableConfirmedResult, disableConfirmedAction] = await Promise.all([

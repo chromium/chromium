@@ -13,15 +13,16 @@ import 'chrome://resources/js/cr.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
-import './search_engine_delete_confirmation_dialog.js';
+import '../simple_confirmation_dialog.js';
 import './search_engine_edit_dialog.js';
 import './search_engines_list.js';
 import './omnibox_extension_entry.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -204,9 +205,19 @@ export class SettingsSearchEnginesPageElement extends
   }
 
   private onCloseDeleteConfirmationDialog_() {
+    const dialog =
+        this.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+    assert(dialog);
+    const confirmed = dialog.wasConfirmed();
     this.showDeleteConfirmationDialog_ = false;
+
+    if (confirmed) {
+      assert(this.dialogModel_);
+      this.browserProxy_.removeSearchEngine(this.dialogModel_.modelIndex);
+      this.dialogAnchorElement_ = null;
+    }
+
     this.dialogModel_ = null;
-    this.dialogAnchorElement_ = null;
   }
 
   private onEditSearchEngine_(e: SearchEngineEditEvent) {

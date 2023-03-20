@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://settings/lazy_load.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
+import {SettingsSimpleConfirmationDialogElement, PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
@@ -266,14 +268,16 @@ suite('PaymentsSectionCardDialogs', function() {
     section.$.menuRemoveCreditCard.click();
     flush();
 
-    const confirmationDialog = section.shadowRoot!.querySelector(
-        'settings-local-credit-card-remove-confirmation-dialog');
+    const confirmationDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#localCardDeleteConfirmDialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 
     const closePromise = eventToPromise('close', confirmationDialog);
 
-    const removeButton = confirmationDialog.$.remove;
+    const removeButton = confirmationDialog.$.confirm;
     assertTrue(!!removeButton);
     removeButton.click();
     flush();
@@ -313,7 +317,7 @@ suite('PaymentsSectionCardDialogs', function() {
     flush();
 
     const confirmationDialog = section.shadowRoot!.querySelector(
-        'settings-local-credit-card-remove-confirmation-dialog');
+        'settings-simple-confirmation-dialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 

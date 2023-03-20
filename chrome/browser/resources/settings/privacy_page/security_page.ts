@@ -12,7 +12,7 @@ import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../prefs/prefs.js';
 import '../settings_shared.css.js';
-import './disable_safebrowsing_dialog.js';
+import '../simple_confirmation_dialog.js';
 
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -351,9 +351,10 @@ export class SettingsSecurityPageElement extends
    * the disable safebrowsing button.
    */
   private onDisableSafebrowsingDialogClose_() {
-    const confirmed =
-        this.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!
-            .wasConfirmed();
+    const dialog =
+        this.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+    assert(dialog);
+    const confirmed = dialog.wasConfirmed();
     this.recordInteractionHistogramOnSafeBrowsingDialogClose_(confirmed);
     this.recordActionOnSafeBrowsingDialogClose_(confirmed);
     // Check if the dialog was confirmed before closing it.

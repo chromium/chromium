@@ -15,6 +15,7 @@ import './autofill_page/passwords_section.js';
 import './autofill_page/payments_section.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
+import './simple_confirmation_dialog.js';
 import './privacy_page/anti_abuse_page.js';
 import './privacy_page/preloading_page.js';
 import './privacy_page/privacy_guide/privacy_guide_description_item.js';
@@ -99,7 +100,6 @@ export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_e
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
 // <if expr="is_win or is_macosx">
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
-export {SettingsPasskeysDeleteConfirmationDialogElement} from './autofill_page/passkeys_delete_confirmation_dialog.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
 // </if>
 export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
@@ -190,11 +190,11 @@ export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/s
 export {SettingsResetPageElement} from './reset_page/reset_page.js';
 export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
 export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
-export {SettingsSearchEngineDeleteConfirmationDialogElement} from './search_engines_page/search_engine_delete_confirmation_dialog.js';
 export {SettingsSearchEngineEditDialogElement} from './search_engines_page/search_engine_edit_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';
 export {SettingsSearchEnginesListElement} from './search_engines_page/search_engines_list.js';
 export {SettingsSearchEnginesPageElement} from './search_engines_page/search_engines_page.js';
+export {SettingsSimpleConfirmationDialogElement} from './simple_confirmation_dialog.js';
 export {AddSiteDialogElement} from './site_settings/add_site_dialog.js';
 export {AllSitesElement} from './site_settings/all_sites.js';
 // <if expr="chromeos_ash">

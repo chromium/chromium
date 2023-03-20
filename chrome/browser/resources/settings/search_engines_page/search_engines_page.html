@@ -60,9 +60,12 @@
     </template>
 
     <template is="dom-if" if="[[showDeleteConfirmationDialog_]]" restamp>
-      <settings-search-engine-delete-confirmation-dialog
-          model="[[dialogModel_]]" on-close="onCloseDeleteConfirmationDialog_">
-      </settings-search-engine-delete-confirmation-dialog>
+      <settings-simple-confirmation-dialog id="deleteConfirmDialog"
+          title-text="$i18n{searchEnginesDeleteConfirmationTitle}"
+          body-text="$i18n{searchEnginesDeleteConfirmationDescription}"
+          confirm-text="$i18n{delete}"
+          on-close="onCloseDeleteConfirmationDialog_">
+      </settings-simple-confirmation-dialog>
     </template>
 
     <div class="cr-row first">

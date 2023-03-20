@@ -254,7 +254,10 @@
         external>
     </cr-link-row>
     <template is="dom-if" if="[[showDisableSafebrowsingDialog_]]" restamp>
-      <settings-disable-safebrowsing-dialog prefs="{{prefs}}"
+      <settings-simple-confirmation-dialog
+          title-text="$i18n{safeBrowsingDisableDialog}"
+          body-text="$i18n{safeBrowsingDisableDialogDesc}"
+          confirm-text="$i18n{safeBrowsingDisableDialogConfirm}"
           on-close="onDisableSafebrowsingDialogClose_">
-      </settings-disable-safebrowsing-dialog>
+      </settings-simple-confirmation-dialog>
     </template>

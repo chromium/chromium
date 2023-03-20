@@ -18,8 +18,7 @@ import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import './credit_card_edit_dialog.js';
 import './iban_edit_dialog.js';
-import './local_credit_card_remove_confirmation_dialog.js';
-import './local_iban_remove_confirmation_dialog.js';
+import '../simple_confirmation_dialog.js';
 import './passwords_shared.css.js';
 import './payments_list.js';
 import './virtual_card_unenroll_dialog.js';
@@ -35,6 +34,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
+import {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
 import {DotsIbanMenuClickEvent} from './iban_list_entry.js';
@@ -397,8 +397,9 @@ export class SettingsPaymentsSectionElement extends
   private onLocalCreditCardRemoveConfirmationDialogClose_() {
     // Only remove the credit card entry if the user closed the dialog via the
     // confirmation button (instead of cancel or close).
-    const confirmationDialog = this.shadowRoot!.querySelector(
-        'settings-local-credit-card-remove-confirmation-dialog');
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#localCardDeleteConfirmDialog');
     assert(confirmationDialog);
     if (confirmationDialog.wasConfirmed()) {
       assert(this.activeCreditCard_);
@@ -433,8 +434,9 @@ export class SettingsPaymentsSectionElement extends
   private onLocalIbanRemoveConfirmationDialogClose_() {
     // Only remove the IBAN entry if the user closed the dialog via the
     // confirmation button (instead of cancel or close).
-    const confirmationDialog = this.shadowRoot!.querySelector(
-        'settings-local-iban-remove-confirmation-dialog');
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#localIbanDeleteConfirmationDialog');
     assert(confirmationDialog);
     if (confirmationDialog.wasConfirmed()) {
       assert(this.activeIban_);

@@ -84,8 +84,6 @@ build_webui("build") {
     "autofill_page/credit_card_list_entry.ts",
     "autofill_page/iban_edit_dialog.ts",
     "autofill_page/iban_list_entry.ts",
-    "autofill_page/local_credit_card_remove_confirmation_dialog.ts",
-    "autofill_page/local_iban_remove_confirmation_dialog.ts",
     "autofill_page/password_check_edit_disclaimer_dialog.ts",
     "autofill_page/password_check_list_item.ts",
     "autofill_page/password_check.ts",
@@ -136,7 +134,6 @@ build_webui("build") {
     "privacy_page/anti_abuse_page.ts",
     "privacy_page/collapse_radio_button.ts",
     "privacy_page/cookies_page.ts",
-    "privacy_page/disable_safebrowsing_dialog.ts",
     "privacy_page/do_not_track_toggle.ts",
     "privacy_page/personalization_options.ts",
     "privacy_page/preloading_page.ts",
@@ -184,7 +181,6 @@ build_webui("build") {
     "safety_check_page/safety_check_unused_site_permissions.ts",
     "safety_check_page/safety_check_updates_child.ts",
     "search_engines_page/omnibox_extension_entry.ts",
-    "search_engines_page/search_engine_delete_confirmation_dialog.ts",
     "search_engines_page/search_engine_edit_dialog.ts",
     "search_engines_page/search_engine_entry.ts",
     "search_engines_page/search_engines_list.ts",
@@ -196,6 +192,7 @@ build_webui("build") {
     "settings_page/settings_section.ts",
     "settings_page/settings_subpage.ts",
     "settings_ui/settings_ui.ts",
+    "simple_confirmation_dialog.ts",
     "site_favicon.ts",
     "site_settings/add_site_dialog.ts",
     "site_settings/all_sites.ts",
@@ -260,10 +257,7 @@ build_webui("build") {
     ]
   }
   if (is_win || is_mac) {
-    web_component_files += [
-      "autofill_page/passkeys_subpage.ts",
-      "autofill_page/passkeys_delete_confirmation_dialog.ts",
-    ]
+    web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
   }
   if (is_chromeos) {
     web_component_files += [ "controls/password_prompt_dialog.ts" ]

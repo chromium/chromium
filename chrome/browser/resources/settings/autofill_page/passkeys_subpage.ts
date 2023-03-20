@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '../site_favicon.js';
-import './passkeys_delete_confirmation_dialog.js';
+import '../simple_confirmation_dialog.js';
 // <if expr="is_macosx">
 import './passkey_edit_dialog.js';
 
@@ -159,8 +159,8 @@ export class SettingsPasskeysSubpageElement extends PolymerElement {
    * not).
    */
   private onConfirmDialogClose_() {
-    const dialog = this.shadowRoot!.querySelector(
-        'settings-passkeys-delete-confirmation-dialog');
+    const dialog =
+        this.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
     assert(dialog);
     const confirmed = dialog.wasConfirmed();
     this.showDeleteConfirmationDialog_ = false;

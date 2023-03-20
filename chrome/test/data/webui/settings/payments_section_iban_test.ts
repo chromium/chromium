@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://settings/lazy_load.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrInputElement, PaymentsManagerImpl, SettingsIbanEditDialogElement} from 'chrome://settings/lazy_load.js';
+import {SettingsSimpleConfirmationDialogElement, CrInputElement, PaymentsManagerImpl, SettingsIbanEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {CrButtonElement, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
@@ -239,14 +241,16 @@ suite('PaymentsSectionIban', function() {
     menuRemoveIban.click();
     flush();
 
-    const confirmationDialog = section.shadowRoot!.querySelector(
-        'settings-local-iban-remove-confirmation-dialog');
+    const confirmationDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#localIbanDeleteConfirmationDialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 
     const closePromise = eventToPromise('close', confirmationDialog);
 
-    confirmationDialog.$.remove.click();
+    confirmationDialog.$.confirm.click();
     flush();
 
     // Wait for the dialog close event to propagate to the PaymentManager.
@@ -279,8 +283,10 @@ suite('PaymentsSectionIban', function() {
     menuRemoveIban.click();
     flush();
 
-    const confirmationDialog = section.shadowRoot!.querySelector(
-        'settings-local-iban-remove-confirmation-dialog');
+    const confirmationDialog =
+        section.shadowRoot!
+            .querySelector<SettingsSimpleConfirmationDialogElement>(
+                '#localIbanDeleteConfirmationDialog');
     assertTrue(!!confirmationDialog);
     await whenAttributeIs(confirmationDialog.$.dialog, 'open', '');
 

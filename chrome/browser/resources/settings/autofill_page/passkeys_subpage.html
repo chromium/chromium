@@ -85,9 +85,12 @@
 </cr-lazy-render>
 
 <template is="dom-if" if="[[showDeleteConfirmationDialog_]]" restamp>
-  <settings-passkeys-delete-confirmation-dialog id="deleteConfirmDialog"
+  <settings-simple-confirmation-dialog id="deleteConfirmDialog"
+      title-text="$i18n{managePasskeysDeleteConfirmationTitle}"
+      body-text="$i18n{managePasskeysDeleteConfirmationDescription}"
+      confirm-text="$i18n{delete}"
       on-close="onConfirmDialogClose_">
-  </settings-passkeys-delete-confirmation-dialog>
+  </settings-simple-confirmation-dialog>
 </template>
 <if expr="is_macosx">
   <template is="dom-if" if="[[showEditDialog_]]" restamp>
