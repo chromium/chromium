@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "content/public/browser/web_contents.h"
@@ -67,6 +68,22 @@ ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
   return views::AsViewClass<ExtensionsMenuSitePermissionsPageView>(page);
 }
 
+// Returns whether the site setting toggle for `web_contents` should be visible.
+bool IsSiteSettingsToggleVisible(
+    const raw_ptr<ToolbarActionsModel> toolbar_model,
+    content::WebContents* web_contents) {
+  return !toolbar_model->IsRestrictedUrl(web_contents->GetLastCommittedURL());
+}
+
+// Returns whether the site settings toggle for `web_contents` should be on.
+bool IsSiteSettingsToggleOn(Browser* browser,
+                            content::WebContents* web_contents) {
+  auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  return extensions::PermissionsManager::Get(browser->profile())
+             ->GetUserSiteSetting(origin) ==
+         extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension;
+}
+
 }  // namespace
 
 ExtensionsMenuViewController::ExtensionsMenuViewController(
@@ -92,6 +109,15 @@ ExtensionsMenuViewController::~ExtensionsMenuViewController() {
 
 void ExtensionsMenuViewController::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  std::u16string current_site = GetCurrentHost(web_contents);
+  bool is_site_settings_toggle_visible =
+      IsSiteSettingsToggleVisible(toolbar_model_, web_contents);
+  bool is_site_settings_toggle_on =
+      IsSiteSettingsToggleOn(browser_, web_contents);
+  main_page->Update(current_site, is_site_settings_toggle_visible,
+                    is_site_settings_toggle_on);
   PopulateMainPage(main_page.get());
 
   SwitchToPage(std::move(main_page));
@@ -144,7 +170,13 @@ void ExtensionsMenuViewController::UpdatePage(
 
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_);
   if (main_page && web_contents) {
-    main_page->Update(web_contents);
+    std::u16string current_site = GetCurrentHost(web_contents);
+    bool is_site_settings_toggle_visible =
+        IsSiteSettingsToggleVisible(toolbar_model_, web_contents);
+    bool is_site_settings_toggle_on =
+        IsSiteSettingsToggleOn(browser_, web_contents);
+    main_page->Update(current_site, is_site_settings_toggle_visible,
+                      is_site_settings_toggle_on);
   }
 }
 
@@ -250,9 +282,8 @@ void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(
     return;
   }
 
-  auto* main_page = GetMainPage(current_page_);
-  DCHECK(main_page);
-  main_page->Update(GetActiveWebContents());
+  DCHECK(GetMainPage(current_page_));
+  UpdatePage(GetActiveWebContents());
 
   // TODO(crbug.com/1390952): Update the "highlighted section" based on the
   // `site_setting` and whether a page refresh is needed.

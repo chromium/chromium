@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
@@ -46,30 +45,10 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 
 // Updates the `toggle_button` text based on its state.
-void UpdateSiteSettingToggleText(views::ToggleButton* toggle_button) {
-  bool is_on = toggle_button->GetIsOn();
-  toggle_button->SetTooltipText(l10n_util::GetStringUTF16(
-      is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
-            : IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP));
-  toggle_button->SetAccessibleName(l10n_util::GetStringUTF16(
-      is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
-            : IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP));
-}
-
-// Returns whether `site_settings_toggle_` should be on or off.
-bool IsSiteSettingsToggleOn(Browser* browser,
-                            content::WebContents* web_contents) {
-  auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  return PermissionsManager::Get(browser->profile())
-             ->GetUserSiteSetting(origin) ==
-         PermissionsManager::UserSiteSetting::kCustomizeByExtension;
-}
-
-// Returns whether `site_setting_toggle_` should be visible.
-bool IsSiteSettingsToggleVisible(
-    const raw_ptr<ToolbarActionsModel> toolbar_model,
-    content::WebContents* web_contents) {
-  return !toolbar_model->IsRestrictedUrl(web_contents->GetLastCommittedURL());
+std::u16string GetSiteSettingToggleText(bool is_on) {
+  int label_id = is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
+                       : IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP;
+  return l10n_util::GetStringUTF16(label_id);
 }
 
 // Converts a view to a ExtensionMenuItemView. This cannot
@@ -143,9 +122,7 @@ RequestsAccessSection::RequestsAccessSection() {
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     Browser* browser,
     ExtensionsMenuNavigationHandler* navigation_handler)
-    : browser_(browser),
-      navigation_handler_(navigation_handler),
-      toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
+    : browser_(browser), navigation_handler_(navigation_handler) {
   // This is set so that the extensions menu doesn't fall outside the monitor in
   // a maximized window in 1024x768. See https://crbug.com/1096630.
   // TODO(crbug.com/1413883): Consider making the height dynamic.
@@ -155,7 +132,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width =*/true)
           .WithWeight(1);
-  content::WebContents* web_contents = GetActiveWebContents();
 
   views::Builder<ExtensionsMenuMainPageView>(this)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -184,7 +160,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               .SetTextStyle(views::style::STYLE_SECONDARY),
                           views::Builder<views::Label>()
                               .CopyAddressTo(&subheader_subtitle_)
-                              .SetText(GetCurrentHost(web_contents))
                               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                               .SetTextContext(views::style::CONTEXT_LABEL)
                               .SetTextStyle(views::style::STYLE_SECONDARY)
@@ -216,10 +191,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       .CopyAddressTo(&site_settings_toggle_)
                       .SetCallback(base::BindRepeating(
                           &ExtensionsMenuMainPageView::OnToggleButtonPressed,
-                          base::Unretained(this)))
-                      .SetVisible(IsSiteSettingsToggleVisible(toolbar_model_,
-                                                              web_contents))
-                      .SetIsOn(IsSiteSettingsToggleOn(browser_, web_contents)),
+                          base::Unretained(this))),
                   // Close button.
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
@@ -247,9 +219,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                                   views::BoxLayout::Orientation::kVertical))))
 
       .BuildChildren();
-
-  // Update toggle button text after it's build, as it depends on its state.
-  UpdateSiteSettingToggleText(site_settings_toggle_);
 }
 
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
@@ -283,16 +252,17 @@ void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
       ->UpdateUserSiteSetting(origin, site_setting);
 }
 
-void ExtensionsMenuMainPageView::Update(content::WebContents* web_contents) {
-  DCHECK(web_contents);
+void ExtensionsMenuMainPageView::Update(std::u16string current_site,
+                                        bool is_site_settings_toggle_visible,
+                                        bool is_site_settings_toggle_on) {
+  subheader_subtitle_->SetText(current_site);
 
-  subheader_subtitle_->SetText(GetCurrentHost(web_contents));
-
-  site_settings_toggle_->SetVisible(
-      IsSiteSettingsToggleVisible(toolbar_model_, web_contents));
-  site_settings_toggle_->SetIsOn(
-      IsSiteSettingsToggleOn(browser_, web_contents));
-  UpdateSiteSettingToggleText(site_settings_toggle_);
+  site_settings_toggle_->SetVisible(is_site_settings_toggle_visible);
+  site_settings_toggle_->SetIsOn(is_site_settings_toggle_on);
+  site_settings_toggle_->SetTooltipText(
+      GetSiteSettingToggleText(is_site_settings_toggle_on));
+  site_settings_toggle_->SetAccessibleName(
+      GetSiteSettingToggleText(is_site_settings_toggle_on));
 
   // Update menu items.
   for (auto* view : menu_items_->children()) {
