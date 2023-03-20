@@ -19,6 +19,11 @@
     --cr-input-padding-start: 0;
     width: 100%;
   }
+
+  iron-icon {
+    height: 18px;
+    width: 18px;
+  }
 </style>
 
 <cr-url-list-item
@@ -58,5 +63,9 @@
     <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
         hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
         disabled="[[hasCheckbox]]" aria-label="[[trailingIconAriaLabel]]">
+  </template>
+
+  <template is="dom-if" if="[[isBookmarksBar_(bookmark)]]" restamp>
+    <iron-icon slot="folder-icon" icon="bookmarks:bookmarks-bar"></iron-icon>
   </template>
 </cr-url-list-item>

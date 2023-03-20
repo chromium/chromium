@@ -353,8 +353,10 @@
         </div>
       </template>
     </template>
-    <div class="folder cr-icon icon-folder-open"
-        hidden$="[[!shouldShowFolderIcon_(size, imageUrls)]]"></div>
+    <slot id="folder-icon" name="folder-icon">
+      <div class="folder cr-icon icon-folder-open"
+          hidden$="[[!shouldShowFolderIcon_(size, imageUrls)]]"></div>
+    </slot>
     <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>
 </div>

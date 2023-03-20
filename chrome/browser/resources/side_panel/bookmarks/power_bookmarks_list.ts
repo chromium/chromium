@@ -441,7 +441,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       if (imageUrl) {
         imageUrls.push(imageUrl);
       }
-    } else if (bookmark.children) {
+    } else if (this.canEdit_(bookmark) && bookmark.children) {
       bookmark.children.forEach((child) => {
         const childImageUrl: string =
             this.get(`imageUrls_.${child.id.toString()}`);
@@ -508,7 +508,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private canEdit_(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
-    return bookmark.id !== loadTimeData.getString('bookmarksBarId');
+    return bookmark.id !== loadTimeData.getString('bookmarksBarId') &&
+        bookmark.id !== loadTimeData.getString('managedBookmarksFolderId');
   }
 
   private getSortMenuItemLabel_(sortType: SortOption): string {
