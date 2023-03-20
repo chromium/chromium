@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/no_vary_search.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "url/mojom/url.mojom";
@@ -20,8 +21,15 @@ import "url/mojom/url.mojom";
 // re-evaluate.
 interface SpeculationHost {
   // Pushes a new set of speculation candidates, which replaces any previously
-  // sent.
+  // sent. All candidates in `candidates` are from a single document, and
+  // `devtools_navigation_token` is this document's loader's
+  // devtools_navigation_token (a token that can be used by DevTools to
+  // identify a document). This token is sent from renderer to browser as the
+  // document id for Devtools because the lifetime of both SpeculationHostImpl
+  // and RenderFrameHost makes them not suitable for the storage of the
+  // information.
   UpdateSpeculationCandidates(
+    mojo_base.mojom.UnguessableToken devtools_navigation_token,
       array<SpeculationCandidate> candidates);
   // Enables matching prefetches according to No-Vary-Search response headers.
   EnableNoVarySearchSupport();

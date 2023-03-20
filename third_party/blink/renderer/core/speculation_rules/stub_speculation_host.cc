@@ -19,7 +19,10 @@ void StubSpeculationHost::Bind(
       &StubSpeculationHost::OnConnectionLost, WTF::Unretained(this)));
 }
 
-void StubSpeculationHost::UpdateSpeculationCandidates(Candidates candidates) {
+void StubSpeculationHost::UpdateSpeculationCandidates(
+    const base::UnguessableToken& devtools_navigation_token,
+    Candidates candidates) {
+  devtools_navigation_token_ = devtools_navigation_token;
   candidates_ = std::move(candidates);
   if (candidates_updated_callback_)
     candidates_updated_callback_.Run(candidates_);

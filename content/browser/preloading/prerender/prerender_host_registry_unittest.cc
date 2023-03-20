@@ -39,18 +39,21 @@ blink::mojom::SpeculationCandidatePtr CreatePrerenderCandidate(
   return candidate;
 }
 
-void SendCandidates(const std::vector<GURL>& urls,
+void SendCandidates(const base::UnguessableToken& devtools_navigation_token,
+                    const std::vector<GURL>& urls,
                     mojo::Remote<blink::mojom::SpeculationHost>& remote) {
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.resize(urls.size());
   base::ranges::transform(urls, candidates.begin(), &CreatePrerenderCandidate);
-  remote->UpdateSpeculationCandidates(std::move(candidates));
+  remote->UpdateSpeculationCandidates(devtools_navigation_token,
+                                      std::move(candidates));
   remote.FlushForTesting();
 }
 
-void SendCandidate(const GURL& url,
+void SendCandidate(const base::UnguessableToken& devtools_navigation_token,
+                   const GURL& url,
                    mojo::Remote<blink::mojom::SpeculationHost>& remote) {
-  SendCandidates({url}, remote);
+  SendCandidates(devtools_navigation_token, {url}, remote);
 }
 
 // This definition is needed because this constant is odr-used in gtest macros.
@@ -376,7 +379,10 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   ASSERT_TRUE(remote1.is_connected());
   const GURL kPrerenderingUrl1("https://example.com/next1");
   const GURL kPrerenderingUrl2("https://example.com/next2");
-  SendCandidates({kPrerenderingUrl1, kPrerenderingUrl2}, remote1);
+  base::UnguessableToken devtools_navigation_token =
+      base::UnguessableToken::Create();
+  SendCandidates(devtools_navigation_token,
+                 {kPrerenderingUrl1, kPrerenderingUrl2}, remote1);
 
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
   ASSERT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
@@ -394,7 +400,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_SameOriginNavigateAway) {
   mojo::Remote<blink::mojom::SpeculationHost> remote2;
   SpeculationHostImpl::Bind(render_frame_host,
                             remote2.BindNewPipeAndPassReceiver());
-  SendCandidate(kPrerenderingUrl2, remote2);
+  SendCandidate(devtools_navigation_token, kPrerenderingUrl2, remote2);
 
   EXPECT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl2), nullptr);
   ExpectBucketCountOfFinalStatus(
@@ -414,7 +420,10 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   ASSERT_TRUE(remote1.is_connected());
   const GURL kPrerenderingUrl1("https://example.com/next1");
   const GURL kPrerenderingUrl2("https://example.com/next2");
-  SendCandidates({kPrerenderingUrl1, kPrerenderingUrl2}, remote1);
+  base::UnguessableToken devtools_navigation_token =
+      base::UnguessableToken::Create();
+  SendCandidates(devtools_navigation_token,
+                 {kPrerenderingUrl1, kPrerenderingUrl2}, remote1);
 
   // PrerenderHostRegistry should only start prerendering for kPrerenderingUrl1.
   ASSERT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl1), nullptr);
@@ -433,7 +442,7 @@ TEST_F(PrerenderHostRegistryTest, NumberLimit_CrossOriginNavigateAway) {
   SpeculationHostImpl::Bind(render_frame_host,
                             remote2.BindNewPipeAndPassReceiver());
   const GURL kPrerenderingUrl3("https://example.org/next1");
-  SendCandidate(kPrerenderingUrl3, remote2);
+  SendCandidate(devtools_navigation_token, kPrerenderingUrl3, remote2);
   EXPECT_NE(registry().FindHostByUrlForTesting(kPrerenderingUrl3), nullptr);
   ExpectBucketCountOfFinalStatus(
       PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);

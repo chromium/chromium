@@ -3970,5 +3970,33 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
             " without the \"params\" dictionary key being set to true."));
   }
 }
+
+// Verify the consistency of devtools_navigation_token when using the same
+// document to call UpdateSpeculationCandidates.
+TEST_F(SpeculationRuleSetTest, VerifyDevtoolsNavigationTokenConsistency) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    InsertSpeculationRules(page_holder.GetDocument(),
+                           R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/foo"]}]})");
+  });
+
+  absl::optional<base::UnguessableToken> devtools_navigation_token1 =
+      speculation_host.devtools_navigation_token();
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host, [&]() {
+    InsertSpeculationRules(page_holder.GetDocument(),
+                           R"({"prefetch": [
+             {"source": "list", "urls": ["https://example.com/baz"]}]})");
+
+    absl::optional<base::UnguessableToken> devtools_navigation_token2 =
+        speculation_host.devtools_navigation_token();
+    EXPECT_TRUE(devtools_navigation_token1.has_value());
+    EXPECT_TRUE(devtools_navigation_token2.has_value());
+    EXPECT_EQ(devtools_navigation_token1.value(),
+              devtools_navigation_token2.value());
+  });
+}
 }  // namespace
 }  // namespace blink
