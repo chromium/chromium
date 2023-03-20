@@ -371,5 +371,38 @@
     /* When the button is pressed, we layer the ripple color on top of the hover color to form the pressed color, that's what blend() does here. */
     'pressed-on-prominent': 'blend($cros.sys.hover-on-prominent, $cros.sys.ripple-neutral-on-prominent)',
     'pressed-on-subtle': 'blend($cros.sys.hover-on-subtle, $cros.sys.ripple-neutral-on-subtle)',
+
+    /* Illustration colors. */
+    'cros.sys.illo.color1': {
+      light: '$cros.ref.primary30',
+      dark: '$cros.ref.primary80',
+    },
+    'cros.sys.illo.color1.1': {
+      light: '$cros.ref.primary80',
+      dark: '$cros.ref.secondary40',
+    },
+    'cros.sys.illo.color1.2': {
+      light: '$cros.ref.primary90',
+      dark: '$cros.ref.secondary30',
+    },
+    'cros.sys.illo.color2': '$cros.sys.positive',
+    'cros.sys.illo.color3': '$cros.sys.warning',
+    'cros.sys.illo.color4': '$cros.sys.error',
+    'cros.sys.illo.color5': {
+      light: '$cros.ref.tertiary70',
+      dark: '$cros.ref.tertiary40',
+    },
+    'cros.sys.illo.color6': {
+      light: '$cros.ref.secondary90',
+      dark: '$cros.ref.secondary50',
+    },
+    'cros.sys.illo.base': {
+      light: '$cros.ref.secondary100',
+      dark: '$cros.ref.secondary0',
+    },
+    'cros.sys.illo.secondary': {
+      light: '$cros.ref.neutralvariant90',
+      dark: '$cros.ref.neutralvariant40',
+    },
   },
 }
