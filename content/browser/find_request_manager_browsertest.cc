@@ -496,6 +496,41 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_AddFrame) {
   EXPECT_EQ(5, results.active_match_ordinal);
 }
 
+// Tests adding an in-process hidden iframe during a find session.
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
+                       AddInprocessHiddenFrameDuringFind) {
+  LoadAndWait("/find_in_page.html");
+
+  auto options = blink::mojom::FindOptions::New();
+  options->run_synchronously_for_testing = true;
+  Find("result", options.Clone());
+  delegate()->WaitForFinalReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(19, results.number_of_matches);
+
+  // Add a frame. It contains 5 new matches.
+  std::string url = embedded_test_server()
+                        ->GetURL("a.com", "/find_in_simple_page.html")
+                        .spec();
+  std::string script = JsReplace(R"JS(
+      var frame = document.createElement('iframe');
+      frame.src = '$1';
+      frame.style.visibility = 'hidden';
+      document.body.appendChild(frame);
+      )JS",
+                                 url);
+
+  delegate()->MarkNextReply();
+  ASSERT_TRUE(ExecJs(shell(), script));
+  delegate()->WaitForNextReply();
+
+  // The number of matches should not be effected by the
+  // the newly added hidden frame.
+  results = delegate()->GetFindResults();
+  EXPECT_EQ(19, results.number_of_matches);
+}
+
 // Tests adding a frame during a find session where there were previously no
 // matches.
 IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(AddFrameAfterNoMatches)) {

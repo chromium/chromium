@@ -86,7 +86,7 @@ void FindInPage::Find(int request_id,
   }
 
   // Send "no results" if this frame has no visible content.
-  if (!frame_->HasVisibleContent() && !options->force) {
+  if (!frame_->HasVisibleContent()) {
     ReportFindInPageMatchCount(request_id, 0 /* count */,
                                true /* final_update */);
     return;
