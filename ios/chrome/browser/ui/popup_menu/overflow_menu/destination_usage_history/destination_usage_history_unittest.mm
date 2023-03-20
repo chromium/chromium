@@ -12,6 +12,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -141,16 +142,17 @@ class DestinationUsageHistoryTest : public PlatformTest {
 
   OverflowMenuDestination* CreateOverflowMenuDestination(
       overflow_menu::Destination destination) {
-    OverflowMenuDestination* result = [[OverflowMenuDestination alloc]
-                   initWithName:@"Foobar"
-                          image:[UIImage
-                                    imageNamed:
-                                        @"overflow_menu_destination_settings"]
-        accessibilityIdentifier:@"Foobar"
-             enterpriseDisabled:NO
-                        handler:^{
-                            // Do nothing
-                        }];
+    OverflowMenuDestination* result =
+        [[OverflowMenuDestination alloc] initWithName:@"Foobar"
+                                           symbolName:kSettingsSymbol
+                                         systemSymbol:YES
+                                     monochromeSymbol:NO
+                              accessibilityIdentifier:@"Foobar"
+                                   enterpriseDisabled:NO
+                                  displayNewLabelIcon:NO
+                                              handler:^{
+                                                  // Do nothing
+                                              }];
 
     result.destination = static_cast<NSInteger>(destination);
 

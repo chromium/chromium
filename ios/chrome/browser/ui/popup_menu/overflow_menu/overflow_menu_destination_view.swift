@@ -100,15 +100,10 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       spacing = 0
       interiorPadding = Dimensions.horizontalLayoutIconPadding
     }
-    let image: Image
-    if !destination.symbolName.isEmpty {
-      image =
-        (destination.systemSymbol
-        ? Image(systemName: destination.symbolName) : Image(destination.symbolName)).renderingMode(
-          .template)
-    } else {
-      image = destination.image
-    }
+    let image =
+      (destination.systemSymbol
+      ? Image(systemName: destination.symbolName) : Image(destination.symbolName)).renderingMode(
+        .template)
     return iconBuilder(
       configuration: configuration, spacing: spacing, interiorPadding: interiorPadding, image: image
     )
@@ -166,13 +161,9 @@ struct OverflowMenuDestinationButton: ButtonStyle {
       // recognize.
       .accessibilityHidden(true)
 
-    if !destination.symbolName.isEmpty {
-      configuredImage
-        .foregroundColor(.blue600).imageScale(.medium).font(
-          Font.system(size: Dimensions.iconSymbolSize, weight: .medium))
-    } else {
-      configuredImage
-    }
+    configuredImage
+      .foregroundColor(.blue600).imageScale(.medium).font(
+        Font.system(size: Dimensions.iconSymbolSize, weight: .medium))
   }
 
   /// Text view for the destination.

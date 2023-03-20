@@ -10,14 +10,19 @@ import SwiftUI
   /// Text for the link to learn more about enterprise policies.
   @Published public var link: String
 
+  /// The image for this footer.
+  public var image: Image
+
   public init(
     name: String, link: String, image: UIImage, accessibilityIdentifier: String,
     handler: @escaping () -> Void
   ) {
     self.link = link
+    self.image = Image(uiImage: image)
     super.init(
-      name: name, image: image, accessibilityIdentifier: accessibilityIdentifier,
-      enterpriseDisabled: false,
+      name: name, symbolName: "", systemSymbol: true, monochromeSymbol: true,
+      accessibilityIdentifier: accessibilityIdentifier,
+      enterpriseDisabled: false, displayNewLabelIcon: false,
       handler: handler)
   }
 }
