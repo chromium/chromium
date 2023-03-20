@@ -57,7 +57,7 @@ class SVGPath final : public SVGPropertyBase {
   SVGPath* Clone() const;
   SVGPropertyBase* CloneForAnimation(const String&) const override;
   String ValueAsString() const override;
-  SVGParsingError SetValueAsString(const AtomicString&);
+  SVGParsingError SetValueAsString(const String&);
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(
