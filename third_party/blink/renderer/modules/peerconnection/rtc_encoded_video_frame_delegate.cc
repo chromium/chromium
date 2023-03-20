@@ -96,6 +96,9 @@ RTCEncodedVideoFrameDelegate::PassWebRtcFrame() {
 std::unique_ptr<webrtc::TransformableVideoFrameInterface>
 RTCEncodedVideoFrameDelegate::CloneWebRtcFrame() {
   base::AutoLock lock(lock_);
+  if (!webrtc_frame_) {
+    return nullptr;
+  }
   return webrtc::CloneVideoFrame(webrtc_frame_.get());
 }
 

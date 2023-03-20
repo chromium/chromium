@@ -20,6 +20,6 @@ enum RTCEncodedVideoFrameType {
     RTCEncodedVideoFrameMetadata getMetadata();
     [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata, RaisesException]
     void setMetadata(RTCEncodedVideoFrameMetadata metadata);
-    [RuntimeEnabled=RTCEncodedVideoFrameClone] RTCEncodedVideoFrame clone();
+    [RuntimeEnabled=RTCEncodedVideoFrameClone, RaisesException] RTCEncodedVideoFrame clone();
     stringifier;
 };
