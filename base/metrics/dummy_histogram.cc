@@ -29,7 +29,7 @@ class DummySampleCountIterator : public SampleCountIterator {
   void Next() override { NOTREACHED(); }
   void Get(HistogramBase::Sample* min,
            int64_t* max,
-           HistogramBase::Count* count) const override {
+           HistogramBase::Count* count) override {
     NOTREACHED();
   }
 };

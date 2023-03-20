@@ -34,7 +34,7 @@ class PersistentSampleMapIterator : public SampleCountIterator {
   void Next() override;
   void Get(HistogramBase::Sample* min,
            int64_t* max,
-           HistogramBase::Count* count) const override;
+           HistogramBase::Count* count) override;
 
  private:
   void SkipEmptyBuckets();
@@ -62,9 +62,7 @@ void PersistentSampleMapIterator::Next() {
   SkipEmptyBuckets();
 }
 
-void PersistentSampleMapIterator::Get(Sample* min,
-                                      int64_t* max,
-                                      Count* count) const {
+void PersistentSampleMapIterator::Get(Sample* min, int64_t* max, Count* count) {
   DCHECK(!Done());
   if (min)
     *min = iter_->first;

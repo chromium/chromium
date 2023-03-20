@@ -521,7 +521,7 @@ void SampleVectorIterator::Next() {
 
 void SampleVectorIterator::Get(HistogramBase::Sample* min,
                                int64_t* max,
-                               HistogramBase::Count* count) const {
+                               HistogramBase::Count* count) {
   DCHECK(!Done());
   if (min != nullptr)
     *min = bucket_ranges_->range(index_);
