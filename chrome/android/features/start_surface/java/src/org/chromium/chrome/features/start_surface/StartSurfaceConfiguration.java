@@ -41,12 +41,6 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, "open_start_as_homepage", false);
 
-    private static final String TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM =
-            "tab_count_button_on_start_surface";
-    public static final BooleanCachedFieldTrialParameter TAB_COUNT_BUTTON_ON_START_SURFACE =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM, true);
-
     private static final String SHOW_TABS_IN_MRU_ORDER_PARAM = "show_tabs_in_mru_order";
     public static final BooleanCachedFieldTrialParameter SHOW_TABS_IN_MRU_ORDER =
             new BooleanCachedFieldTrialParameter(

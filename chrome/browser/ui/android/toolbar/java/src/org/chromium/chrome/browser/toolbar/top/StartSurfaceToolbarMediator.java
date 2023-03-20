@@ -68,7 +68,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private final PropertyModel mPropertyModel;
     private final Callback<IPHCommandBuilder> mShowIdentityIPHCallback;
     private final boolean mHideIncognitoSwitchWhenNoTabs;
-    private final boolean mShouldShowTabSwitcherButtonOnHomepage;
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
     private final boolean mIsTabGroupsAndroidContinuationEnabled;
     private final boolean mIsTabToGtsFadeAnimationEnabled;
@@ -106,8 +105,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, MenuButtonCoordinator menuButtonCoordinator,
             ButtonDataProvider identityDiscController,
-            Supplier<ButtonData> identityDiscButtonSupplier,
-            boolean shouldShowTabSwitcherButtonOnHomepage, boolean isTabToGtsFadeAnimationEnabled,
+            Supplier<ButtonData> identityDiscButtonSupplier, boolean isTabToGtsFadeAnimationEnabled,
             boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled,
@@ -133,8 +131,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         mFinishedTransitionCallback = finishedTransitionCallback;
         mToolbarAlphaInOverviewObserver = toolbarAlphaInOverviewObserver;
         mContext = context;
-
-        mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
 
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
@@ -458,7 +454,7 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
     private void updateTabSwitcherButtonVisibility() {
         // This button should only be shown on homepage. On tab switcher page, new tab button is
         // shown.
-        boolean shouldShow = mShouldShowTabSwitcherButtonOnHomepage && isOnHomepage();
+        boolean shouldShow = isOnHomepage();
         mPropertyModel.set(TAB_SWITCHER_BUTTON_IS_VISIBLE, shouldShow);
         // If tab switcher button is visible, we should move identity disc to the left.
         mPropertyModel.set(IDENTITY_DISC_AT_START, shouldShow);

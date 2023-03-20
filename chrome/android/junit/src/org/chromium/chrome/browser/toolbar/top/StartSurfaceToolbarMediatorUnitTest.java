@@ -201,7 +201,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertTrue(mMediator.isLogoVisibleForTesting());
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
@@ -212,7 +212,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertTrue(mMediator.isLogoVisibleForTesting());
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
@@ -272,7 +272,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertTrue(mMediator.isLogoVisibleForTesting());
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
@@ -291,7 +291,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         assertTrue(mMediator.isLogoVisibleForTesting());
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertTrue(mPropertyModel.get(IDENTITY_DISC_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
@@ -470,7 +470,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public void testNewTabButtonWithAccessibilityOnAndContinuationOn() {
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
 
-        createMediator(false, true, true);
+        createMediator(false, true);
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
         // When accessibility is turned on and TAB_GROUPS_CONTINUATION_ANDROID is enabled, new tab
@@ -482,7 +482,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public void testNewTabButtonWithAccessibilityOnAndContinuationOff() {
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
 
-        createMediator(false, true, false);
+        createMediator(false, false);
         mMediator.onStartSurfaceStateChanged(
                 StartSurfaceState.SHOWN_HOMEPAGE, true, LayoutType.START_SURFACE);
 
@@ -551,12 +551,11 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
-        createMediator(hideIncognitoSwitchWhenNoTabs, false, false);
+        createMediator(hideIncognitoSwitchWhenNoTabs, false);
     }
 
-    private void createMediator(boolean hideIncognitoSwitchWhenNoTabs,
-            boolean shouldShowTabSwitcherButtonOnHomepage,
-            boolean isTabGroupsAndroidContinuationEnabled) {
+    private void createMediator(
+            boolean hideIncognitoSwitchWhenNoTabs, boolean isTabGroupsAndroidContinuationEnabled) {
         boolean shouldCreateLogoInToolbar =
                 !ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
                 || SharedPreferencesManager.getInstance().readBoolean(
@@ -568,8 +567,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting(),
                                 mMediator.getLayoutTypeForTesting()),
-                shouldShowTabSwitcherButtonOnHomepage, /*isTabToGtsFadeAnimationEnabled=*/false,
-                isTabGroupsAndroidContinuationEnabled,
+                /*isTabToGtsFadeAnimationEnabled=*/false, isTabGroupsAndroidContinuationEnabled,
                 ()
                         -> false,
                 /*logoClickedCallback=*/null,

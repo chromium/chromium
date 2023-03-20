@@ -25,7 +25,6 @@ import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Tap;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.LargeTest;
-import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -72,8 +71,6 @@ public class StartSurfaceNoTabsTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = sClassParamsForStartSurfaceTest;
 
-    private static final String BASE_PARAMS = "force-fieldtrial-params=Study.Group:";
-
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -103,38 +100,7 @@ public class StartSurfaceNoTabsTest {
     @LargeTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "tab_count_button_on_start_surface/true"})
     public void testShow_SingleAsHomepage_NoTabs() throws TimeoutException {
-        // clang-format on
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> mActivityTestRule.getActivity().getLayoutManager() != null
-                        && mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
-                                LayoutType.TAB_SWITCHER));
-
-        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
-        onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
-        onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.tab_switcher_title)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.carousel_tab_switcher_container))
-                .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.more_tabs)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
-        onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
-        onViewWaiting(withId(R.id.logo)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.start_tab_switcher_button))
-                .perform(clickAndPressBackIfAccidentallyLongClicked());
-        StartSurfaceTestUtils.waitForTabSwitcherVisible(mActivityTestRule.getActivity());
-        pressBack();
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    // clang-format off
-    public void testShow_SingleAsHomepage_SingleTabSwitcher_NoTabs() {
         // clang-format on
         CriteriaHelper.pollUiThread(
                 ()
@@ -151,6 +117,14 @@ public class StartSurfaceNoTabsTest {
         onView(withId(R.id.single_tab_view)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.more_tabs)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
+        onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.logo)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.start_tab_switcher_button))
+                .perform(clickAndPressBackIfAccidentallyLongClicked());
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(mActivityTestRule.getActivity());
+        pressBack();
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
     }
 
     private void pressBack() {

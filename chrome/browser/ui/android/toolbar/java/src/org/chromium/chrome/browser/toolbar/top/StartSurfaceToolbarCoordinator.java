@@ -100,7 +100,6 @@ public class StartSurfaceToolbarCoordinator {
                 },
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 menuButtonCoordinator, identityDiscController, identityDiscButtonSupplier,
-                StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
                 isIncognitoModeEnabledSupplier, logoClickedCallback, isRefactorEnabled,
                 StartSurfaceConfiguration.IS_DOODLE_SUPPORTED.getValue(), shouldCreateLogoInToolbar,
@@ -278,23 +277,20 @@ public class StartSurfaceToolbarCoordinator {
 
         mToolbarMediator.onLogoViewReady(mView.findViewById(R.id.logo));
 
-        if (StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue()) {
-            mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
-            if (mTabSwitcherLongClickListener != null) {
-                mTabSwitcherButtonView.setOnLongClickListener(mTabSwitcherLongClickListener);
-                mTabSwitcherLongClickListener = null;
-            }
-            mTabSwitcherButtonCoordinator =
-                    new TabSwitcherButtonCoordinator(mTabSwitcherButtonView);
-            mTabSwitcherButtonCoordinator.setThemeColorProvider(mThemeColorProvider);
-            if (mTabCountProvider != null) {
-                mTabSwitcherButtonCoordinator.setTabCountProvider(mTabCountProvider);
-                mTabCountProvider = null;
-            }
-            if (mTabSwitcherClickListener != null) {
-                mTabSwitcherButtonCoordinator.setTabSwitcherListener(mTabSwitcherClickListener);
-                mTabSwitcherClickListener = null;
-            }
+        mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);
+        if (mTabSwitcherLongClickListener != null) {
+            mTabSwitcherButtonView.setOnLongClickListener(mTabSwitcherLongClickListener);
+            mTabSwitcherLongClickListener = null;
+        }
+        mTabSwitcherButtonCoordinator = new TabSwitcherButtonCoordinator(mTabSwitcherButtonView);
+        mTabSwitcherButtonCoordinator.setThemeColorProvider(mThemeColorProvider);
+        if (mTabCountProvider != null) {
+            mTabSwitcherButtonCoordinator.setTabCountProvider(mTabCountProvider);
+            mTabCountProvider = null;
+        }
+        if (mTabSwitcherClickListener != null) {
+            mTabSwitcherButtonCoordinator.setTabSwitcherListener(mTabSwitcherClickListener);
+            mTabSwitcherClickListener = null;
         }
     }
 
