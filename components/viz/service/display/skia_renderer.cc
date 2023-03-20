@@ -3091,16 +3091,27 @@ void SkiaRenderer::UpdateRenderPassTextures(
     const AggregatedRenderPassList& render_passes_in_draw_order,
     const base::flat_map<AggregatedRenderPassId, RenderPassRequirements>&
         render_passes_in_frame) {
+  const auto& root_pass_id = render_passes_in_draw_order.back()->id;
   std::vector<AggregatedRenderPassId> passes_to_delete;
-  for (const auto& pair : render_pass_backings_) {
-    auto render_pass_it = render_passes_in_frame.find(pair.first);
+  for (const auto& [backing_id, backing] : render_pass_backings_) {
+    // If a root backing exists but its id does not match the current root
+    // render pass id, then it must be an old backing that should be deleted.
+    // Otherwise we should not delete a root backing in case it is scheduled
+    // this frame but not drawn.
+    if (backing.is_root) {
+      if (backing_id != root_pass_id) {
+        passes_to_delete.push_back(backing_id);
+      }
+      continue;
+    }
+
+    auto render_pass_it = render_passes_in_frame.find(backing_id);
     if (render_pass_it == render_passes_in_frame.end()) {
-      passes_to_delete.push_back(pair.first);
+      passes_to_delete.push_back(backing_id);
       continue;
     }
 
     const RenderPassRequirements& requirements = render_pass_it->second;
-    const RenderPassBacking& backing = pair.second;
     bool size_appropriate = backing.size.width() >= requirements.size.width() &&
                             backing.size.height() >= requirements.size.height();
     bool mipmap_appropriate =
@@ -3111,7 +3122,7 @@ void SkiaRenderer::UpdateRenderPassTextures(
 
     if (!size_appropriate || !mipmap_appropriate || !no_change_in_format ||
         !no_change_in_color_space) {
-      passes_to_delete.push_back(pair.first);
+      passes_to_delete.push_back(backing_id);
     }
   }
 
@@ -3142,16 +3153,20 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     auto& root_pass_backing = render_pass_backings_[render_pass_id];
     root_pass_backing.is_root = true;
     root_pass_backing.mailbox = buffer_queue_->GetCurrentBuffer();
-    root_pass_backing.generate_mipmap = false;
-    root_pass_backing.size = surface_size_for_swap_buffers();
-    root_pass_backing.format = GetResourceFormat(reshape_buffer_format());
-    root_pass_backing.color_space = reshape_color_space();
+    root_pass_backing.generate_mipmap = requirements.generate_mipmap;
+    root_pass_backing.size = requirements.size;
+    root_pass_backing.format = requirements.format;
+    root_pass_backing.color_space = requirements.color_space;
     return;
   }
 
   auto it = render_pass_backings_.find(render_pass_id);
   if (it != render_pass_backings_.end()) {
     DCHECK(gfx::Rect(it->second.size).Contains(gfx::Rect(requirements.size)));
+    // A root backing should not be used for other render passes. If the root
+    // pass id has changed, then it's old backing should have been deleted
+    // already in UpdateRenderPassTextures().
+    DCHECK(!it->second.is_root);
     return;
   }
 

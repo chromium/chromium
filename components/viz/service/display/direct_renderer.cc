@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
@@ -188,10 +189,15 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
   base::flat_map<AggregatedRenderPassId, RenderPassRequirements>
       render_passes_in_frame;
   for (const auto& pass : render_passes_in_draw_order) {
+    if (pass == root_render_pass) {
+      // Requirements for the root render pass are communicated in
+      // AllocateRenderPassResourceIfNeeded().
+      continue;
+    }
+
     // If there's a copy request, we need an explicit renderpass backing so
     // only try to draw directly if there are no copy requests.
-    bool is_root = pass == root_render_pass;
-    if (!is_root && pass->copy_requests.empty()) {
+    if (pass->copy_requests.empty()) {
       if (const DrawQuad* quad = CanPassBeDrawnDirectly(pass.get())) {
         // If the render pass is drawn directly, it will not be drawn from as
         // a render pass so it's not added to the map.
@@ -199,12 +205,7 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
         continue;
       }
     }
-    gfx::Size size = pass->output_rect.size();
-    // We should not change the buffer size for the root render pass.
-    // The requirement is used for non-root render pass only.
-    if (!is_root) {
-      size = CalculateTextureSizeForRenderPass(pass.get());
-    }
+    gfx::Size size = CalculateTextureSizeForRenderPass(pass.get());
     auto color_space = RenderPassColorSpace(pass.get());
     auto format = GetColorSpaceResourceFormat(color_space);
 
@@ -789,20 +790,22 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
     return;
   }
 
-  gfx::Size size = render_pass->output_rect.size();
-  // We should not change the buffer size for the root render pass.
-  if (!is_root) {
-    size = CalculateTextureSizeForRenderPass(render_pass);
-    size.Enlarge(enlarge_pass_texture_amount_.width(),
-                 enlarge_pass_texture_amount_.height());
+  RenderPassRequirements requirements;
+  if (is_root) {
+    requirements.size = surface_size_for_swap_buffers();
+    requirements.generate_mipmap = false;
+    requirements.color_space = reshape_color_space();
+    requirements.format = GetResourceFormat(reshape_buffer_format());
+  } else {
+    requirements.size = CalculateTextureSizeForRenderPass(render_pass);
+    requirements.size.Enlarge(enlarge_pass_texture_amount_.width(),
+                              enlarge_pass_texture_amount_.height());
+    requirements.generate_mipmap = render_pass->generate_mipmap;
+    requirements.color_space = CurrentRenderPassColorSpace();
+    requirements.format = GetColorSpaceResourceFormat(requirements.color_space);
   }
 
-  auto color_space = CurrentRenderPassColorSpace();
-  auto format = GetColorSpaceResourceFormat(color_space);
-
-  AllocateRenderPassResourceIfNeeded(
-      render_pass->id,
-      {size, render_pass->generate_mipmap, format, color_space});
+  AllocateRenderPassResourceIfNeeded(render_pass->id, requirements);
 
   // TODO(crbug.com/582554): This change applies only when Vulkan is enabled and
   // it will be removed once SkiaRenderer has complete support for Vulkan.
