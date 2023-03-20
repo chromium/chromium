@@ -848,8 +848,6 @@
           # https://github.com/intel/libva/blob/master/va/va_fool.c#L47
           '--env-var', 'LIBVA_DRIVERS_PATH', './',
           '--env-var', 'LIBVA_DRIVER_NAME', 'libfake',
-          '--env-var', 'LIBVA_FOOL_DECODE', '1',
-          '--env-var', 'LIBVA_FOOL_POSTP', '1',
           '--gtest_filter="VaapiTest.*"',
         ],
       },
@@ -4210,8 +4208,6 @@
           # https://github.com/intel/libva/blob/master/va/va_fool.c#L47
           '--env-var', 'LIBVA_DRIVERS_PATH', './',
           '--env-var', 'LIBVA_DRIVER_NAME', 'libfake',
-          '--env-var', 'LIBVA_FOOL_DECODE', '1',
-          '--env-var', 'LIBVA_FOOL_POSTP', '1',
           '--gtest_filter="VaapiTest.*"',
         ],
 	'ci_only': True, # https://crbug.com/1425489

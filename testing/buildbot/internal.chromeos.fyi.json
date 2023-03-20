@@ -946,12 +946,6 @@
           "--env-var",
           "LIBVA_DRIVER_NAME",
           "libfake",
-          "--env-var",
-          "LIBVA_FOOL_DECODE",
-          "1",
-          "--env-var",
-          "LIBVA_FOOL_POSTP",
-          "1",
           "--gtest_filter=\"VaapiTest.*\"",
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
