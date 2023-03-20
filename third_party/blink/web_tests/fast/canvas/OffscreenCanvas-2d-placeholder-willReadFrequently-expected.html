@@ -6,16 +6,13 @@
 // Testing that willReadFrequently works the same with HTMLCanvasElement and
 // OffscreenCanvas with a placeholder canvas
 var canvasCPU = document.getElementById("canvasCPU");
-var offscreenCanvasCPU = canvasCPU.transferControlToOffscreen();
-var ctxCPU = offscreenCanvasCPU.getContext('2d', { willReadFrequently: true });
+var ctxCPU = canvasCPU.getContext('2d', { willReadFrequently: true });
 
 var canvasGPU = document.getElementById("canvasGPU");
-var offscreenCanvasGPU = canvasGPU.transferControlToOffscreen();
-var ctxGPU = offscreenCanvasGPU.getContext('2d', { willReadFrequently: false });
+var ctxGPU = canvasGPU.getContext('2d', { willReadFrequently: false });
 
 var canvasDefault = document.getElementById("canvasDefault");
-var offscreenCanvasDefault = canvasDefault.transferControlToOffscreen();
-var ctxDefault = offscreenCanvasDefault.getContext('2d');
+var ctxDefault = canvasDefault.getContext('2d');
 
 var img = document.createElement('IMG');
 img.onload = function () {
