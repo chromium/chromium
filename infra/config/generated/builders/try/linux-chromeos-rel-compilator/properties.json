@@ -49,12 +49,10 @@
     ],
     "use_clang_coverage": true
   },
-  "$build/goma": {
-    "enable_ats": true,
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
     "jobs": 300,
-    "rpc_extra_params": "?prod",
-    "server_host": "goma.chromium.org",
-    "use_luci_auth": true
+    "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

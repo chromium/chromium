@@ -1058,34 +1058,34 @@
       # and two kevin bots when the PFQ has it enabled.
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
-      'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks',
+      'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
-      'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
-      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
-      'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks',
+      'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on_reclient',
+      'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks_reclient',
+      'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks_reclient',
       'chromeos-octopus-rel': 'chromeos_octopus_dchecks',
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-try-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-try-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
       'gpu-fyi-try-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
-      'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks',
+      'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
       # TODO (crbug.com/1287228): Remove when orchestrator is verified
-      'lacros-amd64-generic-rel-orchestrator': 'chromeos_amd64-generic_lacros_rel_dchecks',
-      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
-      'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
-      'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks',
+      'lacros-amd64-generic-rel-orchestrator': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
+      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi_reclient',
+      'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks_reclient',
+      'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi',
       'linux-cfm-rel': 'linux_cfm_release_trybot',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
-      'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
-      'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
+      'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot_reclient',
+      'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
       'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials',
-      'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
+      'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-chromeos-rel-rts': 'chromeos_with_codecs_release_trybot_code_coverage', # should be kept in sync with linux-chromeos-rel
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
-      'linux-lacros-rel': 'lacros_on_linux_release_trybot',
+      'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient',
       'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage',
       # TODO (crbug.com/1287228): Remove when orchestrator is verified
       'linux-lacros-rel-orchestrator': 'lacros_on_linux_release_trybot',
@@ -2072,12 +2072,16 @@
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'release',
     ],
 
-    'chromeos_amd64-generic_lacros_rel_dchecks': [
-      'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
+    'chromeos_amd64-generic_lacros_rel_dchecks_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on',
     ],
 
     'chromeos_amd64-generic_lacros_rel_fyi': [
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'is_skylab',
+    ],
+
+    'chromeos_amd64-generic_lacros_rel_fyi_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_lacros_rel_reclient': [
@@ -2096,8 +2100,8 @@
       'chromeos_amd64-generic-vm', 'use_fake_dbus_clients',
     ],
 
-    'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks': [
-      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_amd64'
+    'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient': [
+      'chromeos_amd64-generic-vm_reclient', 'use_fake_dbus_clients', 'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_amd64'
     ],
 
     'chromeos_arm-generic_cfi_thin_lto_official': [
@@ -2115,8 +2119,8 @@
       'chromeos_device_reclient', 'arm-generic', 'debug',
     ],
 
-    'chromeos_arm-generic_dcheck_always_on': [
-      'chromeos_device', 'arm-generic', 'dcheck_always_on',
+    'chromeos_arm-generic_dcheck_always_on_reclient': [
+      'chromeos_device_reclient', 'arm-generic', 'dcheck_always_on',
     ],
 
     'chromeos_arm-generic_lacros_official': [
@@ -2130,8 +2134,8 @@
       'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
-    'chromeos_arm-generic_lacros_rel_dchecks': [
-      'chromeos_arm-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
+    'chromeos_arm-generic_lacros_rel_dchecks_reclient': [
+      'chromeos_arm-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on',
     ],
 
     'chromeos_arm-generic_lacros_rel_reclient': [
@@ -2146,10 +2150,6 @@
       'chromeos_device', 'arm64-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
 
-    'chromeos_arm64-generic_dchecks': [
-      'chromeos_device', 'arm64-generic', 'dcheck_always_on',
-    ],
-
     'chromeos_arm64-generic_dchecks_reclient': [
       'chromeos_device_reclient', 'arm64-generic', 'dcheck_always_on',
     ],
@@ -2162,9 +2162,10 @@
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
-    'chromeos_arm64-generic_lacros_rel_dchecks': [
-      'chromeos_arm64-generic-crostoolchain', 'lacros', 'release', 'dcheck_always_on',
+    'chromeos_arm64-generic_lacros_rel_dchecks_reclient': [
+      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on',
     ],
+
 
     'chromeos_arm64-generic_lacros_rel_fyi': [
       'chromeos_arm64-generic-crostoolchain', 'lacros', 'release','is_skylab',
@@ -2198,10 +2199,6 @@
     'chromeos_eve_include_unwind_tables_official_dchecks': [
       'chromeos_device', 'eve', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
-    ],
-
-    'chromeos_jacuzzi_dchecks': [
-      'chromeos_jacuzzi', 'dcheck_always_on',
     ],
 
     'chromeos_jacuzzi_dchecks_reclient': [
@@ -2251,10 +2248,6 @@
       'chromeos_device', 'trogdor64', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
     ],
 
-    'chromeos_with_codecs_debug_bot': [
-      'chromeos_with_codecs', 'debug_bot',
-    ],
-
     'chromeos_with_codecs_debug_bot_reclient': [
       'chromeos_with_codecs', 'debug_bot_reclient',
     ],
@@ -2280,6 +2273,12 @@
       'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
+
+    'chromeos_with_codecs_release_trybot_code_coverage_reclient': [
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
 
     'chromeos_with_codecs_release_trybot_invert_fieldtrials': [
       'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'invert_fieldtrials',
@@ -3020,6 +3019,10 @@
     'lacros_on_linux_release_trybot_coverage': [
       'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+    ],
+
+    'lacros_on_linux_release_trybot_reclient': [
+      'lacros_on_linux', 'release_trybot_reclient', 'also_build_ash_chrome', 'no_symbols',
     ],
 
     'lacros_on_linux_tot_debug': [
@@ -3958,10 +3961,6 @@
     'chromeos_device_reclient': {
       'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
       'mixins': ['dcheck_off', 'reclient'],
-    },
-
-    'chromeos_jacuzzi': {
-      'mixins': ['chromeos_device', 'jacuzzi',]
     },
 
     'chromeos_jacuzzi_reclient': {
