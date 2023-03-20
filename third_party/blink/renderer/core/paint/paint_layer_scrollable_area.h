@@ -627,9 +627,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // background paint location.
   bool ComputeNeedsCompositedScrolling(
       bool force_prefer_compositing_to_lcd_text);
-  int ComputeHypotheticalScrollbarThickness(
-      ScrollbarOrientation,
-      bool should_include_overlay_thickness) const;
 
   bool NeedsScrollbarReconstruction() const;
 
@@ -789,11 +786,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   // MainThreadScrollingReason due to the properties of the LayoutObject
   uint32_t non_composited_main_thread_scrolling_reasons_;
-
-  // These are cached after layout to avoid computation of custom scrollbar
-  // dimensions (requiring layout) outside of a lifecycle update.
-  int hypothetical_horizontal_scrollbar_thickness_ = 0;
-  int hypothetical_vertical_scrollbar_thickness_ = 0;
 
   // These are not bitfields because they need to be passed as references.
   bool horizontal_scrollbar_previously_was_overlay_ = false;
