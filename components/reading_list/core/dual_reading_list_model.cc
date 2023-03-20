@@ -590,6 +590,8 @@ void DualReadingListModel::ReadingListDidAddEntry(
     return;
   }
 
+  UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
+
   for (auto& observer : observers_) {
     observer.ReadingListDidAddEntry(this, url, source);
   }
