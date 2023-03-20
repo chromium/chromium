@@ -11,12 +11,12 @@ on:
         description: "Build and run tests on macOS"
         type: boolean
         required: false
-        default: "true"
+        default: "false"
       windows_build:
         description: "Build and run tests on windows"
         type: boolean
         required: false
-        default: "true"
+        default: "false"
       driver_revision:
         description: "Driver revision to use, if not the latest"
         required: false

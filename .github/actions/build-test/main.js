@@ -11,8 +11,8 @@ sendBuildTestRequest({
   name: `Chromium Build/Test ${revision}`,
   tasks: [
     ...platformTasks("linux"),
-    ...platformTasks("macOS"),
-    ...platformTasks("windows"),
+    //...platformTasks("macOS"),
+    //...platformTasks("windows"),
   ],
 });
 
