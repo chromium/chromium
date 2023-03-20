@@ -46,7 +46,12 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
+    content::CookieChangeObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
     NavigateToUrlWithThirdPartyCookies();
+    if (name == "NotWorkingClicked") {
+      observer.Wait();
+    }
     ASSERT_TRUE(cookie_controls_icon()->GetVisible());
     cookie_controls_icon_->ExecuteForTesting();
 

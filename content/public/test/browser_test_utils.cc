@@ -4383,6 +4383,36 @@ WebContents* CreateAndLoadWebContentsObserver::Wait() {
   return web_contents_;
 }
 
+CookieChangeObserver::CookieChangeObserver(content::WebContents* web_contents,
+                                           int num_expected_calls)
+    : content::WebContentsObserver(web_contents),
+      run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
+      num_expected_calls_(num_expected_calls) {}
+
+CookieChangeObserver::~CookieChangeObserver() = default;
+
+void CookieChangeObserver::Wait() {
+  run_loop_.Run();
+}
+
+void CookieChangeObserver::OnCookiesAccessed(
+    content::RenderFrameHost* render_frame_host,
+    const content::CookieAccessDetails& details) {
+  OnCookieAccessed();
+}
+
+void CookieChangeObserver::OnCookiesAccessed(
+    content::NavigationHandle* navigation,
+    const content::CookieAccessDetails& details) {
+  OnCookieAccessed();
+}
+
+void CookieChangeObserver::OnCookieAccessed() {
+  if (++num_seen_ == num_expected_calls_) {
+    run_loop_.Quit();
+  }
+}
+
 base::CallbackListSubscription RegisterWebContentsCreationCallback(
     base::RepeatingCallback<void(WebContents*)> callback) {
   return WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(callback);

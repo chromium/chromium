@@ -2396,6 +2396,29 @@ class CreateAndLoadWebContentsObserver {
   int num_new_contents_seen_ = 0;
 };
 
+// Waits for the given number of calls to
+// WebContentsObserver::OnCookiesAccessed.
+class CookieChangeObserver : public content::WebContentsObserver {
+ public:
+  explicit CookieChangeObserver(content::WebContents* web_contents,
+                                int num_expected_calls = 1);
+  ~CookieChangeObserver() override;
+
+  void Wait();
+
+ private:
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override;
+  void OnCookiesAccessed(content::NavigationHandle* navigation,
+                         const content::CookieAccessDetails& details) override;
+
+  void OnCookieAccessed();
+
+  base::RunLoop run_loop_;
+  int num_seen_ = 0;
+  int num_expected_calls_;
+};
+
 [[nodiscard]] base::CallbackListSubscription
 RegisterWebContentsCreationCallback(
     base::RepeatingCallback<void(WebContents*)> callback);
