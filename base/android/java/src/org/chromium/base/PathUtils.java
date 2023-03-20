@@ -136,7 +136,7 @@ public abstract class PathUtils {
             if (sCacheDirectoryBasePath != null || sCacheSubDirectory != null) {
                 cacheDir.mkdirs();
                 // Set to rwx--S--- as the Android cache dir has a distinct gid and is setgid.
-                chmod(paths[CACHE_DIRECTORY], 02700);
+                chmod(cacheDir.getPath(), 02700);
             }
             paths[CACHE_DIRECTORY] = cacheDir.getPath();
         }
