@@ -3529,8 +3529,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UIDismissalReason"
-    enum="PasswordManagerUIDismissalReason" expires_after="2023-04-30">
+    enum="PasswordManagerUIDismissalReason" expires_after="2023-11-30">
   <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
   <summary>
     Why was the password manager's UI (bubble or infobar) closed? Save and
     update UI are tracked separately.
