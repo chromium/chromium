@@ -421,7 +421,6 @@ enum class ToolbarKind {
 @implementation BrowserCoordinator {
   BrowserViewControllerDependencies _viewControllerDependencies;
   KeyCommandsProvider* _keyCommandsProvider;
-  PrerenderService* _prerenderService;
   BubblePresenter* _bubblePresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensCoordinator* _lensCoordinator;
@@ -435,17 +434,8 @@ enum class ToolbarKind {
   // The coordinator that shows the Send Tab To Self UI.
   SendTabToSelfCoordinator* _sendTabToSelfCoordinator;
   BookmarksCoordinator* _bookmarksCoordinator;
-  id<TextZoomCommands> _textZoomHandler;
-  id<HelpCommands> _helpHandler;
-  id<PopupMenuCommands> _popupMenuCommandsHandler;
-  id<SnackbarCommands> _snackbarCommandsHandler;
-  id<ApplicationCommands> _applicationCommandsHandler;
-  id<BrowserCoordinatorCommands> _browserCoordinatorCommandsHandler;
-  id<FindInPageCommands> _findInPageCommandsHandler;
-  id<ToolbarCommands> _toolbarCommandsHandler;
   absl::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
-  BOOL _isOffTheRecord;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
 }
@@ -700,10 +690,11 @@ enum class ToolbarKind {
   _keyCommandsProvider.browserCoordinatorCommandsHandler =
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
 
-  _prerenderService = PrerenderServiceFactory::GetForBrowserState(browserState);
+  PrerenderService* prerenderService =
+      PrerenderServiceFactory::GetForBrowserState(browserState);
   if (!browserState->IsOffTheRecord()) {
-    DCHECK(_prerenderService);
-    _prerenderService->SetDelegate(self);
+    DCHECK(prerenderService);
+    prerenderService->SetDelegate(self);
   }
 
   _fullscreenController = FullscreenController::FromBrowser(self.browser);
@@ -802,17 +793,6 @@ enum class ToolbarKind {
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
 
-  _textZoomHandler = HandlerForProtocol(_dispatcher, TextZoomCommands);
-  _helpHandler = HandlerForProtocol(_dispatcher, HelpCommands);
-  _popupMenuCommandsHandler =
-      HandlerForProtocol(_dispatcher, PopupMenuCommands);
-  _applicationCommandsHandler =
-      HandlerForProtocol(_dispatcher, ApplicationCommands);
-  _browserCoordinatorCommandsHandler =
-      HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
-  _findInPageCommandsHandler =
-      HandlerForProtocol(_dispatcher, FindInPageCommands);
-  _toolbarCommandsHandler = HandlerForProtocol(_dispatcher, ToolbarCommands);
   // TODO(crbug.com/1413769) Typecast should be performed using
   // HandlerForProtocol method. PrimaryToolbarCoordinator isn't started yet, so
   // LocationBarCoordinator is not created at this point and therefore not
@@ -825,13 +805,7 @@ enum class ToolbarKind {
     _voiceSearchController.dispatcher = _loadQueryCommandsHandler;
   }
 
-  // SnackbarCoordinator is not created yet and therefore not dispatching
-  // SnackbarCommands.
-  // TODO(crbug.com/1413769) Typecast should be performed using
-  // HandlerForProtocol method.
-  _snackbarCommandsHandler = static_cast<id<SnackbarCommands>>(_dispatcher);
-
-  _viewControllerDependencies.prerenderService = _prerenderService;
+  _viewControllerDependencies.prerenderService = prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
   _viewControllerDependencies.toolbarAccessoryPresenter =
       _toolbarAccessoryPresenter;
@@ -848,19 +822,25 @@ enum class ToolbarKind {
   _viewControllerDependencies.sideSwipeController = _sideSwipeController;
   _viewControllerDependencies.bookmarksCoordinator = _bookmarksCoordinator;
   _viewControllerDependencies.fullscreenController = _fullscreenController;
-  _viewControllerDependencies.textZoomHandler = _textZoomHandler;
-  _viewControllerDependencies.helpHandler = _helpHandler;
+  _viewControllerDependencies.textZoomHandler =
+      HandlerForProtocol(_dispatcher, TextZoomCommands);
+  _viewControllerDependencies.helpHandler =
+      HandlerForProtocol(_dispatcher, HelpCommands);
   _viewControllerDependencies.popupMenuCommandsHandler =
-      _popupMenuCommandsHandler;
+      HandlerForProtocol(_dispatcher, PopupMenuCommands);
+  // TODO(crbug.com/1413769) SnackbarCoordinator is not created yet and
+  // therefore not dispatching SnackbarCommands. Typecast should be performed
+  // using HandlerForProtocol method.
   _viewControllerDependencies.snackbarCommandsHandler =
-      _snackbarCommandsHandler;
+      static_cast<id<SnackbarCommands>>(_dispatcher);
   _viewControllerDependencies.applicationCommandsHandler =
-      _applicationCommandsHandler;
+      HandlerForProtocol(_dispatcher, ApplicationCommands);
   _viewControllerDependencies.browserCoordinatorCommandsHandler =
-      _browserCoordinatorCommandsHandler;
+      HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
-      _findInPageCommandsHandler;
-  _viewControllerDependencies.toolbarCommandsHandler = _toolbarCommandsHandler;
+      HandlerForProtocol(_dispatcher, FindInPageCommands);
+  _viewControllerDependencies.toolbarCommandsHandler =
+      HandlerForProtocol(_dispatcher, ToolbarCommands);
   _viewControllerDependencies.loadQueryCommandsHandler =
       _loadQueryCommandsHandler;
   // TODO(crbug.com/1413769) Typecast should be performed using
@@ -952,8 +932,6 @@ enum class ToolbarKind {
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;
 
-  _textZoomHandler = nil;
-  _helpHandler = nil;
   _legacyTabStripCoordinator = nil;
   _tabStripCoordinator = nil;
   _sideSwipeController = nil;
@@ -966,7 +944,6 @@ enum class ToolbarKind {
   _bubblePresenter = nil;
   _toolbarAccessoryPresenter = nil;
 
-  _prerenderService = nil;
   _fullscreenController = nullptr;
 
   [self.popupMenuCoordinator stop];
