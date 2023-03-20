@@ -1528,11 +1528,10 @@ class InterestGroupFencedFrameBrowserTest
   void RunBasicAuctionWithAdComponents(const GURL& ad_component_url,
                                        GURL* component_ad_urn = nullptr) {
     GURL test_url =
-        https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+        https_server_->GetURL("a.test", "/fenced_frames/basic.html");
     ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-    GURL ad_url =
-        https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
+    GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/basic.html");
     EXPECT_EQ(
         kSuccess,
         JoinInterestGroupAndVerify(
@@ -6266,8 +6265,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinner) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -6397,8 +6395,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerReplacedURN) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -6460,12 +6457,12 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
       base::StringPrintf(
           "/cross_site_iframe_factory.html?a.test(%s,%s)",
           base::EscapeUrlEncodedData(
-              https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html")
+              https_server_->GetURL("a.test", "/fenced_frames/basic.html")
                   .spec(),
               /*use_plus=*/false)
               .c_str(),
           base::EscapeUrlEncodedData(
-              https_server_->GetURL("b.test", "/fenced_frames/opaque_ads.html")
+              https_server_->GetURL("b.test", "/fenced_frames/basic.html")
                   .spec(),
               /*use_plus=*/false)
               .c_str()));
@@ -6599,8 +6596,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerNestedLeaveGroup) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -6674,8 +6670,7 @@ IN_PROC_BROWSER_TEST_P(
     RunAdAuctionWithWinnerLeaveGroupAfterRendererInitiatedNavigation) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -6808,8 +6803,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, CrossOrigin) {
 
   // Navigate to publisher.
   ASSERT_TRUE(NavigateToURL(
-      shell(),
-      https_server_->GetURL(kPublisher, "/fenced_frames/opaque_ads.html")));
+      shell(), https_server_->GetURL(kPublisher, "/fenced_frames/basic.html")));
 
   GURL seller_logic_url = https_server_->GetURL(
       kSeller, "/interest_group/decision_logic_need_signals.js");
@@ -7042,7 +7036,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, Iframe) {
       kTopFrameHost,
       base::StringPrintf(
           "/cross_site_iframe_factory.html?%s(%s)", kTopFrameHost,
-          https_server_->GetURL(kIframeHost, "/fenced_frames/opaque_ads.html")
+          https_server_->GetURL(kIframeHost, "/fenced_frames/basic.html")
               .spec()
               .c_str()));
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -7963,16 +7957,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
 // Test that when there are no ad components, an array of ad components is still
 // available, and they're all mapped to about:blank.
 IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   // Trying to retrieve the adAuctionComponents of the main frame should throw
   // an exception.
   EXPECT_FALSE(GetAdAuctionComponentsInJS(shell(), 1));
 
-  GURL ad_url =
-      https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
+  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/basic.html");
   EXPECT_EQ(
       kSuccess,
       JoinInterestGroupAndVerify(
@@ -8056,7 +8048,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponents) {
 IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        AdComponentsNotLeaked) {
   GURL ad_component_url =
-      https_server_->GetURL("d.test", "/fenced_frames/opaque_ads.html");
+      https_server_->GetURL("d.test", "/fenced_frames/basic.html");
   ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
 
   // The top frame should have no ad components.
@@ -8145,12 +8137,10 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        AdComponentsMainAdLoadedInMultipleFrames) {
   GURL ad_component_url = https_server_->GetURL(
       "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
-  GURL ad_url =
-      https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
+  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/basic.html");
   EXPECT_EQ(
       kSuccess,
       JoinInterestGroupAndVerify(
@@ -8225,8 +8215,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
        R"(["3",{"4":"five"}])"},
   };
 
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   // Register bidding script that validates interestGroup.adComponents and
@@ -8255,8 +8244,7 @@ return {
       https_server_->GetURL("a.test", "/generated_bidding_logic.js");
   network_responder_->RegisterBidderScript(bidding_url.path(), bidding_script);
 
-  GURL ad_url =
-      https_server_->GetURL("c.test", "/fenced_frames/opaque_ads.html");
+  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/basic.html");
   EXPECT_EQ(
       kSuccess,
       JoinInterestGroupAndVerify(
@@ -11640,8 +11628,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerRegisterAdBeaconBuyer) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
@@ -11686,8 +11673,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinnerRegisterPrivateAggregationBuyer) {
   URLLoaderMonitor url_loader_monitor;
 
-  GURL test_url =
-      https_server_->GetURL("a.test", "/fenced_frames/opaque_ads.html");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 

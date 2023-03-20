@@ -572,8 +572,13 @@ DocumentLoader::DocumentLoader(
         service_worker_network_provider_->GetControllerServiceWorkerMode();
   }
 
-  if (params_->fenced_frame_properties)
+  if (params_->fenced_frame_properties) {
     fenced_frame_properties_ = std::move(params_->fenced_frame_properties);
+    if (frame_->GetPage()) {
+      frame_->GetPage()->SetDeprecatedFencedFrameMode(
+          fenced_frame_properties_->mode());
+    }
+  }
 
   frame_->SetAncestorOrSelfHasCSPEE(params_->ancestor_or_self_has_cspee);
   frame_->Client()->DidCreateDocumentLoader(this);

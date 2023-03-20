@@ -419,8 +419,6 @@ data/fenced_frames/in_iframe.html
 data/fenced_frames/in_iframe.html.mock-http-headers
 data/fenced_frames/nested.html
 data/fenced_frames/nested.html.mock-http-headers
-data/fenced_frames/opaque_ads.html
-data/fenced_frames/opaque_ads.html.mock-http-headers
 data/fenced_frames/outer_inner_frame_as_param.html
 data/fenced_frames/outer_inner_frame_as_param.html.mock-http-headers
 data/fenced_frames/page_with_script.html

@@ -2988,7 +2988,6 @@ class SharedStorageFencedFrameInteractionBrowserTestBase
 
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
 
     EXPECT_EQ(initial_child_count + 1, root->child_count());
@@ -3844,7 +3843,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(
     SharedStorageFencedFrameInteractionBrowserTest,
-    FencedFrameNavigateFromParentToRegularURLAndThenNavigateTop_NoBudgetWithdrawal) {
+    FencedFrameNavigateFromParentToRegularURLAndThenOpenPopup_NoBudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
@@ -3872,11 +3871,7 @@ IN_PROC_BROWSER_TEST_P(
 
   GURL new_page_url = https_server()->GetURL("d.test", kSimplePagePath);
 
-  TestNavigationObserver top_navigation_observer(shell()->web_contents());
-  EXPECT_TRUE(
-      ExecJs(fenced_frame_root_node,
-             JsReplace("window.open($1, '_unfencedTop')", new_page_url)));
-  top_navigation_observer.Wait();
+  OpenPopup(fenced_frame_root_node, new_page_url, /*name=*/"");
 
   // No budget withdrawal as the initial fenced frame was navigated away by its
   // parent before it triggers a top navigation.
@@ -3942,8 +3937,10 @@ IN_PROC_BROWSER_TEST_P(
                                      1);
 }
 
+// TODO(crbug.com/1347953): Reenable this test when it is possible to create a
+// nested fenced frame with no reporting metadata, that can call _unfencedTop.
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
-                       NestedFencedFrameNavigateTop_BudgetWithdrawal) {
+                       DISABLED_NestedFencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
@@ -4035,7 +4032,8 @@ IN_PROC_BROWSER_TEST_P(
       static_cast<RenderFrameHostImpl*>(
           fenced_frame_test_helper_.CreateFencedFrame(
               shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
-              net::OK, blink::mojom::FencedFrameMode::kOpaqueAds))
+              net::OK,
+              blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds))
           ->frame_tree_node();
 
   EXPECT_TRUE(ExecJs(fenced_frame_root_node_1,
@@ -4584,16 +4582,17 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
 
   EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
 
-  GURL fenced_frame_url =
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  url::Origin shared_storage_origin =
+      url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
+  GURL urn_uuid = SelectFrom8URLsInContext(shared_storage_origin);
 
-  FrameTreeNode* fenced_frame_node = CreateFencedFrame(fenced_frame_url);
+  FrameTreeNode* fenced_frame_node = CreateFencedFrame(urn_uuid);
 
   EXPECT_TRUE(ExecJs(fenced_frame_node, R"(
       sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
     )"));
 
-  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+  EXPECT_EQ(2u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
 
   EXPECT_TRUE(ExecJs(fenced_frame_node,

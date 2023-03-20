@@ -884,9 +884,6 @@ FrameTreeNode::GetFencedFrameProperties() {
 absl::optional<FencedFrameProperties>&
 FrameTreeNode::GetFencedFramePropertiesForEditing() {
   if (IsInFencedFrameTree()) {
-    // Because we already confirmed we're in a fenced frame tree, we know
-    // there must be a fenced frame root with properties stored.
-    CHECK(frame_tree().root()->fenced_frame_properties_.has_value());
     return frame_tree().root()->fenced_frame_properties_;
   }
 
@@ -989,19 +986,18 @@ void FrameTreeNode::SetFencedFramePropertiesIfNeeded() {
   fenced_frame_properties_ = FencedFrameProperties();
 }
 
-absl::optional<blink::mojom::FencedFrameMode>
-FrameTreeNode::GetFencedFrameMode() {
+blink::FencedFrame::DeprecatedFencedFrameMode
+FrameTreeNode::GetDeprecatedFencedFrameMode() {
   if (!IsInFencedFrameTree()) {
-    return absl::nullopt;
+    return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
   }
 
-  FrameTreeNode* outer_delegate_node = render_manager()->GetOuterDelegateNode();
-  DCHECK(outer_delegate_node);
+  auto& root_fenced_frame_properties = GetFencedFrameProperties();
+  if (!root_fenced_frame_properties.has_value()) {
+    return blink::FencedFrame::DeprecatedFencedFrameMode::kDefault;
+  }
 
-  FencedFrame* fenced_frame = FindFencedFrame(outer_delegate_node);
-  DCHECK(fenced_frame);
-
-  return fenced_frame->mode();
+  return root_fenced_frame_properties->mode_;
 }
 
 bool FrameTreeNode::IsErrorPageIsolationEnabled() const {

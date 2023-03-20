@@ -1823,7 +1823,7 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* fenced_frame =
       fenced_frame_test_helper().CreateFencedFrame(
           PrimaryMainFrame(), kOuterUrl, net::OK,
-          blink::mojom::FencedFrameMode::kOpaqueAds);
+          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
 
   GURL new_url = GetURL("frame_factory.html?primary");
 
@@ -1861,7 +1861,7 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* fenced_frame =
       fenced_frame_test_helper().CreateFencedFrame(
           PrimaryMainFrame(), kOuterUrl, net::OK,
-          blink::mojom::FencedFrameMode::kOpaqueAds);
+          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
 
   GURL new_url = GetURL("frame_factory.html?primary");
 

@@ -19,15 +19,15 @@ promise_test(async(t) => {
 }, 'Cross-origin fenced frame does not load when feature policies are self');
 
 promise_test(async(t) => {
-  const fencedframe = attachFencedFrameContext({
-        attributes: [["mode", "opaque-ads"]],
+  const fencedframe = await attachFencedFrameContext({
+        generator_api: "sharedstorage",
         origin: get_host_info().ORIGIN});
 
   await fencedframe.execute(async () => {
       assert_true(document.featurePolicy.allowsFeature('attribution-reporting'),
           "Attribution reporting should be allowed in the outer fenced frame.");
-      const fencedframe_inner = attachFencedFrameContext({
-        attributes: [["mode", "opaque-ads"]],
+      const fencedframe_inner = await attachFencedFrameContext({
+        generator_api: "sharedstorage",
         origin: get_host_info().REMOTE_ORIGIN});
 
       await fencedframe_inner.execute(async () => {
@@ -46,9 +46,8 @@ promise_test(async(t) => {
   const page1_key = token();
   const redirect_key = token();
 
-  const fencedframe = attachFencedFrame(
-      generateURL("resources/default-enabled-features-redirect.https.html",
-      [page1_key, redirect_key]), "opaque-ads");
+  const urn = await generateURNFromFledge("resources/default-enabled-features-redirect.https.html", [page1_key, redirect_key]);
+  const fencedframe = attachFencedFrame(urn);
 
   // The fenced frame will send its attribution reporting result and then
   // attempt to redirect to a remote origin page.

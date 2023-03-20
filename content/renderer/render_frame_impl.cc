@@ -1044,7 +1044,7 @@ void FillMiscNavigationParams(
 
   if (commit_params.fenced_frame_properties) {
     navigation_params->fenced_frame_properties =
-        std::move(commit_params.fenced_frame_properties);
+        commit_params.fenced_frame_properties;
 
     if (commit_params.fenced_frame_properties->nested_urn_config_pairs() &&
         commit_params.fenced_frame_properties->nested_urn_config_pairs()

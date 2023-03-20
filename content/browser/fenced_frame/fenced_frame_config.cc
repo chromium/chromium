@@ -68,7 +68,8 @@ FencedFrameConfig::FencedFrameConfig(const GURL& mapped_url)
     : mapped_url_(absl::in_place,
                   mapped_url,
                   VisibilityToEmbedder::kOpaque,
-                  VisibilityToContent::kTransparent) {}
+                  VisibilityToContent::kTransparent),
+      mode_(DeprecatedFencedFrameMode::kOpaqueAds) {}
 
 FencedFrameConfig::FencedFrameConfig(const GURL& urn_uuid,
                                      const GURL& mapped_url)
@@ -76,7 +77,8 @@ FencedFrameConfig::FencedFrameConfig(const GURL& urn_uuid,
       mapped_url_(absl::in_place,
                   mapped_url,
                   VisibilityToEmbedder::kOpaque,
-                  VisibilityToContent::kTransparent) {}
+                  VisibilityToContent::kTransparent),
+      mode_(DeprecatedFencedFrameMode::kOpaqueAds) {}
 
 FencedFrameConfig::FencedFrameConfig(
     const GURL& urn_uuid,
@@ -96,7 +98,8 @@ FencedFrameConfig::FencedFrameConfig(
                                       shared_storage_budget_metadata,
                                       VisibilityToEmbedder::kOpaque,
                                       VisibilityToContent::kOpaque),
-      fenced_frame_reporter_(std::move(fenced_frame_reporter)) {}
+      fenced_frame_reporter_(std::move(fenced_frame_reporter)),
+      mode_(DeprecatedFencedFrameMode::kOpaqueAds) {}
 
 FencedFrameConfig::FencedFrameConfig(const FencedFrameConfig&) = default;
 FencedFrameConfig::FencedFrameConfig(FencedFrameConfig&&) = default;

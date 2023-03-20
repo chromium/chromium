@@ -68,7 +68,8 @@ TEST_F(HTMLFencedFrameElementTest, FreezeSizePageZoomFactor) {
 TEST_F(HTMLFencedFrameElementTest, CoerceFrameSizeTest) {
   Document& doc = GetDocument();
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->mode_ = mojom::blink::FencedFrameMode::kOpaqueAds;
+  fenced_frame->mode_ =
+      blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   doc.body()->AppendChild(fenced_frame);
 
   // Check that for allowed ad sizes, coercion is a no-op.
@@ -198,34 +199,16 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
       FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
 }
 
-TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleURNDefault) {
-  Document& doc = GetDocument();
-
-  auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setAttribute(html_names::kModeAttr, String("default"),
-                             ASSERT_NO_EXCEPTION);
-  fenced_frame->setAttribute(
-      html_names::kSrcAttr,
-      String("urn:uuid:12345678-1234-5678-1234-567812345678"),
-      ASSERT_NO_EXCEPTION);
-  doc.body()->AppendChild(fenced_frame);
-  histogram_tester_.ExpectUniqueSample(
-      kFencedFrameCreationOrNavigationOutcomeHistogram,
-      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
-}
-
 TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlOpaque) {
   Document& doc = GetDocument();
 
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setAttribute(html_names::kModeAttr, String("opaque-ads"),
-                             ASSERT_NO_EXCEPTION);
   fenced_frame->setAttribute(
       html_names::kSrcAttr, String("http://example.com/"), ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,
-      FencedFrameCreationOutcome::kIncompatibleURLOpaque, 1);
+      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
 }
 
 TEST_F(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {

@@ -500,9 +500,23 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // by FrameTree::Init() or FrameTree::AddFrame().
   void SetFencedFramePropertiesIfNeeded();
 
-  // Returns the mode attribute set on the fenced frame root if this frame is
-  // in a fenced frame tree, otherwise returns `absl::nullopt`.
-  absl::optional<blink::mojom::FencedFrameMode> GetFencedFrameMode();
+  // Set the current FencedFrameProperties to have "opaque ads mode".
+  // This should only be used during tests, when the proper embedder-initiated
+  // fenced frame root urn/config navigation flow isn't available.
+  // TODO(crbug.com/1347953): Refactor and expand use of test utils so there is
+  // a consistent way to do this properly everywhere. Consider removing
+  // arbitrary restrictions in "default mode" so that using opaque ads mode is
+  // less necessary.
+  void SetFencedFramePropertiesOpaqueAdsModeForTesting() {
+    if (fenced_frame_properties_.has_value()) {
+      fenced_frame_properties_->mode_ =
+          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+    }
+  }
+
+  // Returns the mode attribute from the `FencedFrameProperties` if this frame
+  // is in a fenced frame tree, otherwise returns `kDefault`.
+  blink::FencedFrame::DeprecatedFencedFrameMode GetDeprecatedFencedFrameMode();
 
   // Helper for GetParentOrOuterDocument/GetParentOrOuterDocumentOrEmbedder.
   // Do not use directly.

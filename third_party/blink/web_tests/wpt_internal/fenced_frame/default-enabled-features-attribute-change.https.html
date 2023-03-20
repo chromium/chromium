@@ -11,9 +11,9 @@
 <body>
 <script>
 promise_test(async(t) => {
-  const fencedframe = attachFencedFrameContext({
-        attributes: [["mode", "opaque-ads"],
-                     ["allow", "shared-storage *; attribution-reporting *"]],
+  const fencedframe = await attachFencedFrameContext({
+        generator_api: "sharedstorage",
+        attributes: [["allow", "shared-storage *; attribution-reporting *"]],
         origin: get_host_info().ORIGIN});
 
   fencedframe.element.allow = "attribution-reporting 'none'";
@@ -25,9 +25,9 @@ promise_test(async(t) => {
 }, 'Changing the allow attribute is a no-op for the current navigation');
 
 promise_test(async(t) => {
-  const fencedframe = attachFencedFrameContext({
-        attributes: [["mode", "opaque-ads"],
-                     ["allow", "shared-storage *; attribution-reporting *"]],
+  const fencedframe = await attachFencedFrameContext({
+        generator_api: "sharedstorage",
+        attributes: [["allow", "shared-storage *; attribution-reporting *"]],
         origin: get_host_info().ORIGIN});
 
   fencedframe.element.allow = "attribution-reporting 'none'";
