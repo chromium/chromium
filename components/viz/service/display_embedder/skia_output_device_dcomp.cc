@@ -144,16 +144,14 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   DCHECK(context_state_->context());
 
   // SRGB
-  constexpr SkColorType kSrgbColorType = kRGBA_8888_SkColorType;
-  constexpr SkColorType kSrgbColorTypeOpaque = kRGB_888x_SkColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
-      kSrgbColorType;
+      kRGBA_8888_SkColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBX_8888)] =
-      kSrgbColorTypeOpaque;
+      kRGBA_8888_SkColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
-      kSrgbColorType;
+      kRGBA_8888_SkColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
-      kSrgbColorTypeOpaque;
+      kRGBA_8888_SkColorType;
   // HDR10
   capabilities_
       .sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_1010102)] =
