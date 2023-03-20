@@ -3749,10 +3749,6 @@ crbug.com/757165 [ Win ] fast/spatial-navigation/snav-two-elements-one-line.html
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-z-index.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-accelerated-child-with-filter-child.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-on-accelerated-layer.html [ Crash Failure Pass Timeout ]
-# This is timing out on non-windows platforms, marked as skip on all platforms.
-# This is currently skipped on all OSes due to crbug.com/775957
-#crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/canvas-incremental-repaint.html [ Pass Failure Timeout Crash ]
-crbug.com/757165 [ Win ] virtual/gpu/fast/canvas/image-object-in-canvas.html [ Crash Failure Pass Timeout ]
 
 # Antialiasing error
 crbug.com/845973 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Failure Pass ]
@@ -3785,10 +3781,6 @@ crbug.com/388976 external/wpt/css/cssom/caretPositionFromPoint-with-transformati
 
 # Sheriff failure 2017-09-18
 crbug.com/766404 [ Mac ] plugins/keyboard-events.html [ Failure Pass ]
-
-# Layout test corrupted after Skia rect tessellation change due to apparent SwiftShader bug.
-# This was previously skipped on Windows in the section for crbug.com/757165
-crbug.com/775957 virtual/gpu/fast/canvas/canvas-incremental-repaint.html [ Crash Failure Pass Timeout ]
 
 # Sheriff failures 2017-09-21
 crbug.com/767469 http/tests/navigation/start-load-during-provisional-loader-detach.html [ Failure Pass ]
