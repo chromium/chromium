@@ -759,12 +759,12 @@ void PinManager::Complete(const Stage stage) {
       LOG(ERROR) << "Finished with error: " << stage;
   }
 
-  NotifyProgress();
   weak_ptr_factory_.InvalidateWeakPtrs();
   search_query_.reset();
   files_to_pin_.clear();
   files_to_track_.clear();
   progress_.syncing_files = 0;
+  NotifyProgress();
 
   if (completion_callback_) {
     std::move(completion_callback_).Run(stage);
@@ -796,16 +796,14 @@ void PinManager::StartPinning() {
       kStalledFileInterval);
 
   CheckFreeSpace();
-
   PinSomeFiles();
-  NotifyProgress();
 }
 
 void PinManager::PinSomeFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (progress_.stage != Stage::kSyncing) {
-    return;
+    return NotifyProgress();
   }
 
   while (progress_.syncing_files < 50 && !files_to_pin_.empty()) {
@@ -852,6 +850,8 @@ void PinManager::PinSomeFiles() {
     VLOG(2) << "Useful events: " << progress_.useful_events;
     VLOG(2) << "Duplicated events: " << progress_.duplicated_events;
   }
+
+  NotifyProgress();
 }
 
 void PinManager::OnFilePinned(const Id id,
@@ -864,7 +864,6 @@ void PinManager::OnFilePinned(const Id id,
     if (Remove(id, path, 0)) {
       progress_.failed_files++;
       PinSomeFiles();
-      NotifyProgress();
     }
     return;
   }
@@ -892,7 +891,6 @@ void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   }
 
   PinSomeFiles();
-  NotifyProgress();
 }
 
 bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
@@ -961,7 +959,6 @@ void PinManager::NotifyDelete(const Id id, const Path& path) {
   VLOG(1) << "Stopped tracking " << id << " " << Quote(path);
   progress_.failed_files++;
   PinSomeFiles();
-  NotifyProgress();
 }
 
 void PinManager::OnUnmounted() {
@@ -1133,7 +1130,6 @@ void PinManager::OnMetadataForCreatedFile(
 
   if (Add(md, path)) {
     PinSomeFiles();
-    NotifyProgress();
   }
 }
 
@@ -1178,9 +1174,7 @@ void PinManager::OnMetadataForModifiedFile(
     LOG(ERROR) << "Got unexpectedly unpinned: " << id << " " << Quote(path);
     Remove(it, path, 0);
     progress_.failed_files++;
-    PinSomeFiles();
-    NotifyProgress();
-    return;
+    return PinSomeFiles();
   }
 
   DCHECK(md.pinned);
@@ -1189,7 +1183,6 @@ void PinManager::OnMetadataForModifiedFile(
     VLOG(1) << "Synced " << id << " " << Quote(path);
     progress_.pinned_files++;
     PinSomeFiles();
-    NotifyProgress();
   }
 }
 
