@@ -165,6 +165,9 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
   const int kCountForNarrowMonth = 5;
   Document& document = EditElement().GetDocument();
 
+  recordreplay::Assert("[RUN-1548-1565] DateTimeEditBuilder::VisitField %d %d",
+                       (int)field_type, count);
+
   switch (field_type) {
     case DateTimeFormat::kFieldTypeDayOfMonth: {
       DateTimeFieldElement* field =
