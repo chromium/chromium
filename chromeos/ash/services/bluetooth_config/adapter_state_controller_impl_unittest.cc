@@ -108,13 +108,9 @@ class AdapterStateControllerImplTest : public testing::Test {
     pending_power_state_.reset();
 
     if (success) {
+      SetAdapterPoweredState(expected_pending_state);
       std::move(set_powered_success_callback_).Run();
       set_powered_error_callback_.Reset();
-
-      // In real-life, the adapter's powered state doesn't change until after
-      // the success callback is fired. Simulate this by setting the adapter
-      // state after invoking the success callback.
-      SetAdapterPoweredState(expected_pending_state);
       return;
     }
 
@@ -258,6 +254,16 @@ TEST_F(AdapterStateControllerImplTest, MultiplePowerChanges_SameChange) {
                            /*success=*/true);
   EXPECT_EQ(mojom::BluetoothSystemState::kDisabled, GetAdapterState());
   EXPECT_EQ(2u, GetNumObserverEvents());
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
+
+  // Simulate adapter being enabled by system. There should be no leftover
+  // queued disable requests (Regression test for b/269082911).
+  SetAdapterPoweredState(/*powered=*/true);
+  EXPECT_EQ(mojom::BluetoothSystemState::kEnabled, GetAdapterState());
+  EXPECT_EQ(3u, GetNumObserverEvents());
   histogram_tester.ExpectBucketCount(
       "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
   histogram_tester.ExpectBucketCount(
