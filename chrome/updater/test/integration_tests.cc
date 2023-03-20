@@ -423,14 +423,7 @@ TEST_F(IntegrationTest, Install) {
 // TODO(crbug.com/1398845) Enable test once SetupRealUpdaterLowerVersion
 // is implemented.
 #if !BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1396103): fix after implementing `CheckForUpdate` and
-// rolling out a new CIPD build.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OverinstallWorking DISABLED_OverinstallWorking
-#else
-#define MAYBE_OverinstallWorking OverinstallWorking
-#endif
-TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
+TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
@@ -444,14 +437,7 @@ TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-// TODO(crbug.com/1396103): fix after implementing `CheckForUpdate` and
-// rolling out a new CIPD build.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
-#else
-#define MAYBE_OverinstallBroken OverinstallBroken
-#endif
-TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
+TEST_F(IntegrationTest, OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(DeleteUpdaterDirectory());
