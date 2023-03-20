@@ -1937,6 +1937,11 @@
       settable_from_internals: true,
     },
     {
+      // crbug.com/1425520. Enabled since M113.
+      name: "LayoutMediaChildPaintContainment",
+      status: "stable",
+    },
+    {
       name: "LayoutMediaNGContainer",
       // This feature doesn't work in the legacy layout.
       depends_on: ["LayoutNGPrinting"],
