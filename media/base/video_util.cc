@@ -194,19 +194,30 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
   }
 
   bool has_alpha = !IsOpaque(format) && src_frame.NumTextures() == 1;
-
-  const gpu::MailboxHolder& holder = src_frame.mailbox_holder(src_plane);
-  DCHECK(!holder.mailbox.IsZero());
-  ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
-
   SkColorType sk_color_type = SkColorTypeForPlane(format, src_plane);
   SkAlphaType sk_alpha_type =
       has_alpha ? kUnpremul_SkAlphaType : kOpaque_SkAlphaType;
 
   auto info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
                                 sk_color_type, sk_alpha_type);
-  ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
-                          src_rect.y(), /*plane_index=*/0, dest_pixels);
+
+  // Perform readback for a mailbox per plane for legacy shared image format
+  // types where planes and mailboxes are 1:1. With multiplanar shared images,
+  // there's one shared image mailbox for multiplanar formats so perform
+  // readback passing the appropriate `src_plane` for the single mailbox.
+  if (src_frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
+    const gpu::MailboxHolder& holder = src_frame.mailbox_holder(src_plane);
+    DCHECK(!holder.mailbox.IsZero());
+    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+    ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
+                            src_rect.y(), /*plane_index=*/0, dest_pixels);
+  } else {
+    const gpu::MailboxHolder& holder = src_frame.mailbox_holder(0);
+    DCHECK(!holder.mailbox.IsZero());
+    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+    ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
+                            src_rect.y(), src_plane, dest_pixels);
+  }
   return ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&
          ri->GetError() == GL_NO_ERROR;
 }
