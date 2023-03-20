@@ -189,7 +189,20 @@ class CORE_EXPORT CSSSelector {
     // leftmost + combinator of relative selector
     kRelativeDirectAdjacent,
     // leftmost ~ combinator of relative selector
-    kRelativeIndirectAdjacent
+    kRelativeIndirectAdjacent,
+
+    // The following applies to selectors within @scope
+    // (see CSSNestingType::kScope):
+    //
+    // The kScopeActivation relation is implicitly inserted parse-time before
+    // any compound selector which contains either :scope or the parent
+    // selector (&). When encountered during selector matching,
+    // kScopeActivation will try the to match the rest of the selector (i.e. the
+    // TagHistory from that point) using activation roots as the :scope
+    // element, trying the nearest activation root first.
+    //
+    // See also StyleScopeActivation.
+    kScopeActivation,
   };
 
   enum PseudoType {

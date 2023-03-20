@@ -235,15 +235,7 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
       return false;
     }
   }
-  if (MatchSelector(context, result) != kSelectorMatches) {
-    return false;
-  }
-  if (context.style_scope != nullptr &&
-      RuntimeEnabledFeatures::CSSScopeEnabled() &&
-      !CheckInStyleScope(context, result)) {
-    return false;
-  }
-  return true;
+  return MatchSelector(context, result) == kSelectorMatches;
 }
 
 // Recursive check of selectors and combinators
@@ -504,6 +496,24 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       return kSelectorFailsCompletely;
     case CSSSelector::kSubSelector:
       break;
+    case CSSSelector::kScopeActivation:
+      if (context.style_scope) {
+        const StyleScopeActivations& activations =
+            EnsureActivations(context, *context.style_scope);
+        if (activations.empty()) {
+          return kSelectorFailsCompletely;
+        }
+        for (const StyleScopeActivation& activation : activations) {
+          next_context.style_scope = nullptr;
+          next_context.scope = activation.root;
+          if (MatchSelector(next_context, result) == kSelectorMatches) {
+            result.proximity = activation.proximity;
+            return kSelectorMatches;
+          }
+        }
+        return kSelectorFailsLocally;
+      }
+      return MatchSelector(next_context, result);
   }
   NOTREACHED();
   return kSelectorFailsCompletely;
@@ -2028,21 +2038,6 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
 bool SelectorChecker::CheckPseudoScope(const SelectorCheckingContext& context,
                                        MatchResult& result) const {
   Element& element = *context.element;
-  if (RuntimeEnabledFeatures::CSSScopeEnabled() && context.style_scope) {
-    DCHECK(context.style_scope_frame);
-    const StyleScopeActivations& activations =
-        EnsureActivations(context, *context.style_scope);
-    // The same @scope may produce multiple activations, but only (at most)
-    // one activation per element in the ancestor chain. Therefore we do not
-    // need to check the list of activations in any particular order.
-    for (const StyleScopeActivation& activation : activations) {
-      if (&element == activation.root) {
-        result.proximity = activation.proximity;
-        return true;
-      }
-    }
-    return false;
-  }
   if (!context.scope) {
     return false;
   }
@@ -2382,22 +2377,6 @@ bool SelectorChecker::ElementIsScopingLimit(
     return false;
   }
   return MatchesWithScope(element, *style_scope.To(), activation.root.Get());
-}
-
-bool SelectorChecker::CheckInStyleScope(const SelectorCheckingContext& context,
-                                        MatchResult& result) const {
-  const StyleScopeActivations& activations =
-      EnsureActivations(context, *context.style_scope);
-
-  if (activations.empty()) {
-    return false;
-  }
-
-  for (const StyleScopeActivation& activation : activations) {
-    result.proximity = std::min(activation.proximity, result.proximity);
-  }
-
-  return true;
 }
 
 }  // namespace blink

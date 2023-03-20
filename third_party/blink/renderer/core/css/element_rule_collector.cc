@@ -442,13 +442,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
         continue;
       }
-      if (context.style_scope != nullptr &&
-          RuntimeEnabledFeatures::CSSScopeEnabled() &&
-          !checker.CheckInStyleScope(context, result)) {
-        DCHECK(!SlowMatchWithNoResultFlags(checker, context, selector,
-                                           rule_data, suppress_visited_));
-        continue;
-      }
+      DCHECK(!context.style_scope);
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
                                         suppress_visited_, result.proximity));
     } else if (context.vtt_originating_element == nullptr &&
@@ -457,12 +451,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         continue;
       }
       bool easy_match = EasySelectorChecker::Match(&selector, context.element);
-
-      if (context.style_scope != nullptr &&
-          RuntimeEnabledFeatures::CSSScopeEnabled() &&
-          !checker.CheckInStyleScope(context, result)) {
-        easy_match = false;
-      }
+      DCHECK(!context.style_scope);
       DCHECK_EQ(easy_match, SlowMatchWithNoResultFlags(
                                 checker, context, selector, rule_data,
                                 suppress_visited_, result.proximity))

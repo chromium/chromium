@@ -491,3 +491,23 @@ test_scope(document.currentScript, () => {
   assert_green('.a > span');
 }, 'Relative selector inside @scope');
 </script>
+
+
+<template>
+  <style>
+    @scope (.a) {
+      /* Can never match anything. */
+      :scope > :scope { background-color: green; }
+    }
+  </style>
+  <div class=a>
+    <div id=inner class=a>
+    </div>
+  </div>
+</template>
+<script>
+test_scope(document.currentScript, () => {
+  assert_not_green('.a');
+  assert_not_green('#inner');
+}, ':scope in two different compounds');
+</script>

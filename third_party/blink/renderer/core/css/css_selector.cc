@@ -1112,7 +1112,8 @@ const CSSSelector* CSSSelector::SerializeCompound(
     if (!simple_selector->SerializeSimpleSelector(builder)) {
       return nullptr;
     }
-    if (simple_selector->Relation() != kSubSelector) {
+    if (simple_selector->Relation() != kSubSelector &&
+        simple_selector->Relation() != kScopeActivation) {
       return simple_selector;
     }
   }
@@ -1129,15 +1130,25 @@ String CSSSelector::SelectorText() const {
       return builder.ReleaseString() + result;
     }
 
-    // If we are combining with an implicit &, :scope or :true, it is as if we
-    // used a relative combinator.
     RelationType relation = compound->Relation();
     DCHECK_NE(relation, kSubSelector);
-    if (compound->TagHistory()->Match() == kPseudoClass &&
-        (compound->TagHistory()->GetPseudoType() == kPseudoParent ||
-         compound->TagHistory()->GetPseudoType() == kPseudoScope ||
-         compound->TagHistory()->GetPseudoType() == kPseudoTrue) &&
-        compound->TagHistory()->is_implicitly_added_) {
+    DCHECK_NE(relation, kScopeActivation);
+
+    const CSSSelector* next_compound = compound->TagHistory();
+    DCHECK(next_compound);
+
+    // Skip leading :true. This internal pseudo-class is not supposed to
+    // affect serialization.
+    if (next_compound->GetPseudoType() == kPseudoTrue) {
+      next_compound = next_compound->TagHistory();
+    }
+
+    // If we are combining with an implicit & or :scope, it is as if we
+    // used a relative combinator.
+    if (!next_compound || (next_compound->Match() == kPseudoClass &&
+                           (next_compound->GetPseudoType() == kPseudoParent ||
+                            next_compound->GetPseudoType() == kPseudoScope) &&
+                           next_compound->is_implicitly_added_)) {
       relation = ConvertRelationToRelative(relation);
     }
 
@@ -1155,6 +1166,7 @@ String CSSSelector::SelectorText() const {
         result = " ~ " + builder.ReleaseString() + result;
         break;
       case kSubSelector:
+      case kScopeActivation:
         NOTREACHED();
         break;
       case kShadowPart:
