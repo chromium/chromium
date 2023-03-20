@@ -97,11 +97,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 
   scheme.fontColor = [UIColor colorNamed:kTextPrimaryColor];
   scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  if (UseSymbols()) {
-    scheme.trailingButtonColor = [UIColor colorNamed:kGrey600Color];
-  } else {
-    scheme.trailingButtonColor = [UIColor colorNamed:kGrey500Color];
-  }
+  scheme.trailingButtonColor = [UIColor colorNamed:kGrey600Color];
 
   return scheme;
 }

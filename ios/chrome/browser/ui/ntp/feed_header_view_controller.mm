@@ -62,9 +62,6 @@ const CGFloat kFollowingSegmentDotMargin = 8;
 // Duration of the fade animation for elements that toggle when switching feeds.
 const CGFloat kSegmentAnimationDuration = 0.3;
 
-// TODO(crbug.com/1277974): Remove this when Web Channels is launched.
-NSString* kDiscoverMenuIcon = @"infobar_settings_icon";
-
 // The size of feed symbol images.
 NSInteger kFeedSymbolPointSize = 17;
 
@@ -370,12 +367,8 @@ NSInteger kFeedSymbolPointSize = 17;
     menuButton.layer.cornerRadius = kButtonSize / 2;
     menuButton.clipsToBounds = YES;
   } else {
-    UIImage* menuIcon =
-        UseSymbols()
-            ? DefaultSymbolTemplateWithPointSize(kSettingsFilledSymbol,
-                                                 kFeedSymbolPointSize)
-            : [[UIImage imageNamed:kDiscoverMenuIcon]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* menuIcon = DefaultSymbolTemplateWithPointSize(
+        kSettingsFilledSymbol, kFeedSymbolPointSize);
     [menuButton setImage:menuIcon forState:UIControlStateNormal];
     menuButton.tintColor = [UIColor colorNamed:kGrey600Color];
     menuButton.imageEdgeInsets = UIEdgeInsetsMake(

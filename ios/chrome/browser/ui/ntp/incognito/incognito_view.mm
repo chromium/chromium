@@ -176,24 +176,18 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     if (showTopIncognitoImageAndTitle) {
       // Incognito image.
       UIImage* incognitoImage;
-      if (UseSymbols()) {
-        UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-            configurationWithPointSize:kIncognitoSymbolImagePointSize
-                                weight:UIImageSymbolWeightLight
-                                 scale:UIImageSymbolScaleMedium];
-        if (@available(iOS 15, *)) {
-          incognitoImage =
-              SymbolWithPalette(CustomSymbolWithConfiguration(
-                                    kIncognitoCircleFillSymbol, configuration),
-                                LargeIncognitoPalette());
-        } else {
-          incognitoImage = [CustomSymbolWithConfiguration(
-              kIncognitoCircleFilliOS14Symbol, configuration)
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        }
+      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+          configurationWithPointSize:kIncognitoSymbolImagePointSize
+                              weight:UIImageSymbolWeightLight
+                               scale:UIImageSymbolScaleMedium];
+      if (@available(iOS 15, *)) {
+        incognitoImage =
+            SymbolWithPalette(CustomSymbolWithConfiguration(
+                                  kIncognitoCircleFillSymbol, configuration),
+                              LargeIncognitoPalette());
       } else {
-        incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        incognitoImage = CustomSymbolWithConfiguration(
+            kIncognitoCircleFilliOS14Symbol, configuration);
       }
 
       UIImageView* incognitoImageView =

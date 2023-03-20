@@ -30,11 +30,3 @@ imageset("ntp_search_icon") {
     "ntp_search_icon.imageset/ntp_search_icon@3x.png",
   ]
 }
-
-imageset("sign_out_icon") {
-  sources = [
-    "sign_out_icon.imageset/Contents.json",
-    "sign_out_icon.imageset/sign_out_icon@2x.png",
-    "sign_out_icon.imageset/sign_out_icon@3x.png",
-  ]
-}

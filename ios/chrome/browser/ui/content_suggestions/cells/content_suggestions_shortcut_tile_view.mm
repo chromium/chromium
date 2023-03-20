@@ -66,9 +66,7 @@ const CGFloat kIconSize = 56;
   // extra from the accessibilityLabel.
   self.accessibilityUserInputLabels = @[ config.title ];
   self.iconView.image =
-      UseSymbols()
-          ? SymbolForCollectionShortcutType(config.collectionShortcutType)
-          : ImageForCollectionShortcutType(config.collectionShortcutType);
+      SymbolForCollectionShortcutType(config.collectionShortcutType);
   self.countContainer.hidden = config.count == 0;
   if (config.count > 0) {
     self.countLabel.text = [@(config.count) stringValue];
