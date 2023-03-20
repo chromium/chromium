@@ -11,8 +11,8 @@ found in the LICENSE file.
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_height="wrap_content"
   android:layout_width="match_parent"
-  android:paddingLeft="@dimen/fast_checkout_sheet_margin"
-  android:paddingRight="@dimen/fast_checkout_sheet_margin"
+  android:paddingLeft="@dimen/fast_checkout_sheet_padding"
+  android:paddingRight="@dimen/fast_checkout_sheet_padding"
   android:orientation="vertical">
 
  <ImageView

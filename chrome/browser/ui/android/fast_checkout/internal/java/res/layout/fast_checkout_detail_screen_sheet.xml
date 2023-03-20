@@ -29,5 +29,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:clipToPadding="false"
           android:divider="@null"
-          android:paddingBottom="24dp"/>
+          android:paddingBottom="24dp"
+          android:paddingLeft="@dimen/fast_checkout_sheet_padding_content"
+          android:paddingRight="@dimen/fast_checkout_sheet_padding_content"/>
     </LinearLayout>

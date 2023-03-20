@@ -10,7 +10,9 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="18dp">
+    android:layout_marginTop="18dp"
+    android:paddingLeft="@dimen/fast_checkout_sheet_padding_content"
+    android:paddingRight="@dimen/fast_checkout_sheet_padding_content">
   <LinearLayout
       android:layout_height="wrap_content"
       android:layout_width="match_parent"
