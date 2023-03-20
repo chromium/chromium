@@ -8,7 +8,7 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
-#include "media/gpu/v4l2/test/av1_pix_fmt.h"
+#include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -361,7 +361,7 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
 
     ConvertNV12ToYUV(dest_y, dest_u, dest_v, dest_size,
                      static_cast<uint8_t*>(planes[0].start_addr), src_size);
-  } else if (fourcc == v4l2_fourcc('M', 'M', '2', '1')) {
+  } else if (fourcc == V4L2_PIX_FMT_MM21) {
     CHECK_EQ(planes.size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
 

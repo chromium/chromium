@@ -20,6 +20,7 @@
 #include "media/filters/ivf_parser.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/test/upstream_pix_fmt.h"
 
 namespace media {
 
@@ -195,7 +196,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
                                       uncompressed_fourcc)) {
     // Fall back to MM21 for MediaTek platforms
-    uncompressed_fourcc = v4l2_fourcc('M', 'M', '2', '1');
+    uncompressed_fourcc = V4L2_PIX_FMT_MM21;
     num_planes = 2;
 
     if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,

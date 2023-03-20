@@ -164,9 +164,9 @@ source_set("unit_test") {
 executable("v4l2_stateless_decoder") {
   testonly = true
   sources = [
-    "test/av1_pix_fmt.h",
     "test/h264_decoder.cc",
     "test/h264_decoder.h",
+    "test/upstream_pix_fmt.h",
     "test/v4l2_ioctl_shim.cc",
     "test/v4l2_ioctl_shim.h",
     "test/v4l2_stateless_decoder.cc",

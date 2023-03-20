@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_TEST_AV1_PIX_FMT_H_
-#define MEDIA_GPU_V4L2_TEST_AV1_PIX_FMT_H_
+#ifndef MEDIA_GPU_V4L2_TEST_UPSTREAM_PIX_FMT_H_
+#define MEDIA_GPU_V4L2_TEST_UPSTREAM_PIX_FMT_H_
 
 // TODO(stevecho): This is temporary until the change to define
 // V4L2_PIX_FMT_AV1_FRAME lands in videodev2.h.
@@ -17,4 +17,10 @@
                                    */
 #endif
 
-#endif  // MEDIA_GPU_V4L2_TEST_VIDEO_DECODER_H_
+// TODO(b/232419944): remove this once V4L2 header is updated.
+#ifndef V4L2_PIX_FMT_MM21
+// MTK 8-bit block mode, two non-contiguous planes.
+#define V4L2_PIX_FMT_MM21 v4l2_fourcc('M', 'M', '2', '1')
+#endif
+
+#endif  // MEDIA_GPU_V4L2_TEST_UPSTREAM_PIX_FMT_H_
