@@ -393,6 +393,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kFontVariantEastAsian:
       return a.GetFontDescription().VariantEastAsian() ==
              b.GetFontDescription().VariantEastAsian();
+    case CSSPropertyID::kFontVariantLigatures:
+      return a.GetFontDescription().GetVariantLigatures() ==
+             b.GetFontDescription().GetVariantLigatures();
     case CSSPropertyID::kFontVariantNumeric:
       return a.GetFontDescription().VariantNumeric() ==
              b.GetFontDescription().VariantNumeric();
@@ -850,11 +853,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.TextEmphasisColor() == b.TextEmphasisColor();
     case CSSPropertyID::kZoom:
       return a.Zoom() == b.Zoom();
-
-    // Doesn't define operator==
-    case CSSPropertyID::kFontVariantLigatures:
-      NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
-      return true;
 
     // These properties are not animateable, but perhaps equality should still
     // be defined for them.

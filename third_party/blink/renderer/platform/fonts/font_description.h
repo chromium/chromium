@@ -153,6 +153,11 @@ class PLATFORM_EXPORT FontDescription {
     unsigned discretionary : 2;
     unsigned historical : 2;
     unsigned contextual : 2;
+
+    bool operator==(const VariantLigatures& other) const {
+      return common == other.common && discretionary == other.discretionary
+        && historical == other.historical && contextual == other.contextual;
+    }
   };
 
   struct Size {
