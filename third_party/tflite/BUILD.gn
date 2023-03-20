@@ -99,6 +99,7 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/error_reporter.h",
     "src/tensorflow/lite/graph_info.h",
     "src/tensorflow/lite/kernels/builtin_op_kernels.h",
+    "src/tensorflow/lite/minimal_logging.h",
     "src/tensorflow/lite/model.h",
     "src/tensorflow/lite/mutable_op_resolver.h",
     "src/tensorflow/lite/op_resolver.h",

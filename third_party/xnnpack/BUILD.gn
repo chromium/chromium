@@ -489,6 +489,7 @@ source_set("subgraph") {
     "src/src/subgraph/static-slice.c",
     "src/src/subgraph/static-transpose.c",
     "src/src/subgraph/subtract.c",
+    "src/src/subgraph/tanh.c",
     "src/src/subgraph/unpooling-2d.c",
     "src/src/subgraph/validation.c",
   ]
