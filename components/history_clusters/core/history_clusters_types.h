@@ -32,9 +32,10 @@ struct QueryClustersFilterParams {
   QueryClustersFilterParams(const QueryClustersFilterParams&);
   ~QueryClustersFilterParams();
 
-  // The maximum number of clusters to return. If less than 0, no max will be
-  // applied.
-  int max_clusters = -1;
+  // The maximum number of clusters to return. If equal to 0, no max will be
+  // applied. If set to a positive value, the returned clusters will be returned
+  // based on likelihood of subsequent user engagemnent.
+  size_t max_clusters = 0;
 
   // The minimum number of visits within a cluster that have associated images.
   // Note that this also implicitly works as a visit filter such that if fewer

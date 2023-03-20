@@ -228,8 +228,6 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
         in_clusters);
     run_loop.Run();
 
-    // Sort clusters here for easier verification.
-    SortClusters(&clusters);
     return clusters;
   }
 
@@ -381,6 +379,46 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   // Cluster processors and finalizers should be run.
 
   // The below clusters contain the exact same visit so should be merged and
+  // then deduped. No max is applied so clusters should be returned as is.
+
+  history::Cluster cluster1;
+  cluster1.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://google.com/"), base::Time::FromTimeT(1))));
+  clusters.push_back(cluster1);
+
+  history::Cluster cluster2;
+  cluster2.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          2, GURL("https://google.com/"), base::Time::FromTimeT(2))));
+  clusters.push_back(cluster2);
+
+  history::Cluster cluster3;
+  cluster3.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          3, GURL("https://othercluster.com/"), base::Time::FromTimeT(4))));
+  clusters.push_back(cluster3);
+
+  std::vector<history::Cluster> result_clusters =
+      GetClustersForUI(ClusteringRequestSource::kJourneysPage,
+                       QueryClustersFilterParams(), clusters);
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(
+                              2, 1.0, {history::DuplicateClusterVisit{1}})),
+                          ElementsAre(testing::VisitResult(3, 1.0))));
+  EXPECT_FALSE(result_clusters[0].label->empty());
+}
+
+TEST_F(OnDeviceClusteringWithoutContentBackendTest,
+       GetClustersForUIMaxFilterApplied) {
+  std::vector<history::Cluster> clusters;
+
+  QueryClustersFilterParams params;
+  params.max_clusters = 1;
+
+  // Cluster processors and finalizers should be run.
+
+  // The below clusters contain the exact same visit so should be merged and
   // then deduped.
 
   history::Cluster cluster1;
@@ -395,12 +433,17 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
           2, GURL("https://google.com/"), base::Time::FromTimeT(2))));
   clusters.push_back(cluster2);
 
+  history::Cluster cluster3;
+  cluster3.visits.emplace_back(
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          3, GURL("https://othercluster.com/"), base::Time::FromTimeT(4))));
+  clusters.push_back(cluster3);
+
   std::vector<history::Cluster> result_clusters =
       GetClustersForUI(ClusteringRequestSource::kJourneysPage,
-                       QueryClustersFilterParams(), clusters);
+                       std::move(params), std::move(clusters));
   EXPECT_THAT(testing::ToVisitResults(result_clusters),
-              ElementsAre(ElementsAre(testing::VisitResult(
-                  2, 1.0, {history::DuplicateClusterVisit{1}}))));
+              ElementsAre(ElementsAre(testing::VisitResult(3, 1.0))));
   EXPECT_FALSE(result_clusters[0].label->empty());
 }
 
@@ -748,8 +791,9 @@ TEST_F(OnDeviceClusteringWithContentBackendTest, GetClustersForUIWithContent) {
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
       ElementsAre(ElementsAre(
+          testing::VisitResult(2, 1.0),
           testing::VisitResult(4, 1.0, {history::DuplicateClusterVisit{1}}),
-          testing::VisitResult(2, 1.0), testing::VisitResult(10, 0.5))));
+          testing::VisitResult(10, 0.5))));
   EXPECT_THAT(result_clusters.size(), 1u);
   EXPECT_THAT(result_clusters[0].GetKeywords(),
               UnorderedElementsAre(u"alias-github", u"rewritten-github"));

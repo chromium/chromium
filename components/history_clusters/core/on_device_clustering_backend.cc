@@ -564,8 +564,16 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
     }
   }
 
-  // TODO(b/265301309): Rank clusters if `filter_params` has specified a
-  // `max_clusters` param.
+  if (filter_params.max_clusters > 0) {
+    // TODO(b/265301665): Do something better than reverse-chron by
+    // highest-scoring visit.
+    SortClusters(&clusters);
+
+    if (filter_params.max_clusters < clusters.size()) {
+      // Cull clusters if more than max size.
+      clusters.resize(filter_params.max_clusters);
+    }
+  }
 
   return calculate_triggerability
              ? GetClusterTriggerabilityOnBackgroundThread(
