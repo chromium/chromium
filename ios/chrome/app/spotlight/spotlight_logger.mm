@@ -74,6 +74,12 @@ NSString* kSpotlightDebuggerErrorLogKey = @"SpotlightDebuggerErrorLogKey";
   }
 }
 
+- (void)logDeletionOfItemsInDomains:(NSArray<NSString*>*)domains {
+  for (NSString* domain in domains) {
+    [self logDeletionOfItemsInDomain:domain];
+  }
+}
+
 - (void)logDeletionOfAllItems {
   [self.knownItems removeAllObjects];
 }

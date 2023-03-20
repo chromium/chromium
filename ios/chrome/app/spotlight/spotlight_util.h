@@ -43,6 +43,9 @@ extern const int kCurrentSpotlightIndexVersion;
 // indexing.
 extern const char kSpotlightLastIndexingVersionKey[];
 
+// Maximum retry attempts to delete/index a set of items.
+const NSUInteger kMaxAttempts = 5;
+
 // Utility methods deleting nodes in Spotlight index. Will be retried in case of
 // failure as required by Apple documentation.
 void DeleteSearchableDomainItems(Domain domain, BlockWithError callback);

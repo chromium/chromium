@@ -35,6 +35,7 @@
 
 - (void)logDeletionOfItemsWithIdentifiers:(NSArray<NSString*>*)identifiers;
 - (void)logDeletionOfItemsInDomain:(NSString*)domain;
+- (void)logDeletionOfItemsInDomains:(NSArray<NSString*>*)domains;
 - (void)logDeletionOfAllItems;
 
 - (NSArray<CSSearchableItem*>*)knownIndexedItems;
