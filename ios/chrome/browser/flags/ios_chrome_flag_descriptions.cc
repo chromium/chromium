@@ -425,13 +425,15 @@ const char kFeedExperimentTaggingName[] = "Enable Feed experiment tagging";
 const char kFeedExperimentTaggingDescription[] =
     "Makes server experiments visible as client-side experiments.";
 
-const char kFeedForegroundRefreshName[] = "Enable feed foreground refresh";
-const char kFeedForegroundRefreshDescription[] =
-    "Foreground refresh has two variations. The first is when the Feed is "
-    "refreshed after the user ends a Feed session, but the app is still in the "
-    "foreground (e.g., user switches tabs, user navigates away from Feed in "
-    "current tab). The second is when the Feed is refreshed at the moment the "
-    "app is backgrounding (e.g., extended execution time).";
+const char kFeedInvisibleForegroundRefreshName[] =
+    "Enable feed invisible foreground refresh";
+const char kFeedInvisibleForegroundRefreshDescription[] =
+    "Invisible foreground refresh has two variations. The first is when the "
+    "Feed is refreshed after the user ends a Feed session, but the app is "
+    "still in the foreground (e.g., user switches tabs, user navigates away "
+    "from Feed in current tab). The second is when the Feed is refreshed at "
+    "the moment the app is backgrounding (e.g., during extended execution "
+    "time).";
 
 const char kFillingAcrossAffiliatedWebsitesName[] =
     "Fill passwords across affiliated websites.";

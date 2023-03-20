@@ -898,7 +898,7 @@ using feed::FeedUserActionType;
   // This must be called after memoizing if the current session has met
   // engagement criteria. For example, setting `engagedSimpleReportedDiscover`
   // must happen before this call.
-  if (IsFeedRefreshPostFeedSessionEnabled()) {
+  if (IsFeedSessionCloseForegroundRefreshEnabled()) {
     [self setOrExtendSessionEndTimer];
   }
 }

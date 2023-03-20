@@ -82,7 +82,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   if (IsFeedBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
   }
-  if (IsFeedRefreshOnAppBackgroundingEnabled()) {
+  if (IsFeedAppCloseForegroundRefreshEnabled()) {
     [self feedService]->RefreshFeed(FeedRefreshTrigger::kForegroundAppClose);
   }
 }

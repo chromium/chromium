@@ -24,8 +24,8 @@ BASE_FEATURE(kEnableFeedBackgroundRefresh,
              "EnableFeedBackgroundRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedForegroundRefresh,
-             "EnableFeedForegroundRefresh",
+BASE_FEATURE(kEnableFeedInvisibleForegroundRefresh,
+             "EnableFeedInvisibleForegroundRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
@@ -74,10 +74,10 @@ const char kBackgroundRefreshIntervalInSeconds[] =
 const char kBackgroundRefreshMaxAgeInSeconds[] =
     "BackgroundRefreshMaxAgeInSeconds";
 
-const char kEnableFeedRefreshPostFeedSession[] =
-    "EnableFeedRefreshPostFeedSession";
-const char kEnableFeedRefreshOnAppBackgrounding[] =
-    "EnableFeedRefreshOnAppBackgrounding";
+const char kEnableFeedSessionCloseForegroundRefresh[] =
+    "EnableFeedSessionCloseForegroundRefresh";
+const char kEnableFeedAppCloseForegroundRefresh[] =
+    "EnableFeedAppCloseForegroundRefresh";
 const char kFeedSessionEndTimerTimeoutInSeconds[] =
     "FeedSessionEndTimerTimeoutInSeconds";
 const char kFeedSeenRefreshThresholdInSeconds[] =
@@ -198,15 +198,17 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
       /*default=*/0);
 }
 
-bool IsFeedRefreshPostFeedSessionEnabled() {
+bool IsFeedSessionCloseForegroundRefreshEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedForegroundRefresh, kEnableFeedRefreshPostFeedSession,
+      kEnableFeedInvisibleForegroundRefresh,
+      kEnableFeedSessionCloseForegroundRefresh,
       /*default=*/false);
 }
 
-bool IsFeedRefreshOnAppBackgroundingEnabled() {
+bool IsFeedAppCloseForegroundRefreshEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedForegroundRefresh, kEnableFeedRefreshOnAppBackgrounding,
+      kEnableFeedInvisibleForegroundRefresh,
+      kEnableFeedAppCloseForegroundRefresh,
       /*default=*/false);
 }
 
@@ -217,7 +219,8 @@ double GetFeedSessionEndTimerTimeoutInSeconds() {
     return override_value;
   }
   return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedForegroundRefresh, kFeedSessionEndTimerTimeoutInSeconds,
+      kEnableFeedInvisibleForegroundRefresh,
+      kFeedSessionEndTimerTimeoutInSeconds,
       /*default=*/base::Minutes(5).InSecondsF());
 }
 
@@ -228,7 +231,7 @@ double GetFeedSeenRefreshThresholdInSeconds() {
     return override_value;
   }
   return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedForegroundRefresh, kFeedSeenRefreshThresholdInSeconds,
+      kEnableFeedInvisibleForegroundRefresh, kFeedSeenRefreshThresholdInSeconds,
       /*default=*/base::Hours(1).InSecondsF());
 }
 
@@ -239,7 +242,8 @@ double GetFeedUnseenRefreshThresholdInSeconds() {
     return override_value;
   }
   return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedForegroundRefresh, kFeedUnseenRefreshThresholdInSeconds,
+      kEnableFeedInvisibleForegroundRefresh,
+      kFeedUnseenRefreshThresholdInSeconds,
       /*default=*/base::Hours(6).InSecondsF());
 }
 
