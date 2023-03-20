@@ -146,7 +146,11 @@
       "Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll",
       session->tabs.size());
 
-  OpenDistantTabsInBackground(session->tabs, self.browser, self.loadStrategy);
+  BOOL inIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  UrlLoadingBrowserAgent* URLLoader =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  OpenDistantTabsInBackground(session->tabs, inIncognito, URLLoader,
+                              self.loadStrategy);
 
   [self showActiveRegularTabFromRecentTabs];
 }

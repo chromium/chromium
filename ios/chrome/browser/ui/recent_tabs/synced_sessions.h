@@ -45,6 +45,9 @@ struct DistantTab {
   size_t hashOfUserVisibleProperties();
 };
 
+// A list of DistantTab objects.
+using DistantTabVector = std::vector<std::unique_ptr<DistantTab>>;
+
 // Data holder that contains a set of distant tabs to show in the UI.
 struct DistantTabsSet {
   DistantTabsSet();
@@ -84,7 +87,7 @@ class DistantSession {
   std::string tag;
   std::string name;
   base::Time modified_time;
-  std::vector<std::unique_ptr<DistantTab>> tabs;
+  DistantTabVector tabs;
 };
 
 // Class containing distant sessions.

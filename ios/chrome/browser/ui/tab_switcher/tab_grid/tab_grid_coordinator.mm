@@ -1153,8 +1153,10 @@
       "Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll",
       session->tabs.size());
 
+  BOOL inIncognito = self.regularBrowser->GetBrowserState()->IsOffTheRecord();
   OpenDistantTabsInBackground(
-      session->tabs, self.regularBrowser,
+      session->tabs, inIncognito,
+      UrlLoadingBrowserAgent::FromBrowser(self.regularBrowser),
       self.baseViewController.remoteTabsViewController.loadStrategy);
 
   [self showActiveRegularTabFromRecentTabs];

@@ -6,10 +6,10 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
-std::vector<std::unique_ptr<synced_sessions::DistantTab>>
-PromptTabsForAndroidSwitcher(ChromeBrowserState* browser_state) {
+synced_sessions::DistantTabVector PromptTabsForAndroidSwitcher(
+    ChromeBrowserState* browser_state) {
   // TODO(crbug.com/1418114): Add implementation.
-  return std::vector<std::unique_ptr<synced_sessions::DistantTab>>();
+  return synced_sessions::DistantTabVector();
 }
 
 void OnBringAndroidTabsPromptDisplayed(PrefService* user_prefs) {

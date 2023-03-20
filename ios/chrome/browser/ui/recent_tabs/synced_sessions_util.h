@@ -5,20 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_UI_RECENT_TABS_SYNCED_SESSIONS_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_RECENT_TABS_SYNCED_SESSIONS_UTIL_H_
 
-#include <memory>
-#include <vector>
+#include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 
-class Browser;
+class UrlLoadingBrowserAgent;
 enum class UrlLoadStrategy;
 
-namespace synced_sessions {
-struct DistantTab;
-}  // namespace synced_sessions
-
 // Opens all tabs in the given set of tabs in the background.
-void OpenDistantTabsInBackground(
-    const std::vector<std::unique_ptr<synced_sessions::DistantTab>>& tabs,
-    Browser* browser,
-    UrlLoadStrategy load_strategy);
+void OpenDistantTabsInBackground(const synced_sessions::DistantTabVector& tabs,
+                                 bool in_incognito,
+                                 UrlLoadingBrowserAgent* url_loader,
+                                 UrlLoadStrategy load_strategy);
 
 #endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_SYNCED_SESSIONS_UTIL_H_

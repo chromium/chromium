@@ -125,8 +125,6 @@ source_set("synced_sessions") {
     "synced_sessions_util.mm",
   ]
   deps = [
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/url_loading:url_loading_params_header",
