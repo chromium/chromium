@@ -297,6 +297,7 @@ static const char* const kSwitchNames[] = {
 #if BUILDFLAG(IS_ANDROID)
     switches::kEnableReachedCodeProfiler,
     switches::kReachedCodeSamplingIntervalUs,
+    switches::kDisableAdpf,
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
     switches::kPlatformDisallowsChromeOSDirectVideoDecoder,
