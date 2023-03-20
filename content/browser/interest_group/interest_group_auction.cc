@@ -547,15 +547,13 @@ class InterestGroupAuction::BuyerHelper
 
     // Request processes for all bidder worklets.
     for (auto& bid_state : bid_states_) {
-      if (auction_->auction_worklet_manager_->RequestWorkletByKey(
-              auction_->BidderWorkletKey(*bid_state),
-              base::BindOnce(&BuyerHelper::OnBidderWorkletReceived,
-                             base::Unretained(this), bid_state.get()),
-              base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
-                             base::Unretained(this), bid_state.get()),
-              bid_state->worklet_handle)) {
-        OnBidderWorkletReceived(bid_state.get());
-      }
+      auction_->auction_worklet_manager_->RequestWorkletByKey(
+          auction_->BidderWorkletKey(*bid_state),
+          base::BindOnce(&BuyerHelper::OnBidderWorkletReceived,
+                         base::Unretained(this), bid_state.get()),
+          base::BindOnce(&BuyerHelper::OnBidderWorkletGenerateBidFatalError,
+                         base::Unretained(this), bid_state.get()),
+          bid_state->worklet_handle);
     }
   }
 
@@ -1006,7 +1004,6 @@ class InterestGroupAuction::BuyerHelper
       absl::optional<double> new_priority,
       base::OnceClosure resume_generate_bid_callback) {
     DCHECK(!state->bidding_signals_received);
-    DCHECK(state->generate_bid_client_receiver_id);
     DCHECK_GT(num_outstanding_bids_, 0);
     DCHECK_GT(num_outstanding_bidding_signals_received_calls_, 0);
     // `resume_generate_bid_callback` must be non-null except when invoked with
@@ -1243,7 +1240,10 @@ class InterestGroupAuction::BuyerHelper
     CloseBidStatePipes(*state);
 
     if (!bid && !kanon_bid) {
-      state->EndTracing();
+      if (state->trace_id.has_value()) {
+        // Might not have started it if we timed out before worklet received.
+        state->EndTracing();
+      }
     } else {
       state->bidder_debug_win_report_url = debug_win_report_url;
       state->made_bid = true;
@@ -2533,16 +2533,14 @@ void InterestGroupAuction::OnComponentSellerWorkletReceived() {
 void InterestGroupAuction::RequestSellerWorklet() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_seller_worklet",
                                     *trace_id_);
-  if (auction_worklet_manager_->RequestSellerWorklet(
-          config_->decision_logic_url, config_->trusted_scoring_signals_url,
-          config_->seller_experiment_group_id,
-          base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
-                         base::Unretained(this)),
-          base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,
-                         base::Unretained(this)),
-          seller_worklet_handle_)) {
-    OnSellerWorkletReceived();
-  }
+  auction_worklet_manager_->RequestSellerWorklet(
+      config_->decision_logic_url, config_->trusted_scoring_signals_url,
+      config_->seller_experiment_group_id,
+      base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
+                     base::Unretained(this)),
+      base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,
+                     base::Unretained(this)),
+      seller_worklet_handle_);
 }
 
 void InterestGroupAuction::OnSellerWorkletReceived() {

@@ -258,19 +258,16 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
   // base::Unretained is safe to use for these callbacks because destroying
   // `seller_worklet_handle_` will prevent the callbacks from being invoked, if
   // `this` is destroyed while still waiting on the callbacks.
-  if (auction_worklet_manager_->RequestSellerWorklet(
-          seller_info->auction_config->decision_logic_url,
-          seller_info->auction_config->trusted_scoring_signals_url,
-          seller_info->auction_config->seller_experiment_group_id,
-          base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
-                         base::Unretained(this), base::Unretained(seller_info),
-                         top_seller_signals),
-          base::BindOnce(
-              &InterestGroupAuctionReporter::OnSellerWorkletFatalError,
-              base::Unretained(this), base::Unretained(seller_info)),
-          seller_worklet_handle_)) {
-    OnSellerWorkletReceived(seller_info, top_seller_signals);
-  }
+  auction_worklet_manager_->RequestSellerWorklet(
+      seller_info->auction_config->decision_logic_url,
+      seller_info->auction_config->trusted_scoring_signals_url,
+      seller_info->auction_config->seller_experiment_group_id,
+      base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
+                     base::Unretained(this), base::Unretained(seller_info),
+                     top_seller_signals),
+      base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletFatalError,
+                     base::Unretained(this), base::Unretained(seller_info)),
+      seller_worklet_handle_);
 }
 
 void InterestGroupAuctionReporter::OnSellerWorkletFatalError(
@@ -462,18 +459,15 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   // base::Unretained is safe to use for these callbacks because destroying
   // `bidder_worklet_handle_` will prevent the callbacks from being invoked, if
   // `this` is destroyed while still waiting on the callbacks.
-  if (auction_worklet_manager_->RequestBidderWorklet(
-          interest_group.bidding_url.value_or(GURL()),
-          interest_group.bidding_wasm_helper_url,
-          interest_group.trusted_bidding_signals_url, experiment_group_id,
-          base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
-                         base::Unretained(this), signals_for_winner),
-          base::BindOnce(
-              &InterestGroupAuctionReporter::OnBidderWorkletFatalError,
-              base::Unretained(this)),
-          bidder_worklet_handle_)) {
-    OnBidderWorkletReceived(signals_for_winner);
-  }
+  auction_worklet_manager_->RequestBidderWorklet(
+      interest_group.bidding_url.value_or(GURL()),
+      interest_group.bidding_wasm_helper_url,
+      interest_group.trusted_bidding_signals_url, experiment_group_id,
+      base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
+                     base::Unretained(this), signals_for_winner),
+      base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletFatalError,
+                     base::Unretained(this)),
+      bidder_worklet_handle_);
 }
 
 void InterestGroupAuctionReporter::OnBidderWorkletReceived(

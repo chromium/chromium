@@ -433,10 +433,6 @@ RenderProcessHost* MockAuctionProcessManager::LaunchProcess(
   mojo::ReceiverId receiver_id =
       receiver_set_.Add(this, std::move(auction_worklet_service_receiver));
 
-  // Have to flush the receiver set, so that any closed receivers are removed,
-  // before searching for duplicate process names.
-  receiver_set_.FlushForTesting();
-
   // Each receiver should get a unique display name. This check serves to help
   // ensure that processes are correctly reused.
   EXPECT_EQ(0u, receiver_display_name_map_.count(receiver_id));

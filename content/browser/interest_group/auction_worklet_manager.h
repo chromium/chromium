@@ -48,8 +48,7 @@ class SubresourceUrlBuilder;
 // hooks, the others by the current worklet implementations.
 //
 // If a worklet fails to load or crashes, information about the error is
-// broadcast to all consumers of the worklet. This will only happen after
-// a worklet was successfully created. After a load failure or crash, the
+// broadcast to all consumers of the worklet. After a load failure or crash, the
 // worklet will not be able to invoke any pending callbacks passed over the Mojo
 // interface.
 //
@@ -57,12 +56,13 @@ class SubresourceUrlBuilder;
 // invoking callbacks that are sharing a worklet in FIFO order. The
 // AuctionProcessManager handles prioritization for process creation. Once a
 // process is created for a worklet, the worklet is created immediately.
-//
-// TODO(https://crbug.com/1276639): Currently only applies to seller worklets.
-// Make this handle bidder worklets, too.
 class CONTENT_EXPORT AuctionWorkletManager {
  public:
   using WorkletType = AuctionProcessManager::WorkletType;
+
+  // How many callbacks are dispatched at once, if splitting up notifications is
+  // on.
+  static const size_t kBatchSize = 10;
 
   // Types of fatal error that can prevent a worklet from all further execution.
   enum class FatalErrorType {
@@ -139,7 +139,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // the returned Worklet once the request receives one. Destroying the handle
   // will abort a pending request and potentially release any worklets or
   // processes it is keeping alive, so consumers should destroy these as soon as
-  // they are no longer needed.
+  // they are no longer needed. Handles should not outlive the
+  // AuctionWorkletManager.
   class CONTENT_EXPORT WorkletHandle : public base::CheckedObserver {
    public:
     WorkletHandle(const WorkletHandle&) = delete;
@@ -195,11 +196,10 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
     scoped_refptr<WorkletOwner> worklet_owner_;
 
-    // Non-null only when waiting on a Worklet object to be provided.
     base::OnceClosure worklet_available_callback_;
-
     FatalErrorCallback fatal_error_callback_;
 
+    uint64_t seq_num_;
     bool authorized_subresources_ = false;
   };
 
@@ -228,18 +228,27 @@ class CONTENT_EXPORT AuctionWorkletManager {
   // DevTools, and merging requests with the same parameters so they can share a
   // single worklet.
   //
-  // If a worklet is synchronously assigned to `out_worklet_handle`, returns
-  // true and the Worklet pointer can immediately be retrieved from the handle.
-  // `worklet_available_callback` will not be invoked. Otherwise, returns false
-  // and will invoke `worklet_available_callback` when the service pointer can
-  // be retrieved from `handle`.
+  // Will invoke `worklet_available_callback` when the service pointer can
+  // be retrieved from `handle`. Multiple instances of the callback can be
+  // invoked synchronously right after each other, but none will be invoked from
+  // within the Request... call itself. `worklet_available_callback` invocations
+  // that refer to the same underlying worklet will be in the same order as the
+  // Request... call, but those that don't share worklets are unordered with
+  // respect to each other.
   //
   // `fatal_error_callback` is invoked in the case of a fatal error. It may be
-  // invoked any time after the worklet is available (after returning true or
-  // after `worklet_available_callback` has been invoked), before the
-  // WorkletHandle is destroyed. It is called to indicate the worklet failed to
-  // load or crashed.
-  [[nodiscard]] bool RequestBidderWorklet(
+  // invoked both if the worklet creation outright failed, or after a successful
+  // creation that invoked `worklet_available_callback_`, so long as the
+  // WorkletHandle lives. It is called to indicate the worklet failed to
+  // load or crashed.  Callbacks from multiple calls may be invoked right after
+  // another without returning to the event loop (but not within the Request...
+  // call itself); but unlike for success callback there are no ordering
+  // guarantees about ordering of failures corresponding to different Request...
+  // calls.
+  //
+  // The callbacks should not delete the AuctionWorkletManager itself, but are
+  // free to release any WorkletHandle they wish.
+  void RequestBidderWorklet(
       const GURL& bidding_logic_url,
       const absl::optional<GURL>& wasm_url,
       const absl::optional<GURL>& trusted_bidding_signals_url,
@@ -247,18 +256,17 @@ class CONTENT_EXPORT AuctionWorkletManager {
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
-  [[nodiscard]] bool RequestSellerWorklet(
+  void RequestSellerWorklet(
       const GURL& decision_logic_url,
       const absl::optional<GURL>& trusted_scoring_signals_url,
       absl::optional<uint16_t> experiment_group_id,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle);
-  [[nodiscard]] bool RequestWorkletByKey(
-      WorkletKey worklet_info,
-      base::OnceClosure worklet_available_callback,
-      FatalErrorCallback fatal_error_callback,
-      std::unique_ptr<WorkletHandle>& out_worklet_handle);
+  void RequestWorkletByKey(WorkletKey worklet_info,
+                           base::OnceClosure worklet_available_callback,
+                           FatalErrorCallback fatal_error_callback,
+                           std::unique_ptr<WorkletHandle>& out_worklet_handle);
 
  private:
   void OnWorkletNoLongerUsable(WorkletOwner* worklet);

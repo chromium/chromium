@@ -11294,6 +11294,62 @@ IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       LotsOfInterestGroupsEpsilonTimeout) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+
+  // Need lots of groups to exercise them being handled in chunks.
+  // Use /hung as script since we don't actually want to finish.
+  for (int group = 0; group < 100; ++group) {
+    EXPECT_EQ(kSuccess,
+              JoinInterestGroupAndVerify(
+                  /*owner=*/test_origin,
+                  /*name=*/base::StringPrintf("cars%d", group),
+                  /*priority=*/0.0,
+                  /*execution_mode=*/
+                  blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                  /*bidding_url=*/
+                  https_server_->GetURL("a.test", "/hung"),
+                  /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+  }
+
+  // Also add an IG on a different host also with hung script so that we don't
+  // terminate immediately.
+  GURL other_url = https_server_->GetURL("allow-join.b.test", "/hung");
+  url::Origin other_origin = url::Origin::Create(other_url);
+  content_browser_client_->AddToAllowList({other_origin});
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/other_origin,
+                /*name=*/"bicycles",
+                /*priority=*/0.0,
+                /*execution_mode=*/
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/other_url,
+                /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      perBuyerCumulativeTimeouts: {$1: 1, $3: 50},
+      interestGroupBuyers: [$1, $3]
+  })";
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Worklet error: https://a.test:*/hung perBuyerCumulativeTimeout "
+      "exceeded during bid generation.");
+  EXPECT_EQ(nullptr,
+            RunAuctionAndWait(JsReplace(kAuctionConfigTemplate, test_origin,
+                                        decision_url, other_origin)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
 // Interest group APIs throw NotAllowedError (i.e., feature
 // join-ad-interest-group is disabled by Permissions Policy), and runAdAuction
 // throws NotAllowedError (i.e, feature run-ad-auction is disabled by

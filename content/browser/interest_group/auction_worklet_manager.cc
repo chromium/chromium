@@ -15,13 +15,13 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/auction_shared_storage_host.h"
@@ -47,6 +47,16 @@ namespace content {
 
 namespace {
 
+// If on, worklet assignment/failure callbacks will be executed in chunks rather
+// than all at once.
+BASE_FEATURE(kFledgeSplitUpWorkletAssignment,
+             "FledgeSplitUpWorkletAssignment",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// We use sequence numbers with handles to make sure they are assigned in FIFO
+// order.
+using HandleKey = std::pair<uint64_t, AuctionWorkletManager::WorkletHandle*>;
+
 auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
 GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
                                         const GURL& worklet_script_url) {
@@ -66,21 +76,21 @@ GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
 
 }  // namespace
 
+const size_t AuctionWorkletManager::kBatchSize;
+
 class AuctionWorkletManager::WorkletOwner
     : public base::RefCounted<AuctionWorkletManager::WorkletOwner> {
  public:
-  // On construction, attempts to immediately create a worklet. If that
-  // succeeds, it's up to the AuctionWorkletManager itself to inform the caller
-  // a worklet was synchronously created. Otherwise, the WorkletOwner will
-  // immediately start waiting for a process to be available, and once one is,
-  // create a worklet, informing all associated WorkletHandles.
+  // Attempts to immediately create a worklet. If that fails, the WorkletOwner
+  // will immediately start waiting for a process to be available, and once one
+  // is, create a worklet, informing all associated WorkletHandles.
   WorkletOwner(AuctionWorkletManager* worklet_manager, WorkletKey worklet_info);
 
   // Registers/unregisters a WorkletHandle for the worklet `this` owns.
-  void RegisterHandle(WorkletHandle* handle) { handles_.AddObserver(handle); }
-  void UnregisterHandle(WorkletHandle* handle) {
-    handles_.RemoveObserver(handle);
-  }
+  void RegisterHandle(HandleKey handle);
+  void UnregisterHandle(HandleKey handle);
+
+  uint64_t GetNextSeqNum() { return next_handle_seq_num_++; }
 
   auction_worklet::mojom::BidderWorklet* bidder_worklet() {
     DCHECK(bidder_worklet_);
@@ -111,6 +121,12 @@ class AuctionWorkletManager::WorkletOwner
 
   ~WorkletOwner();
 
+  void MaybeQueueNotifications();
+
+  void DispatchSomeNotifications();
+  void DispatchSomeSuccessNotifications();
+  void DispatchSomeFailureNotifications();
+
   // Called if the worklet becomes unusable. This happens on destruction (once
   // all refs have been released) or when the Mojo pipe is closed. Removes
   // `this` from `worklet_manager_`, so that future requests using the same
@@ -139,9 +155,15 @@ class AuctionWorkletManager::WorkletOwner
 
   AuctionProcessManager::ProcessHandle process_handle_;
 
-  // List of live WorkletHandles to notify in case a Worklet is created or on
-  // Mojo pipe closure.
-  base::ObserverList<WorkletHandle, /*check_empty=*/true> handles_;
+  // These are handles that have not yet been notified of having a process,
+  // either because the process isn't available yet or because we haven't
+  // gotten around to dispatching the notification. If the process fails before
+  // handle assignment, it's removed from this set, too.
+  std::set<HandleKey> handles_waiting_for_process_;
+
+  // These are handles that have been notified of having a process, and not of
+  // a process failure.
+  std::set<WorkletHandle*> handles_with_process_;
 
   std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy_;
   mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet_;
@@ -149,13 +171,25 @@ class AuctionWorkletManager::WorkletOwner
   // This must be destroyed before the worklet it's passed, since it hangs on to
   // a raw pointer to it.
   std::unique_ptr<DebuggableAuctionWorklet> worklet_debug_;
+
+  // If true, we will split callback notifications into small batches.
+  bool split_up_notifications_;
+  bool notifications_pending_ = false;
+  absl::optional<FatalErrorType> notify_error_type_;
+  std::vector<std::string> notify_errors_;
+
+  uint64_t next_handle_seq_num_ = 0;
+
+  base::WeakPtrFactory<WorkletOwner> weak_ptr_factory_{this};
 };
 
 AuctionWorkletManager::WorkletOwner::WorkletOwner(
     AuctionWorkletManager* worklet_manager,
     WorkletKey worklet_info)
     : worklet_manager_(worklet_manager),
-      worklet_info_(std::move(worklet_info)) {
+      worklet_info_(std::move(worklet_info)),
+      split_up_notifications_(
+          base::FeatureList::IsEnabled(kFledgeSplitUpWorkletAssignment)) {
   if (worklet_manager_->auction_process_manager()->RequestWorkletService(
           worklet_info_.type, url::Origin::Create(worklet_info_.script_url),
           worklet_manager_->delegate()->GetFrameSiteInstance(),
@@ -167,8 +201,111 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
   }
 }
 
+void AuctionWorkletManager::WorkletOwner::RegisterHandle(HandleKey handle) {
+  handles_waiting_for_process_.insert(handle);
+  if (worklet_created()) {
+    MaybeQueueNotifications();
+  }
+}
+
+void AuctionWorkletManager::WorkletOwner::UnregisterHandle(HandleKey handle) {
+  if (!handles_waiting_for_process_.erase(handle)) {
+    // The handle should only be in one of the sets, so only need to search
+    // `handles_with_process_` if it wasn't in `handles_waiting_for_process_`.
+    handles_with_process_.erase(handle.second);
+  }
+  DCHECK_EQ(handles_waiting_for_process_.count(handle), 0u);
+}
+
 AuctionWorkletManager::WorkletOwner::~WorkletOwner() {
+  DCHECK(handles_waiting_for_process_.empty());
+  DCHECK(handles_with_process_.empty());
   WorkletNoLongerUsable();
+}
+
+void AuctionWorkletManager::WorkletOwner::MaybeQueueNotifications() {
+  if (notifications_pending_) {
+    return;
+  }
+  notifications_pending_ = true;
+
+  // This uses a weak pointer and not a ref-count holding one to avoid extending
+  // lifetime of `this` beyond the handles.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&WorkletOwner::DispatchSomeNotifications,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AuctionWorkletManager::WorkletOwner::DispatchSomeNotifications() {
+  // Make sure `this` isn't released in the middle of dispatch loops if they
+  // drop all the handles.
+  scoped_refptr<WorkletOwner> guard(this);
+
+  notifications_pending_ = false;
+
+  // Failure/success is checked here and not at queuing time since things may
+  // change by the time this method is invoked.
+  if (notify_error_type_.has_value()) {
+    DispatchSomeFailureNotifications();
+  } else {
+    DispatchSomeSuccessNotifications();
+  }
+}
+
+void AuctionWorkletManager::WorkletOwner::DispatchSomeFailureNotifications() {
+  // In case of an error, we notify both of `handles_with_process_` and
+  // `handles_waiting_for_process_`.  It's OK to remove things from these
+  // sets here since we won't do anything else with them anyway, and it
+  // protects us from re-entrancy weirdness.
+  size_t num_notified = 0;
+  size_t to_notify =
+      handles_with_process_.size() + handles_waiting_for_process_.size();
+  if (split_up_notifications_) {
+    to_notify = std::min(to_notify, kBatchSize);
+  }
+
+  while (num_notified < to_notify && !handles_with_process_.empty()) {
+    auto node = handles_with_process_.extract(handles_with_process_.begin());
+    node.value()->OnFatalError(*notify_error_type_, notify_errors_);
+    ++num_notified;
+  }
+  while (num_notified < to_notify && !handles_waiting_for_process_.empty()) {
+    auto node = handles_waiting_for_process_.extract(
+        handles_waiting_for_process_.begin());
+    node.value().second->OnFatalError(*notify_error_type_, notify_errors_);
+    ++num_notified;
+  }
+
+  if (!handles_with_process_.empty() || !handles_waiting_for_process_.empty()) {
+    MaybeQueueNotifications();
+  }
+}
+
+void AuctionWorkletManager::WorkletOwner::DispatchSomeSuccessNotifications() {
+  // In case of success, we only notify `handles_waiting_for_process_`, and
+  // also add them to `handles_with_process_`; if the next time we run
+  // DispatchSomeNotifications() we're in failure state we want them to get
+  // the failure notification.
+  size_t num_notified = 0;
+  size_t to_notify = handles_waiting_for_process_.size();
+  if (split_up_notifications_) {
+    to_notify = std::min(to_notify, kBatchSize);
+  }
+  // This loops needs to check `handles_waiting_for_process_.empty()` for the
+  // case where items are removed in response to callbacks.
+  while (num_notified < to_notify && !handles_waiting_for_process_.empty()) {
+    auto node = handles_waiting_for_process_.extract(
+        handles_waiting_for_process_.begin());
+    // Must do the insert before the callback in case the callback deletes
+    // the handle.
+    handles_with_process_.insert(node.value().second);
+    node.value().second->OnWorkletAvailable();
+    ++num_notified;
+  }
+
+  if (!handles_waiting_for_process_.empty()) {
+    MaybeQueueNotifications();
+  }
 }
 
 void AuctionWorkletManager::WorkletOwner::WorkletNoLongerUsable() {
@@ -249,9 +386,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
     }
   }
 
-  for (auto& handle : handles_) {
-    handle.OnWorkletAvailable();
-  }
+  MaybeQueueNotifications();
 }
 
 void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
@@ -263,21 +398,17 @@ void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
 
   WorkletNoLongerUsable();
 
-  FatalErrorType error_type;
-  std::vector<std::string> errors;
   // If there's a description, it's a load failure. Otherwise, it's a crash.
   if (!description.empty()) {
-    error_type = FatalErrorType::kScriptLoadFailed;
-    errors.push_back(description);
+    notify_error_type_ = FatalErrorType::kScriptLoadFailed;
+    notify_errors_.push_back(description);
   } else {
-    error_type = FatalErrorType::kWorkletCrash;
-    errors.emplace_back(
+    notify_error_type_ = FatalErrorType::kWorkletCrash;
+    notify_errors_.emplace_back(
         base::StrCat({worklet_info_.script_url.spec(), " crashed."}));
   }
 
-  for (auto& handle : handles_) {
-    handle.OnFatalError(error_type, errors);
-  }
+  MaybeQueueNotifications();
 }
 
 AuctionWorkletManager::WorkletKey::WorkletKey(
@@ -316,7 +447,7 @@ AuctionWorkletManager::WorkletHandle::~WorkletHandle() {
     worklet_owner_->subresource_url_authorizations()
         ->OnWorkletHandleDestruction(this);
   }
-  worklet_owner_->UnregisterHandle(this);
+  worklet_owner_->UnregisterHandle(HandleKey(seq_num_, this));
 }
 
 auction_worklet::mojom::BidderWorklet*
@@ -346,17 +477,12 @@ AuctionWorkletManager::WorkletHandle::WorkletHandle(
     FatalErrorCallback fatal_error_callback)
     : worklet_owner_(std::move(worklet_owner)),
       worklet_available_callback_(std::move(worklet_available_callback)),
-      fatal_error_callback_(std::move(fatal_error_callback)) {
+      fatal_error_callback_(std::move(fatal_error_callback)),
+      seq_num_(worklet_owner_->GetNextSeqNum()) {
   DCHECK(worklet_available_callback_);
   DCHECK(fatal_error_callback_);
 
-  // Delete `worklet_available_callback_` if worklet is already available, since
-  // it won't be needed.
-  if (worklet_owner_->worklet_created()) {
-    worklet_available_callback_.Reset();
-  }
-
-  worklet_owner_->RegisterHandle(this);
+  worklet_owner_->RegisterHandle(HandleKey(seq_num_, this));
 }
 
 void AuctionWorkletManager::WorkletHandle::OnWorkletAvailable() {
@@ -445,7 +571,7 @@ AuctionWorkletManager::WorkletKey AuctionWorkletManager::BidderWorkletKey(
                         : absl::nullopt);
 }
 
-bool AuctionWorkletManager::RequestBidderWorklet(
+void AuctionWorkletManager::RequestBidderWorklet(
     const GURL& bidding_logic_url,
     const absl::optional<GURL>& wasm_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
@@ -453,14 +579,14 @@ bool AuctionWorkletManager::RequestBidderWorklet(
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle) {
-  return RequestWorkletByKey(
+  RequestWorkletByKey(
       BidderWorkletKey(bidding_logic_url, wasm_url, trusted_bidding_signals_url,
                        experiment_group_id),
       std::move(worklet_available_callback), std::move(fatal_error_callback),
       out_worklet_handle);
 }
 
-bool AuctionWorkletManager::RequestSellerWorklet(
+void AuctionWorkletManager::RequestSellerWorklet(
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
     absl::optional<uint16_t> experiment_group_id,
@@ -472,12 +598,12 @@ bool AuctionWorkletManager::RequestSellerWorklet(
                           /*wasm_url=*/absl::nullopt,
                           /*signals_url=*/trusted_scoring_signals_url,
                           experiment_group_id);
-  return RequestWorkletByKey(
-      std::move(worklet_info), std::move(worklet_available_callback),
-      std::move(fatal_error_callback), out_worklet_handle);
+  RequestWorkletByKey(std::move(worklet_info),
+                      std::move(worklet_available_callback),
+                      std::move(fatal_error_callback), out_worklet_handle);
 }
 
-bool AuctionWorkletManager::RequestWorkletByKey(
+void AuctionWorkletManager::RequestWorkletByKey(
     WorkletKey worklet_info,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
@@ -496,7 +622,6 @@ bool AuctionWorkletManager::RequestWorkletByKey(
   out_worklet_handle.reset(new WorkletHandle(
       std::move(worklet), std::move(worklet_available_callback),
       std::move(fatal_error_callback)));
-  return out_worklet_handle->worklet_created();
 }
 
 void AuctionWorkletManager::OnWorkletNoLongerUsable(WorkletOwner* worklet) {
