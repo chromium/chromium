@@ -834,7 +834,15 @@ void BookmarkBridge::DeleteBookmark(
   int type = JavaBookmarkIdGetType(env, j_bookmark_id_obj);
   const BookmarkNode* node = GetNodeByID(bookmark_id, type);
 
-  // TODO(twellington): Switch back to a DCHECK after debugging
+  // TODO(crbug.com/1425438): Switch to an early returns after debugging why
+  // this is called with a nullptr.
+  if (!node) {
+    LOG(ERROR) << "Deleting null bookmark, type:" << type;
+    NOTREACHED();
+    return;
+  }
+
+  // TODO(crbug.com/1425438): Switch back to a D/CHECK after debugging
   // why this is called with an uneditable node.
   // See https://crbug.com/981172.
   if (!IsEditable(node)) {
