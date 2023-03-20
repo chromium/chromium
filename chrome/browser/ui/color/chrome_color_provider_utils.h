@@ -31,4 +31,10 @@ SkColor GetToolbarTopSeparatorColor(SkColor toolbar_color, SkColor frame_color);
 // Returns true if we should apply chrome high contrast colors for the `key`.
 bool ShouldApplyHighContrastColors(const ui::ColorProviderManager::Key& key);
 
+// Returns true if material color overrides should be applied over the top of
+// chrome color mixer definitions. If false color recipes from the old design
+// system should be honored.
+bool ShouldApplyChromeMaterialOverrides(
+    const ui::ColorProviderManager::Key& key);
+
 #endif  // CHROME_BROWSER_UI_COLOR_CHROME_COLOR_PROVIDER_UTILS_H_

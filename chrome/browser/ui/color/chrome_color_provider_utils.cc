@@ -14,6 +14,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/ui_base_features.h"
 
 #include "ui/color/color_id_map_macros.inc"
 
@@ -104,4 +105,10 @@ bool ShouldApplyHighContrastColors(const ui::ColorProviderManager::Key& key) {
 #else
   return key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh;
 #endif
+}
+
+bool ShouldApplyChromeMaterialOverrides(
+    const ui::ColorProviderManager::Key& key) {
+  // Only apply material overrides when not using a custom theme.
+  return features::IsChromeRefresh2023() && !key.custom_theme;
 }

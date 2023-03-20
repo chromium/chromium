@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/color/material_tab_strip_color_mixer.h"
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -12,6 +13,10 @@
 
 void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
                                    const ui::ColorProviderManager::Key& key) {
+  if (!ShouldApplyChromeMaterialOverrides(key)) {
+    return;
+  }
+
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // TODO(crbug.com/1399942): Validate final mappings for Gm3 color.
