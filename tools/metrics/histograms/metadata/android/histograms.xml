@@ -1692,6 +1692,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.IncognitoReauth.PromoImpressionAfterActionCount"
+    units="count" expires_after="M119">
+  <owner>arabm@google.com</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the number of impressions of the Incognito re-auth promo card when
+    user clicks accept or dismiss or when the promo expires after the max number
+    of impressions.
+  </summary>
+</histogram>
+
 <histogram name="Android.IncognitoReauth.ToggleOnOrOff" enum="BooleanToggled"
     expires_after="2023-09-03">
   <owner>roagarwal@chromium.org</owner>

@@ -52314,6 +52314,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 <enum name="IncognitoReauthPromoActionType">
   <int value="0" label="Promo accepted"/>
   <int value="1" label="No thanks"/>
+  <int value="2" label="Promo expired"/>
 </enum>
 
 <enum name="IncognitoReauthToggleValueType">

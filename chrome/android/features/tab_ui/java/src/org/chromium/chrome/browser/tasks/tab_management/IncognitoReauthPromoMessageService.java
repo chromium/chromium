@@ -110,12 +110,14 @@ public class IncognitoReauthPromoMessageService
      * (as IncognitoReauthPromoActionType).
      */
     @IntDef({IncognitoReauthPromoActionType.PROMO_ACCEPTED,
-            IncognitoReauthPromoActionType.NO_THANKS, IncognitoReauthPromoActionType.NUM_ENTRIES})
+            IncognitoReauthPromoActionType.NO_THANKS, IncognitoReauthPromoActionType.PROMO_EXPIRED,
+            IncognitoReauthPromoActionType.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     @interface IncognitoReauthPromoActionType {
         int PROMO_ACCEPTED = 0;
         int NO_THANKS = 1;
-        int NUM_ENTRIES = 2;
+        int PROMO_EXPIRED = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**
@@ -152,6 +154,7 @@ public class IncognitoReauthPromoMessageService
     void dismiss() {
         sendInvalidNotification();
         disableIncognitoReauthPromoMessage();
+        recordPromoImpressionsCount();
 
         // Once dismissed, we will never show the re-auth promo card again, so there's no need
         // to keep tracking the lifecycle events.
@@ -161,6 +164,12 @@ public class IncognitoReauthPromoMessageService
     void increasePromoShowCountAndMayDisableIfCountExceeds() {
         if (getPromoShowCount() > mMaximumPromoShowCountLimit) {
             dismiss();
+
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Android.IncognitoReauth.PromoAcceptedOrDismissed",
+                    IncognitoReauthPromoActionType.PROMO_EXPIRED,
+                    IncognitoReauthPromoActionType.NUM_ENTRIES);
+
             return;
         }
 
@@ -343,5 +352,11 @@ public class IncognitoReauthPromoMessageService
 
         dismiss();
         prepareSnackBarAndShow();
+    }
+
+    private void recordPromoImpressionsCount() {
+        RecordHistogram.recordExactLinearHistogram(
+                "Android.IncognitoReauth.PromoImpressionAfterActionCount", getPromoShowCount(),
+                mMaxPromoMessageCount);
     }
 }
