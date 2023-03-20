@@ -172,12 +172,12 @@ template("rust_static_library") {
     }
     target_type = "rust_library"
 
-    if (_whole_archive) {
+    if (_whole_archive && !is_win) {
       all_dependent_configs = [ ":${_target_name}_whole_archive" ]
     }
   }
 
-  if (_whole_archive) {
+  if (_whole_archive && !is_win) {
     config("${_target_name}_whole_archive") {
       ldflags = [ "-LinkWrapper,add-whole-archive=${_target_name}" ]
     }

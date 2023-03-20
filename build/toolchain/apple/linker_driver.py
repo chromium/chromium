@@ -11,6 +11,11 @@ import subprocess
 import sys
 import tempfile
 
+# The path to `whole_archive`.
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+
+import whole_archive
+
 # Prefix for all custom linker driver arguments.
 LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
 # Linker action to create a directory and pass it to the linker as
@@ -128,6 +133,12 @@ class LinkerDriver(object):
         if self._get_linker_output() is None:
             raise ValueError(
                 'Could not find path to linker output (-o or --output)')
+
+        # We want to link rlibs as --whole-archive if they are part of a unit
+        # test target. This is determined by switch
+        # `-LinkWrapper,add-whole-archive`.
+        compiler_driver_args = whole_archive.wrap_with_whole_archive(
+            compiler_driver_args)
 
         linker_driver_outputs = [self._get_linker_output()]
 
