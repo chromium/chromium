@@ -1647,6 +1647,7 @@ component("platform") {
     ":blink_platform_pch",
     ":blink_platform_config",
     ":blink_platform_implementation",
+    "//build/config/compiler:wexit_time_destructors",
     "//third_party/blink/renderer:non_test_config",
   ]
 
@@ -1939,6 +1940,7 @@ static_library("test_support") {
 
   configs += [
     ":blink_platform_pch",
+    "//build/config/compiler:wexit_time_destructors",
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
     "//third_party/blink/renderer:non_test_config",
@@ -2455,6 +2457,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     configs += [
       ":blink_platform_config",
       ":blink_platform_implementation",
+      "//build/config/compiler:wexit_time_destructors",
       "//third_party/blink/renderer:non_test_config",
     ]
     public_deps = [ ":blink_platform_public_deps" ]

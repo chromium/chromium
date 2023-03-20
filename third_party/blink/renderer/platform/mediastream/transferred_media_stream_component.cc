@@ -99,8 +99,7 @@ const String& TransferredMediaStreamComponent::GetSourceName() const {
     return component_->GetSourceName();
   }
   // TODO(crbug.com/1288839): Return the transferred value
-  static String name;
-  return name;
+  return g_empty_string;
 }
 
 MediaStreamSource::ReadyState TransferredMediaStreamComponent::GetReadyState()
