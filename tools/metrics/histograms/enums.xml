@@ -3935,6 +3935,15 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="New version is the same as cached"/>
 </enum>
 
+<enum name="AppPreloadServiceWebAppInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid manifest URL"/>
+  <int value="2" label="Network error while downloading manifest"/>
+  <int value="3" label="HTTP response error while downloading manifest"/>
+  <int value="4" label="Empty manifest response"/>
+  <int value="5" label="Web app installation error"/>
+</enum>
+
 <enum name="AppPrimaryAbi">
   <int value="0" label="None"/>
   <int value="1" label="arm"/>

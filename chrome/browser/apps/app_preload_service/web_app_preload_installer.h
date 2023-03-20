@@ -22,6 +22,27 @@ class SimpleURLLoader;
 
 namespace apps {
 
+// The result of a call to WebAppPreloadInstaller::InstallApp. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class WebAppPreloadResult {
+  // Preloaded app was successfully installed.
+  kSuccess = 0,
+  // Web app manifest URL was invalid and could not be downloaded.
+  kInvalidManifestUrl = 1,
+  // A network error occurred while downloading manifest.
+  kManifestNetworkError = 2,
+  // The request to download the manifest contents completed with an error
+  // status code.
+  kManifestResponseError = 3,
+  // The request to download the manifest contents completed successfully, but
+  // with an empty manifest.
+  kManifestResponseEmpty = 4,
+  // The web app installation command completed with an error.
+  kWebAppInstallError = 5,
+  kMaxValue = kWebAppInstallError
+};
+
 using WebAppPreloadInstalledCallback = base::OnceCallback<void(bool success)>;
 
 // WebAppPreloadInstaller manages all communication with the web apps system

@@ -189,7 +189,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AppPreloadService.FirstLoginFlowTime.{Status}" units="ms"
     expires_after="2023-08-01">
-  <owner>jshikaram@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     The time it takes for the first login flow of the App Preload service to
@@ -206,7 +207,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AppPreloadService.ServerResponseCodes"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-01">
-  <owner>jshikaram@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     The combined http and net error codes the App Provisioning Server responds
@@ -216,12 +218,38 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AppPreloadService.ServerRoundTripTimeForFirstLogin" units="ms"
     expires_after="2023-08-01">
-  <owner>jshikaram@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     The time between request and response made by the App Preload Service to the
     APS endpoint for the initial request which is performed the first time a
     user logs in. This is only recorded if the response is successful.
+  </summary>
+</histogram>
+
+<histogram name="AppPreloadService.WebAppInstall.CommandResultCode"
+    enum="WebAppInstallResultCode" expires_after="2023-08-01">
+  <owner>melzhang@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The result code of the web app install command used to install a web app
+    through the App Preload Service. This gives specific detail about errors
+    within the web apps system. Recorded every time the App Preload Service
+    attempts to install a web app (e.g. during OOBE).
+  </summary>
+</histogram>
+
+<histogram name="AppPreloadService.WebAppInstall.InstallResult"
+    enum="AppPreloadServiceWebAppInstallResult" expires_after="2023-08-01">
+  <owner>melzhang@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The overall result of installing a web app through the App Preload Service.
+    Recorded every time the App Preload Service attempts to install a web app
+    (e.g. during OOBE).
   </summary>
 </histogram>
 

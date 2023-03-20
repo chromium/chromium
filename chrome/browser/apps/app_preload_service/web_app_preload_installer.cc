@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_from_manifest_command.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -47,12 +49,20 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
+constexpr char kCommandResultCodeHistogramName[] =
+    "AppPreloadService.WebAppInstall.CommandResultCode";
+
 int GetResponseCode(network::SimpleURLLoader* simple_loader) {
   if (simple_loader->ResponseInfo() && simple_loader->ResponseInfo()->headers) {
     return simple_loader->ResponseInfo()->headers->response_code();
   } else {
     return -1;
   }
+}
+
+void RecordInstallResultMetric(apps::WebAppPreloadResult result) {
+  base::UmaHistogramEnumeration("AppPreloadService.WebAppInstall.InstallResult",
+                                result);
 }
 
 }  // namespace
@@ -102,6 +112,7 @@ void WebAppPreloadInstaller::InstallAppImpl(
   if (!resource_request->url.is_valid()) {
     LOG(ERROR) << "Manifest URL for " << app.GetName()
                << "is invalid: " << resource_request->url;
+    RecordInstallResultMetric(WebAppPreloadResult::kInvalidManifestUrl);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -128,9 +139,20 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
     WebAppPreloadInstalledCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::unique_ptr<std::string> response) {
-  if (url_loader->NetError() != net::OK || response->empty()) {
+  if (url_loader->NetError() != net::OK) {
     LOG(ERROR) << "Downloading manifest failed for " << app.GetName()
                << " with error code: " << GetResponseCode(url_loader.get());
+
+    RecordInstallResultMetric(url_loader->NetError() ==
+                                      net::ERR_HTTP_RESPONSE_CODE_FAILURE
+                                  ? WebAppPreloadResult::kManifestResponseError
+                                  : WebAppPreloadResult::kManifestNetworkError);
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  if (response->empty()) {
+    RecordInstallResultMetric(WebAppPreloadResult::kManifestResponseEmpty);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -154,7 +176,12 @@ void WebAppPreloadInstaller::OnAppInstalled(
     WebAppPreloadInstalledCallback callback,
     const web_app::AppId& app_id,
     webapps::InstallResultCode code) {
-  std::move(callback).Run(webapps::IsSuccess(code));
+  bool success = webapps::IsSuccess(code);
+  RecordInstallResultMetric(success ? WebAppPreloadResult::kSuccess
+                                    : WebAppPreloadResult::kWebAppInstallError);
+  base::UmaHistogramEnumeration(kCommandResultCodeHistogramName, code);
+
+  std::move(callback).Run(success);
 }
 
 }  // namespace apps
