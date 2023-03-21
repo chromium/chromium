@@ -24,11 +24,7 @@ void CanvasCaptureMediaStreamTrack::requestFrame() {
 
 CanvasCaptureMediaStreamTrack* CanvasCaptureMediaStreamTrack::clone(
     ExecutionContext* script_state) {
-  MediaStreamComponent* cloned_component =
-      Component()->Clone(std::make_unique<blink::MediaStreamVideoTrack>(
-          MediaStreamVideoSource::GetVideoSource(Component()->Source()),
-          blink::MediaStreamVideoSource::ConstraintsOnceCallback(),
-          Component()->Enabled()));
+  MediaStreamComponent* cloned_component = Component()->Clone();
   CanvasCaptureMediaStreamTrack* cloned_track =
       MakeGarbageCollected<CanvasCaptureMediaStreamTrack>(*this,
                                                           cloned_component);

@@ -72,6 +72,19 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   MediaStreamTrackPlatform& operator=(const MediaStreamTrackPlatform&) = delete;
   virtual ~MediaStreamTrackPlatform();
 
+  // Creates a new MediaStreamTrackPlatform of the same type as this based on
+  // data retrieved from the supplied MediaStreamComponent. This method must be
+  // called on a MediaStreamTrackPlatform object of the same type as the
+  // platform track member of the passed MediaStreamComponent.
+  //
+  // TODO(crbug.com/1302689): This is an instance method of this class solely
+  // for creating an object of the right type from either the platform or
+  // modules directories.  Remove this method when there is a better way to
+  // achieve this.
+  virtual std::unique_ptr<MediaStreamTrackPlatform> CreateFromComponent(
+      const MediaStreamComponent* component,
+      const String& id) = 0;
+
   static MediaStreamTrackPlatform* GetTrack(const WebMediaStreamTrack& track);
 
   virtual void SetEnabled(bool enabled) = 0;

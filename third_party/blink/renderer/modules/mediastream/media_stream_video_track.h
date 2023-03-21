@@ -79,6 +79,10 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   ~MediaStreamVideoTrack() override;
 
+  std::unique_ptr<MediaStreamTrackPlatform> CreateFromComponent(
+      const MediaStreamComponent* component,
+      const String& id) override;
+
   // MediaStreamTrack overrides.
   void SetEnabled(bool enabled) override;
   void SetContentHint(

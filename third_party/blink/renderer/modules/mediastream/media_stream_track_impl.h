@@ -148,8 +148,6 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   // this class as well as of their own class.
   void CloneInternal(MediaStreamTrackImpl*);
 
-  std::unique_ptr<MediaStreamTrackPlatform> ClonePlatformTrack();
-
  private:
   friend class CanvasCaptureMediaStreamTrack;
   friend class InternalsMediaStream;

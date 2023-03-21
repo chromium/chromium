@@ -86,10 +86,12 @@ MediaStreamComponentImpl::MediaStreamComponentImpl(
                                source,
                                std::move(platform_track)) {}
 
-MediaStreamComponentImpl* MediaStreamComponentImpl::Clone(
-    std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track) const {
+MediaStreamComponentImpl* MediaStreamComponentImpl::Clone() const {
+  const String id = WTF::CreateCanonicalUUIDString();
+  std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track =
+      platform_track_->CreateFromComponent(this, id);
   auto* cloned_component = MakeGarbageCollected<MediaStreamComponentImpl>(
-      Source(), std::move(cloned_platform_track));
+      id, Source(), std::move(cloned_platform_track));
   cloned_component->SetEnabled(enabled_);
   cloned_component->SetContentHint(content_hint_);
   return cloned_component;

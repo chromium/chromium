@@ -166,25 +166,6 @@ CreateWebAudioSourceFromMediaStreamTrack(MediaStreamComponent* component,
                                                         context_sample_rate);
 }
 
-// TODO(crbug.com/1302689): Move inside MediaStreamComponent.
-std::unique_ptr<MediaStreamVideoTrack> CloneNativeVideoMediaStreamTrack(
-    MediaStreamComponent* original) {
-  MediaStreamSource* source = original->Source();
-  DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
-  MediaStreamVideoSource* native_source =
-      MediaStreamVideoSource::GetVideoSource(source);
-  DCHECK(native_source);
-  MediaStreamVideoTrack* original_track = MediaStreamVideoTrack::From(original);
-  DCHECK(original_track);
-  return std::make_unique<MediaStreamVideoTrack>(
-      native_source, original_track->adapter_settings(),
-      original_track->noise_reduction(), original_track->is_screencast(),
-      original_track->min_frame_rate(), original_track->pan(),
-      original_track->tilt(), original_track->zoom(),
-      original_track->pan_tilt_zoom_allowed(),
-      MediaStreamVideoSource::ConstraintsOnceCallback(), original->Enabled());
-}
-
 void DidCloneMediaStreamTrack(MediaStreamComponent* clone) {
   DCHECK(clone);
   DCHECK(clone->Source());
@@ -432,17 +413,6 @@ void MediaStreamTrackImpl::stopTrack(ExecutionContext* execution_context) {
 
   PropagateTrackEnded();
 }
-// TODO(crbug.com/1302689): Move inside MediaStreamComponent.
-std::unique_ptr<MediaStreamTrackPlatform>
-MediaStreamTrackImpl::ClonePlatformTrack() {
-  switch (Component()->GetSourceType()) {
-    case MediaStreamSource::kTypeVideo:
-      return CloneNativeVideoMediaStreamTrack(Component());
-    case MediaStreamSource::kTypeAudio:
-      return MediaStreamAudioSource::From(Component()->Source())
-          ->CreateMediaStreamAudioTrack(Component()->Id().Utf8());
-  }
-}
 
 MediaStreamTrack* MediaStreamTrackImpl::clone(
     ExecutionContext* execution_context) {
@@ -451,8 +421,8 @@ MediaStreamTrack* MediaStreamTrackImpl::clone(
   // Instantiate the clone.
   MediaStreamTrackImpl* cloned_track =
       MakeGarbageCollected<MediaStreamTrackImpl>(
-          execution_context, Component()->Clone(ClonePlatformTrack()),
-          ready_state_, base::DoNothing(), /*is_clone=*/true);
+          execution_context, Component()->Clone(), ready_state_,
+          base::DoNothing(), /*is_clone=*/true);
 
   // Copy state.
   CloneInternal(cloned_track);

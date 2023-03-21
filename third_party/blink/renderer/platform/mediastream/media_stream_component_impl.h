@@ -66,9 +66,7 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   MediaStreamComponentImpl(MediaStreamSource*,
                            std::unique_ptr<MediaStreamTrackPlatform>);
 
-  MediaStreamComponentImpl* Clone(
-      std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track =
-          nullptr) const override;
+  MediaStreamComponentImpl* Clone() const override;
 
   // |m_trackData| may hold pointers to GC objects indirectly, and it may touch
   // eagerly finalized objects in destruction.

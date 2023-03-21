@@ -13,6 +13,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
@@ -34,6 +35,16 @@ MediaStreamAudioTrack::~MediaStreamAudioTrack() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   WebRtcLog(kTag, this, "%s()", __func__);
   Stop();
+}
+
+std::unique_ptr<MediaStreamTrackPlatform>
+MediaStreamAudioTrack::CreateFromComponent(
+    const MediaStreamComponent* component,
+    const String& id) {
+  MediaStreamSource* source = component->Source();
+  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeAudio);
+  return MediaStreamAudioSource::From(source)->CreateMediaStreamAudioTrack(
+      id.Utf8());
 }
 
 // static

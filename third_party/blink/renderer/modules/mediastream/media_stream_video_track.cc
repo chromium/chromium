@@ -729,6 +729,27 @@ MediaStreamVideoTrack::~MediaStreamVideoTrack() {
   DVLOG(3) << "~MediaStreamVideoTrack()";
 }
 
+std::unique_ptr<MediaStreamTrackPlatform>
+MediaStreamVideoTrack::CreateFromComponent(
+    const MediaStreamComponent* component,
+    const String& id) {
+  MediaStreamSource* source = component->Source();
+  DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
+  MediaStreamVideoSource* native_source =
+      MediaStreamVideoSource::GetVideoSource(source);
+  DCHECK(native_source);
+  MediaStreamVideoTrack* original_track =
+      MediaStreamVideoTrack::From(component);
+  DCHECK(original_track);
+  return std::make_unique<MediaStreamVideoTrack>(
+      native_source, original_track->adapter_settings(),
+      original_track->noise_reduction(), original_track->is_screencast(),
+      original_track->min_frame_rate(), original_track->pan(),
+      original_track->tilt(), original_track->zoom(),
+      original_track->pan_tilt_zoom_allowed(),
+      MediaStreamVideoSource::ConstraintsOnceCallback(), component->Enabled());
+}
+
 static void AddSinkInternal(Vector<WebMediaStreamSink*>* sinks,
                             WebMediaStreamSink* sink) {
   DCHECK(!base::Contains(*sinks, sink));

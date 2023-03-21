@@ -53,10 +53,7 @@ class WebLocalFrame;
 
 class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
  public:
-  // TODO(crbug.com/1302689): Clone the platform track internally rather than
-  // taking it as a parameter.
-  virtual MediaStreamComponent* Clone(std::unique_ptr<MediaStreamTrackPlatform>
-                                          cloned_platform_track) const = 0;
+  virtual MediaStreamComponent* Clone() const = 0;
 
   virtual MediaStreamSource* Source() const = 0;
 

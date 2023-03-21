@@ -33,6 +33,10 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
 
   ~MediaStreamAudioTrack() override;
 
+  std::unique_ptr<MediaStreamTrackPlatform> CreateFromComponent(
+      const MediaStreamComponent*,
+      const String& id) override;
+
   // Returns the MediaStreamAudioTrack instance owned by the given blink |track|
   // or null.
   static MediaStreamAudioTrack* From(const MediaStreamComponent* component);

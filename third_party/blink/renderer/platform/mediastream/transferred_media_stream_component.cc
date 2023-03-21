@@ -52,10 +52,9 @@ void TransferredMediaStreamComponent::SetImplementation(
   add_audio_sink_calls_.clear();
 }
 
-MediaStreamComponent* TransferredMediaStreamComponent::Clone(
-    std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track) const {
+MediaStreamComponent* TransferredMediaStreamComponent::Clone() const {
   if (component_) {
-    return component_->Clone(std::move(cloned_platform_track));
+    return component_->Clone();
   }
   // TODO(crbug.com/1288839): Implement Clone() for when component_ is not set
   return nullptr;
