@@ -54,6 +54,9 @@ class PLATFORM_EXPORT ParkableStringImpl
   constexpr static size_t kDigestSize = 32;  // SHA256.
   using SecureDigest = Vector<uint8_t, kDigestSize>;
   // Computes a secure hash of a |string|, to be passed to |MakeParkable()|.
+  //
+  // TODO(lizeb): This is the "right" way of hashing a string. Move this code
+  // into WTF, and make sure it's the only way that is used.
   static std::unique_ptr<SecureDigest> HashString(StringImpl* string);
 
   // Not all ParkableStringImpls are actually parkable.

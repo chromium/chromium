@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <cstring>
 #include <limits>
 
 #include "base/functional/bind.h"
@@ -1332,6 +1333,36 @@ TEST_P(ParkableStringTest, ReportTotalDiskTime) {
   histogram_tester.ExpectUniqueSample(
       "Memory.ParkableString.OnDiskFootprintKb.5min", kCompressedSize / 1000,
       1);
+}
+
+TEST_P(ParkableStringTest, EncodingAndDeduplication) {
+  size_t size_in_chars = 2 * kSizeKb * 1000 / sizeof(UChar);
+  Vector<UChar> data_16(size_in_chars);
+  for (size_t i = 0; i < size_in_chars; ++i) {
+    data_16[i] = 0x2020;
+  }
+  String large_string_16 = String(&data_16[0], size_in_chars);
+
+  ParkableString parkable_16(large_string_16.Impl());
+  ASSERT_TRUE(parkable_16.Impl()->digest());
+  ASSERT_TRUE(parkable_16.may_be_parked());
+
+  Vector<LChar> data_8(2 * size_in_chars);
+  for (size_t i = 0; i < 2 * size_in_chars; ++i) {
+    data_8[i] = 0x20;
+  }
+  String large_string_8 = String(&data_8[0], 2 * size_in_chars);
+
+  ParkableString parkable_8(large_string_8.Impl());
+  ASSERT_TRUE(parkable_8.Impl()->digest());
+  ASSERT_TRUE(parkable_8.may_be_parked());
+
+  // Same content, but the hash must be differnt because the encoding is.
+  EXPECT_EQ(0, memcmp(large_string_16.Bytes(), large_string_8.Bytes(),
+                      large_string_8.CharactersSizeInBytes()));
+  EXPECT_EQ(parkable_16.CharactersSizeInBytes(),
+            parkable_8.CharactersSizeInBytes());
+  EXPECT_NE(*parkable_16.Impl()->digest(), *parkable_8.Impl()->digest());
 }
 
 class ParkableStringTestWithQueuedThreadPool : public ParkableStringTest {

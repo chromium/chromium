@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
+#include <array>
+
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/check_op.h"
@@ -229,18 +231,26 @@ ParkableStringImpl::ParkableMetadata::ParkableMetadata(
       is_8bit_(string.Is8Bit()),
       length_(string.length()) {}
 
-// static
+// static2
 std::unique_ptr<ParkableStringImpl::SecureDigest>
 ParkableStringImpl::HashString(StringImpl* string) {
   DigestValue digest_result;
-  bool ok = ComputeDigest(kHashAlgorithmSha256,
-                          static_cast<const char*>(string->Bytes()),
-                          string->CharactersSizeInBytes(), digest_result);
+
+  Digestor digestor(kHashAlgorithmSha256);
+  digestor.Update(base::make_span(static_cast<const uint8_t*>(string->Bytes()),
+                                  string->CharactersSizeInBytes()));
+  // Also include encoding in the digest, otherwise two strings with identical
+  // byte content but different encoding will be assumed equal, leading to
+  // crashes when one is replaced by the other one.
+  std::array<uint8_t, 1> is_8bit;
+  is_8bit[0] = string->Is8Bit();
+  digestor.Update(is_8bit);
+  digestor.Finish(digest_result);
 
   // The only case where this can return false in BoringSSL is an allocation
   // failure of the temporary data required for hashing. In this case, there
   // is nothing better to do than crashing.
-  if (!ok) {
+  if (digestor.has_failed()) {
     // Don't know the exact size, the SHA256 spec hints at ~64 (block size)
     // + 32 (digest) bytes.
     base::TerminateBecauseOutOfMemory(64 + kDigestSize);

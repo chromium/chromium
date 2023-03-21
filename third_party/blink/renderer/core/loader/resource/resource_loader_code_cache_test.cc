@@ -106,12 +106,10 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
     std::vector<uint8_t> serialized_data(kSerializedDataSize);
     *reinterpret_cast<uint32_t*>(&serialized_data[0]) = outer_type;
     if (source_text.has_value()) {
-      DigestValue hash;
-      CHECK(ComputeDigest(kHashAlgorithmSha256,
-                          static_cast<const char*>(source_text->Bytes()),
-                          source_text->CharactersSizeInBytes(), hash));
-      CHECK_EQ(hash.size(), kSha256Bytes);
-      memcpy(&serialized_data[kCachedMetadataTypeSize], hash.data(),
+      std::unique_ptr<ParkableStringImpl::SecureDigest> hash =
+          ParkableStringImpl::HashString(source_text->Impl());
+      CHECK_EQ(hash->size(), kSha256Bytes);
+      memcpy(&serialized_data[kCachedMetadataTypeSize], hash->data(),
              kSha256Bytes);
     }
     *reinterpret_cast<uint32_t*>(
@@ -264,6 +262,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckSuccess) {
   // Now the metadata can be accessed.
   scoped_refptr<CachedMetadata> cached_metadata =
       resource_->CacheHandler()->GetCachedMetadata(0);
+  EXPECT_TRUE(cached_metadata.get());
   EXPECT_EQ(cached_metadata->size(), cache_data.size());
   EXPECT_EQ(*(cached_metadata->Data() + 2), cache_data[2]);
 
