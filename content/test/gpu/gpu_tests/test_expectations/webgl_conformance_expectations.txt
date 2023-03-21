@@ -578,6 +578,8 @@ crbug.com/1383180 [ android android-pixel-6 ] conformance/textures/image_bitmap_
 crbug.com/1383180 [ android android-pixel-6 angle-opengles passthrough ] conformance/textures/video/* [ RetryOnFailure ]
 # finder:group-end
 
+crbug.com/1426593 [ android android-pixel-6 no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+
 ## Misc failures ##
 
 # Failing webgl passthrough test on nexus 5x.
