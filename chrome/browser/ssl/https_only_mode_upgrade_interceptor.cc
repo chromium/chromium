@@ -111,8 +111,9 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
   }
 
   // Check if the hostname is in the enterprise policy HTTP allowlist.
-  if (IsHostnameInHttpAllowlist(tentative_resource_request.url,
-                                profile->GetPrefs())) {
+  PrefService* prefs = profile->GetPrefs();
+  if (IsHostnameInAllowlist(tentative_resource_request.url,
+                            prefs->GetList(prefs::kHttpAllowlist))) {
     std::move(callback).Run({});
     return;
   }
