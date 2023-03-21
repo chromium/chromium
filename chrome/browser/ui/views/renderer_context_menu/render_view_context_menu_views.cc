@@ -378,7 +378,13 @@ void RenderViewContextMenuViews::AppendPlatformEditableItems() {
 
 void RenderViewContextMenuViews::ExecOpenInReadAnything() {
   Browser* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return;
+  }
   browser_view->side_panel_coordinator()->Show(
       SidePanelEntry::Id::kReadAnything,
       SidePanelUtil::SidePanelOpenTrigger::kReadAnythingContextMenu);
