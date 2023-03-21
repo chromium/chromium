@@ -4678,6 +4678,11 @@ if (!is_android) {
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
       deps += [ "//printing:test_support" ]
+
+      if (!is_chromeos) {
+        sources +=
+            [ "../browser/printing/system_access_process_print_browsertest.cc" ]
+      }
     }
     if (enable_paint_preview) {
       sources += [
