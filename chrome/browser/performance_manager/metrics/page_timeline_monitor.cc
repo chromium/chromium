@@ -155,6 +155,7 @@ void PageTimelineMonitor::CollectSlice() {
         .SetIsCapturingMedia(is_capturing_media)
         .SetIsConnectedToDevice(is_connected_to_device)
         .SetIsPlayingAudio(page_node->IsAudible())
+        .SetPrivateFootprint(page_node->EstimatePrivateFootprintSize())
         .SetResidentSetSize(page_node->EstimateResidentSetSize())
         .SetTabId(curr_info->tab_id);
 

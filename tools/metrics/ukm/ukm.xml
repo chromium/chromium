@@ -17662,10 +17662,16 @@ be describing additional metrics about the same event.
       True if this page is playing audio.
     </summary>
   </metric>
+  <metric name="PrivateFootprint">
+    <summary>
+      The total memory footprint of this page at the moment the sample was
+      recorded, in kilobytes.
+    </summary>
+  </metric>
   <metric name="ResidentSetSize">
     <summary>
-      The total resident set size footprint of this page at the moment the
-      sample was recorded, in kilobytes.
+      The total resident set size of this page at the moment the sample was
+      recorded, in kilobytes.
     </summary>
   </metric>
   <metric name="SliceId">
