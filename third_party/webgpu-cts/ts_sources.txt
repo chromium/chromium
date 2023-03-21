@@ -487,6 +487,7 @@ src/webgpu/shader/execution/statement/increment_decrement.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/const_assert/const_assert.spec.ts
 src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/atomics.spec.ts
 src/webgpu/shader/validation/parse/align.spec.ts
 src/webgpu/shader/validation/parse/attribute.spec.ts
 src/webgpu/shader/validation/parse/binary_ops.spec.ts
