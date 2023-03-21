@@ -6664,6 +6664,10 @@ crbug.com/webrtc/14884 external/wpt/webrtc/simulcast/vp9-scalability-mode.https.
 # TODO(https://crbug.com/webrtc/14884): When the roll is in, delete this virtual suite.
 crbug.com/webrtc/14884 virtual/webrtc-vp9-simulcast/external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Pass ]
 
+# Temporarily disable tests to land frontend changes
+crbug.com/1210894 http/tests/devtools/security/interstitial-sidebar.js [ Failure Skip ]
+crbug.com/1210894 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Skip ]
+
 #Sheriff 2023-02-21
 crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeout ]
 
