@@ -161,7 +161,18 @@ void aom_comp_avg_pred_c(uint8_t* comp_pred,
                          int height,
                          const uint8_t* ref,
                          int ref_stride);
-#define aom_comp_avg_pred aom_comp_avg_pred_c
+void aom_comp_avg_pred_avx2(uint8_t* comp_pred,
+                            const uint8_t* pred,
+                            int width,
+                            int height,
+                            const uint8_t* ref,
+                            int ref_stride);
+RTCD_EXTERN void (*aom_comp_avg_pred)(uint8_t* comp_pred,
+                                      const uint8_t* pred,
+                                      int width,
+                                      int height,
+                                      const uint8_t* ref,
+                                      int ref_stride);
 
 void aom_comp_mask_pred_c(uint8_t* comp_pred,
                           const uint8_t* pred,
@@ -9562,6 +9573,10 @@ static void setup_rtcd_internal(void) {
   aom_blend_a64_vmask = aom_blend_a64_vmask_c;
   if (flags & HAS_SSE4_1) {
     aom_blend_a64_vmask = aom_blend_a64_vmask_sse4_1;
+  }
+  aom_comp_avg_pred = aom_comp_avg_pred_c;
+  if (flags & HAS_AVX2) {
+    aom_comp_avg_pred = aom_comp_avg_pred_avx2;
   }
   aom_comp_mask_pred = aom_comp_mask_pred_c;
   if (flags & HAS_SSSE3) {
