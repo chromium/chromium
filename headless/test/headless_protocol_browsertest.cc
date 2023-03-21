@@ -268,6 +268,7 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigation,
                        "emulation/virtual-time-history-navigation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
                        "emulation/virtual-time-history-navigation-same-doc.js")
+HEADLESS_PROTOCOL_TEST(VirtualTimeSVG, "emulation/virtual-time-svg.js")
 
 // Flaky on Mac. TODO(crbug.com/1419801): Re-enable.
 #if BUILDFLAG(IS_MAC)

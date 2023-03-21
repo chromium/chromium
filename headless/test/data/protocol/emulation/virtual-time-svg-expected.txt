@@ -1,0 +1,3 @@
+Tests virtual time with history navigation.
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/circle.svg, type: Image

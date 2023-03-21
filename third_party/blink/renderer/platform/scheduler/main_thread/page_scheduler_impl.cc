@@ -259,7 +259,7 @@ void PageSchedulerImpl::SetPageFrozenImpl(
     bool frozen,
     PageSchedulerImpl::NotificationPolicy notification_policy) {
   // Only pages owned by web views can be frozen.
-  DCHECK(IsOrdinary());
+  DCHECK(!frozen || IsOrdinary());
 
   do_freeze_page_callback_.Cancel();
   if (is_frozen_ == frozen)
@@ -804,7 +804,7 @@ bool PageSchedulerImpl::IsBackgrounded() const {
 bool PageSchedulerImpl::ShouldFreezePage() const {
   if (!base::FeatureList::IsEnabled(blink::features::kStopInBackground))
     return false;
-  return IsBackgrounded();
+  return IsOrdinary() && IsBackgrounded();
 }
 
 void PageSchedulerImpl::DoFreezePage() {
