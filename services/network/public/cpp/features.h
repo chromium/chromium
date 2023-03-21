@@ -101,14 +101,8 @@ BASE_DECLARE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
 
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPreconnectInNetworkService);
-
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPrefetchDNSWithURL);
-
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<bool> kPrefetchDNSWithURLAllAnchorElements;
-
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPreconnectOnRedirect);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kOutOfProcessSystemDnsResolution);

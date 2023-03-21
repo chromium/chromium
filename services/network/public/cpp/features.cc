@@ -316,27 +316,6 @@ BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
              "LocalNetworkAccessAllowPotentiallyTrustworthySameOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Handle the Link header DNS prefetches and preconnects in the network
-// service instead of through the renderer process.
-BASE_FEATURE(kPreconnectInNetworkService,
-             "PreconnectInNetworkService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When prefetching a DNS record ensures that the scheme and port are taken
-// into account so that the cache (which is keyed by scheme and port) works
-// for subsequent queries.
-BASE_FEATURE(kPrefetchDNSWithURL,
-             "PrefetchDNSWithURL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<bool> kPrefetchDNSWithURLAllAnchorElements{
-    &kPrefetchDNSWithURL, "prefetch_dns_all_anchor_elements", true};
-
-// Preconnect to a new origin right when a redirect starts.
-BASE_FEATURE(kPreconnectOnRedirect,
-             "PreconnectOnRedirect",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables out-of-process system DNS resolution so getaddrinfo() never runs in
 // the network service sandbox. System DNS resolution will instead be brokered
 // out over Mojo, likely to run in the browser process.

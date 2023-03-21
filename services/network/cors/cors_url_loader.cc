@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -23,11 +22,9 @@
 #include "services/network/network_service_memory_cache.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/request_mode.h"
-#include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -245,35 +242,6 @@ void RecordNetworkLoaderCompletionTime(const char* suffix,
 }
 
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
-
-class EmptyResolveHostClient : ResolveHostClientBase {
- public:
-  EmptyResolveHostClient(const GURL& url,
-                         const net::NetworkAnonymizationKey& key,
-                         raw_ptr<NetworkContext> context) {
-    mojom::ResolveHostParametersPtr params =
-        mojom::ResolveHostParameters::New();
-    params->initial_priority = net::RequestPriority::IDLE;
-    params->is_speculative = true;
-    params->purpose = mojom::ResolveHostParameters::Purpose::kPreconnect;
-    context->ResolveHost(
-        mojom::HostResolverHost::NewSchemeHostPort(url::SchemeHostPort(url)),
-        key, std::move(params), receiver_.BindNewPipeAndPassRemote());
-  }
-  ~EmptyResolveHostClient() override = default;
-
- private:
-  // mojom::ResolveHostClient:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
-    delete this;
-  }
-
-  mojo::Receiver<mojom::ResolveHostClient> receiver_{this};
-};
 
 }  // namespace
 
@@ -531,22 +499,6 @@ void CorsURLLoader::OnReceiveResponse(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kPreconnectInNetworkService) &&
-      context_->enable_preconnect() && response_head->parsed_headers) {
-    auto key = isolation_info_.network_anonymization_key();
-    for (auto& header : response_head->parsed_headers->link_headers) {
-      if (header->rel == mojom::LinkRelAttribute::kDnsPrefetch) {
-        // Deletes itself.
-        new EmptyResolveHostClient(header->href, key, context_);
-      } else if (header->rel == mojom::LinkRelAttribute::kPreconnect) {
-        context_->PreconnectSockets(
-            1, header->href,
-            header->cross_origin != mojom::CrossOriginAttribute::kAnonymous,
-            key);
-      }
-    }
-  }
-
   has_forwarded_response_ = true;
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);
 
@@ -605,15 +557,6 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
 
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);
   last_response_url_ = redirect_info.new_url;
-
-  if (base::FeatureList::IsEnabled(features::kPreconnectOnRedirect) &&
-      context_->enable_preconnect() &&
-      redirect_info.new_url.SchemeIs(request_.url.scheme()) &&
-      !url::Origin::Create(redirect_info.new_url)
-           .IsSameOriginWith(url::Origin::Create(request_.url))) {
-    context_->PreconnectSockets(1, redirect_info.new_url, true,
-                                isolation_info_.network_anonymization_key());
-  }
 
   if (request_.redirect_mode == mojom::RedirectMode::kManual) {
     CheckTainted(redirect_info);

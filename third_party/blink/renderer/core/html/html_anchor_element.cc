@@ -26,14 +26,12 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -247,28 +245,6 @@ void HTMLAnchorElement::ParseAttribute(
       PseudoStateChanged(CSSSelector::kPseudoVisited);
       PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
       PseudoStateChanged(CSSSelector::kPseudoAnyLink);
-    }
-    if (IsLink()) {
-      String parsed_url = StripLeadingAndTrailingHTMLSpaces(params.new_value);
-      // GetDocument().GetFrame() could be null if this method is called from
-      // DOMParser::parseFromString(), which internally creates a document
-      // and eventually calls this.
-      static bool enable =
-          !base::FeatureList::IsEnabled(
-              network::features::kPrefetchDNSWithURL) ||
-          network::features::kPrefetchDNSWithURLAllAnchorElements.Get();
-      if (GetDocument().IsDNSPrefetchEnabled() && GetDocument().GetFrame() &&
-          enable) {
-        if (ProtocolIs(parsed_url, "http") || ProtocolIs(parsed_url, "https") ||
-            parsed_url.StartsWith("//")) {
-          WebPrescientNetworking* web_prescient_networking =
-              GetDocument().GetFrame()->PrescientNetworking();
-          if (web_prescient_networking) {
-            web_prescient_networking->PrefetchDNS(
-                GetDocument().CompleteURL(parsed_url));
-          }
-        }
-      }
     }
     if (isConnected()) {
       if (auto* document_rules =

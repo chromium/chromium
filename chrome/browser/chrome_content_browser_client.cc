@@ -7329,7 +7329,7 @@ void ChromeContentBrowserClient::OnKeepaliveTimerFired(
 }
 #endif
 
-bool ChromeContentBrowserClient::ShouldPreconnect(
+bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
     content::BrowserContext* browser_context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // An extension could be blocking connections for privacy reasons, so skip
@@ -7347,11 +7347,6 @@ bool ChromeContentBrowserClient::ShouldPreconnect(
   return prefetch::IsSomePreloadingEnabledIgnoringFinch(
              *Profile::FromBrowserContext(browser_context)->GetPrefs()) ==
          content::PreloadingEligibility::kEligible;
-}
-
-bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
-    content::BrowserContext* browser_context) {
-  return ShouldPreconnect(browser_context);
 }
 
 bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(

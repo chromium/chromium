@@ -213,10 +213,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return params_ && params_->allow_any_cors_exempt_header_for_browser;
   }
 
-  bool enable_preconnect() const {
-    return params_ && params_->enable_preconnect;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   base::android::ApplicationStatusListener* app_status_listener() const {
     return app_status_listener_.get();
@@ -312,7 +308,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                             mojom::NetworkConditionsPtr conditions) override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
   void SetEnableReferrers(bool enable_referrers) override;
-  void SetEnablePreconnect(bool enable_preconnect) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override;

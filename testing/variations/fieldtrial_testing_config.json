@@ -9664,52 +9664,6 @@
             ]
         }
     ],
-    "PreconnectInNetworkService": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "FixLinkDNSPrefetchAndDisableHttpFrameAnchorPrefetchAndUseNetworkService_20230131",
-                    "params": {
-                        "prefetch_dns_all_anchor_elements": "false"
-                    },
-                    "enable_features": [
-                        "PreconnectInNetworkService",
-                        "PrefetchDNSWithURL",
-                        "WebViewEnableDnsPrefetchAndPreconnect"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PreconnectOnRedirect": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PreconnectOnRedirect"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [

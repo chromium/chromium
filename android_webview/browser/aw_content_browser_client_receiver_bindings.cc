@@ -8,7 +8,6 @@
 #include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
-#include "android_webview/common/aw_features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
@@ -210,11 +209,8 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     content::RenderFrameHost* render_frame_host,
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewEnableDnsPrefetchAndPreconnect)) {
-    map->Add<network_hints::mojom::NetworkHintsHandler>(
-        base::BindRepeating(&BindNetworkHintsHandler));
-  }
+  map->Add<network_hints::mojom::NetworkHintsHandler>(
+      base::BindRepeating(&BindNetworkHintsHandler));
 }
 
 }  // namespace android_webview

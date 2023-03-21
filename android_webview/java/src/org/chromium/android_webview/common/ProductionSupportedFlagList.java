@@ -327,8 +327,6 @@ public final class ProductionSupportedFlagList {
                             + "instances of the image are outside of the "
                             + "viewport."),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
-            Flag.baseFeature("PreconnectOnRedirect"),
-            Flag.baseFeature("PreconnectInNetworkService"), Flag.baseFeature("PrefetchDNSWithURL"),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,
                     "This changes event propagation for disabled form controls."),
             Flag.baseFeature(ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
@@ -361,7 +359,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature("CanvasColorCache"),
             Flag.baseFeature(AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT,
                     "Controls whether access to sensitive web content should be restricted."),
-            Flag.baseFeature("WebViewEnableDnsPrefetchAndPreconnect"),
             Flag.baseFeature(BlinkFeatures.KEYBOARD_FOCUSABLE_SCROLLERS,
                     "When enabled, can focus on a scroller element using the keyboard."),
             Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_TRUST_TOKENS_COMPONENT,

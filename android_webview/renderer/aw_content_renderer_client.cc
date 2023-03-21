@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "android_webview/common/url_constants.h"
@@ -173,11 +172,6 @@ void AwContentRendererClient::RenderFrameCreated(
 std::unique_ptr<blink::WebPrescientNetworking>
 AwContentRendererClient::CreatePrescientNetworking(
     content::RenderFrame* render_frame) {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebViewEnableDnsPrefetchAndPreconnect)) {
-    return nullptr;
-  }
-
   return std::make_unique<network_hints::WebPrescientNetworkingImpl>(
       render_frame);
 }

@@ -4,10 +4,6 @@
 
 static_library("renderer") {
   sources = [
-    "dns_prefetch_queue.cc",
-    "dns_prefetch_queue.h",
-    "renderer_dns_prefetch.cc",
-    "renderer_dns_prefetch.h",
     "web_prescient_networking_impl.cc",
     "web_prescient_networking_impl.h",
   ]
@@ -18,17 +14,5 @@ static_library("renderer") {
     "//content/public/renderer",
     "//third_party/blink/public:blink",
     "//url",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "dns_prefetch_queue_unittest.cc",
-    "renderer_dns_prefetch_unittest.cc",
-  ]
-  deps = [
-    ":renderer",
-    "//testing/gtest",
   ]
 }

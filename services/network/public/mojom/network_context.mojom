@@ -312,9 +312,6 @@ struct NetworkContextParams {
   // If false, the referrer of requests is never populated.
   bool enable_referrers = true;
 
-  // Whether dns-prefetch and preconnect are allowed.
-  bool enable_preconnect = true;
-
   // If true, requests initiated with referrers that don't match their referrer
   // policy will fail.
   bool validate_referrer_policy_on_initial_request = true;
@@ -1093,9 +1090,6 @@ interface NetworkContext {
 
   // If false, the referrer of requests is never populated.
   SetEnableReferrers(bool enable_referrers);
-
-  // See 'enable_preconnect' above.
-  SetEnablePreconnect(bool enable_preconnect);
 
   // Updates the additional trust anchors for certificate verification.
   [EnableIf=is_chromeos]

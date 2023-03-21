@@ -144,9 +144,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // update our I/O thread cache of this value.
   static void SetApplicationLocale(const std::string& locale);
 
-  // Whether DNS prefetching and preconnect are allowed.
-  static bool ShouldPreconnect(content::BrowserContext* browser_context);
-
   // content::ContentBrowserClient:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;

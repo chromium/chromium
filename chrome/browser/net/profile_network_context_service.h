@@ -29,11 +29,6 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
-#endif
-
 class PrefRegistrySimple;
 class Profile;
 class TrialComparisonCertVerifierController;
@@ -62,9 +57,6 @@ class ProfileNetworkContextService
     : public KeyedService,
       public content_settings::Observer,
       public content_settings::CookieSettings::Observer,
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      public extensions::ExtensionRegistryObserver,
-#endif
       public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
   explicit ProfileNetworkContextService(Profile* profile);
@@ -135,7 +127,6 @@ class ProfileNetworkContextService
   std::string ComputeAcceptLanguage() const;
 
   void UpdateReferrersEnabled();
-  void UpdatePreconnect();
 
   // Gets the current CTPolicy from preferences.
   network::mojom::CTPolicyPtr GetCTPolicy();
@@ -183,13 +174,6 @@ class ProfileNetworkContextService
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // extensions::ExtensionRegistryObserver:
-  void OnExtensionInstalled(content::BrowserContext* browser_context,
-                            const extensions::Extension* extension,
-                            bool is_update) override;
-#endif
-
   // PrivacySandboxSettings::Observer:
   void OnFirstPartySetsEnabledChanged(bool enabled) override;
 
@@ -200,7 +184,6 @@ class ProfileNetworkContextService
   BooleanPrefMember quic_allowed_;
   StringPrefMember pref_accept_language_;
   BooleanPrefMember enable_referrers_;
-  IntegerPrefMember preload_allowed_;
   PrefChangeRegistrar pref_change_registrar_;
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
@@ -219,12 +202,6 @@ class ProfileNetworkContextService
   // or not allowed for this profile.
   std::unique_ptr<TrialComparisonCertVerifierController>
       trial_comparison_cert_verifier_controller_;
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  base::ScopedObservation<extensions::ExtensionRegistry,
-                          ExtensionRegistryObserver>
-      registry_observation_{this};
 #endif
 
   // Used for testing.
