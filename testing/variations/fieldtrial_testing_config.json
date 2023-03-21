@@ -7161,7 +7161,7 @@
             ]
         }
     ],
-    "KeepToolbarTexture": [
+    "KeepAndroidTintedResources": [
         {
             "platforms": [
                 "android"
@@ -7170,7 +7170,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "KeepToolbarTexture"
+                        "KeepAndroidTintedResources"
                     ]
                 }
             ]
