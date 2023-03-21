@@ -12116,8 +12116,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_MANAGE_PASSWORDS_EDIT_NOTE_TOOLTIP" desc="The tooltip of a button that is used in the credential details view of the password management bubble for editing the note attached to the password.">
         Edit note
       </message>
+      <message name="IDS_MANAGE_PASSWORDS_NOTE_ACCESSIBLE_NAME" desc="Name used by screen readers for the password note label in the credential details view of the password management bubble.">
+        Note: <ph name="NOTE">$1<ex>note</ex></ph>
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_NOTE_TEXTFIELD" is_accessibility_with_no_ui="true" desc="Name used by screen readers for the note text field in the credential details view of the password management bubble.">
+        Note
+      </message>
       <message name="IDS_MANAGE_PASSWORDS_UPDATE" desc="The text of the button to update the credential details in the password management bubble.">
         Update
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_USERNAME_ACCESSIBLE_NAME" desc="Name used by screen readers for the username label in the credential details view of the password management bubble.">
+        Username: <ph name="USERNAME">$1<ex>user@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_USERNAME_TEXTFIELD" is_accessibility_with_no_ui="true" desc="Name used by screen readers for the username text field in the credential details view of the password management bubble.">
+        Username
       </message>
 
       <message name="IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD" desc="The title of the auto-signin toast in Material Design mode.">

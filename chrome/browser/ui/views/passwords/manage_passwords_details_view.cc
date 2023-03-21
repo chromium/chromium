@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -210,12 +211,11 @@ std::unique_ptr<views::View> CreateNoteLabel(
                    : note;
 
   auto note_label = std::make_unique<views::Label>(
-      std::move(note_to_display), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      note_to_display, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   note_label->SetMultiLine(true);
-  // TODO(crbug.com/1382017): Review string with UX and use internationalized
-  // string.
-  note_label->SetAccessibleName(u"Password Note");
+  note_label->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_MANAGE_PASSWORDS_NOTE_ACCESSIBLE_NAME, note_to_display));
   note_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   note_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   note_label->SetSelectable(true);
@@ -263,8 +263,9 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
                                views::MaximumFlexSizeRule::kUnbounded));
   *textfield = username_with_error_label_view->AddChildView(
       std::make_unique<views::Textfield>());
-  // TODO(crbug.com/1382017): use internationalized string.
-  (*textfield)->SetAccessibleName(u"Username");
+  (*textfield)
+      ->SetAccessibleName(
+          l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_USERNAME_TEXTFIELD));
   (*textfield)
       ->SetID(static_cast<int>(ManagePasswordsViewIDs::kUsernameTextField));
   *error_label = username_with_error_label_view->AddChildView(
@@ -300,8 +301,8 @@ std::unique_ptr<views::View> CreateEditNoteRow(
   *textarea = note_with_error_label_view->AddChildView(
       std::make_unique<views::Textarea>());
   (*textarea)->SetText(form.GetNoteWithEmptyUniqueDisplayName());
-  // TODO(crbug.com/1382017): use internationalized string.
-  (*textarea)->SetAccessibleName(u"Password Note");
+  (*textarea)->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_NOTE_TEXTFIELD));
   int line_height = views::style::GetLineHeight(views::style::CONTEXT_TEXTFIELD,
                                                 views::style::STYLE_PRIMARY);
   (*textarea)->SetPreferredSize(
@@ -361,6 +362,9 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       CreateUsernameLabel(password_form);
   username_label->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kUsernameLabel));
+  username_label->SetAccessibleName(
+      l10n_util::GetStringFUTF16(IDS_MANAGE_PASSWORDS_USERNAME_ACCESSIBLE_NAME,
+                                 username_label->GetText()));
   if (!password_form.username_value.empty()) {
     auto copy_username_button_callback =
         base::BindRepeating(&WriteToClipboard, password_form.username_value)
