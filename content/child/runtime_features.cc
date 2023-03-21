@@ -553,6 +553,9 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
       content::IsBackForwardCacheEnabled());
 
   if (base::FeatureList::IsEnabled(network::features::kPrivateStateTokens)) {
+    WebRuntimeFeatures::EnablePrivateStateTokens(true);
+    WebRuntimeFeatures::EnablePrivateStateTokensAlwaysAllowIssuance(true);
+  } else if (base::FeatureList::IsEnabled(network::features::kFledgePst)) {
     // See https://bit.ly/configuring-trust-tokens.
     using network::features::TrustTokenOriginTrialSpec;
     switch (

@@ -58854,6 +58854,7 @@ from previous Chrome versions.
   <int value="-1830199297" label="force-empty-corb-allowlist"/>
   <int value="-1829204930"
       label="ForceGpuMainThreadToNormalPriorityDrDc:disabled"/>
+  <int value="-1829053093" label="PrivateStateTokens:enabled"/>
   <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1826309726" label="ArcCustomTabsExperiment:disabled"/>
@@ -60611,6 +60612,7 @@ from previous Chrome versions.
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
   <int value="-868041476" label="OmniboxFocusTriggersSRPZeroSuggest:enabled"/>
+  <int value="-867571486" label="PrivateStateTokens:disabled"/>
   <int value="-867087281" label="enable-virtual-keyboard"/>
   <int value="-867085393" label="WebNotesDynamicTemplates:enabled"/>
   <int value="-866993841" label="OfflinePagesCTV2:disabled"/>

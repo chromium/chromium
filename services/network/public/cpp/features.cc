@@ -148,8 +148,12 @@ BASE_FEATURE(kAttributionReportingTriggerAttestation,
 // set, and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)
 BASE_FEATURE(kPrivateStateTokens,
-             "TrustTokens",
+             "PrivateStateTokens",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Secondary flag used by the FLEDGE ads experiment in the interim before
+// PSTs are fully rolled out to stable.
+BASE_FEATURE(kFledgePst, "TrustTokens", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Determines which Trust Tokens operations require the TrustTokens origin trial
 // active in order to be used. This is runtime-configurable so that the Trust
@@ -177,7 +181,7 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>::Option
          "only-issuance-requires-origin-trial"}};
 const base::FeatureParam<TrustTokenOriginTrialSpec>
     kTrustTokenOperationsRequiringOriginTrial{
-        &kPrivateStateTokens, "TrustTokenOperationsRequiringOriginTrial",
+        &kFledgePst, "TrustTokenOperationsRequiringOriginTrial",
         TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
         &kTrustTokenOriginTrialParamOptions};
 

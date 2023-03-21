@@ -11288,10 +11288,11 @@ void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
     return;
   }
 
-  // This is enforced in benign renderers by the
+  // Both flags are enforced in benign renderers by the
   // RuntimeEnabled=PrivateStateTokens IDL attribute (the base::Feature's value
   // is tied to the RuntimeEnabledFeature's).
-  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens)) {
+  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) &&
+      !base::FeatureList::IsEnabled(network::features::kFledgePst)) {
     mojo::ReportBadMessage(
         "Attempted to get a TrustTokenQueryAnswerer with Private State Tokens "
         "disabled.");

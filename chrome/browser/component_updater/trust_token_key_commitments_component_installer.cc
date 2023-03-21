@@ -22,8 +22,10 @@ namespace component_updater {
 
 void RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(
     ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens))
+  if (!base::FeatureList::IsEnabled(network::features::kPrivateStateTokens) &&
+      !base::FeatureList::IsEnabled(network::features::kFledgePst)) {
     return;
+  }
 
   VLOG(1) << "Registering Trust Token Key Commitments component.";
   auto installer = base::MakeRefCounted<ComponentInstaller>(
