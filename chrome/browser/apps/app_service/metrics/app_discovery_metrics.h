@@ -68,9 +68,29 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   // Records app state metrics if there has been a change.
   void RecordAppState(const InstanceUpdate& instance_update);
 
-  void RecordFromInactiveState(const InstanceUpdate& instance_update);
-  void RecordFromActiveState(const InstanceUpdate& instance_update);
-  void RecordFromStartState(const InstanceUpdate& instance_update);
+  // Checks whether |instance_update| moves from an active app state to inactive
+  // app state. If there are any other instances that are active other than
+  // the instance specified in |instance_update|, then the app is still
+  // considered to be active and will return false.
+  //
+  // If there was no previous state, the check for whether the previous state is
+  // Active will be ignored.
+  bool IsUpdateActiveToInactive(const InstanceUpdate& instance_update);
+
+  // Checks whether |instance_update| moves from an inactive app state to active
+  // app state. If there are any other instances that are active other than
+  // the instance specified in |instance_update|, then the app is still
+  // considered to be active and will return false.
+  //
+  // If there was no previous state, the check for whether the previous state is
+  // Inactive will be ignored.
+  bool IsUpdateInactiveToActive(const InstanceUpdate& instance_update);
+
+  bool IsStateInactive(InstanceState instance_state);
+  bool IsStateActive(InstanceState instance_state);
+
+  void RecordAppActive(const std::string& app_id);
+  void RecordAppInactive(const std::string& app_id);
   void RecordAppClosed(const InstanceUpdate& instance_update);
 
   // Profile for which apps discovery metrics are being recorded for.

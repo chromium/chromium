@@ -3044,7 +3044,14 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   ModifyInstance(app_id, window.get(), apps::InstanceState::kStarted);
   launch_event_run_loop.Run();
 
-  // Validate active event is recorded.
+  // Mark app as kRunning otherwise active event will not trigger since the app
+  // isn't considered to be running yet.
+  ModifyInstance(
+      app_id, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+
+  // Validate launch -> active event is recorded.
   base::RunLoop active_event_run_loop;
   auto active_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
@@ -3054,10 +3061,13 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       active_record_callback);
 
-  ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
+  ModifyInstance(
+      app_id, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kActive |
+                                       apps::InstanceState::kRunning));
   active_event_run_loop.Run();
 
-  // Validate inactive event is recorded.
+  // Validate active -> inactive event is recorded.
   base::RunLoop hidden_event_run_loop;
   auto hidden_record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
@@ -3067,8 +3077,27 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   test_structured_metrics_provider()->SetOnEventsRecordClosure(
       hidden_record_callback);
 
-  ModifyInstance(app_id, window.get(), apps::InstanceState::kHidden);
+  ModifyInstance(
+      app_id, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kHidden |
+                                       apps::InstanceState::kRunning));
   hidden_event_run_loop.Run();
+
+  // Validate inactive -> active is recorded.
+  base::RunLoop active_event_run_loop2;
+  auto active_record_callback2 = base::BindLambdaForTesting(
+      [&, this](const metrics::structured::Event& event) {
+        ValidateAppStateEvent(event, app_id, AppStateChange::kActive);
+        active_event_run_loop2.Quit();
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      active_record_callback2);
+
+  ModifyInstance(
+      app_id, window.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kActive |
+                                       apps::InstanceState::kRunning));
+  active_event_run_loop2.Run();
 
   // Validate closed event is recorded.
   base::RunLoop closed_event_run_loop;
@@ -3084,8 +3113,140 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   closed_event_run_loop.Run();
 }
 
-// TODO(b/269683180): Add more complex tests such as opening multiple instances
-// of an app for better coverage.
+TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
+  base::test::ScopedRunLoopTimeout default_timeout(FROM_HERE, base::Seconds(3));
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  apps::AppRegistryCache& cache = proxy->AppRegistryCache();
+  proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
+  const std::string app_id = "a";
+
+  // Install an ARC app to test.
+  AddApp(cache, app_id, AppType::kArc, "com.google.A", Readiness::kReady,
+         InstallReason::kUser, InstallSource::kPlayStore,
+         true /* should_notify_initialized */);
+
+  // Simulate registering publishers for the launch interface to record metrics.
+  proxy->RegisterPublishersForTesting();
+  FakePublisher fake_arc_apps(proxy, AppType::kArc);
+
+  // Create a window to simulate launching the app.
+  auto window1 = std::make_unique<aura::Window>(nullptr);
+  auto window2 = std::make_unique<aura::Window>(nullptr);
+  window1->Init(ui::LAYER_NOT_DRAWN);
+  window2->Init(ui::LAYER_NOT_DRAWN);
+
+  // Validate event recorded after event is recorded.
+  base::RunLoop launch_event_run_loop;
+  auto launch_record_callback = base::BindLambdaForTesting(
+      [&, this](const metrics::structured::Event& event) {
+        ValidateAppLaunchEvent(event, app_id, AppType::kArc,
+                               LaunchSource::kFromChromeInternal);
+        launch_event_run_loop.Quit();
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      launch_record_callback);
+
+  EXPECT_CALL(fake_arc_apps,
+              Launch(app_id, ui::EF_NONE, LaunchSource::kFromChromeInternal, _))
+      .Times(1);
+  proxy->Launch(app_id, ui::EF_NONE, LaunchSource::kFromChromeInternal,
+                nullptr);
+  ModifyInstance(app_id, window1.get(), apps::InstanceState::kStarted);
+  ModifyInstance(app_id, window2.get(), apps::InstanceState::kStarted);
+  launch_event_run_loop.Run();
+
+  // Mark app as kRunning otherwise active event will not trigger since the app
+  // isn't considered to be running yet.
+  ModifyInstance(
+      app_id, window1.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+  ModifyInstance(
+      app_id, window2.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
+                                       apps::InstanceState::kRunning));
+
+  // Validate launch -> active event is recorded.
+  base::RunLoop active_event_run_loop;
+  auto active_record_callback = base::BindLambdaForTesting(
+      [&, this](const metrics::structured::Event& event) {
+        ValidateAppStateEvent(event, app_id, AppStateChange::kActive);
+        active_event_run_loop.Quit();
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      active_record_callback);
+
+  ModifyInstance(
+      app_id, window1.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kActive |
+                                       apps::InstanceState::kRunning));
+  active_event_run_loop.Run();
+
+  // Active event should not be recorded when 2nd instance becomes active.
+  auto active_record_callback2 =
+      base::BindLambdaForTesting([](const metrics::structured::Event& event) {
+        ADD_FAILURE() << "Should not be called!";
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      active_record_callback2);
+  ModifyInstance(
+      app_id, window2.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kActive |
+                                       apps::InstanceState::kRunning));
+
+  // Inactive event is not recorded if one instance becomes inactive but other
+  // instance is active.
+  auto hidden_record_callback =
+      base::BindLambdaForTesting([](const metrics::structured::Event& event) {
+        ADD_FAILURE() << "Should not be called!";
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      hidden_record_callback);
+
+  ModifyInstance(
+      app_id, window1.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kHidden |
+                                       apps::InstanceState::kRunning));
+
+  // Validate inactive event recorded if both instances are inactive.
+  base::RunLoop inactive_event_run_loop;
+  auto inactive_record_callback = base::BindLambdaForTesting(
+      [&, this](const metrics::structured::Event& event) {
+        ValidateAppStateEvent(event, app_id, AppStateChange::kInactive);
+        inactive_event_run_loop.Quit();
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      inactive_record_callback);
+
+  ModifyInstance(
+      app_id, window2.get(),
+      static_cast<apps::InstanceState>(apps::InstanceState::kVisible |
+                                       apps::InstanceState::kRunning));
+  inactive_event_run_loop.Run();
+
+  // Validate closed event is not recorded when one instance is closed.
+  auto closed_record_callback =
+      base::BindLambdaForTesting([](const metrics::structured::Event& event) {
+        ADD_FAILURE() << "Should not be called!";
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      closed_record_callback);
+  ModifyInstance(app_id, window1.get(), apps::InstanceState::kDestroyed);
+
+  // Validate closed event is recorded when both instances are closed.
+  base::RunLoop closed_event_run_loop;
+  auto closed_record_callback2 = base::BindLambdaForTesting(
+      [&, this](const metrics::structured::Event& event) {
+        ValidateAppStateEvent(event, app_id, AppStateChange::kClosed);
+        closed_event_run_loop.Quit();
+      });
+  test_structured_metrics_provider()->SetOnEventsRecordClosure(
+      closed_record_callback2);
+
+  ModifyInstance(app_id, window2.get(), apps::InstanceState::kDestroyed);
+  closed_event_run_loop.Run();
+}
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppDiscoveryMetricsTest,

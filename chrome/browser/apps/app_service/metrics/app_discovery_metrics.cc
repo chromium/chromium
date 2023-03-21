@@ -152,13 +152,12 @@ bool AppDiscoveryMetrics::IsAnyAppInstanceActive(
   }
 
   for (const auto& instance_id : app_id_to_instance_ids_[app_id]) {
-    if (instance_to_state_[instance_id] == InstanceState::kActive) {
-      // Ignore excluded instance_id if it exists.
-      if (!exclude_instance_id.has_value() ||
-          exclude_instance_id.value() != instance_id) {
-        is_any_instance_active = true;
-        break;
-      }
+    // Ignore excluded instance_id if it exists.
+    if (IsStateActive(instance_to_state_[instance_id]) &&
+        (!exclude_instance_id.has_value() ||
+         exclude_instance_id.value() != instance_id)) {
+      is_any_instance_active = true;
+      break;
     }
   }
 
@@ -167,121 +166,75 @@ bool AppDiscoveryMetrics::IsAnyAppInstanceActive(
 
 void AppDiscoveryMetrics::RecordAppState(
     const InstanceUpdate& instance_update) {
-  InstanceState prev_state =
+  if (instance_update.IsDestruction()) {
+    RecordAppClosed(instance_update);
+  } else if (IsUpdateActiveToInactive(instance_update)) {
+    RecordAppInactive(instance_update.AppId());
+  } else if (IsUpdateInactiveToActive(instance_update)) {
+    RecordAppActive(instance_update.AppId());
+  }
+}
+
+bool AppDiscoveryMetrics::IsUpdateActiveToInactive(
+    const InstanceUpdate& instance_update) {
+  const bool is_any_other_instance_active = IsAnyAppInstanceActive(
+      instance_update.AppId(), instance_update.InstanceId());
+
+  // kUnknown if no previous state exists.
+  const InstanceState prev_state =
       instance_to_state_.find(instance_update.InstanceId()) ==
               instance_to_state_.end()
           ? InstanceState::kUnknown
           : instance_to_state_[instance_update.InstanceId()];
 
-  switch (prev_state) {
-    case kUnknown:
-    case kStarted:
-    case kRunning:
-      RecordFromStartState(instance_update);
-      return;
-    case kVisible:
-    case kHidden:
-      RecordFromInactiveState(instance_update);
-      return;
-    case kDestroyed:
-      // Previous state should not be destroyed.
-      NOTREACHED();
-      return;
-    case kActive:
-      RecordFromActiveState(instance_update);
-      return;
-  }
+  // Active -> Inactive and no other instances are active. If no previous state,
+  // then ignores the check for IsStateActive(prev_state)
+  return (prev_state == InstanceState::kUnknown || IsStateActive(prev_state)) &&
+         IsStateInactive(instance_update.State()) &&
+         !is_any_other_instance_active;
 }
 
-void AppDiscoveryMetrics::RecordFromInactiveState(
+bool AppDiscoveryMetrics::IsUpdateInactiveToActive(
     const InstanceUpdate& instance_update) {
-  bool is_any_instance_active = IsAnyAppInstanceActive(instance_update.AppId());
-
-  switch (instance_update.State()) {
-    case kUnknown:
-    case kStarted:
-    case kRunning:
-    case kVisible:
-    case kHidden:
-      return;
-    case kDestroyed:
-      RecordAppClosed(instance_update);
-      return;
-    case kActive: {
-      // Only record if there are no active instances of the app.
-      if (!is_any_instance_active) {
-        cros_events::AppDiscovery_AppStateChanged active_event;
-        active_event.SetAppId(instance_update.AppId())
-            .SetAppState(static_cast<int>(AppStateChange::kActive))
-            .Record();
-      }
-      return;
-    }
-  }
-}
-void AppDiscoveryMetrics::RecordFromActiveState(
-    const InstanceUpdate& instance_update) {
-  bool is_any_instance_active = IsAnyAppInstanceActive(
+  const bool is_any_other_instance_active = IsAnyAppInstanceActive(
       instance_update.AppId(), instance_update.InstanceId());
 
-  switch (instance_update.State()) {
-    case kUnknown:
-    case kStarted:
-    case kRunning:
-    case kActive:
-      return;
-    case kDestroyed:
-      RecordAppClosed(instance_update);
-      return;
-    case kVisible:
-    case kHidden: {
-      // Only record if there are no active instances of the app.
-      if (!is_any_instance_active) {
-        cros_events::AppDiscovery_AppStateChanged inactive_event;
-        inactive_event.SetAppId(instance_update.AppId())
-            .SetAppState(static_cast<int>(AppStateChange::kInactive))
-            .Record();
-      }
-      return;
-    }
-  }
+  // kUnknown if no previous state exists.
+  const InstanceState prev_state =
+      instance_to_state_.find(instance_update.InstanceId()) ==
+              instance_to_state_.end()
+          ? InstanceState::kUnknown
+          : instance_to_state_[instance_update.InstanceId()];
+
+  // Inactive -> Active and no other instances are active. If no previous state,
+  // then ignores the check for IsStateInactive(prev_state)
+  return (prev_state == InstanceState::kUnknown ||
+          IsStateInactive(prev_state)) &&
+         IsStateActive(instance_update.State()) &&
+         !is_any_other_instance_active;
 }
 
-void AppDiscoveryMetrics::RecordFromStartState(
-    const InstanceUpdate& instance_update) {
-  bool is_any_instance_active = IsAnyAppInstanceActive(instance_update.AppId());
+bool AppDiscoveryMetrics::IsStateInactive(InstanceState instance_state) {
+  return (instance_state & InstanceState::kRunning) &&
+         !IsStateActive(instance_state);
+}
 
-  switch (instance_update.State()) {
-    case kActive: {
-      // Record if no instances of app are already active.
-      if (!is_any_instance_active) {
-        cros_events::AppDiscovery_AppStateChanged active_event;
-        active_event.SetAppId(instance_update.AppId())
-            .SetAppState(static_cast<int>(AppStateChange::kActive))
-            .Record();
-      }
+bool AppDiscoveryMetrics::IsStateActive(InstanceState instance_state) {
+  return instance_state & InstanceState::kActive;
+}
 
-      return;
-    }
-    case kVisible:
-    case kHidden: {
-      // Only record if there aren't any active instances.
-      if (!is_any_instance_active) {
-        cros_events::AppDiscovery_AppStateChanged inactive_event;
-        inactive_event.SetAppId(instance_update.AppId())
-            .SetAppState(static_cast<int>(AppStateChange::kInactive))
-            .Record();
-      }
-      return;
-    }
-    case kRunning:
-    case kUnknown:
-    case kStarted:
-      return;
-    case kDestroyed:
-      RecordAppClosed(instance_update);
-      return;
-  }
+void AppDiscoveryMetrics::RecordAppActive(const std::string& app_id) {
+  cros_events::AppDiscovery_AppStateChanged()
+      .SetAppId(app_id)
+      .SetAppState(static_cast<int>(AppStateChange::kActive))
+      .Record();
+}
+
+void AppDiscoveryMetrics::RecordAppInactive(const std::string& app_id) {
+  cros_events::AppDiscovery_AppStateChanged()
+      .SetAppId(app_id)
+      .SetAppState(static_cast<int>(AppStateChange::kInactive))
+      .Record();
 }
 
 void AppDiscoveryMetrics::RecordAppClosed(
@@ -291,8 +244,8 @@ void AppDiscoveryMetrics::RecordAppClosed(
 
   // If instance_update is the only instance of the app.
   if (prev_instances.size() == 1) {
-    cros_events::AppDiscovery_AppStateChanged app_state_change_event;
-    app_state_change_event.SetAppId(instance_update.AppId())
+    cros_events::AppDiscovery_AppStateChanged()
+        .SetAppId(instance_update.AppId())
         .SetAppState(static_cast<int>(AppStateChange::kClosed))
         .Record();
   }
