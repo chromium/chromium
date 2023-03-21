@@ -71,6 +71,10 @@ void RecordNumberOfLacrosSecondaryProfiles(
     }
 
     const std::string base_name = entry.BaseName().value();
+    // TODO(b/274470090): Add unit tests to prevent the crash in the future.
+    if (base_name.length() <= prefix_length) {
+      continue;
+    }
 
     bool starts_with_prefix =
         base::StartsWith(base_name, prefix, base::CompareCase::SENSITIVE);
