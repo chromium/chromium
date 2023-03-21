@@ -14,6 +14,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
@@ -22,6 +23,8 @@
 #include "base/time/time.h"
 #include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/render_process_host.h"
@@ -147,31 +150,30 @@ AttributionOsLevelManagerAndroid::~AttributionOsLevelManagerAndroid() {
       base::android::AttachCurrentThread(), jobj_);
 }
 
-void AttributionOsLevelManagerAndroid::RegisterAttributionSource(
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
-    bool is_debug_key_allowed,
-    const AttributionInputEvent& input_event) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AttributionOsLevelManager_registerAttributionSource(
-      env, jobj_, url::GURLAndroid::FromNativeGURL(env, registration_url),
-      url::GURLAndroid::FromNativeGURL(env, top_level_origin.GetURL()),
-      is_debug_key_allowed, input_event.input_event);
-}
-
-void AttributionOsLevelManagerAndroid::RegisterAttributionTrigger(
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
+void AttributionOsLevelManagerAndroid::Register(
+    const OsRegistration& registration,
     bool is_debug_key_allowed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AttributionOsLevelManager_registerAttributionTrigger(
-      env, jobj_, url::GURLAndroid::FromNativeGURL(env, registration_url),
-      url::GURLAndroid::FromNativeGURL(env, top_level_origin.GetURL()),
-      is_debug_key_allowed);
+
+  auto registration_url =
+      url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
+  auto top_level_origin = url::GURLAndroid::FromNativeGURL(
+      env, registration.top_level_origin.GetURL());
+
+  switch (registration.GetType()) {
+    case attribution_reporting::mojom::OsRegistrationType::kSource:
+      DCHECK(registration.input_event.has_value());
+      Java_AttributionOsLevelManager_registerAttributionSource(
+          env, jobj_, registration_url, top_level_origin, is_debug_key_allowed,
+          registration.input_event->input_event);
+      break;
+    case attribution_reporting::mojom::OsRegistrationType::kTrigger:
+      Java_AttributionOsLevelManager_registerAttributionTrigger(
+          env, jobj_, registration_url, top_level_origin, is_debug_key_allowed);
+      break;
+  }
 }
 
 void AttributionOsLevelManagerAndroid::ClearData(

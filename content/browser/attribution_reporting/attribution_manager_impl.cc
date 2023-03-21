@@ -82,9 +82,9 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
 namespace content {
@@ -1226,52 +1226,33 @@ void AttributionManagerImpl::OverrideOsLevelManagerForTesting(
   attribution_os_level_manager_ = std::move(os_level_manager);
 }
 
-struct AttributionManagerImpl::OsRegistration {
-  GURL registration_url;
-  url::Origin top_level_origin;
-  // If `absl::nullopt`, represents an OS trigger. Otherwise, represents an OS
-  // source.
-  absl::optional<AttributionInputEvent> input_event;
-};
-
-void AttributionManagerImpl::HandleOsSource(
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
-    AttributionInputEvent input_event,
-    GlobalRenderFrameHostId render_frame_id) {
-  HandleOsRegistration(registration_url, top_level_origin,
-                       std::move(input_event), render_frame_id);
-}
-
-void AttributionManagerImpl::HandleOsTrigger(
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
-    GlobalRenderFrameHostId render_frame_id) {
-  HandleOsRegistration(registration_url, top_level_origin,
-                       /*input_event=*/absl::nullopt, render_frame_id);
-}
-
 void AttributionManagerImpl::HandleOsRegistration(
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
-    absl::optional<AttributionInputEvent> input_event,
+    OsRegistration registration,
     GlobalRenderFrameHostId render_frame_id) {
   if (!attribution_os_level_manager_) {
     return;
   }
 
-  const auto registration_origin = url::Origin::Create(registration_url);
+  const auto registration_origin =
+      url::Origin::Create(registration.registration_url);
   if (registration_origin.opaque()) {
     return;
   }
 
-  auto operation = ContentBrowserClient::AttributionReportingOperation::kSource;
-  const url::Origin* source_origin = &top_level_origin;
-  const url::Origin* destination_origin = nullptr;
-  if (!input_event.has_value()) {
-    operation = ContentBrowserClient::AttributionReportingOperation::kTrigger;
-    source_origin = nullptr;
-    destination_origin = &top_level_origin;
+  ContentBrowserClient::AttributionReportingOperation operation;
+  const url::Origin* source_origin;
+  const url::Origin* destination_origin;
+  switch (registration.GetType()) {
+    case OsRegistrationType::kSource:
+      operation = ContentBrowserClient::AttributionReportingOperation::kSource;
+      source_origin = &registration.top_level_origin;
+      destination_origin = nullptr;
+      break;
+    case OsRegistrationType::kTrigger:
+      operation = ContentBrowserClient::AttributionReportingOperation::kTrigger;
+      source_origin = nullptr;
+      destination_origin = &registration.top_level_origin;
+      break;
   }
 
   // TODO(https://crbug.com/1420704): Support separate behavior on webview for
@@ -1292,11 +1273,7 @@ void AttributionManagerImpl::HandleOsRegistration(
     return;
   }
 
-  pending_os_events_.push_back(OsRegistration{
-      .registration_url = registration_url,
-      .top_level_origin = top_level_origin,
-      .input_event = std::move(input_event),
-  });
+  pending_os_events_.push_back(std::move(registration));
 
   // Only process the new event if it is the only one in the queue. Otherwise,
   // there's already an async cookie-check in progress.
@@ -1321,43 +1298,25 @@ void AttributionManagerImpl::ProcessNextOsEvent() {
 
             {
               const auto& event = manager->pending_os_events_.front();
+              manager->attribution_os_level_manager_->Register(
+                  event, is_debug_key_allowed);
+              manager->NotifyOsRegistration(event, is_debug_key_allowed);
+            }
 
-              if (event.input_event.has_value()) {
-                manager->attribution_os_level_manager_
-                    ->RegisterAttributionSource(
-                        event.registration_url, event.top_level_origin,
-                        is_debug_key_allowed, *event.input_event);
-                manager->NotifyOsRegistration(
-                    event.registration_url, event.top_level_origin,
-                    OsRegistrationType::kSource, is_debug_key_allowed);
-              } else {
-                manager->attribution_os_level_manager_
-                    ->RegisterAttributionTrigger(event.registration_url,
-                                                 event.top_level_origin,
-                                                 is_debug_key_allowed);
-                manager->NotifyOsRegistration(
-                    event.registration_url, event.top_level_origin,
-                    OsRegistrationType::kTrigger, is_debug_key_allowed);
-              }
-
-              manager->pending_os_events_.pop_front();
-              if (!manager->pending_os_events_.empty()) {
-                manager->ProcessNextOsEvent();
-              }
+            manager->pending_os_events_.pop_front();
+            if (!manager->pending_os_events_.empty()) {
+              manager->ProcessNextOsEvent();
             }
           },
           weak_factory_.GetWeakPtr()));
 }
 
 void AttributionManagerImpl::NotifyOsRegistration(
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
-    OsRegistrationType registration_type,
+    const OsRegistration& registration,
     bool is_debug_key_allowed) {
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
-    observer.OnOsRegistration(now, registration_url, top_level_origin,
-                              registration_type, is_debug_key_allowed);
+    observer.OnOsRegistration(now, registration, is_debug_key_allowed);
   }
 }
 

@@ -61,6 +61,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 #endif
@@ -199,13 +200,6 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   // Logically const.
   GlobalRenderFrameHostId render_frame_id_;
 };
-
-#if BUILDFLAG(IS_ANDROID)
-struct AttributionDataHostManagerImpl::OsTrigger {
-  GURL registration_url;
-  url::Origin top_level_origin;
-};
-#endif
 
 struct AttributionDataHostManagerImpl::DelayedTrigger {
   // Logically const.
@@ -678,18 +672,17 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     return;
   }
 
-  attribution_manager_->HandleOsSource(
-      registration_url, context->context_origin(), context->input_event(),
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(registration_url, context->context_origin(),
+                     context->input_event()),
       context->render_frame_id());
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
     const GURL& registration_url) {
   MaybeBufferTrigger([&](const ReceiverContext& context) {
-    return OsTrigger{
-        .registration_url = registration_url,
-        .top_level_origin = context.context_origin(),
-    };
+    return OsRegistration(registration_url, context.context_origin(),
+                          /*input_event=*/absl::nullopt);
   });
 }
 
@@ -710,10 +703,10 @@ void AttributionDataHostManagerImpl::HandleTrigger(
                     attribution_manager_->HandleTrigger(std::move(trigger),
                                                         render_frame_id);
                   },
-                  [&](const OsTrigger& trigger) {
-                    attribution_manager_->HandleOsTrigger(
-                        trigger.registration_url, trigger.top_level_origin,
-                        render_frame_id);
+                  [&](OsRegistration trigger) {
+                    DCHECK(!trigger.input_event.has_value());
+                    attribution_manager_->HandleOsRegistration(
+                        std::move(trigger), render_frame_id);
                   },
               },
               std::move(trigger));
@@ -958,9 +951,11 @@ void AttributionDataHostManagerImpl::OnOsSourceParsed(SourceRegistrationsId id,
       GURL registration_url =
           attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
 
-      attribution_manager_->HandleOsSource(
-          registration_url, registrations.source_origin(),
-          registrations.input_event(), registrations.render_frame_id());
+      attribution_manager_->HandleOsRegistration(
+          OsRegistration(std::move(registration_url),
+                         registrations.source_origin(),
+                         registrations.input_event()),
+          registrations.render_frame_id());
     }
   });
 }

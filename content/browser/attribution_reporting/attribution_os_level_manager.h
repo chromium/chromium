@@ -11,8 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 
-class GURL;
-
 namespace base {
 class Time;
 }  // namespace base
@@ -23,7 +21,7 @@ class Origin;
 
 namespace content {
 
-struct AttributionInputEvent;
+struct OsRegistration;
 
 // Interface between the browser's Attribution Reporting implementation and the
 // operating system's.
@@ -31,14 +29,7 @@ class AttributionOsLevelManager {
  public:
   virtual ~AttributionOsLevelManager() = default;
 
-  virtual void RegisterAttributionSource(const GURL& registration_url,
-                                         const url::Origin& top_level_origin,
-                                         bool is_debug_key_allowed,
-                                         const AttributionInputEvent&) = 0;
-
-  virtual void RegisterAttributionTrigger(const GURL& registration_url,
-                                          const url::Origin& top_level_origin,
-                                          bool is_debug_key_allowed) = 0;
+  virtual void Register(const OsRegistration&, bool is_debug_key_allowed) = 0;
 
   // Clears storage data with the OS.
   // Note that `done` is not run if `AttributionOsLevelManager` is destroyed

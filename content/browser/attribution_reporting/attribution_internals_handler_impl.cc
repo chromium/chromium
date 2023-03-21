@@ -61,6 +61,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
 namespace content {
@@ -410,17 +411,15 @@ void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
 #if BUILDFLAG(IS_ANDROID)
 void AttributionInternalsHandlerImpl::OnOsRegistration(
     base::Time time,
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
-    attribution_reporting::mojom::OsRegistrationType registration_type,
+    const OsRegistration& registration,
     bool is_debug_key_allowed) {
   auto web_ui_os_registration =
       attribution_internals::mojom::WebUIOsRegistration::New();
   web_ui_os_registration->time = time.ToJsTimeIgnoringNull();
-  web_ui_os_registration->registration_url = registration_url;
-  web_ui_os_registration->top_level_origin = top_level_origin;
+  web_ui_os_registration->registration_url = registration.registration_url;
+  web_ui_os_registration->top_level_origin = registration.top_level_origin;
   web_ui_os_registration->is_debug_key_allowed = is_debug_key_allowed;
-  web_ui_os_registration->type = registration_type;
+  web_ui_os_registration->type = registration.GetType();
 
   observer_->OnOsRegistration(std::move(web_ui_os_registration));
 }

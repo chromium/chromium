@@ -83,9 +83,7 @@ class AttributionInternalsHandlerImpl
 
 #if BUILDFLAG(IS_ANDROID)
   void OnOsRegistration(base::Time time,
-                        const GURL& registration_url,
-                        const url::Origin& top_level_origin,
-                        attribution_reporting::mojom::OsRegistrationType,
+                        const OsRegistration&,
                         bool is_debug_key_allowed) override;
 #endif  // BUILDFLAG(IS_ANDROID)
 

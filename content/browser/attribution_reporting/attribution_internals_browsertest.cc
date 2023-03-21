@@ -60,12 +60,10 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
 #include "components/attribution_reporting/os_support.mojom.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
 namespace content {
@@ -449,8 +447,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
 
   manager()->NotifyOsRegistration(
-      GURL("https://a.test"), url::Origin::Create(GURL("https://b.test")),
-      attribution_reporting::mojom::OsRegistrationType::kSource, false);
+      OsRegistration(GURL("https://a.test"),
+                     url::Origin::Create(GURL("https://b.test")),
+                     AttributionInputEvent()),
+      /*is_debug_key_allowed=*/false);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 #endif  // BUILDFLAG(IS_ANDROID)

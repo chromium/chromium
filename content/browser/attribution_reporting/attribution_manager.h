@@ -19,20 +19,6 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 
-#if BUILDFLAG(IS_ANDROID)
-
-class GURL;
-
-namespace content {
-struct AttributionInputEvent;
-}  // namespace content
-
-namespace url {
-class Origin;
-}  // namespace url
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace attribution_reporting {
 class SuitableOrigin;
 }  // namespace attribution_reporting
@@ -53,6 +39,10 @@ class StoredSource;
 class WebContents;
 
 struct GlobalRenderFrameHostId;
+
+#if BUILDFLAG(IS_ANDROID)
+struct OsRegistration;
+#endif
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
@@ -84,17 +74,10 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
                              GlobalRenderFrameHostId render_frame_id) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-
-  virtual void HandleOsSource(const GURL& registration_url,
-                              const url::Origin& top_level_origin,
-                              AttributionInputEvent,
-                              GlobalRenderFrameHostId render_frame_id) = 0;
-
-  virtual void HandleOsTrigger(const GURL& registration_url,
-                               const url::Origin& top_level_origin,
-                               GlobalRenderFrameHostId render_frame_id) = 0;
-
-#endif  // BUILDFLAG(IS_ANDROID)
+  virtual void HandleOsRegistration(
+      OsRegistration,
+      GlobalRenderFrameHostId render_frame_id) = 0;
+#endif
 
   // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.

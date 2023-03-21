@@ -51,6 +51,10 @@ class AttributionTrigger;
 
 struct GlobalRenderFrameHostId;
 
+#if BUILDFLAG(IS_ANDROID)
+struct OsRegistration;
+#endif
+
 // Manages a receiver set of all ongoing `AttributionDataHost`s and forwards
 // events to the `AttributionManager` that owns `this`. Because attributionsrc
 // requests may continue until after we have detached a frame, all browser
@@ -125,8 +129,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       absl::variant<blink::AttributionSrcToken, BeaconId>;
 
 #if BUILDFLAG(IS_ANDROID)
-  struct OsTrigger;
-  using TriggerPayload = absl::variant<AttributionTrigger, OsTrigger>;
+  using TriggerPayload = absl::variant<AttributionTrigger, OsRegistration>;
 #else
   using TriggerPayload = AttributionTrigger;
 #endif

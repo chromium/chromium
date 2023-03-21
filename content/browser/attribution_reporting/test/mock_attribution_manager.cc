@@ -21,7 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
 namespace content {
@@ -105,14 +105,11 @@ void MockAttributionManager::NotifyDebugReportSent(
 
 #if BUILDFLAG(IS_ANDROID)
 void MockAttributionManager::NotifyOsRegistration(
-    const GURL& registration_url,
-    const url::Origin& top_level_origin,
-    attribution_reporting::mojom::OsRegistrationType registration_type,
+    const OsRegistration& registration,
     bool is_debug_key_allowed) {
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
-    observer.OnOsRegistration(now, registration_url, top_level_origin,
-                              registration_type, is_debug_key_allowed);
+    observer.OnOsRegistration(now, registration, is_debug_key_allowed);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)

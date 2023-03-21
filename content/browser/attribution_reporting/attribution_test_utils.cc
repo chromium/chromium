@@ -40,6 +40,13 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
+#include "content/browser/attribution_reporting/os_registration.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -1095,5 +1102,22 @@ DefaultAggregatableHistogramContributions(
   }
   return contributions;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+bool operator==(const OsRegistration& a, const OsRegistration& b) {
+  const auto tie = [](const OsRegistration& r) {
+    return std::make_tuple(r.registration_url, r.top_level_origin, r.GetType());
+  };
+  return tie(a) == tie(b);
+}
+
+std::ostream& operator<<(std::ostream& out, const OsRegistration& r) {
+  return out << "{registration_url=" << r.registration_url
+             << ",top_level_origin=" << r.top_level_origin
+             << ",type=" << r.GetType() << "}";
+}
+
+#endif
 
 }  // namespace content

@@ -79,6 +79,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
 namespace content {
@@ -225,18 +226,8 @@ class MockAttributionOsLevelManager : public AttributionOsLevelManager {
   ~MockAttributionOsLevelManager() override = default;
 
   MOCK_METHOD(void,
-              RegisterAttributionSource,
-              (const GURL& registration_url,
-               const url::Origin& top_level_origin,
-               bool is_debug_key_allowed,
-               const AttributionInputEvent&),
-              (override));
-
-  MOCK_METHOD(void,
-              RegisterAttributionTrigger,
-              (const GURL& registration_url,
-               const url::Origin& top_level_origin,
-               bool is_debug_key_allowed),
+              Register,
+              (const OsRegistration&, bool is_debug_key_allowed),
               (override));
 
   MOCK_METHOD(void,
@@ -1144,32 +1135,42 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
     InSequence seq;
 
     EXPECT_CALL(*os_level_manager_ptr,
-                RegisterAttributionSource(kRegistrationUrl1, kTopLevelOrigin1,
-                                          /*is_debug_key_allowed=*/true, _));
+                Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
+                                        AttributionInputEvent()),
+                         /*is_debug_key_allowed=*/true));
 
     EXPECT_CALL(*os_level_manager_ptr,
-                RegisterAttributionSource(kRegistrationUrl2, kTopLevelOrigin2,
-                                          /*is_debug_key_allowed=*/false, _));
+                Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
+                                        AttributionInputEvent()),
+                         /*is_debug_key_allowed=*/false));
   }
 
   // Dropped due to the URL being opaque.
-  EXPECT_CALL(
-      *os_level_manager_ptr,
-      RegisterAttributionSource(kRegistrationUrl3, kTopLevelOrigin3, _, _))
+  EXPECT_CALL(*os_level_manager_ptr,
+              Register(OsRegistration(kRegistrationUrl3, kTopLevelOrigin3,
+                                      AttributionInputEvent()),
+                       _))
       .Times(0);
 
   // Prohibited by policy below.
-  EXPECT_CALL(
-      *os_level_manager_ptr,
-      RegisterAttributionSource(kRegistrationUrl4, kTopLevelOrigin4, _, _))
+  EXPECT_CALL(*os_level_manager_ptr,
+              Register(OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
+                                      AttributionInputEvent()),
+                       _))
       .Times(0);
 
-  attribution_manager_->HandleOsSource(kRegistrationUrl1, kTopLevelOrigin1,
-                                       AttributionInputEvent(), kFrameId);
-  attribution_manager_->HandleOsSource(kRegistrationUrl2, kTopLevelOrigin2,
-                                       AttributionInputEvent(), kFrameId);
-  attribution_manager_->HandleOsSource(kRegistrationUrl3, kTopLevelOrigin3,
-                                       AttributionInputEvent(), kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
+                     AttributionInputEvent()),
+      kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
+                     AttributionInputEvent()),
+      kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl3, kTopLevelOrigin3,
+                     AttributionInputEvent()),
+      kFrameId);
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -1181,8 +1182,10 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  attribution_manager_->HandleOsSource(kRegistrationUrl4, kTopLevelOrigin4,
-                                       AttributionInputEvent(), kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
+                     AttributionInputEvent()),
+      kFrameId);
 }
 
 TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
@@ -1207,32 +1210,42 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
     InSequence seq;
 
     EXPECT_CALL(*os_level_manager_ptr,
-                RegisterAttributionTrigger(kRegistrationUrl1, kTopLevelOrigin1,
-                                           /*is_debug_key_allowed=*/true));
+                Register(OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
+                                        /*input_event=*/absl::nullopt),
+                         /*is_debug_key_allowed=*/true));
 
     EXPECT_CALL(*os_level_manager_ptr,
-                RegisterAttributionTrigger(kRegistrationUrl2, kTopLevelOrigin2,
-                                           /*is_debug_key_allowed=*/false));
+                Register(OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
+                                        /*input_event=*/absl::nullopt),
+                         /*is_debug_key_allowed=*/false));
   }
 
   // Dropped due to the URL being opaque.
-  EXPECT_CALL(
-      *os_level_manager_ptr,
-      RegisterAttributionTrigger(kRegistrationUrl3, kTopLevelOrigin3, _))
+  EXPECT_CALL(*os_level_manager_ptr,
+              Register(OsRegistration(kRegistrationUrl3, kTopLevelOrigin3,
+                                      /*input_event=*/absl::nullopt),
+                       _))
       .Times(0);
 
   // Prohibited by policy below.
-  EXPECT_CALL(
-      *os_level_manager_ptr,
-      RegisterAttributionTrigger(kRegistrationUrl4, kTopLevelOrigin4, _))
+  EXPECT_CALL(*os_level_manager_ptr,
+              Register(OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
+                                      /*input_event=*/absl::nullopt),
+                       _))
       .Times(0);
 
-  attribution_manager_->HandleOsTrigger(kRegistrationUrl1, kTopLevelOrigin1,
-                                        kFrameId);
-  attribution_manager_->HandleOsTrigger(kRegistrationUrl2, kTopLevelOrigin2,
-                                        kFrameId);
-  attribution_manager_->HandleOsTrigger(kRegistrationUrl3, kTopLevelOrigin3,
-                                        kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl1, kTopLevelOrigin1,
+                     /*input_event=*/absl::nullopt),
+      kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl2, kTopLevelOrigin2,
+                     /*input_event=*/absl::nullopt),
+      kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl3, kTopLevelOrigin3,
+                     /*input_event=*/absl::nullopt),
+      kFrameId);
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -1244,8 +1257,10 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  attribution_manager_->HandleOsTrigger(kRegistrationUrl4, kTopLevelOrigin4,
-                                        kFrameId);
+  attribution_manager_->HandleOsRegistration(
+      OsRegistration(kRegistrationUrl4, kTopLevelOrigin4,
+                     /*input_event=*/absl::nullopt),
+      kFrameId);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

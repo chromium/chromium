@@ -65,6 +65,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #endif
 
 namespace content {
@@ -776,8 +777,10 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
   EXPECT_CALL(mock_manager_,
-              HandleOsSource(GURL("https://r.test/x"), *source_site,
-                             /*input_event=*/_, kFrameId));
+              HandleOsRegistration(
+                  OsRegistration(GURL("https://r.test/x"), *source_site,
+                                 AttributionInputEvent()),
+                  kFrameId));
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -805,7 +808,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   const auto reporter = *SuitableOrigin::Deserialize("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
-  EXPECT_CALL(mock_manager_, HandleOsSource).Times(0);
+  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader, "!");
@@ -831,7 +834,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(mock_manager_, HandleOsSource).Times(0);
+  EXPECT_CALL(mock_manager_, HandleOsRegistration).Times(0);
 #endif
   EXPECT_CALL(mock_manager_, HandleSource).Times(0);
 
@@ -1782,8 +1785,10 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
 
   EXPECT_CALL(mock_manager_,
-              HandleOsSource(GURL("https://r.test/x"), *source_origin,
-                             /*input_event=*/_, kFrameId))
+              HandleOsRegistration(
+                  OsRegistration(GURL("https://r.test/x"), *source_origin,
+                                 AttributionInputEvent()),
+                  kFrameId))
       .Times(2);
 
   NavigationBeaconId navigation_id(123);
@@ -2071,8 +2076,11 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
 
-  EXPECT_CALL(mock_manager_,
-              HandleOsSource(kRegistrationUrl, *kTopLevelOrigin, _, kFrameId));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleOsRegistration(OsRegistration(kRegistrationUrl, *kTopLevelOrigin,
+                                          AttributionInputEvent()),
+                           kFrameId));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -2088,8 +2096,11 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
 
-  EXPECT_CALL(mock_manager_,
-              HandleOsTrigger(kRegistrationUrl, *kTopLevelOrigin, kFrameId));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleOsRegistration(OsRegistration(kRegistrationUrl, *kTopLevelOrigin,
+                                          /*input_event=*/absl::nullopt),
+                           kFrameId));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(

@@ -3016,6 +3016,8 @@ source_set("browser") {
       "attribution_reporting/attribution_os_level_manager.h",
       "attribution_reporting/attribution_os_level_manager_android.cc",
       "attribution_reporting/attribution_os_level_manager_android.h",
+      "attribution_reporting/os_registration.cc",
+      "attribution_reporting/os_registration.h",
       "child_process_launcher_helper_android.cc",
       "contacts/contacts_provider_android.cc",
       "contacts/contacts_provider_android.h",
