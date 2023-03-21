@@ -31,10 +31,13 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/user_education/common/user_education_class_properties.h"
+#include "content/public/common/url_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
@@ -222,8 +225,18 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   }
 
   // This will show the promo only after the IPH system is properly initialized.
-  browser_->window()->MaybeShowStartupFeaturePromo(
-      feature_engagement::kIPHProfileSwitchFeature);
+  if (!web_app::AppBrowserController::IsWebApp(browser_)) {
+    browser_->window()->MaybeShowStartupFeaturePromo(
+        feature_engagement::kIPHProfileSwitchFeature);
+  } else {
+    // Installable PasswordManager WebUI is the only web app that has an avatar
+    // toolbar button.
+    auto app_url = browser_->app_controller()->GetAppStartUrl();
+    CHECK(content::HasWebUIScheme(app_url) &&
+          (app_url.host() == password_manager::kChromeUIPasswordManagerHost));
+    browser_->window()->MaybeShowStartupFeaturePromo(
+        feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
+  }
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {

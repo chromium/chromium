@@ -17,6 +17,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -187,6 +188,11 @@ void ProfileMenuView::BuildMenu() {
     }
   }
 #endif
+
+  if (web_app::AppBrowserController::IsWebApp(browser())) {
+    browser()->window()->NotifyFeatureEngagementEvent(
+        "web_app_profile_menu_shown");
+  }
 }
 
 gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {

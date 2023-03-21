@@ -78,6 +78,8 @@ class WebAppLaunchProcess {
                                    content::WebContents* web_contents,
                                    bool started_new_navigation);
 
+  void MaybeShowProfileSwitchIPH(Browser* browser);
+
   const raw_ref<Profile> profile_;
   const raw_ref<WebAppRegistrar> registrar_;
   const raw_ref<OsIntegrationManager> os_integration_manager_;
