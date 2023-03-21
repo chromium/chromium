@@ -3184,6 +3184,21 @@
             ]
         }
     ],
+    "CrOSBluetoothFlossCoredump": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BluetoothFlossCoredump"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSBluetoothLLPrivacy": [
         {
             "platforms": [
