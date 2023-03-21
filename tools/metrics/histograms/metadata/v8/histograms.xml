@@ -1005,24 +1005,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2023-06-11">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in background tasks doing marking in one GC cycle. It is recorded
-    after each GC.
-  </summary>
-</histogram>
-
-<histogram name="V8.GCBackgroundSweeping" units="ms" expires_after="M111">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in background tasks doing sweeping in one GC cycle. It is
-    recorded after each GC.
-  </summary>
-</histogram>
-
 <histogram name="V8.GCCompactor" units="ms" expires_after="2023-08-08">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
