@@ -8,11 +8,14 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
+#include "chromeos/ash/components/phonehub/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -20,10 +23,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -98,17 +103,44 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     title_->layer()->SetFillsBoundsOpaquely(false);
 
     // Add dialog body.
-    // TODO(b/273822975): change Learn More to link.
-    body_ =
-        AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-            IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_MAIN_TEXT)));
+    const std::u16string learn_more_link =
+        l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE);
+    size_t offset;
+    const std::u16string body_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_MAIN_TEXT, learn_more_link,
+        &offset);
+
+    body_ = AddChildView(std::make_unique<views::StyledLabel>());
+    body_->SetText(body_text);
+
+    views::StyledLabel::RangeStyleInfo style;
+    style.override_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    body_->AddStyleRange(gfx::Range(0, offset), style);
+
+    // TODO(b/273822975): Change Learn More link to a different page than the
+    // default Phone Hub help page.
+    views::StyledLabel::RangeStyleInfo link_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &ConnectionErrorDialogDelegateView::LearnMoreLinkPressed,
+            base::Unretained(this),
+            base::BindRepeating(
+                &NewWindowDelegate::OpenUrl,
+                base::Unretained(NewWindowDelegate::GetPrimary()),
+                GURL(phonehub::kPhoneHubLearnMoreLink),
+                NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                NewWindowDelegate::Disposition::kNewForegroundTab)));
+    const SkColor link_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
+    link_style.override_color = link_color;
+    body_->AddStyleRange(gfx::Range(offset, offset + learn_more_link.length()),
+                         link_style);
+
     body_->SetProperty(views::kMarginsKey,
                        gfx::Insets::TLBR(kMarginBetweenTitleAndBody, 0,
                                          kMarginBetweenBodyAndButtons, 0));
     body_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
     body_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    body_->SetMultiLine(true);
-    body_->SetAllowCharacterBreak(true);
     body_->SetAutoColorReadabilityEnabled(false);
 
     body_->SetPaintToLayer();
@@ -133,7 +165,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
             &ConnectionErrorDialogDelegateView::OnStartTetheringClicked,
             base::Unretained(this))),
         l10n_util::GetStringUTF16(
-            IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TURN_ON_HOTSPOT),
+            IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_OK_TEXT),
         PillButton::Type::kPrimaryWithoutIcon, nullptr));
   }
 
@@ -166,8 +198,6 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         /*use_light_colors=*/false));
     title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
-    body_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
   void OnStartTetheringClicked() {
@@ -184,13 +214,17 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         views::Widget::ClosedReason::kCancelButtonClicked);
   }
 
+  void LearnMoreLinkPressed(base::RepeatingClosure callback) {
+    std::move(callback).Run();
+  }
+
  private:
   StartTetheringCallback start_tethering_callback_;
   std::unique_ptr<ViewShadow> view_shadow_;
 
   views::ImageView* icon_ = nullptr;
   views::Label* title_ = nullptr;
-  views::Label* body_ = nullptr;
+  views::StyledLabel* body_ = nullptr;
   views::Button* cancel_button_ = nullptr;
   views::Button* accept_button_ = nullptr;
 };

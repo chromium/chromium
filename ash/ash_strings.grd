@@ -6363,11 +6363,14 @@ New install
       <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE" desc="The title of dialog that appears when there is a connection error trying to stream app">
         Can't stream apps
       </message>
-      <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_MAIN_TEXT" desc="The main description in the dialog that appears when there is a connection error trying to stream app">
-        This network doesn't support streaming apps from your phone. Try turning on your phone's hotspot. Learn more.
+      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_MAIN_TEXT" desc="The main description in the dialog that appears when there is a connection error trying to stream app">
+        This network doesn't support streaming apps from your phone. Try using your phone's hotspot. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TURN_ON_HOTSPOT" desc="The button in the dialog that appears when there is a connection error trying to stream app to turn on hotspot">
         Turn on hotspot
+      </message>
+      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_OK_TEXT" desc="Confirm button on the connection error dialog to acknowledge.">
+        Ok
       </message>
 
       <!-- Deferred update dialog -->
