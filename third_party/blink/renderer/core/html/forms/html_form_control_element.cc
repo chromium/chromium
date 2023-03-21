@@ -118,6 +118,8 @@ void HTMLFormControlElement::AttributeChanged(
     if (params.reason == AttributeModificationReason::kDirectly &&
         IsDisabledFormControl() && AdjustedFocusedElementInTreeScope() == this)
       blur();
+  } else if (params.name == html_names::kPopovertargetAttr) {
+    CheckAndPossiblyClosePopoverStack();
   }
 }
 
