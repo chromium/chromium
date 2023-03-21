@@ -13,7 +13,7 @@
 @protocol PasswordStoreObserver <NSObject>
 
 // Called when the logins in the Password Store are changed.
-- (void)loginsDidChange;
+- (void)loginsDidChangeInStore:(password_manager::PasswordStoreInterface*)store;
 
 @end
 

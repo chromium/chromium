@@ -43,7 +43,8 @@ std::string CreateUsernamePasswordSortKey(const CredentialUIEntry& credential);
 // Sort entries of |list| based on sort key. The key is the concatenation of
 // origin, entry type (non-Android credential, Android w/ affiliated web realm
 // or Android w/o affiliated web realm). If a form in |list| is not blocklisted,
-// username, password and federation are also included in sort key. If there are
+// username, password and federation are also included in sort key. Forms that
+// only differ by password_form::PasswordForm::Store are merged. If there are
 // several forms with the same key, all such forms but the first one are stored
 // in |duplicates| instead of |list|.
 void SortEntriesAndHideDuplicates(

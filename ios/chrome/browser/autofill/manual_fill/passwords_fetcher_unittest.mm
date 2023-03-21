@@ -9,12 +9,15 @@
 #import "base/functional/bind.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -24,6 +27,7 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilCondition;
 
 // Test object conforming to PasswordFetcherDelegate used to verify the results
@@ -55,6 +59,54 @@ using base::test::ios::WaitUntilCondition;
 
 namespace {
 
+scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
+    password_manager::IsAccountStore is_account_store,
+    web::BrowserState* browser_state) {
+  auto store = base::MakeRefCounted<password_manager::TestPasswordStore>(
+      is_account_store);
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  return store;
+}
+
+password_manager::PasswordForm MakeForm1() {
+  password_manager::PasswordForm form;
+  form.url = GURL("http://www.example.com/accounts/LoginAuth");
+  form.action = GURL("http://www.example.com/accounts/Login");
+  form.username_element = u"Email";
+  form.username_value = u"test@egmail.com";
+  form.password_element = u"Passwd";
+  form.password_value = u"test";
+  form.submit_element = u"signIn";
+  form.signon_realm = "http://www.example.com/";
+  form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  form.blocked_by_user = false;
+  return form;
+}
+
+password_manager::PasswordForm MakeForm2() {
+  password_manager::PasswordForm form;
+  form.url = GURL("http://www.example2.com/accounts/LoginAuth");
+  form.action = GURL("http://www.example2.com/accounts/Login");
+  form.username_element = u"Email";
+  form.username_value = u"test@egmail.com";
+  form.password_element = u"Passwd";
+  form.password_value = u"test";
+  form.submit_element = u"signIn";
+  form.signon_realm = "http://www.example2.com/";
+  form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  form.blocked_by_user = false;
+  return form;
+}
+
+password_manager::PasswordForm MakeBlockedForm() {
+  password_manager::PasswordForm form;
+  form.url = GURL("http://www.secret.com/login");
+  form.signon_realm = "http://www.secret.test/";
+  form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  form.blocked_by_user = true;
+  return form;
+}
+
 class PasswordFetcherTest : public PlatformTest {
  protected:
   PasswordFetcherTest() = default;
@@ -64,63 +116,35 @@ class PasswordFetcherTest : public PlatformTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindRepeating(&BuildPasswordStore,
+                            password_manager::IsAccountStore(false)));
+    // Despite overriding BuildServiceInstanceFor() for the account factory,
+    // GetAccountPasswordStore() is still null if the feature is off, which
+    // matches production behavior. This just future-proofs the tests for when
+    // the feature is enabled.
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeAccountPasswordStoreFactory::GetInstance(),
+        base::BindRepeating(&BuildPasswordStore,
+                            password_manager::IsAccountStore(true)));
     chrome_browser_state_ = test_cbs_builder.Build();
+    ASSERT_EQ(base::FeatureList::IsEnabled(
+                  password_manager::features::kEnablePasswordsAccountStorage),
+              !!GetAccountPasswordStore());
   }
 
-  password_manager::PasswordStoreInterface* GetPasswordStore() {
+  scoped_refptr<password_manager::PasswordStoreInterface>
+  GetProfilePasswordStore() {
     return IOSChromePasswordStoreFactory::GetForBrowserState(
-               chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
-        .get();
+        chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   }
 
-  password_manager::PasswordForm Form1() {
-    password_manager::PasswordForm form;
-    form.url = GURL("http://www.example.com/accounts/LoginAuth");
-    form.action = GURL("http://www.example.com/accounts/Login");
-    form.username_element = u"Email";
-    form.username_value = u"test@egmail.com";
-    form.password_element = u"Passwd";
-    form.password_value = u"test";
-    form.submit_element = u"signIn";
-    form.signon_realm = "http://www.example.com/";
-    form.scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form.blocked_by_user = false;
-    return form;
+  scoped_refptr<password_manager::PasswordStoreInterface>
+  GetAccountPasswordStore() {
+    return IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+        chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   }
 
-  // Creates and adds a saved password form.
-  void AddSavedForm1() { GetPasswordStore()->AddLogin(Form1()); }
-
-  // Creates and adds a saved password form.
-  void AddSavedForm2() {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL("http://www.example2.com/accounts/LoginAuth");
-    form->action = GURL("http://www.example2.com/accounts/Login");
-    form->username_element = u"Email";
-    form->username_value = u"test@egmail.com";
-    form->password_element = u"Passwd";
-    form->password_value = u"test";
-    form->submit_element = u"signIn";
-    form->signon_realm = "http://www.example2.com/";
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->blocked_by_user = false;
-    GetPasswordStore()->AddLogin(*std::move(form));
-  }
-
-  // Creates and adds a blocked site form to never offer to save
-  // user's password to those sites.
-  void AddBlockedForm() {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL("http://www.secret.com/login");
-    form->signon_realm = "http://www.secret.test/";
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->blocked_by_user = true;
-    GetPasswordStore()->AddLogin(*std::move(form));
-  }
-
+ private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 };
@@ -129,11 +153,9 @@ class PasswordFetcherTest : public PlatformTest {
 TEST_F(PasswordFetcherTest, Initialization) {
   TestPasswordFetcherDelegate* passwordFetcherDelegate =
       [[TestPasswordFetcherDelegate alloc] init];
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:passwordStore
-              accountPasswordStore:nullptr
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
   EXPECT_TRUE(passwordFetcher);
@@ -141,14 +163,13 @@ TEST_F(PasswordFetcherTest, Initialization) {
 
 // Tests PasswordFetcher returns 1 passwords.
 TEST_F(PasswordFetcherTest, ReturnsPassword) {
-  AddSavedForm1();
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+
   TestPasswordFetcherDelegate* passwordFetcherDelegate =
       [[TestPasswordFetcherDelegate alloc] init];
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:passwordStore
-              accountPasswordStore:nullptr
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
 
@@ -156,7 +177,7 @@ TEST_F(PasswordFetcherTest, ReturnsPassword) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::Seconds(1000));
+      /*run_message_loop=*/true, kWaitForActionTimeout);
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -164,22 +185,21 @@ TEST_F(PasswordFetcherTest, ReturnsPassword) {
 
 // Tests PasswordFetcher returns 2 passwords.
 TEST_F(PasswordFetcherTest, ReturnsTwoPasswords) {
-  AddSavedForm1();
-  AddSavedForm2();
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+  GetProfilePasswordStore()->AddLogin(MakeForm2());
+
   TestPasswordFetcherDelegate* passwordFetcherDelegate =
       [[TestPasswordFetcherDelegate alloc] init];
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:passwordStore
-              accountPasswordStore:nullptr
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::Seconds(1000));
+      /*run_message_loop=*/true, kWaitForActionTimeout);
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 2u);
   EXPECT_TRUE(passwordFetcher);
@@ -187,22 +207,21 @@ TEST_F(PasswordFetcherTest, ReturnsTwoPasswords) {
 
 // Tests PasswordFetcher ignores blocked passwords.
 TEST_F(PasswordFetcherTest, IgnoresBlocked) {
-  AddSavedForm1();
-  AddBlockedForm();
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+  GetProfilePasswordStore()->AddLogin(MakeBlockedForm());
+
   TestPasswordFetcherDelegate* passwordFetcherDelegate =
       [[TestPasswordFetcherDelegate alloc] init];
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:passwordStore
-              accountPasswordStore:nullptr
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::Seconds(1000));
+      /*run_message_loop=*/true, kWaitForActionTimeout);
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -210,24 +229,23 @@ TEST_F(PasswordFetcherTest, IgnoresBlocked) {
 
 // Tests PasswordFetcher ignores duplicated passwords.
 TEST_F(PasswordFetcherTest, IgnoresDuplicated) {
-  AddSavedForm1();
-  AddSavedForm1();
-  AddSavedForm1();
-  AddSavedForm1();
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+
   TestPasswordFetcherDelegate* passwordFetcherDelegate =
       [[TestPasswordFetcherDelegate alloc] init];
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:passwordStore
-              accountPasswordStore:nullptr
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::Seconds(1000));
+      /*run_message_loop=*/true, kWaitForActionTimeout);
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);
@@ -235,45 +253,43 @@ TEST_F(PasswordFetcherTest, IgnoresDuplicated) {
 
 // Tests PasswordFetcher receives 0 passwords.
 TEST_F(PasswordFetcherTest, ReceivesZeroPasswords) {
-  AddSavedForm1();
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+
   TestPasswordFetcherDelegate* passwordFetcherDelegate =
       [[TestPasswordFetcherDelegate alloc] init];
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:passwordStore
-              accountPasswordStore:nullptr
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL::EmptyGURL()];
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::Seconds(1000));
-  EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
+      /*run_message_loop=*/true, kWaitForActionTimeout);
+  ASSERT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
 
-  GetPasswordStore()->RemoveLogin(Form1());
+  GetProfilePasswordStore()->RemoveLogin(MakeForm1());
 
   WaitUntilCondition(
       ^bool {
         return passwordFetcherDelegate.passwordNumber == 0;
       },
-      true, base::Seconds(1000));
+      /*run_message_loop=*/true, kWaitForActionTimeout);
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 0u);
   EXPECT_TRUE(passwordFetcher);
 }
 
 // Tests PasswordFetcher filters 1 passwords.
 TEST_F(PasswordFetcherTest, FilterPassword) {
-  AddSavedForm1();
-  AddSavedForm2();
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+  GetProfilePasswordStore()->AddLogin(MakeForm2());
+
   TestPasswordFetcherDelegate* passwordFetcherDelegate =
       [[TestPasswordFetcherDelegate alloc] init];
-  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
-      initWithProfilePasswordStore:passwordStore
-              accountPasswordStore:nullptr
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
                           delegate:passwordFetcherDelegate
                                URL:GURL("http://www.example.com/accounts/"
                                         "Login")];
@@ -281,7 +297,40 @@ TEST_F(PasswordFetcherTest, FilterPassword) {
       ^bool {
         return passwordFetcherDelegate.passwordNumber > 0;
       },
-      true, base::Seconds(1000));
+      /*run_message_loop=*/true, kWaitForActionTimeout);
+
+  EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
+  EXPECT_TRUE(passwordFetcher);
+}
+
+class PasswordFetcherTestWithAccountStorage : public PasswordFetcherTest {
+ protected:
+  PasswordFetcherTestWithAccountStorage() {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kEnablePasswordsAccountStorage);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests PasswordFetcher ignores duplicated passwords in different stores.
+TEST_F(PasswordFetcherTestWithAccountStorage, IgnoresDuplicateInOtherStore) {
+  GetProfilePasswordStore()->AddLogin(MakeForm1());
+  GetAccountPasswordStore()->AddLogin(MakeForm1());
+
+  TestPasswordFetcherDelegate* passwordFetcherDelegate =
+      [[TestPasswordFetcherDelegate alloc] init];
+  PasswordFetcher* passwordFetcher = [[PasswordFetcher alloc]
+      initWithProfilePasswordStore:GetProfilePasswordStore()
+              accountPasswordStore:GetAccountPasswordStore()
+                          delegate:passwordFetcherDelegate
+                               URL:GURL::EmptyGURL()];
+  WaitUntilCondition(
+      ^bool {
+        return passwordFetcherDelegate.passwordNumber > 0;
+      },
+      /*run_message_loop=*/true, kWaitForActionTimeout);
 
   EXPECT_EQ(passwordFetcherDelegate.passwordNumber, 1u);
   EXPECT_TRUE(passwordFetcher);

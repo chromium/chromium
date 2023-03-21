@@ -13,13 +13,13 @@ PasswordStoreObserverBridge::PasswordStoreObserverBridge(
     : observer_(observer) {}
 
 void PasswordStoreObserverBridge::OnLoginsChanged(
-    password_manager::PasswordStoreInterface* /*store*/,
+    password_manager::PasswordStoreInterface* store,
     const password_manager::PasswordStoreChangeList& /*changes*/) {
-  [observer_ loginsDidChange];
+  [observer_ loginsDidChangeInStore:store];
 }
 
 void PasswordStoreObserverBridge::OnLoginsRetained(
-    password_manager::PasswordStoreInterface* /*store*/,
+    password_manager::PasswordStoreInterface* store,
     const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
-  [observer_ loginsDidChange];
+  [observer_ loginsDidChangeInStore:store];
 }

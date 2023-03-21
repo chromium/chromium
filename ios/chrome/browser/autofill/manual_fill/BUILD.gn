@@ -31,6 +31,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common:features",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/passwords",
     "//testing/gtest",

@@ -121,7 +121,7 @@ void SortEntriesAndHideDuplicates(
       keys_to_forms;
   keys_to_forms.reserve(list->size());
   for (auto& form : *list) {
-    std::string key = CreateSortKey(*form, IgnoreStore(false));
+    std::string key = CreateSortKey(*form, IgnoreStore(true));
     keys_to_forms.emplace_back(std::move(key), std::move(form));
   }
 

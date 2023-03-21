@@ -16,8 +16,10 @@
 
 // Callback called when the async request launched from
 // `getLoginsFromPasswordStore` finishes.
-- (void)onGetPasswordStoreResults:
-    (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results;
+- (void)
+    onGetPasswordStoreResults:
+        (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results
+                    fromStore:(password_manager::PasswordStoreInterface*)store;
 
 @end
 
@@ -32,9 +34,16 @@ class SavePasswordsConsumer : public password_manager::PasswordStoreConsumer {
   SavePasswordsConsumer& operator=(const SavePasswordsConsumer&) = delete;
 
   ~SavePasswordsConsumer() override;
+
+  // password_manager::PasswordStoreConsumer implementation.
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
       override;
+  void OnGetPasswordStoreResultsFrom(
+      password_manager::PasswordStoreInterface* store,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
+      override;
+
   base::WeakPtr<password_manager::PasswordStoreConsumer> GetWeakPtr();
 
  private:

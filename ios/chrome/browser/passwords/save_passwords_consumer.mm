@@ -6,6 +6,7 @@
 
 #import <utility>
 
+#import "base/notreached.h"
 #import "components/password_manager/core/browser/password_form.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,7 +23,14 @@ SavePasswordsConsumer::~SavePasswordsConsumer() = default;
 
 void SavePasswordsConsumer::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
-  [delegate_ onGetPasswordStoreResults:std::move(results)];
+  // Not called because OnGetPasswordStoreResultsFrom() is overridden.
+  NOTREACHED_NORETURN();
+}
+
+void SavePasswordsConsumer::OnGetPasswordStoreResultsFrom(
+    password_manager::PasswordStoreInterface* store,
+    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+  [delegate_ onGetPasswordStoreResults:std::move(results) fromStore:store];
 }
 
 base::WeakPtr<password_manager::PasswordStoreConsumer>
