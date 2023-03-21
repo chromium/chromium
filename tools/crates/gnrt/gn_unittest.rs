@@ -29,7 +29,7 @@ fn test() {
                     cargo_pkg_authors: Some("Somebody <somebody@foo.org>".to_string()),
                     cargo_pkg_name: "foo".to_string(),
                     cargo_pkg_description: Some(
-                        "A generic framework for foo\nNewline\"".to_string(),
+                        "A generic framework for foo\nNewline\"\n".to_string(),
                     ),
                     deps: vec![RuleDep::construct_for_testing(
                         Condition::Always,
@@ -80,7 +80,7 @@ edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_authors = "Somebody <somebody@foo.org>"
 cargo_pkg_name = "foo"
-cargo_pkg_description = "A generic framework for fooNewline\""
+cargo_pkg_description = "A generic framework for foo Newline\""
 library_configs -= [ "//build/config/compiler:chromium_code" ]
 library_configs += [ "//build/config/compiler:no_chromium_code" ]
 executable_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -404,7 +404,7 @@ fn test() {
     }
 
     expect_eq!("foo bar", escaped("foo bar"));
-    expect_eq!("foobar", escaped("foo\nbar"));
+    expect_eq!("foo bar ", escaped("foo\nbar\n"));
     expect_eq!(r#"foo \"bar\""#, escaped(r#"foo "bar""#));
     expect_eq!("foo 'bar'", escaped("foo 'bar'"));
 }

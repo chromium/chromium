@@ -529,10 +529,16 @@ fn write_concrete<W: Write>(
     writeln!(writer, "edition = \"{}\"", details.edition)?;
     writeln!(writer, "cargo_pkg_version = \"{}\"", details.cargo_pkg_version)?;
     if let Some(authors) = &details.cargo_pkg_authors {
-        writeln!(writer, "cargo_pkg_authors = \"{authors}\"")?;
+        write!(writer, "cargo_pkg_authors = \"")?;
+        write!(Escaper(&mut writer), "{authors}")?;
+        writeln!(writer, "\"")?;
     }
     writeln!(writer, "cargo_pkg_name = \"{}\"", details.cargo_pkg_name)?;
     if let Some(description) = &details.cargo_pkg_description {
+        // Remove the trailing newline, which unattractively comes out as a
+        // trailing space. Escaper can't do this because, as a Write
+        // implementation, it does not know where the end of input will be.
+        let description = description.trim_end();
         write!(writer, "cargo_pkg_description = \"")?;
         write!(Escaper(&mut writer), "{description}")?;
         writeln!(writer, "\"")?;
@@ -692,8 +698,9 @@ impl<W: Write> Write for Escaper<W> {
             c @ ('"' | '\\') => write!(self.0, "\\{c}"),
             // GN strings can encode literal ASCII with "$0x<hex_code>" syntax,
             // so we could embed newlines with "$0x0A". However, GN seems to
-            // escape these incorrectly in its Ninja output so we just skip it.
-            '\n' => return Ok(()),
+            // escape these incorrectly in its Ninja output so we just replace
+            // it with a space.
+            '\n' => self.0.write_char(' '),
             c => self.0.write_char(c),
         }
     }

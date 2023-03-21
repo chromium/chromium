@@ -21,7 +21,7 @@ cargo_crate("lib") {
   cargo_pkg_version = "0.5.9"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "toml"
-  cargo_pkg_description = "A native Rust encoder and decoder of TOML-formatted files and streams. Providesimplementations of the standard Serialize/Deserialize traits for TOML data tofacilitate deserializing and serializing Rust structures."
+  cargo_pkg_description = "A native Rust encoder and decoder of TOML-formatted files and streams. Provides implementations of the standard Serialize/Deserialize traits for TOML data to facilitate deserializing and serializing Rust structures."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

@@ -21,7 +21,7 @@ cargo_crate("lib") {
   cargo_pkg_version = "0.10.0"
   cargo_pkg_authors = "Danny Guo <danny@dannyguo.com>"
   cargo_pkg_name = "strsim"
-  cargo_pkg_description = "Implementations of string similarity metrics. Includes Hamming, Levenshtein,OSA, Damerau-Levenshtein, Jaro, Jaro-Winkler, and Sørensen-Dice."
+  cargo_pkg_description = "Implementations of string similarity metrics. Includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro, Jaro-Winkler, and Sørensen-Dice."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]

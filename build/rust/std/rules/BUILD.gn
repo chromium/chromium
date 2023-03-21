@@ -105,7 +105,7 @@ cargo_crate("cc") {
   cargo_pkg_version = "1.0.78"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "cc"
-  cargo_pkg_description = "A build-time dependency for Cargo build scripts to assist in invoking the nativeC compiler to compile native C code into a static archive to be linked into Rustcode."
+  cargo_pkg_description = "A build-time dependency for Cargo build scripts to assist in invoking the native C compiler to compile native C code into a static archive to be linked into Rust code."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -124,7 +124,7 @@ cargo_crate("cfg_if") {
   cargo_pkg_version = "1.0.0"
   cargo_pkg_authors = "Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "cfg-if"
-  cargo_pkg_description = "A macro to ergonomically define an item depending on a large number of #[cfg]parameters. Structured like an if-else chain, the first matching branch is theitem that gets emitted."
+  cargo_pkg_description = "A macro to ergonomically define an item depending on a large number of #[cfg] parameters. Structured like an if-else chain, the first matching branch is the item that gets emitted."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -155,7 +155,7 @@ cargo_crate("compiler_builtins") {
   cargo_pkg_version = "0.1.87"
   cargo_pkg_authors = "Jorge Aparicio <japaricious@gmail.com>"
   cargo_pkg_name = "compiler_builtins"
-  cargo_pkg_description = "Compiler intrinsics used by the Rust compiler. Also available for other targetsif necessary!"
+  cargo_pkg_description = "Compiler intrinsics used by the Rust compiler. Also available for other targets if necessary!"
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -751,7 +751,7 @@ cargo_crate("unicode_width") {
   cargo_pkg_authors =
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
-  cargo_pkg_description = "Determine displayed width of `char` and `str` typesaccording to Unicode Standard Annex #11 rules."
+  cargo_pkg_description = "Determine displayed width of `char` and `str` types according to Unicode Standard Annex #11 rules."
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
