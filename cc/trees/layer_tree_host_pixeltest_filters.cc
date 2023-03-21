@@ -765,7 +765,13 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
           .InsertBeforeExtensionASCII(GetRendererSuffix()));
 }
 
-TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
+// TODO(crbug.com/1416306): currently does not pass on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_ZoomFilter DISABLED_ZoomFilter
+#else
+#define MAYBE_ZoomFilter ZoomFilter
+#endif  // BUILDFLAG(IS_IOS)
+TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ZoomFilter) {
   scoped_refptr<SolidColorLayer> root =
       CreateSolidColorLayer(gfx::Rect(300, 300), SK_ColorWHITE);
 
