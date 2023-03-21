@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -390,6 +391,101 @@ self.addEventListener('activate', (event) => {
   NavigateAndWaitForTitle(GURL(kUrl),
                           u"data from web bundle data from service worker");
 }
+
+class IsolatedWebAppURLLoaderFactoryCSPBrowserTest
+    : public IsolatedWebAppURLLoaderFactoryBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  void AddIndexHtml(web_package::WebBundleBuilder& builder,
+                    const std::string& csp) {
+    bool use_meta_tag = GetParam();
+
+    std::string html;
+    web_package::WebBundleBuilder::Headers headers = {
+        {":status", "200"}, {"content-type", "text/html"}};
+    if (use_meta_tag) {
+      html += base::ReplaceStringPlaceholders(R"(
+        <head>
+          <meta http-equiv="Content-Security-Policy" content="$1">
+        </head>
+      )",
+                                              {csp}, nullptr);
+    } else {
+      headers.emplace_back("content-security-policy", csp);
+    }
+
+    html += R"(
+      <script type="text/javascript" src="/script.js"></script>
+    )";
+
+    builder.AddExchange(kUrl, std::move(headers), std::move(html));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppURLLoaderFactoryCSPBrowserTest,
+                       CanMakeCSPStricter) {
+  web_package::WebBundleBuilder builder;
+  // Make connect-src stricter than is required for IWAs. This should cause any
+  // `fetch()` request to fail.
+  AddIndexHtml(builder, "connect-src 'none'");
+  builder.AddExchange(kUrl.Resolve("/script.js"),
+                      {{":status", "200"}, {"content-type", "text/javascript"}},
+                      R"(
+    fetch('file.txt')
+      .then(res => console.error(`Unexpectedly fetched file: ` + res.text()))
+      .catch(err => {
+        console.log(err);
+        document.title = "unable to fetch";
+      });
+    )");
+  builder.AddExchange(kUrl.Resolve("/file.txt"),
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "some data");
+  base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
+
+  std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+  RegisterWebApp(std::move(iwa));
+  TrustWebBundleId();
+
+  NavigateAndWaitForTitle(kUrl, u"unable to fetch");
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppURLLoaderFactoryCSPBrowserTest,
+                       CannotMakeCSPLessStrict) {
+  web_package::WebBundleBuilder builder;
+  // Attempt to allow JavaScript `eval()`. This should fail due to the CSP that
+  // we apply by default.
+  AddIndexHtml(builder, "script-src 'self' 'unsafe-eval'");
+  builder.AddExchange(kUrl.Resolve("/script.js"),
+                      {{":status", "200"}, {"content-type", "text/javascript"}},
+                      R"(
+    try {
+      eval("1+1");
+      console.error("Eval unexpectedly ran.");
+    } catch (err) {
+      console.log(err);
+      document.title = "unable to eval";
+    }
+    )");
+  base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
+
+  std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+  RegisterWebApp(std::move(iwa));
+  TrustWebBundleId();
+
+  NavigateAndWaitForTitle(kUrl, u"unable to eval");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IsolatedWebAppURLLoaderFactoryCSPBrowserTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        IsolatedWebAppURLLoaderFactoryCSPBrowserTest::ParamType>& info) {
+      return info.param ? "meta_tag" : "header";
+    });
 
 }  // namespace
 }  // namespace web_app
