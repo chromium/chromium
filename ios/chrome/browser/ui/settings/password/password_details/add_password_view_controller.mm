@@ -283,19 +283,11 @@ const int kMaxNoteCharAmount = 1000;
 
   // During editing password is exposed so eye icon shouldn't be shown.
   if (!self.tableView.editing) {
-    if (UseSymbols()) {
-      UIImage* image =
-          [self isPasswordShown]
-              ? DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize)
-              : DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
-      item.identifyingIcon = image;
-    } else {
-      NSString* image = [self isPasswordShown]
-                            ? @"infobar_hide_password_icon"
-                            : @"infobar_reveal_password_icon";
-      item.identifyingIcon = [[UIImage imageNamed:image]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage* image =
+        [self isPasswordShown]
+            ? DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize)
+            : DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
+    item.identifyingIcon = image;
     item.identifyingIconEnabled = YES;
     item.identifyingIconAccessibilityLabel = l10n_util::GetNSString(
         [self isPasswordShown] ? IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON
@@ -810,14 +802,8 @@ const int kMaxNoteCharAmount = 1000;
     if (self.passwordForTesting) {
       self.passwordTextItem.textFieldValue = kMaskedPassword;
     }
-    if (UseSymbols()) {
-      self.passwordTextItem.identifyingIcon =
-          DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
-    } else {
-      self.passwordTextItem.identifyingIcon =
-          [[UIImage imageNamed:@"infobar_reveal_password_icon"]
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    self.passwordTextItem.identifyingIcon =
+        DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
     self.passwordTextItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
     [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
@@ -828,14 +814,8 @@ const int kMaxNoteCharAmount = 1000;
     if (self.passwordForTesting) {
       self.passwordTextItem.textFieldValue = self.passwordForTesting;
     }
-    if (UseSymbols()) {
-      self.passwordTextItem.identifyingIcon =
-          DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
-    } else {
-      self.passwordTextItem.identifyingIcon =
-          [[UIImage imageNamed:@"infobar_hide_password_icon"]
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    self.passwordTextItem.identifyingIcon =
+        DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
     self.passwordTextItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON);
     [self reconfigureCellsForItems:@[ self.passwordTextItem ]];

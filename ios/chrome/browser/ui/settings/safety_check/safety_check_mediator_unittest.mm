@@ -94,22 +94,14 @@ PrefService* SetPrefService() {
 
 // The image when the state is safe.
 UIImage* SafeImage() {
-  if (UseSymbols()) {
-    return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                              kTrailingSymbolImagePointSize);
-  }
-  return [[UIImage imageNamed:@"settings_safe_state"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
+                                            kTrailingSymbolImagePointSize);
 }
 
 // The image when the state is unsafe.
 UIImage* UnsafeImage() {
-  if (UseSymbols()) {
-    return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
-                                              kTrailingSymbolImagePointSize);
-  }
-  return [[UIImage imageNamed:@"settings_unsafe_state"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  return DefaultSymbolTemplateWithPointSize(kWarningFillSymbol,
+                                            kTrailingSymbolImagePointSize);
 }
 
 }  // namespace

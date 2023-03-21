@@ -11,11 +11,3 @@ imageset("google_services_enterprise") {
     "google_services_enterprise.imageset/google_services_enterprise@3x.png",
   ]
 }
-
-imageset("google_services_sync_error") {
-  sources = [
-    "google_services_sync_error.imageset/Contents.json",
-    "google_services_sync_error.imageset/google_services_sync_error@2x.png",
-    "google_services_sync_error.imageset/google_services_sync_error@3x.png",
-  ]
-}

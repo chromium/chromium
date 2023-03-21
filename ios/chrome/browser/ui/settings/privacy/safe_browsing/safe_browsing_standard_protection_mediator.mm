@@ -186,12 +186,7 @@ const CGFloat kSymbolSize = 20;
 - (SafeBrowsingHeaderItem*)shieldIconHeader {
   if (!_shieldIconHeader) {
     UIImage* shieldIcon;
-    if (UseSymbols()) {
-      shieldIcon = CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);
-    } else {
-      shieldIcon = [[UIImage imageNamed:@"shield"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    shieldIcon = CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);
     SafeBrowsingHeaderItem* shieldIconItem = [self
              detailItemWithType:ItemTypeShieldIcon
                      detailText:
@@ -205,14 +200,8 @@ const CGFloat kSymbolSize = 20;
 
 - (SafeBrowsingHeaderItem*)metricIconHeader {
   if (!_metricIconHeader) {
-    UIImage* metricIcon;
-    if (UseSymbols()) {
-      metricIcon =
-          DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
-    } else {
-      metricIcon = [[UIImage imageNamed:@"bar_chart"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage* metricIcon =
+        DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
     SafeBrowsingHeaderItem* metricIconItem = [self
              detailItemWithType:ItemTypeMetricIcon
                      detailText:

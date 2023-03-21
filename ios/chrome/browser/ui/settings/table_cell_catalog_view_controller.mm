@@ -150,7 +150,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tableViewBlueDotItem.showNotificationDot = YES;
   tableViewBlueDotItem.text = @"I have a blue dot badge!";
   tableViewBlueDotItem.iconImage =
-      [UIImage imageNamed:@"default_browser_world"];
+      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
   [model addItem:tableViewBlueDotItem
       toSectionWithIdentifier:SectionIdentifierText];
 
@@ -242,7 +242,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textActionButtonColorItem.disableButtonIntrinsicWidth = YES;
   textActionButtonColorItem.buttonBackgroundColor = [UIColor lightGrayColor];
   textActionButtonColorItem.buttonTextColor =
-    [UIColor colorNamed:@"settings_catalog_example_text"];
+      [UIColor colorNamed:kSolidBlackColor];
   textActionButtonColorItem.buttonText = @"Do something, different Colors";
   [model addItem:textActionButtonColorItem
       toSectionWithIdentifier:SectionIdentifierText];
@@ -280,15 +280,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* detailIconItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   detailIconItem.text = @"Detail Icon Item Cell";
-  detailIconItem.iconImage =
-      [UIImage imageNamed:@"settings_article_suggestions"];
+  detailIconItem.iconImage = DefaultSettingsRootSymbol(kDiscoverSymbol);
   detailIconItem.detailText = @"Short";
   [model addItem:detailIconItem toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewDetailIconItem* detailIconItemVerticalTextLayout =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   detailIconItemVerticalTextLayout.iconImage =
-      [UIImage imageNamed:@"settings_article_suggestions"];
+      DefaultSettingsRootSymbol(kDiscoverSymbol);
   detailIconItemVerticalTextLayout.text = @"Detail Icon Item Cell";
   detailIconItemVerticalTextLayout.detailText = @"Short subtitle";
   detailIconItemVerticalTextLayout.textLayoutConstraintAxis =
@@ -443,7 +442,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tableViewInfoButtonItemWithLeadingImage.text = @"Info button item";
   tableViewInfoButtonItemWithLeadingImage.statusText = @"Status";
   tableViewInfoButtonItemWithLeadingImage.iconImage =
-      [UIImage imageNamed:@"settings_article_suggestions"];
+      DefaultSettingsRootSymbol(kDiscoverSymbol);
   [model addItem:tableViewInfoButtonItemWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
 

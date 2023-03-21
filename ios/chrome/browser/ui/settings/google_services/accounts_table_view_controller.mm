@@ -413,12 +413,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   item.text =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON);
   item.accessibilityIdentifier = kSettingsAccountsTableViewAddAccountCellId;
-  item.image =
-      UseSymbols()
-          ? CustomSymbolWithPointSize(kPlusCircleFillSymbol,
-                                      kSymbolAddAccountPointSize)
-          : [[UIImage imageNamed:@"settings_accounts_add_account"]
-                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  item.image = CustomSymbolWithPointSize(kPlusCircleFillSymbol,
+                                         kSymbolAddAccountPointSize);
   return item;
 }
 

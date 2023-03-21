@@ -35,7 +35,6 @@ source_set("utils") {
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/google_services/resources:google_services_sync_error",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
     "//ui/gfx",

@@ -32,7 +32,6 @@ source_set("google_services") {
   deps = [
     ":constants",
     "resources:google_services_enterprise",
-    "resources:google_services_sync_error",
     "//base",
     "//components/autofill/core/common",
     "//components/browser_sync",

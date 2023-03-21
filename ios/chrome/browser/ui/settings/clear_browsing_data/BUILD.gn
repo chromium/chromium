@@ -22,10 +22,6 @@ source_set("clear_browsing_data") {
     "time_range_selector_table_view_controller.mm",
   ]
   deps = [
-    "resources:clear_browsing_data_autofill",
-    "resources:clear_browsing_data_cached_images",
-    "resources:clear_browsing_data_cookies",
-    "resources:clear_browsing_data_history",
     "//components/browsing_data/core",
     "//components/feature_engagement/public",
     "//components/history/core/browser",

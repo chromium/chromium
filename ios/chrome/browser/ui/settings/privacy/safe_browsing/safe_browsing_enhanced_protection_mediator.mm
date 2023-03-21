@@ -54,13 +54,8 @@ const CGFloat kSymbolSize = 20;
 - (ItemArray)safeBrowsingEnhancedProtectionItems {
   if (!_safeBrowsingEnhancedProtectionItems) {
     NSMutableArray* items = [NSMutableArray array];
-    UIImage* shieldIcon;
-    if (UseSymbols()) {
-      shieldIcon = CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);
-    } else {
-      shieldIcon = [[UIImage imageNamed:@"shield"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage* shieldIcon =
+        CustomSymbolWithPointSize(kPrivacySymbol, kSymbolSize);
     SettingsImageDetailTextItem* shieldIconItem = [self
              detailItemWithType:ItemTypeShieldIcon
                      detailText:
@@ -69,17 +64,12 @@ const CGFloat kSymbolSize = 20;
         accessibilityIdentifier:kSafeBrowsingEnhancedProtectionShieldCellId];
     [items addObject:shieldIconItem];
 
-    UIImage* gIcon;
-    if (UseSymbols()) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-      gIcon = CustomSymbolWithPointSize(kGoogleShieldSymbol, kSymbolSize);
+    UIImage* gIcon =
+        CustomSymbolWithPointSize(kGoogleShieldSymbol, kSymbolSize);
 #else
-      gIcon = DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolSize);
+    UIImage* gIcon = DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolSize);
 #endif
-    } else {
-      gIcon = [[UIImage imageNamed:@"g_icon"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
     SettingsImageDetailTextItem* gIconItem = [self
              detailItemWithType:ItemTypeGIcon
                      detailText:
@@ -89,16 +79,10 @@ const CGFloat kSymbolSize = 20;
     [items addObject:gIconItem];
 
     UIImage* globeIcon;
-    if (UseSymbols()) {
-      if (@available(iOS 15, *)) {
-        globeIcon =
-            DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kSymbolSize);
-      } else {
-        globeIcon = DefaultSymbolWithPointSize(kGlobeSymbol, kSymbolSize);
-      }
+    if (@available(iOS 15, *)) {
+      globeIcon = DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kSymbolSize);
     } else {
-      globeIcon = [[UIImage imageNamed:@"globe"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      globeIcon = DefaultSymbolWithPointSize(kGlobeSymbol, kSymbolSize);
     }
     SettingsImageDetailTextItem* globeIconItem = [self
              detailItemWithType:ItemTypeGlobeIcon
@@ -108,13 +92,7 @@ const CGFloat kSymbolSize = 20;
         accessibilityIdentifier:kSafeBrowsingEnhancedProtectionGlobeCellId];
     [items addObject:globeIconItem];
 
-    UIImage* keyIcon;
-    if (UseSymbols()) {
-      keyIcon = CustomSymbolWithPointSize(kPasswordSymbol, kSymbolSize);
-    } else {
-      keyIcon = [[UIImage imageNamed:@"key"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage* keyIcon = CustomSymbolWithPointSize(kPasswordSymbol, kSymbolSize);
     SettingsImageDetailTextItem* keyIconItem = [self
              detailItemWithType:ItemTypeKeyIcon
                      detailText:
@@ -123,14 +101,8 @@ const CGFloat kSymbolSize = 20;
         accessibilityIdentifier:kSafeBrowsingEnhancedProtectionKeyCellId];
     [items addObject:keyIconItem];
 
-    UIImage* metricIcon;
-    if (UseSymbols()) {
-      metricIcon =
-          DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
-    } else {
-      metricIcon = [[UIImage imageNamed:@"bar_chart"]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage* metricIcon =
+        DefaultSymbolWithPointSize(kCheckmarkCircleSymbol, kSymbolSize);
     SettingsImageDetailTextItem* metricIconItem = [self
              detailItemWithType:ItemTypeMetricIcon
                      detailText:

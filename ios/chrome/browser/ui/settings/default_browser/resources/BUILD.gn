@@ -11,11 +11,3 @@ imageset("chrome_icon") {
     "chrome_icon.imageset/chrome_icon@3x.png",
   ]
 }
-
-imageset("default_browser_world") {
-  sources = [
-    "default_browser_world.imageset/Contents.json",
-    "default_browser_world.imageset/default_browser_world@2x.png",
-    "default_browser_world.imageset/default_browser_world@3x.png",
-  ]
-}

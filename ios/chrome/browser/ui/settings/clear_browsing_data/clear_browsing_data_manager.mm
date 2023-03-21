@@ -466,26 +466,7 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
   clearDataItem.checkedBackgroundColor = [[UIColor colorNamed:kBlueColor]
       colorWithAlphaComponent:kSelectedBackgroundColorAlpha];
 
-  if (UseSymbols()) {
-    clearDataItem.image = SymbolForItemType(itemType);
-  } else {
-    static NSDictionary* const imageNamesByItemTypes = @{
-      [NSNumber numberWithInteger:ItemTypeDataTypeBrowsingHistory] :
-          @"clear_browsing_data_history",
-      [NSNumber numberWithInteger:ItemTypeDataTypeCookiesSiteData] :
-          @"clear_browsing_data_cookies",
-      [NSNumber numberWithInteger:ItemTypeDataTypeCache] :
-          @"clear_browsing_data_cached_images",
-      [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] :
-          @"password_key",
-      [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
-          @"clear_browsing_data_autofill",
-    };
-
-    clearDataItem.image = [UIImage
-        imageNamed:[imageNamesByItemTypes
-                       objectForKey:[NSNumber numberWithInteger:itemType]]];
-  }
+  clearDataItem.image = SymbolForItemType(itemType);
 
   if (itemType == ItemTypeDataTypeCookiesSiteData) {
     // Because there is no counter for cookies, an explanatory text is

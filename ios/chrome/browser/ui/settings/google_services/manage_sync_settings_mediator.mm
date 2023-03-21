@@ -79,8 +79,6 @@ UIImageConfiguration* AccessoryConfiguration() {
 
 // Enterprise icon.
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
-// Sync error icon.
-NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 
 }  // namespace
 
@@ -765,15 +763,10 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       syncErrorItem.text = GetNSString(IDS_SYNC_NEEDS_VERIFICATION_TITLE);
       break;
   }
-  if (UseSymbols()) {
-    syncErrorItem.iconImage = DefaultSettingsRootSymbol(kSyncErrorSymbol);
-    syncErrorItem.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
-    syncErrorItem.iconTintColor = UIColor.whiteColor;
-    syncErrorItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
-  } else {
-    syncErrorItem.iconImage =
-        [UIImage imageNamed:kGoogleServicesSyncErrorImage];
-  }
+  syncErrorItem.iconImage = DefaultSettingsRootSymbol(kSyncErrorSymbol);
+  syncErrorItem.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
+  syncErrorItem.iconTintColor = UIColor.whiteColor;
+  syncErrorItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   return syncErrorItem;
 }
 
