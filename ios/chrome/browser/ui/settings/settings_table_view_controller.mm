@@ -566,13 +566,15 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     // Create the sign-in promo mediator if it doesn't exist.
     if (!_signinPromoViewMediator) {
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-          initWithAccountManagerService:self.accountManagerService
-                            authService:AuthenticationServiceFactory::
-                                            GetForBrowserState(_browserState)
-                            prefService:_browserState->GetPrefs()
-                            accessPoint:signin_metrics::AccessPoint::
-                                            ACCESS_POINT_SETTINGS
-                              presenter:self];
+                initWithBrowser:_browser
+          accountManagerService:self.accountManagerService
+                    authService:AuthenticationServiceFactory::
+                                    GetForBrowserState(_browserState)
+                    prefService:_browserState->GetPrefs()
+                    accessPoint:signin_metrics::AccessPoint::
+                                    ACCESS_POINT_SETTINGS
+                      presenter:self
+             baseViewController:self];
       _signinPromoViewMediator.consumer = self;
     }
     TableViewSigninPromoItem* signinPromoItem =

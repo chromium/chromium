@@ -59,15 +59,18 @@
       _identityManagerObserverBridge.reset(
           new signin::IdentityManagerObserverBridge(
               IdentityManagerFactory::GetForBrowserState(browserState), self));
+      // TODO(crbug.com/1420997): Need to set `baseViewController`.
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-          initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                            GetForBrowserState(browserState)
-                            authService:AuthenticationServiceFactory::
-                                            GetForBrowserState(browserState)
-                            prefService:browserState->GetPrefs()
-                            accessPoint:signin_metrics::AccessPoint::
-                                            ACCESS_POINT_BOOKMARK_MANAGER
-                              presenter:presenter];
+                initWithBrowser:browser
+          accountManagerService:ChromeAccountManagerServiceFactory::
+                                    GetForBrowserState(browserState)
+                    authService:AuthenticationServiceFactory::
+                                    GetForBrowserState(browserState)
+                    prefService:browserState->GetPrefs()
+                    accessPoint:signin_metrics::AccessPoint::
+                                    ACCESS_POINT_BOOKMARK_MANAGER
+                      presenter:presenter
+             baseViewController:nil];
       _signinPromoViewMediator.consumer = self;
     }
     [self updateShouldShowSigninPromo];

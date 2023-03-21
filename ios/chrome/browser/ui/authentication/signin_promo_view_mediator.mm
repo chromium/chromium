@@ -438,10 +438,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 }  // namespace
 
-@interface SigninPromoViewMediator () <ChromeAccountManagerServiceObserver> {
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
-}
+@interface SigninPromoViewMediator () <ChromeAccountManagerServiceObserver>
 
 // Redefined to be readwrite.
 @property(nonatomic, strong, readwrite) id<SystemIdentity> identity;
@@ -476,7 +473,13 @@ const char* AlreadySeenSigninViewPreferenceKey(
 
 @end
 
-@implementation SigninPromoViewMediator
+@implementation SigninPromoViewMediator {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
+  Browser* _browser;
+  // View used to present sign-in UI.
+  UIViewController* _baseViewController;
+}
 
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   // Bookmarks
@@ -553,24 +556,25 @@ const char* AlreadySeenSigninViewPreferenceKey(
   return YES;
 }
 
-- (instancetype)
-    initWithAccountManagerService:
-        (ChromeAccountManagerService*)accountManagerService
-                      authService:(AuthenticationService*)authService
-                      prefService:(PrefService*)prefService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint
-                        presenter:(id<SigninPresenter>)presenter {
+- (instancetype)initWithBrowser:(Browser*)browser
+          accountManagerService:
+              (ChromeAccountManagerService*)accountManagerService
+                    authService:(AuthenticationService*)authService
+                    prefService:(PrefService*)prefService
+                    accessPoint:(signin_metrics::AccessPoint)accessPoint
+                      presenter:(id<SigninPresenter>)presenter
+             baseViewController:(UIViewController*)baseViewController {
   self = [super init];
   if (self) {
     DCHECK(accountManagerService);
     DCHECK(IsSupportedAccessPoint(accessPoint));
-
+    _browser = browser;
     _accountManagerService = accountManagerService;
     _authService = authService;
     _prefService = prefService;
     _accessPoint = accessPoint;
     _presenter = presenter;
-
+    _baseViewController = baseViewController;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
