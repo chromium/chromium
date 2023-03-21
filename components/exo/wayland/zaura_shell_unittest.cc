@@ -52,6 +52,7 @@ namespace wayland {
 namespace {
 
 constexpr auto kTransitionDuration = base::Seconds(3);
+constexpr int kTooltipExpectedHeight = 28;
 
 class TestAuraSurface : public AuraSurface {
  public:
@@ -486,7 +487,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromCursor) {
 
   const char* text = "my tooltip";
   gfx::Rect expected_tooltip_position =
-      gfx::Rect(mouse_position, gfx::Size(77, 24));
+      gfx::Rect(mouse_position, gfx::Size(77, kTooltipExpectedHeight));
   views::corewm::TooltipAura::AdjustToCursor(&expected_tooltip_position);
   aura::Window::ConvertRectToTarget(surface->window(),
                                     surface->window()->GetToplevelWindow(),
@@ -519,7 +520,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromKeyboard) {
 
   const char* text = "my tooltip";
   gfx::Point anchor_point = surface->window()->bounds().bottom_center();
-  gfx::Size expected_tooltip_size = gfx::Size(77, 24);
+  gfx::Size expected_tooltip_size = gfx::Size(77, kTooltipExpectedHeight);
   // Calculate expected tooltip position. For keyboard tooltip, it should be
   // shown right below and in the center of tooltip target window while it must
   // fit inside the display bounds.
@@ -570,7 +571,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromCursor) {
   const char* text = "my tooltip";
   // Size of the tooltip depends on the text to show.
   gfx::Rect expected_tooltip_position =
-      gfx::Rect(mouse_position, gfx::Size(77, 24));
+      gfx::Rect(mouse_position, gfx::Size(77, kTooltipExpectedHeight));
   views::corewm::TooltipAura::AdjustToCursor(&expected_tooltip_position);
   aura::Window::ConvertRectToTarget(surface->window(),
                                     surface->window()->GetToplevelWindow(),
@@ -603,7 +604,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromKeyboard) {
 
   const char* text = "my tooltip";
   gfx::Point anchor_point = surface->window()->bounds().bottom_center();
-  gfx::Size expected_tooltip_size = gfx::Size(77, 24);
+  gfx::Size expected_tooltip_size = gfx::Size(77, kTooltipExpectedHeight);
   // Calculate expected tooltip position. For keyboard tooltip, it should be
   // shown right below and in the center of tooltip target window while it must
   // fit inside the display bounds.

@@ -19,6 +19,11 @@ class InkDrop;
 class InkDropHighlight;
 class InkDropRipple;
 class View;
+
+namespace corewm {
+class TooltipViewAura;
+}  // namespace corewm
+
 }  // namespace views
 
 namespace ash {
@@ -95,6 +100,9 @@ class ASH_EXPORT StyleUtil {
   // view's ColorProvider and the given color identifier.
   static std::unique_ptr<views::Background>
   CreateThemedFullyRoundedRectBackground(ui::ColorId color_id);
+
+  static std::unique_ptr<views::corewm::TooltipViewAura>
+  CreateAshStyleTooltipView();
 
  private:
   StyleUtil() = default;

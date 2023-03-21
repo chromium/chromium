@@ -616,6 +616,9 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorToggleButtonTrackOffDisabled] =
       ui::SetAlpha({ui::kColorToggleButtonTrackOff}, kDisabledColorOpacity);
   mixer[ui::kColorToggleButtonHover] = {cros_tokens::kCrosSysHoverOnProminent};
+
+  mixer[ui::kColorTooltipBackground] = {cros_tokens::kCrosSysOnSurface};
+  mixer[ui::kColorTooltipForeground] = {cros_tokens::kCrosSysInverseOnSurface};
 }
 
 }  // namespace ash

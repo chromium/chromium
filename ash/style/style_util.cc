@@ -9,6 +9,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/font_list.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -16,10 +17,15 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/corewm/tooltip_view_aura.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kTooltipRoundedCornerRadius = 6;
+constexpr gfx::Insets kTooltipBorderInset = gfx::Insets::VH(5, 8);
+constexpr int kTooltipMinLineHeight = 18;
 
 // A themed fully rounded rect background whose corner radius equals to the half
 // of the minimum dimension of its view's local bounds.
@@ -167,6 +173,21 @@ views::FocusRing* StyleUtil::SetUpFocusRingForView(
 std::unique_ptr<views::Background>
 StyleUtil::CreateThemedFullyRoundedRectBackground(ui::ColorId color_id) {
   return std::make_unique<ThemedFullyRoundedRectBackground>(color_id);
+}
+
+// static
+std::unique_ptr<views::corewm::TooltipViewAura>
+StyleUtil::CreateAshStyleTooltipView() {
+  auto tooltip_view = std::make_unique<views::corewm::TooltipViewAura>();
+  // Apply ash style background, border, and font.
+  tooltip_view->SetBackground(views::CreateThemedRoundedRectBackground(
+      ui::kColorTooltipBackground, kTooltipRoundedCornerRadius));
+  tooltip_view->SetBorder(views::CreateEmptyBorder(kTooltipBorderInset));
+  tooltip_view->SetFontList(gfx::FontList({"Google Sans, Roboto", "Noto Sans"},
+                                          gfx::Font::NORMAL, 12,
+                                          gfx::Font::Weight::NORMAL));
+  tooltip_view->SetMinLineHeight(kTooltipMinLineHeight);
+  return tooltip_view;
 }
 
 }  // namespace ash
