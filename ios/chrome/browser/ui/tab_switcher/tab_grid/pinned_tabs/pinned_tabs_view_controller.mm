@@ -485,6 +485,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   base::UmaHistogramEnumeration(kUmaPinnedViewDragDropTabs, dragEvent);
 
   [self.dragDropHandler dragSessionDidEnd];
+  [self.delegate pinnedViewControllerDragSessionDidEnd:self];
   [self dragSessionEnabled:NO];
 }
 

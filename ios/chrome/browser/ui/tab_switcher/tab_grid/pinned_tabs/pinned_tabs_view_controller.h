@@ -53,6 +53,10 @@
 - (void)pinnedViewControllerDropAnimationDidEnd:
     (PinnedTabsViewController*)pinnedTabsViewController;
 
+// Tells the delegate that a drag session did end.
+- (void)pinnedViewControllerDragSessionDidEnd:
+    (PinnedTabsViewController*)pinnedTabsViewController;
+
 @end
 
 // UICollectionViewController used to display pinned tabs.
