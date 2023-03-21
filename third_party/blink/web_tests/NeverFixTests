@@ -27,6 +27,10 @@
 # Perf tests are really slow in debug builds and there are few benefits in running them.
 [ Debug ] http/tests/perf/* [ Skip ]
 
+# See crbug.com/1143079. DigitalGoods is Android and chromeos only feature
+[ Mac ] wpt_internal/digital-goods/* [ Skip ]
+[ Win ] wpt_internal/digital-goods/* [ Skip ]
+
 # Chrome Win/Linux doesn't support emacs key-bindings.
 [ Win ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
