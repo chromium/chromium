@@ -2516,7 +2516,9 @@ public class AwContents implements SmartClipProvider {
      */
     public void goBack() {
         if (TRACE) Log.i(TAG, "%s goBack", this);
-        if (!isDestroyed(WARN)) mNavigationController.goBack();
+        if (!isDestroyed(WARN) && mNavigationController.canGoBack()) {
+            mNavigationController.goBack();
+        }
     }
 
     /**
@@ -2531,7 +2533,9 @@ public class AwContents implements SmartClipProvider {
      */
     public void goForward() {
         if (TRACE) Log.i(TAG, "%s goForward", this);
-        if (!isDestroyed(WARN)) mNavigationController.goForward();
+        if (!isDestroyed(WARN) && mNavigationController.canGoForward()) {
+            mNavigationController.goForward();
+        }
     }
 
     /**

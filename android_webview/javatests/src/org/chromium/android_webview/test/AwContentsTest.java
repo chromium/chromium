@@ -224,6 +224,24 @@ public class AwContentsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testGoBackGoForwardWithoutSessionHistory() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        mActivityTestRule.runOnUiThread(() -> {
+            AwContents awContents =
+                    mActivityTestRule.createAwTestContainerView(mContentsClient).getAwContents();
+
+            Assert.assertFalse(awContents.canGoBack());
+            Assert.assertFalse(awContents.canGoForward());
+            // If no back/forward entries exist, then calling these should do nothing and not crash
+            // or fail asserts.
+            awContents.goBack();
+            awContents.goForward();
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testBackgroundColorInDarkMode() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         mActivityTestRule.runOnUiThread(() -> {
