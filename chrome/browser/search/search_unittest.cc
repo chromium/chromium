@@ -360,10 +360,11 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser3pDisabled) {
+TEST_F(SearchTest,
+       UseLocalNTPIfNTPURLIsBlockedForSupervisedUserWithoutFiltering) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 
   // Mark the profile as supervised, otherwise the URL filter won't be checked.
   profile()->SetIsSupervisedProfile();
@@ -387,10 +388,10 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser3pDisabled) {
   }
 }
 
-TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser3pEnabled) {
+TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUserWithFiltering) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 
   // Mark the profile as supervised, otherwise the URL filter won't be checked.
   profile()->SetIsSupervisedProfile();

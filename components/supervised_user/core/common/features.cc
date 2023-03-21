@@ -128,8 +128,8 @@ bool IsKidsManagementServiceEnabled() {
 BASE_FEATURE(kEnableSupervisionOnDesktopAndIOS,
              "EnableSupervisionOnDesktopAndIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnThirdParty,
-             "FilterWebsitesForSupervisedUsersOnThirdParty",
+BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
+             "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSynchronousSignInCheckingEnabled() {

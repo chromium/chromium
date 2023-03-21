@@ -554,12 +554,12 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-class ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest
+class ContextMenuWithoutFilteringForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTest {
  public:
-  ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest() {
+  ContextMenuWithoutFilteringForSupervisedUsersBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+        supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   }
 
  private:
@@ -567,8 +567,8 @@ class ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithoutFilteringForSupervisedUsersOn3pBrowserTest,
-    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildNo3P) {
+    ContextMenuWithoutFilteringForSupervisedUsersBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWithoutFiltering) {
   // Set up child user profile.
   Profile* profile = browser()->profile();
   browser()->profile()->GetPrefs()->SetString(
@@ -599,16 +599,16 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-class ContextMenuWithFilteringForSupervisedUsersOn3pBrowserTest
+class ContextMenuWithFilteringForSupervisedUsersBrowserTest
     : public ContextMenuBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty};
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS};
 };
 
 IN_PROC_BROWSER_TEST_F(
-    ContextMenuWithFilteringForSupervisedUsersOn3pBrowserTest,
-    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWith3P) {
+    ContextMenuWithFilteringForSupervisedUsersBrowserTest,
+    SaveLinkAsEntryIsDisabledForUrlsNotAccessibleForChildWithFiltering) {
   // Set up child user profile.
   Profile* profile = browser()->profile();
   browser()->profile()->GetPrefs()->SetString(

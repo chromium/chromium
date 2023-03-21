@@ -171,7 +171,7 @@ TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
   // Enable filtering flag across platforms.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 
   EXPECT_TRUE(service->IsURLFilteringEnabled());
 }
@@ -200,9 +200,9 @@ TEST_F(SupervisedUserServiceTestUnsupervised, IsURLFilteringEnabled) {
   // Enable filtering flag across platforms.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
   EXPECT_TRUE(base::FeatureList::IsEnabled(
-      supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty));
+      supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS));
 
   EXPECT_FALSE(service->IsURLFilteringEnabled());
 }

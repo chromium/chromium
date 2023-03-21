@@ -186,7 +186,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   PolicyUrlBlockingTabHelper::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(
-          supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty)) {
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
     SupervisedUserURLFilterTabHelper::CreateForWebState(web_state);
   }
 

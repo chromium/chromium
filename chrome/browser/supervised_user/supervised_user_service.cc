@@ -224,7 +224,7 @@ bool SupervisedUserService::IsURLFilteringEnabled() const {
 #else
   return profile_->IsChild() &&
          base::FeatureList::IsEnabled(
-             supervised_user::kFilterWebsitesForSupervisedUsersOnThirdParty);
+             supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 #endif
 }
 
