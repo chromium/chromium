@@ -76,18 +76,6 @@ void RecordOfflinerResultUMA(const ClientId& client_id,
   }
 }
 
-// Records final request status UMA for an offlining request. This should only
-// be called once per Offliner::LoadAndSave request. Every Offliner::LoadAndSave
-// request should also call this once.
-void RecordSavePageResultUMA(
-    const ClientId& client_id,
-    RequestNotifier::BackgroundSavePageResult request_status) {
-  base::UmaHistogramEnumeration(
-      AddHistogramSuffix(client_id,
-                         "OfflinePages.Background.FinalSavePageResult"),
-      request_status);
-}
-
 // Records whether the request comes from CCT or not
 void RecordSavePageResultCCTUMA(const ClientId& client_id,
                                 const std::string& origin) {
@@ -148,23 +136,6 @@ void RecordSavePageLaterNetworkQuality(
       AddHistogramSuffix(
           client_id,
           "OfflinePages.Background.EffectiveConnectionType.SavePageLater"),
-      1, net::EFFECTIVE_CONNECTION_TYPE_LAST - 1,
-      net::EFFECTIVE_CONNECTION_TYPE_LAST,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  histogram->Add(effective_connection);
-}
-
-// Record the network quality at request creation time per namespace.
-void RecordNetworkQualityAtRequestStartForFailedRequest(
-    const ClientId& client_id,
-    const net::EffectiveConnectionType effective_connection) {
-  // The histogram below is an expansion of the UMA_HISTOGRAM_ENUMERATION
-  // macro adapted to allow for a dynamically suffixed histogram name.
-  // Note: The factory creates and owns the histogram.
-  base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
-      AddHistogramSuffix(
-          client_id,
-          "OfflinePages.Background.EffectiveConnectionType.OffliningStartType"),
       1, net::EFFECTIVE_CONNECTION_TYPE_LAST - 1,
       net::EFFECTIVE_CONNECTION_TYPE_LAST,
       base::HistogramBase::kUmaTargetedHistogramFlag);
@@ -657,9 +628,6 @@ bool RequestCoordinator::StartImmediateProcessing(
   UpdateCurrentConditionsFromAndroid();
   OfflinerImmediateStartStatus immediate_start_status =
       TryImmediateStart(callback);
-  UMA_HISTOGRAM_ENUMERATION(
-      "OfflinePages.Background.ImmediateStartStatus", immediate_start_status,
-      RequestCoordinator::OfflinerImmediateStartStatus::STATUS_COUNT);
   return immediate_start_status == OfflinerImmediateStartStatus::STARTED;
 }
 
@@ -883,17 +851,10 @@ void RequestCoordinator::RequestCounts(bool is_start_of_processing,
   if (processing_state_ == ProcessingWindowState::SCHEDULED_WINDOW) {
     if (is_low_end_device_) {
       UMA_HISTOGRAM_COUNTS_1000(
-          "OfflinePages.Background.ScheduledStart.AvailableRequestCount."
-          "Svelte",
-          available_requests);
-      UMA_HISTOGRAM_COUNTS_1000(
           "OfflinePages.Background.ScheduledStart.UnavailableRequestCount."
           "Svelte",
           total_requests - available_requests);
     } else {
-      UMA_HISTOGRAM_COUNTS_1000(
-          "OfflinePages.Background.ScheduledStart.AvailableRequestCount",
-          available_requests);
       UMA_HISTOGRAM_COUNTS_1000(
           "OfflinePages.Background.ScheduledStart.UnavailableRequestCount",
           total_requests - available_requests);
@@ -901,17 +862,10 @@ void RequestCoordinator::RequestCounts(bool is_start_of_processing,
   } else if (processing_state_ == ProcessingWindowState::IMMEDIATE_WINDOW) {
     if (is_low_end_device_) {
       UMA_HISTOGRAM_COUNTS_1000(
-          "OfflinePages.Background.ImmediateStart.AvailableRequestCount."
-          "Svelte",
-          available_requests);
-      UMA_HISTOGRAM_COUNTS_1000(
           "OfflinePages.Background.ImmediateStart.UnavailableRequestCount."
           "Svelte",
           total_requests - available_requests);
     } else {
-      UMA_HISTOGRAM_COUNTS_1000(
-          "OfflinePages.Background.ImmediateStart.AvailableRequestCount",
-          available_requests);
       UMA_HISTOGRAM_COUNTS_1000(
           "OfflinePages.Background.ImmediateStart.UnavailableRequestCount",
           total_requests - available_requests);
@@ -1015,15 +969,6 @@ void RequestCoordinator::UpdateRequestForAttempt(
     Offliner::RequestStatus status) {
   absl::optional<RequestNotifier::BackgroundSavePageResult> attempt_result =
       SingleAttemptResult(status);
-
-  // If the request failed, report the connection type as of the start of the
-  // request.
-  if (!attempt_result ||
-      attempt_result.value() !=
-          RequestNotifier::BackgroundSavePageResult::SUCCESS) {
-    RecordNetworkQualityAtRequestStartForFailedRequest(
-        request.client_id(), network_quality_at_request_start_);
-  }
 
   if (IsCanceledOrInternalFailure(status)) {
     UpdateRequestForAbortedAttempt(request);
@@ -1169,7 +1114,6 @@ void RequestCoordinator::NotifyAdded(const SavePageRequest& request) {
 void RequestCoordinator::NotifyCompleted(
     const SavePageRequest& request,
     RequestNotifier::BackgroundSavePageResult status) {
-  RecordSavePageResultUMA(request.client_id(), status);
   RecordSavePageResultCCTUMA(request.client_id(), request.request_origin());
   for (Observer& observer : observers_)
     observer.OnCompleted(request, status);

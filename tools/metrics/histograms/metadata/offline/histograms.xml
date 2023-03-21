@@ -202,19 +202,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="OfflinePages.Background.EffectiveConnectionType.OffliningStartType"
-    enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
-  <owner>petewil@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Effective connection type at the start of an offlining attempt for an
-    attempt that eventually failed.
-
-    This metric is recorded for RequestCoordinator::SavePageLater API calls.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Background.EffectiveConnectionType.PauseRequests"
     enum="NQEEffectiveConnectionType" expires_after="2021-06-25">
   <owner>dougarnett@chromium.org</owner>
@@ -264,15 +251,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.Background.FinalSavePageResult"
-    enum="OfflinePagesBackgroundSavePageResult" expires_after="2021-06-25">
-  <owner>chili@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Status code of background offlining requests at the final step.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.Background.ImmediateStart.AvailableRequestCount"
     units="units" expires_after="2021-06-25">
   <owner>dougarnett@chromium.org</owner>
@@ -281,18 +259,6 @@ chromium-metrics-reviews@google.com.
     Number of queued background load requests available for processing when
     processing starts immediately (vs. scheduled). This is for non-svelte
     devices (where svelte is determined by base::SysInfo::IsLowEnd()).
-  </summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.Background.ImmediateStart.AvailableRequestCount.Svelte"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of queued background load requests available for processing when
-    processing starts immediately (vs. scheduled). This is for svelte devices
-    (where svelte is determined by base::SysInfo::IsLowEnd()).
   </summary>
 </histogram>
 
@@ -317,18 +283,6 @@ chromium-metrics-reviews@google.com.
     Number of queued background load requests unavailable for processing when
     processing starts immediately (vs. scheduled). This is for svelte devices
     (where svelte is determined by base::SysInfo::IsLowEnd()).
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.ImmediateStartStatus"
-    enum="OfflinePagesBackgroundImmediateStartStatus"
-    expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Status of attempt to immediately start offlining a page in the background
-    while application is still concurrently using the foreground. This may be
-    attempted when an web page download is initially requested or resumed.
   </summary>
 </histogram>
 
@@ -374,17 +328,6 @@ chromium-metrics-reviews@google.com.
   <owner>chili@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>Whether the save page result came from chrome custom tabs.</summary>
-</histogram>
-
-<histogram name="OfflinePages.Background.ScheduledStart.AvailableRequestCount"
-    units="units" expires_after="2021-06-25">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of queued background load requests available for processing when
-    background scheduled processing starts. This is for non-svelte devices
-    (where svelte is determined by base::SysInfo::IsLowEnd()).
-  </summary>
 </histogram>
 
 <histogram

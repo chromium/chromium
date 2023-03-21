@@ -3222,10 +3222,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="ntp_suggestions" label="NTP suggestions offlined by the user"/>
   <suffix name="suggested_articles" label="Prefetched NTP suggestions"/>
   <affected-histogram
-      name="OfflinePages.Background.EffectiveConnectionType.OffliningStartType"/>
-  <affected-histogram
       name="OfflinePages.Background.EffectiveConnectionType.SavePageLater"/>
-  <affected-histogram name="OfflinePages.Background.FinalSavePageResult"/>
   <affected-histogram name="OfflinePages.Background.LoadingErrorStatusCode"/>
   <affected-histogram name="OfflinePages.Background.OfflinerRequestStatus"/>
   <affected-histogram name="OfflinePages.Background.SavePageFromCCT"/>
