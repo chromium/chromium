@@ -1290,7 +1290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.CpuUsage" units="%"
-    expires_after="2023-05-03">
+    expires_after="2024-03-20">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
