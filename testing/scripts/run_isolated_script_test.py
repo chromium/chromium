@@ -61,8 +61,10 @@ class BareScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
   def __init__(self):
     super().__init__()
     # Arguments that are ignored, but added here because it's easier to ignore
-    # them to to update bot configs to not pass them.
+    # them than to update bot configs to not pass them.
     common.add_emulator_args(self._parser)
+    self._parser.add_argument(
+        '--use-persistent-shell', action='store_true', help='Unused')
 
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):

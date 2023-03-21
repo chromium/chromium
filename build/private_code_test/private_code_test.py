@@ -82,9 +82,6 @@ def main():
   parser.add_argument('--expect-failure',
                       action='store_true',
                       help='Invert exit code.')
-  parser.add_argument('--use-persistent-shell',
-                      action='store_true',
-                      help='Unused')
   args = parser.parse_args()
 
   private_paths = pathlib.Path(args.private_paths_file).read_text().splitlines()
