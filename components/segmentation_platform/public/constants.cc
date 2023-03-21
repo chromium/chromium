@@ -133,7 +133,10 @@ proto::Predictor::PredictorTypeCase GetClassifierType(
              segmentation_key == kSearchUserKey) {
     return proto::Predictor::kBinnedClassifier;
   }
-  NOTREACHED();
+  // This case is reached when UNKNOWN segment is valid, in case of boolean
+  // segment results.
+  // TODO(crbug.com/1346389): UNKNOWN must be handled separately and add a
+  // NOTREACHED() here after fixing tests.
   return proto::Predictor::kRegressor;
 }
 

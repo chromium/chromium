@@ -58,6 +58,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       field_trial_register_(std::move(init_params->field_trial_register)),
       field_trial_recorder_(
           std::make_unique<FieldTrialRecorder>(field_trial_register_.get())),
+      prefs_migrator_(
+          std::make_unique<PrefsMigrator>(init_params->profile_prefs.get(),
+                                          configs_)),
       profile_prefs_(init_params->profile_prefs.get()),
       creation_time_(clock_->Now()) {
   base::UmaHistogramMediumTimes(
@@ -87,6 +90,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       base::BindRepeating(
           &SegmentationPlatformServiceImpl::OnModelRefreshNeeded,
           weak_ptr_factory_.GetWeakPtr()));
+
+  prefs_migrator_->MigrateOldPrefsToNewPrefs();
 
   cached_result_provider_ = std::make_unique<CachedResultProvider>(
       init_params->profile_prefs, configs_);

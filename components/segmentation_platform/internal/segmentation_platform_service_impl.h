@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/metrics/field_trial_recorder.h"
+#include "components/segmentation_platform/internal/migration/prefs_migrator.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/cached_result_provider.h"
@@ -192,6 +193,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::unique_ptr<SegmentScoreProvider> segment_score_provider_;
 
   std::unique_ptr<ServiceProxyImpl> proxy_;
+
+  // Prefs Migration
+  std::unique_ptr<PrefsMigrator> prefs_migrator_;
 
   // PrefService from profile.
   raw_ptr<PrefService> profile_prefs_;
