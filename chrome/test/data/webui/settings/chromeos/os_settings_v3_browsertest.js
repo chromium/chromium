@@ -261,6 +261,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
+ ['DevicePagePerDeviceMouse', 'device_page/per_device_mouse_test.js'],
  [
    'DisplayAndMagnificationPage',
    'display_and_magnification_page_tests.js',
@@ -450,7 +451,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'per_device_keyboard_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
  ],
- ['PerDeviceMouse', 'per_device_mouse_test.js'],
  [
    'PerDeviceMouseSubsection', 'per_device_mouse_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
