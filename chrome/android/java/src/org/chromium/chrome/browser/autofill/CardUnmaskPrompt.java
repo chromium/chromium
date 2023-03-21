@@ -166,7 +166,10 @@ public class CardUnmaskPrompt
             ChromeImageView cardIconView = (ChromeImageView) mMainView.findViewById(R.id.card_icon);
             cardIconView.setImageDrawable(AutofillUiUtils.getCardIcon(context, cardArtUrl,
                     cardIconId, R.dimen.card_unmask_dialog_credit_card_icon_width,
-                    R.dimen.card_unmask_dialog_credit_card_icon_height));
+                    R.dimen.card_unmask_dialog_credit_card_icon_height,
+                    isVirtualCard
+                            || ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
             ((TextView) mMainView.findViewById(R.id.card_name)).setText(cardName);
             ((TextView) mMainView.findViewById(R.id.card_last_four)).setText(cardLastFourDigits);
             ((TextView) mMainView.findViewById(R.id.card_expiration)).setText(cardExpiration);

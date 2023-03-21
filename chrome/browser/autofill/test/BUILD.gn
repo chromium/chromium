@@ -11,9 +11,11 @@ android_library("test_java") {
 
   deps = [
     ":test_support_java",
+    "//base:base_java",
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/video_tutorials:test_support_java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/junit:junit",

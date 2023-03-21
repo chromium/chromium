@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.autofill;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -22,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -650,5 +655,69 @@ public class PersonalDataManagerTest {
         mHelper.clearAllDataForTesting();
         Assert.assertEquals(0, mHelper.getNumberOfProfilesForSettings());
         Assert.assertEquals(0, mHelper.getNumberOfCreditCardsForSettings());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void
+    testGetCardIcon_customIconUrlAvailable_customIconCachedOnFirstCallAndReturnedOnSecondCall()
+            throws TimeoutException {
+        Context context = ContextUtils.getApplicationContext();
+        int widthId = R.dimen.autofill_dropdown_icon_width;
+        int heightId = R.dimen.autofill_dropdown_icon_height;
+        Bitmap scaledTestCardArtImage = Bitmap.createScaledBitmap(TEST_CARD_ART_IMAGE,
+                context.getResources().getDimensionPixelSize(widthId),
+                context.getResources().getDimensionPixelSize(heightId), true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // The first call to get the custom icon only fetches and caches the icon. It returns
+            // the default icon.
+            assertTrue(
+                    ((BitmapDrawable) AppCompatResources.getDrawable(context, R.drawable.mc_card))
+                            .getBitmap()
+                            .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
+                                             new GURL("http://google.com/test.png"),
+                                             R.drawable.mc_card, widthId, heightId, true))
+                                            .getBitmap()));
+
+            // The custom icon is already cached, and gets returned.
+            assertTrue(scaledTestCardArtImage.sameAs(
+                    ((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
+                             new GURL("http://google.com/test.png"), R.drawable.mc_card, widthId,
+                             heightId, true))
+                            .getBitmap()));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testGetCardIcon_customIconUrlUnavailable_defaultIconReturned()
+            throws TimeoutException {
+        Context context = ContextUtils.getApplicationContext();
+        int widthId = R.dimen.autofill_dropdown_icon_width;
+        int heightId = R.dimen.autofill_dropdown_icon_height;
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // In the absence of custom icon URL, the default icon is returned.
+            assertTrue(
+                    ((BitmapDrawable) AppCompatResources.getDrawable(context, R.drawable.mc_card))
+                            .getBitmap()
+                            .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
+                                             new GURL(""), R.drawable.mc_card, widthId, heightId,
+                                             true))
+                                            .getBitmap()));
+
+            // Calling it twice just to make sure that there is no caching behavior like it happens
+            // in the case of custom icons.
+            assertTrue(
+                    ((BitmapDrawable) AppCompatResources.getDrawable(context, R.drawable.mc_card))
+                            .getBitmap()
+                            .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
+                                             new GURL(""), R.drawable.mc_card, widthId, heightId,
+                                             true))
+                                            .getBitmap()));
+        });
     }
 }

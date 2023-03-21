@@ -35,6 +35,8 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
+    "//components/autofill/android:autofill_java_resources",
+    "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java_resources",
