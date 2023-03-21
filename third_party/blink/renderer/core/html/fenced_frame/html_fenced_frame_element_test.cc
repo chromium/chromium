@@ -189,8 +189,6 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
   Document& doc = GetDocument();
 
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setAttribute(html_names::kModeAttr, String("default"),
-                             ASSERT_NO_EXCEPTION);
   fenced_frame->setAttribute(
       html_names::kSrcAttr, String("http://example.com/"), ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame);
@@ -215,8 +213,6 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {
   Document& doc = GetDocument();
 
   auto* fenced_frame_opaque = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame_opaque->setAttribute(html_names::kModeAttr, String("opaque-ads"),
-                                    ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame_opaque);
 
   // The fenced frame was not navigated to any page. Manually tell it that it

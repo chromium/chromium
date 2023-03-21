@@ -17,7 +17,6 @@ promise_test(async () => {
   // Create a fenced frame.
   const fenced_frame = document.createElement('fencedframe');
   document.body.append(fenced_frame);
-  assert_equals(fenced_frame.mode, "default");
 
   // Specify the fenced frame's src attribute to an url.
   const url = generateURL('resources/fenced-frame-loaded.html',

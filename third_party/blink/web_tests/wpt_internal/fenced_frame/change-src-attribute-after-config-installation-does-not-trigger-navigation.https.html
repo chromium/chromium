@@ -28,8 +28,6 @@ promise_test(async (t) => {
   fenced_frame.config = config;
   document.body.append(fenced_frame);
 
-  assert_equals(fenced_frame.mode, "default");
-
   // Installing a config to the fenced frame triggers navigation.
   const load_expected = "fenced frame loaded";
   const load_actual = await nextValueFromServer(fenced_frame_loaded_key);
