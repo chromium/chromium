@@ -40,6 +40,8 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_POP_STATE;
     case TaskAttributionTracker::TaskScopeType::kSchedulerPostTask:
       return ProtoType::TASK_SCOPE_SCHEDULER_POST_TASK;
+    case TaskAttributionTracker::TaskScopeType::kRequestIdleCallback:
+      return ProtoType::TASK_SCOPE_REQUEST_IDLE_CALLBACK;
   }
 }
 

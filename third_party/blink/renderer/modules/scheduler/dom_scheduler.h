@@ -87,6 +87,10 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
 
   void Trace(Visitor*) const override;
 
+  // Gets the fixed priority TaskSignal for `priority`, creating it if needed.
+  DOMTaskSignal* GetFixedPriorityTaskSignal(ScriptState*,
+                                            WebSchedulingPriority);
+
  private:
   // TODO(crbug.com/c/979020): Move DOMTaskQueue out of DOMScheduler.
   friend class DOMTask;              // For DOMTaskQueue
@@ -156,10 +160,6 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
       ExceptionState&,
       absl::variant<AbortSignal*, InheritOption> signal_option,
       absl::variant<AtomicString, InheritOption> priority_option);
-
-  // Gets the fixed priority TaskSignal for `priority`, creating it if needed.
-  DOMTaskSignal* GetFixedPriorityTaskSignal(ScriptState*,
-                                            WebSchedulingPriority);
 
   // Gets the task queue used to schedule tasks or continuations with the given
   // signal and type, creating it if needed.

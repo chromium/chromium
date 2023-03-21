@@ -38,6 +38,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kPostMessage,
     kPopState,
     kSchedulerPostTask,
+    kRequestIdleCallback,
   };
 
   // A class maintaining the scope of the current task. Keeping it alive ensures
