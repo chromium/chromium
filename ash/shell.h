@@ -202,6 +202,7 @@ class RefreshRateThrottleController;
 class ResizeShadowController;
 class ResolutionNotificationController;
 class RootWindowController;
+class SavedDeskController;
 class SavedDeskDelegate;
 class ScreenLayoutObserver;
 class ScreenOrientationController;
@@ -440,6 +441,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   DesksController* desks_controller() { return desks_controller_.get(); }
   PersistentDesksBarController* persistent_desks_bar_controller() {
     return persistent_desks_bar_controller_.get();
+  }
+  SavedDeskController* saved_desk_controller() {
+    return saved_desk_controller_.get();
   }
   SavedDeskDelegate* saved_desk_delegate() {
     return saved_desk_delegate_.get();
@@ -909,6 +913,7 @@ class ASH_EXPORT Shell : public SessionObserver,
       security_curtain_controller_;
   std::unique_ptr<DarkLightModeControllerImpl> dark_light_mode_controller_;
   std::unique_ptr<DesksController> desks_controller_;
+  std::unique_ptr<SavedDeskController> saved_desk_controller_;
   std::unique_ptr<SavedDeskDelegate> saved_desk_delegate_;
   std::unique_ptr<DetachableBaseHandler> detachable_base_handler_;
   std::unique_ptr<DetachableBaseNotificationController>
