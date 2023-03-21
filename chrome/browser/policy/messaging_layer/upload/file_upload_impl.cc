@@ -244,15 +244,6 @@ class FileUploadDelegate::InitContext
     // Record total size of the file.
     total_ = total_result.ValueOrDie();
 
-    // Extract base name of the file for metadata.
-    const base::FilePath full_name = base::FilePath(origin_path_);
-    const auto base_name = full_name.BaseName().MaybeAsASCII();
-    if (base_name.empty()) {
-      Complete(Status(error::FAILED_PRECONDITION,
-                      base::StrCat({"Origin path malformed: ", origin_path_})));
-      return;
-    }
-
     // Initiate upload.
     DVLOG(1) << "Starting URL fetcher.";
 
@@ -268,27 +259,34 @@ class FileUploadDelegate::InitContext
 
     url_loader_ = delegate()->CreatePostLoader(std::move(resource_request));
 
-    // Construct and attach medatata.
-    // See go/scotty-http-protocols#unified-resumable-protocol
-    // Retrieve the base name of the file to be used as uploaded file name.
-    // TODO(b/264399295): The rest is to be populated from the event.
-    std::string metadata;
-    metadata.append("<File-Type>\r\n")
-        .append("  ")
-        .append("support_file")  // TODO(b/264399295): get from the event
-        .append("\r\n")
-        .append("</File-Type>\r\n");
-    metadata.append("<Command-ID>\r\n")
-        .append("  ")
-        .append("ID12345")  // TODO(b/264399295): get from the event
-        .append("\r\n")
-        .append("</Command-ID>\r\n");
-    metadata.append("<Filename>\r\n")
-        .append("  ")
-        .append(base_name)
-        .append("\r\n")
-        .append("</Filename>\r\n");
-    url_loader_->AttachStringForUpload(metadata, "text/xml");
+    // Construct and attach medatata - see
+    // go/scotty-http-protocols#unified-resumable-protocol
+    // Here we expect `upload_parameters` to be in the form like:
+    //
+    // "<File-Type>\r\n"
+    // "  support_file\r\n"
+    // "</File-Type>\r\n"
+    // "<Command-ID>\r\n"
+    // "  ID12345\r\n"
+    // "</Command-ID>\r\n"
+    // "<Filename>\r\n"
+    // "  resulting_file_name\r\n"
+    // "</Filename>\r\n"
+    // "text/xml"
+    //
+    // with the last line indicating content type.
+    const auto pos = upload_parameters_.find_last_of("\n");
+    if (pos == std::string::npos || pos + 1u >= upload_parameters_.size()) {
+      Complete(Status(error::INVALID_ARGUMENT,
+                      base::StrCat({"Cannot parse upload_parameters=`",
+                                    upload_parameters_, "`"})));
+      return;
+    }
+    const std::string metadata_contents_type =
+        upload_parameters_.substr(pos + 1u);
+    const std::string metadata =
+        upload_parameters_.substr(0, pos + 1u);  // With \n included!
+    url_loader_->AttachStringForUpload(metadata, metadata_contents_type);
 
     // Make a call and get response headers.
     delegate()->SendAndGetResponse(

@@ -67,6 +67,17 @@ constexpr char kRobotAccountId[] = "robot@gmail.com";
 constexpr size_t kDataGranularity = 10;
 constexpr size_t kMaxUploadBufferSize = kDataGranularity * 2;
 constexpr char kUploadId[] = "ABC";
+constexpr char kUploadMedata[] =
+    "<File-Type>\r\n"
+    "  support_file\r\n"
+    "</File-Type>\r\n"
+    "<Command-ID>\r\n"
+    "  ID12345\r\n"
+    "</Command-ID>\r\n"
+    "<Filename>\r\n"
+    "  resulting_file_name\r\n"
+    "</Filename>\r\n";
+constexpr char kUploadMetadataContentType[] = "text/xml";
 constexpr char kResumableUrl[] =
     "/upload?upload_id=ABC&upload_protocol=resumable";
 constexpr char kTokenInvalid[] = "INVALID_TOKEN";
@@ -289,7 +300,11 @@ class FileUploadDelegateTest : public ::testing::Test {
             Pair("X-Goog-Upload-Header-Content-Type",
                  ::testing::MatcherCast<std::string>(
                      StrEq("application/octet-stream"))),
+            Pair("Content-Type", ::testing::MatcherCast<std::string>(
+                                     kUploadMetadataContentType)),
         }));
+    EXPECT_TRUE(request.has_content);
+    EXPECT_THAT(request.content, StrEq(kUploadMedata));
   }
 
   void ExpectQuery(const ::net::test_server::HttpRequest& request) {
@@ -378,7 +393,11 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStart) {
   test::TestEvent<
       StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
       init_done;
-  delegate->DoInitiate(origin_path(), /*upload_parameters=*/"", init_done.cb());
+  delegate->DoInitiate(
+      origin_path(),
+      /*upload_parameters=*/
+      base::StrCat({kUploadMedata, kUploadMetadataContentType}),
+      init_done.cb());
   const auto& result = init_done.result();
   ASSERT_OK(result) << result.status();
   ASSERT_THAT(result.ValueOrDie().first,
@@ -440,8 +459,28 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
-                         init_done.cb());
+    // Incorrect upload parameters prevent calling the server - no expectation
+    // is provided!
+    delegate->DoInitiate(origin_path(),
+                         /*upload_parameters=*/"ABCD", init_done.cb());
+    EXPECT_THAT(
+        init_done.result().status(),
+        AllOf(Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)),
+              Property(&Status::error_message,
+                       StrEq("Cannot parse upload_parameters=`ABCD`"))));
+  }
+  {
+    // Prepare access token.
+    access_token_manager_.AddTokenToQueue(kTokenValid);
+
+    test::TestEvent<
+        StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
+        init_done;
+    delegate->DoInitiate(
+        origin_path(),
+        /*upload_parameters=*/
+        base::StrCat({kUploadMedata, kUploadMetadataContentType}),
+        init_done.cb());
     EXPECT_THAT(init_done.result().status(),
                 AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
                       Property(&Status::error_message,
@@ -454,8 +493,11 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
-                         init_done.cb());
+    delegate->DoInitiate(
+        origin_path(),
+        /*upload_parameters=*/
+        base::StrCat({kUploadMedata, kUploadMetadataContentType}),
+        init_done.cb());
     EXPECT_THAT(init_done.result().status(),
                 AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
                       Property(&Status::error_message,
@@ -468,8 +510,11 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
-                         init_done.cb());
+    delegate->DoInitiate(
+        origin_path(),
+        /*upload_parameters=*/
+        base::StrCat({kUploadMedata, kUploadMetadataContentType}),
+        init_done.cb());
     EXPECT_THAT(init_done.result().status(),
                 AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
                       Property(&Status::error_message,
@@ -482,8 +527,11 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
-                         init_done.cb());
+    delegate->DoInitiate(
+        origin_path(),
+        /*upload_parameters=*/
+        base::StrCat({kUploadMedata, kUploadMetadataContentType}),
+        init_done.cb());
     EXPECT_THAT(
         init_done.result().status(),
         AllOf(
@@ -499,8 +547,11 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
-                         init_done.cb());
+    delegate->DoInitiate(
+        origin_path(),
+        /*upload_parameters=*/
+        base::StrCat({kUploadMedata, kUploadMetadataContentType}),
+        init_done.cb());
     EXPECT_THAT(
         init_done.result().status(),
         AllOf(
@@ -908,8 +959,8 @@ TEST_F(FileUploadDelegateTest, FinishFailures) {
   {
     test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
     delegate->DoFinalize(
-        /*session_token=*/base::StrCat(
-            {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        /*session_token=*/
+        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
         finish_done.cb());
     const auto& result = finish_done.result();
     ASSERT_THAT(
