@@ -26,14 +26,6 @@ class ChromiumDepGraph {
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
         androidx_multidex_multidex: new PropertyOverride(
             url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
-        com_android_tools_desugar_jdk_libs: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/google/desugar_jdk_libs/master/LICENSE',
-            licenseName: 'GNU General Public License, version 2, with the Classpath Exception',
-            generateTarget: false),
-        com_android_tools_desugar_jdk_libs_configuration: new PropertyOverride(
-            licensePath: 'licenses/desugar_jdk_libs_configuration.txt',
-            licenseName: 'BSD 3-Clause',
-            generateTarget: false),
         com_github_kevinstern_software_and_algorithms: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE',
             licenseName: 'MIT License'),
@@ -145,10 +137,6 @@ class ChromiumDepGraph {
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
             licenseName: 'BSD'),
-        com_google_protobuf_protobuf_lite: new PropertyOverride(
-            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md',
-            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
-            licenseName: 'BSD'),
         javax_annotation_javax_annotation_api: new PropertyOverride(
             isShipped: false,  // Annotations are stripped by R8.
             licenseName: 'CDDLv1.1',
@@ -169,9 +157,6 @@ class ChromiumDepGraph {
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
             licenseName: 'Apache 2.0'),
-        net_sf_kxml_kxml2: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/stefanhaustein/kxml2/master/license.txt',
-            licenseName: 'MIT'),
         org_checkerframework_checker_compat_qual: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),

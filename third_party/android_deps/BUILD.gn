@@ -2361,24 +2361,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("net_sf_kxml_kxml2_java") {
-    jar_path = "libs/net_sf_kxml_kxml2/kxml2-2.3.0.jar"
-    output_name = "net_sf_kxml_kxml2"
-    supports_android = true
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-
-    # Target needs to exclude *xmlpull* files as already included in Android SDK.
-    jar_excluded_patterns = [ "*xmlpull*" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_bouncycastle_bcprov_jdk15on_java") {
     jar_path = "libs/org_bouncycastle_bcprov_jdk15on/bcprov-jdk15on-1.68.jar"
     output_name = "org_bouncycastle_bcprov_jdk15on"
