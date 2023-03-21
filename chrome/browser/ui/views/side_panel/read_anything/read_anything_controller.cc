@@ -135,10 +135,16 @@ void ReadAnythingController::OnSystemThemeChanged() {
 void ReadAnythingController::OnUIReady() {
   ui_ready_ = true;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsReadAnythingWithScreen2xEnabled() &&
-      !component_ready_observer_.IsObserving()) {
-    component_ready_observer_.Observe(
-        screen_ai::ScreenAIInstallState::GetInstance());
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    if (screen_ai::ScreenAIInstallState::GetInstance()
+            ->IsComponentAvailable()) {
+      // Notify that the screen ai service is already ready so we can bind to
+      // the content extractor.
+      model_->ScreenAIServiceReady();
+    } else if (!component_ready_observer_.IsObserving()) {
+      component_ready_observer_.Observe(
+          screen_ai::ScreenAIInstallState::GetInstance());
+    }
   }
 #endif
   OnActiveWebContentsChanged();

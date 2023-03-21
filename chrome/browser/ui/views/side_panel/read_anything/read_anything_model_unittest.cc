@@ -43,6 +43,9 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
                read_anything::mojom::LineSpacing line_spacing,
                read_anything::mojom::LetterSpacing letter_spacing),
               (override));
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  MOCK_METHOD(void, ScreenAIServiceReady, (), (override));
+#endif
 };
 
 class ReadAnythingModelTest : public TestWithBrowserView {

@@ -14,6 +14,36 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 
+class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
+ public:
+  MOCK_METHOD(void,
+              AccessibilityEventReceived,
+              (const content::AXEventNotificationDetails& details),
+              (override));
+  MOCK_METHOD(void,
+              OnActiveAXTreeIDChanged,
+              (const ui::AXTreeID& tree_id, const ukm::SourceId& ukm_source_id),
+              (override));
+  MOCK_METHOD(void,
+              OnAXTreeDestroyed,
+              (const ui::AXTreeID& tree_id),
+              (override));
+  MOCK_METHOD(void,
+              OnReadAnythingThemeChanged,
+              (const std::string& font_name,
+               double font_scale,
+               ui::ColorId foreground_color_id,
+               ui::ColorId background_color_id,
+               ui::ColorId separator_color_id,
+               ui::ColorId dropdown_color_id,
+               read_anything::mojom::LineSpacing line_spacing,
+               read_anything::mojom::LetterSpacing letter_spacing),
+              (override));
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  MOCK_METHOD(void, ScreenAIServiceReady, (), (override));
+#endif
+};
+
 class ReadAnythingControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
@@ -101,6 +131,7 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
   std::unique_ptr<ReadAnythingModel> model_;
   std::unique_ptr<ReadAnythingController> controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  MockReadAnythingModelObserver model_observer_;
 };
 
 TEST_F(ReadAnythingControllerTest, ValidIndexUpdatesFontNamePref) {
@@ -252,3 +283,23 @@ TEST_F(ReadAnythingControllerTest, CallOnUIReadyTwiceNoCrash) {
   OnUIDestroyed();
   OnUIReady();
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+TEST_F(ReadAnythingControllerTest, OnUIReady_ScreenAIReadyCallsModel) {
+  model_->AddObserver(&model_observer_);
+  screen_ai::ScreenAIInstallState::GetInstance()->SetComponentReadyForTesting();
+
+  EXPECT_CALL(model_observer_, ScreenAIServiceReady()).Times(1);
+
+  OnUIReady();
+}
+
+TEST_F(ReadAnythingControllerTest, OnUIReady_ScreenAINotReady) {
+  model_->AddObserver(&model_observer_);
+  screen_ai::ScreenAIInstallState::GetInstance()->ResetForTesting();
+
+  EXPECT_CALL(model_observer_, ScreenAIServiceReady()).Times(0);
+
+  OnUIReady();
+}
+#endif
