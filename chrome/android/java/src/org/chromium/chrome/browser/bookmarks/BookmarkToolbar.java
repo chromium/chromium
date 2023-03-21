@@ -104,7 +104,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
         if (mBookmarkUiMode == BookmarkUiMode.FOLDER && mCurrentFolder != null) {
             // It's possible that the folder was renamed, so refresh the folder UI just in case.
-            setCurrentFolder(mCurrentFolder.getId());
+            setCurrentFolder(mCurrentFolder);
         }
     }
 
@@ -127,23 +127,28 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setOnMenuItemClickListener(dragEnabled ? null : this);
     }
 
-    /** Set the current folder */
+    /** Sets the current folder as a BookmarkId. */
     // TODO(crbug.com/1413463): The individual title/nav state should be set manually instead of
     // being derived from the BookmarkId.
     void setCurrentFolder(BookmarkId folder) {
-        mCurrentFolder = mBookmarkModel.getBookmarkById(folder);
+        setCurrentFolder(mBookmarkModel.getBookmarkById(folder));
+    }
+
+    /** Sets the current folder as a BookmarkItem. */
+    void setCurrentFolder(BookmarkItem folder) {
+        mCurrentFolder = folder;
 
         getMenu().findItem(R.id.search_menu_id).setVisible(true);
         getMenu().findItem(R.id.edit_menu_id).setVisible(mCurrentFolder.isEditable());
 
         // If this is the root folder, we can't go up anymore.
-        if (folder.equals(mBookmarkModel.getRootFolderId())) {
+        if (folder.getId().equals(mBookmarkModel.getRootFolderId())) {
             setTitle(R.string.bookmarks);
             setNavigationButton(NAVIGATION_BUTTON_NONE);
             return;
         }
 
-        if (folder.equals(BookmarkId.SHOPPING_FOLDER)) {
+        if (folder.getId().equals(BookmarkId.SHOPPING_FOLDER)) {
             setTitle(R.string.price_tracking_bookmarks_filter_title);
         } else if (mBookmarkModel.getTopLevelFolderParentIDs().contains(
                            mCurrentFolder.getParentId())
@@ -268,6 +273,8 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         if (mCurrentFolder == null) {
             getMenu().findItem(R.id.search_menu_id).setVisible(false);
             getMenu().findItem(R.id.edit_menu_id).setVisible(false);
+        } else {
+            setCurrentFolder(mCurrentFolder);
         }
     }
 

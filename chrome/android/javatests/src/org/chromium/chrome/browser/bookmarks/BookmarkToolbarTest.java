@@ -127,15 +127,19 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
             when(mBookmarkModel.getTopLevelFolderParentIDs())
                     .thenReturn(Collections.singletonList(BOOKMARK_ID_ROOT));
 
-            mockBookmarkItem(BOOKMARK_ID_FOLDER, "folder", null, true, BOOKMARK_ID_ROOT);
+            BookmarkItem rootBookmarkItem = new BookmarkItem(
+                    BOOKMARK_ID_ROOT, "root", null, false, null, false, false, 0, false);
+            when(mBookmarkModel.getBookmarkById(BOOKMARK_ID_ROOT)).thenReturn(rootBookmarkItem);
+
+            mockBookmarkItem(BOOKMARK_ID_FOLDER, "folder", null, true, BOOKMARK_ID_ROOT, true);
             mockBookmarkItem(
-                    BOOKMARK_ID_ONE, "one", JUnitTestGURLs.URL_1, false, BOOKMARK_ID_FOLDER);
+                    BOOKMARK_ID_ONE, "one", JUnitTestGURLs.URL_1, false, BOOKMARK_ID_FOLDER, true);
             mockBookmarkItem(
-                    BOOKMARK_ID_TWO, "two", JUnitTestGURLs.URL_2, false, BOOKMARK_ID_FOLDER);
+                    BOOKMARK_ID_TWO, "two", JUnitTestGURLs.URL_2, false, BOOKMARK_ID_FOLDER, true);
             mockBookmarkItem(BOOKMARK_ID_PARTNER, "partner", JUnitTestGURLs.RED_1, false,
-                    BOOKMARK_ID_FOLDER);
+                    BOOKMARK_ID_FOLDER, false);
             mockBookmarkItem(BOOKMARK_ID_READING_LIST, "reading list", JUnitTestGURLs.BLUE_1, false,
-                    BOOKMARK_ID_FOLDER);
+                    BOOKMARK_ID_FOLDER, true);
         });
     }
 
@@ -167,10 +171,10 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         mBookmarkToolbar.setOpenFolderCallback(mOpenFolderCallback);
     }
 
-    private void mockBookmarkItem(
-            BookmarkId bookmarkId, String title, String url, boolean isFolder, BookmarkId parent) {
+    private void mockBookmarkItem(BookmarkId bookmarkId, String title, String url, boolean isFolder,
+            BookmarkId parent, boolean isEditable) {
         BookmarkItem bookmarkItem = new BookmarkItem(
-                bookmarkId, title, new GURL(url), isFolder, parent, false, false, 0, false);
+                bookmarkId, title, new GURL(url), isFolder, parent, isEditable, false, 0, false);
         when(mBookmarkModel.getBookmarkById(bookmarkId)).thenReturn(bookmarkItem);
     }
 
@@ -488,6 +492,11 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         Assert.assertFalse(mBookmarkToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
         mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_FOLDER);
+        Assert.assertTrue(mBookmarkToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
+        Assert.assertTrue(mBookmarkToolbar.getMenu().findItem(R.id.search_menu_id).isVisible());
+
+        mBookmarkToolbar.setCurrentFolder(BOOKMARK_ID_ROOT);
+        Assert.assertFalse(mBookmarkToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
         Assert.assertTrue(mBookmarkToolbar.getMenu().findItem(R.id.search_menu_id).isVisible());
     }
 }
