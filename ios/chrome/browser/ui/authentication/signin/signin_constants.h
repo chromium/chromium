@@ -47,9 +47,9 @@ extern NSString* const kConfirmationAccessibilityIdentifier;
 extern NSString* const kMoreAccessibilityIdentifier;
 // Name of accessibility identifier for the web sign-in consistency sheet.
 extern NSString* const kWebSigninAccessibilityIdentifier;
-// Name of accessiblity identifier for "Continue As..." button that signs in
-// the primary account user for the web sign-in consistency sheet.
-extern NSString* const kWebSigninContinueAsButtonAccessibilityIdentifier;
+// Name of accessibility identifier for the primary button that signs in
+// the user for the web sign-in consistency sheet.
+extern NSString* const kWebSigninPrimaryButtonAccessibilityIdentifier;
 // Name of accessibility identifier for "Skip" button in the web sign-in
 // consistency sheet.
 extern NSString* const kWebSigninSkipButtonAccessibilityIdentifier;

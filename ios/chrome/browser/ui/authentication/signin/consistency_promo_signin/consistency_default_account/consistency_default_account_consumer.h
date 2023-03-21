@@ -10,13 +10,15 @@
 // Consumer for consistency default account.
 @protocol ConsistencyDefaultAccountConsumer <NSObject>
 
-// Updates the user information.
-- (void)updateWithFullName:(NSString*)fullName
-                 givenName:(NSString*)givenName
-                     email:(NSString*)email;
+// Updates the user information, and show the default account.
+- (void)showDefaultAccountWithFullName:(NSString*)fullName
+                             givenName:(NSString*)givenName
+                                 email:(NSString*)email
+                                avatar:(UIImage*)avatar;
 
-// Updates the user avatar.
-- (void)updateUserAvatar:(UIImage*)image;
+// Disable display for the default account button, for when an account isn't
+// available on the device.
+- (void)hideDefaultAccount;
 
 @end
 

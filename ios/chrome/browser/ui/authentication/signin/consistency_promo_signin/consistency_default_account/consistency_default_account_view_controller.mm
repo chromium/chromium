@@ -40,12 +40,14 @@ constexpr CGFloat kContentSpacing = 16.;
 @property(nonatomic, strong) UIStackView* contentView;
 // Button to present the default identity.
 @property(nonatomic, strong) IdentityButtonControl* identityButtonControl;
-// Button to confirm the default identity and sign-in.
-@property(nonatomic, strong) UIButton* continueAsButton;
-// Title for `self.continueAsButton`. This property is needed to hide the title
-// the activity indicator is shown.
+// Button to
+// 1. confirm the default identity and sign-in when an account is available, or
+// 2. add an account when no account is available on the device
+@property(nonatomic, strong) UIButton* primaryButton;
+// Title for `self.primaryButton` when it needs to show the text "Continue as…".
+// This property is needed to hide the title the activity indicator is shown.
 @property(nonatomic, strong) NSString* continueAsTitle;
-// Activity indicator on top of `self.continueAsButton`.
+// Activity indicator on top of `self.primaryButton`.
 @property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 // The access point that triggered sign-in.
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
@@ -68,13 +70,13 @@ constexpr CGFloat kContentSpacing = 16.;
   self.activityIndicatorView = [[UIActivityIndicatorView alloc] init];
   self.activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicatorView.color = UIColor.whiteColor;
-  [self.continueAsButton addSubview:self.activityIndicatorView];
-  AddSameCenterConstraints(self.activityIndicatorView, self.continueAsButton);
+  [self.primaryButton addSubview:self.activityIndicatorView];
+  AddSameCenterConstraints(self.activityIndicatorView, self.primaryButton);
   [self.activityIndicatorView startAnimating];
   // Disable buttons.
   self.identityButtonControl.enabled = NO;
-  self.continueAsButton.enabled = NO;
-  [self.continueAsButton setTitle:@"" forState:UIControlStateNormal];
+  self.primaryButton.enabled = NO;
+  [self.primaryButton setTitle:@"" forState:UIControlStateNormal];
 }
 
 - (void)stopSpinner {
@@ -84,10 +86,10 @@ constexpr CGFloat kContentSpacing = 16.;
   self.activityIndicatorView = nil;
   // Enable buttons.
   self.identityButtonControl.enabled = YES;
-  self.continueAsButton.enabled = YES;
+  self.primaryButton.enabled = YES;
   DCHECK(self.continueAsTitle);
-  [self.continueAsButton setTitle:self.continueAsTitle
-                         forState:UIControlStateNormal];
+  [self.primaryButton setTitle:self.continueAsTitle
+                      forState:UIControlStateNormal];
 }
 
 #pragma mark - UIViewController
@@ -112,12 +114,15 @@ constexpr CGFloat kContentSpacing = 16.;
       [[UIBarButtonItem alloc] initWithCustomView:titleLabel];
   self.navigationItem.leftBarButtonItem = leftItem;
 
-  // Set the skip button in the right bar button item.
-  NSString* skipButtonTitle =
+  NSString* skipButtonTitle;
+  if (self.accessPoint ==
+          signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO ||
       self.accessPoint ==
-              signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO
-          ? l10n_util::GetNSString(IDS_CANCEL)
-          : l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP);
+          signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
+    skipButtonTitle = l10n_util::GetNSString(IDS_CANCEL);
+  } else {
+    skipButtonTitle = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP);
+  }
   UIBarButtonItem* skipButton =
       [[UIBarButtonItem alloc] initWithTitle:skipButtonTitle
                                        style:UIBarButtonItemStylePlain
@@ -197,24 +202,26 @@ constexpr CGFloat kContentSpacing = 16.;
     [self.identityButtonControl.widthAnchor
         constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
-  // Add primary button.
-  self.continueAsButton =
+  // Add the primary button (the "Continue as"/"Sign in" button)
+  self.primaryButton =
       PrimaryActionButton(/* pointer_interaction_enabled */ YES);
-  self.continueAsButton.accessibilityIdentifier =
-      kWebSigninContinueAsButtonAccessibilityIdentifier;
-  self.continueAsButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.continueAsButton addTarget:self
-                            action:@selector(signInWithDefaultIdentityAction:)
-                  forControlEvents:UIControlEventTouchUpInside];
-  [self.contentView addArrangedSubview:self.continueAsButton];
+  self.primaryButton.accessibilityIdentifier =
+      kWebSigninPrimaryButtonAccessibilityIdentifier;
+  self.primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.primaryButton addTarget:self
+                         action:@selector(primaryButtonAction:)
+               forControlEvents:UIControlEventTouchUpInside];
+
+  [self.contentView addArrangedSubview:self.primaryButton];
+
   [NSLayoutConstraint activateConstraints:@[
-    [self.continueAsButton.widthAnchor
+    [self.primaryButton.widthAnchor
         constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
   // Adjust the identity button control rounded corners to the same value than
   // the "continue as" button.
   self.identityButtonControl.layer.cornerRadius =
-      self.continueAsButton.layer.cornerRadius;
+      self.primaryButton.layer.cornerRadius;
 
   // Ensure that keyboard is hidden.
   UIResponder* firstResponder = GetFirstResponder();
@@ -232,9 +239,17 @@ constexpr CGFloat kContentSpacing = 16.;
       consistencyDefaultAccountViewControllerOpenIdentityChooser:self];
 }
 
-- (void)signInWithDefaultIdentityAction:(id)sender {
-  [self.actionDelegate
-      consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:self];
+- (void)primaryButtonAction:
+    (ConsistencyDefaultAccountViewController*)viewController {
+  // if the IBC is hidden, then there is no account avaiable on the device
+  if (!self.identityButtonControl.hidden) {
+    [self.actionDelegate
+        consistencyDefaultAccountViewControllerContinueWithSelectedIdentity:
+            self];
+  } else {
+    [self.actionDelegate
+        consistencyDefaultAccountViewControllerAddAccountAndSignin:self];
+  }
 }
 
 #pragma mark - ChildConsistencySheetViewController
@@ -265,26 +280,35 @@ constexpr CGFloat kContentSpacing = 16.;
 
 #pragma mark - ConsistencyDefaultAccountConsumer
 
-- (void)updateWithFullName:(NSString*)fullName
-                 givenName:(NSString*)givenName
-                     email:(NSString*)email {
+- (void)showDefaultAccountWithFullName:(NSString*)fullName
+                             givenName:(NSString*)givenName
+                                 email:(NSString*)email
+                                avatar:(UIImage*)avatar {
   if (!self.viewLoaded) {
     // Load the view.
     [self view];
   }
   self.continueAsTitle = l10n_util::GetNSStringF(
       IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, base::SysNSStringToUTF16(givenName));
-  [self.continueAsButton setTitle:self.continueAsTitle
-                         forState:UIControlStateNormal];
+  [self.primaryButton setTitle:self.continueAsTitle
+                      forState:UIControlStateNormal];
   [self.identityButtonControl setIdentityName:fullName email:email];
+  [self.identityButtonControl setIdentityAvatar:avatar];
+
+  self.identityButtonControl.hidden = NO;
 }
 
-- (void)updateUserAvatar:(UIImage*)avatar {
+- (void)hideDefaultAccount {
   if (!self.viewLoaded) {
-    // Load the view.
     [self view];
   }
-  [self.identityButtonControl setIdentityAvatar:avatar];
+
+  // hide the IdentityButtonControl, and update the primary button to serve as
+  // a "Sign in…" button
+  self.identityButtonControl.hidden = YES;
+  [self.primaryButton
+      setTitle:l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN)
+      forState:UIControlStateNormal];
 }
 
 @end

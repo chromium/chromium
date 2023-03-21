@@ -102,7 +102,7 @@
       triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninContinueButtonMatcher()]
+                                          WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   // Wait for the error dialog (sign-in fails since the sign-in is done with a
   // fake identity).
@@ -128,7 +128,7 @@
       triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninContinueButtonMatcher()]
+                                          WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
   // Wait for the error dialog (sign-in fails since the sign-in is done with a
   // fake identity).
