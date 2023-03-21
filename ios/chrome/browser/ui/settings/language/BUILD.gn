@@ -128,10 +128,7 @@ source_set("eg_test_support+eg2") {
     "language_settings_app_interface.h",
     "language_settings_app_interface_stub.mm",
   ]
-  deps = [
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
-  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
 
 source_set("eg2_tests") {
@@ -151,7 +148,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/language:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//ui/strings:ui_strings_grit",
   ]
   frameworks = [ "UIKit.framework" ]

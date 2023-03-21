@@ -64,7 +64,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/scanner:camera_state",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//net",
     "//net:test_support",
     "//third_party/ocmock",
@@ -121,6 +120,6 @@ source_set("eg_test_support+eg2") {
   ]
   deps = [
     "//ios/chrome/browser/ui/scanner:camera_state",
-    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }

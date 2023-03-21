@@ -59,7 +59,6 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/webui:url_constants",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
     "//ui/base",

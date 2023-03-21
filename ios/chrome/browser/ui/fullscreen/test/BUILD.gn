@@ -55,8 +55,5 @@ source_set("eg_test_support+eg2") {
     "fullscreen_app_interface.h",
     "fullscreen_app_interface_stub.mm",
   ]
-  deps = [
-    "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
-  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }

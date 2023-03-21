@@ -28,7 +28,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/context_menu/link_preview:constants",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
   ]
   frameworks = [ "UIKit.framework" ]
 }

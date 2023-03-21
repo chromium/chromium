@@ -5,8 +5,8 @@
 #include <memory>
 
 #import <ChromeWebView/ChromeWebView.h>
-#import <EarlGrey/EarlGrey.h>
 #import <XCTest/XCTest.h>
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web_view/shell/shell_view_controller.h"

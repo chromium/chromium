@@ -43,7 +43,6 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/webui:url_constants",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public/test/http_server",
     "//net",
     "//net:test_support",
@@ -106,5 +105,5 @@ source_set("eg_test_support+eg2") {
     "infobar_manager_app_interface.h",
     "infobar_manager_app_interface_stub.mm",
   ]
-  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }

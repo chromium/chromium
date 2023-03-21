@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
 
-#import <TestLib/EarlGreyImpl/EarlGrey.h>
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

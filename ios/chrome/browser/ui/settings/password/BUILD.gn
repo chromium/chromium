@@ -265,7 +265,7 @@ source_set("eg_test_support+eg2") {
 
   deps = [
     "//ios/chrome/common/ui/reauthentication",
-    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }
 
@@ -303,7 +303,6 @@ source_set("eg2_tests") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//ios/web/public/test:element_selector",
     "//ios/web/public/test/http_server:http_server",
     "//ui/base",

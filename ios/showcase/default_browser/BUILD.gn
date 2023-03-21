@@ -28,7 +28,6 @@ source_set("eg2_tests") {
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//ui/base",
   ]
 

@@ -84,7 +84,7 @@ template("ios_eg2_test") {
     if (!defined(deps)) {
       deps = []
     }
-    deps += [ "//ios/third_party/earl_grey2:test_lib" ]
+    deps += [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 
     # TODO(crbug.com/1056328) Because we change the target name, the subnodes
     # are going to append with the _test in the naming, which won't be backwards

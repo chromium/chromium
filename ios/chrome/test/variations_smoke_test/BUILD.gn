@@ -16,7 +16,6 @@ source_set("eg2_tests") {
     "//base",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
   ]
 }
 
@@ -48,5 +47,5 @@ source_set("eg_test_support+eg2") {
     "variations_smoke_test_app_interface.h",
     "variations_smoke_test_app_interface_stub.mm",
   ]
-  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }

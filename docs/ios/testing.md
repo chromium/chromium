@@ -87,7 +87,7 @@ tests that use the app interface.
 ```objc
 #import "ios_internal/chrome/test/earl_grey2/my_test_app_interface.h"
 
-#import <TestLib/EarlGreyImpl/EarlGrey.h>
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -120,7 +120,6 @@ source_set("eg2_tests") {
   deps = [
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -361,7 +361,6 @@ source_set("eg2_tests") {
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
-    "//ios/third_party/earl_grey2:test_lib",
     "//net:test_support",
     "//ui/base",
     "//ui/strings",
@@ -381,7 +380,7 @@ source_set("eg_test_support+eg2") {
     "new_tab_page_app_interface_stub.mm",
   ]
 
-  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
 
 source_set("eg_app_support+eg2") {
