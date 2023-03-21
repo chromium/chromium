@@ -399,12 +399,9 @@ void SingleSampleIterator::Get(HistogramBase::Sample* min,
                                int64_t* max,
                                HistogramBase::Count* count) {
   DCHECK(!Done());
-  if (min != nullptr)
-    *min = min_;
-  if (max != nullptr)
-    *max = max_;
-  if (count != nullptr)
-    *count = count_;
+  *min = min_;
+  *max = max_;
+  *count = count_;
 }
 
 bool SingleSampleIterator::GetBucketIndex(size_t* index) const {

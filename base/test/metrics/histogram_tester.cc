@@ -142,9 +142,10 @@ std::vector<Bucket> HistogramTester::GetAllSamples(StringPiece name) const {
   if (snapshot) {
     for (auto it = snapshot->Iterator(); !it->Done(); it->Next()) {
       HistogramBase::Sample sample;
+      int64_t max;
       HistogramBase::Count count;
-      it->Get(&sample, nullptr, &count);
-      samples.push_back(Bucket(sample, count));
+      it->Get(&sample, &max, &count);
+      samples.emplace_back(sample, count);
     }
   }
   return samples;

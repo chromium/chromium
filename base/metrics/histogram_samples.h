@@ -250,7 +250,6 @@ class BASE_EXPORT SampleCountIterator {
   virtual void Next() = 0;
 
   // Get the sample and count at current position.
-  // |min| |max| and |count| can be NULL if the value is not of interest.
   // Note: |max| is int64_t because histograms support logged values in the
   // full int32_t range and bucket max is exclusive, so it needs to support
   // values up to MAXINT32+1.
