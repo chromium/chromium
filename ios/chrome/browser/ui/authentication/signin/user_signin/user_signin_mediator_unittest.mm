@@ -6,9 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/fake_consent_auditor.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
@@ -218,9 +220,14 @@ class UserSigninMediatorTest : public PlatformTest {
   // then the consent is given. The list is ordered according to the position
   // on the screen.
   const std::vector<int> ExpectedConsentStringIds() const {
+    const int sync_dialog_title =
+        base::FeatureList::IsEnabled(
+            password_manager::features::kEnablePasswordsAccountStorage)
+            ? IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE_WITHOUT_PASSWORDS
+            : IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE;
     return {
         IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE,
-        IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE,
+        sync_dialog_title,
         IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE,
         IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS,
     };

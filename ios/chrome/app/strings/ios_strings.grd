@@ -186,6 +186,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE" desc="Title of the sync description section on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
         Sync your passwords, history &amp; more on all devices
       </message>
+      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE_WITHOUT_PASSWORDS" desc="Title of the sync description section on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
+        Sync your bookmarks, history &amp; more on all devices
+      </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_TITLE" desc="Title of the sync description section on the sync consent dialog to explain why sync can be useful for the user when sync types are limited (i.e. managed by policies). [iOS only]">
         To sync and personalize accross devices, turn on sync.
       </message>

@@ -66,6 +66,7 @@ source_set("unit_tests") {
     ":user_signin",
     "//base/test:test_support",
     "//components/consent_auditor:test_support",
+    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync:test_support",
