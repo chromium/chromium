@@ -27,6 +27,8 @@ bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
   switch (password_manager_util::GetPasswordSyncState(sync_service)) {
     case password_manager::SyncState::kNotSyncing:
     case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
+    case password_manager::SyncState::
+        kAccountPasswordsActiveWithCustomPassphrase:
       return false;
     case password_manager::SyncState::kSyncingNormalEncryption:
     case password_manager::SyncState::kSyncingWithCustomPassphrase:

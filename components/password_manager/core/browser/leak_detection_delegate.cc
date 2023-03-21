@@ -111,6 +111,7 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
     case SyncState::kNotSyncing:
       break;
     case SyncState::kAccountPasswordsActiveNormalEncryption:
+    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
       is_syncing = IsSyncing((in_stores & PasswordForm::Store::kAccountStore) ==
                              PasswordForm::Store::kAccountStore);
       break;

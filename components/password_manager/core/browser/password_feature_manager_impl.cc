@@ -30,6 +30,7 @@ bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
     case SyncState::kSyncingWithCustomPassphrase:
     case SyncState::kSyncingNormalEncryption:
     case SyncState::kAccountPasswordsActiveNormalEncryption:
+    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
       return true;
   }
 }

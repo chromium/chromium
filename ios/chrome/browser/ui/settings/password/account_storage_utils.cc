@@ -33,6 +33,7 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
     case SyncState::kSyncingWithCustomPassphrase:
       return false;
     case SyncState::kAccountPasswordsActiveNormalEncryption:
+    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
       // If the data is stored both in kProfileStore and kAccountStore, it's
       // backed up, no need to bother the user.
       return !credential.stored_in.contains(

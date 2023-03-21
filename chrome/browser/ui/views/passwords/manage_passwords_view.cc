@@ -215,6 +215,10 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
           open_password_manager_closure);
+    case password_manager::SyncState::
+        kAccountPasswordsActiveWithCustomPassphrase:
+      // Unreachable on desktop platforms.
+      NOTREACHED_NORETURN();
   }
 }
 

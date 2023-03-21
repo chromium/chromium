@@ -111,10 +111,12 @@ password_manager::SyncState GetPasswordSyncState(
 
   DCHECK(base::FeatureList::IsEnabled(
       password_manager::features::kEnablePasswordsAccountStorage));
-  // Account passwords are enabled only for users with normal encryption at
-  // the moment. Data types won't become active for non-sync users with custom
-  // passphrase.
-  return password_manager::SyncState::kAccountPasswordsActiveNormalEncryption;
+
+  return sync_service->GetUserSettings()->IsUsingExplicitPassphrase()
+             ? password_manager::SyncState::
+                   kAccountPasswordsActiveWithCustomPassphrase
+             : password_manager::SyncState::
+                   kAccountPasswordsActiveNormalEncryption;
 }
 
 void TrimUsernameOnlyCredentials(

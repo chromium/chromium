@@ -329,6 +329,8 @@ bool PasswordCheckManager::CanUseAccountCheck() const {
     case SyncState::kNotSyncing:
       ABSL_FALLTHROUGH_INTENDED;
     case SyncState::kSyncingWithCustomPassphrase:
+      ABSL_FALLTHROUGH_INTENDED;
+    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
       return false;
 
     case SyncState::kSyncingNormalEncryption:

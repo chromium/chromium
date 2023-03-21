@@ -96,7 +96,9 @@ enum class SyncState {
   kSyncingWithCustomPassphrase,
   // Sync is disabled but the user is signed in and opted in to passwords
   // account storage.
-  kAccountPasswordsActiveNormalEncryption
+  kAccountPasswordsActiveNormalEncryption,
+  // Same as above but the account has a custom passphrase set.
+  kAccountPasswordsActiveWithCustomPassphrase,
 };
 
 enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
