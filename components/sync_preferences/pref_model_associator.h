@@ -32,6 +32,7 @@ class PreferenceSpecifics;
 
 namespace sync_preferences {
 
+class DualLayerUserPrefStore;
 class PrefModelAssociatorClient;
 
 class PrefServiceForAssociator {
@@ -50,6 +51,15 @@ class PrefModelAssociator : public syncer::SyncableService,
   PrefModelAssociator(const PrefModelAssociatorClient* client,
                       scoped_refptr<WriteablePrefStore> user_prefs,
                       syncer::ModelType type);
+
+  // The |client| is not owned and must outlive this object.
+  // |user_prefs| is the PrefStore to be hooked up to Sync.
+  // Note: This must be called iff EnablePreferencesAccountStorage feature is
+  // enabled.
+  PrefModelAssociator(
+      const PrefModelAssociatorClient* client,
+      scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
+      syncer::ModelType type);
 
   PrefModelAssociator(const PrefModelAssociator&) = delete;
   PrefModelAssociator& operator=(const PrefModelAssociator&) = delete;
@@ -131,6 +141,8 @@ class PrefModelAssociator : public syncer::SyncableService,
   // Note this does not refer to SYNCABLE_PREF.
   bool IsPrefSyncedForTesting(const std::string& name) const;
 
+  bool IsUsingDualLayerUserPrefStoreForTesting() const;
+
  private:
   // Create an association for a given preference. If |sync_pref| is valid,
   // signifying that sync has data for this preference, we reconcile their data
@@ -163,6 +175,10 @@ class PrefModelAssociator : public syncer::SyncableService,
 
   // The PrefStore we are syncing to.
   scoped_refptr<WriteablePrefStore> user_prefs_;
+  // This is set if EnablePreferencesAccountStorage is enabled. This points to
+  // the DualLayerUserPrefStore instance, if one exists, which shares the
+  // ownership of `user_prefs_`.
+  scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs_;
 
   // The interface to the PrefService.
   raw_ptr<PrefServiceForAssociator> pref_service_ = nullptr;

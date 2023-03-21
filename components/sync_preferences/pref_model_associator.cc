@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
@@ -24,6 +25,7 @@
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
+#include "components/sync_preferences/dual_layer_user_pref_store.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 
@@ -112,7 +114,10 @@ PrefModelAssociator::PrefModelAssociator(
     const PrefModelAssociatorClient* client,
     scoped_refptr<WriteablePrefStore> user_prefs,
     syncer::ModelType type)
-    : type_(type), client_(client), user_prefs_(user_prefs) {
+    : type_(type),
+      client_(client),
+      user_prefs_(user_prefs),
+      dual_layer_user_prefs_(nullptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(type_ == syncer::PREFERENCES ||
@@ -123,6 +128,17 @@ PrefModelAssociator::PrefModelAssociator(
   DCHECK(type_ == syncer::PREFERENCES || type_ == syncer::PRIORITY_PREFERENCES);
 #endif
   user_prefs_->AddObserver(this);
+}
+
+PrefModelAssociator::PrefModelAssociator(
+    const PrefModelAssociatorClient* client,
+    scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
+    syncer::ModelType type)
+    : PrefModelAssociator(client,
+                          dual_layer_user_prefs->GetAccountPrefStore(),
+                          type) {
+  CHECK(base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage));
+  dual_layer_user_prefs_ = std::move(dual_layer_user_prefs);
 }
 
 PrefModelAssociator::~PrefModelAssociator() {
@@ -245,6 +261,9 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   DCHECK(sync_processor.get());
   sync_processor_ = std::move(sync_processor);
 
+  // TODO(crbug.com/1416480): Inform `dual_layer_user_prefs_` to enable account
+  // storage for `type_`.
+
   syncer::SyncChangeList new_changes;
   std::set<std::string> remaining_preferences = registered_preferences_;
 
@@ -308,6 +327,8 @@ void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
     for (const std::string& pref_name : synced_preferences_) {
       user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
     }
+    // TODO(crbug.com/1416480): Inform `dual_layer_user_prefs_` to disable
+    // account storage for `type_`.
   }
   synced_preferences_.clear();
   pref_service_->OnIsSyncingChanged();
@@ -591,6 +612,10 @@ void PrefModelAssociator::NotifyStartedSyncing(const std::string& path) const {
   for (auto& observer : *observer_iter->second) {
     observer.OnStartedSyncing(path);
   }
+}
+
+bool PrefModelAssociator::IsUsingDualLayerUserPrefStoreForTesting() const {
+  return dual_layer_user_prefs_.get();
 }
 
 }  // namespace sync_preferences

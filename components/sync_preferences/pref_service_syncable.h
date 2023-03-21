@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -26,6 +27,7 @@ class SyncableService;
 
 namespace sync_preferences {
 
+class DualLayerUserPrefStore;
 class PrefModelAssociatorClient;
 class PrefServiceSyncableObserver;
 class SyncedPrefObserver;
@@ -42,7 +44,21 @@ class PrefServiceSyncable : public PrefService,
       std::unique_ptr<PrefNotifierImpl> pref_notifier,
       std::unique_ptr<PrefValueStore> pref_value_store,
       scoped_refptr<PersistentPrefStore> user_prefs,
-      scoped_refptr<WriteablePrefStore> user_prefs_for_sync,
+      scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
+      scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
+      const PrefModelAssociatorClient* pref_model_associator_client,
+      base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
+          read_error_callback,
+      bool async);
+
+  // Note: This must be called iff EnablePreferencesAccountStorage feature is
+  // enabled.
+  // Note: Can be done using templates instead of overload but chosen not to for
+  // more clarity.
+  PrefServiceSyncable(
+      std::unique_ptr<PrefNotifierImpl> pref_notifier,
+      std::unique_ptr<PrefValueStore> pref_value_store,
+      scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
       scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
       const PrefModelAssociatorClient* pref_model_associator_client,
@@ -100,6 +116,8 @@ class PrefServiceSyncable : public PrefService,
                                 SyncedPrefObserver* observer);
 
  private:
+  void ConnectAssociatorsAndRegisterPreferences();
+
   void AddRegisteredSyncablePreference(const std::string& path, uint32_t flags);
 
   // PrefServiceForAssociator:

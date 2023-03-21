@@ -13,6 +13,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -20,6 +21,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
@@ -29,6 +31,7 @@
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
+#include "components/sync_preferences/pref_service_syncable_factory.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/sync_preferences/synced_pref_observer.h"
@@ -421,7 +424,6 @@ class PrefServiceSyncableMergeTest : public testing::Test {
                                              pref_registry_->defaults().get(),
                                              pref_notifier_),
             user_prefs_,
-            /*user_prefs_for_sync=*/user_prefs_,
             standalone_browser_prefs_,
             pref_registry_,
             &client_,
@@ -972,8 +974,7 @@ class PrefServiceSyncableChromeOsTest : public testing::Test {
             new TestingPrefStore, new TestingPrefStore, user_prefs_.get(),
             standalone_browser_prefs_.get(), pref_registry_->defaults().get(),
             pref_notifier_),
-        user_prefs_, /*user_prefs_for_sync=*/user_prefs_,
-        standalone_browser_prefs_, pref_registry_, &client_,
+        user_prefs_, standalone_browser_prefs_, pref_registry_, &client_,
         /*read_error_callback=*/base::DoNothing(),
         /*async=*/false);
   }
@@ -1333,6 +1334,66 @@ TEST_F(PrefServiceSyncableChromeOsTest, SyncedPrefObserver_EmptyCloud) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+class PrefServiceSyncableFactoryTest : public PrefServiceSyncableTest {
+ public:
+  PrefServiceSyncableFactoryTest() {
+    pref_service_syncable_factory_.set_user_prefs(user_prefs_);
+  }
+
+ protected:
+  PrefServiceSyncableFactory pref_service_syncable_factory_;
+  scoped_refptr<TestingPrefStore> user_prefs_ =
+      base::MakeRefCounted<TestingPrefStore>();
+};
+
+TEST_F(PrefServiceSyncableFactoryTest,
+       ShouldCreateSyncServiceWithoutDualLayerStoreIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kEnablePreferencesAccountStorage);
+  auto pref_service =
+      pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+  EXPECT_FALSE(static_cast<PrefModelAssociator*>(
+                   pref_service->GetSyncableService(syncer::PREFERENCES))
+                   ->IsUsingDualLayerUserPrefStoreForTesting());
+  EXPECT_FALSE(
+      static_cast<PrefModelAssociator*>(
+          pref_service->GetSyncableService(syncer::PRIORITY_PREFERENCES))
+          ->IsUsingDualLayerUserPrefStoreForTesting());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_FALSE(static_cast<PrefModelAssociator*>(
+                   pref_service->GetSyncableService(syncer::OS_PREFERENCES))
+                   ->IsUsingDualLayerUserPrefStoreForTesting());
+  EXPECT_FALSE(
+      static_cast<PrefModelAssociator*>(
+          pref_service->GetSyncableService(syncer::OS_PRIORITY_PREFERENCES))
+          ->IsUsingDualLayerUserPrefStoreForTesting());
+#endif
+}
+
+TEST_F(PrefServiceSyncableFactoryTest,
+       ShouldCreateSyncServiceWithDualLayerStoreIfFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      syncer::kEnablePreferencesAccountStorage);
+  auto pref_service =
+      pref_service_syncable_factory_.CreateSyncable(prefs_.registry());
+  EXPECT_TRUE(static_cast<PrefModelAssociator*>(
+                  pref_service->GetSyncableService(syncer::PREFERENCES))
+                  ->IsUsingDualLayerUserPrefStoreForTesting());
+  EXPECT_TRUE(
+      static_cast<PrefModelAssociator*>(
+          pref_service->GetSyncableService(syncer::PRIORITY_PREFERENCES))
+          ->IsUsingDualLayerUserPrefStoreForTesting());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(static_cast<PrefModelAssociator*>(
+                  pref_service->GetSyncableService(syncer::OS_PREFERENCES))
+                  ->IsUsingDualLayerUserPrefStoreForTesting());
+  EXPECT_TRUE(
+      static_cast<PrefModelAssociator*>(
+          pref_service->GetSyncableService(syncer::OS_PRIORITY_PREFERENCES))
+          ->IsUsingDualLayerUserPrefStoreForTesting());
+#endif
+}
 
 }  // namespace
 
