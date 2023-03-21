@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * {@link TestRule} to disable animations for UI testing, or enable animation with new
@@ -55,6 +56,11 @@ public class DisableAnimationsTestRule implements TestRule {
      */
     public DisableAnimationsTestRule(boolean enableAnimation) {
         mEnableAnimation = enableAnimation;
+
+        // Set animation scales through settings through shell commands in S+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) return;
+
+        // Set animation scales through reflection in R-.
         try {
             Class<?> windowManagerStubClazz = Class.forName("android.view.IWindowManager$Stub");
             Method asInterface =
@@ -68,14 +74,7 @@ public class DisableAnimationsTestRule implements TestRule {
             IBinder windowManagerBinder = (IBinder) getService.invoke(null, "window");
             mWindowManagerObject = asInterface.invoke(null, windowManagerBinder);
         } catch (Exception e) {
-            // TODO(https://crbug.com/1225707): Always throw once this works on Android S. The above
-            // API is no longer accessible and will crash regardless of filter rules so just warn
-            // instead.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                Log.w(TAG, "Failed to access animation methods", e);
-            } else {
-                throw new RuntimeException("Failed to access animation methods", e);
-            }
+            throw new RuntimeException("Failed to access animation methods", e);
         }
     }
 
@@ -109,14 +108,20 @@ public class DisableAnimationsTestRule implements TestRule {
     }
 
     private void setAnimationScaleFactors(float scaleFactor) throws Exception {
-        // TODO(https://crbug.com/1225707): Remove once this works on Android S.
-        if (mGetAnimationScalesMethod == null || mSetAnimationScalesMethod == null
-                || mWindowManagerObject == null) {
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Set animation scales through settings through shell commands in S+.
+            List<String> commandToRuns =
+                    List.of("settings put global animator_duration_scale " + scaleFactor,
+                            "settings put global transition_animation_scale " + scaleFactor,
+                            "settings put global window_animation_scale " + scaleFactor);
+            for (String command : commandToRuns) {
+                Runtime.getRuntime().exec(command);
+            }
+        } else {
+            // Set animation scales through reflection in R-.
+            float[] scaleFactors = (float[]) mGetAnimationScalesMethod.invoke(mWindowManagerObject);
+            Arrays.fill(scaleFactors, scaleFactor);
+            mSetAnimationScalesMethod.invoke(mWindowManagerObject, scaleFactors);
         }
-
-        float[] scaleFactors = (float[]) mGetAnimationScalesMethod.invoke(mWindowManagerObject);
-        Arrays.fill(scaleFactors, scaleFactor);
-        mSetAnimationScalesMethod.invoke(mWindowManagerObject, scaleFactors);
     }
 }
