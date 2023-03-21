@@ -308,6 +308,8 @@ message CheckUserAccountResponse {
 
 // Response from server to device register request.
 message DeviceRegisterResponse {
+  reserved 6;
+
   // Device management token for this registration.  This token MUST be
   // part of HTTP Authorization header for all future requests from
   // device to server.
@@ -348,10 +350,6 @@ message DeviceRegisterResponse {
   // registering for policy is affiliated on the device.
   // Only sent if DeviceRegisterRequest.Type == USER
   repeated string user_affiliation_ids = 5;
-
-  // The unique directory api ID of the device which was generated on the
-  // server-side.
-  optional string directory_api_id = 6;
 }
 
 // Request from device to server to unregister device.
