@@ -25,15 +25,6 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
                                   mojom::Keyboard* keyboard) override;
   void UpdateKeyboardSettings(PrefService* pref_service,
                               const mojom::Keyboard& keyboard) override;
-
- private:
-  mojom::KeyboardSettingsPtr GetNewKeyboardSettings(
-      PrefService* prefs,
-      const mojom::Keyboard& keyboard);
-  mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
-      PrefService* prefs,
-      const mojom::Keyboard& keyboard,
-      const base::Value::Dict& settings_dict);
 };
 
 }  // namespace ash
