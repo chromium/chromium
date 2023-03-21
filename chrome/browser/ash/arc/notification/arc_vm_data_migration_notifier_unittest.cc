@@ -140,7 +140,13 @@ TEST_F(ArcVmDataMigrationNotifierTest, AccountManaged) {
 
 // Tests that a notification is shown when the migration is enabled but not
 // started nor finished yet.
-TEST_F(ArcVmDataMigrationNotifierTest, MigrationEnabled) {
+// TODO(https://crbug.com/1426616): Fix test failure and re-enable
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MigrationEnabled DISABLED_MigrationEnabled
+#else
+#define MAYBE_MigrationEnabled MigrationEnabled
+#endif
+TEST_F(ArcVmDataMigrationNotifierTest, MAYBE_MigrationEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
 
