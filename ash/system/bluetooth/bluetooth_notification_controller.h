@@ -24,7 +24,7 @@ namespace ash {
 
 // The BluetoothNotificationController receives incoming pairing requests from
 // the BluetoothAdapter, and notifications of changes to the adapter state and
-// set of paired devices. It presents incoming pairing requests in the form of
+// set of bonded devices. It presents incoming pairing requests in the form of
 // rich notifications that the user can interact with to approve the request.
 class ASH_EXPORT BluetoothNotificationController
     : public device::BluetoothAdapter::Observer,
@@ -64,7 +64,6 @@ class ASH_EXPORT BluetoothNotificationController
 
  private:
   friend class BluetoothNotificationControllerTest;
-  class BluetoothPairedNotificationDelegate;
 
   static const char kBluetoothDeviceDiscoverableToastId[];
   // Identifier for the pairing notification; the Bluetooth code ensures we
@@ -90,8 +89,8 @@ class ASH_EXPORT BluetoothNotificationController
                      const std::u16string& message,
                      bool with_buttons);
 
-  // Clears any shown pairing notification now that the device has been paired.
-  void NotifyPairedDevice(device::BluetoothDevice* device);
+  // Clears any shown pairing notification now that the device has been bonded.
+  void NotifyBondedDevice(device::BluetoothDevice* device);
 
   message_center::MessageCenter* const message_center_;
 
@@ -99,9 +98,9 @@ class ASH_EXPORT BluetoothNotificationController
   // ensures we stay around as the pairing delegate for that adapter.
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
-  // Set of currently paired devices, stored by Bluetooth address, used to
-  // filter out property changes for devices that were previously paired.
-  std::set<std::string> paired_devices_;
+  // Set of currently bonded devices, stored by Bluetooth address, used to
+  // filter out property changes for devices that were previously bonded.
+  std::set<std::string> bonded_devices_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
