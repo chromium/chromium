@@ -13,10 +13,12 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
@@ -45,6 +47,14 @@ class AttributionManager;
 class AuctionWorkletManager;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
+
+// Configures rounding on reported results from FLEDGE. This feature is intended
+// to be always enabled, but available to attach FeatureParams to so that we can
+// adjust the rounding setting via Finch.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeRounding);
+CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeBidReportingBits;
+CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeScoreReportingBits;
+CONTENT_EXPORT extern const base::FeatureParam<int> kFledgeAdCostReportingBits;
 
 // Handles the reporting phase of FLEDGE auctions with a winner. Loads the
 // bidder, seller, and (if present) component seller worklets and invokes

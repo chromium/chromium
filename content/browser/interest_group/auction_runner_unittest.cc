@@ -11352,7 +11352,45 @@ TEST_F(AuctionRunnerTest,
                       /*value=*/2 * kScale)))));
 }
 
-TEST_F(AuctionRunnerTest, AdCostPassed) {
+class RoundingTest : public AuctionRunnerTest,
+                     public ::testing::WithParamInterface<size_t> {
+ public:
+  RoundingTest(size_t bid_bits, size_t score_bits, size_t cost_bits)
+      : bid_bits_(bid_bits), score_bits_(score_bits), cost_bits_(cost_bits) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kFledgeRounding,
+          {{kFledgeBidReportingBits.name, base::NumberToString(bid_bits_)},
+           {kFledgeScoreReportingBits.name, base::NumberToString(score_bits_)},
+           {kFledgeAdCostReportingBits.name,
+            base::NumberToString(cost_bits_)}}}},
+        {});
+  }
+
+  size_t bid_bits() { return bid_bits_; }
+  size_t score_bits() { return score_bits_; }
+  size_t cost_bits() { return cost_bits_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  size_t bid_bits_, score_bits_, cost_bits_;
+};
+
+class BidRoundingTest : public RoundingTest {
+ public:
+  BidRoundingTest() : RoundingTest(GetParam(), 8, 8) {}
+};
+
+class ScoreRoundingTest : public RoundingTest {
+ public:
+  ScoreRoundingTest() : RoundingTest(8, GetParam(), 8) {}
+};
+
+class CostRoundingTest : public RoundingTest {
+ public:
+  CostRoundingTest() : RoundingTest(8, 8, GetParam()) {}
+};
+
+TEST_P(CostRoundingTest, AdCostPassed) {
   const char kBidScript[] = R"(
     const bid = %d;
     function generateBid(
@@ -11384,6 +11422,8 @@ TEST_F(AuctionRunnerTest, AdCostPassed) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
+  // Only one bidder, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
   RunStandardAuction(/*request_trusted_bidding_signals=*/false);
   EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
@@ -11395,16 +11435,16 @@ TEST_F(AuctionRunnerTest, AdCostPassed) {
                   GURL("https://buyer-reporting.example.com/?adCost=2")));
 }
 
-TEST_F(AuctionRunnerTest, AdCostRounded) {
+TEST_P(CostRoundingTest, AdCostRounded) {
   const char kBidScript[] = R"(
-    const bid = %d;
+    const bid = %f;
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       // Return an adCost that requires more bits of precision than allowed.
       return {bid: bid,
               render: interestGroup.ads[0].renderUrl,
-              adCost: 1.99609375};
+              adCost: bid};
     }
 
     function reportWin(
@@ -11424,24 +11464,46 @@ TEST_F(AuctionRunnerTest, AdCostRounded) {
   )";
 
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
-                                         base::StringPrintf(kBidScript, 1));
+                                         base::StringPrintf(kBidScript, 1.99));
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
+  // Only one bidder, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
   RunStandardAuction(/*request_trusted_bidding_signals=*/false);
   EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
 
-  // adCost should be either 2 or 1.9921875 (randomly)
-  EXPECT_THAT(
-      result_.report_urls,
-      testing::ElementsAre(testing::AnyOf(
-          GURL("https://buyer-reporting.example.com/?adCost=2"),
-          GURL("https://buyer-reporting.example.com/?adCost=1.9921875"))));
+  switch (GetParam()) {
+    case 8:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(testing::AnyOf(
+              GURL("https://buyer-reporting.example.com/?adCost=1.9921875"),
+              GURL("https://buyer-reporting.example.com/?adCost=1.984375"))));
+      break;
+    case 16:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(testing::AnyOf(
+              GURL(
+                  "https://buyer-reporting.example.com/?adCost=1.990005493164"),
+              GURL("https://buyer-reporting.example.com/"
+                   "?adCost=1.989990234375"))));
+      break;
+    case 53:
+      EXPECT_THAT(result_.report_urls,
+                  testing::ElementsAre(GURL(
+                      "https://buyer-reporting.example.com/?adCost=1.99")));
+      break;
+    default:
+      // Not a supported test case.
+      ASSERT_TRUE(false);
+  }
 }
 
-TEST_F(AuctionRunnerTest, AdCostExponentTruncated) {
+TEST_P(CostRoundingTest, AdCostExponentTruncated) {
   const char kBidScript[] = R"(
     const bid = %d;
     function generateBid(
@@ -11472,6 +11534,8 @@ TEST_F(AuctionRunnerTest, AdCostExponentTruncated) {
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
+  // Only one bidder, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
   RunStandardAuction(/*request_trusted_bidding_signals=*/false);
   EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
@@ -11482,6 +11546,233 @@ TEST_F(AuctionRunnerTest, AdCostExponentTruncated) {
               testing::ElementsAre(GURL(
                   "https://buyer-reporting.example.com/?adCost=Infinity")));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    CostRoundingTest,
+    testing::Values(8, 16, 53));
+
+TEST_P(BidRoundingTest, BidRounded) {
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      // Return a bid that requires more bits of precision than allowed.
+      return {bid: %f,
+              render: interestGroup.ads[0].renderUrl};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?bid=" +
+                   browserSignals.bid);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1.99));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Only one bidder, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  switch (GetParam()) {
+    case 8:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(testing::AnyOf(
+              GURL("https://buyer-reporting.example.com/?bid=1.9921875"),
+              GURL("https://buyer-reporting.example.com/?bid=1.984375"))));
+      break;
+    case 16:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(testing::AnyOf(
+              GURL("https://buyer-reporting.example.com/?bid=1.990005493164"),
+              GURL(
+                  "https://buyer-reporting.example.com/?bid=1.989990234375"))));
+      break;
+    case 53:
+      EXPECT_THAT(result_.report_urls,
+                  testing::ElementsAre(
+                      GURL("https://buyer-reporting.example.com/?bid=1.99")));
+      break;
+    default:
+      // Not a supported test case.
+      ASSERT_TRUE(false);
+  }
+}
+
+TEST_P(BidRoundingTest, HighestScoringOtherBidRounded) {
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      // Return a bid that requires more bits of precision than allowed.
+      return {bid: %f,
+              render: interestGroup.ads[0].renderUrl};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+      sendReportTo("https://buyer-reporting.example.com/?"
+        + "highestScoringOtherBid=" + browserSignals.highestScoringOtherBid);
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return bid;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      sendReportTo("https://seller-reporting.example.com/?"
+        + "highestScoringOtherBid="
+        + browserSignals.highestScoringOtherBid);
+    }
+  )";
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder2Url,
+                                         base::StringPrintf(kBidScript, 3.0));
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1.99));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+
+  switch (GetParam()) {
+    case 8:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(
+              testing::AnyOf(GURL("https://seller-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.9921875"),
+                             GURL("https://seller-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.984375")),
+              testing::AnyOf(GURL("https://buyer-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.9921875"),
+                             GURL("https://buyer-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.984375"))));
+      break;
+    case 16:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(
+              testing::AnyOf(GURL("https://seller-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.990005493164"),
+                             GURL("https://seller-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.989990234375")),
+              testing::AnyOf(GURL("https://buyer-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.990005493164"),
+                             GURL("https://buyer-reporting.example.com/"
+                                  "?highestScoringOtherBid=1.989990234375"))));
+      break;
+    case 53:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(GURL("https://seller-reporting.example.com/"
+                                    "?highestScoringOtherBid=1.99"),
+                               GURL("https://buyer-reporting.example.com/"
+                                    "?highestScoringOtherBid=1.99")));
+      break;
+    default:
+      // Not a supported test case.
+      ASSERT_TRUE(false);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    BidRoundingTest,
+    ::testing::Values(8, 16, 53));
+
+TEST_P(ScoreRoundingTest, ScoreRounded) {
+  const char kBidScript[] = R"(
+    function generateBid(
+        interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+        browserSignals) {
+      // Return an score that requires more bits of precision than allowed.
+      return {bid: %f,
+              render: interestGroup.ads[0].renderUrl};
+    }
+
+    function reportWin(
+        auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+    }
+  )";
+
+  const std::string kSellerScript = R"(
+    function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
+      return 1.99;
+    }
+
+    function reportResult(auctionConfig, browserSignals) {
+      sendReportTo("https://seller-reporting.example.com/?score=" + browserSignals.desirability);
+    }
+  )";
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         base::StringPrintf(kBidScript, 1.99));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kSellerScript);
+
+  // Only one bidder, to keep things simple.
+  interest_group_buyers_ = {{kBidder1}};
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_FALSE(result_.manually_aborted);
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+  switch (GetParam()) {
+    case 8:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(testing::AnyOf(
+              GURL("https://seller-reporting.example.com/?score=1.9921875"),
+              GURL("https://seller-reporting.example.com/?score=1.984375"))));
+      break;
+    case 16:
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::ElementsAre(testing::AnyOf(
+              GURL(
+                  "https://seller-reporting.example.com/?score=1.990005493164"),
+              GURL("https://seller-reporting.example.com/"
+                   "?score=1.989990234375"))));
+      break;
+    case 53:
+      EXPECT_THAT(result_.report_urls,
+                  testing::ElementsAre(GURL(
+                      "https://seller-reporting.example.com/?score=1.99")));
+      break;
+    default:
+      // Not a supported test case.
+      ASSERT_TRUE(false);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    ScoreRoundingTest,
+    ::testing::Values(8, 16, 53));
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and
 // forDebuggingOnly.reportAdAuctionWin() APIs.
