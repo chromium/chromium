@@ -313,30 +313,30 @@ base::Value CWTRequestHandler::InitializeSession() {
   target_tab_id_ =
       base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
 
-  base::Value result(base::Value::Type::DICT);
+  base::Value::Dict result;
   session_id_ = base::GenerateGUID();
-  result.SetStringKey(kWebDriverSessionIdValueField, session_id_);
+  result.Set(kWebDriverSessionIdValueField, session_id_);
 
-  base::Value capabilities(base::Value::Type::DICT);
-  capabilities.SetStringKey(kCapabilitiesBrowserNameField,
-                            kCapabilitiesBrowserName);
-  capabilities.SetStringKey(kCapabilitiesBrowserVersionField,
-                            version_info::GetVersionNumber());
-  capabilities.SetStringKey(kCapabilitiesPlatformNameField,
-                            kCapabilitiesPlatformName);
-  capabilities.SetStringKey(kCapabilitiesPageLoadStrategyField,
-                            kCapabilitiesPageLoadStrategy);
-  capabilities.SetKey(kCapabilitiesProxyField,
-                      base::Value(base::Value::Type::DICT));
-  capabilities.SetIntPath(kCapabilitiesScriptTimeoutField,
-                          script_timeout_.InMilliseconds());
-  capabilities.SetIntPath(kCapabilitiesPageLoadTimeoutField,
-                          page_load_timeout_.InMilliseconds());
-  capabilities.SetIntPath(kCapabilitiesImplicitTimeoutField, 0);
-  capabilities.SetKey(kCapabilitiesCanResizeWindowsField, base::Value(false));
+  base::Value::Dict capabilities;
+  capabilities.Set(kCapabilitiesBrowserNameField, kCapabilitiesBrowserName);
+  capabilities.Set(kCapabilitiesBrowserVersionField,
+                   version_info::GetVersionNumber());
+  capabilities.Set(kCapabilitiesPlatformNameField, kCapabilitiesPlatformName);
+  capabilities.Set(kCapabilitiesPageLoadStrategyField,
+                   kCapabilitiesPageLoadStrategy);
+  capabilities.Set(kCapabilitiesProxyField,
+                   base::Value(base::Value::Type::DICT));
+  capabilities.SetByDottedPath(
+      kCapabilitiesScriptTimeoutField,
+      static_cast<int>(script_timeout_.InMilliseconds()));
+  capabilities.SetByDottedPath(
+      kCapabilitiesPageLoadTimeoutField,
+      static_cast<int>(page_load_timeout_.InMilliseconds()));
+  capabilities.SetByDottedPath(kCapabilitiesImplicitTimeoutField, 0);
+  capabilities.Set(kCapabilitiesCanResizeWindowsField, base::Value(false));
 
-  result.SetKey(kWebDriverCapabilitiesValueField, std::move(capabilities));
-  return result;
+  result.Set(kWebDriverCapabilitiesValueField, std::move(capabilities));
+  return base::Value(std::move(result));
 }
 
 base::Value CWTRequestHandler::CloseSession() {

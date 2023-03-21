@@ -139,7 +139,7 @@ TEST_F(OverlayUserPrefStoreTest, ModifyDictionaries) {
   EXPECT_TRUE(overlay_->GetMutableValue(regular_key, &modify));
   ASSERT_TRUE(modify);
   ASSERT_TRUE(modify->is_dict());
-  modify->SetIntPath(regular_key, 42);
+  modify->GetDict().SetByDottedPath(regular_key, 42);
 
   Value* original_in_underlay = nullptr;
   EXPECT_TRUE(underlay_->GetMutableValue(regular_key, &original_in_underlay));
