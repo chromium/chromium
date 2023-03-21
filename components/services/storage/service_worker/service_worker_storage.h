@@ -517,9 +517,9 @@ class ServiceWorkerStorage {
       scoped_refptr<base::SequencedTaskRunner> original_task_runner,
       const std::string& key_prefix,
       GetUserDataForAllRegistrationsInDBCallback callback);
-  static void DeleteAllDataForStorageKeysFromDB(
+  static void DeleteAllDataForOriginsFromDB(
       ServiceWorkerDatabase* database,
-      const std::set<blink::StorageKey>& keys);
+      const std::set<url::Origin>& origins);
   static void PerformStorageCleanupInDB(ServiceWorkerDatabase* database);
   static void GetPurgeableResourceIdsFromDB(
       ServiceWorkerDatabase* database,
@@ -541,7 +541,7 @@ class ServiceWorkerStorage {
   // StorageKeys having registations.
   std::set<blink::StorageKey> registered_keys_;
   // The set of StorageKeys whose storage should be cleaned on shutdown.
-  std::set<blink::StorageKey> keys_to_purge_on_shutdown_;
+  std::set<url::Origin> origins_to_purge_on_shutdown_;
 
   // Pending database tasks waiting for initialization.
   std::vector<base::OnceClosure> pending_tasks_;

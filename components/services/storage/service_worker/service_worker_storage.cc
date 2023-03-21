@@ -1275,12 +1275,11 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
   }
 
   for (const auto& update : policy_updates) {
-    const blink::StorageKey key =
-        blink::StorageKey::CreateFirstParty(update->origin);
+    const url::Origin origin = update->origin;
     if (!update->purge_on_shutdown)
-      keys_to_purge_on_shutdown_.erase(key);
+      origins_to_purge_on_shutdown_.erase(origin);
     else
-      keys_to_purge_on_shutdown_.insert(std::move(key));
+      origins_to_purge_on_shutdown_.insert(std::move(origin));
   }
 
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk);
@@ -1600,8 +1599,8 @@ void ServiceWorkerStorage::DidCollectStaleResources(
 
 void ServiceWorkerStorage::ClearSessionOnlyOrigins() {
   database_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeleteAllDataForStorageKeysFromDB,
-                                database_.get(), keys_to_purge_on_shutdown_));
+      FROM_HERE, base::BindOnce(&DeleteAllDataForOriginsFromDB, database_.get(),
+                                origins_to_purge_on_shutdown_));
 }
 
 void ServiceWorkerStorage::OnResourceReaderDisconnected(
@@ -1964,13 +1963,13 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB(
       base::BindOnce(std::move(callback), status, std::move(user_data)));
 }
 
-void ServiceWorkerStorage::DeleteAllDataForStorageKeysFromDB(
+void ServiceWorkerStorage::DeleteAllDataForOriginsFromDB(
     ServiceWorkerDatabase* database,
-    const std::set<blink::StorageKey>& keys) {
+    const std::set<url::Origin>& origins) {
   DCHECK(database);
 
   std::vector<int64_t> newly_purgeable_resources;
-  database->DeleteAllDataForStorageKeys(keys, &newly_purgeable_resources);
+  database->DeleteAllDataForOrigins(origins, &newly_purgeable_resources);
 }
 
 void ServiceWorkerStorage::PerformStorageCleanupInDB(
