@@ -65,16 +65,16 @@ found in the LICENSE file.
     vertical-align: middle;
   }
 
-  .light {
-    background-color: var(--google-grey-100);
+  .example.light {
+    background-color: var(--cros-bg-color-light);
     border-radius: 4px 0 0 4px;
-    color: black;
+    color: var(--cros-text-color-primary-light);;
   }
 
-  .dark {
-    background-color: var(--google-grey-900);
+  .example.dark {
+    background-color: var(--cros-bg-color-dark);;
     border-radius: 0 4px 4px 0;
-    color: white;
+    color: var(--cros-text-color-primary-dark);
   }
 
   .highlight {
@@ -87,7 +87,7 @@ found in the LICENSE file.
   }
 
   .background-preview {
-    background-color: RGBA(0, 0, 0, .4);
+    background-color: rgba(var(--cros-bg-color-dark-rgb), .4);
     border-radius: 4px;
     line-height: 1.5;
     margin-inline-end: var(--cr-section-padding);
@@ -97,31 +97,19 @@ found in the LICENSE file.
   }
 
   .background-preview-selected {
-    background-color: white;
+    background-color: var(--cros-bg-color);
     border-radius: 6px;
     box-shadow: 0 0 4px 4px var(--focus-ring-highlight-color);
-    color: black;
+    color: var(--cros-text-color-primary);
     display: inline-block;
     margin: 0;
     padding: 6px 4px 6px 4px;
   }
 
   .background-preview-unselected {
+    color: var(--cros-text-color-secondary);
     margin: 2px 0 2px 0;
     padding: 0 4px 0 4px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .background-preview-selected {
-      background-color: var(--google-grey-900);
-      color: var(--cros-text-color-primary);
-    }
-
-    .background-preview-unselected {
-      color: var(--cros-text-color-secondary);
-      margin: 2px 0 2px 0;
-      padding: 0 4px 0 4px;
-    }
   }
 </style>
 
@@ -301,4 +289,3 @@ found in the LICENSE file.
     deep-link-focus-id$="[[Setting.kSelectToSpeakNavigationControls]]"
     aria-show-label aria-show-sublabel>
 </settings-toggle-button>
-
