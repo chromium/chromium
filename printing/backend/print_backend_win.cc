@@ -185,12 +185,12 @@ void LoadPaper(const wchar_t* printer,
       tmp_name = tmp_name.c_str();
       paper.display_name = base::WideToUTF8(tmp_name);
     }
-    if (!ids.empty())
+    if (!ids.empty()) {
       paper.vendor_id = base::NumberToString(ids[i]);
-
-    if (devmode) {
-      devmode->dmPaperSize = ids[i];
-      paper.printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
+      if (devmode) {
+        devmode->dmPaperSize = ids[i];
+        paper.printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
+      }
     }
 
     // Default to the paper size if printable area is missing.
