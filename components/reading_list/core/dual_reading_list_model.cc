@@ -540,21 +540,29 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
 void DualReadingListModel::ReadingListWillMoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    // Only expected for changes received via sync.
-    DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
-    NotifyObserversWithWillMoveEntry(url);
+  if (suppress_observer_notifications_) {
+    return;
   }
+
+  // Only expected for changes received via sync.
+  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
+
+  NotifyObserversWithWillMoveEntry(url);
+  UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(url));
 }
 
 void DualReadingListModel::ReadingListDidMoveEntry(
     const ReadingListModel* model,
     const GURL& url) {
-  if (!suppress_observer_notifications_) {
-    // Only expected for changes received via sync.
-    DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
-    NotifyObserversWithDidMoveEntry(url);
+  if (suppress_observer_notifications_) {
+    return;
   }
+
+  // Only expected for changes received via sync.
+  DCHECK(ToReadingListModelImpl(model)->IsTrackingSyncMetadata());
+
+  UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
+  NotifyObserversWithDidMoveEntry(url);
 }
 
 void DualReadingListModel::ReadingListWillAddEntry(
