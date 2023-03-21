@@ -63,8 +63,6 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/history_clusters/core/config.h"
-#include "components/image_service/features.h"
 #include "components/image_service/image_service.h"
 #include "components/image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -231,10 +229,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpHistoryClustersModuleLoad) &&
                          HasCredentials(profile));
-  source->AddBoolean(
-      "isHistoryClustersImagesEnabled",
-      history_clusters::GetConfig().images &&
-          base::FeatureList::IsEnabled(image_service::kImageService));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},

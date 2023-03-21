@@ -12,7 +12,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {URLVisit} from '../../history_cluster_types.mojom-webui.js';
-import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
+import {I18nMixin} from '../../i18n_setup.js';
 
 import {getTemplate} from './tile.html.js';
 
@@ -67,12 +67,11 @@ export class TileModuleElement extends I18nMixin
   private async onVisitUpdated_(): Promise<void> {
     const visitUrl = this.visit.normalizedUrl;
     if (visitUrl && this.visit.hasUrlKeyedImage && !this.smallFormat &&
-        loadTimeData.getBoolean('isHistoryClustersImagesEnabled') &&
         this.visit.isKnownToSync) {
       const result =
           await ImageServiceBrowserProxy.getInstance().handler.getPageImageUrl(
               ImageServiceClientId.NtpQuests, visitUrl,
-              {suggestImages: true, optimizationGuideImages: true});
+              {suggestImages: false, optimizationGuideImages: true});
       if (result && result.result) {
         this.imageUrl_ = result.result.imageUrl;
         return;

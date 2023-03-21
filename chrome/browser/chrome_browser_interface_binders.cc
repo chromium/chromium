@@ -977,12 +977,18 @@ void PopulateChromeWebUIFrameBinders(
       RegisterWebUIControllerInterfaceBinder<
           history_clusters::mojom::PageHandler, HistoryUI>(map);
     }
+  }
 
-    if (history_clusters_service->IsJourneysImagesEnabled()) {
-      RegisterWebUIControllerInterfaceBinder<
-          image_service::mojom::ImageServiceHandler, HistoryUI,
-          HistoryClustersSidePanelUI, NewTabPageUI>(map);
-    }
+  if ((history_clusters_service &&
+       history_clusters_service->IsJourneysEnabled() &&
+       history_clusters_service->IsJourneysImagesEnabled()) ||
+      base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) ||
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleLoad) ||
+      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+    RegisterWebUIControllerInterfaceBinder<
+        image_service::mojom::ImageServiceHandler, HistoryUI,
+        HistoryClustersSidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<
@@ -1057,10 +1063,6 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       shopping_list::mojom::ShoppingListHandlerFactory, BookmarksSidePanelUI>(
       map);
-  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
-    RegisterWebUIControllerInterfaceBinder<
-        image_service::mojom::ImageServiceHandler, BookmarksSidePanelUI>(map);
-  }
 
   if (customize_chrome::IsSidePanelEnabled()) {
     RegisterWebUIControllerInterfaceBinder<

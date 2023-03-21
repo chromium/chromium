@@ -202,8 +202,11 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
   // isn't used in the layout.
   const visits = element.cluster.visits.slice(1);
   // Count number of visits with images.
-  const imageCount =
-      visits.filter((visit: URLVisit) => visit.hasUrlKeyedImage).length;
+  const imageCount = visits
+                         .filter(
+                             (visit: URLVisit) =>
+                                 visit.hasUrlKeyedImage && visit.isKnownToSync)
+                         .length;
   const visitCount = visits.length;
 
   // Calculate which layout to use.

@@ -25,7 +25,7 @@ export function createVisit(
       visitTime: {internalValue: BigInt(0)},
     },
     hasUrlKeyedImage: hasUrlKeyedImage,
-    isKnownToSync: false,
+    isKnownToSync: true,
   };
 }
 
