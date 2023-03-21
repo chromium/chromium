@@ -12,6 +12,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/autofill/AutofillHintsServiceTestHelper.java",
     "java/src/org/chromium/components/autofill/AutofillProviderTestHelper.java",
+    "java/src/org/chromium/components/autofill/FormFieldDataBuilder.java",
     "java/src/org/chromium/components/autofill/TestViewStructure.java",
   ]
   deps = [

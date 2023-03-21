@@ -73,42 +73,6 @@ public class AutofillProviderTest {
     private RenderCoordinatesImpl mRenderCoordinates;
 
     /**
-     * Helper class to simplify FormFieldData creation.
-     */
-    private static class FormFieldDataBuilder {
-        String mName;
-        String mLabel;
-        String mValue;
-        String mAutocompleteAttr;
-        boolean mShouldAutocomplete;
-        String mPlaceholder;
-        String mType;
-        String mId;
-        String[] mOptionValues;
-        String[] mOptionContents;
-        boolean mIsCheckField;
-        boolean mIsChecked;
-        int mMaxLength;
-        String mHeuristicType;
-        String mServerType;
-        String mComputedType;
-        String[] mServerPredictions;
-        Rect mBounds = new Rect();
-        String[] mDatalistValues;
-        String[] mDatalistLabels;
-        boolean mVisible;
-        boolean mIsAutofilled;
-
-        public FormFieldData build() {
-            return FormFieldData.createFormFieldData(mName, mLabel, mValue, mAutocompleteAttr,
-                    mShouldAutocomplete, mPlaceholder, mType, mId, mOptionValues, mOptionContents,
-                    mIsCheckField, mIsChecked, mMaxLength, mHeuristicType, mServerType,
-                    mComputedType, mServerPredictions, mBounds.left, mBounds.top, mBounds.right,
-                    mBounds.bottom, mDatalistValues, mDatalistLabels, mVisible, mIsAutofilled);
-        }
-    }
-
-    /**
      * AutofillManagerWrapper which keeps track of the virtual id of the field with focus.
      */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
@@ -175,9 +139,9 @@ public class AutofillProviderTest {
     @Test
     public void testTransformFormFieldToContainViewCoordinates() {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
-        field1Builder.mBounds = new Rect(/*left=*/10, /*top=*/20, /*right=*/300, /*bottom=*/60);
+        field1Builder.mBounds = new RectF(/*left=*/10, /*top=*/20, /*right=*/300, /*bottom=*/60);
         FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
-        field2Builder.mBounds = new Rect(/*left=*/20, /*top=*/100, /*right=*/400, /*bottom=*/200);
+        field2Builder.mBounds = new RectF(/*left=*/20, /*top=*/100, /*right=*/400, /*bottom=*/200);
 
         FormData formData = new FormData(
                 null, null, Arrays.asList(field1Builder.build(), field2Builder.build()));
