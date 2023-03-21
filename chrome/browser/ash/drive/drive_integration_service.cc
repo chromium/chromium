@@ -1283,7 +1283,12 @@ void DriveIntegrationService::ToggleBulkPinning() {
   const bool enabled =
       GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
   GetDriveFsHost()->SetAlwaysEnableDocsOffline(enabled);
-  pin_manager_->Enable(enabled);
+
+  if (enabled) {
+    pin_manager_->Start();
+  } else {
+    pin_manager_->Stop();
+  }
 }
 
 void DriveIntegrationService::GetTotalPinnedSize(

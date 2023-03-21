@@ -616,16 +616,6 @@ void PinManager::Stop() {
   }
 }
 
-void PinManager::Enable(bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (enabled) {
-    Start();
-  } else {
-    Stop();
-  }
-}
-
 void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kGettingFreeSpace);
