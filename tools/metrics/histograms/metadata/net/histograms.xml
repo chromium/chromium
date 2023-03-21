@@ -5244,26 +5244,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.TrustTokens.IssuanceHelperLocalFulfillResult"
-    enum="FulfillTrustTokenIssuanceAnswerStatus" expires_after="2022-01-15">
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
-  <summary>
-    For locally diverted platform-provided trust token issuance requests, the
-    results of the LocalOperationDelegate issuance delegation call. This is a
-    liveness metric that allows verifying that platform-provided trust token
-    issuance is working during the feature's initial rollout (and, if it isn't,
-    that helps debug the failures).
-  </summary>
-</histogram>
-
 <histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
-    enum="NetErrorCodes" expires_after="2023-02-26">
+    enum="NetErrorCodes" expires_after="2023-06-06">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
-  <owner>davidvc@chromium.org</owner>
+  <owner>svaldez@chromium.org</owner>
+  <owner>timhuber@google.com</owner>
   <owner>yhirano@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The net error for a failed Fetch API call with an associated Trust Tokens
     operation. This was originally added to help debug a surfeit of 'TypeError:
@@ -5273,11 +5260,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForTrustTokenOperation"
-    enum="NetErrorCodes" expires_after="2022-10-30">
+    enum="NetErrorCodes" expires_after="2023-06-06">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <owner>svaldez@chromium.org</owner>
+  <owner>timhuber@google.com</owner>
   <summary>
     The //net status codes for resource requests that had started Trust Tokens
     operations. This captures the reasons why requests with Trust Tokens
@@ -5287,9 +5274,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TrustTokens.Operation{TimeSpan}Time.{Outcome}.{Type}"
-    units="ms" expires_after="2022-01-15">
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
+    units="ms" expires_after="2023-06-06">
+  <owner>svaldez@chromium.org</owner>
+  <owner>timhuber@google.com</owner>
   <summary>
     Time taken to execute various parts of a Trust Tokens operation: 1. Begin =
     time taken to execute the operation's outbound Begin half 2. Server = time
@@ -5321,9 +5308,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.TrustTokens.RedemptionRequestEmpty" enum="BooleanEmpty"
-    expires_after="2022-01-15">
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
+    expires_after="2023-06-06">
+  <owner>svaldez@chromium.org</owner>
+  <owner>timhuber@google.com</owner>
   <summary>
     Whether the Trust Tokens redemption logic received an empty redemption
     request string from its underlying cryptographic library. If this is always
@@ -5334,11 +5321,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"
-    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2022-08-28">
+    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2023-06-06">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
-  <owner>davidvc@chromium.org</owner>
-  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <owner>svaldez@chromium.org</owner>
+  <owner>timhuber@google.com</owner>
   <summary>
     For resource requests that bear Trust Tokens parameters, the results of
     running TrustTokenRequestHelperFactory to initialize Trust Tokens handling
