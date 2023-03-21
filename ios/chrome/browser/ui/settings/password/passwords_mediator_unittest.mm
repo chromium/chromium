@@ -85,6 +85,9 @@ PasswordForm CreatePasswordForm() {
   _blockedSites = blockedSites;
 }
 
+- (void)setSavingPasswordsToAccount:(BOOL)savingPasswordsToAccount {
+}
+
 - (void)setAffiliatedGroups:
             (const std::vector<password_manager::AffiliatedGroup>&)
                 affiliatedGroups

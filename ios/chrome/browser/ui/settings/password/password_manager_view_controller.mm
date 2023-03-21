@@ -341,6 +341,9 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   TableViewTextItem* _setUpOnDeviceEncryptionItem;
   // The list of the user's saved passwords.
   std::vector<password_manager::CredentialUIEntry> _passwords;
+  // Boolean indicating that passwords are being saved in an account if YES,
+  // and locally if NO.
+  BOOL _savingPasswordsToAccount;
   // The list of the user's blocked sites.
   std::vector<password_manager::CredentialUIEntry> _blockedSites;
   // The list of the user's saved grouped passwords.
@@ -960,7 +963,7 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
   TableViewLinkHeaderFooterItem* header =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
 
-  if ([self.delegate isSyncingPasswords]) {
+  if (_savingPasswordsToAccount) {
     header.text =
         l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT_HEADER);
 
@@ -1318,6 +1321,14 @@ UIColor* GetPasswordCheckStatusTrailingImageTintColor(
 
     [self updatePasswordManagerUI];
   }
+}
+
+- (void)setSavingPasswordsToAccount:(BOOL)savingPasswordsToAccount {
+  if (_savingPasswordsToAccount == savingPasswordsToAccount) {
+    return;
+  }
+  _savingPasswordsToAccount = savingPasswordsToAccount;
+  [self reloadData];
 }
 
 - (void)setAffiliatedGroups:

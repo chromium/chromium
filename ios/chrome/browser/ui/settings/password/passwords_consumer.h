@@ -50,6 +50,9 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
         blockedSites:
             (std::vector<password_manager::CredentialUIEntry>)blockedSites;
 
+// Updates whether passwords are being saved to an account or only locally.
+- (void)setSavingPasswordsToAccount:(BOOL)savingPasswordsToAccount;
+
 // Displays affiliated groups for the Password Manager.
 // This method relates to the -setPasswords method above. This will eventually
 // replace it when the feature is done.

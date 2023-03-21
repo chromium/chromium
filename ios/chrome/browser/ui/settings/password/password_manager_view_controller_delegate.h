@@ -59,9 +59,6 @@ struct CredentialUIEntry;
 // Returns the on-device encryption state according to the sync service.
 - (OnDeviceEncryptionState)onDeviceEncryptionState;
 
-// Returns whether or not passwords are currently syncing.
-- (BOOL)isSyncingPasswords;
-
 // Returns whether a special icon should be shown next to `credential` that
 // indicates it's not backed up to any account.
 - (BOOL)shouldShowLocalOnlyIconForCredential:

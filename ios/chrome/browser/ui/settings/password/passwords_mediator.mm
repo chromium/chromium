@@ -130,6 +130,10 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
   _currentState = _passwordCheckManager->GetPasswordCheckState();
   [self updateConsumerPasswordCheckState:_currentState];
+  [self.consumer
+      setSavingPasswordsToAccount:password_manager_util::GetPasswordSyncState(
+                                      _syncService) !=
+                                  password_manager::SyncState::kNotSyncing];
 }
 
 - (void)disconnect {
@@ -249,11 +253,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
     return OnDeviceEncryptionStateOptedIn;
   }
   return OnDeviceEncryptionStateNotShown;
-}
-
-- (BOOL)isSyncingPasswords {
-  return password_manager_util::GetPasswordSyncState(_syncService) !=
-         password_manager::SyncState::kNotSyncing;
 }
 
 - (BOOL)shouldShowLocalOnlyIconForCredential:
@@ -441,6 +440,10 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 - (void)onSyncStateChanged {
   [self.consumer updateOnDeviceEncryptionSessionAndUpdateTableView];
+  [self.consumer
+      setSavingPasswordsToAccount:password_manager_util::GetPasswordSyncState(
+                                      _syncService) !=
+                                  password_manager::SyncState::kNotSyncing];
 }
 
 @end
