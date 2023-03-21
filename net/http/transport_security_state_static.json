@@ -81,6 +81,7 @@
     { "name": "now.sh", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "cnpy.gdn", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "gentapps.com", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
+    { "name": "onavstack.net", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
 
     // Now we force HTTPS for subtrees of google.com.
           {
