@@ -1587,7 +1587,7 @@ EXPORTS
     ??0UntypedFormatSpec@absl@@QEAA@Vstring_view@1@@Z
     ??0UntypedFormatSpecImpl@str_format_internal@absl@@QEAA@Vstring_view@2@@Z
     ??0ViableSubstitution@strings_internal@absl@@QEAA@Vstring_view@2@0_K@Z
-    ??0Waiter@synchronization_internal@absl@@QEAA@XZ
+    ??0Win32Waiter@synchronization_internal@absl@@QEAA@XZ
     ??0WriterMutexLock@absl@@QEAA@PEAVMutex@1@@Z
     ??0ZoneInfoSource@cctz@time_internal@absl@@QEAA@XZ
     ??0_ConstructTransaction@?$__split_buffer@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@AEAV?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAA@PEAPEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@_K@Z
@@ -2587,7 +2587,7 @@ EXPORTS
     ?GetCapacity@?$AllocationTransaction@V?$allocator@UPayload@status_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QEAAAEA_KXZ
     ?GetCharacter@CordRepBtree@cord_internal@absl@@QEBAD_K@Z
     ?GetCharacter@CordRepRing@cord_internal@absl@@QEBAD_K@Z
-    ?GetCond@WinHelper@Waiter@synchronization_internal@absl@@SAPEAU_RTL_CONDITION_VARIABLE@@PEAV234@@Z
+    ?GetCond@WinHelper@Win32Waiter@synchronization_internal@absl@@SAPEAU_RTL_CONDITION_VARIABLE@@PEAV234@@Z
     ?GetCordzStatistics@CordzInfo@cord_internal@absl@@QEBA?AUCordzStatistics@23@XZ
     ?GetCpuType@crc_internal@absl@@YA?AW4CpuType@12@XZ
     ?GetCurrentTimeNanos@absl@@YA_JXZ
@@ -2620,7 +2620,7 @@ EXPORTS
     ?GetKeys@RandenHwAes@random_internal@absl@@SAPEBXXZ
     ?GetKeys@RandenSlow@random_internal@absl@@SAPEBXXZ
     ?GetLeafData@CordRepRing@cord_internal@absl@@SAPEBDPEBUCordRep@23@@Z
-    ?GetLock@WinHelper@Waiter@synchronization_internal@absl@@SAPEAU_RTL_SRWLOCK@@PEAV234@@Z
+    ?GetLock@WinHelper@Win32Waiter@synchronization_internal@absl@@SAPEAU_RTL_SRWLOCK@@PEAV234@@Z
     ?GetMaxSamples@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QEBA_KXZ
     ?GetOrCreateCurrentThreadIdentity@synchronization_internal@absl@@YAPEAUThreadIdentity@base_internal@2@XZ
     ?GetParentMethod@CordzInfo@cord_internal@absl@@CA?AW4MethodIdentifier@CordzUpdateTracker@23@PEBV123@@Z
@@ -2663,7 +2663,7 @@ EXPORTS
     ?GetTestEngine@CrcMemcpy@crc_internal@absl@@SA?AV?$unique_ptr@VCrcMemcpyEngine@crc_internal@absl@@U?$default_delete@VCrcMemcpyEngine@crc_internal@absl@@@Cr@std@@@Cr@std@@HH@Z
     ?GetThreadBlockedCounter@PerThreadSem@synchronization_internal@absl@@SAPEAU?$atomic@H@Cr@std@@XZ
     ?GetTransitionType@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NH_NAEBV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@PEAE@Z
-    ?GetWaiter@Waiter@synchronization_internal@absl@@SAPEAV123@PEAUThreadIdentity@base_internal@3@@Z
+    ?GetWaiter@?$WaiterCrtp@VWin32Waiter@synchronization_internal@absl@@@synchronization_internal@absl@@SAPEAVWin32Waiter@23@PEAUThreadIdentity@base_internal@3@@Z
     ?GetWeekday@absl@@YA?AW4weekday@detail@cctz@time_internal@1@V?$civil_time@Usecond_tag@time_internal@absl@@@3451@@Z
     ?GetWord@?$BigUnsigned@$03@strings_internal@absl@@QEBAIH@Z
     ?GetWord@?$BigUnsigned@$0FE@@strings_internal@absl@@QEBAIH@Z
@@ -2736,7 +2736,7 @@ EXPORTS
     ?Int128Max@absl@@YA?AVint128@1@XZ
     ?Int128Min@absl@@YA?AVint128@1@XZ
     ?InternalAttemptToUseMutexInFatalSignalHandler@Mutex@absl@@SAXXZ
-    ?InternalCondVarPoke@Waiter@synchronization_internal@absl@@AEAAXXZ
+    ?InternalCondVarPoke@Win32Waiter@synchronization_internal@absl@@AEAAXXZ
     ?InternalError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?InternalStream@LogMessage@log_internal@absl@@QEAAAEAV123@XZ
     ?InvalidArgumentError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
@@ -2852,6 +2852,7 @@ EXPORTS
     ?MaxFlatLength@CordTestAccess@strings_internal@absl@@SA_KXZ
     ?MaxFramesInLogStackTrace@log_internal@absl@@YAHXZ
     ?MaxVarintSize@log_internal@absl@@YA_KXZ
+    ?MaybeBecomeIdle@WaiterBase@synchronization_internal@absl@@KAXXZ
     ?MaybeGetCrcCordState@Cord@absl@@AEBAPEBVCrcCordState@crc_internal@2@XZ
     ?MaybeRemoveEmptyCrcNode@InlineRep@Cord@absl@@AEAAXXZ
     ?MaybeTrackCordImpl@CordzInfo@cord_internal@absl@@CAXAEAVInlineData@23@AEBV423@W4MethodIdentifier@CordzUpdateTracker@23@@Z
@@ -2948,9 +2949,9 @@ EXPORTS
     ?PiecewiseChunkSize@hash_internal@absl@@YA_KXZ
     ?PointerToRep@Status@absl@@CA_KPEAUStatusRep@status_internal@2@@Z
     ?Poison@CrcCordState@crc_internal@absl@@QEAAXXZ
-    ?Poke@Waiter@synchronization_internal@absl@@QEAAXXZ
+    ?Poke@Win32Waiter@synchronization_internal@absl@@QEAAXXZ
     ?Post@PerThreadSem@synchronization_internal@absl@@CAXPEAUThreadIdentity@base_internal@3@@Z
-    ?Post@Waiter@synchronization_internal@absl@@QEAAXXZ
+    ?Post@Win32Waiter@synchronization_internal@absl@@QEAAXXZ
     ?PrefetchToLocalCacheNta@absl@@YAXPEBX@Z
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QEAAX_J_K@Z
     ?PrepareToDie@LogMessage@log_internal@absl@@AEAAXXZ
@@ -3179,6 +3180,9 @@ EXPORTS
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@00@Z
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@0@Z
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@@Z
+    ?StrContains@absl@@YA_NVstring_view@1@D@Z
+    ?StrContainsIgnoreCase@absl@@YA_NVstring_view@1@0@Z
+    ?StrContainsIgnoreCase@absl@@YA_NVstring_view@1@D@Z
     ?StrError@base_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@H@Z
     ?StrReplaceAll@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@Vstring_view@1@V?$initializer_list@U?$pair@Vstring_view@absl@@V12@@Cr@std@@@4@@Z
     ?StrReplaceAll@absl@@YAHV?$initializer_list@U?$pair@Vstring_view@absl@@V12@@Cr@std@@@std@@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@3@@Z
@@ -3365,7 +3369,7 @@ EXPORTS
     ?Wait@BlockingCounter@absl@@QEAAXXZ
     ?Wait@CondVar@absl@@QEAAXPEAVMutex@2@@Z
     ?Wait@PerThreadSem@synchronization_internal@absl@@CA_NVKernelTimeout@23@@Z
-    ?Wait@Waiter@synchronization_internal@absl@@QEAA_NVKernelTimeout@23@@Z
+    ?Wait@Win32Waiter@synchronization_internal@absl@@QEAA_NVKernelTimeout@23@@Z
     ?WaitCommon@CondVar@absl@@AEAA_NPEAVMutex@2@VKernelTimeout@synchronization_internal@2@@Z
     ?WaitForNotification@Notification@absl@@QEBAXXZ
     ?WaitForNotificationWithDeadline@Notification@absl@@QEBA_NVTime@2@@Z
@@ -3817,6 +3821,7 @@ EXPORTS
     ?ascii_isspace@absl@@YA_NE@Z
     ?ascii_isxdigit@absl@@YA_NE@Z
     ?ascii_tolower@absl@@YADE@Z
+    ?ascii_toupper@absl@@YADE@Z
     ?back@?$InlinedVector@H$0CP@V?$allocator@H@Cr@std@@@absl@@QEAAAEAHXZ
     ?back@?$InlinedVector@PEAUCordRep@cord_internal@absl@@$01V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@absl@@QEAAAEAPEAUCordRep@cord_internal@2@XZ
     ?back@?$InlinedVector@PEAUCordRep@cord_internal@absl@@$0CP@V?$allocator@PEAUCordRep@cord_internal@absl@@@Cr@std@@@absl@@QEAAAEAPEAUCordRep@cord_internal@2@XZ
@@ -4084,6 +4089,7 @@ EXPORTS
     ?find_first_not_of@string_view@absl@@QEBA_KD_K@Z
     ?find_first_not_of@string_view@absl@@QEBA_KV12@_K@Z
     ?find_first_of@string_view@absl@@QEBA_KD_K@Z
+    ?find_first_of@string_view@absl@@QEBA_KPEBD_K@Z
     ?find_first_of@string_view@absl@@QEBA_KV12@_K@Z
     ?find_last_not_of@string_view@absl@@QEBA_KD_K@Z
     ?find_last_not_of@string_view@absl@@QEBA_KV12@_K@Z

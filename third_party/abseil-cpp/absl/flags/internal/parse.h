@@ -21,6 +21,7 @@
 
 #include "absl/base/config.h"
 #include "absl/flags/declare.h"
+#include "absl/flags/internal/usage.h"
 #include "absl/strings/string_view.h"
 
 ABSL_DECLARE_FLAG(std::vector<std::string>, flagfile);
@@ -40,8 +41,8 @@ enum class OnUndefinedFlag {
 };
 
 std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
-                                        UsageFlagsAction usage_flag_act,
-                                        OnUndefinedFlag on_undef_flag);
+                                        UsageFlagsAction usage_flag_action,
+                                        OnUndefinedFlag undef_flag_action);
 
 // --------------------------------------------------------------------
 // Inspect original command line

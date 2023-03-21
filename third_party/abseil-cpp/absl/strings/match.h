@@ -72,6 +72,15 @@ inline bool EndsWith(absl::string_view text,
           memcmp(text.data() + (text.size() - suffix.size()), suffix.data(),
                  suffix.size()) == 0);
 }
+// StrContainsIgnoreCase()
+//
+// Returns whether a given ASCII string `haystack` contains the ASCII substring
+// `needle`, ignoring case in the comparison.
+bool StrContainsIgnoreCase(absl::string_view haystack,
+                           absl::string_view needle) noexcept;
+
+bool StrContainsIgnoreCase(absl::string_view haystack,
+                           char needle) noexcept;
 
 // EqualsIgnoreCase()
 //

@@ -30,8 +30,6 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace synchronization_internal {
 
-class Waiter;
-
 // An optional timeout, with nanosecond granularity.
 //
 // This is a private low-level API for use by a handful of low-level

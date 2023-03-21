@@ -48,6 +48,7 @@
     ::absl::raw_log_internal::RawLog(ABSL_RAW_LOG_INTERNAL_##severity,         \
                                      absl_raw_log_internal_basename, __LINE__, \
                                      __VA_ARGS__);                             \
+    ABSL_RAW_LOG_INTERNAL_MAYBE_UNREACHABLE_##severity;                        \
   } while (0)
 
 // Similar to CHECK(condition) << message, but for low-level modules:
@@ -77,8 +78,7 @@
     ::absl::raw_log_internal::internal_log_function(                      \
         ABSL_RAW_LOG_INTERNAL_##severity, absl_raw_log_internal_filename, \
         __LINE__, message);                                               \
-    if (ABSL_RAW_LOG_INTERNAL_##severity == ::absl::LogSeverity::kFatal)  \
-      ABSL_UNREACHABLE();                                                 \
+    ABSL_RAW_LOG_INTERNAL_MAYBE_UNREACHABLE_##severity;                   \
   } while (0)
 
 #define ABSL_INTERNAL_CHECK(condition, message)                    \
@@ -96,6 +96,12 @@
 #define ABSL_RAW_LOG_INTERNAL_FATAL ::absl::LogSeverity::kFatal
 #define ABSL_RAW_LOG_INTERNAL_LEVEL(severity) \
   ::absl::NormalizeLogSeverity(severity)
+
+#define ABSL_RAW_LOG_INTERNAL_MAYBE_UNREACHABLE_INFO
+#define ABSL_RAW_LOG_INTERNAL_MAYBE_UNREACHABLE_WARNING
+#define ABSL_RAW_LOG_INTERNAL_MAYBE_UNREACHABLE_ERROR
+#define ABSL_RAW_LOG_INTERNAL_MAYBE_UNREACHABLE_FATAL ABSL_UNREACHABLE()
+#define ABSL_RAW_LOG_INTERNAL_MAYBE_UNREACHABLE_LEVEL(severity)
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN

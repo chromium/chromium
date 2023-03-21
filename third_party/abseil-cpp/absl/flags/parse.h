@@ -28,7 +28,6 @@
 
 #include "absl/base/config.h"
 #include "absl/flags/internal/parse.h"
-#include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -52,6 +51,15 @@ inline bool operator==(const UnrecognizedFlag& lhs,
   return lhs.source == rhs.source && lhs.flag_name == rhs.flag_name;
 }
 
+namespace flags_internal {
+
+HelpMode ParseAbseilFlagsOnlyImpl(
+    int argc, char* argv[], std::vector<char*>& positional_args,
+    std::vector<UnrecognizedFlag>& unrecognized_flags,
+    UsageFlagsAction usage_flag_action);
+
+}  // namespace flags_internal
+
 // ParseAbseilFlagsOnly()
 //
 // Parses a list of command-line arguments, passed in the `argc` and `argv[]`
@@ -69,7 +77,11 @@ inline bool operator==(const UnrecognizedFlag& lhs,
 //     treated as positional arguments regardless of their syntax.
 //
 // All of the deduced Abseil Flag arguments are then parsed into their
-// corresponding flag values.
+// corresponding flag values. If any syntax errors are found in these arguments,
+// the binary exits with code 1.
+//
+// This function also handles Abseil Flags built-in usage flags (e.g. --help)
+// if any were present on the command line.
 //
 // All the remaining positional arguments including original program name
 // (argv[0]) are are returned in the `positional_args` output parameter.
@@ -81,10 +93,7 @@ inline bool operator==(const UnrecognizedFlag& lhs,
 // that appear within `undefok` will therefore be ignored and not included in
 // the `unrecognized_flag` output parameter.
 //
-// This function returns true if no syntax errors were found on the command line
-// or in the referenced flag files. Unrecognized flags do not cause this routine
-// to return false.
-bool ParseAbseilFlagsOnly(int argc, char* argv[],
+void ParseAbseilFlagsOnly(int argc, char* argv[],
                           std::vector<char*>& positional_args,
                           std::vector<UnrecognizedFlag>& unrecognized_flags);
 

@@ -26,7 +26,9 @@ namespace {
 
 #if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER) ||  \
-    defined(ABSL_HAVE_THREAD_SANITIZER) || defined(__ANDROID__)
+    defined(ABSL_HAVE_THREAD_SANITIZER) || \
+    defined(__ANDROID__) || \
+    defined(_WIN32) || defined(_WIN64)
 constexpr absl::Duration kTimingBound = absl::Milliseconds(5);
 #else
 constexpr absl::Duration kTimingBound = absl::Microseconds(250);

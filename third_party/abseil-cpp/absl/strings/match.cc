@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "absl/strings/match.h"
+#include "absl/strings/ascii.h"
 
 #include "absl/strings/internal/memutil.h"
 
@@ -25,6 +26,27 @@ bool EqualsIgnoreCase(absl::string_view piece1,
           0 == absl::strings_internal::memcasecmp(piece1.data(), piece2.data(),
                                                   piece1.size()));
   // memcasecmp uses absl::ascii_tolower().
+}
+
+bool StrContainsIgnoreCase(absl::string_view haystack,
+                           absl::string_view needle) noexcept {
+  while (haystack.size() >= needle.size()) {
+    if (StartsWithIgnoreCase(haystack, needle)) return true;
+    haystack.remove_prefix(1);
+  }
+  return false;
+}
+
+bool StrContainsIgnoreCase(absl::string_view haystack,
+                           char needle) noexcept {
+  char upper_needle = absl::ascii_toupper(static_cast<unsigned char>(needle));
+  char lower_needle = absl::ascii_tolower(static_cast<unsigned char>(needle));
+  if (upper_needle == lower_needle) {
+    return StrContains(haystack, needle);
+  } else {
+    const char both_cstr[3] = {lower_needle, upper_needle, '\0'};
+    return haystack.find_first_of(both_cstr) != absl::string_view::npos;
+  }
 }
 
 bool StartsWithIgnoreCase(absl::string_view text,

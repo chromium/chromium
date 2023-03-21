@@ -44,8 +44,12 @@ absl_source_set("synchronization") {
     "barrier.cc",
     "blocking_counter.cc",
     "internal/create_thread_identity.cc",
+    "internal/futex_waiter.cc",
     "internal/per_thread_sem.cc",
-    "internal/waiter.cc",
+    "internal/pthread_waiter.cc",
+    "internal/sem_waiter.cc",
+    "internal/waiter_base.cc",
+    "internal/win32_waiter.cc",
     "mutex.cc",
     "notification.cc",
   ]
@@ -54,8 +58,13 @@ absl_source_set("synchronization") {
     "blocking_counter.h",
     "internal/create_thread_identity.h",
     "internal/futex.h",
+    "internal/futex_waiter.h",
     "internal/per_thread_sem.h",
+    "internal/pthread_waiter.h",
+    "internal/sem_waiter.h",
     "internal/waiter.h",
+    "internal/waiter_base.h",
+    "internal/win32_waiter.h",
     "mutex.h",
     "notification.h",
   ]
@@ -72,6 +81,16 @@ absl_source_set("synchronization") {
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/debugging:symbolize",
+    "//third_party/abseil-cpp/absl/time",
+  ]
+}
+
+absl_test("waiter_test") {
+  sources = [ "internal/waiter_test.cc" ]
+  deps = [
+    ":kernel_timeout_internal",
+    ":synchronization",
+    ":thread_pool",
     "//third_party/abseil-cpp/absl/time",
   ]
 }

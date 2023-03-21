@@ -124,4 +124,48 @@ TEST(MatchTest, EndsWithIgnoreCase) {
   EXPECT_FALSE(absl::EndsWithIgnoreCase("", "fo"));
 }
 
+TEST(MatchTest, ContainsIgnoreCase) {
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("foo", "foo"));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("FOO", "Foo"));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("--FOO", "Foo"));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("FOO--", "Foo"));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase("BAR", "Foo"));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase("BAR", "Foo"));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("123456", "123456"));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("123456", "234"));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("", ""));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase("abc", ""));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase("", "a"));
+}
+
+TEST(MatchTest, ContainsCharIgnoreCase) {
+  absl::string_view a("AaBCdefg!");
+  absl::string_view b("AaBCd!");
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(a, 'a'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(a, 'A'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(a, 'b'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(a, 'B'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(a, 'e'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(a, 'E'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(a, 'h'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(a, 'H'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(a, '!'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(a, '?'));
+
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(b, 'a'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(b, 'A'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(b, 'b'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(b, 'B'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(b, 'e'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(b, 'E'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(b, 'h'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(b, 'H'));
+  EXPECT_TRUE(absl::StrContainsIgnoreCase(b, '!'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase(b, '?'));
+
+  EXPECT_FALSE(absl::StrContainsIgnoreCase("", 'a'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase("", 'A'));
+  EXPECT_FALSE(absl::StrContainsIgnoreCase("", '0'));
+}
+
 }  // namespace

@@ -357,18 +357,18 @@ CrcMemcpy::ArchSpecificEngines CrcMemcpy::GetArchSpecificEngines() {
     case CpuType::kIntelHaswell:
     case CpuType::kIntelIvybridge:
       return {
-          .temporal = new FallbackCrcMemcpyEngine(),
-          .non_temporal = new CrcNonTemporalMemcpyAVXEngine(),
+          /*.temporal=*/new FallbackCrcMemcpyEngine(),
+          /*.non_temporal=*/new CrcNonTemporalMemcpyAVXEngine(),
       };
     // INTEL_SANDYBRIDGE performs better with SSE than AVX.
     case CpuType::kIntelSandybridge:
       return {
-          .temporal = new FallbackCrcMemcpyEngine(),
-          .non_temporal = new CrcNonTemporalMemcpyEngine(),
+          /*.temporal=*/new FallbackCrcMemcpyEngine(),
+          /*.non_temporal=*/new CrcNonTemporalMemcpyEngine(),
       };
     default:
-      return {.temporal = new FallbackCrcMemcpyEngine(),
-              .non_temporal = new FallbackCrcMemcpyEngine()};
+      return {/*.temporal=*/new FallbackCrcMemcpyEngine(),
+              /*.non_temporal=*/new FallbackCrcMemcpyEngine()};
   }
 #else
   // Get the underlying architecture.
@@ -386,8 +386,8 @@ CrcMemcpy::ArchSpecificEngines CrcMemcpy::GetArchSpecificEngines() {
     case CpuType::kAmdRome:
     case CpuType::kAmdNaples:
       return {
-          .temporal = new AcceleratedCrcMemcpyEngine<1, 2>(),
-          .non_temporal = new CrcNonTemporalMemcpyAVXEngine(),
+          /*.temporal=*/new AcceleratedCrcMemcpyEngine<1, 2>(),
+          /*.non_temporal=*/new CrcNonTemporalMemcpyAVXEngine(),
       };
     // PCLMULQDQ is slow and we don't have wide enough issue width to take
     // advantage of it.  For an unknown architecture, don't risk using CLMULs.
@@ -398,18 +398,18 @@ CrcMemcpy::ArchSpecificEngines CrcMemcpy::GetArchSpecificEngines() {
     case CpuType::kIntelHaswell:
     case CpuType::kIntelIvybridge:
       return {
-          .temporal = new AcceleratedCrcMemcpyEngine<3, 0>(),
-          .non_temporal = new CrcNonTemporalMemcpyAVXEngine(),
+          /*.temporal=*/new AcceleratedCrcMemcpyEngine<3, 0>(),
+          /*.non_temporal=*/new CrcNonTemporalMemcpyAVXEngine(),
       };
     // INTEL_SANDYBRIDGE performs better with SSE than AVX.
     case CpuType::kIntelSandybridge:
       return {
-          .temporal = new AcceleratedCrcMemcpyEngine<3, 0>(),
-          .non_temporal = new CrcNonTemporalMemcpyEngine(),
+          /*.temporal=*/new AcceleratedCrcMemcpyEngine<3, 0>(),
+          /*.non_temporal=*/new CrcNonTemporalMemcpyEngine(),
       };
     default:
-      return {.temporal = new FallbackCrcMemcpyEngine(),
-              .non_temporal = new FallbackCrcMemcpyEngine()};
+      return {/*.temporal=*/new FallbackCrcMemcpyEngine(),
+              /*.non_temporal=*/new FallbackCrcMemcpyEngine()};
   }
 #endif  // UNDEFINED_BEHAVIOR_SANITIZER
 }

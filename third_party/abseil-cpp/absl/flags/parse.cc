@@ -666,7 +666,7 @@ std::vector<std::string> GetMisspellingHints(const absl::string_view flag) {
   const size_t maxCutoff = std::min(flag.size() / 2 + 1, kMaxDistance);
   auto undefok = absl::GetFlag(FLAGS_undefok);
   BestHints best_hints(static_cast<uint8_t>(maxCutoff));
-  absl::flags_internal::ForEachFlag([&](const CommandLineFlag& f) {
+  flags_internal::ForEachFlag([&](const CommandLineFlag& f) {
     if (best_hints.hints.size() >= kMaxHints) return;
     uint8_t distance = strings_internal::CappedDamerauLevenshteinDistance(
         flag, f.Name(), best_hints.best_distance);
@@ -697,51 +697,42 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
   std::vector<char*> positional_args;
   std::vector<UnrecognizedFlag> unrecognized_flags;
 
-  bool parse_successful = absl::ParseAbseilFlagsOnly(
-      argc, argv, positional_args, unrecognized_flags);
+  auto help_mode = flags_internal::ParseAbseilFlagsOnlyImpl(
+      argc, argv, positional_args, unrecognized_flags, usage_flag_action);
 
   if (undef_flag_action != OnUndefinedFlag::kIgnoreUndefined) {
-    if (parse_successful &&
-        undef_flag_action == OnUndefinedFlag::kAbortIfUndefined) {
-      if (!unrecognized_flags.empty()) { parse_successful = false; }
-    }
-
     flags_internal::ReportUnrecognizedFlags(
         unrecognized_flags,
-        !parse_successful &&
-            (undef_flag_action == OnUndefinedFlag::kAbortIfUndefined));
-  }
+        (undef_flag_action == OnUndefinedFlag::kAbortIfUndefined));
 
-#if ABSL_FLAGS_STRIP_NAMES
-  if (!parse_successful) {
-    ReportUsageError("NOTE: command line flags are disabled in this build",
-                     true);
-  }
-#endif
-
-  if (!parse_successful) {
-    HandleUsageFlags(std::cout, ProgramUsageMessage());
-    std::exit(1);
-  }
-
-  if (usage_flag_action == UsageFlagsAction::kHandleUsage) {
-    int exit_code = HandleUsageFlags(std::cout, ProgramUsageMessage());
-
-    if (exit_code != -1) {
-      std::exit(exit_code);
+    if (undef_flag_action == OnUndefinedFlag::kAbortIfUndefined) {
+      if (!unrecognized_flags.empty()) { std::exit(1); }
     }
   }
+
+  flags_internal::MaybeExit(help_mode);
 
   return positional_args;
 }
 
 // --------------------------------------------------------------------
 
-}  // namespace flags_internal
-
-bool ParseAbseilFlagsOnly(int argc, char* argv[],
-                          std::vector<char*>& positional_args,
-                          std::vector<UnrecognizedFlag>& unrecognized_flags) {
+// This function handles all Abseil Flags and built-in usage flags and, if any
+// help mode was handled, it returns that help mode. The caller of this function
+// can decide to exit based on the returned help mode.
+// The caller may decide to handle unrecognized positional arguments and
+// unrecognized flags first before exiting.
+//
+// Returns:
+// * HelpMode::kFull if parsing errors were detected in recognized arguments
+// * The HelpMode that was handled in case when `usage_flag_action` is
+//   UsageFlagsAction::kHandleUsage and a usage flag was specified on the
+//   commandline
+// * Otherwise it returns HelpMode::kNone
+HelpMode ParseAbseilFlagsOnlyImpl(
+    int argc, char* argv[], std::vector<char*>& positional_args,
+    std::vector<UnrecognizedFlag>& unrecognized_flags,
+    UsageFlagsAction usage_flag_action) {
   ABSL_INTERNAL_CHECK(argc > 0, "Missing argv[0]");
 
   using flags_internal::ArgsList;
@@ -771,9 +762,9 @@ bool ParseAbseilFlagsOnly(int argc, char* argv[],
     specified_flags->clear();
   }
 
-  // Iterate through the list of the input arguments. First level are arguments
-  // originated from argc/argv. Following levels are arguments originated from
-  // recursive parsing of flagfile(s).
+  // Iterate through the list of the input arguments. First level are
+  // arguments originated from argc/argv. Following levels are arguments
+  // originated from recursive parsing of flagfile(s).
   bool success = true;
   while (!input_args.empty()) {
     // First we process the built-in generator flags.
@@ -793,8 +784,8 @@ bool ParseAbseilFlagsOnly(int argc, char* argv[],
     }
 
     // Handle the next argument in the current list. If the stack of argument
-    // lists contains only one element - we are processing an argument from the
-    // original argv.
+    // lists contains only one element - we are processing an argument from
+    // the original argv.
     absl::string_view arg(curr_list.Front());
     bool arg_from_argv = input_args.size() == 1;
 
@@ -895,7 +886,33 @@ bool ParseAbseilFlagsOnly(int argc, char* argv[],
 
   std::swap(unrecognized_flags, filtered);
 
-  return success;
+  if (!success) {
+#if ABSL_FLAGS_STRIP_NAMES
+    flags_internal::ReportUsageError(
+        "NOTE: command line flags are disabled in this build", true);
+#else
+    flags_internal::HandleUsageFlags(std::cout, ProgramUsageMessage());
+#endif
+    return HelpMode::kFull;  // We just need to make sure the exit with
+                             // code 1.
+  }
+
+  return usage_flag_action == UsageFlagsAction::kHandleUsage
+             ? flags_internal::HandleUsageFlags(std::cout,
+                                                ProgramUsageMessage())
+             : HelpMode::kNone;
+}
+
+}  // namespace flags_internal
+
+void ParseAbseilFlagsOnly(int argc, char* argv[],
+                          std::vector<char*>& positional_args,
+                          std::vector<UnrecognizedFlag>& unrecognized_flags) {
+  auto help_mode = flags_internal::ParseAbseilFlagsOnlyImpl(
+      argc, argv, positional_args, unrecognized_flags,
+      flags_internal::UsageFlagsAction::kHandleUsage);
+
+  flags_internal::MaybeExit(help_mode);
 }
 
 // --------------------------------------------------------------------

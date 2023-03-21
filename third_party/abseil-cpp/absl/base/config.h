@@ -799,6 +799,20 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_HWADDRESS_SANITIZER 1
 #endif
 
+// ABSL_HAVE_DATAFLOW_SANITIZER
+//
+// Dataflow Sanitizer (or DFSAN) is a generalised dynamic data flow analysis.
+#ifdef ABSL_HAVE_DATAFLOW_SANITIZER
+#error "ABSL_HAVE_DATAFLOW_SANITIZER cannot be directly set."
+#elif defined(DATAFLOW_SANITIZER)
+// GCC provides no method for detecting the presence of the standalone
+// DataFlowSanitizer (-fsanitize=dataflow), so GCC users of -fsanitize=dataflow
+// should also use -DDATAFLOW_SANITIZER.
+#define ABSL_HAVE_DATAFLOW_SANITIZER 1
+#elif ABSL_HAVE_FEATURE(dataflow_sanitizer)
+#define ABSL_HAVE_DATAFLOW_SANITIZER 1
+#endif
+
 // ABSL_HAVE_LEAK_SANITIZER
 //
 // LeakSanitizer (or lsan) is a detector of memory leaks.
@@ -813,7 +827,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #ifdef ABSL_HAVE_LEAK_SANITIZER
 #error "ABSL_HAVE_LEAK_SANITIZER cannot be directly set."
 #elif defined(LEAK_SANITIZER)
-// GCC provides no method for detecting the presense of the standalone
+// GCC provides no method for detecting the presence of the standalone
 // LeakSanitizer (-fsanitize=leak), so GCC users of -fsanitize=leak should also
 // use -DLEAK_SANITIZER.
 #define ABSL_HAVE_LEAK_SANITIZER 1

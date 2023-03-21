@@ -56,6 +56,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstring>
+#include <exception>
 #include <functional>
 #include <initializer_list>
 #include <memory>
