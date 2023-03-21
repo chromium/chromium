@@ -68,7 +68,8 @@ if (is_android) {
   }
 
   java_cpp_enum("local_web_approval_outcome_java_enum_srcjar") {
-    sources = [ "//chrome/browser/supervised_user/web_approvals_manager.h" ]
+    sources =
+        [ "//chrome/browser/supervised_user/android/website_parent_approval.h" ]
   }
 
   android_library("website_parent_approval_java") {

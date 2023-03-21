@@ -27,6 +27,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/web_content_handler.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -158,13 +159,15 @@ std::u16string GetActiveUserFirstName() {
 // static
 std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
     WebContents* web_contents,
+    std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
     const GURL& url,
     supervised_user::FilteringBehaviorReason reason,
     int frame_id,
     int64_t interstitial_navigation_id) {
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
       base::WrapUnique(new SupervisedUserInterstitial(
-          web_contents, url, reason, frame_id, interstitial_navigation_id));
+          web_contents, std::move(web_content_handler), url, reason, frame_id,
+          interstitial_navigation_id));
 
   if (web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id)
     CleanUpInfoBar(web_contents);
@@ -175,11 +178,13 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
 
 SupervisedUserInterstitial::SupervisedUserInterstitial(
     WebContents* web_contents,
+    std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
     const GURL& url,
     supervised_user::FilteringBehaviorReason reason,
     int frame_id,
     int64_t interstitial_navigation_id)
-    : web_contents_(web_contents),
+    : web_content_handler_(std::move(web_content_handler)),
+      web_contents_(web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       url_(url),
       reason_(reason),
@@ -263,15 +268,12 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
                             Commands::HISTOGRAM_BOUNDING_VALUE);
   OutputRequestPermissionSourceMetric();
 
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile_);
   gfx::ImageSkia favicon;
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   favicon = favicon_handler_->GetFaviconOrFallback();
 #endif
-  supervised_user_service->web_approvals_manager().RequestLocalApproval(
-      web_contents(), url_, GetActiveUserFirstName(), favicon,
-      std::move(callback));
+  web_content_handler_->RequestLocalApproval(url_, GetActiveUserFirstName(),
+                                             favicon, std::move(callback));
 }
 
 void SupervisedUserInterstitial::ShowFeedback() {

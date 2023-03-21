@@ -3196,6 +3196,8 @@ static_library("browser") {
       "ssl/known_interception_disclosure_infobar.h",
       "supervised_user/android/favicon_fetcher.cc",
       "supervised_user/android/favicon_fetcher.h",
+      "supervised_user/android/web_content_handler_impl.cc",
+      "supervised_user/android/web_content_handler_impl.h",
       "sync/android/sync_service_android_bridge.cc",
       "sync/android/sync_service_android_bridge.h",
       "sync/glue/synced_tab_delegate_android.cc",
@@ -7430,6 +7432,10 @@ static_library("browser") {
       "supervised_user/web_approvals_manager.h",
     ]
     if (is_chromeos_ash) {
+      sources += [
+        "supervised_user/chromeos/web_content_handler_impl.cc",
+        "supervised_user/chromeos/web_content_handler_impl.h",
+      ]
       deps += [ "//chrome/browser/ash/crosapi" ]
     }
     if (is_chromeos) {

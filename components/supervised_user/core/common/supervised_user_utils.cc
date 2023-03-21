@@ -5,6 +5,8 @@
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 
 #include "base/notreached.h"
+#include "components/url_matcher/url_util.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
 
@@ -24,6 +26,14 @@ std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason) {
       return "NotSignedIn";
   }
   return "Unknown";
+}
+
+GURL NormalizeUrl(const GURL& url) {
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
+  if (!effective_url.is_valid()) {
+    effective_url = url;
+  }
+  return url_matcher::util::Normalize(effective_url);
 }
 
 }  // namespace supervised_user

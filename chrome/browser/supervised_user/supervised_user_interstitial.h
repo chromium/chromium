@@ -18,6 +18,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace supervised_user {
+class WebContentHandler;
+}
+
 class Profile;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -75,6 +79,7 @@ class SupervisedUserInterstitial {
 
   static std::unique_ptr<SupervisedUserInterstitial> Create(
       content::WebContents* web_contents,
+      std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
       const GURL& url,
       supervised_user::FilteringBehaviorReason reason,
       int frame_id,
@@ -100,11 +105,13 @@ class SupervisedUserInterstitial {
   const GURL& url() const { return url_; }
 
  private:
-  SupervisedUserInterstitial(content::WebContents* web_contents,
-                             const GURL& url,
-                             supervised_user::FilteringBehaviorReason reason,
-                             int frame_id,
-                             int64_t interstitial_navigation_id);
+  SupervisedUserInterstitial(
+      content::WebContents* web_contents,
+      std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
+      const GURL& url,
+      supervised_user::FilteringBehaviorReason reason,
+      int frame_id,
+      int64_t interstitial_navigation_id);
 
   // Tries to go back.
   void AttemptMoveAwayFromCurrentFrameURL();
@@ -112,6 +119,8 @@ class SupervisedUserInterstitial {
   void OnInterstitialDone();
 
   void OutputRequestPermissionSourceMetric();
+
+  std::unique_ptr<supervised_user::WebContentHandler> web_content_handler_;
 
   // Owns SupervisedUserNavigationObserver which owns us.
   raw_ptr<content::WebContents> web_contents_;

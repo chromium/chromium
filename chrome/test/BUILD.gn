@@ -9085,7 +9085,11 @@ test("unit_tests") {
       "../browser/supervised_user/web_approvals_manager_unittest.cc",
     ]
     if (is_chromeos_ash) {
+      sources += [ "../browser/supervised_user/chromeos/web_content_handler_impl_unittest.cc" ]
       deps += [ "//chrome/browser/ash/crosapi" ]
+    }
+    if (is_android) {
+      sources += [ "../browser/supervised_user/android/web_content_handler_impl_unittest.cc" ]
     }
 
     if (enable_extensions) {

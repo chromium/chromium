@@ -21,6 +21,8 @@ static_library("browser") {
     "supervised_user_sync_model_type_controller.h",
     "supervised_user_url_filter.cc",
     "supervised_user_url_filter.h",
+    "web_content_handler.cc",
+    "web_content_handler.h",
   ]
 
   public_deps = [

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -24,12 +25,37 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/web_content_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/supervised_user/android/web_content_handler_impl.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
+#endif
+
+namespace {
+
+std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
+    content::WebContents* web_contents) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<WebContentHandlerImpl>(*web_contents);
+#elif BUILDFLAG(IS_ANDROID)
+  return std::make_unique<WebContentHandlerImpl>(*web_contents);
+#else
+  return nullptr;
+#endif
+}
+
+}  // namespace
 
 using content::NavigationEntry;
 
@@ -276,8 +302,9 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
     int frame_id,
     const OnInterstitialResultCallback& callback) {
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
-      SupervisedUserInterstitial::Create(web_contents(), url, reason, frame_id,
-                                         navigation_id);
+      SupervisedUserInterstitial::Create(
+          web_contents(), CreateWebContentHandler(web_contents()), url, reason,
+          frame_id, navigation_id);
 
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 

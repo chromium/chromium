@@ -29,6 +29,7 @@ static_library("common") {
     ":buildflags",
     "//base",
     "//build:branding_buildflags",
+    "//components/url_matcher:url_matcher",
     "//url",
   ]
 }

@@ -18,65 +18,19 @@
 #include "build/build_config.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/crosapi/mojom/parent_access.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-enum class AndroidLocalWebApprovalFlowOutcome;
-#endif  // BUILDFLAG(IS_ANDROID)
-
 class GURL;
 class PermissionRequestCreator;
 
-namespace supervised_user {
-class SupervisedUserSettingsService;
-}  // namespace supervised_user
-
-namespace content {
-class WebContents;
-}  // namespace content
-
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.supervised_user
-enum class AndroidLocalWebApprovalFlowOutcome {
-  kApproved = 0,
-  kRejected = 1,
-  kIncomplete = 2
-};
-
-// Manages remote and local web approval requests from Family Link users.
+// Manages remote web approval requests from Family Link users.
 //
 // Remote requests are forwarded to the guardian and processed asynchronously.
 // The result of the remote approval syncs as a new web rule to the client and
 // is not handled in this class.
-// Local request opens OS specific local approval flow. The result of the local
-// approval is not handled in this class.
-
 class WebApprovalsManager {
  public:
   // Callback indicating whether the URL access request was initiated
   // successfully.
   using ApprovalRequestInitiatedCallback = base::OnceCallback<void(bool)>;
-
-  // The result of local web approval flow.
-  // Used for metrics. Those values are logged to UMA. Entries should not be
-  // renumbered and numeric values should never be reused. Please keep in sync
-  // with "FamilyLinkUserLocalWebApprovalResult" in
-  // src/tools/metrics/histograms/enums.xml.
-  enum class LocalApprovalResult {
-    kApproved = 0,
-    kDeclined = 1,
-    kCanceled = 2,
-    kError = 3,
-    kMaxValue = kError
-  };
-
-  // Returns the name of the local approval duration histogram.
-  // The duration is recorded in milliseconds.
-  static const char* GetLocalApprovalDurationMillisecondsHistogram();
-
-  // Returns the name of the local approval result histogram.
-  static const char* GetLocalApprovalResultHistogram();
 
   WebApprovalsManager();
 
@@ -84,16 +38,6 @@ class WebApprovalsManager {
   WebApprovalsManager& operator=(const WebApprovalsManager&) = delete;
 
   ~WebApprovalsManager();
-
-  // Requests a local approval flow for the `url`, attaching to the
-  // `web_contents` provided.
-  // Runs the `callback` to inform the caller whether the flow initiation was
-  // successful.
-  void RequestLocalApproval(content::WebContents* web_contents,
-                            const GURL& url,
-                            const std::u16string& child_display_name,
-                            const gfx::ImageSkia& favicon,
-                            ApprovalRequestInitiatedCallback callback);
 
   // Adds a remote approval request for the `url`.
   // The `callback` is run when the request was sent or sending of the request
@@ -118,10 +62,6 @@ class WebApprovalsManager {
 
   size_t FindEnabledRemoteApprovalRequestCreator(size_t start) const;
 
-  // Strips user-specific tokens in a URL to generalize it for use in the
-  // parent approval request.
-  GURL NormalizeUrl(const GURL& url);
-
   void AddRemoteApprovalRequestInternal(
       const CreateRemoteApprovalRequestCallback& create_request,
       ApprovalRequestInitiatedCallback callback,
@@ -132,46 +72,6 @@ class WebApprovalsManager {
       ApprovalRequestInitiatedCallback callback,
       size_t index,
       bool success);
-
-  // Processes the outcome of the local approval request.
-  // Shared between the platforms. Should be called by platform specific
-  // completion callback.
-  void CompleteLocalApprovalRequest(
-      supervised_user::SupervisedUserSettingsService* settings_service,
-      const GURL& url,
-      base::TimeTicks start_time,
-      LocalApprovalResult approval_result);
-
-  // Platform specific callbacks used to indicate approval request completion.
-  // Can implement platform specific operations needed to handle the result.
-  // Should call `CompleteLocalApprovalRequest` to complete the request.
-#if BUILDFLAG(IS_ANDROID)
-  void OnLocalApprovalRequestCompletedAndroid(
-      supervised_user::SupervisedUserSettingsService* settings_service,
-      const GURL& url,
-      base::TimeTicks start_time,
-      AndroidLocalWebApprovalFlowOutcome request_outcome);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnLocalApprovalRequestCompletedChromeOS(
-      supervised_user::SupervisedUserSettingsService* settings_service,
-      const GURL& url,
-      base::TimeTicks start_time,
-      crosapi::mojom::ParentAccessResultPtr result);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Helpers for private method testing.
-  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
-                           LocalWebApprovalDurationHistogramTest);
-  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
-                           LocalWebApprovalApprovedChromeOSTest);
-  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
-                           LocalWebApprovalDeclinedChromeOSTest);
-  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
-                           LocalWebApprovalCanceledChromeOSTest);
-  FRIEND_TEST_ALL_PREFIXES(WebApprovalsManagerTest,
-                           LocalWebApprovalErrorChromeOSTest);
 
   // Stores remote approval request creators.
   // The creators are cleared during shutdown.

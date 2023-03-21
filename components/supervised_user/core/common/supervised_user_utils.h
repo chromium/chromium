@@ -7,6 +7,8 @@
 
 #include <string>
 
+class GURL;
+
 namespace supervised_user {
 
 // Reason for applying the website filtering parental control.
@@ -21,6 +23,9 @@ enum class FilteringBehaviorReason {
 
 // Converts FilteringBehaviorReason enum to string format.
 std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason);
+
+// Strips user-specific tokens in a URL to generalize it.
+GURL NormalizeUrl(const GURL& url);
 
 }  // namespace supervised_user
 
