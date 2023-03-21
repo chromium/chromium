@@ -520,4 +520,8 @@ BeginFrameArgs ExternalBeginFrameSource::GetMissedBeginFrameArgs(
   return missed_args;
 }
 
+base::TimeDelta ExternalBeginFrameSource::GetMaximumRefreshFrameInterval() {
+  return BeginFrameArgs::DefaultInterval();
+}
+
 }  // namespace viz

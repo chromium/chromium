@@ -549,6 +549,11 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     use_preferred_interval_ = true;
   }
 #endif
+
+  if (external_begin_frame_source_) {
+    display_frame_interval_ =
+        external_begin_frame_source_->GetMaximumRefreshFrameInterval();
+  }
 }
 
 void RootCompositorFrameSinkImpl::DisplayOutputSurfaceLost() {

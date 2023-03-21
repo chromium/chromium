@@ -4,8 +4,9 @@
 
 #import "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
 
-#import <Foundation/NSRunLoop.h>
-#import <QuartzCore/CADisplayLink.h>
+#import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIKit.h>
 
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
@@ -14,13 +15,10 @@
 
 namespace {
 
-constexpr float kMinimumRefreshInterval =
+constexpr float kMinimumRefreshRate =
     (viz::BeginFrameArgs::MinInterval() == base::TimeDelta()
          ? 1
          : 1 / viz::BeginFrameArgs::MinInterval().InSecondsF());
-
-constexpr float kMaximumRefreshInterval =
-    (1 / viz::BeginFrameArgs::DefaultInterval().InSecondsF());
 
 // Translates CFTimeInterval to absolute time.
 uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
@@ -66,6 +64,9 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
   // maximum refresh rate of display. Eg, if a display supports 60Hz, the
   // refresh rate might be rounded to 15, 20, 30, and 60 FPS respectively.
   float _preferredRefrehRate;
+  // The maximum refresh rate that depends on a maximum supported refresh rate
+  // of a display that a device uses.
+  float _maximumRefreshRate;
 }
 
 @end
@@ -83,7 +84,8 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
     _displayLink =
         [CADisplayLink displayLinkWithTarget:self
                                     selector:@selector(displayLinkDidFire:)];
-    [self setPreferredInterval:viz::BeginFrameArgs::DefaultInterval()];
+    _maximumRefreshRate = [UIScreen mainScreen].maximumFramesPerSecond;
+    [self setPreferredInterval:base::Hertz(_maximumRefreshRate)];
     [self setEnabled:false];
     [_displayLink addToRunLoop:[NSRunLoop currentRunLoop]
                        forMode:NSRunLoopCommonModes];
@@ -124,16 +126,19 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
   }
 
   DCHECK_GE(interval, base::TimeDelta());
-  const float refresh_rate =
-      interval.InSecondsF() == 0 ? 0 : (1 / interval.InSecondsF());
+  const float refresh_rate = 1 / interval.InSecondsF();
 
   if (_preferredRefrehRate != refresh_rate) {
-    _preferredRefrehRate = refresh_rate;
+    // The preferred refresh rate mustn't exceed the maximum one. The floating
+    // part can result in exceeding the maximum rate because of the division
+    // operation.
+    _preferredRefrehRate =
+        refresh_rate > _maximumRefreshRate ? _maximumRefreshRate : refresh_rate;
     if (@available(iOS 15, *)) {
       [_displayLink
           setPreferredFrameRateRange:CAFrameRateRange{
-                                         .minimum = kMinimumRefreshInterval,
-                                         .maximum = kMaximumRefreshInterval,
+                                         .minimum = kMinimumRefreshRate,
+                                         .maximum = _maximumRefreshRate,
                                          .preferred = _preferredRefrehRate}];
     } else if (@available(iOS 10, *)) {
       [_displayLink setPreferredFramesPerSecond:_preferredRefrehRate];
@@ -171,6 +176,10 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
   _client->OnVSync(vsync_time, next_vsync_time, vsync_interval);
 }
 
+- (int64_t)maximumRefreshRate {
+  return _maximumRefreshRate;
+}
+
 @end
 
 namespace viz {
@@ -191,6 +200,14 @@ ExternalBeginFrameSourceIOS::~ExternalBeginFrameSourceIOS() {
 void ExternalBeginFrameSourceIOS::SetPreferredInterval(
     base::TimeDelta interval) {
   [display_link_impl_ setPreferredInterval:interval];
+}
+
+base::TimeDelta ExternalBeginFrameSourceIOS::GetMaximumRefreshFrameInterval() {
+  const int64_t max_refresh_rate = [display_link_impl_ maximumRefreshRate];
+  if (UNLIKELY(max_refresh_rate <= 0)) {
+    return BeginFrameArgs::DefaultInterval();
+  }
+  return base::Hertz(max_refresh_rate);
 }
 
 void ExternalBeginFrameSourceIOS::SetDynamicBeginFrameDeadlineOffsetSource(

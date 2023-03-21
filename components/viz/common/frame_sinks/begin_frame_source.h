@@ -414,6 +414,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
+  // Returns the maximum supported refresh rate interval for a given BFS.
+  virtual base::TimeDelta GetMaximumRefreshFrameInterval();
+
  protected:
   // Called on AddObserver and gets missed BeginFrameArgs for the given
   // observer. The missed BeginFrame is sent only if the returned
