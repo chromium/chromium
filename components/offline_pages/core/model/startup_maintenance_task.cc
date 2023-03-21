@@ -137,14 +137,6 @@ SyncOperationResult ClearLegacyPagesInPrivateDirSync(
   if (!DeleteFiles(files_to_delete))
     return SyncOperationResult::FILE_OPERATION_ERROR;
 
-  size_t headless_file_count =
-      files_to_delete.size() - offline_ids_to_delete.size();
-  if (headless_file_count > 0) {
-    UMA_HISTOGRAM_COUNTS_1M(
-        "OfflinePages.ConsistencyCheck.Legacy.DeletedHeadlessFileCount",
-        headless_file_count);
-  }
-
   return SyncOperationResult::SUCCESS;
 }
 
@@ -182,9 +174,6 @@ SyncOperationResult CheckTemporaryPageConsistencySync(
     // committed.
     if (!DeletePageTask::DeletePagesFromDbSync(offline_ids_to_delete, db))
       return SyncOperationResult::DB_OPERATION_ERROR;
-    UMA_HISTOGRAM_COUNTS_1M(
-        "OfflinePages.ConsistencyCheck.Temporary.PagesMissingArchiveFileCount",
-        base::saturated_cast<int32_t>(offline_ids_to_delete.size()));
   }
 
   if (!transaction.Commit())
@@ -202,9 +191,6 @@ SyncOperationResult CheckTemporaryPageConsistencySync(
   if (files_to_delete.size() > 0) {
     if (!DeleteFiles(files_to_delete))
       return SyncOperationResult::FILE_OPERATION_ERROR;
-    UMA_HISTOGRAM_COUNTS_1M(
-        "OfflinePages.ConsistencyCheck.Temporary.PagesMissingDbEntryCount",
-        static_cast<int32_t>(files_to_delete.size()));
   }
 
   return SyncOperationResult::SUCCESS;
@@ -217,13 +203,6 @@ void ReportStorageUsageSync(sql::Database* db) {
   for (const auto& name_space : GetAllPolicyNamespaces()) {
     sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
     statement.BindString(0, name_space);
-    int size_in_kib = 0;
-    while (statement.Step()) {
-      size_in_kib = base::saturated_cast<int>(statement.ColumnInt64(0) / 1024);
-    }
-    base::UmaHistogramCustomCounts(
-        "OfflinePages.ClearStoragePreRunUsage2." + name_space, size_in_kib, 1,
-        10000000, 50);
   }
 }
 

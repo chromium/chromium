@@ -3233,7 +3233,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.Background.TimeToSaved"/>
   <affected-histogram name="OfflinePages.Background.TimeToStart"/>
   <affected-histogram name="OfflinePages.Background.TimeToStart.Svelte"/>
-  <affected-histogram name="OfflinePages.ClearStoragePreRunUsage2"/>
   <affected-histogram name="OfflinePages.MhtmlLoadResult"/>
   <affected-histogram name="OfflinePages.PageAccessInterval"/>
   <affected-histogram name="OfflinePages.PageLifetime"/>

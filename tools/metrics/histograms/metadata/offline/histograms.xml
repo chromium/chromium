@@ -477,16 +477,6 @@ chromium-metrics-reviews@google.com.
   <summary>Number of thumbnails removed by the thumbnail cleanup task.</summary>
 </histogram>
 
-<histogram name="OfflinePages.ClearStoragePreRunUsage2" units="KiB"
-    expires_after="2021-06-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    The total disk storage size used by all offline pages from a specific client
-    namespace.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.ClearTemporaryPages.BatchSize" units="pages"
     expires_after="2021-06-25">
   <owner>dimich@chromium.org</owner>
@@ -517,43 +507,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.ConsistencyCheck.Legacy.DeletedHeadlessFileCount"
-    units="files" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of files which are deleted during legacy dir clearing since they have
-    no associated DB entry and live in private directory.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.ConsistencyCheck.Persistent.Result"
     enum="OfflinePagesSyncOperationResult" expires_after="2021-06-25">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>Result of persistent page consistency check.</summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.ConsistencyCheck.Temporary.PagesMissingArchiveFileCount"
-    units="pages" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of temporary offline pages without archive file when checking
-    consistency. It will only be reported if the number is larger than 0.
-  </summary>
-</histogram>
-
-<histogram
-    name="OfflinePages.ConsistencyCheck.Temporary.PagesMissingDbEntryCount"
-    units="pages" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Number of archives without database entry when checking temporary page
-    consistency. It will only be reported if the number is larger than 0.
-  </summary>
 </histogram>
 
 <histogram name="OfflinePages.ConsistencyCheck.Temporary.Result"

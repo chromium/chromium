@@ -108,8 +108,6 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeletePageInLegacyArchivesDir) {
   EXPECT_EQ(PagePresence::BOTH_DB_AND_FILESYSTEM,
             CheckPagePresence(persistent_page1));
   EXPECT_EQ(PagePresence::NONE, CheckPagePresence(persistent_page2));
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Legacy.DeletedHeadlessFileCount", 2, 1);
 }
 
 // This test is affected by https://crbug.com/725685, which only affects windows
@@ -157,13 +155,6 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeleteFileWithoutDbEntry) {
   EXPECT_EQ(PagePresence::NONE, CheckPagePresence(persistent_page2));
 
   histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Legacy.DeletedHeadlessFileCount", 1, 1);
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ConsistencyCheck.Temporary.PagesMissingArchiveFileCount",
-      0);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Temporary.PagesMissingDbEntryCount", 1, 1);
-  histogram_tester()->ExpectUniqueSample(
       "OfflinePages.ConsistencyCheck.Temporary.Result",
       static_cast<int>(SyncOperationResult::SUCCESS), 1);
 }
@@ -210,11 +201,6 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_TestDeleteDbEntryWithoutFile) {
             CheckPagePresence(persistent_page1));
   EXPECT_EQ(PagePresence::DB_ONLY, CheckPagePresence(persistent_page2));
 
-  histogram_tester()->ExpectTotalCount(
-      "OfflinePages.ConsistencyCheck.Temporary.PagesMissingDbEntryCount", 0);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Temporary.PagesMissingArchiveFileCount", 1,
-      1);
   histogram_tester()->ExpectUniqueSample(
       "OfflinePages.ConsistencyCheck.Temporary.Result",
       static_cast<int>(SyncOperationResult::SUCCESS), 1);
@@ -273,13 +259,6 @@ TEST_F(StartupMaintenanceTaskTest, MAYBE_CombinedTest) {
   EXPECT_EQ(PagePresence::NONE, CheckPagePresence(persistent_page2));
 
   histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Legacy.DeletedHeadlessFileCount", 2, 1);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Temporary.PagesMissingArchiveFileCount", 2,
-      1);
-  histogram_tester()->ExpectUniqueSample(
-      "OfflinePages.ConsistencyCheck.Temporary.PagesMissingDbEntryCount", 1, 1);
-  histogram_tester()->ExpectUniqueSample(
       "OfflinePages.ConsistencyCheck.Temporary.Result",
       static_cast<int>(SyncOperationResult::SUCCESS), 1);
 }
@@ -332,14 +311,6 @@ TEST_F(StartupMaintenanceTaskTest, TestReportStorageUsage) {
   auto task =
       std::make_unique<StartupMaintenanceTask>(store(), archive_manager());
   RunTask(std::move(task));
-
-  // For each namespace, check if the storage usage was correctly reported,
-  // since the value is reported with KiB as unit, divide it by 1024 here.
-  for (const auto& name_space : namespaces) {
-    histogram_tester()->ExpectUniqueSample(
-        "OfflinePages.ClearStoragePreRunUsage2." + name_space,
-        name_space.length() * kTestFileSize / 1024, 1);
-  }
 }
 
 }  // namespace offline_pages
