@@ -1,9 +1,9 @@
 Name: clang-format
 Short Name: clang-format
 URL: https://github.com/llvm/llvm-project/tree/main/clang/tools/clang-format
-Version: llvmorg-16-init-13328-g110fe4f4
-Date: 7 December 2022
-Revision: llvmorg-16-init-13328-g110fe4f4
+Version: llvmorg-17-init-4759-g547e3456
+Date: 21 March 2023
+Revision: llvmorg-17-init-4759-g547e3456
 License: Apache 2.0 / University of Illinois/NCSA Open Source License
 License File: NOT_SHIPPED
 Security Critical: No
