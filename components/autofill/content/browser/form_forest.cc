@@ -627,6 +627,11 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
           case CREDIT_CARD_NAME_FULL:
           case CREDIT_CARD_NAME_FIRST:
           case CREDIT_CARD_NAME_LAST:
+          case CREDIT_CARD_EXP_MONTH:
+          case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+          case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+          case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+          case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
             return false;
           default:
             return true;

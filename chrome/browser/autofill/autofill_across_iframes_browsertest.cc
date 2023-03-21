@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Simple,
   const FormStructure* form = LoadForm({"$1", "$2", "$1", "$1"});
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
-              ElementsAre(kNameFull, kNumber, "", ""));
+              ElementsAre(kNameFull, kNumber, kExp, ""));
 }
 
 // Tests that sandboxed frames are treated like other cross-origin frames.
@@ -553,8 +553,7 @@ IN_PROC_BROWSER_TEST_P(
       LoadForm({"$1", "$2", "$1", "$1"}, {"", "", "", "allow=shared-autofill"});
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
-              ElementsAre(kNameFull, kNumber, is_relaxed() ? kExp : "",
-                          is_relaxed() ? kCvc : ""));
+              ElementsAre(kNameFull, kNumber, kExp, is_relaxed() ? kCvc : ""));
 }
 
 // Test fixture where a form changes dynamically when it is filled.
