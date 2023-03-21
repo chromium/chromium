@@ -349,6 +349,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/test:test_support",
+    "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

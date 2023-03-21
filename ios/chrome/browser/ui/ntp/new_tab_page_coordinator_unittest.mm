@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
@@ -16,7 +17,12 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
@@ -27,9 +33,12 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
+#import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -38,6 +47,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,6 +76,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
+    histogram_tester_.reset(new base::HistogramTester());
   }
 
   void CreateCoordinator(bool off_the_record) {
@@ -163,10 +174,10 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     coordinator_.NTPViewController = original_vc;
   }
 
+  web::WebTaskEnvironment task_environment_;
   web::WebState* web_state_;
   id toolbar_delegate_;
   id delegate_;
-  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
@@ -176,6 +187,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
   id omnibox_commands_handler_mock;
   id snackbar_commands_handler_mock;
   id fakebox_focuser_handler_mock;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // Tests that the coordinator doesn't vend an IncognitoViewController VC on the
@@ -198,42 +210,170 @@ TEST_F(NewTabPageCoordinatorTest, StartOffTheRecord) {
   [coordinator_ stop];
 }
 
-// Tests that if the NTP should/shouldn't be showing Start upon -start, that it
-// properly configures the ContentSuggestionsHeaderViewController property.
+// Tests that if the NTPCoordinator properly configures
+// ContentSuggestionsHeaderViewController and NewTabPageTabHelper correctly for
+// Start depending on public lifecycle API calls.
 TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   CreateCoordinator(/*off_the_record=*/false);
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
   SetupCommandHandlerMocks();
+  // Swizzle out `-configureNTPViewController` since it leaves a dangling
+  // pointer somewhere, and UI code does not need to be spun up for this test.
+  void (^swizzle_block)() = ^void() {
+    // no-op
+  };
+  std::unique_ptr<ScopedBlockSwizzler> service_swizzler =
+      std::make_unique<ScopedBlockSwizzler>(
+          [NewTabPageCoordinator class], @selector(configureNTPViewController),
+          swizzle_block);
 
+  id coordinator_mock = OCMClassMock([ContentSuggestionsCoordinator class]);
+  ContentSuggestionsCoordinator* mockContentSuggestionsCoordinator =
+      coordinator_mock;
+
+  // Test `-start` sets `isStartShowing` to true if NTPTabHelper's
+  // `-ShouldShowStartSurface` is true.
+  OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
+  OCMExpect([coordinator_mock initWithBaseViewController:[OCMArg any]
+                                                 browser:browser_.get()])
+      .andReturn(mockContentSuggestionsCoordinator);
+  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  OCMExpect([coordinator_mock configureStartSurfaceIfNeeded]);
   [coordinator_ start];
-  EXPECT_TRUE(coordinator_.headerController.isStartShowing);
+  EXPECT_OCMOCK_VERIFY(coordinator_mock);
   [coordinator_ stop];
 
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(false);
+  // Test `-didNavigateToNTP` configures the NTP for Start. `-didNavigateToNTP`
+  // should only be called if the NTPCoordinator is still started (e.g. another
+  // tab has the NTP open).
+  OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
+  OCMExpect([coordinator_mock initWithBaseViewController:[OCMArg any]
+                                                 browser:browser_.get()])
+      .andReturn(mockContentSuggestionsCoordinator);
   [coordinator_ start];
-  EXPECT_FALSE(coordinator_.headerController.isStartShowing);
-  [coordinator_ stop];
-}
-
-// Tests that calls to the coordinator's -didNavigateToNTP when Start should
-// also show updates the state of the ContentSuggestionsHeaderViewController
-// and calling -didNavigateAwayFromNTP when Start was showing updates
-// ContentSuggestionsHeaderViewController and NewTabPageTabHelper correctly.
-TEST_F(NewTabPageCoordinatorTest, ShowStartSurface) {
-  CreateCoordinator(/*off_the_record=*/false);
-  SetupCommandHandlerMocks();
-  [coordinator_ start];
-  EXPECT_FALSE(coordinator_.headerController.isStartShowing);
-
   NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  OCMExpect([coordinator_mock configureStartSurfaceIfNeeded]);
   [coordinator_ didNavigateToNTP];
-  EXPECT_TRUE(coordinator_.headerController.isStartShowing);
-
+  EXPECT_OCMOCK_VERIFY(coordinator_mock);
+  // Test `-didNavigateAwayFromNTP` when currently showing Start resets the
+  // configuration.
   [coordinator_ didNavigateAwayFromNTP];
   EXPECT_FALSE(
       NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());
-  EXPECT_FALSE(coordinator_.headerController.isStartShowing);
+  [coordinator_ stop];
 
+  // Test `-didChangeActiveWebState:` updates NTP Start state to false if it
+  // began as true.
+  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
+  OCMExpect([coordinator_mock initWithBaseViewController:[OCMArg any]
+                                                 browser:browser_.get()])
+      .andReturn(mockContentSuggestionsCoordinator);
+  OCMExpect([coordinator_mock configureStartSurfaceIfNeeded]);
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(coordinator_mock);
+  // Save reference before `web_state_` is set to new active WebState.
+  web::WebState* start_web_state = web_state_;
+  // Simulate didChangeActiveWebState: callback.
+  InsertWebState(CreateWebStateWithURL(GURL("chrome://version")));
+  // Moved away from Start surface to a different WebState, Start config for
+  // original WebState's TabHelper should be NO.
+  EXPECT_FALSE(NewTabPageTabHelper::FromWebState(start_web_state)
+                   ->ShouldShowStartSurface());
+  [coordinator_ stop];
+
+  // Test `-start` doesn't set `isStartShowing` if NTPTabHelper's
+  // `-ShouldShowStartSurface` is false.
+  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(false);
+  [[coordinator_mock reject] configureStartSurfaceIfNeeded];
+  [coordinator_ start];
+  EXPECT_OCMOCK_VERIFY(coordinator_mock);
+  [coordinator_ stop];
+}
+
+// Tests that tapping on the fake omnibox logs the correct metric depending on
+// if Start is configured.
+TEST_F(NewTabPageCoordinatorTest, FakeboxTappedMetricLogging) {
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+
+  // Test `-start` sets `isStartShowing` to true/false, depending on
+  // SetShowStartSurface.
+  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  [coordinator_ start];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kFakebox, 0);
+  [coordinator_ fakeboxTapped];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kFakebox, 1);
+
+  // Simulate navigate away and then back to non-Start NTP.
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetUrl(GURL("chrome://version"));
+  static_cast<web::FakeWebState*>(web_state_)
+      ->OnNavigationStarted(&navigation_context);
+  [coordinator_ didNavigateAwayFromNTP];
+  ASSERT_FALSE(coordinator_.started);
+  [coordinator_ start];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kFakebox, 1);
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kFakebox, 0);
+  [coordinator_ fakeboxTapped];
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kFakebox, 1);
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnNTP",
+      IOSContentSuggestionsActionType::kFakebox, 1);
+  [coordinator_ stop];
+}
+
+// Test that in response to tapping on MVT while on the Start Surface, the
+// NTPTabHelper, NTPCoordinator, and ContentSuggestionsMediator perform as
+// expected, leading to logging the correct NTP metric and resets NTPTabHelper's
+// ShouldShowStartSurface() property.
+TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
+  CreateCoordinator(/*off_the_record=*/false);
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
+  SetupCommandHandlerMocks();
+  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
+  [coordinator_ start];
+
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kMostVisitedTile, 0);
+
+  ContentSuggestionsMostVisitedItem* item =
+      [[ContentSuggestionsMostVisitedItem alloc] init];
+  item.title = @"Most Visited Index 0";
+  item.URL = GURL("chrome://version");
+  [coordinator_.contentSuggestionsCoordinator.contentSuggestionsMediator
+      openMostVisitedItem:item
+                  atIndex:0];
+  // Force the URL load callback to simulate the NavigationManager receiving the
+  // URL load signal from the URLLoadingBrowserAgent.
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetUrl(GURL("chrome://version"));
+  static_cast<web::FakeWebState*>(web_state_)
+      ->OnNavigationStarted(&navigation_context);
+  // Simulate BrowserCoordinator receiving NTPTabHelper's
+  // newTabPageHelperDidChangeVisibility: callback.
+  [coordinator_ didNavigateAwayFromNTP];
+
+  // Verify that ActionOnStartSurface metric was logged, meaning that
+  // NTPHomeMetrics logged the metric before NewTabPageTabHelper received the
+  // DidStartNavigation() WebStateObserver callback to reset
+  // ShouldShowStartSurface() to false.
+  histogram_tester_->ExpectUniqueSample(
+      "IOS.ContentSuggestions.ActionOnStartSurface",
+      IOSContentSuggestionsActionType::kMostVisitedTile, 1);
+  EXPECT_FALSE(
+      NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());
   [coordinator_ stop];
 }
 
@@ -247,8 +387,16 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigate) {
       transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
   EXPECT_TRUE(coordinator_.visible);
 
+  // Create second NTP since `-didNavigateToNTP` should only be called instead
+  // of `-start` when there is another tab showing the NTP.
+  InsertWebState(CreateWebStateWithURL(GURL("chrome://newtab")));
   // Simulate navigating away from the NTP.
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetUrl(GURL("chrome://version"));
+  static_cast<web::FakeWebState*>(web_state_)
+      ->OnNavigationStarted(&navigation_context);
   [coordinator_ didNavigateAwayFromNTP];
+  ASSERT_TRUE(coordinator_.started);
   EXPECT_EQ(coordinator_.webState, nullptr);
   EXPECT_FALSE(coordinator_.visible);
 
@@ -257,7 +405,12 @@ TEST_F(NewTabPageCoordinatorTest, DidNavigate) {
   EXPECT_EQ(coordinator_.webState, web_state_);
   EXPECT_TRUE(coordinator_.visible);
 
-  [coordinator_ stop];
+  // Remove one of the tabs so that NTPCoordinator will actually stop.
+  browser_->GetWebStateList()->CloseWebStateAt(
+      /*index=*/0, /* close_flags= */ 0);
+  web_state_ = browser_->GetWebStateList()->GetActiveWebState();
+  [coordinator_ stopIfNeeded];
+  ASSERT_FALSE(coordinator_.started);
 }
 
 // Test that NTPCoordinator's DidChangeActiveWebState will change the
@@ -300,7 +453,7 @@ TEST_F(NewTabPageCoordinatorTest, ProxiesNTPViewControllerMethods) {
                           @selector(isNTPScrolledToTop));
   ExpectMethodToProxyToVC(@selector(willUpdateSnapshot),
                           @selector(willUpdateSnapshot));
-  ExpectMethodToProxyToVC(@selector(focusFakebox), @selector(focusFakebox));
+  ExpectMethodToProxyToVC(@selector(focusFakebox), @selector(focusOmnibox));
   ExpectMethodToProxyToVC(@selector(locationBarDidResignFirstResponder),
                           @selector(omniboxDidResignFirstResponder));
 

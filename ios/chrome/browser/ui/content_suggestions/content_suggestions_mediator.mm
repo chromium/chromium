@@ -264,11 +264,6 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   self.NTPMetrics.webState = self.webState;
 }
 
-- (void)setShowingStartSurface:(BOOL)showingStartSurface {
-  _showingStartSurface = showingStartSurface;
-  self.NTPMetrics.showingStartSurface = showingStartSurface;
-}
-
 + (NSUInteger)maxSitesShown {
   return kMaxNumMostVisitedTiles;
 }
@@ -617,11 +612,13 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   // Fetch Trending Queries
   TemplateURLRef::SearchTermsArgs args;
   args.request_source = RequestSource::NTP_MODULE;
+  BOOL isShowingStartSurface = NewTabPageTabHelper::FromWebState(self.webState)
+                                   ->ShouldShowStartSurface();
   _startSuggestService->FetchSuggestions(
       args,
       base::BindOnce(&StartSuggestServiceResponseBridge::OnSuggestionsReceived,
                      _startSuggestServiceResponseBridge->AsWeakPtr()),
-      self.showingStartSurface);
+      isShowingStartSurface);
 }
 
 - (NSString*)constructReturnToRecentTabSubtitleWithPageTitle:

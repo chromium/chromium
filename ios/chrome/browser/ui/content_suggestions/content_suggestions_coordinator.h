@@ -53,7 +53,9 @@ class WebState;
 // Reloads the suggestions.
 - (void)reload;
 
-// Configure Content Suggestions if showing the Start Surface.
+// Configure Content Suggestions if showing the Start Surface. NOTE: this should
+// only be called once for every Start configuration. Calling it multiple times
+// in sequence can lead to unpredictable outcomes.
 - (void)configureStartSurfaceIfNeeded;
 
 @end

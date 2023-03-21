@@ -457,24 +457,12 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (void)fakeTapViewTapped {
   base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
-  [self logOmniboxAction];
-  [self.delegate focusFakebox];
+  [self.commandHandler fakeboxTapped];
 }
 
 - (void)fakeboxTapped {
   base::RecordAction(base::UserMetricsAction("MobileFakeboxNTPTapped"));
-  [self logOmniboxAction];
-  [self.delegate focusFakebox];
-}
-
-- (void)logOmniboxAction {
-  if (self.isStartShowing) {
-    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
-                              IOSContentSuggestionsActionType::kFakebox);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP",
-                              IOSContentSuggestionsActionType::kFakebox);
-  }
+  [self.commandHandler fakeboxTapped];
 }
 
 - (void)focusAccessibilityOnOmnibox {
@@ -665,7 +653,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
   if (!self.isShowing)
     return;
 
-  [self.delegate focusFakebox];
+  [self.commandHandler fakeboxTapped];
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {

@@ -134,6 +134,7 @@ source_set("metrics") {
     "//base",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ui/content_suggestions:constants",
   ]
 }

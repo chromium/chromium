@@ -204,8 +204,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 #pragma mark - ContentSuggestionsViewControllerAudience
 
 - (void)viewWillDisappear {
-  // Start no longer showing
-  self.contentSuggestionsMediator.showingStartSurface = NO;
   DiscoverFeedServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState())
       ->SetIsShownOnStartSurface(false);
@@ -333,11 +331,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
     return;
   }
 
-  // Shouldn't be calling this if start has already been configured.
-  DCHECK(!self.contentSuggestionsMediator.showingStartSurface);
-
-  // Update Mediator property to signal the NTP is currently showing Start.
-  self.contentSuggestionsMediator.showingStartSurface = YES;
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {
     web::WebState* most_recent_tab =
         StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)

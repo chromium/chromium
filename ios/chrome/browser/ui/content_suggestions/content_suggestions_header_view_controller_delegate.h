@@ -13,9 +13,6 @@
 // Whether the scrollview is scrolled to the omnibox.
 @property(nonatomic, assign, readonly) BOOL scrolledToMinimumHeight;
 
-// Indicates to the receiver to update its state to focus the omnibox.
-- (void)focusFakebox;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_HEADER_VIEW_CONTROLLER_DELEGATE_H_

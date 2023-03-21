@@ -386,6 +386,19 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 #pragma mark - Public
 
+- (void)focusOmnibox {
+  // If the feed is meant to be visible and its contents have not loaded yet,
+  // then any omnibox focus animations (i.e. opening app from search widget
+  // action) needs to wait until it is ready. viewDidAppear: currently serves as
+  // this proxy as there is no specific signal given from the feed that its
+  // contents have loaded.
+  if (self.isFeedVisible && !self.viewDidAppear) {
+    self.shouldFocusFakebox = YES;
+  } else {
+    [self shiftTilesUpToFocusOmnibox];
+  }
+}
+
 - (void)layoutContentInParentCollectionView {
   DCHECK(self.feedWrapperViewController);
   DCHECK(self.contentSuggestionsViewController);
@@ -629,19 +642,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 #pragma mark - ContentSuggestionsHeaderViewControllerDelegate
-
-- (void)focusFakebox {
-  // If the feed is meant to be visible and its contents have not loaded yet,
-  // then any omnibox focus animations (i.e. opening app from search widget
-  // action) needs to wait until it is ready. viewDidAppear: currently serves as
-  // this proxy as there is no specific signal given from the feed that its
-  // contents have loaded.
-  if (self.isFeedVisible && !self.viewDidAppear) {
-    self.shouldFocusFakebox = YES;
-  } else {
-    [self shiftTilesUpToFocusOmnibox];
-  }
-}
 
 - (void)shiftTilesDownForOmniboxDefocus {
   if (IsSplitToolbarMode(self)) {

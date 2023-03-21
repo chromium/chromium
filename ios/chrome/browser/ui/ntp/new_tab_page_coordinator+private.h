@@ -7,20 +7,26 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
+@class ContentSuggestionsCoordinator;
 @class ContentSuggestionsHeaderViewController;
 @class NewTabPageViewController;
 
 // This is a private category that is intended to only be imported in
 // new_tab_page_coordinator.mm and tests.
-@interface NewTabPageCoordinator (Private) <SceneStateObserver,
+@interface NewTabPageCoordinator (Private) <ContentSuggestionsHeaderCommands,
+                                            SceneStateObserver,
                                             WebStateListObserving>
 
 @property(nonatomic, strong, readonly)
     ContentSuggestionsHeaderViewController* headerController;
+
+@property(nonatomic, strong)
+    ContentSuggestionsCoordinator* contentSuggestionsCoordinator;
 
 @property(nonatomic, assign) web::WebState* webState;
 
@@ -29,6 +35,8 @@
 @property(nonatomic, readonly) BOOL visible;
 
 @property(nonatomic, strong) NewTabPageViewController* NTPViewController;
+
+- (void)configureNTPViewController;
 
 @end
 

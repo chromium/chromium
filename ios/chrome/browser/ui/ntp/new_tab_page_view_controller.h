@@ -89,6 +89,9 @@
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
+// Indicates to the receiver to update its state to focus the omnibox.
+- (void)focusOmnibox;
+
 // Called when a snapshot of the content will be taken.
 - (void)willUpdateSnapshot;
 

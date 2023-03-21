@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
@@ -461,7 +462,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (void)focusFakebox {
-  [self.NTPViewController focusFakebox];
+  [self.NTPViewController focusOmnibox];
 }
 
 - (void)reload {
@@ -662,15 +663,10 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
       LayoutGuideCenterForBrowser(self.browser);
   self.headerController.toolbarDelegate = self.toolbarDelegate;
   self.headerController.baseViewController = self.baseViewController;
-  if (NewTabPageTabHelper::FromWebState(self.webState)
-          ->ShouldShowStartSurface()) {
-    self.headerController.isStartShowing = YES;
-  }
 }
 
 // Configures `self.contentSuggestionsCoordiantor`.
 - (void)configureContentSuggestionsCoordinator {
-  DCHECK(self.contentSuggestionsCoordinator);
   self.contentSuggestionsCoordinator.webState = self.webState;
   self.contentSuggestionsCoordinator.ntpDelegate = self;
   self.contentSuggestionsCoordinator.feedDelegate = self;
@@ -681,7 +677,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 - (void)configureNTPMediator {
   NewTabPageMediator* NTPMediator = self.NTPMediator;
   DCHECK(NTPMediator);
-  DCHECK(self.contentSuggestionsCoordinator.contentSuggestionsMediator);
   NTPMediator.browser = self.browser;
   NTPMediator.feedControlDelegate = self;
   NTPMediator.contentSuggestionsHeaderConsumer = self.headerController;
@@ -776,6 +771,18 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 - (void)updateForHeaderSizeChange {
   [self.NTPViewController updateHeightAboveFeedAndScrollToTopIfNeeded];
+}
+
+- (void)fakeboxTapped {
+  if (NewTabPageTabHelper::FromWebState(self.webState)
+          ->ShouldShowStartSurface()) {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
+                              IOSContentSuggestionsActionType::kFakebox);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP",
+                              IOSContentSuggestionsActionType::kFakebox);
+  }
+  [self focusFakebox];
 }
 
 - (void)identityDiscWasTapped {
@@ -1351,12 +1358,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 }
 
 - (void)updateStartForVisibilityChange:(BOOL)visible {
-  if (visible && self.started &&
-      NewTabPageTabHelper::FromWebState(self.webState)
-          ->ShouldShowStartSurface()) {
-    // Start is being shown on an existing NTP, so configure it
-    // appropriately.
-    self.headerController.isStartShowing = YES;
+  if (visible && NewTabPageTabHelper::FromWebState(self.webState)
+                     ->ShouldShowStartSurface()) {
     [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
   }
   if (!visible && NewTabPageTabHelper::FromWebState(self.webState)
@@ -1365,7 +1368,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     // since it should not show Start after disappearing.
     NewTabPageTabHelper::FromWebState(self.webState)
         ->SetShowStartSurface(false);
-    self.headerController.isStartShowing = NO;
   }
 }
 

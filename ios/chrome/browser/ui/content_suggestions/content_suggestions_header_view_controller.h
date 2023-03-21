@@ -50,9 +50,6 @@
 // `YES` if Google is the default search engine.
 @property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
 
-// `YES` if the Start Surface is currently being shown.
-@property(nonatomic, assign) BOOL isStartShowing;
-
 // `YES` if its view is visible.  When set to `NO` various UI updates are
 // ignored.
 @property(nonatomic, assign, getter=isShowing) BOOL showing;

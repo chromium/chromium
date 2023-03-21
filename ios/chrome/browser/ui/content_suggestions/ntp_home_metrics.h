@@ -45,9 +45,6 @@ enum class IOSContentSuggestionsActionType {
 // Currently active WebState with an active NTP.
 @property(nonatomic, assign) web::WebState* webState;
 
-// Whether `webState` is showing the Start Surface.
-@property(nonatomic, assign) BOOL showingStartSurface;
-
 - (void)recordAction:(new_tab_page_uma::ActionType)action;
 
 // Records a user action on a ContentSuggestions module `type`.

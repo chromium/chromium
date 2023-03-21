@@ -77,9 +77,6 @@ class WebStateList;
 // The consumer that will be notified when the data change.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
-// YES if the Start Surface is being shown.
-@property(nonatomic, assign) BOOL showingStartSurface;
-
 // WebStateList associated with this mediator.
 @property(nonatomic, assign) WebStateList* webStateList;
 
