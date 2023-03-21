@@ -93,6 +93,7 @@ public class ExternalNavigationParams {
     private final boolean mHasUserGesture;
     private final boolean mIsInitialNavigationInFrame;
     private final boolean mIsCrossFrameNavigation;
+    private final boolean mIsSandboxedMainFrame;
     private final Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
     private boolean mIsRendererInitiated;
     private Origin mInitiatorOrigin;
@@ -107,7 +108,7 @@ public class ExternalNavigationParams {
             boolean isMainFrame, String nativeClientPackageName, boolean hasUserGesture,
             Callback<AsyncActionTakenParams> asyncActionTakenCallback, boolean isRendererInitiated,
             @Nullable Origin initiatorOrigin, boolean isInitialNavigationInFrame,
-            boolean isCrossFrameNavigation) {
+            boolean isCrossFrameNavigation, boolean isSandboxedMainFrame) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -126,6 +127,7 @@ public class ExternalNavigationParams {
         mInitiatorOrigin = initiatorOrigin;
         mIsInitialNavigationInFrame = isInitialNavigationInFrame;
         mIsCrossFrameNavigation = isCrossFrameNavigation;
+        mIsSandboxedMainFrame = isSandboxedMainFrame;
     }
 
     public void onAsyncActionStarted() {
@@ -248,6 +250,13 @@ public class ExternalNavigationParams {
         return mIsCrossFrameNavigation;
     }
 
+    /**
+     * @return whether this navigation is taking place in a sandboxed main frame.
+     */
+    public boolean isSandboxedMainFrame() {
+        return mIsSandboxedMainFrame;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         private GURL mUrl;
@@ -268,6 +277,7 @@ public class ExternalNavigationParams {
         private Origin mInitiatorOrigin;
         private boolean mIsInitialNavigationInFrame;
         private boolean mIsCrossFrameNavigation;
+        private boolean mIsSandboxedMainFrame;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -371,6 +381,14 @@ public class ExternalNavigationParams {
             return this;
         }
 
+        /**
+         * Sets whether this navigation is taking place in a sandboxed main frame.
+         */
+        public Builder setIsSandboxedMainFrame(boolean v) {
+            mIsSandboxedMainFrame = v;
+            return this;
+        }
+
         /** @return A fully constructed {@link ExternalNavigationParams} object. */
         public ExternalNavigationParams build() {
             return new ExternalNavigationParams(mUrl, mIsIncognito, mReferrerUrl, mPageTransition,
@@ -378,7 +396,7 @@ public class ExternalNavigationParams {
                     mIsBackgroundTabNavigation, mIntentLaunchesAllowedInBackgroundTabs,
                     mIsMainFrame, mNativeClientPackageName, mHasUserGesture,
                     mAsyncActionTakenCallback, mIsRendererInitiated, mInitiatorOrigin,
-                    mIsInitialNavigationInFrame, mIsCrossFrameNavigation);
+                    mIsInitialNavigationInFrame, mIsCrossFrameNavigation, mIsSandboxedMainFrame);
         }
     }
 }

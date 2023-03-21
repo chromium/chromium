@@ -444,6 +444,7 @@ public class ExternalNavigationHandler {
         }
     }
 
+    public static boolean sAllowIntentsToSelfForTesting;
     private final ExternalNavigationDelegate mDelegate;
     private AlertDialog mIncognitoAlertDialog;
 
@@ -1121,10 +1122,20 @@ public class ExternalNavigationHandler {
         return OverrideUrlLoadingResult.forNoOverride();
     }
 
-    private boolean isSubframeNavigationToSelf(ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity) {
+    /**
+     * If a navigation is targeting the current browser, just load the URL in the browser to avoid
+     * exposing capabilities only intended for other apps on the device to the web (and weird things
+     * like websites launching CCTs).
+     */
+    private boolean isNavigationToSelf(ExternalNavigationParams params,
+            QueryIntentActivitiesSupplier resolvingInfos, ResolveActivitySupplier resolveActivity,
+            boolean isExternalProtocol) {
+        if (sAllowIntentsToSelfForTesting) return false;
         if (!ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF.isEnabled()) return false;
-        if (params.isMainFrame()) return false;
+        if (!ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF.isEnabled() && params.isMainFrame()) {
+            return false;
+        }
+        if (!isExternalProtocol) return false;
         if (!resolveInfoContainsSelf(resolvingInfos.get())) return false;
         if (resolveActivity.get() == null) return false;
 
@@ -1591,7 +1602,7 @@ public class ExternalNavigationHandler {
         }
 
         ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
-        if (isSubframeNavigationToSelf(params, resolvingInfos, resolveActivity)) {
+        if (isNavigationToSelf(params, resolvingInfos, resolveActivity, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNavigateTab(intentDataUrl, params);
         }
 
