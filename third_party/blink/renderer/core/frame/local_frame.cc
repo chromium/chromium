@@ -1031,11 +1031,10 @@ void LocalFrame::SetIsInert(bool inert) {
   }
 
   // Nodes all over the accessibility tree can change inertness which means they
-  // must be added or removed from the tree. The most foolproof way is to clear
-  // the entire tree and rebuild it, though a more clever way is probably
-  // possible.
-  if (Document* document = GetDocument())
-    document->ClearAXObjectCache();
+  // must be added or removed from the tree.
+  if (GetDocument()) {
+    GetDocument()->RefreshAccessibilityTree();
+  }
 }
 
 void LocalFrame::SetInheritedEffectiveTouchAction(TouchAction touch_action) {
@@ -1578,8 +1577,9 @@ bool LocalFrame::ShouldThrottleRendering() const {
 }
 
 void LocalFrame::PortalStateChanged() {
-  if (Document* document = GetDocument())
-    document->ClearAXObjectCache();
+  if (GetDocument()) {
+    GetDocument()->RefreshAccessibilityTree();
+  }
 
   if (IsOutermostMainFrame()) {
     intersection_state_.occlusion_state =

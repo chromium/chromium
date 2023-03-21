@@ -510,6 +510,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   static constexpr int kDataTableHeuristicMinRows = 20;
 
   void UpdateAXForAllDocuments() override;
+  void MarkDocumentDirty() override;
   void MarkElementDirty(const Node*) override;
 
  protected:

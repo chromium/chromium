@@ -638,11 +638,20 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
       DCHECK(!crash_on_error_) << "Missing client node for serialization.";
 #endif
     }
+
+    // Assume that if this is the first node, it is the new root.
+    // TODO(accessibility) Consider a more explicit mechanism for specifying the
+    // root, as this logic caused crbug.com/1421550 when a document's existing
+    // serializer was quickly destroyed and a new one created. Although the new
+    // serializer correctly identified the root, it had a new id, which could
+    // correspond to a non-root id in the browser-side accessibility cache.
     client_root_ = new ClientTreeNode();
     client_node = client_root_;
     client_node->id = id;
     client_node->parent = nullptr;
     client_id_map_[client_node->id] = client_node;
+    DCHECK(!tree_->GetParent(node)) << "A root should never have a parent, but "
+                                       "the tree source thinks there is one.";
   }
 
   DCHECK_EQ(tree_->GetId(tree_->GetRoot()), client_root_->id);

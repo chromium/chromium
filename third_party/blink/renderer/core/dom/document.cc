@@ -3124,6 +3124,8 @@ void Document::ClearAXObjectCache() {
   DCHECK(IsMainThread());
   DCHECK_EQ(&AXObjectCacheOwner(), this);
 
+  DCHECK_EQ(ax_contexts_.size(), 0U);
+
   // Clear the cache member variable before calling delete because attempts
   // are made to access it during destruction.
   if (ax_object_cache_) {
@@ -3131,19 +3133,6 @@ void Document::ClearAXObjectCache() {
     ax_object_cache_.Clear();
     DCHECK_NE(g_ax_object_cache_count, 0u);
     g_ax_object_cache_count--;
-  }
-
-  // If there's at least one AXContext in scope and there's still a LayoutView
-  // around, recreate an empty AXObjectCache.
-  //
-  // TODO(dmazzoni): right now ClearAXObjectCache() is being used as a way
-  // to invalidate / reset the AXObjectCache while keeping it around. We
-  // should rewrite that as a method on AXObjectCache rather than destroying
-  // and recreating it here.
-  if (ax_contexts_.size() > 0 && GetLayoutView()) {
-    ax_object_cache_ =
-        AXObjectCache::Create(*this, ComputeAXModeFromAXContexts(ax_contexts_));
-    g_ax_object_cache_count++;
   }
 }
 
@@ -3160,6 +3149,12 @@ AXObjectCache* Document::ExistingAXObjectCache() const {
     return nullptr;
 
   return cache_owner.ax_object_cache_.Get();
+}
+
+void Document::RefreshAccessibilityTree() const {
+  if (AXObjectCache* cache = ExistingAXObjectCache()) {
+    cache->MarkDocumentDirty();
+  }
 }
 
 CanvasFontCache* Document::GetCanvasFontCache() {

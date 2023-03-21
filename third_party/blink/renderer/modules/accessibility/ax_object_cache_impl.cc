@@ -3667,6 +3667,21 @@ void AXObjectCacheImpl::MarkAXSubtreeDirty(AXObject* obj) {
   DeferTreeUpdateInternal(std::move(callback), obj);
 }
 
+// This method is useful when something that potentially affects most of the
+// page occurs, such as an inertness change or a fullscreen toggle.
+// This keeps the existing nodes, but recomputes all of their properties and
+// reserializes everything.
+void AXObjectCacheImpl::MarkDocumentDirty() {
+  if (AXObject* root = SafeGet(document_)) {
+    // Assume all nodes in the tree need to recompute their properties.
+    ++modification_count_;
+    // Tell the serializer that everything will need to be serialized.
+    MarkAXSubtreeDirty(root);
+    // Send the serialization at the next available opportunity.
+    ScheduleAXUpdate();
+  }
+}
+
 void AXObjectCacheImpl::MarkElementDirty(const Node* element) {
   // Warning, if no AXObject exists for element, nothing is marked dirty.
   MarkAXObjectDirty(Get(element));
@@ -3767,8 +3782,7 @@ void AXObjectCacheImpl::UpdateActiveAriaModalDialog(Node* node) {
     return;
 
   active_aria_modal_dialog_ = new_active_aria_modal;
-  modification_count_++;
-  MarkAXSubtreeDirty(Root());
+  MarkDocumentDirty();
 }
 
 AXObject* AXObjectCacheImpl::AncestorAriaModalDialog(Node* node) {

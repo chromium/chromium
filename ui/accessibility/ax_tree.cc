@@ -1784,8 +1784,10 @@ bool AXTree::UpdateNode(const AXNodeData& src,
     // DestroySubtree.
     AXNode* old_root = root_;
     root_ = node;
-    if (old_root && old_root != node)
+    if (old_root && old_root != node) {
+      // Example of when occurs: the contents of an iframe are replaced.
       DestroySubtree(old_root, update_state);
+    }
   }
 
   return success;

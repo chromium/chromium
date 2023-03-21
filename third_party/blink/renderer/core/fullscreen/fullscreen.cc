@@ -118,8 +118,8 @@ void FullscreenElementChanged(Document& document,
 
   // Any element not contained by the fullscreen element is inert (see
   // |Node::IsInert()|), so changing the fullscreen element will typically
-  // change the inertness of most elements. Clear the entire cache.
-  document.ClearAXObjectCache();
+  // change the inertness of most elements. Reserialize the entire document.
+  document.RefreshAccessibilityTree();
 
   if (LocalFrame* frame = document.GetFrame()) {
     // TODO(foolip): Synchronize hover state changes with animation frames.

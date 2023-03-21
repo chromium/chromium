@@ -218,6 +218,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                    base::TimeDelta timeout,
                                    ui::AXTreeUpdate*) = 0;
 
+  virtual void MarkDocumentDirty() = 0;
+
   virtual void MarkElementDirty(const Node*) = 0;
 
   virtual void MarkAllImageAXObjectsDirty() = 0;

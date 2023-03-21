@@ -713,12 +713,10 @@ void Page::SettingsChanged(ChangeType change_type) {
       }
       break;
     case ChangeType::kAccessibilityState:
-      if (!MainFrame() || !MainFrame()->IsLocalFrame())
+      if (!MainFrame() || !MainFrame()->IsLocalFrame()) {
         break;
-      DeprecatedLocalMainFrame()
-          ->GetDocument()
-          ->AXObjectCacheOwner()
-          .ClearAXObjectCache();
+      }
+      DeprecatedLocalMainFrame()->GetDocument()->RefreshAccessibilityTree();
       break;
     case ChangeType::kViewportStyle: {
       auto* main_local_frame = DynamicTo<LocalFrame>(MainFrame());

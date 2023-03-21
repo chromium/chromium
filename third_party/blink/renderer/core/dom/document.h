@@ -756,7 +756,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // AXContexts are deleted, the AXObjectCache will be removed.
   AXObjectCache* ExistingAXObjectCache() const;
   Document& AXObjectCacheOwner() const;
-  void ClearAXObjectCache();
+  // If there is an accessibility tree, recompute it and re-serialize it all.
+  // This method is useful when something that potentially affects most of the
+  // page occurs, such as an inertness change or a fullscreen toggle.
+  void RefreshAccessibilityTree() const;
 
   // to get visually ordered hebrew and arabic pages right
   bool VisuallyOrdered() const { return visually_ordered_; }
@@ -1997,6 +2000,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void RemoveAXContext(AXContext*);
   // Called when the AXMode of an existing AXContext changes.
   void AXContextModeChanged();
+  void ClearAXObjectCache();
 
   bool IsDocumentFragment() const =
       delete;  // This will catch anyone doing an unnecessary check.
