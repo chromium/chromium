@@ -1,22 +1,18 @@
 This is a testharness.js-based test.
-Found 182 tests; 0 PASS, 182 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 142 tests; 0 PASS, 142 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL reduceMax float32 1D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMax float32 2D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMax float32 3D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMax float32 4D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMax float32 5D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMax float32 3D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceMax float32 3D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceMax float32 4D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceMax float32 4D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceMax float32 3D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMax float32 3D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMax float32 4D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMax float32 4D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMax float32 4D tensor options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMax float32 4D tensor options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
-FAIL reduceMax float32 4D tensor negative options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
-FAIL reduceMax float32 4D tensor negative options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMean float32 1D tensor all positive default options / sync builder[operationName] is not a function
 FAIL reduceMean float32 1D tensor all negative default options / sync builder[operationName] is not a function
 FAIL reduceMean float32 1D tensor all positive integers default options / sync builder[operationName] is not a function
@@ -26,51 +22,39 @@ FAIL reduceMean float32 3D tensor default options / sync builder[operationName] 
 FAIL reduceMean float32 4D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMean float32 5D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMean float32 3D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceMean float32 3D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceMean float32 4D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceMean float32 4D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceMean float32 3D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMean float32 3D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMean float32 4D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMean float32 4D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMean float32 4D tensor options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMean float32 4D tensor options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
-FAIL reduceMean float32 4D tensor negative options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
-FAIL reduceMean float32 4D tensor negative options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMin float32 1D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMin float32 2D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMin float32 3D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMin float32 4D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMin float32 5D tensor default options / sync builder[operationName] is not a function
 FAIL reduceMin float32 3D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceMin float32 3D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceMin float32 4D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceMin float32 4D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceMin float32 3D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMin float32 3D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMin float32 4D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMin float32 4D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMin float32 4D tensor options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceMin float32 4D tensor options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
-FAIL reduceMin float32 4D tensor negative options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
-FAIL reduceMin float32 4D tensor negative options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceProduct float32 1D tensor default options / sync builder[operationName] is not a function
 FAIL reduceProduct float32 2D tensor default options / sync builder[operationName] is not a function
 FAIL reduceProduct float32 3D tensor default options / sync builder[operationName] is not a function
 FAIL reduceProduct float32 4D tensor default options / sync builder[operationName] is not a function
 FAIL reduceProduct float32 5D tensor default options / sync builder[operationName] is not a function
 FAIL reduceProduct float32 3D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceProduct float32 3D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceProduct float32 4D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceProduct float32 4D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceProduct float32 3D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceProduct float32 3D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceProduct float32 4D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceProduct float32 4D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceProduct float32 4D tensor options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceProduct float32 4D tensor options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
-FAIL reduceProduct float32 4D tensor negative options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
-FAIL reduceProduct float32 4D tensor negative options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceSum float32 1D tensor all positive default options / sync builder[operationName] is not a function
 FAIL reduceSum float32 1D tensor all negative default options / sync builder[operationName] is not a function
 FAIL reduceSum float32 1D tensor all positive integers default options / sync builder[operationName] is not a function
@@ -80,34 +64,26 @@ FAIL reduceSum float32 3D tensor default options / sync builder[operationName] i
 FAIL reduceSum float32 4D tensor default options / sync builder[operationName] is not a function
 FAIL reduceSum float32 5D tensor default options / sync builder[operationName] is not a function
 FAIL reduceSum float32 3D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceSum float32 3D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceSum float32 4D tensor options.axes / sync builder[operationName] is not a function
-FAIL reduceSum float32 4D tensor negative options.axes / sync builder[operationName] is not a function
 FAIL reduceSum float32 3D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceSum float32 3D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceSum float32 4D tensor options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceSum float32 4D tensor options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceSum float32 4D tensor options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
 FAIL reduceSum float32 4D tensor options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
-FAIL reduceSum float32 4D tensor negative options.axes with options.keepDimensions=false / sync builder[operationName] is not a function
-FAIL reduceSum float32 4D tensor negative options.axes with options.keepDimensions=true / sync builder[operationName] is not a function
 FAIL reduceMax float32 1D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 3D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMax float32 3D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 4D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMax float32 4D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 3D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 3D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 4D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 4D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 4D tensor options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMax float32 4D tensor options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMax float32 4D tensor negative options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMax float32 4D tensor negative options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 1D tensor all positive default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 1D tensor all negative default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 1D tensor all positive integers default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
@@ -117,51 +93,39 @@ FAIL reduceMean float32 3D tensor default options / async promise_test: Unhandle
 FAIL reduceMean float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 3D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMean float32 3D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 4D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMean float32 4D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 3D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 3D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 4D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 4D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 4D tensor options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMean float32 4D tensor options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMean float32 4D tensor negative options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMean float32 4D tensor negative options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 1D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 3D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMin float32 3D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 4D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMin float32 4D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 3D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 3D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 4D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 4D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 4D tensor options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceMin float32 4D tensor options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMin float32 4D tensor negative options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceMin float32 4D tensor negative options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 1D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 3D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceProduct float32 3D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 4D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceProduct float32 4D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 3D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 3D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 4D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 4D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 4D tensor options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceProduct float32 4D tensor options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceProduct float32 4D tensor negative options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceProduct float32 4D tensor negative options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 1D tensor all positive default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 1D tensor all negative default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 1D tensor all positive integers default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
@@ -171,16 +135,12 @@ FAIL reduceSum float32 3D tensor default options / async promise_test: Unhandled
 FAIL reduceSum float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 3D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceSum float32 3D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 4D tensor options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceSum float32 4D tensor negative options.axes / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 3D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 3D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 4D tensor options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 4D tensor options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 4D tensor options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL reduceSum float32 4D tensor options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceSum float32 4D tensor negative options.axes with options.keepDimensions=false / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL reduceSum float32 4D tensor negative options.axes with options.keepDimensions=true / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 

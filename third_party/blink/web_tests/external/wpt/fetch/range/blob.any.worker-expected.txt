@@ -4,12 +4,13 @@ PASS A blob range request with no end.
 PASS A blob range request with no start.
 PASS A simple blob range request with whitespace.
 PASS Blob content with short content and a large range end
+PASS Blob range with whitespace before and after hyphen
+PASS Blob range with whitespace after hyphen
+FAIL Blob range with whitespace around equals sign assert_equals: HTTP status is 206 expected 206 but got 200
 PASS Blob range request with multiple range values
 PASS Blob range request with multiple range values and whitespace
 FAIL Blob range request with trailing comma assert_unreached: Should have rejected: undefined Reached unreachable code
 FAIL Blob range with no start or end assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range with invalid whitespace in range #1 assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL Blob range with invalid whitespace in range #2 assert_unreached: Should have rejected: undefined Reached unreachable code
 FAIL Blob range request with short range end assert_unreached: Should have rejected: undefined Reached unreachable code
 FAIL Blob range start should be an ASCII digit assert_unreached: Should have rejected: undefined Reached unreachable code
 FAIL Blob range should have a dash assert_unreached: Should have rejected: undefined Reached unreachable code

@@ -6,8 +6,6 @@ FAIL split float32 4D tensor number splits default options / async promise_test:
 FAIL split float32 5D tensor number splits default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL split float32 4D tensor array splits default options / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL split float32 4D tensor number splits options.axis / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL split float32 4D tensor number splits negative options.axis / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL split float32 5D tensor array splits options.axis / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL split float32 5D tensor array splits negative options.axis / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 

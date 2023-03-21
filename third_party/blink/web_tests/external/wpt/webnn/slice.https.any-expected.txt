@@ -12,7 +12,5 @@ FAIL slice float32 1D tensor options.axes=[0] / async promise_test: Unhandled re
 FAIL slice float32 2D tensor positive options.axes=[1] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL slice float32 3D tensor positive options.axes=[1, 2] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL slice float32 4D tensor positive options.axes=[0, 2, 3] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 3D tensor negative options.axes=[-2, -1] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL slice float32 4D tensor negative options.axes=[-4, -2, -1] / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 

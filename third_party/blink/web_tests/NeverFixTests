@@ -937,10 +937,6 @@ external/wpt/css/css-backgrounds/first-letter-space-not-selected.html [ Skip ]
 external/wpt/css/css-color/t32-opacity-offscreen-multiple-boxes-1-c.xht [ Skip ]
 external/wpt/css/css-color/t32-opacity-offscreen-multiple-boxes-2-c.xht [ Skip ]
 
-# https://github.com/web-platform-tests/wpt/issues/8547
-external/wpt/css/mediaqueries/device-aspect-ratio-001.html [ Skip ]
-external/wpt/css/mediaqueries/device-aspect-ratio-005.html [ Skip ]
-
 # image() (https://drafts.csswg.org/css-images-4/#image-notation) isn't supported
 crbug.com/254753 external/wpt/css/css-images/css-image-fallbacks-and-annotations.html [ Skip ]
 crbug.com/254753 external/wpt/css/css-images/css-image-fallbacks-and-annotations002.html [ Skip ]

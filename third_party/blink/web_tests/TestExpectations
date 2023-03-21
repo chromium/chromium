@@ -2908,6 +2908,12 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-counter-styles/hebrew/counter-hebrew-nested.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-counter-styles/japanese-formal/counter-japanese-formal.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-counter-styles/japanese-informal/counter-japanese-informal.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-counter-styles/korean-hanja-informal/counter-korean-hanja-informal.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-counter-styles/simp-chinese-informal/counter-simp-chinese-informal.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-counter-styles/trad-chinese-informal/counter-trad-chinese-informal.html [ Failure ]
 crbug.com/626703 external/wpt/svg/struct/reftests/use-inheritance-nth-child-of.svg [ Failure ]
 crbug.com/626703 external/wpt/svg/struct/reftests/use-inheritance-nth-last-child-of.svg [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/forms/range-input-appearance-native-vertical-rtl.optional.html [ Failure ]
@@ -6646,7 +6652,7 @@ crbug.com/822696 virtual/webrtc-legacy-stats-trial-disabled/http/tests/inspector
 crbug.com/webrtc/14889 external/wpt/webrtc/simulcast/vp9.https.html [ Skip Timeout ]
 # Temporarily disabled to unblock WebRTC roll that unflags standard behavior.
 # TODO(https://crbug.com/webrtc/14884): When the roll is in, expect to always pass.
-crbug.com/webrtc/14884 external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Skip Pass Timeout ]
+crbug.com/webrtc/14884 external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Pass Skip Timeout ]
 # This test enables opting in to VP9 simulcast and thus passes (unlike the non-virtual test).
 # TODO(https://crbug.com/webrtc/14884): When the roll is in, delete this virtual suite.
 crbug.com/webrtc/14884 virtual/webrtc-vp9-simulcast/external/wpt/webrtc/simulcast/vp9-scalability-mode.https.html [ Pass ]
