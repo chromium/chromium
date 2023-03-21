@@ -37,17 +37,19 @@ CacheStorageContextImpl::CacheStorageContextImpl(
 CacheStorageContextImpl::~CacheStorageContextImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  cache_manager_->DeleteStorageKeyData(
-      storage_keys_to_purge_on_shutdown_,
-      storage::mojom::CacheStorageOwner::kCacheAPI,
+  if (!storage_keys_to_purge_on_shutdown_.empty()) {
+    cache_manager_->DeleteStorageKeyData(
+        storage_keys_to_purge_on_shutdown_,
+        storage::mojom::CacheStorageOwner::kCacheAPI,
 
-      // Retain a reference to the manager until the deletion is
-      // complete, since it internally uses weak pointers for
-      // the various stages of deletion and nothing else will
-      // keep it alive during shutdown.
-      base::BindOnce([](scoped_refptr<CacheStorageManager> cache_manager,
-                        blink::mojom::QuotaStatusCode) {},
-                     cache_manager_));
+        // Retain a reference to the manager until the deletion is
+        // complete, since it internally uses weak pointers for
+        // the various stages of deletion and nothing else will
+        // keep it alive during shutdown.
+        base::BindOnce([](scoped_refptr<CacheStorageManager> cache_manager,
+                          blink::mojom::QuotaStatusCode) {},
+                       cache_manager_));
+  }
 }
 
 // static

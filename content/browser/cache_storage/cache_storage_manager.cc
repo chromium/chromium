@@ -907,6 +907,13 @@ void CacheStorageManager::DeleteStorageKeyData(
     storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (storage_keys.empty()) {
+    scheduler_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  blink::mojom::QuotaStatusCode::kOk));
+    return;
+  }
+
   if (IsMemoryBacked()) {
     std::vector<
         std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>

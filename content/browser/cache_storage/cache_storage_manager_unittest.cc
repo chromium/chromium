@@ -2835,6 +2835,16 @@ TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
   EXPECT_EQ(206, callback_cache_handle_response_->status_code);
 }
 
+TEST_P(CacheStorageManagerTestP, DeleteStorageKeyDataEmptyList) {
+  std::set<blink::StorageKey> empty_list;
+  for (const storage::mojom::CacheStorageOwner owner :
+       {storage::mojom::CacheStorageOwner::kCacheAPI,
+        storage::mojom::CacheStorageOwner::kBackgroundFetch}) {
+    EXPECT_EQ(DeleteStorageKeyData(empty_list, owner),
+              blink::mojom::QuotaStatusCode::kOk);
+  }
+}
+
 TEST_P(CacheStorageManagerTestP, BatchDeleteStorageKeyData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
