@@ -61,6 +61,42 @@ const base::FilePath::CharType kForceEnableEffectsPath[] =
 const base::FilePath::CharType kForceDisableEffectsPath[] =
     "/run/camera/force_disable_effects";
 
+void CreateEnableDisableFile(const std::string& enable_path,
+                             const std::string& disable_path,
+                             bool should_enable,
+                             bool should_remove_both) {
+  base::FilePath enable_file_path(enable_path);
+  base::FilePath disable_file_path(disable_path);
+
+  // Removing enable file if the target is to disable or remove both.
+  if ((!should_enable || should_remove_both) &&
+      !base::DeleteFile(enable_file_path)) {
+    LOG(WARNING) << "CameraHalDispatcherImpl Error: can't  delete "
+                 << enable_file_path;
+  }
+
+  // Removing disable file if the target is to enable or remove both.
+  if ((should_enable || should_remove_both) &&
+      !base::DeleteFile(disable_file_path)) {
+    LOG(WARNING) << "CameraHalDispatcherImpl Error: can't delete "
+                 << disable_file_path;
+  }
+
+  if (should_remove_both) {
+    return;
+  }
+
+  const base::FilePath& new_file =
+      should_enable ? enable_file_path : disable_file_path;
+
+  // Adding enable/disable file if it does not exist yet.
+  if (!base::PathExists(new_file)) {
+    base::File file(new_file,
+                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    file.Close();
+  }
+}
+
 std::string GenerateRandomToken() {
   char random_bytes[16];
   base::RandBytes(random_bytes, 16);
@@ -190,78 +226,35 @@ bool CameraHalDispatcherImpl::Start(
     return false;
   }
 
-  {
-    base::FilePath enable_file_path(kForceEnableAePath);
-    base::FilePath disable_file_path(kForceDisableAePath);
-    if (!base::DeleteFile(enable_file_path)) {
-      LOG(WARNING) << "Could not delete " << kForceEnableAePath;
-    }
-    if (!base::DeleteFile(disable_file_path)) {
-      LOG(WARNING) << "Could not delete " << kForceDisableAePath;
-    }
-    const base::CommandLine* command_line =
-        base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(media::switches::kForceControlFaceAe)) {
-      if (command_line->GetSwitchValueASCII(
-              media::switches::kForceControlFaceAe) == "enable") {
-        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                              base::File::FLAG_WRITE);
-        file.Close();
-      } else {
-        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                               base::File::FLAG_WRITE);
-        file.Close();
-      }
-    }
-  }
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
 
-  {
-    base::FilePath enable_file_path(kForceEnableAutoFramingPath);
-    base::FilePath disable_file_path(kForceDisableAutoFramingPath);
-    if (!base::DeleteFile(enable_file_path)) {
-      LOG(WARNING) << "Could not delete " << kForceEnableAutoFramingPath;
-    }
-    if (!base::DeleteFile(disable_file_path)) {
-      LOG(WARNING) << "Could not delete " << kForceDisableAutoFramingPath;
-    }
-    const base::CommandLine* command_line =
-        base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(media::switches::kAutoFramingOverride)) {
-      std::string value =
-          command_line->GetSwitchValueASCII(switches::kAutoFramingOverride);
-      if (value == switches::kAutoFramingForceEnabled) {
-        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                              base::File::FLAG_WRITE);
-        file.Close();
-      } else if (value == switches::kAutoFramingForceDisabled) {
-        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
-                                               base::File::FLAG_WRITE);
-        file.Close();
-      }
-    }
-  }
+  CreateEnableDisableFile(
+      kForceEnableAePath, kForceDisableAePath,
+      /*should_enable=*/
+      command_line->GetSwitchValueASCII(media::switches::kForceControlFaceAe) ==
+          "enable",
+      /*should_remove_both=*/
+      !command_line->HasSwitch(media::switches::kForceControlFaceAe));
 
-  {
-    base::FilePath enable_file_path(kForceEnableEffectsPath);
-    base::FilePath disable_file_path(kForceDisableEffectsPath);
-    if (!base::DeleteFile(enable_file_path)) {
-      LOG(WARNING) << "Could not delete " << kForceEnableEffectsPath;
-    }
-    if (!base::DeleteFile(disable_file_path)) {
-      LOG(WARNING) << "Could not delete " << kForceDisableEffectsPath;
-    }
-    base::File file(ash::features::IsVideoConferenceEnabled()
-                        ? enable_file_path
-                        : disable_file_path,
-                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    file.Close();
-  }
+  CreateEnableDisableFile(
+      kForceEnableAutoFramingPath, kForceDisableAutoFramingPath,
+      /*should_enable=*/
+      command_line->GetSwitchValueASCII(switches::kAutoFramingOverride) ==
+          switches::kAutoFramingForceEnabled,
+      /*should_remove_both=*/
+      !command_line->HasSwitch(media::switches::kAutoFramingOverride));
+
+  CreateEnableDisableFile(
+      kForceEnableEffectsPath, kForceDisableEffectsPath,
+      /*should_enable=*/ash::features::IsVideoConferenceEnabled(),
+      /*should_remove_both=*/false);
 
   jda_factory_ = std::move(jda_factory);
   jea_factory_ = std::move(jea_factory);
   base::WaitableEvent started;
-  // It's important we generate tokens before creating the socket, because once
-  // it is available, everyone connecting to socket would start fetching
+  // It's important we generate tokens before creating the socket, because
+  // once it is available, everyone connecting to socket would start fetching
   // tokens.
   if (!token_manager_.GenerateServerToken()) {
     LOG(ERROR) << "Failed to generate authentication token for server";
@@ -1011,6 +1004,8 @@ void CameraHalDispatcherImpl::GetAutoFramingSupportedOnProxyThread(
 void CameraHalDispatcherImpl::SetCameraEffects(
     cros::mojom::EffectsConfigPtr config) {
   if (!proxy_thread_.IsRunning()) {
+    LOG(ERROR) << "CameraHalDispatcherImpl Error: calling SetCameraEffects "
+                  "without proxy_thread_ running.";
     // The camera hal dispatcher is not running, ignore the request.
     // Notify with nullopt as the proxy thread is not running and camera effects
     // cannot be set in this case.
@@ -1044,7 +1039,9 @@ void CameraHalDispatcherImpl::SetCameraEffectsOnProxyThread(
     // server becomes ready.
     initial_effects_ = std::move(config);
 
-    LOG(ERROR) << "Cannot change camera effects, no camera server registered.";
+    LOG(ERROR)
+        << "CameraHalDispatcherImpl Error: calling "
+           "SetCameraEffectsOnProxyThread without camera server registered.";
     // Notify with nullopt as no camera server has been registered and camera
     // effects cannot be set in this case.
     camera_effect_observers_->Notify(
@@ -1070,6 +1067,10 @@ void CameraHalDispatcherImpl::OnSetCameraEffectsCompleteOnProxyThread(
   }
   // New config is not applied if set effects failed.
   else {
+    LOG(ERROR) << "CameraHalDispatcherImpl Error: SetCameraEffectsComplete "
+                  "returns with error code "
+               << static_cast<int>(result);
+
     // If setting from register and failed, the new effects should be the
     // default effects.
     if (is_from_register) {
