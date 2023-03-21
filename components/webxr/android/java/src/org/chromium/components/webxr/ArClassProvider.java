@@ -14,10 +14,6 @@ import androidx.annotation.Nullable;
  * corresponding /stubs/ version of this class.
  */
 /*package*/ class ArClassProvider {
-    /*package*/ static @Nullable ArDelegate getArDelegate() {
-        return new ArDelegateImpl();
-    }
-
     /*package*/ static @Nullable XrImmersiveOverlay.Delegate getOverlayDelegate(
             @NonNull ArCompositorDelegate compositorDelegate, boolean useOverlay,
             boolean canRenderDomContent) {

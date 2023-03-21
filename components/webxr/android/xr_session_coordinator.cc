@@ -61,7 +61,7 @@ void XrSessionCoordinator::RequestArSession(
   surface_touch_callback_ = std::move(touch_callback);
   surface_destroyed_callback_ = std::move(destroyed_callback);
 
-  Java_XrSessionCoordinator_startSession(
+  Java_XrSessionCoordinator_startArSession(
       env, j_xr_session_coordinator_,
       compositor_delegate_provider.GetJavaObject(),
       webxr::GetJavaWebContents(render_process_id, render_frame_id),

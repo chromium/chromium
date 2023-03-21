@@ -4,13 +4,9 @@
 
 package org.chromium.components.webxr;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.chromium.components.webxr.XrSessionCoordinator.SessionType;
 
 /**
  * This class provides methods to interact with and query the state of any Xr
@@ -24,49 +20,27 @@ public class XrDelegateImpl implements XrDelegate {
     private static final String TAG = "XrDelegateImpl";
     private static final boolean DEBUG_LOGS = false;
 
-    @IntDef({SessionType.NONE, SessionType.AR, SessionType.VR})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SessionType {
-        int NONE = 0;
-        int AR = 1;
-        int VR = 2;
-    }
-
-    // The ArDelegate is either included in the build or not, so it's okay to
-    // cache an instance of it.
-    private ArDelegate mArDelegate;
-
-    private @XrDelegateImpl.SessionType int mActiveSession = XrDelegateImpl.SessionType.NONE;
+    private @SessionType int mActiveSession = SessionType.NONE;
 
     private ObservableSupplierImpl<Boolean> mHasActiveSessionSupplier =
             new ObservableSupplierImpl<>();
 
     public XrDelegateImpl() {
-        mArDelegate = ArClassProvider.getArDelegate();
-        if (mArDelegate != null) {
-            mArDelegate.getHasActiveArSessionSupplier().addObserver(this::setHasActiveArSession);
-        }
+        XrSessionCoordinator.getActiveSessionTypeSupplier().addObserver(this::setActiveSessionType);
     }
 
-    private void setHasActiveArSession(Boolean hasSession) {
-        if (hasSession) {
-            assert (mActiveSession == XrDelegateImpl.SessionType.NONE);
-            mActiveSession = XrDelegateImpl.SessionType.AR;
-            mHasActiveSessionSupplier.set(true);
-        } else if (mActiveSession == XrDelegateImpl.SessionType.AR) {
-            mActiveSession = XrDelegateImpl.SessionType.NONE;
-            mHasActiveSessionSupplier.set(false);
+    private void setActiveSessionType(@SessionType int sessionType) {
+        boolean hasActiveSession = (mActiveSession != SessionType.NONE);
+        boolean nowHasActiveSession = (sessionType != SessionType.NONE);
+        mActiveSession = sessionType;
+        if (hasActiveSession != nowHasActiveSession) {
+            mHasActiveSessionSupplier.set(nowHasActiveSession);
         }
     }
 
     @Override
     public boolean onBackPressed() {
-        if (mActiveSession == XrDelegateImpl.SessionType.AR) {
-            // If we have an active AR session we must have an ArDelegate.
-            return mArDelegate.onBackPressed();
-        }
-
-        return false;
+        return XrSessionCoordinator.onBackPressed();
     }
 
     @Override
@@ -81,6 +55,6 @@ public class XrDelegateImpl implements XrDelegate {
 
     @Override
     public boolean hasActiveArSession() {
-        return mActiveSession == XrDelegateImpl.SessionType.AR;
+        return mActiveSession == SessionType.AR;
     }
 }
