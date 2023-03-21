@@ -2022,6 +2022,14 @@
       base_feature: "none",
     },
     {
+      // A feature to load <input type=image> images even if there is no layout object.
+      // This aligns with <img> behavior, but for safety can be disabled with this
+      // flag.
+      name: "LoadInputImageWithoutObject",
+      status: "stable",
+      base_feature: "LoadInputImageWithoutObject",
+    },
+    {
       name: "LongAnimationFrameTiming",
       status: "experimental"
     },

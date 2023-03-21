@@ -130,8 +130,10 @@ void ImageInputType::AltAttributeChanged() {
 }
 
 void ImageInputType::SrcAttributeChanged() {
-  if (!GetElement().GetLayoutObject())
+  if (!GetElement().GetLayoutObject() &&
+      !RuntimeEnabledFeatures::LoadInputImageWithoutObjectEnabled()) {
     return;
+  }
   GetElement().EnsureImageLoader().UpdateFromElement(
       ImageLoader::kUpdateIgnorePreviousError);
 }
