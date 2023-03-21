@@ -158,8 +158,7 @@ using signin_metrics::PromoAction;
   ChromeBrowserState* browserState = browser->GetBrowserState();
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  if (!IsConsistencyNewAccountInterfaceEnabled() &&
-      !accountManagerService->HasIdentities()) {
+  if (!accountManagerService->HasIdentities()) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS);
     return nil;

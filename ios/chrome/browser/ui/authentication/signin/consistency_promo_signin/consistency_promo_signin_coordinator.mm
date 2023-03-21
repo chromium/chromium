@@ -188,54 +188,16 @@
 // finished.
 - (void)
     addAccountCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                          completionInfo:(SigninCompletionInfo*)completionInfo
-                             startSignin:(BOOL)startSignin {
+                          completionInfo:(SigninCompletionInfo*)completionInfo {
+  if (signinResult == SigninCoordinatorResultSuccess) {
+    DCHECK(completionInfo);
+    [self.consistencyPromoSigninMediator
+        systemIdentityAdded:completionInfo.identity];
+  }
   RecordConsistencyPromoUserAction(
       signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED);
   [self.addAccountCoordinator stop];
   self.addAccountCoordinator = nil;
-
-  if (signinResult != SigninCoordinatorResultSuccess) {
-    return;
-  }
-  DCHECK(completionInfo);
-  [self.consistencyPromoSigninMediator
-      systemIdentityAdded:completionInfo.identity];
-
-  if (!startSignin) {
-    return;
-  }
-  AuthenticationFlow* authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:completionInfo.identity
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
-                         presentingViewController:self.navigationController];
-  authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-  [self.consistencyPromoSigninMediator
-      signinWithAuthenticationFlow:authenticationFlow];
-}
-
-// Opens an AddAccountSigninCoordinator to add an account to the device. If
-// startSignin == YES, the added account will be used to sign in to Chrome
-// directly after the AddAccountSigninCoordinator finishes.
-- (void)openAddAccountCoordinatorWithStartSignin:(BOOL)startSignin {
-  RecordConsistencyPromoUserAction(
-      signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED);
-  DCHECK(!self.addAccountCoordinator);
-  self.addAccountCoordinator = [SigninCoordinator
-      addAccountCoordinatorWithBaseViewController:self.navigationController
-                                          browser:self.browser
-                                      accessPoint:self.accessPoint];
-  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
-  self.addAccountCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf addAccountCompletionWithSigninResult:signinResult
-                                        completionInfo:signinCompletionInfo
-                                           startSignin:startSignin];
-      };
-  [self.addAccountCoordinator start];
 }
 
 // Stops all the coordinators and mediator, and run the completion callback.
@@ -280,7 +242,21 @@
 
 - (void)consistencyAccountChooserCoordinatorOpenAddAccount:
     (ConsistencyAccountChooserCoordinator*)coordinator {
-  [self openAddAccountCoordinatorWithStartSignin:NO];
+  RecordConsistencyPromoUserAction(
+      signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED);
+  DCHECK(!self.addAccountCoordinator);
+  self.addAccountCoordinator = [SigninCoordinator
+      addAccountCoordinatorWithBaseViewController:self.navigationController
+                                          browser:self.browser
+                                      accessPoint:self.accessPoint];
+  __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
+  self.addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        SigninCompletionInfo* signinCompletionInfo) {
+        [weakSelf addAccountCompletionWithSigninResult:signinResult
+                                        completionInfo:signinCompletionInfo];
+      };
+  [self.addAccountCoordinator start];
 }
 
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
@@ -342,11 +318,6 @@
       self.browser->GetCommandDispatcher(), BrowsingDataCommands);
   [self.consistencyPromoSigninMediator
       signinWithAuthenticationFlow:authenticationFlow];
-}
-
-- (void)consistencyDefaultAccountCoordinatorOpenAddAccount:
-    (ConsistencyDefaultAccountCoordinator*)coordinator {
-  [self openAddAccountCoordinatorWithStartSignin:YES];
 }
 
 #pragma mark - ConsistencyLayoutDelegate

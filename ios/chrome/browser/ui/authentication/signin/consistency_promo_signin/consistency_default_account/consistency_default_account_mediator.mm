@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/system_identity.h"
@@ -58,9 +57,7 @@
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
-  if (!IsConsistencyNewAccountInterfaceEnabled()) {
-    DCHECK(identity);
-  }
+  DCHECK(identity);
   if ([_selectedIdentity isEqual:identity]) {
     return;
   }
@@ -70,8 +67,7 @@
 
 #pragma mark - Private
 
-// Updates the default identity, or hide the default identity if there isn't
-// one present on the device.
+// Updates the default identity.
 - (void)selectSelectedIdentity {
   if (!self.accountManagerService) {
     return;
@@ -79,35 +75,23 @@
 
   id<SystemIdentity> identity =
       self.accountManagerService->GetDefaultIdentity();
-
-  if (!IsConsistencyNewAccountInterfaceEnabled() && !identity) {
+  if (!identity) {
     [self.delegate consistencyDefaultAccountMediatorNoIdentities:self];
     return;
   }
 
-  // Here, default identity may be nil.
   self.selectedIdentity = identity;
 }
 
-// Updates the view controller using the default identity, or hide the default
-// identity button if no identity is present on device.
+// Updates the view controller using the default identity.
 - (void)updateSelectedIdentityUI {
-  if (!IsConsistencyNewAccountInterfaceEnabled()) {
-    DCHECK(self.selectedIdentity);
-  }
-
-  if (!self.selectedIdentity) {
-    [self.consumer hideDefaultAccount];
-    return;
-  }
-
   id<SystemIdentity> selectedIdentity = self.selectedIdentity;
+  [self.consumer updateWithFullName:selectedIdentity.userFullName
+                          givenName:selectedIdentity.userGivenName
+                              email:selectedIdentity.userEmail];
   UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
       selectedIdentity, IdentityAvatarSize::TableViewIcon);
-  [self.consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
-                                      givenName:selectedIdentity.userGivenName
-                                          email:selectedIdentity.userEmail
-                                         avatar:avatar];
+  [self.consumer updateUserAvatar:avatar];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver

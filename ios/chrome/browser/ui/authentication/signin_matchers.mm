@@ -38,9 +38,9 @@ id<GREYMatcher> WebSigninSkipButtonMatcher() {
       grey_sufficientlyVisible(), nil);
 }
 
-id<GREYMatcher> WebSigninPrimaryButtonMatcher() {
+id<GREYMatcher> WebSigninContinueButtonMatcher() {
   return grey_allOf(
-      grey_accessibilityID(kWebSigninPrimaryButtonAccessibilityIdentifier),
+      grey_accessibilityID(kWebSigninContinueAsButtonAccessibilityIdentifier),
       grey_sufficientlyVisible(), nil);
 }
 
