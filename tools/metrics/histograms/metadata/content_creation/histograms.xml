@@ -53,14 +53,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.NoteShared" enum="BooleanShared"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>Records whether the created note was shared or not.</summary>
 </histogram>
 
 <histogram name="NoteCreation.NumberOfTemplateChanges"
-    units="Number of changes" expires_after="2023-04-23">
+    units="Number of changes" expires_after="2023-06-25">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NoteCreation.ShareDestination" enum="NoteShareDestination"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -116,21 +116,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NoteCreation.TemplateFetchSuccess" enum="BooleanSuccess"
-    expires_after="2023-04-23">
-  <obsolete>
-    Removed 2023-03
-  </obsolete>
-  <owner>graysonlafleur@google.com</owner>
-  <owner>chrome-creation@google.com</owner>
-  <summary>
-    Records whether the Webnote Stylize template data was successfully fetched
-    from gStatic.
-  </summary>
-</histogram>
-
 <histogram name="NoteCreation.TimeTo{action}" units="ms"
-    expires_after="2023-04-23">
+    expires_after="2023-06-25">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
