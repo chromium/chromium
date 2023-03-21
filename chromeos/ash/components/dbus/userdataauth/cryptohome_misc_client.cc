@@ -114,13 +114,6 @@ class CryptohomeMiscClientImpl : public CryptohomeMiscClient {
                     std::move(callback));
   }
 
-  void CheckHealth(const ::user_data_auth::CheckHealthRequest& request,
-                   CheckHealthCallback callback) override {
-    CallProtoMethod(::user_data_auth::kCheckHealth,
-                    ::user_data_auth::kCryptohomeMiscInterface, request,
-                    std::move(callback));
-  }
-
   absl::optional<::user_data_auth::GetSanitizedUsernameReply>
   BlockingGetSanitizedUsername(
       const ::user_data_auth::GetSanitizedUsernameRequest& request) override {

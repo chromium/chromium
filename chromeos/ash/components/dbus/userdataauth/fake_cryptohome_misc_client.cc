@@ -77,20 +77,6 @@ void FakeCryptohomeMiscClient::GetRsuDeviceId(
   reply.set_rsu_device_id(rsu_device_id_);
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
-void FakeCryptohomeMiscClient::CheckHealth(
-    const ::user_data_auth::CheckHealthRequest& request,
-    CheckHealthCallback callback) {
-  absl::optional<::user_data_auth::CheckHealthReply> reply;
-  if (cryptohome_error_ ==
-      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
-    reply = ::user_data_auth::CheckHealthReply();
-    reply->set_requires_powerwash(requires_powerwash_);
-  }
-  // Note: In case cryptohome_error_ is set to anything else, we'll return as if
-  // the dbus call failed.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), reply));
-}
 
 absl::optional<::user_data_auth::GetSanitizedUsernameReply>
 FakeCryptohomeMiscClient::BlockingGetSanitizedUsername(

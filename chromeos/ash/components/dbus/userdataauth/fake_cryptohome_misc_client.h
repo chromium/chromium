@@ -41,8 +41,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeCryptohomeMiscClient
       LockToSingleUserMountUntilRebootCallback callback) override;
   void GetRsuDeviceId(const ::user_data_auth::GetRsuDeviceIdRequest& request,
                       GetRsuDeviceIdCallback callback) override;
-  void CheckHealth(const ::user_data_auth::CheckHealthRequest& request,
-                   CheckHealthCallback callback) override;
 
   absl::optional<::user_data_auth::GetSanitizedUsernameReply>
   BlockingGetSanitizedUsername(

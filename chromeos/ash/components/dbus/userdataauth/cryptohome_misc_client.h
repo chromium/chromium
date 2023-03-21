@@ -85,10 +85,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) CryptohomeMiscClient {
       const ::user_data_auth::GetRsuDeviceIdRequest& request,
       GetRsuDeviceIdCallback callback) = 0;
 
-  // Returns the "health" state of the system. i.e. If powerwash is needed.
-  virtual void CheckHealth(const ::user_data_auth::CheckHealthRequest& request,
-                           CheckHealthCallback callback) = 0;
-
   // Blocking version of GetSanitizedUsername().
   virtual absl::optional<::user_data_auth::GetSanitizedUsernameReply>
   BlockingGetSanitizedUsername(

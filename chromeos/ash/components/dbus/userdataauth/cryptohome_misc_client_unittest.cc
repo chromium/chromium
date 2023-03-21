@@ -142,7 +142,6 @@ class CryptohomeMiscClientTest : public testing::Test {
   ::user_data_auth::LockToSingleUserMountUntilRebootReply
       expected_lock_to_single_user_mount_until_reboot_reply_;
   ::user_data_auth::GetRsuDeviceIdReply expected_get_rsu_device_id_reply_;
-  ::user_data_auth::CheckHealthReply expected_check_health_reply_;
 
   // The expected replies to the respective blocking D-Bus calls.
   ::user_data_auth::GetSanitizedUsernameReply
@@ -179,8 +178,6 @@ class CryptohomeMiscClientTest : public testing::Test {
           expected_lock_to_single_user_mount_until_reboot_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kGetRsuDeviceId) {
       writer.AppendProtoAsArrayOfBytes(expected_get_rsu_device_id_reply_);
-    } else if (method_call->GetMember() == ::user_data_auth::kCheckHealth) {
-      writer.AppendProtoAsArrayOfBytes(expected_check_health_reply_);
     } else {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
@@ -293,18 +290,6 @@ TEST_F(CryptohomeMiscClientTest, GetRsuDeviceId) {
   ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(), expected_get_rsu_device_id_reply_));
-}
-
-TEST_F(CryptohomeMiscClientTest, CheckHealth) {
-  expected_check_health_reply_.set_requires_powerwash(true);
-  absl::optional<::user_data_auth::CheckHealthReply> result_reply;
-
-  client_->CheckHealth(::user_data_auth::CheckHealthRequest(),
-                       CreateCopyCallback(&result_reply));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(
-      ProtobufEquals(result_reply.value(), expected_check_health_reply_));
 }
 
 TEST_F(CryptohomeMiscClientTest, BlockingGetSanitizedUsername) {

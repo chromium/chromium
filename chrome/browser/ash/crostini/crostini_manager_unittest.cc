@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -53,7 +52,6 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
@@ -226,9 +224,6 @@ class CrostiniManagerTest : public testing::Test {
         ->WaylandServer()
         ->OverrideServerForTesting(vm_tools::launch::TERMINA, nullptr, {});
 
-    ash::CryptohomeMiscClient::InitializeFake();
-    ash::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
-    policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
 
@@ -241,7 +236,6 @@ class CrostiniManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    ash::CryptohomeMiscClient::Shutdown();
     g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     scoped_user_manager_.reset();
     crostini_manager_->Shutdown();
@@ -354,78 +348,6 @@ TEST_F(CrostiniManagerTest, StartTerminaVmDiskPathError) {
 
   EXPECT_FALSE(success_future.Get());
   EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
-}
-
-TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
-  const base::FilePath& disk_path = base::FilePath("unused");
-
-  // Login unaffiliated user.
-  const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), "0987654321"));
-  fake_user_manager()->AddUserWithAffiliation(account_id, false);
-  fake_user_manager()->LoginUser(account_id);
-
-  // Set DeviceRebootOnUserSignout to always.
-  ash::ScopedCrosSettingsTestHelper settings_helper{
-      /* create_settings_service=*/false};
-  settings_helper.ReplaceDeviceSettingsProviderWithStub();
-  settings_helper.SetInteger(
-      ash::kDeviceRebootOnUserSignout,
-      enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
-
-  // Set cryptohome requiring powerwash.
-  ash::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(true);
-  policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
-
-  NotificationDisplayServiceTester notification_service(profile());
-  TestFuture<bool> success_future;
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
-                                     success_future.GetCallback());
-
-  EXPECT_FALSE(success_future.Get());
-  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
-
-  auto notification = notification_service.GetNotification(
-      "crostini_powerwash_request_instead_of_run");
-  EXPECT_NE(absl::nullopt, notification);
-}
-
-TEST_F(CrostiniManagerTest,
-       StartTerminaVmPowerwashRequestErrorDueToCryptohomeError) {
-  const base::FilePath& disk_path = base::FilePath("unused");
-
-  // Login unaffiliated user.
-  const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      profile()->GetProfileUserName(), "0987654321"));
-  fake_user_manager()->AddUserWithAffiliation(account_id, false);
-  fake_user_manager()->LoginUser(account_id);
-
-  // Set DeviceRebootOnUserSignout to always.
-  ash::ScopedCrosSettingsTestHelper settings_helper{
-      /* create_settings_service=*/false};
-  settings_helper.ReplaceDeviceSettingsProviderWithStub();
-  settings_helper.SetInteger(
-      ash::kDeviceRebootOnUserSignout,
-      enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
-
-  // Reset cryptohome state to undefined and make cryptohome unavailable.
-  policy::PowerwashRequirementsChecker::ResetForTesting();
-  ash::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
-  policy::PowerwashRequirementsChecker::Initialize();
-  ash::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
-
-  NotificationDisplayServiceTester notification_service(profile());
-
-  TestFuture<bool> success_future;
-  crostini_manager()->StartTerminaVm(kVmName, disk_path, {}, 0,
-                                     success_future.GetCallback());
-
-  EXPECT_FALSE(success_future.Get());
-  EXPECT_EQ(fake_concierge_client_->start_vm_call_count(), 0);
-
-  auto notification = notification_service.GetNotification(
-      "crostini_powerwash_request_cryptohome_error");
-  EXPECT_NE(absl::nullopt, notification);
 }
 
 TEST_F(CrostiniManagerTest, StartTerminaVmMountError) {
