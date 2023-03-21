@@ -166,6 +166,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   int EndOffset() { return controller_->EndOffset(); }
 
+  bool HasSelection() { return controller_->model_.has_selection(); }
+
   bool DisplayNodeIdsContains(ui::AXNodeID ax_node_id) {
     return base::Contains(controller_->model_.display_node_ids(), ax_node_id);
   }
@@ -1037,6 +1039,19 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
                                 focus_node_id, focus_offset))
       .Times(1);
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_ClickDoesNotUpdateSelection) {
+  ui::AXNodeID anchor_node_id = 2;
+  int anchor_offset = 15;
+  ui::AXNodeID focus_node_id = 2;
+  int focus_offset = 15;
+  EXPECT_CALL(page_handler_,
+              OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
+                                focus_node_id, focus_offset))
+      .Times(0);
+  OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
   page_handler_.FlushForTesting();
 }
 
@@ -1122,4 +1137,20 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IgnoredNode) {
   EXPECT_EQ(3, EndNodeId());
   EXPECT_EQ(0, StartOffset());
   EXPECT_EQ(5, EndOffset());  // The length of the word 'Hello'.
+}
+
+TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.tree_data.sel_anchor_object_id = 2;
+  update.tree_data.sel_focus_object_id = 2;
+  update.tree_data.sel_anchor_offset = 3;
+  update.tree_data.sel_focus_offset = 3;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(ui::kInvalidAXNodeID, StartNodeId());
+  EXPECT_EQ(ui::kInvalidAXNodeID, EndNodeId());
+  EXPECT_EQ(-1, StartOffset());
+  EXPECT_EQ(-1, EndOffset());
+  EXPECT_EQ(false, HasSelection());
 }

@@ -437,7 +437,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
       !model_.ContainsTree(tree_id) || tree_id == ui::AXTreeIDUnknown()) {
     return;
   }
-  model_.ResetSelection();
   if (!model_.content_node_ids().empty()) {
     // If there are content_node_ids, this means the AXTree was successfully
     // distilled. Post-process in preparation to display the distilled content.
@@ -791,6 +790,11 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // TODO(crbug.com/1266555): Consider how to show this in a more user-friendly
   // way.
   if (model_.distillation_in_progress()) {
+    return;
+  }
+
+  // Ignore the selection if it's collapsed, which is created by a simple click.
+  if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
     return;
   }
 

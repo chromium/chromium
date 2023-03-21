@@ -83,7 +83,6 @@ class ReadAnythingAppModel {
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
   void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
 
-  void ResetSelection();
   void InsertDisplayNode(ui::AXNodeID node);
   void Reset(const std::vector<ui::AXNodeID>& content_node_ids);
 
