@@ -363,11 +363,9 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       ...this.keyboard.settings,
       modifierRemappings: this.getUpdatedRemappings(),
     };
-    if (this.inputDeviceSettingsProvider instanceof
-        FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.setKeyboardSettings(
-          this.keyboard.id, this.keyboard.settings);
-    }
+
+    this.inputDeviceSettingsProvider.setKeyboardSettings(
+        this.keyboard.id, this.keyboard.settings);
   }
 
   /**
