@@ -50309,6 +50309,26 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
              result code."/>
 </enum>
 
+<enum name="HotspotDisableReason">
+  <int value="0"
+      label="kAutoDisabled: Hotspot disabled due to fixed time of no
+             connected device."/>
+  <int value="1"
+      label="kInternalError: Hotspot disabled due to internal error."/>
+  <int value="2"
+      label="kUserInitiated: Hotspot disabled due to user initiated
+             operation."/>
+  <int value="3" label="kWifiEnabled: Hotspot disabled due to WiFi enabled."/>
+  <int value="4"
+      label="kProhibitedByPolicy: Hotspot disabled due to policy restriction."/>
+  <int value="5"
+      label="kUpstreamNetworkNotAvailable: Hotspot disabled due to no
+             available upstream network."/>
+  <int value="6" label="kSuspended: Hotspot disabled due to device suspend."/>
+  <int value="7"
+      label="kRestart: Hotspot disabled due to hotspot restart process."/>
+</enum>
+
 <enum name="HotspotSetConfigResult">
   <int value="0" label="kSuccess: The operation completes successfully."/>
   <int value="1"

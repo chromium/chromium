@@ -330,4 +330,33 @@ TEST_F(HotspotMetricsHelperTest, HotspotEnabledUpstreamStatusHistogram) {
       /*expected_count=*/1);
 }
 
+TEST_F(HotspotMetricsHelperTest, HotspotDisableReasonHistogram) {
+  PrepareEnableHotspotForTesting();
+  hotspot_controller_->EnableHotspot(base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  SetHotspotStateInShill(shill::kTetheringStateActive);
+  hotspot_controller_->DisableHotspot(
+      base::DoNothing(), hotspot_config::mojom::DisableReason::kUserInitiated);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotDisableReasonHistogram,
+      HotspotMetricsHelper::HotspotMetricsDisableReason::kUserInitiated, 1);
+
+  SetHotspotStateInShill(shill::kTetheringStateIdle);
+  // Verifies that the disabel reason is logged if hotspot is torn down by
+  // internal error.
+  base::Value::Dict status_dict;
+  status_dict.Set(shill::kTetheringStatusStateProperty,
+                  shill::kTetheringStateIdle);
+  status_dict.Set(shill::kTetheringStatusIdleReasonProperty,
+                  shill::kTetheringIdleReasonError);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      HotspotMetricsHelper::kHotspotDisableReasonHistogram,
+      HotspotMetricsHelper::HotspotMetricsDisableReason::kInternalError, 1);
+}
+
 }  // namespace ash

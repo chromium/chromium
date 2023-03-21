@@ -74,6 +74,10 @@ const char HotspotMetricsHelper::kHotspotUpstreamStatusWhenEnabled[] =
     "Network.Ash.Hotspot.Upstream.Cellular.Enabled.UpstreamStatus";
 
 // static
+const char HotspotMetricsHelper::kHotspotDisableReasonHistogram[] =
+    "Network.Ash.Hotspot.Upstream.Cellular.Disabled.Reason";
+
+// static
 void HotspotMetricsHelper::RecordSetTetheringEnabledResult(
     bool enabled,
     hotspot_config::mojom::HotspotControlResult result) {
@@ -107,6 +111,7 @@ void HotspotMetricsHelper::RecordEnableHotspotLatency(
   base::UmaHistogramMediumTimes(kHotspotEnableLatency, latency);
 }
 
+// static
 HotspotMetricsHelper::HotspotMetricsSetEnabledResult
 HotspotMetricsHelper::GetSetEnabledMetricsResult(
     const hotspot_config::mojom::HotspotControlResult& result) {
@@ -140,6 +145,7 @@ HotspotMetricsHelper::GetSetEnabledMetricsResult(
   }
 }
 
+// static
 HotspotMetricsHelper::HotspotMetricsCheckReadinessResult
 HotspotMetricsHelper::GetCheckReadinessMetricsResult(
     const HotspotCapabilitiesProvider::CheckTetheringReadinessResult& result) {
@@ -160,6 +166,7 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
   }
 }
 
+// static
 HotspotMetricsHelper::HotspotMetricsSetConfigResult
 HotspotMetricsHelper::GetSetConfigMetricsResult(
     const hotspot_config::mojom::SetHotspotConfigResult& result) {
@@ -172,6 +179,32 @@ HotspotMetricsHelper::GetSetConfigMetricsResult(
       return HotspotMetricsSetConfigResult::kFailedNotLogin;
     case SetHotspotConfigResult::kFailedInvalidConfiguration:
       return HotspotMetricsSetConfigResult::kFailedInvalidConfiguration;
+  }
+}
+
+// static
+HotspotMetricsHelper::HotspotMetricsDisableReason
+HotspotMetricsHelper::GetMetricsDisableReason(
+    const hotspot_config::mojom::DisableReason& reason) {
+  using hotspot_config::mojom::DisableReason;
+
+  switch (reason) {
+    case DisableReason::kAutoDisabled:
+      return HotspotMetricsDisableReason::kAutoDisabled;
+    case DisableReason::kInternalError:
+      return HotspotMetricsDisableReason::kInternalError;
+    case DisableReason::kUserInitiated:
+      return HotspotMetricsDisableReason::kUserInitiated;
+    case DisableReason::kWifiEnabled:
+      return HotspotMetricsDisableReason::kWifiEnabled;
+    case DisableReason::kProhibitedByPolicy:
+      return HotspotMetricsDisableReason::kProhibitedByPolicy;
+    case DisableReason::kUpstreamNetworkNotAvailable:
+      return HotspotMetricsDisableReason::kUpstreamNetworkNotAvailable;
+    case DisableReason::kSuspended:
+      return HotspotMetricsDisableReason::kSuspended;
+    case DisableReason::kRestart:
+      return HotspotMetricsDisableReason::kRestart;
   }
 }
 
@@ -339,6 +372,12 @@ void HotspotMetricsHelper::LogUpstreamStatus() {
       HotspotMetricsUpstreamStatus::kWifiWithCellularConnected);
 }
 
+void HotspotMetricsHelper::LogDisableReason(
+    const hotspot_config::mojom::DisableReason& reason) {
+  base::UmaHistogramEnumeration(kHotspotDisableReasonHistogram,
+                                GetMetricsDisableReason(reason));
+}
+
 void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
   is_hotspot_active_ = true;
   LogUpstreamStatus();
@@ -352,6 +391,7 @@ void HotspotMetricsHelper::OnHotspotTurnedOn(bool wifi_turned_off) {
 void HotspotMetricsHelper::OnHotspotTurnedOff(
     hotspot_config::mojom::DisableReason reason) {
   is_hotspot_active_ = false;
+  LogDisableReason(reason);
   LogUsageDuration();
   LogMaxClientCount();
   max_client_count_ = 0;
