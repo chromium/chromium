@@ -27,11 +27,13 @@ android_library("javatests") {
     "//chrome/android:chrome_java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
