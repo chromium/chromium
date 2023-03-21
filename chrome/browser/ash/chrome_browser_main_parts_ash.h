@@ -24,10 +24,6 @@ class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
 
 namespace arc {
-namespace data_snapshotd {
-class ArcDataSnapshotdManager;
-}  // namespace data_snapshotd
-
 class ArcServiceLauncher;
 }  // namespace arc
 
@@ -282,9 +278,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<GnubbyNotification> gnubby_notification_;
   std::unique_ptr<system::BreakpadConsentWatcher> breakpad_consent_watcher_;
-
-  std::unique_ptr<arc::data_snapshotd::ArcDataSnapshotdManager>
-      arc_data_snapshotd_manager_;
 
   std::unique_ptr<platform_keys::KeyPermissionsManager>
       system_token_key_permissions_manager_;

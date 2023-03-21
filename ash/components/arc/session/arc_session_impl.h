@@ -212,15 +212,6 @@ class ArcSessionImpl : public ArcSession,
   // Called when arcbridge socket is created.
   void OnSocketCreated(base::ScopedFD fd);
 
-  // Loads ARC data/ snapshot if necessary.
-  // |callback| is called once the load process is finished.
-  void StartLoadingDataSnapshot(base::OnceClosure callback);
-
-  // Called when ARC data/ snapshot step is done: either snapshot is loaded or
-  // skipped.
-  // |socket_fd| should be a socket to be passed to OnUpgraded.
-  void OnDataSnapshotLoaded(base::ScopedFD scoped_fd);
-
   // D-Bus callback for UpgradeArcContainer(). |socket_fd| should be a socket
   // which should be accept(2)ed to connect ArcBridgeService Mojo channel.
   void OnUpgraded(base::ScopedFD socket_fd, bool result);

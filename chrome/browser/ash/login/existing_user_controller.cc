@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -276,26 +275,6 @@ absl::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
   // policy, otherwise ask the user.
   return profile_has_policy ? EncryptionMigrationMode::START_MIGRATION
                             : EncryptionMigrationMode::ASK_USER;
-}
-
-// Returns account ID of a public session account if it is unique, otherwise
-// returns invalid account ID.
-AccountId GetArcDataSnapshotAutoLoginAccountId(
-    const std::vector<policy::DeviceLocalAccount>& device_local_accounts) {
-  AccountId auto_login_account_id = EmptyAccountId();
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
-           device_local_accounts.begin();
-       it != device_local_accounts.end(); ++it) {
-    if (it->type == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION) {
-      // Do not perform ARC data snapshot auto-login if more than one public
-      // session account is configured.
-      if (auto_login_account_id.is_valid())
-        return EmptyAccountId();
-      auto_login_account_id = AccountId::FromUserEmail(it->user_id);
-      VLOG(2) << "PublicSession autologin found: " << it->user_id;
-    }
-  }
-  return auto_login_account_id;
 }
 
 // Returns account ID if a corresponding to `auto_login_account_id` device local
@@ -1344,18 +1323,8 @@ void ExistingUserController::ConfigureAutoLogin() {
       policy::GetDeviceLocalAccounts(cros_settings_);
   const bool show_update_required_screen = IsUpdateRequiredDeadlineReached();
 
-  auto* data_snapshotd_manager =
-      arc::data_snapshotd::ArcDataSnapshotdManager::Get();
-  bool is_arc_data_snapshot_autologin =
-      (data_snapshotd_manager &&
-       data_snapshotd_manager->IsAutoLoginConfigured());
-  if (is_arc_data_snapshot_autologin) {
-    public_session_auto_login_account_id_ =
-        GetArcDataSnapshotAutoLoginAccountId(device_local_accounts);
-  } else {
-    public_session_auto_login_account_id_ = GetPublicSessionAutoLoginAccountId(
-        device_local_accounts, auto_login_account_id);
-  }
+  public_session_auto_login_account_id_ = GetPublicSessionAutoLoginAccountId(
+      device_local_accounts, auto_login_account_id);
 
   const user_manager::User* public_session_user =
       user_manager::UserManager::Get()->FindUser(
@@ -1366,8 +1335,7 @@ void ExistingUserController::ConfigureAutoLogin() {
     public_session_auto_login_account_id_ = EmptyAccountId();
   }
 
-  if (is_arc_data_snapshot_autologin ||
-      !cros_settings_->GetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
+  if (!cros_settings_->GetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
                                   &auto_login_delay_)) {
     auto_login_delay_ = 0;
   }
@@ -1450,20 +1418,6 @@ void ExistingUserController::StartAutoLoginTimer() {
 
   if (auto_login_timer_ && auto_login_timer_->IsRunning()) {
     StopAutoLoginTimer();
-  }
-
-  // Block auto-login flow until ArcDataSnapshotdManager is ready to enter an
-  // auto-login session.
-  // ArcDataSnapshotdManager stores a reset auto-login callback to fire it once
-  // it is ready.
-  auto* data_snapshotd_manager =
-      arc::data_snapshotd::ArcDataSnapshotdManager::Get();
-  if (data_snapshotd_manager && !data_snapshotd_manager->IsAutoLoginAllowed() &&
-      data_snapshotd_manager->IsAutoLoginConfigured()) {
-    data_snapshotd_manager->set_reset_autologin_callback(
-        base::BindOnce(&ExistingUserController::StartAutoLoginTimer,
-                       weak_factory_.GetWeakPtr()));
-    return;
   }
 
   // Start the auto-login timer.

@@ -9,7 +9,6 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -317,27 +316,6 @@ base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
   return filtered_policies;
 }
 
-void DisableRequiredAppsIfDataSnapshotUpdateInProgress(
-    base::Value::Dict& filtered_policies) {
-  if (arc::data_snapshotd::ArcDataSnapshotdManager::Get() &&
-      arc::data_snapshotd::ArcDataSnapshotdManager::Get()
-          ->IsSnapshotInProgress()) {
-    base::Value::List* applications_value =
-        filtered_policies.FindList(policy_util::kArcPolicyKeyApplications);
-    if (applications_value) {
-      for (base::Value& entry : *applications_value) {
-        auto* installType = entry.FindStringKey("installType");
-        if (installType &&
-            (*installType == "REQUIRED" || *installType == "FORCE_INSTALLED")) {
-          entry.SetBoolKey("disabled", true);
-        }
-      }
-    }
-    // Always reset android_id if ARC data snapshot update is in progress.
-    filtered_policies.Set(ArcPolicyBridge::kResetAndroidIdEnabled, true);
-  }
-}
-
 void MapChromeToArcPolicies(base::Value::Dict& filtered_policies,
                             const Profile* profile,
                             const policy::PolicyMap& policy_map) {
@@ -374,8 +352,6 @@ void OverrideArcPolicies(base::Value::Dict& filtered_policies,
                          const std::string& guid,
                          bool is_affiliated,
                          const Profile* profile) {
-  DisableRequiredAppsIfDataSnapshotUpdateInProgress(filtered_policies);
-
   MapChromeToArcPolicies(filtered_policies, profile, policy_map);
 
   // If kForceDevToolsAvailable is set, then force debugging features to be

@@ -119,17 +119,4 @@ void FakeUpstartClient::StopWilcoDtcService(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeUpstartClient::StartArcDataSnapshotd(
-    const std::vector<std::string>& upstart_env,
-    chromeos::VoidDBusMethodCallback callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
-void FakeUpstartClient::StopArcDataSnapshotd(
-    chromeos::VoidDBusMethodCallback callback) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), true));
-}
-
 }  // namespace ash

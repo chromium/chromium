@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -167,21 +166,6 @@ base::FilePath GetKerberosCredentialsCachePath() {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_HOME, &path));
   return path.Append("kerberos").Append("krb5cc");
-}
-
-void EnableArcForProfile(Profile* profile) {
-  arc::SetArcAvailableCommandLineForTesting(
-      base::CommandLine::ForCurrentProcess());
-  arc::ResetArcAllowedCheckForTesting(profile);
-  arc::SetArcPlayStoreEnabledForProfile(profile, true);
-
-  ArcAppListPrefsFactory::GetInstance()->RecreateServiceInstanceForTesting(
-      profile);
-  arc::ArcSessionManager::Get()->SetProfile(profile);
-}
-
-arc::data_snapshotd::ArcDataSnapshotdManager* arc_data_snapshotd_manager() {
-  return arc::data_snapshotd::ArcDataSnapshotdManager::Get();
 }
 
 class UserProfileLoadedObserver
@@ -411,12 +395,6 @@ class ExistingUserControllerPublicSessionTest
 
   void SetUpOnMainThread() override {
     ExistingUserControllerTest::SetUpOnMainThread();
-
-    // By default ArcDataSnapshotdManager does not influence an auto login
-    // flow.
-    EXPECT_TRUE(arc_data_snapshotd_manager());
-    EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
-    EXPECT_FALSE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
 
     // Wait for the public session user to be created.
     if (!user_manager::UserManager::Get()->IsKnownUser(
@@ -778,54 +756,6 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   FireAutoLogin();
 }
 
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
-                       ArcDataSnapshotdAutoLogin) {
-  arc_data_snapshotd_manager()->set_state_for_testing(
-      arc::data_snapshotd::ArcDataSnapshotdManager::State::kBlockedUi);
-  EXPECT_FALSE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
-  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
-
-  ConfigureAutoLogin();
-
-  // Do not start an auto-login public account session when in blocked UI mode.
-  EXPECT_TRUE(auto_login_account_id().is_valid());
-  EXPECT_EQ(public_session_account_id_, auto_login_account_id());
-  EXPECT_EQ(0, auto_login_delay());
-  EXPECT_FALSE(auto_login_timer());
-  auto& reset_autologin_callback =
-      arc_data_snapshotd_manager()->get_reset_autologin_callback_for_testing();
-  EXPECT_FALSE(reset_autologin_callback.is_null());
-
-  // Allow to launch public account session (MGS).
-  arc_data_snapshotd_manager()->set_state_for_testing(
-      arc::data_snapshotd::ArcDataSnapshotdManager::State::kMgsToLaunch);
-  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
-  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
-
-  // Set up mocks to check login success.
-  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                           public_session_account_id_);
-  user_context.SetUserIDHash(user_context.GetAccountId().GetUserEmail());
-  ExpectSuccessfulLogin(user_context);
-
-  std::move(reset_autologin_callback).Run();
-
-  // Start auto-login and wait for login tasks to complete.
-  content::RunAllPendingInMessageLoop();
-
-  // Setup profile before changing the state.
-  EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
-  EnableArcForProfile(ProfileManager::GetActiveUserProfile());
-
-  arc_data_snapshotd_manager()->OnSnapshotSessionStarted();
-
-  EXPECT_TRUE(auto_login_account_id().is_valid());
-  EXPECT_EQ(0, auto_login_delay());
-  EXPECT_TRUE(auto_login_timer());
-  EXPECT_EQ(arc::data_snapshotd::ArcDataSnapshotdManager::State::kMgsLaunched,
-            arc_data_snapshotd_manager()->state());
-}
-
 class ExistingUserControllerSecondPublicSessionTest
     : public ExistingUserControllerPublicSessionTest {
  public:
@@ -858,23 +788,6 @@ class ExistingUserControllerSecondPublicSessionTest
         kPublicSessionSecondUserEmail, device_local_account_policy.GetBlob());
   }
 };
-// Test that if two public session accounts are configured for the device, auto
-// login is not happening.
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerSecondPublicSessionTest,
-                       ArcDataSnapshotdTwoAccounts) {
-  // Allow to launch public account session (MGS).
-  arc_data_snapshotd_manager()->set_state_for_testing(
-      arc::data_snapshotd::ArcDataSnapshotdManager::State::kMgsToLaunch);
-  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginAllowed());
-  EXPECT_TRUE(arc_data_snapshotd_manager()->IsAutoLoginConfigured());
-
-  ConfigureAutoLogin();
-
-  // Do not configure auto login if more than one public session is configured.
-  EXPECT_FALSE(auto_login_account_id().is_valid());
-  EXPECT_EQ(0, auto_login_delay());
-  EXPECT_FALSE(auto_login_timer());
-}
 
 class ExistingUserControllerActiveDirectoryTest
     : public ExistingUserControllerTest {

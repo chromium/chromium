@@ -118,15 +118,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
   virtual void StopWilcoDtcService(
       chromeos::VoidDBusMethodCallback callback) = 0;
 
-  // Starts arc-data-snapshotd daemon.
-  virtual void StartArcDataSnapshotd(
-      const std::vector<std::string>& upstart_env,
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  // Stops arc-data-snapshotd daemon.
-  virtual void StopArcDataSnapshotd(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
  protected:
   // Initialize() should be used instead.
   UpstartClient();

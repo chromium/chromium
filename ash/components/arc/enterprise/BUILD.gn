@@ -11,17 +11,6 @@ static_library("enterprise") {
     "arc_apps_tracker.h",
     "arc_data_remove_requested_pref_handler.cc",
     "arc_data_remove_requested_pref_handler.h",
-    "arc_data_snapshotd_bridge.cc",
-    "arc_data_snapshotd_bridge.h",
-    "arc_data_snapshotd_manager.cc",
-    "arc_data_snapshotd_manager.h",
-    "arc_snapshot_reboot_notification.h",
-    "snapshot_hours_policy_service.cc",
-    "snapshot_hours_policy_service.h",
-    "snapshot_reboot_controller.cc",
-    "snapshot_reboot_controller.h",
-    "snapshot_session_controller.cc",
-    "snapshot_session_controller.h",
   ]
 
   deps = [

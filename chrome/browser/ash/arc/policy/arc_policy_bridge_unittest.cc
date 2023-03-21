@@ -10,7 +10,6 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -27,7 +26,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
-#include "chrome/browser/ash/arc/enterprise/arc_data_snapshotd_delegate.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
@@ -779,63 +777,6 @@ TEST_F(ArcPolicyBridgeTest, ManualChildUserPoliciesSet) {
       base::StrCat({"{\"apkCacheEnabled\":true,\"guid\":\"", instance_guid(),
                     "\",", kMountPhysicalMediaDisabledPolicySetting, ",",
                     kSupervisedUserPlayStoreModePolicySetting, "}"}));
-}
-
-// Test that required and force-installed apps get disabled during ARC data
-// snapshot update.
-TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
-  constexpr char kDisabledApplicationsPolicyFormat[] =
-      "\"applications\":["
-      "{"
-      "\"disabled\":%s,"
-      "\"installType\":\"REQUIRED\","
-      "\"packageName\":\"com.android.vending\""
-      "},"
-      "{"
-      "\"disabled\":%s,"
-      "\"installType\":\"FORCE_INSTALLED\","
-      "\"packageName\":\"com.force.installed\""
-      "},"
-      "{"
-      "\"disabled\":%s,"
-      "\"installType\":\"OPTIONAL\","
-      "\"packageName\":\"com.optional\""
-      "}],"
-      "\"defaultPermissionPolicy\":\"GRANT\"";
-
-  constexpr char kFalse[] = "false";
-  constexpr char kTrue[] = "true";
-
-  auto upstart_client = std::make_unique<ash::FakeUpstartClient>();
-  arc::prefs::RegisterLocalStatePrefs(
-      profile()->GetTestingPrefService()->registry());
-
-  auto manager = std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>(
-      profile()->GetTestingPrefService(),
-      std::make_unique<arc::data_snapshotd::ArcDataSnapshotdDelegate>(),
-      base::DoNothing());
-  EXPECT_TRUE(arc::data_snapshotd::ArcDataSnapshotdManager::Get());
-  manager->set_state_for_testing(
-      arc::data_snapshotd::ArcDataSnapshotdManager::State::kMgsLaunched);
-  EXPECT_TRUE(manager->IsSnapshotInProgress());
-  policy_map().Set(policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
-                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                   base::Value(base::StrCat(
-                       {"{",
-                        base::StringPrintf(kDisabledApplicationsPolicyFormat,
-                                           kFalse, kFalse, kFalse),
-                        "}"})),
-                   nullptr);
-  GetPoliciesAndVerifyResult(
-      base::StrCat({"{\"apkCacheEnabled\":true,",
-                    base::StringPrintf(kDisabledApplicationsPolicyFormat, kTrue,
-                                       kTrue, kFalse),
-                    ",\"guid\":\"", instance_guid(), "\",",
-                    kMountPhysicalMediaDisabledPolicySetting, ",",
-                    "\"resetAndroidIdEnabled\":true}"}));
-
-  manager.reset();
-  upstart_client.reset();
 }
 
 TEST_P(ArcPolicyBridgeAffiliatedTest, ApkCacheEnabledTest) {

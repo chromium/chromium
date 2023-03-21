@@ -825,7 +825,6 @@ CrosDisksClient* CrosDisksClient::Get() {
 
 // static
 void CrosDisksClient::Initialize(dbus::Bus* bus) {
-  // See ArcDataSnapshotdManager for code that sets this flag.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kCrosDisksFake)) {
     InitializeFake();

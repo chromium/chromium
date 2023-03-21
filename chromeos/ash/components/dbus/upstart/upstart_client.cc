@@ -33,10 +33,6 @@ constexpr char kMediaAnalyticsJob[] = "rtanalytics";
 // using underscore as the escape character, followed by the character code in
 // hex.
 constexpr char kWilcoDtcDispatcherJob[] = "wilco_5fdtc_5fdispatcher";
-// "arc_2ddata_2dsnapshotd" below refers to the "arc-data-snapshotd" upstart
-// job. Upstart escapes characters that aren't valid in D-Bus object paths using
-// underscore as the escape character, followed by the character code in hex.
-constexpr char kArcDataSnapshotdJob[] = "arc_2ddata_2dsnapshotd";
 
 UpstartClient* g_instance = nullptr;
 
@@ -125,17 +121,6 @@ class UpstartClientImpl : public UpstartClient {
 
   void StopWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override {
     StopJob(kWilcoDtcDispatcherJob, {}, std::move(callback));
-  }
-
-  void StartArcDataSnapshotd(
-      const std::vector<std::string>& upstart_env,
-      chromeos::VoidDBusMethodCallback callback) override {
-    StartJob(kArcDataSnapshotdJob, upstart_env, std::move(callback));
-  }
-
-  void StopArcDataSnapshotd(
-      chromeos::VoidDBusMethodCallback callback) override {
-    StopJob(kArcDataSnapshotdJob, {}, std::move(callback));
   }
 
  private:

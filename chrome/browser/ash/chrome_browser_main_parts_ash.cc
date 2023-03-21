@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
@@ -52,7 +51,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/arc/enterprise/arc_data_snapshotd_delegate.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/audio/audio_survey_handler.h"
 #include "chrome/browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl.h"
@@ -862,11 +860,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     g_browser_process->metrics_service()->InitPerUserMetrics();
   }
 
-  arc_data_snapshotd_manager_ =
-      std::make_unique<arc::data_snapshotd::ArcDataSnapshotdManager>(
-          g_browser_process->local_state(),
-          std::make_unique<arc::data_snapshotd::ArcDataSnapshotdDelegate>(),
-          base::BindOnce(chrome::AttemptUserExit));
   if (base::FeatureList::IsEnabled(::features::kWilcoDtc))
     wilco_dtc_supportd_manager_ = std::make_unique<WilcoDtcSupportdManager>();
 
@@ -1440,8 +1433,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // This must be shut down before |arc_service_launcher_|.
   if (pre_profile_init_called_)
     NoteTakingHelper::Shutdown();
-
-  arc_data_snapshotd_manager_.reset();
 
   arc_service_launcher_->Shutdown();
 

@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_appfuse_provider_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_camera_client.h"
-#include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_keymint_client.h"
 #include "chromeos/ash/components/dbus/arc/arc_midis_client.h"
@@ -140,7 +139,6 @@ void InitializeDBus() {
   InitializeDBusClient<AnomalyDetectorClient>(bus);
   InitializeDBusClient<ArcAppfuseProviderClient>(bus);
   InitializeDBusClient<ArcCameraClient>(bus);
-  InitializeDBusClient<ArcDataSnapshotdClient>(bus);
   InitializeDBusClient<ArcKeymasterClient>(bus);
   InitializeDBusClient<ArcKeyMintClient>(bus);
   InitializeDBusClient<ArcMidisClient>(bus);
@@ -341,7 +339,6 @@ void ShutdownDBus() {
   ArcMidisClient::Shutdown();
   ArcKeyMintClient::Shutdown();
   ArcKeymasterClient::Shutdown();
-  ArcDataSnapshotdClient::Shutdown();
   ArcCameraClient::Shutdown();
   ArcAppfuseProviderClient::Shutdown();
   AnomalyDetectorClient::Shutdown();
