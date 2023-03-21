@@ -29,6 +29,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -1980,6 +1981,29 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   std::string pattern_;
   WaiterHelper waiter_helper_;
   std::vector<Message> messages_;
+};
+
+// A helper class to get DevTools inspector log messages (e.g. network errors).
+class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
+ public:
+  explicit DevToolsInspectorLogWatcher(WebContents* web_contents);
+  ~DevToolsInspectorLogWatcher() override;
+
+  void FlushAndStopWatching();
+  std::string last_message() { return last_message_; }
+  GURL last_url() { return last_url_; }
+
+  // DevToolsAgentHostClient:
+  void DispatchProtocolMessage(DevToolsAgentHost* host,
+                               base::span<const uint8_t> message) override;
+  void AgentHostClosed(DevToolsAgentHost* host) override;
+
+ private:
+  scoped_refptr<DevToolsAgentHost> host_;
+  base::RunLoop run_loop_enable_log_;
+  base::RunLoop run_loop_disable_log_;
+  std::string last_message_;
+  GURL last_url_;
 };
 
 // Static methods that simulates Mojo methods as if they were called by a

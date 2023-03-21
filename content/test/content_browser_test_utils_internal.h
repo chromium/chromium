@@ -21,7 +21,6 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/navigation_type.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -439,27 +438,6 @@ class BeforeUnloadBlockingDelegate : public JavaScriptDialogManager,
   DialogClosedCallback callback_;
 
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-};
-
-// A helper class to get DevTools inspector log messages (e.g. network errors).
-class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
- public:
-  explicit DevToolsInspectorLogWatcher(WebContents* web_contents);
-  ~DevToolsInspectorLogWatcher() override;
-
-  void FlushAndStopWatching();
-  std::string last_message() { return last_message_; }
-
-  // DevToolsAgentHostClient:
-  void DispatchProtocolMessage(DevToolsAgentHost* host,
-                               base::span<const uint8_t> message) override;
-  void AgentHostClosed(DevToolsAgentHost* host) override;
-
- private:
-  scoped_refptr<DevToolsAgentHost> host_;
-  base::RunLoop run_loop_enable_log_;
-  base::RunLoop run_loop_disable_log_;
-  std::string last_message_;
 };
 
 // Captures various properties of the NavigationHandle on DidFinishNavigation.
