@@ -1746,7 +1746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameSinkVideoCapturer.I420.CaptureDuration" units="ms"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>bialpio@chromium.org</owner>
   <owner>media-capture-dev@chromium.org</owner>
   <summary>
@@ -1760,7 +1760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameSinkVideoCapturer.I420.CaptureSucceeded"
-    enum="BooleanSuccess" expires_after="2023-07-15">
+    enum="BooleanSuccess" expires_after="2023-09-17">
   <owner>bialpio@chromium.org</owner>
   <owner>media-capture-dev@chromium.org</owner>
   <summary>
@@ -1772,7 +1772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameSinkVideoCapturer.I420.TotalDuration" units="ms"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>bialpio@chromium.org</owner>
   <owner>media-capture-dev@chromium.org</owner>
   <summary>

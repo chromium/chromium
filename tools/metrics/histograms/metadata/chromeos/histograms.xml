@@ -1669,7 +1669,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.LanguagePacks.GetPackState.FeatureId"
-    enum="LanguagePackFeatureIds" expires_after="2023-07-16">
+    enum="LanguagePackFeatureIds" expires_after="2023-09-17">
   <owner>claudiomagni@chromium.org</owner>
   <owner>mlcui@google.com</owner>
   <owner>dvallet@chromium.org</owner>
