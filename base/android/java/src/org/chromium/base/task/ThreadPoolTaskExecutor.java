@@ -10,8 +10,15 @@ package org.chromium.base.task;
  * task posting instead of sharding based on {@link TaskTraits}.
  */
 class ThreadPoolTaskExecutor implements TaskExecutor {
-    private final TaskRunner mTraitsToRunnerMap[] = new TaskRunner[TaskTraits.THREAD_POOL_TRAITS_END
-            - TaskTraits.THREAD_POOL_TRAITS_START + 1];
+    private static final int TRAITS_COUNT =
+            TaskTraits.THREAD_POOL_TRAITS_END - TaskTraits.THREAD_POOL_TRAITS_START + 1;
+    private final TaskRunner mTraitsToRunnerMap[] = new TaskRunner[TRAITS_COUNT];
+
+    public ThreadPoolTaskExecutor() {
+        for (int i = 0; i < TRAITS_COUNT; i++) {
+            mTraitsToRunnerMap[i] = createTaskRunner(TaskTraits.THREAD_POOL_TRAITS_START + i);
+        }
+    }
 
     @Override
     public TaskRunner createTaskRunner(@TaskTraits int taskTraits) {
@@ -35,16 +42,9 @@ class ThreadPoolTaskExecutor implements TaskExecutor {
     }
 
     @Override
-    public synchronized void postDelayedTask(
-            @TaskTraits int taskTraits, Runnable task, long delay) {
-        // Caching TaskRunners only for common TaskTraits.
+    public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
         int index = taskTraits - TaskTraits.THREAD_POOL_TRAITS_START;
-        TaskRunner runner = mTraitsToRunnerMap[index];
-        if (runner == null) {
-            runner = createTaskRunner(taskTraits);
-            mTraitsToRunnerMap[index] = runner;
-        }
-        runner.postDelayedTask(task, delay);
+        mTraitsToRunnerMap[index].postDelayedTask(task, delay);
     }
 
     @Override
