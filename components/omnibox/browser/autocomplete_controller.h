@@ -363,12 +363,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   void OnUrlScoringModelDoneForAllMatches(
       const std::vector<AutocompleteMatch>& matches);
 
-  // When ML Relevance Scoring is enabled, this asynchronously runs the ML
-  // scoring model for all `matches_` in `results_`.  It registers the
-  // `OnUrlScoringModelOutput()` callback which runs every time the model
-  // finishes scoring each match, and `OnUrlScoringModelDoneForAllMatches()`
-  // which only runs once when the scoring is complete for ALL matches.
-  void RunUrlScoringModel();
+  // If ML Relevance Scoring is enabled, runs the model for all the supported
+  // `matches_` in `results_` and returns true. `OnUrlScoringModelOutput()`
+  // callback is expected to be called for every match and
+  // `OnUrlScoringModelDoneForAllMatches()` callback is expected to be called
+  // once the scoring is done for ALL matches, whether successfully or not.
+  bool MaybeRunUrlScoringModel();
 
   base::ObserverList<Observer> observers_;
 

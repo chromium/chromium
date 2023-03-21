@@ -41,12 +41,14 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
         const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&)>
         scoring_callback) {
   if (!UrlScoringModelAvailable()) {
+    std::move(scoring_callback).Run(absl::nullopt);
     return;
   }
 
   absl::optional<std::vector<float>> input_signals =
       url_scoring_model_handler_->GetModelInput(scoring_signals);
   if (!input_signals) {
+    std::move(scoring_callback).Run(absl::nullopt);
     return;
   }
 

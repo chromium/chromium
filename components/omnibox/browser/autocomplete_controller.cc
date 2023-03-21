@@ -475,8 +475,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   expire_timer_.Stop();
   stop_timer_.Stop();
 
-  // Start the new query. Starter Pack engines in keyword mode only run a subset
-  // of the providers, so call `ShouldRunProvider()` to determine which.
+  // Start the new query.
   in_start_ = true;
   // Use `start_time` rather than `metrics.start_time_` for
   // 'Omnibox.QueryTime2.*'. They differ by 3 μs, which though too small to be
@@ -492,6 +491,8 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   relevances.pop_back();
 
   for (const auto& provider : providers_) {
+    // Starter Pack engines in keyword mode only run a subset of the providers,
+    // so call `ShouldRunProvider()` to determine which ones should run.
     if (!ShouldRunProvider(provider.get())) {
       continue;
     }
@@ -672,8 +673,7 @@ void AutocompleteController::OnProviderUpdate(
     return;
 
   CheckIfDone();
-  // Multiple providers may provide synchronous results, so we only update the
-  // results if we're not in Start().
+
   if (updated_matches || done_)
     UpdateResult(false, false);
 }
@@ -961,33 +961,39 @@ void AutocompleteController::UpdateResult(
   // `result_` is updated in each UpdateResult() call.
   UpdateScoringSignals();
 
-  // Sort the matches and trim to a small number of "best" matches.
   // Conditionally preserve the default match.
   const AutocompleteMatch* preserve_default_match = nullptr;
   if (last_default_match && ShouldPreserveDefault(in_start_, input_))
     preserve_default_match = &last_default_match.value();
 
-  static bool single_sort_and_cull_pass =
-      base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
-  // If not all providers are done, merge the old and new matches before
-  // sorting. Otherwise, do a final pass at sorting, skipping the second call to
-  // `SortAndCull()` below.  The async ml scoring is only run on the final pass
-  // after all providers are done.
-  if (!single_sort_and_cull_pass || done_) {
-    RunUrlScoringModel();
-    result_.SortAndCull(input_, template_url_service_, preserve_default_match);
-  }
-
   if (!done_) {
-    // This conditional needs to match the conditional in Start that invokes
-    // StartExpireTimer.
+    // Conditionally skip the first call to `SortAndCull()` before the old and
+    // new matches are merged.
+    static bool single_sort_and_cull_pass =
+        base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
+    if (!single_sort_and_cull_pass) {
+      result_.SortAndCull(input_, template_url_service_,
+                          preserve_default_match);
+    }
+    // If not all providers are done, merge the old and new matches before
+    // sorting.
     result_.TransferOldMatches(input_, &old_matches_to_reuse);
     static bool preserve_default_after_transfer =
         OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultAfterTransfer
             .Get();
+    // Sort the matches and trim them to a small number of "best" matches.
     result_.SortAndCull(
         input_, template_url_service_,
         preserve_default_after_transfer ? preserve_default_match : nullptr);
+  } else {
+    // The async ml scoring is only run once all the providers are done.
+    if (MaybeRunUrlScoringModel()) {
+      // TODO(crbug.com/1405555): Do the rest once all matches are scored in
+      // `OnUrlScoringModelDoneForAllMatches()`.
+      return;
+    }
+    // Sort the matches and trim them to a small number of "best" matches.
+    result_.SortAndCull(input_, template_url_service_, preserve_default_match);
   }
 
 #if DCHECK_IS_ON()
@@ -1476,17 +1482,16 @@ void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
   result_.matches_ = matches;
 }
 
-void AutocompleteController::RunUrlScoringModel() {
+bool AutocompleteController::MaybeRunUrlScoringModel() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!OmniboxFieldTrial::IsMlRelevanceScoringEnabled()) {
-    return;
+    return false;
   }
 
   AutocompleteScoringModelService* scoring_model_service =
       provider_client_->GetAutocompleteScoringModelService();
-  if (scoring_model_service == nullptr ||
-      !scoring_model_service->UrlScoringModelAvailable()) {
-    return;
+  if (!scoring_model_service) {
+    return false;
   }
 
   auto barrier_callback = base::BarrierCallback<AutocompleteMatch>(
@@ -1495,12 +1500,23 @@ void AutocompleteController::RunUrlScoringModel() {
           &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
           weak_ptr_factory_.GetWeakPtr()));
 
-  for (auto match : result_.matches_) {
+  for (const auto& match : result_.matches_) {
+    // The ML scoring model only supports URL matches - bookmarks, history, etc.
+    // Call the model for those types and directly invoke the model callback for
+    // any other match type.
+    if (AutocompleteMatch::GetDefaultGroupId(match.type) !=
+        omnibox::GROUP_OTHER_NAVS) {
+      OnUrlScoringModelDone(barrier_callback, match, /*output=*/absl::nullopt);
+      continue;
+    }
+
     scoring_model_service->ScoreAutocompleteUrlMatch(
         match.scoring_signals,
         base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
                        weak_ptr_factory_.GetWeakPtr(), barrier_callback,
                        match));
   }
+
+  return true;
 #endif // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
