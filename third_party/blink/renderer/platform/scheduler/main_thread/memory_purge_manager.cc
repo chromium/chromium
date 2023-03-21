@@ -140,7 +140,7 @@ bool MemoryPurgeManager::AreAllPagesFrozen() const {
 base::TimeDelta MemoryPurgeManager::GetTimeToPurgeAfterBackgrounded() const {
   return base::Seconds(
       base::RandInt(kMinTimeToPurgeAfterBackgrounded.InSeconds(),
-                    kMinTimeToPurgeAfterBackgrounded.InSeconds()));
+                    kMaxTimeToPurgeAfterBackgrounded.InSeconds()));
 }
 
 }  // namespace blink
