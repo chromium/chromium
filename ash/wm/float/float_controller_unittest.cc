@@ -1640,6 +1640,27 @@ TEST_F(TabletWindowFloatTest, TapOnEdgeDoesNotUntuck) {
   EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
 }
 
+// Tests that the tuck handle tap target is larger than its bounds.
+TEST_F(TabletWindowFloatTest, TuckHandleTapTarget) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  auto* float_controller = Shell::Get()->float_controller();
+
+  // Tuck the window in the bottom right.
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+
+  // Tap somewhere slightly outside the tuck handle widget. Verify that the
+  // tucked window is untucked.
+  const gfx::Rect tuck_handle_bounds =
+      float_controller->GetTuckHandleWidget(window.get())
+          ->GetWindowBoundsInScreen();
+  GetEventGenerator()->GestureTapAt(tuck_handle_bounds.origin() -
+                                    gfx::Vector2d(5, 5));
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+}
+
 // Tests that the tuck handle is offscreen in overview mode.
 TEST_F(TabletWindowFloatTest, TuckHandleOffscreenInOverview) {
   const gfx::Rect display_bounds =

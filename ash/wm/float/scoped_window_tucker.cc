@@ -19,12 +19,16 @@
 #include "base/time/time.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
+#include "ui/aura/window_targeter.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/view_targeter_delegate.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -34,6 +38,9 @@ namespace {
 
 constexpr int kTuckHandleWidth = 20;
 constexpr int kTuckHandleHeight = 92;
+
+// The tuck handle can be tapped slightly outside its bounds.
+constexpr gfx::Insets kTuckHandleExtraTapInset = gfx::Insets::VH(-8, -16);
 
 // The distance from the edge of the tucked window to the edge of the screen
 // during the bounce.
@@ -67,19 +74,23 @@ const gfx::Rect GetTuckHandleBounds(bool left, const gfx::Rect& window_bounds) {
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// ScopedWindowTucker::TuckHandle:
+// TuckHandleView:
 
 // Represents a tuck handle that untucks floated windows from offscreen.
-class ScopedWindowTucker::TuckHandle : public views::Button {
+class TuckHandleView : public views::Button,
+                       public views::ViewTargeterDelegate {
  public:
-  TuckHandle(base::RepeatingClosure callback, bool left)
+  METADATA_HEADER(TuckHandleView);
+
+  TuckHandleView(base::RepeatingClosure callback, bool left)
       : views::Button(callback), left_(left) {
     SetFlipCanvasOnPaintForRTLUI(false);
     SetFocusBehavior(FocusBehavior::NEVER);
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   }
-  TuckHandle(const TuckHandle&) = delete;
-  TuckHandle& operator=(const TuckHandle&) = delete;
-  ~TuckHandle() override = default;
+  TuckHandleView(const TuckHandleView&) = delete;
+  TuckHandleView& operator=(const TuckHandleView&) = delete;
+  ~TuckHandleView() override = default;
 
   // views::Button:
   void OnThemeChanged() override {
@@ -142,12 +153,21 @@ class ScopedWindowTucker::TuckHandle : public views::Button {
     }
   }
 
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    return true;
+  }
+
  private:
   // Whether the tuck handle is on the left or right edge of the screen. A
   // left tuck handle will have the chevron arrow pointing right and vice
   // versa.
   const bool left_;
 };
+
+BEGIN_METADATA(TuckHandleView, views::Button)
+END_METADATA
 
 // -----------------------------------------------------------------------------
 
@@ -165,11 +185,15 @@ ScopedWindowTucker::ScopedWindowTucker(aura::Window* window, bool left)
   params.name = "TuckHandleWidget";
   tuck_handle_widget_->Init(std::move(params));
 
-  tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(
+  tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandleView>(
       base::BindRepeating(&ScopedWindowTucker::UntuckWindow,
                           base::Unretained(this)),
       left));
   tuck_handle_widget_->Show();
+
+  auto targeter = std::make_unique<aura::WindowTargeter>();
+  targeter->SetInsets(kTuckHandleExtraTapInset);
+  tuck_handle_widget_->GetNativeWindow()->SetEventTargeter(std::move(targeter));
 
   // Activate the most recent window that is not minimized and not the tucked
   // `window_`, otherwise activate the app list.

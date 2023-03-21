@@ -52,8 +52,6 @@ class ScopedWindowTucker : public wm::ActivationChangeObserver,
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
  private:
-  class TuckHandle;
-
   // Slides the tuck handle offscreen and onscreen when entering and exiting
   // overview mode respectively.
   void OnOverviewModeChanged(bool in_overview);
