@@ -2322,6 +2322,7 @@
     'chromeos_with_codecs_release_trybot_code_coverage_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'enable_dangling_raw_ptr_checks', 'enable_backup_ref_ptr_feature_flag',
     ],
 
     'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient': [
