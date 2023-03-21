@@ -102,6 +102,8 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
       [stackView addArrangedSubview:description];
     }
 
+    [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
+
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
     [self setIsAccessibilityElement:YES];
