@@ -70,7 +70,7 @@
   _faviconContainerView = [[FaviconContainerView alloc] init];
   _localOnlyIcon = [[UIImageView alloc] init];
   _localOnlyIcon.image = CustomSymbolWithPointSize(kCloudSlashSymbol, 20);
-  _localOnlyIcon.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  _localOnlyIcon.tintColor = [UIColor colorNamed:kTextTertiaryColor];
   [_localOnlyIcon setContentHuggingPriority:UILayoutPriorityRequired
                                     forAxis:UILayoutConstraintAxisHorizontal];
   [_localOnlyIcon setContentHuggingPriority:UILayoutPriorityRequired
