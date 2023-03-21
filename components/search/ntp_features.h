@@ -69,6 +69,7 @@ BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMaxClusters);
 BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
@@ -153,6 +154,12 @@ extern const char kNtpHistoryClustersModuleCategoriesAllowlistParam[];
 // Parameter for determining the categories a history cluster must not fall into
 // to be shown.
 extern const char kNtpHistoryClustersModuleCategoriesBlocklistParam[];
+// Parameter for determining the categories a history cluster falls into to be
+// boosted for showing on the New Tab Page.
+extern const char kNtpHistoryClustersModuleCategoriesBoostlistParam[];
+// Parameter for setting the maximum number of candidate clusters for the
+// History Clusters Service to return.
+extern const char kNtpHistoryClustersModuleMaxClustersParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

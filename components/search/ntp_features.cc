@@ -260,6 +260,11 @@ BASE_FEATURE(kNtpHistoryClustersModuleLoad,
              "NtpHistoryClustersModuleLoad",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set kNtpHistoryClustersModuleMaxClustersParam.
+BASE_FEATURE(kNtpHistoryClustersModuleMaxClusters,
+             "NtpHistoryClustersMaxClusters",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, module headers will display an associated icon.
 BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
@@ -329,6 +334,10 @@ const char kNtpHistoryClustersModuleCategoriesAllowlistParam[] =
     "NtpHistoryClustersModuleCategoriesParam";
 const char kNtpHistoryClustersModuleCategoriesBlocklistParam[] =
     "NtpHistoryClustersModuleCategoriesBlocklistParam";
+const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
+    "NtpHistoryClustersModuleCategoriesBoostlistParam";
+const char kNtpHistoryClustersModuleMaxClustersParam[] =
+    "NtpHistoryClustersModuleMaxClustersParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

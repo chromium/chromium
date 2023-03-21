@@ -46,12 +46,9 @@ constexpr int kMinRequiredRelatedSearches = 3;
 // visit.
 constexpr int kMinRequiredVisits = 3;
 
-base::flat_set<std::string> GetCategories(bool allowlist) {
+base::flat_set<std::string> GetCategories(const char* feature_param) {
   std::string categories_string = base::GetFieldTrialParamValueByFeature(
-      ntp_features::kNtpHistoryClustersModuleCategories,
-      allowlist
-          ? ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam
-          : ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam);
+      ntp_features::kNtpHistoryClustersModuleCategories, feature_param);
   if (categories_string.empty()) {
     return {};
   }
@@ -72,15 +69,32 @@ int GetMinImagesToShow() {
   return min_images_to_show;
 }
 
+size_t GetMaxClusters() {
+  // Even though only one cluster will be shown on the NTP at a time for now,
+  // set this to greater than that in case the filtering logic does not match
+  // up.
+  static int max_clusters = base::GetFieldTrialParamByFeatureAsInt(
+      ntp_features::kNtpHistoryClustersModuleMaxClusters,
+      ntp_features::kNtpHistoryClustersModuleMaxClustersParam, 5);
+  if (max_clusters < 0) {
+    return 5;
+  }
+  return static_cast<size_t>(max_clusters);
+}
+
 history_clusters::QueryClustersFilterParams GetFilterParamsFromFeatureFlags() {
   history_clusters::QueryClustersFilterParams filter_params;
   filter_params.min_visits_with_images = GetMinImagesToShow();
-  filter_params.categories_allowlist = GetCategories(/*allowlist=*/true);
-  filter_params.categories_blocklist = GetCategories(/*allowlist=*/false);
+  filter_params.categories_allowlist = GetCategories(
+      ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam);
+  filter_params.categories_blocklist = GetCategories(
+      ntp_features::kNtpHistoryClustersModuleCategoriesBlocklistParam);
   filter_params.is_search_initiated = true;
   filter_params.has_related_searches = true;
   filter_params.is_shown_on_prominent_ui_surfaces = true;
-  // TODO(b/265301665): Add max clusters param when actually showing in the UI.
+  filter_params.max_clusters = GetMaxClusters();
+  filter_params.categories_boostlist = GetCategories(
+      ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam);
   return filter_params;
 }
 
