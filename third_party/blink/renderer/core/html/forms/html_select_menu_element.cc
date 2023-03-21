@@ -342,10 +342,10 @@ void HTMLSelectMenuElement::setValueForBinding(const String& value) {
 }
 
 void HTMLSelectMenuElement::setValue(const String& value, bool send_events) {
-  // Find the option with innerText matching the given parameter and make it the
+  // Find the option with value matching the given parameter and make it the
   // current selection.
   for (auto& option : option_parts_) {
-    if (option->innerText() == value) {
+    if (option->value() == value) {
       SetSelectedOption(option);
       break;
     }
