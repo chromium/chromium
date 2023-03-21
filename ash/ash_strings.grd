@@ -1894,6 +1894,63 @@ Style notes:
       <message name="IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_TITLE" desc="Message content for the title of the storage answer card, showing the amount of storage currently in use and the total storage size.">
         <ph name="STORAGE_IN_USE_SIZE">$1<ex>65 GB</ex></ph> in use / <ph name="STORAGE_TOTAL_SIZE">$2<ex>124 GB</ex></ph>
       </message>
+      <message name="IDS_ASH_STORAGE_MANAGEMENT_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage management in launcher search that should trigger a storage answer card result.">
+        storage management
+      </message>
+      <message name="IDS_ASH_STORAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage in launcher search that should trigger a storage answer card result.">
+        storage
+      </message>
+      <message name="IDS_ASH_STORAGE_USE_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage use in launcher search that should trigger a storage answer card result.">
+        storage use
+      </message>
+      <message name="IDS_ASH_CPU_KEYWORD_FOR_LAUNCHER" desc="Keyword of cpu in launcher search that should trigger a CPU answer card result.">
+        cpu
+      </message>
+      <message name="IDS_ASH_CPU_USAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of cpu usage in launcher search that should trigger a CPU answer card result.">
+        cpu usage
+      </message>
+      <message name="IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER" desc="Keyword of device slow in launcher search that should trigger a CPU answer card result.">
+        device slow
+      </message>
+      <message name="IDS_ASH_WHY_IS_MY_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER" desc="Keyword of why is my device slow in launcher search that should trigger a CPU answer card result.">
+        why is my device slow
+      </message>
+      <message name="IDS_ASH_MEMORY_KEYWORD_FOR_LAUNCHER" desc="Keyword of memory in launcher search that should trigger a memory answer card result.">
+        memory
+      </message>
+      <message name="IDS_ASH_MEMORY_USAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of memory usage in launcher search that should trigger a memory answer card result.">
+        memory usage
+      </message>
+      <message name="IDS_ASH_RAM_KEYWORD_FOR_LAUNCHER" desc="Keyword of ram (random access memory) in launcher search that should trigger a memory answer card result.">
+        ram
+      </message>
+      <message name="IDS_ASH_RANDOM_ACCESS_MEMORY_KEYWORD_FOR_LAUNCHER" desc="Keyword of random access memory in launcher search that should trigger a memory answer card result.">
+        random access memory
+      </message>
+      <message name="IDS_ASH_RAM_USAGE_KEYWORD_FOR_LAUNCHER" desc="Keyword of ram usage in launcher search that should trigger a memory answer card result.">
+        ram usage
+      </message>
+      <message name="IDS_ASH_ACTIVITY_MONITOR_KEYWORD_FOR_LAUNCHER" desc="Keyword of activity monitor in launcher search that should trigger a memory answer card result.">
+        actvity monitor
+      </message>
+      <message name="IDS_ASH_BATTERY_KEYWORD_FOR_LAUNCHER" desc="Keyword of battery in launcher search that should trigger a battery answer card result.">
+        battery
+      </message>
+      <message name="IDS_ASH_BATTERY_LIFE_KEYWORD_FOR_LAUNCHER" desc="Keyword of battery life in launcher search that should trigger a battery answer card result.">
+        battery life
+      </message>
+      <message name="IDS_ASH_BATTERY_HEALTH_KEYWORD_FOR_LAUNCHER" desc="Keyword of battery health in launcher search that should trigger a battery answer card result.">
+        battery health
+      </message>
+      <message name="IDS_ASH_VERSION_KEYWORD_FOR_LAUNCHER" desc="Keyword of version in launcher search that should trigger a version answer card result.">
+        version
+      </message>
+      <message name="IDS_ASH_MY_DEVICE_KEYWORD_FOR_LAUNCHER" desc="Keyword of my device in launcher search that should trigger a version answer card result.">
+        my device
+      </message>
+      <message name="IDS_ASH_ABOUT_KEYWORD_FOR_LAUNCHER" desc="Keyword of about in launcher search that should trigger a version answer card result.">
+        about
+      </message>
 
       <message name="IDS_ASH_TOAST_DISMISS_BUTTON" desc="The text button shown in toasts to close the toast immediately without waiting timeout.">
         DISMISS

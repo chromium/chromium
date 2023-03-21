@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/power_utils.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -277,6 +278,71 @@ void PopulatePowerStatus(const power_manager::PowerSupplyProperties& proto,
 
   battery_health.SetPowerTime(CalculatePowerTime(proto));
   battery_health.SetBatteryPercentage(percent);
+}
+
+std::vector<SystemInfoKeywordInput> GetSystemInfoKeywordVector() {
+  return {
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kVersion,
+          l10n_util::GetStringUTF16(IDS_ASH_VERSION_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kVersion,
+          l10n_util::GetStringUTF16(IDS_ASH_MY_DEVICE_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kVersion,
+          l10n_util::GetStringUTF16(IDS_ASH_ABOUT_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kBattery,
+          l10n_util::GetStringUTF16(IDS_ASH_BATTERY_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kBattery,
+          l10n_util::GetStringUTF16(IDS_ASH_BATTERY_LIFE_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(SystemInfoInputType::kBattery,
+                             l10n_util::GetStringUTF16(
+                                 IDS_ASH_BATTERY_HEALTH_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kMemory,
+          l10n_util::GetStringUTF16(IDS_ASH_MEMORY_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kMemory,
+          l10n_util::GetStringUTF16(IDS_ASH_MEMORY_USAGE_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kMemory,
+          l10n_util::GetStringUTF16(IDS_ASH_RAM_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kMemory,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_RANDOM_ACCESS_MEMORY_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kMemory,
+          l10n_util::GetStringUTF16(IDS_ASH_RAM_USAGE_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kMemory,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_ACTIVITY_MONITOR_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kStorage,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STORAGE_MANAGEMENT_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kStorage,
+          l10n_util::GetStringUTF16(IDS_ASH_STORAGE_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kStorage,
+          l10n_util::GetStringUTF16(IDS_ASH_STORAGE_USE_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kCPU,
+          l10n_util::GetStringUTF16(IDS_ASH_CPU_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kCPU,
+          l10n_util::GetStringUTF16(IDS_ASH_CPU_USAGE_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kCPU,
+          l10n_util::GetStringUTF16(IDS_ASH_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER)),
+      SystemInfoKeywordInput(
+          SystemInfoInputType::kCPU,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_WHY_IS_MY_DEVICE_SLOW_KEYWORD_FOR_LAUNCHER))};
 }
 
 }  // namespace app_list

@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_SYSTEM_INFO_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_SYSTEM_INFO_UTIL_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/system_info/battery_health.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
+#include "chrome/browser/ash/app_list/search/system_info/system_info_keyword_input.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
@@ -55,6 +58,8 @@ void PopulatePowerStatus(
     BatteryHealth& battery_health);
 
 std::u16string GetBatteryTimeText(base::TimeDelta time_left);
+
+std::vector<SystemInfoKeywordInput> GetSystemInfoKeywordVector();
 
 }  // namespace app_list
 

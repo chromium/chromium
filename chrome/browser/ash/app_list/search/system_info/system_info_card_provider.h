@@ -7,12 +7,14 @@
 
 #include <bitset>
 #include <memory>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/system_info/battery_health.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
+#include "chrome/browser/ash/app_list/search/system_info/system_info_keyword_input.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -106,6 +108,7 @@ class SystemInfoCardProvider : public SearchProvider,
   std::unique_ptr<BatteryHealth> battery_health_{nullptr};
   gfx::ImageSkia os_settings_icon_;
   gfx::ImageSkia diagnostics_icon_;
+  std::vector<SystemInfoKeywordInput> keywords_;
 
   base::WeakPtrFactory<SystemInfoCardProvider> weak_factory_{this};
 };

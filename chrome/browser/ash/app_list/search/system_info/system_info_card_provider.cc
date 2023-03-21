@@ -70,7 +70,8 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
       browsing_data_size_calculator_(profile),
       apps_size_calculator_(profile),
       crostini_size_calculator_(profile),
-      profile_(profile) {
+      profile_(profile),
+      keywords_(GetSystemInfoKeywordVector()) {
   DCHECK(profile_);
   ash::cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
       probe_service_.BindNewPipeAndPassReceiver());
@@ -93,67 +94,41 @@ SystemInfoCardProvider::~SystemInfoCardProvider() {
 }
 
 void SystemInfoCardProvider::Start(const std::u16string& query) {
-  // TODO(b/263994165): Replace with complete implementation with keywords
-  // stored in translation unit.
-  std::vector<std::u16string> memory_keywords = {
-      u"memory", u"memory usage", u"ram", u"ram usage", u"activity monitor"};
-  for (const std::u16string& keyword : memory_keywords) {
-    double relevance = CalculateRelevance(query, keyword);
-    if (relevance > kRelevanceThreshold) {
-      relevance_ = relevance;
-      UpdateMemoryUsage();
-      break;
+  double max_relevance = 0;
+  SystemInfoKeywordInput* most_relevant_keyword_input;
+  for (SystemInfoKeywordInput& keyword_input : keywords_) {
+    double relevance = CalculateRelevance(query, keyword_input.GetKeyword());
+    if (relevance > kRelevanceThreshold && relevance > max_relevance) {
+      max_relevance = relevance;
+      most_relevant_keyword_input = &keyword_input;
     }
   }
 
-  std::vector<std::u16string> cpu_keywords = {
-      u"cpu", u"cpu usage", u"device slow", u"why is my device slow"};
-  for (const std::u16string& keyword : cpu_keywords) {
-    double relevance = CalculateRelevance(query, keyword);
-    if (relevance > kRelevanceThreshold) {
-      relevance_ = relevance;
-      UpdateCpuUsage();
-      break;
-    }
-  }
-
-  std::vector<std::u16string> battery_keywords = {u"battery", u"battery life",
-                                                  u"battery health"};
-  for (const std::u16string& keyword : battery_keywords) {
-    double relevance = CalculateRelevance(query, keyword);
-    if (relevance > kRelevanceThreshold) {
-      relevance_ = relevance;
-      UpdateBatteryInfo();
-      break;
-    }
-  }
-
-  std::vector<std::u16string> version_keywords = {u"version", u"my device",
-                                                  u"about"};
-  for (const std::u16string& keyword : version_keywords) {
-    double relevance = CalculateRelevance(query, keyword);
-    if (relevance > kRelevanceThreshold) {
-      relevance_ = relevance;
-      UpdateChromeOsVersion();
-      break;
-    }
-  }
-
-  std::vector<std::u16string> storage_keywords = {u"storage", u"storage use",
-                                                  u"storage management"};
-  for (const std::u16string& keyword : storage_keywords) {
-    double relevance = CalculateRelevance(query, keyword);
-    if (relevance > kRelevanceThreshold) {
-      // Do not calculate the storage size again if already calculated
-      // recently.
+  if (max_relevance > kRelevanceThreshold) {
+    relevance_ = max_relevance;
+    switch (most_relevant_keyword_input->GetInputType()) {
+      case SystemInfoInputType::kMemory:
+        UpdateMemoryUsage();
+        break;
+      case SystemInfoInputType::kCPU:
+        UpdateCpuUsage();
+        break;
+      case SystemInfoInputType::kVersion:
+        UpdateChromeOsVersion();
+        break;
+      // Do not calculate the storage size again if already
+      // calculated recently.
       // TODO(b/263994165): Add in a refresh period here.
-      relevance_ = relevance;
-      if (!calculation_state_.all()) {
-        UpdateStorageInfo();
-      } else {
-        CreateStorageAnswerCard();
-      }
-      break;
+      case SystemInfoInputType::kStorage:
+        if (!calculation_state_.all()) {
+          UpdateStorageInfo();
+        } else {
+          CreateStorageAnswerCard();
+        }
+        break;
+      case SystemInfoInputType::kBattery:
+        UpdateBatteryInfo();
+        break;
     }
   }
 }

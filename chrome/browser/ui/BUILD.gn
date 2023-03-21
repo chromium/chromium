@@ -2216,6 +2216,8 @@ static_library("ui") {
       "../ash/app_list/search/system_info/system_info_answer_result.h",
       "../ash/app_list/search/system_info/system_info_card_provider.cc",
       "../ash/app_list/search/system_info/system_info_card_provider.h",
+      "../ash/app_list/search/system_info/system_info_keyword_input.cc",
+      "../ash/app_list/search/system_info/system_info_keyword_input.h",
       "../ash/app_list/search/system_info/system_info_util.cc",
       "../ash/app_list/search/system_info/system_info_util.h",
       "../ash/app_list/search/types.cc",
