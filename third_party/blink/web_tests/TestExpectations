@@ -6682,3 +6682,4 @@ crbug.com/1418938 http/tests/devtools/sources/debugger-step/debugger-step-into-e
 
 # Flaky loaf tests, still working on deflaking.
 crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-desired-exec-time.html [ Failure Pass Timeout ]
+crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.html [ Failure Pass Timeout ]
