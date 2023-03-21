@@ -391,7 +391,7 @@ source_set("context_provider") {
     "//base",
     "//components/fuchsia_component_support",
     "//fuchsia_web/common",
-    "//fuchsia_web/webinstance_host:webinstance_host_v1",
+    "//fuchsia_web/webinstance_host:webinstance_host",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
   ]
@@ -454,6 +454,17 @@ fuchsia_component("web_instance_component") {
   data_deps = [ ":web_engine_exe" ]
 }
 
+fuchsia_component("web_instance_with_svc_directory_component") {
+  manifest = "web_instance_with_svc_directory.cml"
+  data_deps = [ ":web_engine_exe" ]
+
+  # Prevent inclusion of a shard with a `use` `protocol` block because this
+  # conflicts with the `/svc` directory `use` in this manifest.
+  # This component will not provide code coverage data until
+  # https://crbug.com/1426185 is fixed.
+  include_coverage_shard = false
+}
+
 fuchsia_component("web_instance_component_cfv1") {
   manifest = "web_instance.cmx"
   data_deps = [ ":web_engine_exe" ]
@@ -473,6 +484,7 @@ fuchsia_package("web_engine") {
     ":context_provider_component",
     ":web_instance_component",
     ":web_instance_component_cfv1",
+    ":web_instance_with_svc_directory_component",
   ]
   excluded_files = _web_engine_excluded_files
   excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
@@ -621,27 +633,6 @@ test("web_engine_browsertests") {
   }
 }
 
-# Creates a component manifest based on the production web_instance.cmx, with
-# the program name replaced with the web_engine_unittests binary name.
-action("web_engine_unittests_fake_instance_manifest") {
-  _manifest_input = "web_instance.cmx"
-  _manifest_output = "$target_gen_dir/web_engine_unittests_fake_instance.cmx"
-
-  script = "//build/config/fuchsia/build_cmx_from_fragment.py"
-
-  inputs = [ _manifest_input ]
-  outputs = [ _manifest_output ]
-
-  args = [
-    "--cmx-fragment",
-    rebase_path(_manifest_input),
-    "--cmx",
-    rebase_path(_manifest_output),
-    "--program",
-    "web_engine_unittests__exec",
-  ]
-}
-
 test("web_engine_unittests") {
   sources = [
     "browser/cookie_manager_impl_unittest.cc",
@@ -654,8 +645,6 @@ test("web_engine_unittests") {
     "browser/url_request_rewrite_type_converters_unittest.cc",
     "browser/web_engine_config_unittest.cc",
     "context_provider_impl_unittest.cc",
-    "fake_context.cc",
-    "fake_context.h",
     "renderer/web_engine_audio_output_device_test.cc",
     "renderer/web_engine_audio_renderer_test.cc",
     "test/run_all_unittests.cc",
@@ -664,9 +653,11 @@ test("web_engine_unittests") {
     ":context_provider",
     ":switches",
     ":web_engine_core",
-    ":web_engine_unittests_fake_instance_manifest",
+    "//base",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
+    "//components/fuchsia_component_support",
+    "//components/fuchsia_component_support:test_support",
     "//components/url_rewrite/browser",
     "//components/url_rewrite/common",
     "//components/url_rewrite/mojom",
@@ -681,7 +672,9 @@ test("web_engine_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/fdio",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk/pkg/vfs_cpp",
     "//third_party/widevine/cdm:buildflags",
     "//ui/events:test_support",
     "//ui/ozone",
@@ -691,10 +684,6 @@ test("web_engine_unittests") {
     "//build/config/fuchsia/test/cfv1_launcher.shard.test-cml",
     "//build/config/fuchsia/test/network.shard.test-cml",
     "//build/config/fuchsia/test/sysmem.shard.test-cml",
-  ]
-  additional_manifests = [
-    # Required by ContextProvider unit-tests to launch the FakeContext process.
-    "$target_gen_dir/web_engine_unittests_fake_instance.cmx",
   ]
 }
 

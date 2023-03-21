@@ -31,10 +31,6 @@
         "fuchsia.feedback.CrashReportingProductRegister",
       ],
     },
-    {
-      // Protocols needed when running in CFv1 mode.
-      protocol: "fuchsia.sys.Environment",
-    },
   ],
   offer: [
     // In addition to enabling the offers below, the parent must also offer
@@ -54,40 +50,6 @@
       directory: "config-data-for-web-instance",
       from: "parent",
       as: "config-data",
-      to: "#web_instances",
-      availability: "optional",
-    },
-    {
-      protocol: [
-        "fuchsia.buildinfo.Provider",
-        "fuchsia.device.NameProvider",
-        "fuchsia.fonts.Provider",
-        "fuchsia.hwinfo.Product",
-        "fuchsia.intl.PropertyProvider",
-        "fuchsia.kernel.VmexResource",
-        "fuchsia.logger.LogSink",
-        "fuchsia.memorypressure.Provider",
-        "fuchsia.process.Launcher",
-        "fuchsia.sysmem.Allocator",
-      ],
-      from: "parent",
-      to: "#web_instances",
-    },
-    {
-      protocol: [
-        // Required by video capture.
-        "fuchsia.camera3.DeviceWatcher",
-
-        // Required to schedule display-critical and realtime audio threads.
-        "fuchsia.media.ProfileProvider",
-
-        // Required by Frame.SetPreferredTheme(DEFAULT).
-        "fuchsia.settings.Display",
-
-        // Optionally used by the tracing service.
-        "fuchsia.tracing.perfetto.ProducerConnector",
-      ],
-      from: "parent",
       to: "#web_instances",
       availability: "optional",
     },

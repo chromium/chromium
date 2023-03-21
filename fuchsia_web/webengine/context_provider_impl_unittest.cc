@@ -4,541 +4,610 @@
 
 #include "fuchsia_web/webengine/context_provider_impl.h"
 
-#include <fuchsia/sys/cpp/fidl_test_base.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
-#include <lib/fidl/cpp/binding.h>
-#include <lib/sys/cpp/component_context.h>
+#include <lib/fdio/namespace.h>
+#include <lib/fidl/cpp/binding_set.h>
 #include <lib/sys/cpp/outgoing_directory.h>
-#include <lib/zx/socket.h>
-#include <zircon/processargs.h>
+#include <lib/vfs/cpp/pseudo_dir.h>
+#include <lib/vfs/cpp/service.h>
+#include <zircon/status.h>
 #include <zircon/types.h>
 
-#include <functional>
+#include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/files/file.h"
+#include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/file_utils.h"
-#include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
-#include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/path_service.h"
-#include "base/strings/strcat.h"
-#include "base/test/bind.h"
-#include "base/test/multiprocess_test.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_timeouts.h"
-#include "build/build_config.h"
-#include "build/chromecast_buildflags.h"
-#include "fuchsia_web/webengine/fake_context.h"
+#include "base/threading/thread.h"
+#include "components/fuchsia_component_support/append_arguments_from_file.h"
+#include "components/fuchsia_component_support/mock_realm.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/multiprocess_func_list.h"
-#include "third_party/widevine/cdm/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+
+using ::testing::_;
+using ::testing::Not;
 
 constexpr char kTestDataFileIn[] = "DataFileIn";
 constexpr char kTestDataFileOut[] = "DataFileOut";
 
-constexpr char kUrl[] = "chrome://:emorhc";
-constexpr char kTitle[] = "Palindrome";
-
 constexpr uint64_t kTestQuotaBytes = 1024;
 constexpr char kTestQuotaBytesSwitchValue[] = "1024";
 
-MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
+// A fake implementation of fuchsia.component/Realm.
+class FakeRealm {
+ public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual void OnChildInstanceCreated(const std::string& name) = 0;
 
-  LOG(INFO) << "SpawnContextServer test component started.";
+   protected:
+    Delegate() = default;
+  };
 
-  base::FilePath data_dir(base::kPersistedDataDirectoryPath);
-  if (base::PathExists(data_dir.AppendASCII(kTestDataFileIn))) {
-    auto out_file = data_dir.AppendASCII(kTestDataFileOut);
-    EXPECT_EQ(base::WriteFile(out_file, nullptr, 0), 0);
+  explicit FakeRealm(Delegate& delegate) : delegate_(delegate) {}
+  FakeRealm(const FakeRealm&) = delete;
+  FakeRealm& operator=(const FakeRealm&) = delete;
+  ~FakeRealm() = default;
+
+  // Returns true if the realm has no child instances.
+  bool empty() const { return instances_.empty(); }
+
+  // Sets a callback that will be run when the realm's last child is deleted.
+  void set_on_empty_callback(base::OnceClosure on_empty_callback) {
+    on_empty_callback_ = std::move(on_empty_callback);
   }
 
-  // Publish the fake fuchsia.web.Context implementation for the test to use.
-  FakeContext context;
-  fidl::BindingSet<fuchsia::web::Context> bindings;
-  base::ComponentContextForProcess()->outgoing()->AddPublicService(
-      bindings.GetHandler(&context), "fuchsia.web.Context");
-  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+  // Saves copies of `child_decl` and `args` for subsequent validation by tests.
+  void CreateChild(const fuchsia::component::decl::Child& child_decl,
+                   const fuchsia::component::CreateChildArgs& args) {
+    ASSERT_TRUE(!base::Contains(instances_, child_decl.name()));
 
-  // When a Frame's NavigationEventListener is bound, immediately broadcast a
-  // navigation event to its listeners.
-  context.set_on_create_frame_callback(
-      base::BindRepeating([](FakeFrame* frame) {
-        frame->set_on_set_listener_callback(base::BindOnce(
-            [](FakeFrame* frame) {
-              fuchsia::web::NavigationState state;
-              state.set_url(kUrl);
-              state.set_title(kTitle);
-              frame->listener()->OnNavigationStateChanged(std::move(state),
-                                                          []() {});
-            },
-            frame));
-      }));
+    auto& child = instances_[child_decl.name()];
+    child.decl = std::make_unique<fuchsia::component::decl::Child>();
+    ASSERT_EQ(child_decl.Clone(child.decl.get()), ZX_OK);
+    child.args = std::make_unique<fuchsia::component::CreateChildArgs>();
+    ASSERT_EQ(args.Clone(child.args.get()), ZX_OK);
+  }
 
-  // Quit the process when the context is destroyed.
-  base::RunLoop run_loop;
-  bindings.set_empty_set_handler(
-      [quit_loop = run_loop.QuitClosure()]() { quit_loop.Run(); });
-  run_loop.Run();
+  // Satisfies a request for `child_ref`'s dir by serving a PseudoDir on the
+  // current thread containing entries for the Binder and Context protocols.
+  // When the client connects to the last of these protocols, the realm
+  // delegate's `OnChildInstanceCreated` method is called with the child's name.
+  void OpenExposedDir(
+      fuchsia::component::decl::ChildRef child_ref,
+      fidl::InterfaceRequest<fuchsia::io::Directory> exposed_dir,
+      fidl::InterfaceRequest<fuchsia::component::Binder>& binder_request,
+      fidl::InterfaceRequest<fuchsia::web::Context>& context_request) {
+    auto it = instances_.find(child_ref.name);
+    ASSERT_FALSE(it == instances_.end());
 
-  return 0;
+    auto& child = it->second;
+
+    // Publish a fake Binder to the child's exposed directory to capture the
+    // host's request so that the test may close it to trigger child
+    // destruction.
+    child.instances.AddEntry(
+        fuchsia::component::Binder::Name_,
+        std::make_unique<vfs::Service>([&binder_request](zx::channel request,
+                                                         async_dispatcher_t*) {
+          binder_request = fidl::InterfaceRequest<fuchsia::component::Binder>(
+              std::move(request));
+        }));
+
+    // Publish a fake Context that triggers notifying the delegate.
+    child.instances.AddEntry(
+        fuchsia::web::Context::Name_,
+        std::make_unique<vfs::Service>(
+            [&context_request, delegate = delegate_, name = child_ref.name](
+                zx::channel request, async_dispatcher_t*) {
+              context_request = fidl::InterfaceRequest<fuchsia::web::Context>(
+                  std::move(request));
+              delegate->OnChildInstanceCreated(name);
+            }));
+
+    child.instances.Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
+                              fuchsia::io::OpenFlags::RIGHT_WRITABLE,
+                          exposed_dir.TakeChannel());
+  }
+
+  // Destroys the child and runs the `on_empty_callback` if none remain.
+  void DestroyChild(fuchsia::component::decl::ChildRef child) {
+    ASSERT_EQ(instances_.erase(child.name), 1u);
+    if (instances_.empty() && on_empty_callback_) {
+      std::move(on_empty_callback_).Run();
+    }
+  }
+
+  // Returns true if the realm has a child with the same name as `child`.
+  bool HasChild(const fuchsia::component::decl::Child& child) {
+    return base::Contains(instances_, child.name());
+  }
+
+  // Returns true if the realm has a child with the same name as `child`.
+  bool HasChild(const fuchsia::component::decl::ChildRef& child) {
+    return base::Contains(instances_, child.name);
+  }
+
+  // Returns the component declaration used to create the child named `name`.
+  const fuchsia::component::decl::Child& GetChildDecl(const std::string& name) {
+    return *instances_[name].decl;
+  }
+
+  // Returns the args used to create the child named `name`.
+  const fuchsia::component::CreateChildArgs& GetChildArgs(
+      const std::string& name) {
+    return *instances_[name].args;
+  }
+
+ private:
+  struct Child {
+    vfs::PseudoDir instances;
+    std::unique_ptr<fuchsia::component::decl::Child> decl;
+    std::unique_ptr<fuchsia::component::CreateChildArgs> args;
+  };
+
+  const raw_ref<Delegate> delegate_;
+  std::map<std::string, Child> instances_;
+  base::OnceClosure on_empty_callback_;
+};
+
+class MockFakeRealmDelegate : public FakeRealm::Delegate {
+ public:
+  MOCK_METHOD(void,
+              OnChildInstanceCreated,
+              (const std::string& name),
+              (override));
+};
+
+// Returns true if `arg` (a fuchsia::component::decl::CollectionRef) references
+// `name`.
+MATCHER_P(CollectionNameIs, name, "") {
+  return arg.name == name;
 }
 
-// Fake implementation of the Launcher for the isolated environment in which
-// web instance Components are launched.
-class FakeSysLauncher final : public fuchsia::sys::testing::Launcher_TestBase {
- public:
-  using CreateComponentCallback =
-      base::OnceCallback<void(const base::CommandLine&)>;
+// Returns true if the URL of `arg` (a fuchsia::component::decl::Child) is
+// `url`.
+MATCHER_P(UrlIs, url, "") {
+  return arg.has_url() && arg.url() == url;
+}
 
-  explicit FakeSysLauncher(fuchsia::sys::Launcher* real_launcher)
-      : real_launcher_(real_launcher) {}
-  ~FakeSysLauncher() override = default;
+// Returns true if `realm` knows `arg`.
+MATCHER_P(IsInRealm, realm, "") {
+  return realm->HasChild(arg);
+}
 
-  void set_create_component_callback(CreateComponentCallback callback) {
-    create_component_callback_ = std::move(callback);
+// Returns true if `arg` (a fuchsia::component::CreateChildArgs) has a dynamic
+// directory offer for `name`.
+MATCHER_P2(HasDynamicDirectoryOffer, name, is_writeable, "") {
+  if (!arg.has_dynamic_offers()) {
+    return false;
   }
-
-  void Bind(fidl::InterfaceRequest<fuchsia::sys::Launcher> request) {
-    bindings_.AddBinding(this, std::move(request));
-  }
-
-  // fuchsia::sys::Launcher implementation.
-  void CreateComponent(fuchsia::sys::LaunchInfo launch_info,
-                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                           request) override {
-    // |arguments| should not include argv[0] (i.e. the program name), which
-    // would be empty in a no-program CommandLine instance. Verify that the
-    // |arguments| are either empty or have a non-empty first element.
-    EXPECT_TRUE(launch_info.arguments->empty() ||
-                !launch_info.arguments->at(0).empty());
-
-    // |arguments| omits argv[0] so cannot be used directly to initialize a
-    // CommandLine, but CommandLine provides useful switch processing logic.
-    // Prepend an empty element to a copy of |arguments| and use that to create
-    // a valid CommandLine.
-    std::vector<std::string> command_line_args(*launch_info.arguments);
-    command_line_args.emplace(command_line_args.begin());
-    const base::CommandLine command_line(command_line_args);
-    CHECK(!command_line.HasSwitch(switches::kTestChildProcess));
-
-    // If a create-component-callback is specified then there is no need to
-    // actually launch a component.
-    if (create_component_callback_) {
-      std::move(create_component_callback_).Run(command_line);
-      return;
+  for (const auto& offer : arg.dynamic_offers()) {
+    if (offer.is_directory() && offer.directory().has_target_name() &&
+        offer.directory().target_name() == name &&
+        offer.directory().has_rights() &&
+        offer.directory().rights() == (is_writeable
+                                           ? fuchsia::io::RW_STAR_DIR
+                                           : fuchsia::io::R_STAR_DIR)) {
+      return true;
     }
-
-    // Otherwise, launch another instance of this test executable, configured to
-    // run as a test child (similar to SpawnMultiProcessTestChild()). The
-    // test-suite's component manifest cannot be re-used for this because it
-    // specifies the "isolated-persistent-data" feature, causing the framework
-    // to populate /data, which prevents the |data_directory| supplied in the
-    // CreateContextParams from being mapped.
-    // Launch the component via a fake manifest identical to the one used for
-    // web instances, but which runs this test executable.
-    EXPECT_EQ(launch_info.url,
-              "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cmx");
-    launch_info.url =
-        "fuchsia-pkg://fuchsia.com/web_engine_unittests#meta/"
-        "web_engine_unittests_fake_instance.cmx";
-    launch_info.arguments->push_back(base::StrCat(
-        {"--", switches::kTestChildProcess, "=SpawnContextServer"}));
-
-    // Bind /tmp in the new Component's flat namespace, to allow it to see
-    // the GTest flagfile, if any.
-    fuchsia::io::DirectoryHandle tmp_directory;
-    zx_status_t status = fdio_open(
-        "/tmp", static_cast<uint32_t>(fuchsia::io::OpenFlags::RIGHT_READABLE),
-        tmp_directory.NewRequest().TakeChannel().release());
-    ZX_CHECK(status == ZX_OK, status) << "fdio_open(/tmp)";
-    launch_info.flat_namespace->paths.push_back("/tmp");
-    launch_info.flat_namespace->directories.push_back(std::move(tmp_directory));
-
-    // Redirect the sub-process Component's stderr to feed into the test output.
-    launch_info.err = fuchsia::sys::FileDescriptor::New();
-    launch_info.err->type0 = PA_FD;
-    status = fdio_fd_clone(STDERR_FILENO,
-                           launch_info.err->handle0.reset_and_get_address());
-    ZX_CHECK(status == ZX_OK, status);
-
-    real_launcher_->CreateComponent(std::move(launch_info), std::move(request));
   }
+  return false;
+}
 
- private:
-  void NotImplemented_(const std::string& name) override {
-    ADD_FAILURE() << "Unexpected call: " << name;
-  }
-
-  fidl::BindingSet<fuchsia::sys::Launcher> bindings_;
-  fuchsia::sys::Launcher* const real_launcher_;
-  CreateComponentCallback create_component_callback_;
-};
-
-// Fake implementation of the isolated Environment created by ContextProvider.
-class FakeNestedSysEnvironment
-    : public fuchsia::sys::testing::Environment_TestBase {
- public:
-  explicit FakeNestedSysEnvironment(FakeSysLauncher* fake_launcher)
-      : fake_launcher_(fake_launcher) {}
-  ~FakeNestedSysEnvironment() override = default;
-
-  void Bind(fidl::InterfaceRequest<fuchsia::sys::Environment> request) {
-    bindings_.AddBinding(this, std::move(request));
-  }
-
-  // fuchsia::sys::Environment implementation.
-  void GetLauncher(fidl::InterfaceRequest<fuchsia::sys::Launcher>
-                       launcher_request) override {
-    fake_launcher_->Bind(std::move(launcher_request));
-  }
-
- private:
-  void NotImplemented_(const std::string& name) override {
-    ADD_FAILURE() << "Unexpected call: " << name;
-  }
-
-  FakeSysLauncher* const fake_launcher_;
-  fidl::BindingSet<fuchsia::sys::Environment> bindings_;
-};
-
-// Fake implementation of the Environment in which the ContextProvider runs.
-class FakeSysEnvironment final
-    : public fuchsia::sys::testing::Environment_TestBase {
- public:
-  FakeSysEnvironment(sys::OutgoingDirectory* outgoing_directory,
-                     fuchsia::sys::Launcher* real_launcher)
-      : bindings_(outgoing_directory, this),
-        fake_launcher_(real_launcher),
-        fake_nested_environment_(&fake_launcher_) {}
-  ~FakeSysEnvironment() override = default;
-
-  FakeSysLauncher& fake_launcher() { return fake_launcher_; }
-
-  // fuchsia::sys::Environment implementation.
-  void CreateNestedEnvironment(
-      fidl::InterfaceRequest<fuchsia::sys::Environment> environment_request,
-      fidl::InterfaceRequest<fuchsia::sys::EnvironmentController>
-          controller_request,
-      std::string label,
-      fuchsia::sys::ServiceListPtr additional_services,
-      fuchsia::sys::EnvironmentOptions options) override {
-    EXPECT_TRUE(environment_request);
-    EXPECT_TRUE(controller_request);
-    EXPECT_FALSE(label.empty());
-
-    // The nested environment should receive only the Loader service.
-    ASSERT_TRUE(additional_services);
-    ASSERT_EQ(additional_services->names.size(), 1u);
-    EXPECT_EQ(additional_services->names[0], "fuchsia.sys.Loader");
-    EXPECT_TRUE(additional_services->host_directory);
-
-    EXPECT_FALSE(options.inherit_parent_services);
-    EXPECT_FALSE(options.use_parent_runners);
-    EXPECT_TRUE(options.delete_storage_on_death);
-
-    fake_nested_environment_.Bind(std::move(environment_request));
-    nested_environment_controller_request_ = std::move(controller_request);
-  }
-  void GetDirectory(
-      fidl::InterfaceRequest<::fuchsia::io::Directory> request) override {
-    base::ComponentContextForProcess()->svc()->CloneChannel(std::move(request));
-  }
-
- private:
-  void NotImplemented_(const std::string& name) override {
-    ADD_FAILURE() << "Unexpected call: " << name;
-  }
-
-  base::ScopedServiceBinding<fuchsia::sys::Environment> bindings_;
-  FakeSysLauncher fake_launcher_;
-  FakeNestedSysEnvironment fake_nested_environment_;
-
-  fidl::InterfaceRequest<fuchsia::sys::EnvironmentController>
-      nested_environment_controller_request_;
-};
-
+// Returns a primitive `CreateContextParams` configured to pass the test
+// component's service directory as the service directory to be used by the
+// context.
 fuchsia::web::CreateContextParams BuildCreateContextParams() {
   fuchsia::web::CreateContextParams output;
   zx_status_t result = fdio_service_connect(
       base::kServiceDirectoryPath,
       output.mutable_service_directory()->NewRequest().TakeChannel().release());
-  ZX_CHECK(result == ZX_OK, result) << "Failed to open /svc";
+  EXPECT_EQ(result, ZX_OK) << "Failed to open /svc";
   return output;
 }
 
+// Returns a handle to the test component's `/cache` directory.
 fidl::InterfaceHandle<fuchsia::io::Directory> OpenCacheDirectory() {
   fidl::InterfaceHandle<fuchsia::io::Directory> cache_handle;
   zx_status_t result =
       fdio_service_connect(base::kPersistedCacheDirectoryPath,
                            cache_handle.NewRequest().TakeChannel().release());
-  ZX_CHECK(result == ZX_OK, result) << "Failed to open /cache";
+  EXPECT_EQ(result, ZX_OK) << "Failed to open /cache";
   return cache_handle;
 }
 
 }  // namespace
 
-class ContextProviderImplTest : public base::MultiProcessTest {
- public:
-  ContextProviderImplTest()
-      : sys_launcher_(base::ComponentContextForProcess()
-                          ->svc()
-                          ->Connect<fuchsia::sys::Launcher>()),
-        fake_environment_(test_component_context_.additional_services(),
-                          sys_launcher_.get()),
-        provider_(std::make_unique<ContextProviderImpl>()) {
-    bindings_.AddBinding(provider_.get(), provider_ptr_.NewRequest());
-  }
-
-  ContextProviderImplTest(const ContextProviderImplTest&) = delete;
-  ContextProviderImplTest& operator=(const ContextProviderImplTest&) = delete;
-
-  ~ContextProviderImplTest() override {
-    provider_ptr_.Unbind();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  // Check if a Context is responsive by creating a Frame from it and then
-  // listening for an event.
-  void CheckContextResponsive(
-      fidl::InterfacePtr<fuchsia::web::Context>* context) {
-    // Call a Context method and wait for it to invoke a listener call.
-    base::RunLoop run_loop;
-    context->set_error_handler(
-        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-          quit_loop.Run();
-          ZX_LOG(ERROR, status) << " Context lost.";
-          ADD_FAILURE();
-        });
-
-    fuchsia::web::FramePtr frame_ptr;
-    frame_ptr.set_error_handler(
-        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-          quit_loop.Run();
-          ZX_LOG(ERROR, status) << " Frame lost.";
-          ADD_FAILURE();
-        });
-    (*context)->CreateFrame(frame_ptr.NewRequest());
-
-    // Create a Frame and expect to see a navigation event.
-    CapturingNavigationStateObserver change_listener(run_loop.QuitClosure());
-    fidl::Binding<fuchsia::web::NavigationEventListener>
-        change_listener_binding(&change_listener);
-    frame_ptr->SetNavigationEventListener2(change_listener_binding.NewBinding(),
-                                           /*flags=*/{});
-    run_loop.Run();
-
-    ASSERT_TRUE(change_listener.captured_state()->has_url());
-    EXPECT_EQ(change_listener.captured_state()->url(), kUrl);
-    ASSERT_TRUE(change_listener.captured_state()->has_title());
-    EXPECT_EQ(change_listener.captured_state()->title(), kTitle);
-  }
-
-  // Checks that the Context channel was dropped.
-  void CheckContextUnresponsive(
-      fidl::InterfacePtr<fuchsia::web::Context>* context) {
-    base::RunLoop run_loop;
-    context->set_error_handler(
-        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-          quit_loop.Run();
-          EXPECT_EQ(status, ZX_ERR_PEER_CLOSED);
-        });
-
-    fuchsia::web::FramePtr frame;
-    (*context)->CreateFrame(frame.NewRequest());
-
-    // The error handler should be called here.
-    run_loop.Run();
-  }
-
+class ContextProviderImplTest : public ::testing::Test {
  protected:
+  ContextProviderImplTest()
+      : service_thread_("outgoing server"),
+        mock_realm_(test_component_context_.additional_services()) {
+    provider_.emplace(outgoing_directory_);
+    bindings_.AddBinding(&provider_.value(), provider_ptr_.NewRequest());
+  }
+
+  static void SetUpTestSuite() {
+    // Need to do this once on the main thread before spinning off others.
+    base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
+  }
+
+  void SetUp() override {
+    // Serve the context provider's outgoing directory on the service thread.
+    ASSERT_TRUE(
+        service_thread_.StartWithOptions({base::MessagePumpType::IO, 0}));
+    fidl::InterfaceHandle<fuchsia::io::Directory> handle;
+    service_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](sys::OutgoingDirectory* dir,
+               fidl::InterfaceRequest<fuchsia::io::Directory> request) {
+              dir->Serve(std::move(request));
+            },
+            base::Unretained(&outgoing_directory_), handle.NewRequest()));
+    service_thread_.FlushForTesting();
+
+    // Install the outgoing directory in the test's namespace for inspection.
+    fdio_ns_t* ns = nullptr;
+    ASSERT_EQ(::fdio_ns_get_installed(&ns), ZX_OK);
+    global_namespace_ = ns;
+    ASSERT_EQ(::fdio_ns_bind(global_namespace_, kTestOutgoingPath,
+                             handle.TakeChannel().release()),
+              ZX_OK);
+  }
+
+  void TearDown() override {
+    // Shut down the ContextProvider.
+    provider_ptr_.Unbind();
+    provider_.reset();
+
+    // Wait for all children to be destroyed before the mock is destroyed.
+    if (!fake_realm_.empty()) {
+      base::RunLoop run_loop;
+      fake_realm_.set_on_empty_callback(run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
+    ASSERT_EQ(::fdio_ns_unbind(global_namespace_, kTestOutgoingPath), ZX_OK);
+  }
+
+  // Add expectations to the MockRealm for creation and destruction of a single
+  // child web_instance, invoking the respective methods on the test's
+  // FakeRealm. `binder_request` and `context_request` capture the request
+  // channels for the Binder and Context protocols, respectively.
+  void ExpectChildInstance(
+      fidl::InterfaceRequest<fuchsia::component::Binder>& binder_request,
+      fidl::InterfaceRequest<fuchsia::web::Context>& context_request) {
+    ::testing::InSequence sequence;
+
+    EXPECT_CALL(mock_realm_, CreateChild(CollectionNameIs("web_instances"),
+                                         Not(IsInRealm(&fake_realm_)), _, _))
+        .WillOnce([this](const auto& collection, const auto& decl,
+                         const auto& args, auto callback) {
+          fake_realm_.CreateChild(decl, args);
+          callback(
+              fuchsia::component::Realm_CreateChild_Result::WithResponse({}));
+        })
+        .RetiresOnSaturation();
+
+    EXPECT_CALL(mock_realm_, OpenExposedDir(IsInRealm(&fake_realm_), _, _))
+        .WillOnce([this, &binder_request, &context_request](
+                      const auto& child, auto dir_request, auto callback) {
+          fake_realm_.OpenExposedDir(child, std::move(dir_request),
+                                     binder_request, context_request);
+          callback(
+              fuchsia::component::Realm_OpenExposedDir_Result::WithResponse(
+                  {}));
+        })
+        .RetiresOnSaturation();
+
+    EXPECT_CALL(mock_realm_, DestroyChild(IsInRealm(&fake_realm_), _))
+        .WillOnce([this](const auto& child, auto callback) {
+          fake_realm_.DestroyChild(child);
+          callback(
+              fuchsia::component::Realm_DestroyChild_Result::WithResponse({}));
+        })
+        .RetiresOnSaturation();
+  }
+
+  // Calls on `provider` to create a new web instance and waits for its
+  // creation. Returns the name of the newly-created instance.
+  std::string CreateAndWaitForInstance(
+      fuchsia::web::ContextProvider& provider,
+      fuchsia::web::CreateContextParams create_params,
+      fuchsia::web::ContextPtr& context_ptr) {
+    base::RunLoop run_loop;
+
+    // Terminate the loop if there's an error reported via the Context pointer.
+    context_ptr.set_error_handler(
+        [quit_loop = run_loop.QuitClosure()](zx_status_t error_status) {
+          ADD_FAILURE() << "Context unexpectedly closed while waiting for "
+                           "instance: "
+                        << zx_status_get_string(error_status);
+          quit_loop.Run();
+        });
+
+    provider.Create(std::move(create_params), context_ptr.NewRequest());
+
+    // Pump events until the child instance is created and capture its name.
+    std::string instance_name;
+    EXPECT_CALL(mock_fake_realm_delegate_, OnChildInstanceCreated(_))
+        .WillOnce([&instance_name, quit_loop = run_loop.QuitClosure()](
+                      const std::string& name) {
+          instance_name = name;
+          quit_loop.Run();
+        });
+    run_loop.Run();
+    ::testing::Mock::VerifyAndClearExpectations(&mock_fake_realm_delegate_);
+
+    // Clear the error handler since the loop is no longer running.
+    context_ptr.set_error_handler({});
+
+    return instance_name;
+  }
+
+  // Waits for the Context channel to be closed and returns the associated
+  // error or Epitaph.
+  zx_status_t WaitForContextClosedStatus(
+      fidl::InterfacePtr<fuchsia::web::Context>& context) {
+    zx_status_t status = ZX_OK;
+    base::RunLoop run_loop;
+    context.set_error_handler(
+        [&status, quit_loop = run_loop.QuitClosure()](zx_status_t error) {
+          status = error;
+          quit_loop.Run();
+        });
+    run_loop.Run();
+    return status;
+  }
+
+  // Returns the component declaration used to create the child named `name`.
+  const fuchsia::component::decl::Child& GetInstanceDecl(
+      const std::string& name) {
+    return fake_realm_.GetChildDecl(name);
+  }
+
+  // Returns the args used to create the child named `name`.
+  const fuchsia::component::CreateChildArgs& GetInstanceArgs(
+      const std::string& name) {
+    return fake_realm_.GetChildArgs(name);
+  }
+
+  // Returns the path to the directory in the test's namespace holding dynamic
+  // directory offers for the named instance.
+  static base::FilePath GetInstanceDirectory(const std::string& name) {
+    return base::FilePath(kTestOutgoingPath)
+        .AppendASCII("web_instances")
+        .AppendASCII(name);
+  }
+
+  // Returns the command line passed to the named instance.
+  static base::CommandLine GetInstanceCommandLine(const std::string& name) {
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    EXPECT_TRUE(fuchsia_component_support::AppendArgumentsFromFile(
+        GetInstanceDirectory(name)
+            .AppendASCII("command-line-config")
+            .AppendASCII("argv.json"),
+        command_line));
+    return command_line;
+  }
+
+  fuchsia::web::ContextProvider& context_provider() { return *provider_ptr_; }
+
+  void BindContextProvider(
+      fidl::InterfaceRequest<fuchsia::web::ContextProvider> request) {
+    bindings_.AddBinding(&provider_.value(), std::move(request));
+  }
+
+ private:
+  // The path in the test's namespace where the outgoing directory given to
+  // ContextProvider is bound for the sake of analysis.
+  static constexpr char kTestOutgoingPath[] = "/test_outgoing_path";
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
-  // fuchsia.sys.Launcher member must be constructed before the test component
-  // context replaces the process' component context.
-  fuchsia::sys::LauncherPtr sys_launcher_;
+  raw_ptr<fdio_ns_t> global_namespace_ = nullptr;
+  sys::OutgoingDirectory outgoing_directory_;
+  // The thread serving `outgoing_directory_` must be destroyed before the
+  // directory itself.
+  base::Thread service_thread_;
+
+  ::testing::StrictMock<MockFakeRealmDelegate> mock_fake_realm_delegate_;
+  FakeRealm fake_realm_{mock_fake_realm_delegate_};
 
   // Used to replace the process component context with one providing a fake
-  // fuchsia.sys.Environment, through which a nested Environment and fake
-  // Launcher are obtained.
+  // fuchsia.component.Realm.
   base::TestComponentContextForProcess test_component_context_;
-  FakeSysEnvironment fake_environment_;
 
-  std::unique_ptr<ContextProviderImpl> provider_;
-  fuchsia::web::ContextProviderPtr provider_ptr_;
+  // A mock fuchsia::component/Realm used to bridge to `fake_realm_`.
+  ::testing::StrictMock<fuchsia_component_support::MockRealm> mock_realm_;
   fidl::BindingSet<fuchsia::web::ContextProvider> bindings_;
-
- private:
-  struct CapturingNavigationStateObserver
-      : public fuchsia::web::NavigationEventListener {
-   public:
-    explicit CapturingNavigationStateObserver(base::OnceClosure on_change_cb)
-        : on_change_cb_(std::move(on_change_cb)) {}
-    ~CapturingNavigationStateObserver() override = default;
-
-    void OnNavigationStateChanged(
-        fuchsia::web::NavigationState change,
-        OnNavigationStateChangedCallback callback) override {
-      captured_state_ = std::move(change);
-      std::move(on_change_cb_).Run();
-    }
-
-    fuchsia::web::NavigationState* captured_state() { return &captured_state_; }
-
-   private:
-    base::OnceClosure on_change_cb_;
-    fuchsia::web::NavigationState captured_state_;
-  };
+  absl::optional<ContextProviderImpl> provider_;
+  fuchsia::web::ContextProviderPtr provider_ptr_;
 };
 
-TEST_F(ContextProviderImplTest, CanCreateContext) {
-  // Connect to a new context process.
-  fidl::InterfacePtr<fuchsia::web::Context> context;
-  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
-  CheckContextResponsive(&context);
+TEST_F(ContextProviderImplTest, CanCreateContextWithServiceDirectory) {
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
+  ExpectChildInstance(binder_request, context_request);
+
+  fuchsia::web::ContextPtr context;
+  const std::string instance_name = CreateAndWaitForInstance(
+      context_provider(), BuildCreateContextParams(), context);
+  ASSERT_FALSE(instance_name.empty());
+
+  // Requests for both interfaces should have been made.
+  ASSERT_TRUE(binder_request);
+  ASSERT_TRUE(context_request);
+
+  const auto& child = GetInstanceDecl(instance_name);
+  const auto& create_child_args = GetInstanceArgs(instance_name);
+
+  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
+                           "web_instance_with_svc_directory.cm"));
+  ASSERT_THAT(create_child_args,
+              HasDynamicDirectoryOffer("svc", /*is_writeable=*/true));
+  ASSERT_PRED1(base::PathExists,
+               GetInstanceDirectory(instance_name).AppendASCII("svc"));
 }
 
-TEST_F(ContextProviderImplTest, CreateValidatesServiceDirectory) {
-  // Attempt to create a Context without specifying a service directory.
-  fidl::InterfacePtr<fuchsia::web::Context> context;
-  fuchsia::web::CreateContextParams create_params;
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
-  base::RunLoop run_loop;
-  context.set_error_handler(
-      [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-        quit_loop.Run();
-        EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
-      });
-  run_loop.Run();
+TEST_F(ContextProviderImplTest, CanCreateContextWithoutServiceDirectory) {
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
+  ExpectChildInstance(binder_request, context_request);
+
+  fuchsia::web::ContextPtr context;
+  const std::string instance_name =
+      CreateAndWaitForInstance(context_provider(), {}, context);
+  ASSERT_FALSE(instance_name.empty());
+
+  // Requests for both interfaces should have been made.
+  ASSERT_TRUE(binder_request);
+  ASSERT_TRUE(context_request);
+
+  const auto& child = GetInstanceDecl(instance_name);
+  const auto& create_child_args = GetInstanceArgs(instance_name);
+
+  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
+                           "web_instance.cm"));
+  ASSERT_THAT(create_child_args,
+              Not(HasDynamicDirectoryOffer("svc", /*is_writeable=*/true)));
+  ASSERT_FALSE(
+      base::PathExists(GetInstanceDirectory(instance_name).AppendASCII("svc")));
 }
 
 TEST_F(ContextProviderImplTest, CreateValidatesDataDirectory) {
   // Deliberately supply the wrong kind of object as the data-directory.
-  fidl::InterfacePtr<fuchsia::web::Context> context;
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
   zx::socket socket1, socket2;
   ASSERT_EQ(zx::socket::create(0, &socket1, &socket2), ZX_OK);
   create_params.set_data_directory(
       fidl::InterfaceHandle<fuchsia::io::Directory>(
           zx::channel(socket1.release())));
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
-  base::RunLoop run_loop;
-  context.set_error_handler(
-      [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-        quit_loop.Run();
-        EXPECT_TRUE(status == ZX_ERR_PEER_CLOSED);
-      });
-  run_loop.Run();
+
+  fidl::InterfacePtr<fuchsia::web::Context> context_ptr;
+  context_provider().Create(std::move(create_params), context_ptr.NewRequest());
+  ASSERT_EQ(WaitForContextClosedStatus(context_ptr), ZX_ERR_PEER_CLOSED);
 }
 
-TEST_F(ContextProviderImplTest, CreateValidatesDrmFlags) {
-  {
-    // Request Widevine DRM but do not enable VULKAN.
-    fidl::InterfacePtr<fuchsia::web::Context> context;
-    fuchsia::web::CreateContextParams create_params =
-        BuildCreateContextParams();
-    *create_params.mutable_features() =
-        fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
-    *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
-    provider_ptr_->Create(std::move(create_params), context.NewRequest());
-    base::RunLoop run_loop;
-    context.set_error_handler(
-        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-          quit_loop.Run();
-          EXPECT_EQ(status, ZX_ERR_NOT_SUPPORTED);
-        });
-    run_loop.Run();
-  }
+// Request Widevine DRM but do not enable VULKAN.
+TEST_F(ContextProviderImplTest, CreateValidatesWidevineWithoutVulkan) {
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
+  *create_params.mutable_features() =
+      fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM;
+  *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
 
-  {
-    // Request PlayReady DRM but do not enable VULKAN.
-    fidl::InterfacePtr<fuchsia::web::Context> context;
-    fuchsia::web::CreateContextParams create_params =
-        BuildCreateContextParams();
-    create_params.set_playready_key_system("foo");
-    *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
-    provider_ptr_->Create(std::move(create_params), context.NewRequest());
-    base::RunLoop run_loop;
-    context.set_error_handler(
-        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-          quit_loop.Run();
-          EXPECT_EQ(status, ZX_ERR_NOT_SUPPORTED);
-        });
-    run_loop.Run();
-  }
+  fidl::InterfacePtr<fuchsia::web::Context> context;
+  context_provider().Create(std::move(create_params), context.NewRequest());
+  ASSERT_EQ(WaitForContextClosedStatus(context), ZX_ERR_NOT_SUPPORTED);
+}
 
-  {
-    // Requesting DRM without VULKAN is acceptable for HEADLESS Contexts.
-    fidl::InterfacePtr<fuchsia::web::Context> context;
-    fuchsia::web::CreateContextParams create_params =
-        BuildCreateContextParams();
-    *create_params.mutable_features() =
-        fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM |
-        fuchsia::web::ContextFeatureFlags::HEADLESS;
-    *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
-    provider_ptr_->Create(std::move(create_params), context.NewRequest());
-    base::RunLoop run_loop;
-    context.set_error_handler(
-        [quit_loop = run_loop.QuitClosure()](zx_status_t status) {
-          quit_loop.Run();
-          ZX_LOG(ERROR, status);
-          ADD_FAILURE();
-        });
-    // Spin the loop to allow CreateContext() to be handled, and the |context|
-    // channel to be disconnected, in case of failure.
-    run_loop.RunUntilIdle();
-  }
+// Request PlayReady DRM but do not enable VULKAN.
+TEST_F(ContextProviderImplTest, CreateValidatesPlayReadyWithoutVulkan) {
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
+  create_params.set_playready_key_system("foo");
+  *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
+
+  fidl::InterfacePtr<fuchsia::web::Context> context;
+  context_provider().Create(std::move(create_params), context.NewRequest());
+  ASSERT_EQ(WaitForContextClosedStatus(context), ZX_ERR_NOT_SUPPORTED);
+}
+
+// Requesting DRM without VULKAN is acceptable for HEADLESS Contexts.
+TEST_F(ContextProviderImplTest, CreateHeadlessDrmWithoutVulkan) {
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
+  ExpectChildInstance(binder_request, context_request);
+
+  fuchsia::web::ContextPtr context;
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
+  *create_params.mutable_features() =
+      fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM |
+      fuchsia::web::ContextFeatureFlags::HEADLESS;
+  *create_params.mutable_cdm_data_directory() = OpenCacheDirectory();
+  const std::string instance_name = CreateAndWaitForInstance(
+      context_provider(), std::move(create_params), context);
+  ASSERT_FALSE(instance_name.empty());
+
+  // Requests for both interfaces should have been made.
+  ASSERT_TRUE(binder_request);
+  ASSERT_TRUE(context_request);
+
+  const auto& child = GetInstanceDecl(instance_name);
+  const auto& create_child_args = GetInstanceArgs(instance_name);
+
+  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
+                           "web_instance_with_svc_directory.cm"));
+  ASSERT_THAT(create_child_args,
+              HasDynamicDirectoryOffer("cdm_data", /*is_writeable=*/true));
+  ASSERT_THAT(create_child_args,
+              HasDynamicDirectoryOffer("svc", /*is_writeable=*/true));
+  ASSERT_PRED1(base::PathExists,
+               GetInstanceDirectory(instance_name).AppendASCII("cdm_data"));
+  ASSERT_PRED1(base::PathExists,
+               GetInstanceDirectory(instance_name).AppendASCII("svc"));
 }
 
 TEST_F(ContextProviderImplTest, MultipleConcurrentClients) {
-  // Bind a Provider connection, and create a Context from it.
-  fuchsia::web::ContextProviderPtr provider_1_ptr;
-  bindings_.AddBinding(provider_.get(), provider_1_ptr.NewRequest());
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request_1;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request_1;
+  ExpectChildInstance(binder_request_1, context_request_1);
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request_2;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request_2;
+  ExpectChildInstance(binder_request_2, context_request_2);
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request_3;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request_3;
+  ExpectChildInstance(binder_request_3, context_request_3);
+
+  // Create a Context via the pre-bound Provider pointer.
   fuchsia::web::ContextPtr context_1;
-  provider_1_ptr->Create(BuildCreateContextParams(), context_1.NewRequest());
+  const std::string instance_1_name = CreateAndWaitForInstance(
+      context_provider(), BuildCreateContextParams(), context_1);
+  ASSERT_FALSE(instance_1_name.empty());
 
-  // Do the same on another Provider connection.
+  // Bind a second Provider pointer and create a Context via it.
   fuchsia::web::ContextProviderPtr provider_2_ptr;
-  bindings_.AddBinding(provider_.get(), provider_2_ptr.NewRequest());
+  BindContextProvider(provider_2_ptr.NewRequest());
   fuchsia::web::ContextPtr context_2;
-  provider_2_ptr->Create(BuildCreateContextParams(), context_2.NewRequest());
-
-  CheckContextResponsive(&context_1);
-  CheckContextResponsive(&context_2);
+  const std::string instance_2_name = CreateAndWaitForInstance(
+      *provider_2_ptr, BuildCreateContextParams(), context_2);
+  ASSERT_FALSE(instance_2_name.empty());
 
   // Ensure that the initial ContextProvider connection is still usable, by
   // creating and verifying another Context from it.
   fuchsia::web::ContextPtr context_3;
-  provider_2_ptr->Create(BuildCreateContextParams(), context_3.NewRequest());
-  CheckContextResponsive(&context_3);
+  const std::string instance_3_name = CreateAndWaitForInstance(
+      context_provider(), BuildCreateContextParams(), context_3);
+  ASSERT_FALSE(instance_3_name.empty());
 }
 
 TEST_F(ContextProviderImplTest, WithProfileDir) {
   base::ScopedTempDir profile_temp_dir;
-
-  // Connect to a new context process.
-  fidl::InterfacePtr<fuchsia::web::Context> context;
-  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
 
   // Setup data dir.
   ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
@@ -546,140 +615,166 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
       base::WriteFile(profile_temp_dir.GetPath().AppendASCII(kTestDataFileIn),
                       base::StringPiece()));
 
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
+  ExpectChildInstance(binder_request, context_request);
+
   // Pass a handle data dir to the context.
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
   create_params.set_data_directory(
       base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
 
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
+  fuchsia::web::ContextPtr context;
+  const std::string instance_name = CreateAndWaitForInstance(
+      context_provider(), std::move(create_params), context);
+  ASSERT_FALSE(instance_name.empty());
 
-  CheckContextResponsive(&context);
+  // Requests for both interfaces should have been made.
+  ASSERT_TRUE(binder_request);
+  ASSERT_TRUE(context_request);
 
-  // Verify that the context process can write to the data dir.
-  EXPECT_TRUE(base::PathExists(
-      profile_temp_dir.GetPath().AppendASCII(kTestDataFileOut)));
+  const auto& child = GetInstanceDecl(instance_name);
+  const auto& create_child_args = GetInstanceArgs(instance_name);
+  const base::CommandLine command = GetInstanceCommandLine(instance_name);
+
+  ASSERT_THAT(child, UrlIs("fuchsia-pkg://fuchsia.com/web_engine#meta/"
+                           "web_instance_with_svc_directory.cm"));
+  ASSERT_THAT(create_child_args,
+              HasDynamicDirectoryOffer("data", /*is_writeable=*/true));
+  EXPECT_FALSE(command.HasSwitch(switches::kIncognito));
+
+  auto data_dir = GetInstanceDirectory(instance_name).AppendASCII("data");
+  ASSERT_PRED1(base::PathExists, data_dir);
+
+  // Make sure the input file can be seen in the mounted dir.
+  ASSERT_PRED1(base::PathExists, data_dir.AppendASCII(kTestDataFileIn));
+
+  // Make sure that the mapped dir can be written to.
+  ASSERT_TRUE(base::WriteFile(data_dir.AppendASCII(kTestDataFileOut),
+                              base::StringPiece()));
+  ASSERT_PRED1(base::PathExists,
+               profile_temp_dir.GetPath().AppendASCII(kTestDataFileOut));
 }
 
+// Verify that creation fails when passing in a file rather than a directory.
 TEST_F(ContextProviderImplTest, FailsDataDirectoryIsFile) {
+  base::ScopedTempDir profile_temp_dir;
+  ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
+
   base::FilePath temp_file_path;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(profile_temp_dir.GetPath(),
+                                             &temp_file_path));
 
-  // Connect to a new context process.
-  fidl::InterfacePtr<fuchsia::web::Context> context;
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
-
-  // Pass in a handle to a file instead of a directory.
-  CHECK(base::CreateTemporaryFile(&temp_file_path));
   create_params.set_data_directory(base::OpenDirectoryHandle(temp_file_path));
 
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
-
-  CheckContextUnresponsive(&context);
+  fidl::InterfacePtr<fuchsia::web::Context> context;
+  context_provider().Create(std::move(create_params), context.NewRequest());
+  ASSERT_EQ(WaitForContextClosedStatus(context), ZX_ERR_PEER_CLOSED);
 }
 
 // Tests that unsafely_treat_insecure_origins_as_secure properly adds the right
 // command-line arguments to the Context process.
 TEST_F(ContextProviderImplTest, WithInsecureOriginsAsSecure) {
-  base::RunLoop loop;
-  fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
-        const char* kAllowRunningInsecureContent =
-            "allow-running-insecure-content";
-        loop.Quit();
-        EXPECT_TRUE(command.HasSwitch(
-            network::switches::kUnsafelyTreatInsecureOriginAsSecure));
-#if BUILDFLAG(ENABLE_CAST_RECEIVER)
-        ASSERT_STREQ(kAllowRunningInsecureContent,
-                     switches::kAllowRunningInsecureContent);
-        EXPECT_TRUE(command.HasSwitch(kAllowRunningInsecureContent));
-        EXPECT_THAT(command.GetSwitchValueASCII(switches::kDisableFeatures),
-                    testing::HasSubstr("AutoupgradeMixedContent"));
-        EXPECT_EQ(command.GetSwitchValueASCII(
-                      network::switches::kUnsafelyTreatInsecureOriginAsSecure),
-                  "http://example.com,http://example.net");
-#else
-        EXPECT_FALSE(command.HasSwitch(kAllowRunningInsecureContent));
-        EXPECT_FALSE(command.HasSwitch(switches::kDisableFeatures));
-
-        // The unrecognized values are passed on as origins.
-        EXPECT_EQ(command.GetSwitchValueASCII(
-                      network::switches::kUnsafelyTreatInsecureOriginAsSecure),
-                  "allow-running-insecure-content,"
-                  "disable-mixed-content-autoupgrade,"
-                  "http://example.com,http://example.net");
-#endif
-      }));
-
-  fuchsia::web::ContextPtr context;
-  context.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
+  ExpectChildInstance(binder_request, context_request);
 
   fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
-  std::vector<std::string> insecure_origins;
-  insecure_origins.push_back("allow-running-insecure-content");
-  insecure_origins.push_back("disable-mixed-content-autoupgrade");
-  insecure_origins.push_back("http://example.com");
-  insecure_origins.push_back("http://example.net");
   create_params.set_unsafely_treat_insecure_origins_as_secure(
-      std::move(insecure_origins));
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
+      {"allow-running-insecure-content", "disable-mixed-content-autoupgrade",
+       "http://example.com", "http://example.net"});
 
-  loop.Run();
+  fuchsia::web::ContextPtr context;
+  const std::string instance_name = CreateAndWaitForInstance(
+      context_provider(), std::move(create_params), context);
+  ASSERT_FALSE(instance_name.empty());
+
+  // Requests for both interfaces should have been made.
+  ASSERT_TRUE(binder_request);
+  ASSERT_TRUE(context_request);
+
+  static constexpr char kAllowRunningInsecureContent[] =
+      "allow-running-insecure-content";
+
+  const base::CommandLine command = GetInstanceCommandLine(instance_name);
+
+  EXPECT_TRUE(command.HasSwitch(
+      network::switches::kUnsafelyTreatInsecureOriginAsSecure));
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+  ASSERT_STREQ(kAllowRunningInsecureContent,
+               switches::kAllowRunningInsecureContent);
+  EXPECT_TRUE(command.HasSwitch(kAllowRunningInsecureContent));
+  EXPECT_THAT(command.GetSwitchValueASCII(switches::kDisableFeatures),
+              ::testing::HasSubstr("AutoupgradeMixedContent"));
+  EXPECT_EQ(command.GetSwitchValueASCII(
+                network::switches::kUnsafelyTreatInsecureOriginAsSecure),
+            "http://example.com,http://example.net");
+#else   // BUILDFLAG(ENABLE_CAST_RECEIVER)
+  EXPECT_FALSE(command.HasSwitch(kAllowRunningInsecureContent));
+  EXPECT_FALSE(command.HasSwitch(switches::kDisableFeatures));
+
+  // The unrecognized values are passed on as origins.
+  EXPECT_EQ(command.GetSwitchValueASCII(
+                network::switches::kUnsafelyTreatInsecureOriginAsSecure),
+            "allow-running-insecure-content,"
+            "disable-mixed-content-autoupgrade,"
+            "http://example.com,http://example.net");
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
 }
 
 TEST_F(ContextProviderImplTest, WithDataQuotaBytes) {
-  base::RunLoop loop;
-  fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
-        loop.Quit();
-        EXPECT_EQ(command.GetSwitchValueASCII("data-quota-bytes"),
-                  kTestQuotaBytesSwitchValue);
-      }));
-
-  fuchsia::web::ContextPtr context;
-  context.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
-
-  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
   base::ScopedTempDir profile_temp_dir;
   ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
+
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
+  ExpectChildInstance(binder_request, context_request);
+
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
   create_params.set_data_directory(
       base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
   create_params.set_data_quota_bytes(kTestQuotaBytes);
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
 
-  loop.Run();
+  fuchsia::web::ContextPtr context;
+  const std::string instance_name = CreateAndWaitForInstance(
+      context_provider(), std::move(create_params), context);
+  ASSERT_FALSE(instance_name.empty());
+
+  // Requests for both interfaces should have been made.
+  ASSERT_TRUE(binder_request);
+  ASSERT_TRUE(context_request);
+
+  const base::CommandLine command = GetInstanceCommandLine(instance_name);
+  EXPECT_EQ(command.GetSwitchValueASCII("data-quota-bytes"),
+            kTestQuotaBytesSwitchValue);
 }
 
 TEST_F(ContextProviderImplTest, WithCdmDataQuotaBytes) {
-  base::RunLoop loop;
-  fake_environment_.fake_launcher().set_create_component_callback(
-      base::BindLambdaForTesting([&loop](const base::CommandLine& command) {
-        loop.Quit();
-        EXPECT_EQ(command.GetSwitchValueASCII("cdm-data-quota-bytes"),
-                  kTestQuotaBytesSwitchValue);
-      }));
-
-  fuchsia::web::ContextPtr context;
-  context.set_error_handler([&loop](zx_status_t status) {
-    loop.Quit();
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
-
-  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
   base::ScopedTempDir profile_temp_dir;
   ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
+
+  fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
+  fidl::InterfaceRequest<fuchsia::web::Context> context_request;
+  ExpectChildInstance(binder_request, context_request);
+
+  fuchsia::web::CreateContextParams create_params = BuildCreateContextParams();
   create_params.set_cdm_data_directory(
       base::OpenDirectoryHandle(profile_temp_dir.GetPath()));
   create_params.set_features(fuchsia::web::ContextFeatureFlags::HEADLESS |
                              fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM);
   create_params.set_cdm_data_quota_bytes(kTestQuotaBytes);
-  provider_ptr_->Create(std::move(create_params), context.NewRequest());
 
-  loop.Run();
+  fuchsia::web::ContextPtr context;
+  const std::string instance_name = CreateAndWaitForInstance(
+      context_provider(), std::move(create_params), context);
+  ASSERT_FALSE(instance_name.empty());
+
+  // Requests for both interfaces should have been made.
+  ASSERT_TRUE(binder_request);
+  ASSERT_TRUE(context_request);
+
+  const base::CommandLine command = GetInstanceCommandLine(instance_name);
+  EXPECT_EQ(command.GetSwitchValueASCII("cdm-data-quota-bytes"),
+            kTestQuotaBytesSwitchValue);
 }

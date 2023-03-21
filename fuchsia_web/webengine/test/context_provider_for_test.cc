@@ -38,9 +38,29 @@ namespace {
 
   realm_builder
       .AddRoute(::component_testing::Route{
-          .capabilities = {::component_testing::Protocol{
-                               "fuchsia.sys.Environment"},
-                           ::component_testing::Protocol{"fuchsia.sys.Loader"}},
+          .capabilities =
+              {// Capabilities used/routed by WebInstanceHost:
+               ::component_testing::Directory{"config-data-for-web-instance"},
+               // Required capabilities offered to web-instance.cm:
+               ::component_testing::Directory{"root-ssl-certificates"},
+               ::component_testing::Protocol{"fuchsia.buildinfo.Provider"},
+               ::component_testing::Protocol{"fuchsia.device.NameProvider"},
+               ::component_testing::Protocol{"fuchsia.fonts.Provider"},
+               ::component_testing::Protocol{"fuchsia.hwinfo.Product"},
+               ::component_testing::Protocol{"fuchsia.intl.PropertyProvider"},
+               ::component_testing::Protocol{"fuchsia.kernel.VmexResource"},
+               ::component_testing::Protocol{"fuchsia.logger.LogSink"},
+               ::component_testing::Protocol{"fuchsia.memorypressure.Provider"},
+               ::component_testing::Protocol{"fuchsia.process.Launcher"},
+               ::component_testing::Protocol{"fuchsia.sysmem.Allocator"},
+               // Optional capabilities offered to web-instance.cm:
+               ::component_testing::Protocol{"fuchsia.camera3.DeviceWatcher"},
+               ::component_testing::Protocol{"fuchsia.media.ProfileProvider"},
+               ::component_testing::Protocol{"fuchsia.settings.Display"},
+               ::component_testing::Protocol{
+                   "fuchsia.tracing.perfetto.ProducerConnector"},
+               ::component_testing::Protocol{
+                   "fuchsia.tracing.provider.Registry"}},
           .source = ::component_testing::ParentRef{},
           .targets = {::component_testing::ChildRef{kContextProviderService}}})
       .AddRoute(::component_testing::Route{

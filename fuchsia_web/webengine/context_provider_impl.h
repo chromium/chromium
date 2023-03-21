@@ -8,12 +8,20 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include "fuchsia_web/webengine/web_engine_export.h"
-#include "fuchsia_web/webinstance_host/web_instance_host_v1.h"
+#include "fuchsia_web/webinstance_host/web_instance_host.h"
+
+namespace sys {
+class OutgoingDirectory;
+}  // namespace sys
 
 class WEB_ENGINE_EXPORT ContextProviderImpl
     : public fuchsia::web::ContextProvider {
  public:
-  ContextProviderImpl();
+  // The impl will offer capabilities to child instances via
+  // `outgoing_directory`. ContextProviderImpl owners must serve the directory
+  // before creating web instances, and must ensure that the directory outlives
+  // the ContextProviderImpl instance.
+  explicit ContextProviderImpl(sys::OutgoingDirectory& outgoing_directory);
   ~ContextProviderImpl() override;
 
   ContextProviderImpl(const ContextProviderImpl&) = delete;
@@ -29,7 +37,7 @@ class WEB_ENGINE_EXPORT ContextProviderImpl
 
  private:
   // Manages an isolated Environment, and the web instances hosted within it.
-  WebInstanceHostV1 web_instance_host_;
+  WebInstanceHost web_instance_host_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_CONTEXT_PROVIDER_IMPL_H_

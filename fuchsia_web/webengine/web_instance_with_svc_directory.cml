@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A component manifest used by WebInstanceHost when creating a Context for
+// which the caller provides a service_directory in its CreateContextParams.
+{
+  include: [ "//fuchsia_web/webengine/web_instance-common.shard.cml" ],
+  use: [
+    // fuchsia.web/CreateContextParams.service_directory.
+    {
+      directory: "svc",
+      rights: [ "rw*" ],
+      path: "/svc",
+    },
+  ],
+}

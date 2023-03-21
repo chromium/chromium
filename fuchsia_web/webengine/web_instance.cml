@@ -1,91 +1,17 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// A component manifest used by WebInstanceHost when creating a Context for
+// which the caller does not provide a service_directory in its
+// CreateContextParams.
 {
   include: [
     "inspect/client.shard.cml",
     "syslog/client.shard.cml",
-  ],
-  program: {
-    runner: "elf",
-    binary: "web_engine_exe",
-
-    // Required to allow JIT in child processes such as renderers.
-    job_policy_ambient_mark_vmo_exec: "true",
-  },
-  capabilities: [
-    {
-      protocol: [
-        "fuchsia.web.Context",
-        "fuchsia.web.Debug",
-        "fuchsia.web.FrameHost",
-      ]
-    }
-  ],
-  expose: [
-    {
-      protocol: [
-        "fuchsia.web.Context",
-        "fuchsia.web.Debug",
-        "fuchsia.web.FrameHost",
-      ],
-      from: "self",
-    },
-    {
-      protocol: "fuchsia.component.Binder",
-      from: "framework",
-    }
+    "//fuchsia_web/webengine/web_instance-common.shard.cml",
   ],
   use: [
-    // fuchsia.web/CreateContextParams.cdm_data_directory.
-    {
-      directory: "cdm_data",
-      path: "/cdm_data",
-      rights: [ "rw*" ],
-      availability: "optional",
-    },
-    // Holds optional .json config files.
-    {
-      directory: "config-data",
-      rights: [ "r*" ],
-      path: "/config/data",
-      availability: "optional",
-    },
-    // fuchsia.web/CreateContextParams.data_directory.
-    {
-      directory: "data",
-      path: "/data",
-      rights: [ "rw*" ],
-      availability: "optional",
-    },
-    // Holds cert.pem; the system root certificate store.
-    {
-      directory: "root-ssl-certificates",
-      rights: [ "r*" ],
-      path: "/config/ssl",
-      availability: "optional",
-    },
-    // fuchsia.web/CreateContextParams.content_directories.
-    {
-      directory: "content-directories",
-      rights: [ "r*" ],
-      path: "/content-directories",
-      availability: "optional",
-    },
-    // Expected to host an "argv.json" file containing command line args.
-    {
-      directory: "command-line-config",
-      rights: [ "r*" ],
-      path: "/config/command-line",
-      availability: "optional",
-    },
-    // Temporary directory specified by WebInstanceHost.set_tmp_dir.
-    {
-      directory: "tmp",
-      path: "/tmp",
-      rights: [ "rw*" ],
-      availability: "optional",
-    },
     {
       // Required capabilities for all configurations.
       protocol: [
