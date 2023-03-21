@@ -329,14 +329,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
-#if DCHECK_IS_ON()
-  DCHECK(model_.pending_updates().empty() ||
-         model_.pending_updates_bundle_id() == previous_active_tree_id);
-#endif
   model_.ClearPendingUpdates();
-#if DCHECK_IS_ON()
-  model_.SetPendingUpdatesBundleId(ui::AXTreeIDUnknown());
-#endif
 
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
@@ -453,10 +446,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   Draw();
   // Once drawing is complete, unserialize all of the pending updates on the
   // active tree and send out a new distillation request.
-  model_.UnserializePendingUpdates();
-#if DCHECK_IS_ON()
-  model_.SetPendingUpdatesBundleId(ui::AXTreeIDUnknown());
-#endif
+  model_.UnserializePendingUpdates(tree_id);
 }
 
 void ReadAnythingAppController::Draw() {

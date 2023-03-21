@@ -94,33 +94,39 @@ void ReadAnythingAppModel::AddTree(
 
 void ReadAnythingAppModel::EraseTree(ui::AXTreeID tree_id) {
   trees_.erase(tree_id);
-}
 
-size_t ReadAnythingAppModel::NumTreesForTesting() const {
-  return trees_.size();
+  // Ensure any pending updates associated with the erased tree are removed.
+  pending_updates_map_.erase(tree_id);
 }
 
 void ReadAnythingAppModel::AddPendingUpdates(
+    const ui::AXTreeID tree_id,
     const std::vector<ui::AXTreeUpdate>& updates) {
-  pending_updates_.insert(pending_updates_.end(),
-                          std::make_move_iterator(updates.begin()),
-                          std::make_move_iterator(updates.end()));
+  std::vector<ui::AXTreeUpdate> update = GetOrCreatePendingUpdateAt(tree_id);
+  update.insert(update.end(), std::make_move_iterator(updates.begin()),
+                std::make_move_iterator(updates.end()));
+  pending_updates_map_[tree_id] = update;
 }
 
 void ReadAnythingAppModel::ClearPendingUpdates() {
-  pending_updates_.clear();
+  pending_updates_map_.clear();
 }
 
-void ReadAnythingAppModel::UnserializePendingUpdates() {
-#if DCHECK_IS_ON()
-  DCHECK(pending_updates_.empty() ||
-         pending_updates_bundle_id_ == active_tree_id_);
-#endif
-  UnserializeUpdates(std::move(pending_updates_), active_tree_id_);
+void ReadAnythingAppModel::UnserializePendingUpdates(ui::AXTreeID tree_id) {
+  if (!pending_updates_map_.contains(tree_id)) {
+    return;
+  }
+  // TODO(b/1266555): Ensure there are no crashes / unexpected behavior if
+  //  an accessibility event is received on the same tree after unserialization
+  //  has begun.
+  std::vector<ui::AXTreeUpdate> update =
+      pending_updates_map_.extract(tree_id).mapped();
+  DCHECK(update.empty() || tree_id == active_tree_id_);
+  UnserializeUpdates(update, tree_id);
 }
 
 void ReadAnythingAppModel::UnserializeUpdates(
-    std::vector<ui::AXTreeUpdate> updates,
+    const std::vector<ui::AXTreeUpdate>& updates,
     const ui::AXTreeID& tree_id) {
   if (updates.empty()) {
     return;
@@ -164,16 +170,12 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   // complete.
   if (tree_id == active_tree_id_) {
     if (distillation_in_progress_) {
-#if DCHECK_IS_ON()
-      DCHECK(pending_updates_.empty() || tree_id == pending_updates_bundle_id_);
-      SetPendingUpdatesBundleId(tree_id);
-#endif
-      AddPendingUpdates(updates);
+      AddPendingUpdates(tree_id, updates);
       return;
     } else {
       // We need to unserialize old updates before we can unserialize the new
       // ones
-      UnserializePendingUpdates();
+      UnserializePendingUpdates(tree_id);
     }
   }
   UnserializeUpdates(std::move(updates), tree_id);
@@ -195,6 +197,15 @@ bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
 
 bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
   return base::Contains(content_node_ids_, ax_node_id);
+}
+
+const std::vector<ui::AXTreeUpdate>&
+ReadAnythingAppModel::GetOrCreatePendingUpdateAt(ui::AXTreeID tree_id) {
+  if (!pending_updates_map_.contains(tree_id)) {
+    pending_updates_map_[tree_id] = std::vector<ui::AXTreeUpdate>();
+  }
+
+  return pending_updates_map_[tree_id];
 }
 
 double ReadAnythingAppModel::GetLetterSpacingValue(
