@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Signin.AccountConsistencyPromoAction"
     enum="AccountConsistencyPromoAction" expires_after="2023-08-20">
   <owner>bsazonov@chromium.org</owner>
-  <owner>aliceywang@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records the action taken by user after receiving the header
     from Gaia in the web sign-in flow. Currently only recorded on Android.
@@ -105,7 +105,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
     expires_after="2023-09-03">
   <owner>triploblastic@chromium.org</owner>
-  <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to fetch the account avatar for one account in
@@ -120,7 +119,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
     expires_after="2023-09-10">
   <owner>triploblastic@chromium.org</owner>
-  <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to fetch the account information (except avatar) for one
@@ -207,8 +205,8 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidAccountInfoFetchTime" units="ms"
-    expires_after="2023-03-05">
-  <owner>aliceywang@chromium.org</owner>
+    expires_after="2023-06-21">
+  <owner>samarchehade@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to fetch the account information (user names, avatar) for
@@ -220,7 +218,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.AndroidDeviceAccountsNumberWhenEnteringFRE"
     units="count" expires_after="2023-09-10">
   <owner>bsazonov@chromium.org</owner>
-  <owner>aliceywang@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Number of Android accounts on device when entering the First Run Experience
     sign-in screen.
@@ -259,7 +257,7 @@ prefs when the profile is loaded.  -->
 <histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
     expires_after="2023-08-27">
   <owner>triploblastic@chromium.org</owner>
-  <owner>aliceywang@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     The number of Android accounts present on the device. Recorded on startup.
   </summary>
@@ -1352,7 +1350,6 @@ kept as long as profile signout is possible -->
 <histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}" units="counts"
     expires_after="2023-09-22">
   <owner>triploblastic@chromium.org</owner>
-  <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records how many times sync promos have been shown (including
