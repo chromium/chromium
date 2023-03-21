@@ -9,11 +9,6 @@
 
 @protocol ActivityServiceCommands <NSObject>
 
-// Stops the existing SharingCoordinator and creates a new one. This is used
-// when a sharing coordinator is already started, but the user taps again on the
-// share button.
-- (void)stopAndStartSharingCoordinator;
-
 // Shows the share sheet for the current page.
 - (void)sharePage;
 

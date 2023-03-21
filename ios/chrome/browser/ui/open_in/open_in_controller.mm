@@ -513,16 +513,14 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
   if (@available(iOS 14.5, *)) {
     if (IsOpenInDownloadWithWKDownload()) {
-      __weak __typeof(self) weakSelf = self;
-      [self.download cancelDownload:^() {
-        [weakSelf removeOverlayedView];
-        if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-          [weakSelf hideOpenInToolbar];
-        }
-      }];
-      _downloadCanceled = YES;
+      [self.download cancelDownload];
     }
   }
+
+  [self removeOverlayedView];
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+    [self hideOpenInToolbar];
+  _downloadCanceled = YES;
 }
 
 - (void)removeOverlayedView {
