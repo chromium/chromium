@@ -505,25 +505,53 @@ void vpx_d63_predictor_16x16_c(uint8_t* dst,
                                ptrdiff_t stride,
                                const uint8_t* above,
                                const uint8_t* left);
-#define vpx_d63_predictor_16x16 vpx_d63_predictor_16x16_c
+void vpx_d63_predictor_16x16_neon(uint8_t* dst,
+                                  ptrdiff_t stride,
+                                  const uint8_t* above,
+                                  const uint8_t* left);
+RTCD_EXTERN void (*vpx_d63_predictor_16x16)(uint8_t* dst,
+                                            ptrdiff_t stride,
+                                            const uint8_t* above,
+                                            const uint8_t* left);
 
 void vpx_d63_predictor_32x32_c(uint8_t* dst,
                                ptrdiff_t stride,
                                const uint8_t* above,
                                const uint8_t* left);
-#define vpx_d63_predictor_32x32 vpx_d63_predictor_32x32_c
+void vpx_d63_predictor_32x32_neon(uint8_t* dst,
+                                  ptrdiff_t stride,
+                                  const uint8_t* above,
+                                  const uint8_t* left);
+RTCD_EXTERN void (*vpx_d63_predictor_32x32)(uint8_t* dst,
+                                            ptrdiff_t stride,
+                                            const uint8_t* above,
+                                            const uint8_t* left);
 
 void vpx_d63_predictor_4x4_c(uint8_t* dst,
                              ptrdiff_t stride,
                              const uint8_t* above,
                              const uint8_t* left);
-#define vpx_d63_predictor_4x4 vpx_d63_predictor_4x4_c
+void vpx_d63_predictor_4x4_neon(uint8_t* dst,
+                                ptrdiff_t stride,
+                                const uint8_t* above,
+                                const uint8_t* left);
+RTCD_EXTERN void (*vpx_d63_predictor_4x4)(uint8_t* dst,
+                                          ptrdiff_t stride,
+                                          const uint8_t* above,
+                                          const uint8_t* left);
 
 void vpx_d63_predictor_8x8_c(uint8_t* dst,
                              ptrdiff_t stride,
                              const uint8_t* above,
                              const uint8_t* left);
-#define vpx_d63_predictor_8x8 vpx_d63_predictor_8x8_c
+void vpx_d63_predictor_8x8_neon(uint8_t* dst,
+                                ptrdiff_t stride,
+                                const uint8_t* above,
+                                const uint8_t* left);
+RTCD_EXTERN void (*vpx_d63_predictor_8x8)(uint8_t* dst,
+                                          ptrdiff_t stride,
+                                          const uint8_t* above,
+                                          const uint8_t* left);
 
 void vpx_d63e_predictor_4x4_c(uint8_t* dst,
                               ptrdiff_t stride,
@@ -1366,21 +1394,48 @@ unsigned int vpx_mse16x8_c(const uint8_t* src_ptr,
                            const uint8_t* ref_ptr,
                            int ref_stride,
                            unsigned int* sse);
-#define vpx_mse16x8 vpx_mse16x8_c
+unsigned int vpx_mse16x8_neon(const uint8_t* src_ptr,
+                              int src_stride,
+                              const uint8_t* ref_ptr,
+                              int ref_stride,
+                              unsigned int* sse);
+RTCD_EXTERN unsigned int (*vpx_mse16x8)(const uint8_t* src_ptr,
+                                        int src_stride,
+                                        const uint8_t* ref_ptr,
+                                        int ref_stride,
+                                        unsigned int* sse);
 
 unsigned int vpx_mse8x16_c(const uint8_t* src_ptr,
                            int src_stride,
                            const uint8_t* ref_ptr,
                            int ref_stride,
                            unsigned int* sse);
-#define vpx_mse8x16 vpx_mse8x16_c
+unsigned int vpx_mse8x16_neon(const uint8_t* src_ptr,
+                              int src_stride,
+                              const uint8_t* ref_ptr,
+                              int ref_stride,
+                              unsigned int* sse);
+RTCD_EXTERN unsigned int (*vpx_mse8x16)(const uint8_t* src_ptr,
+                                        int src_stride,
+                                        const uint8_t* ref_ptr,
+                                        int ref_stride,
+                                        unsigned int* sse);
 
 unsigned int vpx_mse8x8_c(const uint8_t* src_ptr,
                           int src_stride,
                           const uint8_t* ref_ptr,
                           int ref_stride,
                           unsigned int* sse);
-#define vpx_mse8x8 vpx_mse8x8_c
+unsigned int vpx_mse8x8_neon(const uint8_t* src_ptr,
+                             int src_stride,
+                             const uint8_t* ref_ptr,
+                             int ref_stride,
+                             unsigned int* sse);
+RTCD_EXTERN unsigned int (*vpx_mse8x8)(const uint8_t* src_ptr,
+                                       int src_stride,
+                                       const uint8_t* ref_ptr,
+                                       int ref_stride,
+                                       unsigned int* sse);
 
 void vpx_plane_add_noise_c(uint8_t* start,
                            const int8_t* noise,
@@ -3222,6 +3277,18 @@ static void setup_rtcd_internal(void) {
   vpx_d45_predictor_8x8 = vpx_d45_predictor_8x8_c;
   if (flags & HAS_NEON)
     vpx_d45_predictor_8x8 = vpx_d45_predictor_8x8_neon;
+  vpx_d63_predictor_16x16 = vpx_d63_predictor_16x16_c;
+  if (flags & HAS_NEON)
+    vpx_d63_predictor_16x16 = vpx_d63_predictor_16x16_neon;
+  vpx_d63_predictor_32x32 = vpx_d63_predictor_32x32_c;
+  if (flags & HAS_NEON)
+    vpx_d63_predictor_32x32 = vpx_d63_predictor_32x32_neon;
+  vpx_d63_predictor_4x4 = vpx_d63_predictor_4x4_c;
+  if (flags & HAS_NEON)
+    vpx_d63_predictor_4x4 = vpx_d63_predictor_4x4_neon;
+  vpx_d63_predictor_8x8 = vpx_d63_predictor_8x8_c;
+  if (flags & HAS_NEON)
+    vpx_d63_predictor_8x8 = vpx_d63_predictor_8x8_neon;
   vpx_dc_128_predictor_16x16 = vpx_dc_128_predictor_16x16_c;
   if (flags & HAS_NEON)
     vpx_dc_128_predictor_16x16 = vpx_dc_128_predictor_16x16_neon;
@@ -3420,6 +3487,15 @@ static void setup_rtcd_internal(void) {
   vpx_mse16x16 = vpx_mse16x16_c;
   if (flags & HAS_NEON)
     vpx_mse16x16 = vpx_mse16x16_neon;
+  vpx_mse16x8 = vpx_mse16x8_c;
+  if (flags & HAS_NEON)
+    vpx_mse16x8 = vpx_mse16x8_neon;
+  vpx_mse8x16 = vpx_mse8x16_c;
+  if (flags & HAS_NEON)
+    vpx_mse8x16 = vpx_mse8x16_neon;
+  vpx_mse8x8 = vpx_mse8x8_c;
+  if (flags & HAS_NEON)
+    vpx_mse8x8 = vpx_mse8x8_neon;
   vpx_post_proc_down_and_across_mb_row = vpx_post_proc_down_and_across_mb_row_c;
   if (flags & HAS_NEON)
     vpx_post_proc_down_and_across_mb_row =
