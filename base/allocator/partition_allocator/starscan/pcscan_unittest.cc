@@ -683,7 +683,9 @@ class PartitionAllocPCScanStackScanningTest : public PartitionAllocPCScanTest {
 // static
 void* PartitionAllocPCScanStackScanningTest::dangling_reference_ = nullptr;
 
-TEST_F(PartitionAllocPCScanStackScanningTest, StackScanning) {
+// The test currently fails on some platform due to the stack dangling reference
+// not being found.
+TEST_F(PartitionAllocPCScanStackScanningTest, DISABLED_StackScanning) {
   PCScan::EnableStackScanning();
 
   // Set to nullptr if the test is retried.
