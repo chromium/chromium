@@ -210,35 +210,23 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
                                                std::move(image_filter));
         break;
       case FilterOperation::ZOOM: {
-        // The center point, always the midpoint of the unclipped rectangle.
-        // When we go to either edge of the screen, the width/height will shrink
-        // at the same rate the offset changes. Use abs on the offset since we
-        // do not care about the offset direction.
-        gfx::Vector2dF center =
-            gfx::Vector2dF((size.width() + std::abs(offset.x())) / 2,
-                           (size.height() + std::abs(offset.y())) / 2);
+        DCHECK_GE(op.amount(), 1.0);
 
-        // The dimensions of the source content. This shrinks as the texture
-        // rectangle gets clipped.
-        gfx::Vector2d src_dimensions =
-            gfx::Vector2d((size.width() + std::abs(offset.x())) / op.amount(),
-                          (size.height() + std::abs(offset.y())) / op.amount());
-
-        // When the magnifier goes to the left/top border of the screen, we need
-        // to adjust the x/y position of the rect. The rate the position gets
-        // updated currently only works properly for a 2x magnification.
-        DCHECK_EQ(op.amount(), 2.f);
-        gfx::Vector2dF center_offset = gfx::Vector2dF(0, 0);
-        if (offset.x() >= 0)
-          center_offset.set_x(-offset.x() / op.amount());
-        if (offset.y() <= 0)
-          center_offset.set_y(offset.y() / op.amount());
+        // Compute the zoom center, from which we apply a scale transformation
+        // to get the zoom filter source rectangle. Usually the zoom center is
+        // the center of the unclipped rectangle, but this can sometimes be
+        // clipped when the magnifier is past the edge of the screen. When that
+        // happens, take the closest point inside the clipped rectangle instead.
+        gfx::PointF unclipped_rect_center = gfx::PointF(
+            (size.width() + offset.x()) / 2, (size.height() + offset.y()) / 2);
+        const gfx::PointF zoom_center =
+            gfx::RectF(size).ClosestPoint(unclipped_rect_center);
 
         sk_sp<PaintFilter> zoom_filter = sk_make_sp<MagnifierPaintFilter>(
-            SkRect::MakeXYWH(
-                (center.x() - src_dimensions.x() / 2.f) + center_offset.x(),
-                (center.y() - src_dimensions.y() / 2.f) + center_offset.y(),
-                size.width() / op.amount(), size.height() / op.amount()),
+            SkRect::MakeXYWH(zoom_center.x() - zoom_center.x() / op.amount(),
+                             zoom_center.y() - zoom_center.y() / op.amount(),
+                             size.width() / op.amount(),
+                             size.height() / op.amount()),
             op.zoom_inset(), nullptr);
         if (image_filter) {
           // TODO(ajuma): When there's a 1-input version of

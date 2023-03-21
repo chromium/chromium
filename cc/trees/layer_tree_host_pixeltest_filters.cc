@@ -769,17 +769,20 @@ TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
   scoped_refptr<SolidColorLayer> root =
       CreateSolidColorLayer(gfx::Rect(300, 300), SK_ColorWHITE);
 
-  // Create the pattern. Two blue/yellow side by side blocks with a horizontal
-  // green strip.
+  // Create the pattern. Two blue/yellow side by side blocks with two horizontal
+  // green strips.
   scoped_refptr<SolidColorLayer> left =
       CreateSolidColorLayer(gfx::Rect(0, 0, 100, 150), SK_ColorBLUE);
   root->AddChild(left);
   scoped_refptr<SolidColorLayer> right =
       CreateSolidColorLayer(gfx::Rect(100, 0, 200, 150), SK_ColorYELLOW);
   root->AddChild(right);
-  scoped_refptr<SolidColorLayer> horizontal_strip =
+  scoped_refptr<SolidColorLayer> top_horizontal_strip =
       CreateSolidColorLayer(gfx::Rect(0, 10, 300, 10), SK_ColorGREEN);
-  root->AddChild(horizontal_strip);
+  root->AddChild(top_horizontal_strip);
+  scoped_refptr<SolidColorLayer> bottom_horizontal_strip =
+      CreateSolidColorLayer(gfx::Rect(0, 275, 300, 10), SK_ColorGREEN);
+  root->AddChild(bottom_horizontal_strip);
 
   // Test a zoom that extends past the edge of the screen.
   scoped_refptr<SolidColorLayer> border_edge_zoom =
@@ -793,7 +796,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
       gfx::RRectF(border_filter_bounds, 0));
   root->AddChild(border_edge_zoom);
 
-  // Test a zoom that extends past the edge of the screen.
+  // Test a zoom that extends past the top edge of the screen.
   scoped_refptr<SolidColorLayer> top_edge_zoom =
       CreateSolidColorLayer(gfx::Rect(70, -10, 50, 50), SK_ColorTRANSPARENT);
   FilterOperations top_filters;
@@ -803,6 +806,43 @@ TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
   gfx::RectF top_filter_bounds(gfx::SizeF(top_edge_zoom->bounds()));
   top_edge_zoom->SetBackdropFilterBounds(gfx::RRectF(top_filter_bounds, 0));
   root->AddChild(top_edge_zoom);
+
+  // Test a zoom centered near the top left of the screen.
+  scoped_refptr<SolidColorLayer> top_left_zoom =
+      CreateSolidColorLayer(gfx::Rect(-24, -24, 50, 50), SK_ColorTRANSPARENT);
+  FilterOperations top_left_filters;
+  top_left_filters.Append(
+      FilterOperation::CreateZoomFilter(1.25f /* zoom */, 0 /* inset */));
+  top_left_zoom->SetBackdropFilters(top_left_filters);
+  gfx::RectF top_left_filter_bounds(gfx::SizeF(top_left_zoom->bounds()));
+  top_left_zoom->SetBackdropFilterBounds(
+      gfx::RRectF(top_left_filter_bounds, 0));
+  root->AddChild(top_left_zoom);
+
+  // Test a zoom centered near the top right of the screen.
+  scoped_refptr<SolidColorLayer> top_right_zoom =
+      CreateSolidColorLayer(gfx::Rect(274, -24, 50, 50), SK_ColorTRANSPARENT);
+  FilterOperations top_right_filters;
+  top_right_filters.Append(
+      FilterOperation::CreateZoomFilter(4.0f /* zoom */, 0 /* inset */));
+  top_right_zoom->SetBackdropFilters(top_right_filters);
+  gfx::RectF top_right_filter_bounds(gfx::SizeF(top_right_zoom->bounds()));
+  top_right_zoom->SetBackdropFilterBounds(
+      gfx::RRectF(top_right_filter_bounds, 0));
+  root->AddChild(top_right_zoom);
+
+  // Test a zoom centered near the bottom right of the screen.
+  scoped_refptr<SolidColorLayer> bottom_right_zoom =
+      CreateSolidColorLayer(gfx::Rect(270, 270, 50, 50), SK_ColorTRANSPARENT);
+  FilterOperations bottom_right_filters;
+  bottom_right_filters.Append(
+      FilterOperation::CreateZoomFilter(1.25f /* zoom */, 0 /* inset */));
+  bottom_right_zoom->SetBackdropFilters(bottom_right_filters);
+  gfx::RectF bottom_right_filter_bounds(
+      gfx::SizeF(bottom_right_zoom->bounds()));
+  bottom_right_zoom->SetBackdropFilterBounds(
+      gfx::RRectF(bottom_right_filter_bounds, 0));
+  root->AddChild(bottom_right_zoom);
 
   // Test a zoom that is fully within the screen.
   scoped_refptr<SolidColorLayer> contained_zoom =

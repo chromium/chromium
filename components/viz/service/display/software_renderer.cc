@@ -862,7 +862,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
 
   gfx::Vector2dF clipping_offset =
       (unclipped_rect.top_right() - backdrop_rect.top_right()) +
-      (backdrop_rect.bottom_left() - unclipped_rect.bottom_left());
+      (unclipped_rect.bottom_left() - backdrop_rect.bottom_left());
 
   sk_sp<cc::PaintFilter> paint_filter =
       cc::RenderSurfaceFilters::BuildImageFilter(

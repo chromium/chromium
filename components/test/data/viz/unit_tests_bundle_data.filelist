@@ -259,7 +259,6 @@
 //components/test/data/viz/yuv_stripes_alpha.png
 //components/test/data/viz/yuv_stripes_clipped.png
 //components/test/data/viz/yuv_stripes_offset.png
-//components/test/data/viz/zoom_filter_skia_dawn.png
 //components/test/data/viz/zoom_filter_skia_gl.png
 //components/test/data/viz/zoom_filter_skia_vk.png
 //components/test/data/viz/zoom_filter_sw.png
