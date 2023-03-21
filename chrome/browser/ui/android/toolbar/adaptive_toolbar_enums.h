@@ -31,7 +31,9 @@ enum class AdaptiveToolbarButtonVariant {
   kReaderMode = 7,
   // Translate page action.
   kTranslate = 8,
-  kMaxValue = kTranslate,
+  // Add to bookmarks action.
+  kAddToBookmarks = 9,
+  kMaxValue = kAddToBookmarks,
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TOOLBAR_ADAPTIVE_TOOLBAR_ENUMS_H_

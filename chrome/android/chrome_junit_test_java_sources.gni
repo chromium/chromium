@@ -42,6 +42,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/background_task_scheduler/NativeBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/base/DexFixerTest.java",
   "junit/src/org/chromium/chrome/browser/base/SplitPreloaderTest.java",
+  "junit/src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonControllerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinatorTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinderTest.java",
