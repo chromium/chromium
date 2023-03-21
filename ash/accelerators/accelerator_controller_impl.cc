@@ -436,7 +436,7 @@ bool AcceleratorControllerImpl::OnMenuAccelerator(
   accelerator_history_->StoreCurrentAccelerator(accelerator);
 
   // Menu shouldn't be closed for an invalid accelerator.
-  AcceleratorAction* action_ptr =
+  const AcceleratorAction* action_ptr =
       accelerator_configuration_->FindAcceleratorAction(accelerator);
   return action_ptr && !base::Contains(actions_keeping_menu_open_, *action_ptr);
 }
@@ -453,7 +453,7 @@ AcceleratorHistoryImpl* AcceleratorControllerImpl::GetAcceleratorHistory() {
 bool AcceleratorControllerImpl::DoesAcceleratorMatchAction(
     const ui::Accelerator& accelerator,
     AcceleratorAction action) {
-  AcceleratorAction* action_ptr =
+  const AcceleratorAction* action_ptr =
       accelerator_configuration_->FindAcceleratorAction(accelerator);
   return action_ptr && *action_ptr == action;
 }
@@ -478,20 +478,22 @@ bool AcceleratorControllerImpl::IsReserved(
 
 bool AcceleratorControllerImpl::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  AcceleratorAction action =
-      accelerator_configuration_->GetAcceleratorAction(accelerator);
-  if (!CanPerformAction(action, accelerator))
+  const AcceleratorAction* action =
+      accelerator_configuration_->FindAcceleratorAction(accelerator);
+
+  if (!action || !CanPerformAction(*action, accelerator)) {
     return false;
+  }
 
   // Handling the deprecated accelerators (if any) only if action can be
   // performed.
-  if (MaybeDeprecatedAcceleratorPressed(action, accelerator) ==
+  if (MaybeDeprecatedAcceleratorPressed(*action, accelerator) ==
       AcceleratorProcessingStatus::STOP) {
     return false;
   }
 
-  PerformAction(action, accelerator);
-  return ShouldActionConsumeKeyEvent(action);
+  PerformAction(*action, accelerator);
+  return ShouldActionConsumeKeyEvent(*action);
 }
 
 bool AcceleratorControllerImpl::CanHandleAccelerators() const {

@@ -1037,7 +1037,7 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAcceleratorNonAsh) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreAllDefaults) {
+TEST_F(AcceleratorConfigurationProviderTest, RemoveAndRestoreAllDefaults) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
 
@@ -1049,6 +1049,7 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreAllDefaults) {
   AshAcceleratorConfiguration* config =
       Shell::Get()->ash_accelerator_configuration();
   config->Initialize(test_data);
+  config->InitializeDeprecatedAccelerators({}, {});
   base::RunLoop().RunUntilIdle();
 
   // Verify accelerators are populated.
@@ -1087,6 +1088,7 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreAllDefaults) {
   ash::shortcut_customization::mojom::
       AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
           .RestoreAllDefaults(&result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
 
   base::RunLoop().RunUntilIdle();
 
