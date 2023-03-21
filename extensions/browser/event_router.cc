@@ -271,6 +271,18 @@ EventRouter::~EventRouter() {
     process->RemoveObserver(this);
 }
 
+content::RenderProcessHost*
+EventRouter::GetRenderProcessHostForCurrentReceiver() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+
+  // process might be nullptr when IPC race with RenderProcessHost destruction.
+  // This may only happen in scenarios that are already inherently racey, so
+  // returning nullptr (and dropping the IPC) is okay and won't lead to any
+  // additional risk of data loss.
+  return process;
+}
+
 BrowserContext* EventRouter::GetIncognitoContextIfAccessible(
     const std::string& extension_id) {
   DCHECK(!extension_id.empty());
@@ -298,8 +310,7 @@ BrowserContext* EventRouter::GetIncognitoContext() {
 
 void EventRouter::AddListenerForMainThread(mojom::EventListenerParamPtr param,
                                            const std::string& event_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
@@ -318,8 +329,7 @@ void EventRouter::AddListenerForServiceWorker(const std::string& extension_id,
                                               const std::string& event_name,
                                               int64_t service_worker_version_id,
                                               int32_t worker_thread_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
@@ -367,8 +377,7 @@ void EventRouter::AddFilteredListenerForMainThread(
     const std::string& event_name,
     base::Value::Dict filter,
     bool add_lazy_listener) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
@@ -384,8 +393,7 @@ void EventRouter::AddFilteredListenerForServiceWorker(
     int32_t worker_thread_id,
     base::Value::Dict filter,
     bool add_lazy_listener) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
@@ -403,8 +411,7 @@ void EventRouter::AddFilteredListenerForServiceWorker(
 void EventRouter::RemoveListenerForMainThread(
     mojom::EventListenerParamPtr param,
     const std::string& event_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
@@ -424,8 +431,7 @@ void EventRouter::RemoveListenerForServiceWorker(
     const std::string& event_name,
     int64_t service_worker_version_id,
     int worker_thread_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
@@ -473,8 +479,7 @@ void EventRouter::RemoveFilteredListenerForMainThread(
     const std::string& event_name,
     base::Value::Dict filter,
     bool remove_lazy_listener) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 
@@ -491,8 +496,7 @@ void EventRouter::RemoveFilteredListenerForServiceWorker(
     int32_t worker_thread_id,
     base::Value::Dict filter,
     bool remove_lazy_listener) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(receivers_.current_context());
+  auto* process = GetRenderProcessHostForCurrentReceiver();
   if (!process)
     return;
 

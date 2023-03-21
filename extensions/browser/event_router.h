@@ -373,6 +373,8 @@ class EventRouter : public KeyedService,
       UserGestureState user_gesture,
       extensions::mojom::EventFilteringInfoPtr info);
 
+  content::RenderProcessHost* GetRenderProcessHostForCurrentReceiver();
+
   // Gets off-the-record browser context if
   //     - The extension has incognito mode set to "split"
   //     - The on-the-record browser context has an off-the-record context
