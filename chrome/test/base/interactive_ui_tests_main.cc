@@ -13,6 +13,7 @@
 #include "chrome/test/base/chrome_test_suite.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "content/public/common/content_switches.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/base/test/ui_controls.h"
 
@@ -144,6 +145,10 @@ int main(int argc, char** argv) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kOverrideUseSoftwareGLForTests);
 #endif
+
+  // Force the CPU backend to use AAA. (https://crbug.com/1421297)
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceSkiaAnalyticAntialiasing);
 
   // Without this it's possible for the first browser to start up in the
   // background, generally because the last test did something that causes the
