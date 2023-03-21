@@ -1102,6 +1102,17 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     UpdateScrollbarProportions();
   }
 
+  hypothetical_horizontal_scrollbar_thickness_ = 0;
+  if (NeedsHypotheticalScrollbarThickness(kHorizontalScrollbar)) {
+    hypothetical_horizontal_scrollbar_thickness_ =
+        ComputeHypotheticalScrollbarThickness(kHorizontalScrollbar, true);
+  }
+  hypothetical_vertical_scrollbar_thickness_ = 0;
+  if (NeedsHypotheticalScrollbarThickness(kVerticalScrollbar)) {
+    hypothetical_vertical_scrollbar_thickness_ =
+        ComputeHypotheticalScrollbarThickness(kVerticalScrollbar, true);
+  }
+
   DelayableClampScrollOffsetAfterOverflowChange();
 
   if (!is_horizontal_scrollbar_frozen || !is_vertical_scrollbar_frozen)
@@ -1451,6 +1462,32 @@ static inline const LayoutObject& ScrollbarStyleSource(
 }
 
 int PaintLayerScrollableArea::HypotheticalScrollbarThickness(
+    ScrollbarOrientation orientation,
+    bool should_include_overlay_thickness) const {
+  DCHECK(NeedsHypotheticalScrollbarThickness(orientation));
+  // The cached values are updated after layout, use them if we're layout clean.
+  if (should_include_overlay_thickness &&
+      GetLayoutBox()->GetDocument().Lifecycle().GetState() >=
+          DocumentLifecycle::kLayoutClean) {
+    return orientation == kHorizontalScrollbar
+               ? hypothetical_horizontal_scrollbar_thickness_
+               : hypothetical_vertical_scrollbar_thickness_;
+  }
+  return ComputeHypotheticalScrollbarThickness(
+      orientation, should_include_overlay_thickness);
+}
+
+// Hypothetical scrollbar thickness is computed and cached during layout, but
+// only as needed to avoid a performance penalty. It is needed for every
+// LayoutView, to support frame view auto-sizing; and it's needed whenever CSS
+// scrollbar-gutter requires it.
+bool PaintLayerScrollableArea::NeedsHypotheticalScrollbarThickness(
+    ScrollbarOrientation orientation) const {
+  return GetLayoutBox()->IsLayoutView() ||
+         GetLayoutBox()->HasScrollbarGutters(orientation);
+}
+
+int PaintLayerScrollableArea::ComputeHypotheticalScrollbarThickness(
     ScrollbarOrientation orientation,
     bool should_include_overlay_thickness) const {
   Scrollbar* scrollbar = orientation == kHorizontalScrollbar

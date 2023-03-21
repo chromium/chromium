@@ -39,11 +39,13 @@ namespace blink {
 
 CustomScrollbar::CustomScrollbar(ScrollableArea* scrollable_area,
                                  ScrollbarOrientation orientation,
-                                 Element* style_source)
+                                 Element* style_source,
+                                 bool suppress_use_counters)
     : Scrollbar(scrollable_area,
                 orientation,
                 style_source,
-                CustomScrollbarTheme::GetCustomScrollbarTheme()) {
+                CustomScrollbarTheme::GetCustomScrollbarTheme()),
+      suppress_use_counters_(suppress_use_counters) {
   DCHECK(style_source);
 }
 
@@ -59,7 +61,8 @@ int CustomScrollbar::HypotheticalScrollbarThickness(
   // Create a temporary scrollbar so that we can match style rules like
   // ::-webkit-scrollbar:horizontal according to the scrollbar's orientation.
   auto* scrollbar = MakeGarbageCollected<CustomScrollbar>(
-      const_cast<ScrollableArea*>(scrollable_area), orientation, style_source);
+      const_cast<ScrollableArea*>(scrollable_area), orientation, style_source,
+      /* suppress_use_counters */ true);
   scrollbar->UpdateScrollbarPart(kScrollbarBGPart);
   auto* part = scrollbar->GetPart(kScrollbarBGPart);
   int thickness = part ? part->ComputeThickness() : 0;
@@ -270,7 +273,8 @@ void CustomScrollbar::UpdateScrollbarPart(ScrollbarPart part_type) {
       it != parts_.end() ? it->value : nullptr;
   if (!part_layout_object && need_layout_object && scrollable_area_) {
     part_layout_object = LayoutCustomScrollbarPart::CreateAnonymous(
-        &StyleSource()->GetDocument(), scrollable_area_, this, part_type);
+        &StyleSource()->GetDocument(), scrollable_area_, this, part_type,
+        suppress_use_counters_);
     parts_.Set(part_type, part_layout_object);
     SetNeedsPaintInvalidation(part_type);
   } else if (part_layout_object && !need_layout_object) {
