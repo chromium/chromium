@@ -10,9 +10,11 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_request_forward.h"
 
 namespace blink {
+
+class ViewTransition;
 
 class CORE_EXPORT ViewTransitionUtils {
  public:
