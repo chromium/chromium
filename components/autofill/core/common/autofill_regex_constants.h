@@ -635,7 +635,7 @@ inline constexpr char16_t kNewOneTimePwdRe[] =
     // boundaries around them.
     u"(?:\\b|_)(?:otp|otc|totp|sms|2fa|mfa)(?:\\b|_)|"
     // Alternatively, require companion tokens before or after the main tokens.
-    u"(?:otp|otc|totp|sms|2fa|mfa).?(?:code|token|input|value|pin|login|verif|"
+    u"(?:otp|otc|totp|sms|2fa|mfa).?(?:code|token|input|val|pin|login|verif|"
     u"pass|pwd|psw|auth|field)|"
     u"(?:verif(?:y|ication)?|email|phone|text|login|input|txt|user).?(?:otp|"
     u"otc|totp|sms|2fa|mfa)|"
