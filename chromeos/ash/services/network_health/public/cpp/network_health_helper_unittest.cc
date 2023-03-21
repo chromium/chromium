@@ -47,6 +47,10 @@ class NetworkHealthHelperTest : public ::testing::Test {
   }
 
   NetworkHealthHelper* helper() { return helper_.get(); }
+  network_config::CrosNetworkConfigTestHelper*
+  cros_network_config_test_helper() {
+    return cros_network_config_test_helper_.get();
+  }
 
   std::string SetupWiFiService(const std::string& state) {
     return cros_network_config_test_helper_->network_state_helper()
@@ -82,14 +86,20 @@ TEST_F(NetworkHealthHelperTest, RequestDefaultNetworkOnline) {
   EXPECT_EQ(default_network->state, mojom::NetworkState::kOnline);
 }
 
-TEST_F(NetworkHealthHelperTest, RequestIsPortalState) {
-  EXPECT_FALSE(helper()->IsPortalState());
+TEST_F(NetworkHealthHelperTest, RequestIsWiFiPortalState) {
+  EXPECT_FALSE(helper()->IsWiFiPortalState());
 
   std::string path = SetupWiFiService(shill::kStateOnline);
-  EXPECT_FALSE(helper()->IsPortalState());
+  EXPECT_FALSE(helper()->IsWiFiPortalState());
 
   SetWiFiState(path, shill::kStateRedirectFound);
-  EXPECT_TRUE(helper()->IsPortalState());
+  EXPECT_TRUE(helper()->IsWiFiPortalState());
+
+  // Ethernet in a portal state should return false.
+  SetWiFiState(path, shill::kStateIdle);
+  cros_network_config_test_helper()->network_state_helper().ConfigureService(
+      R"({"GUID": "eth_guid", "Type": "ethernet", "State": "redirect-found"})");
+  EXPECT_FALSE(helper()->IsWiFiPortalState());
 }
 
 }  // namespace ash::network_health

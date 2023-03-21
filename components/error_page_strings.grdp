@@ -89,8 +89,8 @@
       <ph name="PLATFORM_TEXT">$1<ex>Goto the wrench menu and choose Fix It.</ex></ph>
     </message>
   </if>
-  <message name="IDS_ERRORPAGES_SUGGESTION_CAPTIVE_PORTAL_SIGNIN" desc="ChromeOS instructions for signing in to a captive portal.">
-    <ph name="BEGIN_LINK">&lt;a href="#buttons" onclick="javascript:portalSignin()"&gt;</ph>Signing in<ph name="END_LINK">&lt;/a&gt;</ph> to the network
+  <message name="IDS_ERRORPAGES_SUGGESTION_CAPTIVE_PORTAL_SIGNIN" desc="ChromeOS instructions for signing in to a WiFi captive portal.">
+    <ph name="BEGIN_LINK">&lt;a href="#buttons" onclick="javascript:portalSignin()"&gt;</ph>Signing in<ph name="END_LINK">&lt;/a&gt;</ph> to the WiFi network
   </message>
   <if expr="is_chromeos">
     <message name="IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM" desc="ChromeOS instructions for disabling use of a proxy server.">

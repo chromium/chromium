@@ -7402,7 +7402,7 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     bool is_portal_state =
         ash::network_health::NetworkHealthManager::GetInstance()
             ->helper()
-            ->IsPortalState();
+            ->IsWiFiPortalState();
     alternative_error_page_override_info->alternative_error_page_params.Set(
         error_page::kIsPortalStateKey, base::Value(is_portal_state));
     return alternative_error_page_override_info;

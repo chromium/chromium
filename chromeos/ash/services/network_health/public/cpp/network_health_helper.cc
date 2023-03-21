@@ -79,8 +79,12 @@ void NetworkHealthHelper::RequestNetworks() {
       &NetworkHealthHelper::NetworkListReceived, base::Unretained(this)));
 }
 
-bool NetworkHealthHelper::IsPortalState() {
+bool NetworkHealthHelper::IsWiFiPortalState() {
   if (!default_network_) {
+    return false;
+  }
+  if (default_network_->type !=
+      chromeos::network_config::mojom::NetworkType::kWiFi) {
     return false;
   }
   using PortalState = chromeos::network_config::mojom::PortalState;

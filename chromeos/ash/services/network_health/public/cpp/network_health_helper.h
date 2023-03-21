@@ -28,8 +28,9 @@ class NetworkHealthHelper
   NetworkHealthHelper& operator=(const NetworkHealthHelper&) = delete;
   ~NetworkHealthHelper() override;
 
-  // Returns the portal state of the default network if set, or false.
-  bool IsPortalState();
+  // Returns the portal state of the default network if the default network is
+  // set and is a WiFi network, otherwise returns false.
+  bool IsWiFiPortalState();
 
   // chromeos::network_health::mojom::NetworkEventsObserver:
   void OnConnectionStateChanged(
