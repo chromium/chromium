@@ -371,12 +371,16 @@ static int gAnyContext = 0;
                         change:(NSDictionary*)change
                        context:(void*)context {
   DCHECK_EQ(object, self.underlyingScrollView);
-  if ([keyPath isEqualToString:@"frame"])
-    [_observers webViewScrollViewFrameDidChange:self];
   if ([keyPath isEqualToString:@"contentSize"])
     [_observers webViewScrollViewDidResetContentSize:self];
-  if ([keyPath isEqualToString:@"contentInset"])
-    [_observers webViewScrollViewDidResetContentInset:self];
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    if ([keyPath isEqualToString:@"frame"]) {
+      [_observers webViewScrollViewFrameDidChange:self];
+    }
+    if ([keyPath isEqualToString:@"contentInset"]) {
+      [_observers webViewScrollViewDidResetContentInset:self];
+    }
+  }
 }
 
 - (UIScrollView*)asUIScrollView {
