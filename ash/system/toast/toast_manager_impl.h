@@ -28,6 +28,10 @@ namespace eche_app {
 class LaunchAppHelperTest;
 }
 
+namespace video_conference {
+class VideoConferenceIntegrationTest;
+}
+
 // Class managing toast requests.
 class ASH_EXPORT ToastManagerImpl : public ToastManager,
                                     public ToastOverlay::Delegate,
@@ -67,6 +71,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class ToastManagerImplTest;
   friend class ClipboardHistoryControllerRefreshTest;
   friend class eche_app::LaunchAppHelperTest;
+  friend class video_conference::VideoConferenceIntegrationTest;
 
   void ShowLatest();
 

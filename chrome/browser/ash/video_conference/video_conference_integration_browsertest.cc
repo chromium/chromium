@@ -5,10 +5,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
 #include "ash/system/video_conference/video_conference_tray.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -31,11 +34,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace ash::video_conference {
 
+constexpr char kVideoConferenceTrayUseWhileDisabledToastId[] =
+    "video_conference_tray_toast_ids.use_while_disable";
 const char16_t kTitle1[] = u"Title1";
 
 // Periodically checks the condition and move on with the rest of the code when
@@ -93,6 +99,8 @@ class VideoConferenceIntegrationTest : public WebRtcTestBase {
     camera_bt_ = GetVcTray()->camera_icon();
     mic_bt_ = GetVcTray()->audio_icon();
     share_bt_ = GetVcTray()->screen_share_icon();
+
+    toast_manager_ = Shell::Get()->toast_manager();
   }
 
   // Navigate to the url in a new tab.
@@ -164,10 +172,16 @@ class VideoConferenceIntegrationTest : public WebRtcTestBase {
     return output;
   }
 
+  const std::u16string GetCurrentToastText() {
+    return toast_manager_->GetCurrentOverlayForTesting()->GetText();
+  }
+
  protected:
   VideoConferenceTrayButton* camera_bt_ = nullptr;
   VideoConferenceTrayButton* mic_bt_ = nullptr;
   VideoConferenceTrayButton* share_bt_ = nullptr;
+
+  ToastManagerImpl* toast_manager_ = nullptr;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       ash::features::kVideoConference};
@@ -206,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
 
   // Stop camera and wait for is_capturing to populate.
   StopCamera(web_contents);
-  WAIT_FOR_CONDITION(!GetVcTray()->camera_icon()->is_capturing());
+  WAIT_FOR_CONDITION(!camera_bt_->is_capturing());
 
   // camera_icon should be visible without green_dot.
   EXPECT_TRUE(camera_bt_->GetVisible());
@@ -255,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
 
   // Stop microphone and wait for is_capturing to populate.
   StopMicrophone(web_contents);
-  WAIT_FOR_CONDITION(!GetVcTray()->audio_icon()->is_capturing());
+  WAIT_FOR_CONDITION(!mic_bt_->is_capturing());
 
   // audio_icon should be visible without green_dot.
   EXPECT_TRUE(mic_bt_->GetVisible());
@@ -304,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest,
 
   // Stop microphone and wait for is_capturing to populate.
   StopScreenSharing(web_contents);
-  WAIT_FOR_CONDITION(!GetVcTray()->screen_share_icon()->is_capturing());
+  WAIT_FOR_CONDITION(!share_bt_->is_capturing());
 
   EXPECT_FALSE(share_bt_->GetVisible());
   EXPECT_FALSE(share_bt_->is_capturing());
@@ -538,6 +552,65 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, OneTabReturnToApp) {
   ClickButton(GetReturnToAppButtons()[0]);
   WAIT_FOR_CONDITION(web_contents->GetVisibility() ==
                      content::Visibility::VISIBLE);
+}
+
+IN_PROC_BROWSER_TEST_F(VideoConferenceIntegrationTest, UseWhileDisabled) {
+  // Open a tab.
+  content::WebContents* web_contents =
+      NavigateTo("/video_conference_demo.html");
+  // Set permissions as allow.
+  SetPermission(web_contents, ContentSettingsType::MEDIASTREAM_CAMERA,
+                CONTENT_SETTING_ALLOW);
+  SetPermission(web_contents, ContentSettingsType::MEDIASTREAM_MIC,
+                CONTENT_SETTING_ALLOW);
+
+  // Change title.
+  SetTitle(web_contents, kTitle1);
+
+  // Start accessing microphone and wait for the VcTray to show.
+  StartMicrophone(web_contents);
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+
+  // Stop microphone and wait for is_capturing to populate.
+  StopMicrophone(web_contents);
+  WAIT_FOR_CONDITION(!mic_bt_->is_capturing());
+
+  // Clicking on the mic icon should mute it.
+  ClickButton(mic_bt_);
+  WAIT_FOR_CONDITION(mic_bt_->toggled());
+
+  // Start accessing microphone should trigger UseWhileDisabled.
+  StartMicrophone(web_contents);
+  WAIT_FOR_CONDITION(
+      toast_manager_->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
+
+  // Check the toast message is as expected.
+  EXPECT_EQ(
+      GetCurrentToastText(),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
+          l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME)));
+
+  // Remove current toast for the next step.
+  toast_manager_->Cancel(kVideoConferenceTrayUseWhileDisabledToastId);
+  WAIT_FOR_CONDITION(
+      !toast_manager_->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
+
+  // Clicking on the camera icon should mute it.
+  ClickButton(camera_bt_);
+  WAIT_FOR_CONDITION(camera_bt_->toggled());
+
+  // Start accessing camera should trigger UseWhileDisabled.
+  StartCamera(web_contents);
+  WAIT_FOR_CONDITION(
+      toast_manager_->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
+
+  // Check the toast message is as expected.
+  EXPECT_EQ(
+      GetCurrentToastText(),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
+          l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME)));
 }
 
 }  // namespace ash::video_conference
