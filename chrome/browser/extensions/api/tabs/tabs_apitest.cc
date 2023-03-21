@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Size) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/tab_size")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabUpdate) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Update) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/update")) << message_;
 }
 
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, RemoveMultiple) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/remove_multiple")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabGetCurrent) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, GetCurrent) {
   ASSERT_TRUE(RunExtensionTest("tabs/get_current")) << message_;
 }
 
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Connect) {
   ASSERT_TRUE(RunExtensionTest("tabs/connect")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabOnRemoved) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
 
