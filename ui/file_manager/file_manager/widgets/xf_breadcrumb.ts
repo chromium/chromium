@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {addCSSPrefixSelector, mouseEnterMaybeShowTooltip} from '../common/js/dom_utils.js';
 import {str} from '../common/js/util.js';
 
-import {customElement, property, query, state, css, html, XfBase, PropertyValues} from './xf_base.js';
+import {css, customElement, html, property, PropertyValues, query, state, XfBase} from './xf_base.js';
 
 
 /**
@@ -461,7 +461,7 @@ function getCSS() {
       -webkit-mask-image: url(/foreground/images/files/ui/arrow_right.svg);
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
-      background-color: var(--cros-sys-secondary);
+      background-color: var(--cros-sys-on_surface_variant);
       display: inline-flex;
       height: 20px;
       min-width: 20px;
@@ -476,7 +476,7 @@ function getCSS() {
       /* don't use browser's background-color. */
       background-color: unset;
       border: none;
-      color: var(--cros-sys-secondary);
+      color: var(--cros-sys-on_surface_variant);
       cursor: pointer;
       display: inline-block;
       position: relative;
@@ -509,7 +509,7 @@ function getCSS() {
       -webkit-mask-image: url(/foreground/images/files/ui/menu_ng.svg);
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
-      background-color: var(--cros-sys-secondary);
+      background-color: currentColor;
       height: 48px;
       margin-inline-start: var(--tap-target-shift);
       margin-top: var(--tap-target-shift);
