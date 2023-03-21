@@ -26578,7 +26578,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="67" label="timelineAsConsoleProfileResultPanel"/>
   <int value="68" label="preloadingStatusPanel"/>
   <int value="69" label="disableColorFormatSetting"/>
-  <int value="70" label="timelineDoNotSkipSystemNodesOfCpuProfile"/>
+  <int value="71" label="outermostTargetSelector"/>
+  <int value="72" label="jsProfilerTemporarilyEnable"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
