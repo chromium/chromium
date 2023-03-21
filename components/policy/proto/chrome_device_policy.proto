@@ -133,11 +133,13 @@ message DeviceReportingProto {
   optional bool report_activity_times = 2 [default = true];
   optional bool report_boot_mode = 3 [default = true];
   optional bool report_location = 4 [default = false];
-  // TODO(b/243958646): The server side should remove the usage of this field.
+  // The server side still retains this field for being backward compatible with
+  // old versions of ChromeOS <= 95. See b/243958646.
   optional bool report_network_interfaces = 5
       [default = true, deprecated = true];
   optional bool report_users = 6 [default = true];
-  // TODO(b/243960946): The server side should remove the usage of this field.
+  // The server side still retains this field for being backward compatible with
+  // old versions of ChromeOS <= 95. See b/243960946.
   optional bool report_hardware_status = 7 [default = true, deprecated = true];
   optional bool report_session_status = 8 [default = true];
   optional bool report_os_update_status = 10 [default = false];
