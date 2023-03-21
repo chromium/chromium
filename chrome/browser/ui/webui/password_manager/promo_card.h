@@ -8,10 +8,23 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
+class Profile;
+
+namespace extensions {
+class PasswordsPrivateDelegate;
+namespace api::passwords_private {
+struct PasswordUiEntry;
+}  // namespace api::passwords_private
+}  // namespace extensions
+
+namespace syncer {
+class SyncService;
+}
 
 namespace password_manager {
 
@@ -20,7 +33,8 @@ namespace password_manager {
 // subclass must override GetPromoID() and the content to be displayed.
 class PromoCardInterface {
  public:
-  PromoCardInterface(const std::string& id, PrefService* prefs);
+  static std::vector<std::unique_ptr<PromoCardInterface>>
+  GetAllPromoCardsForProfile(Profile* profile);
 
   PromoCardInterface(const PromoCardInterface&) = delete;
   PromoCardInterface& operator=(const PromoCardInterface&) = delete;
@@ -51,12 +65,86 @@ class PromoCardInterface {
   base::Time last_time_shown() const { return last_time_shown_; }
 
  protected:
+  PromoCardInterface(const std::string& id, PrefService* prefs);
+
   int number_of_times_shown_ = 0;
   base::Time last_time_shown_;
   bool was_dismissed_ = false;
 
  private:
   raw_ptr<PrefService> prefs_;
+};
+
+// Password checkup promo card. Despite other promo cards this one should be
+// shown regularly but not more often than kPasswordCheckupPromoPeriod.
+class PasswordCheckupPromo : public PromoCardInterface {
+ public:
+  PasswordCheckupPromo(PrefService* prefs,
+                       extensions::PasswordsPrivateDelegate* delegate);
+  ~PasswordCheckupPromo() override;
+
+ private:
+  // PromoCardInterface implementation.
+  std::string GetPromoID() const override;
+  bool ShouldShowPromo() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetDescription() const override;
+  std::u16string GetActionButtonText() const override;
+
+  void OnPasswordsReceived(
+      const std::vector<extensions::api::passwords_private::PasswordUiEntry>&
+          passwords);
+
+  bool has_saved_passwords_ = false;
+
+  // `weak_factory_` is used for all callback uses.
+  base::WeakPtrFactory<PasswordCheckupPromo> weak_factory_{this};
+};
+
+// Promoting web version of Password Manager. Has a link to the website in the
+// description.
+class WebPasswordManagerPromo : public PromoCardInterface {
+ public:
+  WebPasswordManagerPromo(PrefService* prefs,
+                          const syncer::SyncService* sync_service);
+
+ private:
+  // PromoCardInterface implementation.
+  std::string GetPromoID() const override;
+  bool ShouldShowPromo() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetDescription() const override;
+
+  bool sync_enabled_ = false;
+};
+
+// Promo card to create shortcut to the Password Manager.
+class PasswordManagerShortcutPromo : public PromoCardInterface {
+ public:
+  explicit PasswordManagerShortcutPromo(Profile* profile);
+
+ private:
+  // PromoCardInterface implementation.
+  std::string GetPromoID() const override;
+  bool ShouldShowPromo() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetDescription() const override;
+  std::u16string GetActionButtonText() const override;
+
+  bool is_shortcut_installed_ = false;
+};
+
+// Promo card to communicate how to use Password Manager on Android and iOS.
+class AccessOnAnyDevicePromo : public PromoCardInterface {
+ public:
+  explicit AccessOnAnyDevicePromo(PrefService* prefs);
+
+ private:
+  // PromoCardInterface implementation.
+  std::string GetPromoID() const override;
+  bool ShouldShowPromo() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetDescription() const override;
 };
 
 }  // namespace password_manager

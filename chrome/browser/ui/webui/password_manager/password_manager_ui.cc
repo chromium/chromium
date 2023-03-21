@@ -11,8 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
-#include "chrome/browser/ui/webui/password_manager/promo_card.h"
-#include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -46,6 +44,8 @@
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/ui/webui/password_manager/promo_card.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards_handler.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #endif
 
@@ -323,10 +323,13 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
                                                                         true);
   web_ui->AddMessageHandler(
       std::make_unique<password_manager::SyncHandler>(profile));
-  std::vector<std::unique_ptr<password_manager::PromoCardInterface>> cards;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   web_ui->AddMessageHandler(
-      std::make_unique<password_manager::PromoCardsHandler>(profile,
-                                                            std::move(cards)));
+      std::make_unique<password_manager::PromoCardsHandler>(
+          profile,
+          password_manager::PromoCardInterface::GetAllPromoCardsForProfile(
+              profile)));
+#endif
   auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);

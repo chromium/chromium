@@ -274,6 +274,14 @@
     "META": {"sizes": {"includes": [40]}},
     "includes": [1840],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_popup/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [1845],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/password_manager/resources.grd": {
+    "META": {"sizes": {"includes": [100]}},
+    "includes": [1850],
+  },
   "chrome/browser/resources/preinstalled_web_apps/resources.grd": {
     "includes": [1860],
   },
@@ -371,14 +379,6 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/whats_new/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [2140],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/password_manager/resources.grd": {
-    "META": {"sizes": {"includes": [70]}},
-    "includes": [2150],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_popup/resources.grd": {
-    "META": {"sizes": {"includes": [50]}},
-    "includes": [2160],
   },
   # END chrome/browser section.
 
