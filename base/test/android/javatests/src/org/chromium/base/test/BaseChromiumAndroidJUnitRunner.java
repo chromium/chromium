@@ -199,6 +199,12 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             checkOrDeleteOnDiskSharedPreferences(false);
             clearDataDirectory(sInMemorySharedPreferencesContext);
             InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
+            // Mockito sometimes gets confused about where to put mocks. Just tell it
+            // explicitly. Hopefully only temporary while we are migrating our test
+            // infra to use the latest androidx.test:runner. See
+            // https://crbug.com/1223832
+            System.setProperty("org.mockito.android.target",
+                    InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
             super.onStart();
         }
     }
