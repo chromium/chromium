@@ -1164,6 +1164,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mActiveLocationBarBackground = mLocationBarBackground;
         mNtpSearchBoxTranslation.set(0, 0);
         mLocationBar.getPhoneCoordinator().setTranslationY(0);
+        mLocationBar.getPhoneCoordinator().setTranslationX(0);
         if (!mUrlFocusChangeInProgress) {
             mToolbarButtonsContainer.setTranslationY(0);
             mHomeButton.setTranslationY(0);
