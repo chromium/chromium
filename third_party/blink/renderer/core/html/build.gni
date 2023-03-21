@@ -577,6 +577,7 @@ blink_core_hot_sources_html = [
   "html_collection.h",
   "parser/atomic_html_token.cc",
   "parser/atomic_html_token.h",
+  "parser/atomic_string_cache.h",
   "parser/css_preload_scanner.cc",
   "parser/css_preload_scanner.h",
   "parser/html_attributes_ranges.h",

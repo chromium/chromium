@@ -893,20 +893,14 @@ class HTMLFastPathParser {
                         g_null_atom);
     }
 
-    // The string pointer in |value| is null for attributes with no values, but
-    // the null atom is used to represent absence of attributes; attributes with
-    // no values have the value set to an empty atom instead.
     AtomicString value;
     if (value_span.second.empty()) {
-      value = AtomicString(value_span.first.data(),
-                           static_cast<unsigned>(value_span.first.size()));
+      value = HTMLAtomicStringCache::MakeAttributeValue(value_span.first);
     } else {
-      value = AtomicString(value_span.second.data(),
-                           static_cast<unsigned>(value_span.second.size()));
+      value = HTMLAtomicStringCache::MakeAttributeValue(value_span.second);
     }
-    if (value.IsNull()) {
-      value = g_empty_atom;
-    }
+    DCHECK(!value.IsNull()) << "Attribute value should never be null";
+
     return Attribute(std::move(name), std::move(value));
   }
 
