@@ -3792,7 +3792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SettingsPage.ButtonClicked.{CardType}.{Button}"
-    enum="BooleanAttempted" expires_after="2023-04-01">
+    enum="BooleanAttempted" expires_after="2023-12-01">
   <owner>vishwasuppoor@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4814,7 +4814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.VirtualCard.{Dialog}" enum="BooleanAccepted"
-    expires_after="2023-04-01">
+    expires_after="2023-12-01">
   <owner>vishwasuppoor@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4826,7 +4826,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.VirtualCard.{Dialog}.LinkClicked"
-    enum="AutofillVirtualCardDialogLinkClicked" expires_after="2023-04-01">
+    enum="AutofillVirtualCardDialogLinkClicked" expires_after="2023-12-01">
   <owner>vishwasuppoor@chromium.org</owner>
   <owner>siashah@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
