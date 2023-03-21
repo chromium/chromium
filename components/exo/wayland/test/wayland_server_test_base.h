@@ -26,6 +26,31 @@ using TestBase = exo::test::ExoTestBase;
 // Base class for tests that create an exo's wayland server.
 class WaylandServerTestBase : public TestBase {
  public:
+  // When using on-demand sockets (described on go/securer-exo-ids) the server
+  // does not own the socket and will not clean it up. This class is used to
+  // help manage creation/cleanup of such sockets
+  class ScopedTempSocket {
+   public:
+    ScopedTempSocket();
+
+    // Not copyable.
+    ScopedTempSocket(const ScopedTempSocket&) = delete;
+    ScopedTempSocket& operator=(const ScopedTempSocket&) = delete;
+
+    ~ScopedTempSocket();
+
+    // Once created, this class owns the socket FD. Use this method to move the
+    // FD out of here (and into a wayland server).
+    base::ScopedFD TakeFd();
+
+    const base::FilePath& server_path() const { return server_path_; }
+
+   private:
+    base::ScopedTempDir socket_dir_;
+    base::FilePath server_path_;
+    base::ScopedFD fd_;
+  };
+
   WaylandServerTestBase();
 
   // Constructs a WaylandServerTestBase with |traits| being forwarded to its

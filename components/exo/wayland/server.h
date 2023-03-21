@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
@@ -66,12 +67,17 @@ class Server : public display::DisplayObserver {
   // used to delete it asynchronously as well.
   static void DestroyAsync(std::unique_ptr<Server> server);
 
+  // TODO(b/270254359): deprecate go/secure-exo-ids in favour of
+  // go/securer-exo-ids.
   void StartAsync(StartCallback callback);
   void StartWithDefaultPath(StartCallback callback);
+  void StartWithFdAsync(base::ScopedFD fd, StartCallback callback);
 
   void Initialize();
 
   bool Open(bool default_path);
+
+  bool OpenFd(base::ScopedFD fd);
 
   void Finalize(StartCallback callback, bool success);
 
@@ -100,6 +106,8 @@ class Server : public display::DisplayObserver {
     return GetWaylandDisplay();
   }
 
+  // Returns the path to the wayland socket used by this server. Returns "" if
+  // StarTWithDefaultPath() hasn't been called, or StartWithFd() was called.
   const base::FilePath& socket_path() const { return socket_path_; }
 
  protected:

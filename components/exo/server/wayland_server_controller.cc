@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/atomic_sequence_num.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,7 +25,13 @@ namespace exo {
 
 namespace {
 WaylandServerController* g_instance = nullptr;
+
+WaylandServerController::ServerToken GetToken() {
+  static base::AtomicSequenceNumber number;
+  return number.GetNext();
 }
+
+}  // namespace
 
 // static
 std::unique_ptr<WaylandServerController>
@@ -113,6 +120,43 @@ void WaylandServerController::DeleteServer(const base::FilePath& path) {
   DCHECK(servers_.contains(path));
   wayland::Server::DestroyAsync(std::move(servers_.at(path)));
   servers_.erase(path);
+}
+
+void WaylandServerController::ListenOnSocket(
+    std::unique_ptr<SecurityDelegate> security_delegate,
+    base::ScopedFD socket,
+    base::OnceCallback<void(bool, ServerToken)> callback) {
+  std::unique_ptr<wayland::Server> server =
+      wayland::Server::Create(display_.get(), std::move(security_delegate));
+  auto* server_ptr = server.get();
+  auto start_callback = base::BindOnce(&WaylandServerController::OnSocketAdded,
+                                       weak_factory_.GetWeakPtr(),
+                                       std::move(server), std::move(callback));
+  server_ptr->StartWithFdAsync(std::move(socket), std::move(start_callback));
+}
+
+void WaylandServerController::OnSocketAdded(
+    std::unique_ptr<wayland::Server> server,
+    base::OnceCallback<void(bool, ServerToken)> callback,
+    bool success,
+    const base::FilePath& path) {
+  if (!success) {
+    std::move(callback).Run(false, -1);
+    return;
+  }
+  // TODO(b/270254359): remove the FilePath field from StartCallback, this was
+  // needed for the old approach but not the current one.
+  DCHECK(path == base::FilePath{});
+
+  ServerToken token = GetToken();
+  DCHECK(token >= 0);
+  on_demand_servers_.emplace(token, std::move(server));
+  std::move(callback).Run(true, token);
+}
+
+void WaylandServerController::CloseSocket(ServerToken server) {
+  DCHECK(on_demand_servers_.contains(server));
+  on_demand_servers_.erase(server);
 }
 
 }  // namespace exo

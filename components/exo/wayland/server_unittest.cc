@@ -22,7 +22,6 @@
 #include "components/exo/security_delegate.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test_base.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace exo::wayland {
@@ -74,26 +73,19 @@ TEST_F(ServerTest, SecurityDelegateAssociation) {
 }
 
 TEST_F(ServerTest, CreateAsync) {
-  using MockServerFunction =
-      testing::MockFunction<void(bool, const base::FilePath&)>;
-
   base::ScopedTempDir non_xdg_dir;
   ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
 
   base::RunLoop run_loop;
   base::FilePath server_socket;
-  MockServerFunction server_callback;
-  EXPECT_CALL(server_callback, Call(testing::_, testing::_))
-      .WillOnce(testing::Invoke([&run_loop, &server_socket](
-                                    bool success, const base::FilePath& path) {
+
+  auto server = CreateServer();
+  server->StartAsync(base::BindLambdaForTesting(
+      [&run_loop, &server_socket](bool success, const base::FilePath& path) {
         EXPECT_TRUE(success);
         server_socket = path;
         run_loop.Quit();
       }));
-
-  auto server = CreateServer();
-  server->StartAsync(base::BindOnce(&MockServerFunction::Call,
-                                    base::Unretained(&server_callback)));
   run_loop.Run();
 
   // Should create a directory for the server.
@@ -103,6 +95,53 @@ TEST_F(ServerTest, CreateAsync) {
   // Must be deleted when the helper is removed.
   server.reset();
   EXPECT_FALSE(base::PathExists(server_socket));
+}
+
+TEST_F(ServerTest, StartFd) {
+  ScopedTempSocket sock;
+
+  auto server = CreateServer();
+  base::RunLoop start_loop;
+  server->StartWithFdAsync(
+      sock.TakeFd(),
+      base::BindLambdaForTesting([&](bool success, const base::FilePath& path) {
+        EXPECT_TRUE(success);
+        EXPECT_EQ(path, base::FilePath{});
+        start_loop.Quit();
+      }));
+  start_loop.Run();
+
+  base::Thread client_thread("client");
+  client_thread.Start();
+
+  wl_display* client_display = nullptr;
+  base::RunLoop connect_loop;
+  client_thread.task_runner()->PostTaskAndReply(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        client_display =
+            wl_display_connect(sock.server_path().MaybeAsASCII().c_str());
+        int events = wl_display_roundtrip(client_display);
+        EXPECT_GE(events, 0);
+      }),
+      connect_loop.QuitClosure());
+  connect_loop.Run();
+  EXPECT_NE(client_display, nullptr);
+
+  wl_list* all_clients =
+      wl_display_get_client_list(server->GetWaylandDisplayForTesting());
+  ASSERT_FALSE(wl_list_empty(all_clients));
+  wl_client* client = wl_client_from_link(all_clients->next);
+
+  TestListener client_destruction_listener;
+  wl_client_add_destroy_listener(client, &client_destruction_listener.listener);
+
+  client_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [&]() { wl_display_disconnect(client_display); }));
+
+  while (!client_destruction_listener.notified) {
+    server->Dispatch(base::Milliseconds(10));
+  }
 }
 
 TEST_F(ServerTest, Dispatch) {

@@ -37,6 +37,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/exo",
     "//components/exo:test_support",
+    "//components/exo/wayland:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/aura",
