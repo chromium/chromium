@@ -285,8 +285,6 @@ GetRequestedGLImplementationFromCommandLine(
     const base::CommandLine* command_line,
     bool* fallback_to_software_gl) {
   *fallback_to_software_gl = false;
-  bool overrideUseSoftwareGL =
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
 #if BUILDFLAG(IS_LINUX) || \
     (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
   if (std::getenv("RUNNING_UNDER_RR")) {
@@ -294,12 +292,9 @@ GetRequestedGLImplementationFromCommandLine(
     // is unhappy when things like GPU drivers write directly into the
     // process's address space.  Using swiftshader helps ensure that doesn't
     // happen and keeps Chrome and linux-chromeos usable with rr.
-    overrideUseSoftwareGL = true;
-  }
-#endif
-  if (overrideUseSoftwareGL) {
     return GetSoftwareGLImplementation();
   }
+#endif
 
   if (!command_line->HasSwitch(switches::kUseGL) &&
       !command_line->HasSwitch(switches::kUseANGLE)) {
