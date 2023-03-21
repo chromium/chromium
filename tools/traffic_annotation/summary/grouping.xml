@@ -339,6 +339,7 @@ after discussions on the right group.
       <annotation id="safe_browsing_extension_telemetry"/>
       <annotation id="safe_browsing_feedback"/>
       <annotation id="safe_browsing_incident"/>
+      <annotation id="safe_browsing_ohttp_key_fetch"/>
       <annotation id="safe_browsing_v4_get_hash"/>
       <annotation id="safe_browsing_v4_update"/>
       <annotation id="safe_browsing_binary_upload_app"/>

@@ -6,8 +6,11 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/network_context_service_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "content/public/browser/browser_context.h"
+#include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 namespace safe_browsing {
 
@@ -28,11 +31,22 @@ OhttpKeyServiceFactory::OhttpKeyServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(NetworkContextServiceFactory::GetInstance());
+}
 
 KeyedService* OhttpKeyServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new OhttpKeyService();
+  if (!g_browser_process->safe_browsing_service()) {
+    return nullptr;
+  }
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto url_loader_factory =
+      std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
+          g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
+              profile));
+  return new OhttpKeyService(
+      network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)));
 }
 
 }  // namespace safe_browsing

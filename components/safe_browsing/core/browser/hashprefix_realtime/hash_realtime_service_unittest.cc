@@ -94,6 +94,8 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
 
 class TestOhttpKeyService : public OhttpKeyService {
  public:
+  TestOhttpKeyService() : OhttpKeyService(/*url_loader_factory=*/nullptr) {}
+
   void GetOhttpKey(OhttpKeyService::Callback callback) override {
     std::move(callback).Run(ohttp_key_);
   }

@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "hash_realtime_cache_unittest.cc",
     "hash_realtime_service_unittest.cc",
     "hash_realtime_utils_unittest.cc",
+    "ohttp_key_service_unittest.cc",
   ]
   deps = [
     ":hash_realtime_cache",
