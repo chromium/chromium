@@ -183,6 +183,10 @@ class MediaRouterIntegrationBrowserTest
 
   void WaitUntilNoRoutes(content::WebContents* web_contents);
 
+  // Returns whether actual media route providers (as opposed to
+  // TestMediaRouteProvider) should be loaded.
+  virtual bool RequiresMediaRouteProviders() const;
+
   // Test API for manipulating the UI.
   raw_ptr<MediaRouterUiForTestBase, DanglingUntriaged> test_ui_ = nullptr;
 

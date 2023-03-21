@@ -56,6 +56,10 @@ void MediaRouterE2EBrowserTest::TearDownOnMainThread() {
   MediaRouterIntegrationBrowserTest::TearDownOnMainThread();
 }
 
+bool MediaRouterE2EBrowserTest::RequiresMediaRouteProviders() const {
+  return true;
+}
+
 void MediaRouterE2EBrowserTest::OnRouteResponseReceived(
     mojom::RoutePresentationConnectionPtr,
     const RouteRequestResult& result) {

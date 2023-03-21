@@ -23,7 +23,6 @@ class RouteRequestResult;
 //
 // Use the following command to run e2e browser tests:
 // ./out/Default/browser_tests --user-data-dir=<empty user data dir>
-//   --extension-unpacked=<mr extension dir>
 //   --receiver=<chromecast device name>
 //   --enable-pixel-output-in-tests --run-manual
 //   --gtest_filter=MediaRouterE2EBrowserTest.<test case name>
@@ -38,6 +37,9 @@ class MediaRouterE2EBrowserTest : public MediaRouterIntegrationBrowserTest {
   // InProcessBrowserTest Overrides
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
+
+  // MediaRouterIntegrationBrowserTest Overrides
+  bool RequiresMediaRouteProviders() const override;
 
   // Callback from MediaRouter when a response to a media route request is
   // received.

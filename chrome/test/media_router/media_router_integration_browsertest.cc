@@ -126,8 +126,10 @@ void MediaRouterIntegrationBrowserTest::SetUpCommandLine(
       switches::kAutoplayPolicy,
       // Needed to allow a video to autoplay from a browser test.
       switches::autoplay::kNoUserGestureRequiredPolicy);
-  // Disable built-in media route providers.
-  command_line->AppendSwitch(kDisableMediaRouteProvidersForTestSwitch);
+  if (!RequiresMediaRouteProviders()) {
+    // Disable built-in media route providers.
+    command_line->AppendSwitch(kDisableMediaRouteProvidersForTestSwitch);
+  }
 }
 
 void MediaRouterIntegrationBrowserTest::SetUp() {
@@ -480,6 +482,10 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
       "window.domAutomationController.send(reconnectedSession.id)",
       &reconnected_session_id));
   ASSERT_EQ(session_id, reconnected_session_id);
+}
+
+bool MediaRouterIntegrationBrowserTest::RequiresMediaRouteProviders() const {
+  return false;
 }
 
 // TODO(crbug.com/1238758): Test is flaky on Windows and Linux.
