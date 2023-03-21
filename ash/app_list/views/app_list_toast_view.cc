@@ -205,9 +205,7 @@ AppListToastView::AppListToastView(const std::u16string title) {
   bubble_utils::ApplyStyle(title_label_, TypographyToken::kCrosBody2);
   title_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title_label_->SetMultiLine(true);
-  // TODO(crbug/682266): This is a temporary fix for the issue where the multi
-  // line label appears cut-off.
-  title_label_->SetMaximumWidth(GetExpandedTitleLabelWidth());
+  SetTitleLabelMaximumWidth();
 
   layout_manager_->SetFlexForView(label_container_, 1);
 }
@@ -409,10 +407,18 @@ void AppListToastView::CreateIconView() {
 }
 
 int AppListToastView::GetExpandedTitleLabelWidth() {
+  // TODO(b/274260097): Investigate to use size() or GetPreferredSize().
   const int icon_width = icon_ ? icon_->size().width() : 0;
-  const int button_width = toast_button_ ? toast_button_->size().width() : 0;
+  const int button_width =
+      toast_button_ ? toast_button_->GetPreferredSize().width() : 0;
   return GetPreferredSize().width() - kInteriorMargin.width() - icon_width -
          button_width - kTitleContainerMargin.width();
+}
+
+void AppListToastView::SetTitleLabelMaximumWidth() {
+  // TODO(crbug/682266): This is a temporary fix for the issue where the multi
+  // line label appears cut-off.
+  title_label_->SetMaximumWidth(GetExpandedTitleLabelWidth());
 }
 
 }  // namespace ash

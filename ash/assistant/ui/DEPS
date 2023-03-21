@@ -1,6 +1,7 @@
 noparent = True
 
 include_rules = [
+  "+ash/app_list/views/app_list_toast_view.h",
   "+ash/assistant/model",
   "+ash/assistant/ui",
   "+ash/assistant/util",

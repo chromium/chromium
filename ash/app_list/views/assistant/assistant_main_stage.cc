@@ -194,6 +194,9 @@ AppListAssistantMainStage::CreateContentLayoutContainer() {
       std::make_unique<AssistantZeroStateView>(delegate_));
   zero_state_view_->SetPaintToLayer();
   zero_state_view_->layer()->SetFillsBoundsOpaquely(false);
+  // Expand the height of the `zero_state_view_` to the host height.
+  stack_layout->SetRespectDimensionForView(
+      zero_state_view_, StackLayout::RespectDimension::kWidth);
 
   return content_layout_container;
 }

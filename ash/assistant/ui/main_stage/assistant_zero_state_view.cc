@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/app_list/views/app_list_toast_view.h"  //nogncheck
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
@@ -15,9 +16,11 @@
 #include "ash/assistant/ui/main_stage/assistant_onboarding_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,8 +29,10 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -36,6 +41,11 @@ namespace {
 // Appearance.
 constexpr int kGreetingLabelTopMarginDip = 28;
 constexpr int kOnboardingViewTopMarginDip = 48;
+
+constexpr base::StringPiece kLearnMoreUrl =
+    "https://support.google.com/chromebook?p=assistant";
+constexpr auto kToastMarginDip = gfx::Insets::TLBR(0, 24, 4, 24);
+constexpr auto kToastPreferredSizeDip = gfx::Size(496, 64);
 
 }  // namespace
 
@@ -95,8 +105,9 @@ void AssistantZeroStateView::OnUiVisibilityChanged(
 
 void AssistantZeroStateView::InitLayout() {
   // Layout.
-  auto* layout = SetLayoutManager(std::make_unique<views::FillLayout>());
-  layout->SetIncludeHiddenViews(false);
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
 
   // Onboarding.
   onboarding_view_ =
@@ -119,12 +130,36 @@ void AssistantZeroStateView::InitLayout() {
   greeting_label_->SetMultiLine(true);
   greeting_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_PROMPT_DEFAULT));
+
+  if (assistant::features::IsAssistantLearnMoreEnabled()) {
+    // Spacer.
+    auto* spacer = AddChildView(std::make_unique<views::View>());
+    layout->SetFlexForView(spacer, 1);
+
+    // Learn more toast.
+    // TODO(b/274527683, b/274525194): add i18n and a11y supports.
+    learn_more_toast_ = AddChildView(
+        AppListToastView::Builder(u"Learn more about Google Assistant")
+            .SetButton(l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE),
+                       base::BindRepeating(
+                           &AssistantZeroStateView::OnLearnMoreButtonPressed,
+                           base::Unretained(this)))
+            .Build());
+    learn_more_toast_->SetID(AssistantViewID::kLearnMoreToast);
+    learn_more_toast_->SetProperty(views::kMarginsKey, kToastMarginDip);
+    learn_more_toast_->SetPreferredSize(kToastPreferredSizeDip);
+    learn_more_toast_->SetTitleLabelMaximumWidth();
+  }
 }
 
 void AssistantZeroStateView::UpdateLayout() {
   const bool show_onboarding = delegate_->ShouldShowOnboarding();
   onboarding_view_->SetVisible(show_onboarding);
   greeting_label_->SetVisible(!show_onboarding);
+}
+
+void AssistantZeroStateView::OnLearnMoreButtonPressed() {
+  AssistantController::Get()->OpenUrl(GURL(kLearnMoreUrl));
 }
 
 }  // namespace ash

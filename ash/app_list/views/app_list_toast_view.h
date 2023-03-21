@@ -117,6 +117,16 @@ class ASH_EXPORT AppListToastView : public views::View {
   views::LabelButton* toast_button() const { return toast_button_; }
   views::Button* close_button() const { return close_button_; }
 
+  // TODO(b/274524838): Sets the maximum width of the `title_label_`.
+  // When any of the values in the `GetExpandedTitleLabelWidth()` changes, need
+  // to recalculate the width.
+  // It is possible that this view automatically recalculate the width when
+  // detect any changes. But for simplicity, the caller needs to call this
+  // method after set the button or icon.
+  void SetTitleLabelMaximumWidth();
+
+  views::Label* GetTitleLabelForTesting() const { return title_label_; }
+
  private:
   class ToastPillButton : public PillButton {
    public:
