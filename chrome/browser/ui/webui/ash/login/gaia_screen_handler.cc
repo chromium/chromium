@@ -1516,10 +1516,10 @@ void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       error_screen_->SetParentScreen(GaiaView::kScreenId);
       error_screen_->SetHideCallback(base::BindOnce(
           &GaiaScreenHandler::OnErrorScreenHide, weak_factory_.GetWeakPtr()));
-      histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
     }
     // Show `ErrorScreen` or update network error message.
     error_screen_->ShowNetworkErrorMessage(state, reason);
+    histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
   } else {
     HideOfflineMessage(state, reason);
   }

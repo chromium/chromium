@@ -102,6 +102,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="OOBENetworkError">
   <variant name="AuthExtTimeout"/>
+  <variant name="None"/>
   <variant name="Offline"/>
   <variant name="Portal"/>
   <variant name="Proxy"/>
@@ -275,11 +276,11 @@ chromium-metrics-reviews@google.com.
     name="OOBE.ErrorScreensTime.{OOBEScreenShownBeforeNetworkError}.{OOBENetworkError}"
     units="ms" expires_after="2023-11-01">
   <owner>dkuzmin@google.com</owner>
-  <owner>cros-oac@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
   <summary>
     Time spent on error screens during {OOBEScreenShownBeforeNetworkError} when
-    the last error is {OOBENetworkError} error. Recorded when user leaves error
-    screen.
+    the last error is {OOBENetworkError} error. Recorded when the host screen is
+    destroyed. Note: None error means that the ErrorScreen was finally hidden.
   </summary>
   <token key="OOBEScreenShownBeforeNetworkError"
       variants="OOBEScreenShownBeforeNetworkError"/>

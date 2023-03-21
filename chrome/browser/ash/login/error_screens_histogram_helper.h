@@ -11,10 +11,13 @@
 
 namespace ash {
 
-FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowHideTime);
-FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowHideShowHideTime);
-FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowShowHideTime);
-
+// This class helps to track time user has spent on the ErrorScreen while
+// going through `parent_screen`.
+//
+// This class records two histograms:
+//   1. OOBE.NetworkErrorShown.{parent_screen}
+//   2. OOBE.ErrorScreensTime.{parent_screen}.{error_state}
+//
 class ErrorScreensHistogramHelper {
  public:
   // The screens that were shown when the error occurred.
@@ -30,26 +33,16 @@ class ErrorScreensHistogramHelper {
   };
 
   explicit ErrorScreensHistogramHelper(ErrorParentScreen parent_screen);
+  ErrorScreensHistogramHelper(const ErrorScreensHistogramHelper&) = delete;
+  ErrorScreensHistogramHelper& operator=(const ErrorScreensHistogramHelper&) =
+      delete;
+  ~ErrorScreensHistogramHelper();
+
   void OnScreenShow();
   void OnErrorShow(NetworkError::ErrorState error);
   void OnErrorHide();
-  ~ErrorScreensHistogramHelper();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ErrorScreensHistogramHelperTest, TestShowHideTime);
-  FRIEND_TEST_ALL_PREFIXES(ErrorScreensHistogramHelperTest,
-                           TestShowHideShowHideTime);
-  FRIEND_TEST_ALL_PREFIXES(ErrorScreensHistogramHelperTest,
-                           TestShowShowHideTime);
-  // functions for testing.
-  void OnErrorShowTime(NetworkError::ErrorState error, base::Time now);
-  void OnErrorHideTime(base::Time now);
-
-  std::string GetParentScreenString();
-  std::string GetLastErrorShownString();
-  void StoreErrorScreenToHistogram();
-  void StoreTimeOnErrorScreenToHistogram(const base::TimeDelta& time_delta);
-
   bool was_shown_ = false;
   ErrorParentScreen parent_screen_;
   NetworkError::ErrorState last_error_shown_ = NetworkError::ERROR_STATE_NONE;
