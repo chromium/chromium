@@ -45,6 +45,10 @@
 
 namespace blink {
 
+BASE_FEATURE(kCanvasOverdrawOptimization,
+             "CanvasOverdrawOptimization",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char BaseRenderingContext2D::kDefaultFont[] = "10px sans-serif";
 const char BaseRenderingContext2D::kInheritDirectionString[] = "inherit";
 const char BaseRenderingContext2D::kRtlDirectionString[] = "rtl";

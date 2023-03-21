@@ -30,6 +30,8 @@
 
 namespace blink {
 
+MODULES_EXPORT BASE_DECLARE_FEATURE(kCanvasOverdrawOptimization);
+
 class CanvasColorCache;
 class CanvasImageSource;
 class Color;
@@ -692,6 +694,10 @@ ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
     const cc::PaintFlags* flags,
     CanvasRenderingContext2DState::ImageType image_type,
     BaseRenderingContext2D::OverdrawOp overdraw_op) {
+  if (UNLIKELY(!base::FeatureList::IsEnabled(kCanvasOverdrawOptimization))) {
+    return;
+  }
+
   // Note on performance: because this method is inlined, all conditional
   // branches on arguments that are static at the call site can be optimized-out
   // by the compiler.
