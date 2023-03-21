@@ -47,6 +47,9 @@ BASE_DECLARE_FEATURE(kDefaultBrowserFullscreenPromoExperiment);
 // Feature flag that allows external apps to show default browser settings.
 BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 
+// Feature flag to log metrics for the edit menu.
+BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
+
 // Feature flag to use the new Edit menu API for browser view.
 BASE_DECLARE_FEATURE(kIOSCustomBrowserEditMenu);
 

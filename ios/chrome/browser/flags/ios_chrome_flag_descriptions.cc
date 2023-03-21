@@ -492,6 +492,10 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
+const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
+const char kIOSBrowserEditMenuMetricsDescription[] =
+    "Collect metrics for edit menu usage.";
+
 const char kIOSCustomBrowserEditMenuName[] = "Custom browser edit menu";
 const char kIOSCustomBrowserEditMenuDescription[] =
     "Use the new API for the WKWebView Edit menu.";

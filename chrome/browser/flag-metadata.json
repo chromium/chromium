@@ -4471,23 +4471,28 @@
     "expiry_milestone": -1
   },
   {
+    "name": "ios-browser-edit-menu-metrics",
+    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "ios-crashpad",
     "owners": [ "justincohen", "bling-flags@google.com" ],
     "expiry_milestone": 120
   },
   {
     "name": "ios-custom-browser-edit-menu",
-    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 125
   },
   {
     "name": "ios-edit-menu-partial-translate",
-    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 125
   },
   {
     "name": "ios-force-translate-enabled",
-    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 120
   },
   {
