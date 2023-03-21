@@ -25,7 +25,7 @@ export class DriveBulkPinningBanner extends EducationalBanner {
   constructor() {
     super();
 
-    this.shadowRoot.querySelector('.learn-more')
+    this.shadowRoot.querySelector('.action-button')
         .addEventListener('click', (e) => {
           e.preventDefault();
           document.querySelector('xf-bulk-pinning-dialog').show();

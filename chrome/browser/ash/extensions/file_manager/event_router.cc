@@ -657,6 +657,8 @@ void EventRouter::ObserveEvents() {
 
   auto file_manager_prefs_callback = base::BindRepeating(
       &EventRouter::OnFileManagerPrefsChanged, weak_factory_.GetWeakPtr());
+  pref_change_registrar_->Add(drive::prefs::kDriveFsBulkPinningEnabled,
+                              file_manager_prefs_callback);
   pref_change_registrar_->Add(drive::prefs::kDisableDriveOverCellular,
                               file_manager_prefs_callback);
   pref_change_registrar_->Add(drive::prefs::kDisableDrive,

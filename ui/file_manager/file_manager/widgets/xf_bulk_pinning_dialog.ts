@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+
 import {str} from '../common/js/util.js';
 
 import {css, customElement, html, query, XfBase} from './xf_base.js';
@@ -17,11 +18,22 @@ export class XfBulkPinningDialog extends XfBase {
 
   private copy_ = {
     cancel: str('CANCEL_LABEL'),
-    continue: 'Continue',  // TODO: replace with final copy when available.
+    continue: 'Turn on sync',  // TODO: replace with final copy when available.
   };
 
   show() {
     this.$dialog_!.showModal();
+  }
+
+  private onContinue() {
+    this.$dialog_!.close();
+    chrome.fileManagerPrivate.setPreferences(
+        {driveFsBulkPinningEnabled: true} as
+        chrome.fileManagerPrivate.PreferencesChange);
+  }
+
+  private onCancel() {
+    this.$dialog_!.cancel();
   }
 
   static override get styles() {
@@ -62,8 +74,10 @@ export class XfBulkPinningDialog extends XfBase {
           </div>
         </div>
         <div slot="button-container">
-          <cr-button class="cancel-button"> ${this.copy_.cancel} </cr-button>
-          <cr-button class="continue-button"> ${this.copy_.continue} </cr-button>
+          <cr-button class="cancel-button" @click="${this.onCancel}"> ${
+        this.copy_.cancel} </cr-button>
+          <cr-button class="continue-button action-button" @click="${
+        this.onContinue}"> ${this.copy_.continue} </cr-button>
         </div>
       </cr-dialog>
     `;
@@ -97,7 +111,6 @@ function getCSS() {
     }
 
     ul {
-      border-bottom: 0;
       border-radius: 12px 12px 0 0;
       border: 1px solid var(--cros-separator-color);
       margin: 0;
@@ -107,8 +120,9 @@ function getCSS() {
     .note {
       background-color: var(--cros-sys-app_base_shaded);
       border-radius: 0 0 12px 12px;
-      border-top: 0;
-      border: 1px solid var(--cros-separator-color);
+      border-inline-end: 1px solid var(--cros-separator-color);
+      border-block-end: 1px solid var(--cros-separator-color);
+      border-inline-start: 1px solid var(--cros-separator-color);
       padding: 16px;
     }
 

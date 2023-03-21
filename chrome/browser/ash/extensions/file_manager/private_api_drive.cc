@@ -998,17 +998,6 @@ FileManagerPrivatePollDriveHostedFilePinStatesFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
-FileManagerPrivateToggleBulkPinningFunction::Run() {
-  using api::file_manager_private::ToggleBulkPinning::Params;
-  const absl::optional<Params> params = Params::Create(args());
-
-  Profile* const profile = Profile::FromBrowserContext(browser_context());
-  profile->GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
-                                  params.value().should_enable);
-  return RespondNow(WithArguments());
-}
-
-ExtensionFunction::ResponseAction
 FileManagerPrivateOpenManageSyncSettingsFunction::Run() {
   if (ash::features::IsDriveFsMirroringEnabled()) {
     ash::ManageMirrorSyncDialog::Show(

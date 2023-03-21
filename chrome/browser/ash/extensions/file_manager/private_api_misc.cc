@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -119,13 +120,15 @@ std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
   for (Profile* profile : profiles) {
     // Filter the profile.
     profile = profile->GetOriginalProfile();
-    if (original_profiles.count(profile))
+    if (original_profiles.count(profile)) {
       continue;
+    }
     original_profiles.insert(profile);
     const user_manager::User* const user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile);
-    if (!user || !user->is_logged_in())
+    if (!user || !user->is_logged_in()) {
       continue;
+    }
 
     // Make a ProfileInfo.
     ProfileInfo profile_info;
@@ -235,6 +238,10 @@ FileManagerPrivateGetPreferencesFunction::Run() {
                          !drive_integration_service->mount_failed();
   result.cellular_disabled =
       service->GetBoolean(drive::prefs::kDisableDriveOverCellular);
+  if (ash::features::IsDriveFsBulkPinningEnabled()) {
+    result.drive_fs_bulk_pinning_enabled =
+        service->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
+  }
   result.search_suggest_enabled =
       service->GetBoolean(prefs::kSearchSuggestEnabled);
   result.use24hour_clock = service->GetBoolean(prefs::kUse24HourClock);
@@ -271,6 +278,11 @@ FileManagerPrivateSetPreferencesFunction::Run() {
   if (params->change_info.cellular_disabled) {
     service->SetBoolean(drive::prefs::kDisableDriveOverCellular,
                         *params->change_info.cellular_disabled);
+  }
+  if (ash::features::IsDriveFsBulkPinningEnabled() &&
+      params->change_info.drive_fs_bulk_pinning_enabled) {
+    service->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
+                        *params->change_info.drive_fs_bulk_pinning_enabled);
   }
   if (params->change_info.arc_enabled) {
     service->SetBoolean(arc::prefs::kArcEnabled,
@@ -312,19 +324,22 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   Profile* const profile = Profile::FromBrowserContext(browser_context());
 
   // Convert parent directory URL to absolute path.
-  if (params->parent_url.empty())
+  if (params->parent_url.empty()) {
     return RespondNow(Error("Empty parent URL"));
+  }
 
   src_dir_ = file_manager::util::GetLocalPathFromURL(
       render_frame_host(), profile, GURL(params->parent_url));
-  if (src_dir_.empty())
+  if (src_dir_.empty()) {
     return RespondNow(
         Error(base::StrCat({"Cannot convert parent URL ",
                             Redact(params->parent_url), " to absolute path"})));
+  }
 
   // Convert source file URLs to relative paths.
-  if (params->urls.empty())
+  if (params->urls.empty()) {
     return RespondNow(Error("No input files"));
+  }
 
   src_files_.reserve(params->urls.size());
 
@@ -333,23 +348,26 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
     const base::FilePath absolute_path =
         file_manager::util::GetLocalPathFromURL(render_frame_host(), profile,
                                                 GURL(url));
-    if (absolute_path.empty())
+    if (absolute_path.empty()) {
       return RespondNow(Error(base::StrCat(
           {"Cannot convert URL ", Redact(url), " to absolute file path"})));
+    }
 
     // Convert absolute path to relative path under |src_dir_|.
     base::FilePath relative_path;
-    if (!src_dir_.AppendRelativePath(absolute_path, &relative_path))
+    if (!src_dir_.AppendRelativePath(absolute_path, &relative_path)) {
       return RespondNow(
           Error(base::StrCat({"Input file ", Redact(absolute_path),
                               " is not in directory ", Redact(src_dir_)})));
+    }
 
     src_files_.push_back(std::move(relative_path));
   }
 
   // Convert destination filename to absolute path.
-  if (params->dest_name.empty())
+  if (params->dest_name.empty()) {
     return RespondNow(Error("Empty destination file name"));
+  }
 
   dest_file_ = src_dir_.Append(params->dest_name);
 
@@ -369,10 +387,11 @@ void FileManagerPrivateInternalZipSelectionFunction::ComputeSize() {
   base::File::Info info;
   for (const base::FilePath& relative_path : src_files_) {
     const base::FilePath absolute_path = src_dir_.Append(relative_path);
-    if (base::GetFileInfo(absolute_path, &info))
+    if (base::GetFileInfo(absolute_path, &info)) {
       total_bytes_ += info.is_directory
                           ? base::ComputeDirectorySize(absolute_path)
                           : info.size;
+    }
   }
   VLOG(1) << "<<< Total size is " << total_bytes_ << " bytes";
 }
@@ -410,9 +429,10 @@ ExtensionFunction::ResponseAction FileManagerPrivateCancelZipFunction::Run() {
 
   // Retrieve matching ZipFileCreator from the collection of active ones.
   const auto it = zip_creators->find(params->zip_id);
-  if (it == zip_creators->end())
+  if (it == zip_creators->end()) {
     return RespondNow(
         Error(base::StringPrintf("No ZIP operation #%d", params->zip_id)));
+  }
 
   ZipFileCreator* const creator = it->second.get();
   DCHECK(creator);
@@ -460,17 +480,19 @@ FileManagerPrivateGetZipProgressFunction::Run() {
 
   // Retrieve matching ZipFileCreator from the collection of active ones.
   const auto it = zip_creators->find(zip_id_);
-  if (it == zip_creators->end())
+  if (it == zip_creators->end()) {
     return RespondNow(
         Error(base::StringPrintf("No ZIP operation #%d", zip_id_)));
+  }
 
   creator_ = it->second;
   DCHECK(creator_);
 
   // Check if ZipFileCreator is in final state.
   const ZipFileCreator::Progress progress = creator_->GetProgress();
-  if (progress.result != ZipFileCreator::kInProgress)
+  if (progress.result != ZipFileCreator::kInProgress) {
     return RespondNow(ZipProgressValue(progress));
+  }
 
   // Not in final state yet. We'll report progress later.
   creator_->SetProgressCallback(base::BindOnce(
@@ -557,8 +579,9 @@ void FileManagerPrivateRequestWebStoreAccessTokenFunction::OnAccessTokenFetched(
   if (code == google_apis::HTTP_SUCCESS) {
     DCHECK(auth_service_->HasAccessToken());
     DCHECK(access_token == auth_service_->access_token());
-    if (logger)
+    if (logger) {
       logger->Log(logging::LOG_INFO, "CWS OAuth token fetch succeeded.");
+    }
     Respond(WithArguments(access_token));
   } else {
     if (logger) {
@@ -776,8 +799,9 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
         Error("ConfigureVolume: volume with ID * not found.", volume_id));
   }
 
-  if (!volume->configurable())
+  if (!volume->configurable()) {
     return RespondNow(Error("Volume not configurable."));
+  }
 
   switch (volume->type()) {
     case file_manager::VOLUME_TYPE_PROVIDED: {
@@ -789,9 +813,10 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
       ProvidedFileSystemInterface* const file_system =
           service->GetProvidedFileSystem(volume->provider_id(),
                                          volume->file_system_id());
-      if (file_system)
+      if (file_system) {
         file_system->Configure(base::BindOnce(
             &FileManagerPrivateConfigureVolumeFunction::OnCompleted, this));
+      }
       break;
     }
     default:
@@ -1237,8 +1262,9 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
     // files returned with some restriction is a subset of what would be
     // returned without restriction. Anyway, the maximum number of files
     // returned from RecentModel is large enough.
-    if (!IsAllowedSource(file.url().type(), restriction))
+    if (!IsAllowedSource(file.url().type(), restriction)) {
       continue;
+    }
 
     file_manager::util::FileDefinition file_definition;
     // Recent file system only lists regular files, not directories.

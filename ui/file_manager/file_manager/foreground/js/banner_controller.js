@@ -296,6 +296,29 @@ export class BannerController extends EventTarget {
       this.directoryModel_.addEventListener(
           'directory-changed', event => this.onDirectoryChanged_(event));
     }
+
+    /**
+     * Whether the DriveBulkPinning preference is enabled.
+     * @private {boolean}
+     */
+    this.isDriveBulkPinningPrefEnabled_ = false;
+
+    chrome.fileManagerPrivate.onPreferencesChanged.addListener(
+        this.onPreferencesChanged_.bind(this));
+    this.onPreferencesChanged_();
+  }
+
+  onPreferencesChanged_() {
+    chrome.fileManagerPrivate.getPreferences(pref => {
+      if (this.isDriveBulkPinningPrefEnabled_ ===
+          pref.driveFsBulkPinningEnabled) {
+        // The driveFsBulkPinningEnabled preference did not change.
+        return;
+      }
+
+      this.isDriveBulkPinningPrefEnabled_ = pref.driveFsBulkPinningEnabled;
+      this.reconcile();
+    });
   }
 
   /**
@@ -374,6 +397,11 @@ export class BannerController extends EventTarget {
         shouldShow: () => isPathSharedWithVm(
             this.crostini_, this.currentEntry_, constants.PLUGIN_VM),
         context: () => ({type: constants.PLUGIN_VM}),
+      });
+
+      this.registerCustomBannerFilter_(DriveBulkPinningBannerTagName, {
+        shouldShow: () => !this.isDriveBulkPinningPrefEnabled_,
+        context: () => ({}),
       });
 
       // Register a custom filter that passes the current size stats down to the

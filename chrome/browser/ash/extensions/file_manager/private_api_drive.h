@@ -200,18 +200,6 @@ class FileManagerPrivatePollDriveHostedFilePinStatesFunction
   ResponseAction Run() override;
 };
 
-class FileManagerPrivateToggleBulkPinningFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.toggleBulkPinning",
-                             FILEMANAGERPRIVATE_TOGGLEBULKPINNING)
-
- protected:
-  ~FileManagerPrivateToggleBulkPinningFunction() override = default;
-
-  ResponseAction Run() override;
-};
-
 // Implements the chrome.fileManagerPrivate.openManageSyncSettings method.
 class FileManagerPrivateOpenManageSyncSettingsFunction
     : public ExtensionFunction {

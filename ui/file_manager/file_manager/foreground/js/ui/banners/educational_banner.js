@@ -117,9 +117,10 @@ export class EducationalBanner extends Banner {
     // TODO(crbug.com/1228128): Add UMA trigger to capture number of extra
     // button clicks.
     const extraButton = this.querySelector('[slot="extra-button"]');
-    if (extraButton) {
+    const href = extraButton?.getAttribute('href');
+    if (href) {
       extraButton.addEventListener('click', (e) => {
-        util.visitURL(extraButton.getAttribute('href'));
+        util.visitURL(/** @type {!string} */ (href));
         if (extraButton.hasAttribute('dismiss-banner-when-clicked')) {
           this.dispatchEvent(
               new CustomEvent(Banner.Event.BANNER_DISMISSED_FOREVER, {
