@@ -7,7 +7,7 @@ import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_e
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {str} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {FileData, State} from '../../externs/ts/state.js';
+import {FileData, State, Volume} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {addVolume, removeVolume} from '../actions/volumes.js';
@@ -349,10 +349,51 @@ export async function testAddDisabledVolume(done: () => void) {
 
   // Expect the volume entry is being disabled.
   await waitUntil(() => {
+    const state = store.getState();
     const volumeEntry =
-        getEntry(store.getState(), volumeInfo.displayRoot.toURL()) as
+        getEntry(state, volumeInfo.displayRoot.toURL()) as VolumeEntry;
+    const volume = state.volumes[volumeInfo.volumeId] as Volume;
+    return volumeEntry && volumeEntry.disabled === true && volume &&
+        volume.isDisabled === true;
+  });
+
+  done();
+}
+
+/**
+ * Tests that drive fake root entry list will be disabled if the drive volume is
+ * disabled in the volume manager.
+ */
+export async function testAddDisabledDriveVolume(done: () => void) {
+  const initialState = getEmptyState();
+  const store = setupStore(initialState);
+
+  // Dispatch an action to add drive volume.
+  const {volumeManager} = window.fileManager;
+  const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DRIVE)!;
+  // DriveFS takes time to resolve.
+  await driveVolumeInfo.resolveDisplayRoot();
+  const driveVolumeMetadata = createFakeVolumeMetadata(driveVolumeInfo);
+  // Disable Drive volume type.
+  volumeManager.isDisabled = (volumeType) => {
+    return volumeType === VolumeManagerCommon.VolumeType.DRIVE;
+  };
+  store.dispatch(addVolume(
+      {volumeInfo: driveVolumeInfo, volumeMetadata: driveVolumeMetadata}));
+
+  // Expect the volume entry is being disabled.
+  await waitUntil(() => {
+    const state = store.getState();
+    const driveFakeRootEntryList =
+        getEntry(state, driveRootEntryListKey) as EntryList;
+    const driveVolumeEntry =
+        getEntry(store.getState(), driveVolumeInfo.displayRoot.toURL()) as
         VolumeEntry;
-    return volumeEntry && volumeEntry.disabled === true;
+    const driveVolume = state.volumes[driveVolumeInfo.volumeId];
+    return driveFakeRootEntryList && driveFakeRootEntryList.disabled === true &&
+        driveVolumeEntry && driveVolumeEntry.disabled === true && driveVolume &&
+        driveVolume.isDisabled === true;
   });
 
   done();

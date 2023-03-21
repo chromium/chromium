@@ -161,6 +161,13 @@ export class EntryList {
     this.isFile = false;
     this.type_name = 'EntryList';
     this.fullPath = '/';
+
+    /**
+     * @public {boolean} EntryList can be a placeholder of a real volume (e.g.
+     * MyFiles or DriveFakeRootEntryList), it can be disabled if the
+     * corresponding volume type is disabled.
+     */
+    this.disabled = false;
   }
 
   /**
@@ -315,6 +322,23 @@ export class EntryList {
   /** @override */
   getNativeEntry() {
     return null;
+  }
+
+  /**
+   * EntryList can be a placeholder for the real volume (e.g. MyFiles or
+   * DriveFakeRootEntryList), if so this field will be the volume type of the
+   * volume it represents.
+   * @return {VolumeManagerCommon.VolumeType|null}
+   */
+  get volumeType() {
+    switch (this.rootType) {
+      case VolumeManagerCommon.RootType.MY_FILES:
+        return VolumeManagerCommon.VolumeType.DOWNLOADS;
+      case VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT:
+        return VolumeManagerCommon.VolumeType.DRIVE;
+      default:
+        return null;
+    }
   }
 }
 
