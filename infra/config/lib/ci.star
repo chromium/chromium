@@ -107,6 +107,14 @@ def ci_builder(
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.ci_test_results",
         ),
+        resultdb.export_text_artifacts(
+            # TODO(crbug.com/1249968): Remove the 'temporary_' part of the table
+            # name if/when RDB is stable after this lands.
+            bq_table = "chrome-luci-data.chromium.temporary_ci_text_artifacts",
+            predicate = resultdb.artifact_predicate(
+                artifact_id_regexp = "(snippet|Test Log)",
+            ),
+        ),
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_ci_test_results",
             predicate = resultdb.test_result_predicate(
