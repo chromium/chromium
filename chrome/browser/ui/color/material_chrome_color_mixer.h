@@ -11,8 +11,8 @@ namespace ui {
 class ColorProvider;
 }
 
-// Adds a color mixer that contains recipes for tab strip colors to `provider`
-// with |key|.
+// Adds a color mixer that contains recipes for chrome colors to `provider` with
+// `key`.
 void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
                                  const ui::ColorProviderManager::Key& key);
 

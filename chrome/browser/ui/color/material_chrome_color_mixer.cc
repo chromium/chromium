@@ -18,13 +18,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
     return;
   }
 
-  ui::ColorMixer& mixer = provider->AddMixer();
-
   // Adds the color recipes for browser UI colors (toolbar, bookmarks bar,
   // downloads bar etc). While both design systems continue to exist, the
   // material recipes are intended to leverage the existing chrome color mixers,
   // overriding when required to do so according to the new material spec.
   // TODO(crbug.com/1408542): Update color recipes to match UX mocks.
+  ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorAvatarButtonHighlightNormal] =
       AdjustHighlightColorForContrast(ui::kColorSysPrimary, kColorToolbar);
   mixer[kColorBookmarkBarBackground] = {ui::kColorSysBase};
@@ -79,6 +78,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorNewTabButtonInkDropFrameInactive] = {
       kColorNewTabButtonInkDropFrameActive};
+  mixer[kColorOmniboxChipBackground] = {ui::kColorSysBaseContainerElevated};
+  mixer[kColorOmniboxChipForegroundLowVisibility] = {
+      ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOmniboxChipForegroundNormalVisibility] = {ui::kColorSysOnSurface};
   mixer[kColorToolbar] = {ui::kColorSysBase};
   mixer[kColorToolbarButtonBackgroundHighlightedDefault] = {
       ui::kColorSysStateHoverOnSubtle};

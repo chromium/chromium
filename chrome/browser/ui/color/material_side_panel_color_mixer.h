@@ -12,7 +12,7 @@ class ColorProvider;
 }
 
 // Adds a color mixer that contains recipes for side panel colors to `provider`
-// with |key|.
+// with `key`.
 void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
                                     const ui::ColorProviderManager::Key& key);
 

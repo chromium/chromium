@@ -17,9 +17,8 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
     return;
   }
 
-  ui::ColorMixer& mixer = provider->AddMixer();
-
   // TODO(crbug.com/1399942): Validate final mappings for Gm3 color.
+  ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorTabBackgroundActiveFrameActive] = {ui::kColorSysBase};
   mixer[kColorTabBackgroundActiveFrameInactive] = {
       kColorTabBackgroundActiveFrameActive};

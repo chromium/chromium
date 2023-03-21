@@ -12,7 +12,7 @@ class ColorProvider;
 }
 
 // Adds a color mixer that contains recipes for tab strip colors to `provider`
-// with |key|.
+// with `key`.
 void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
                                    const ui::ColorProviderManager::Key& key);
 
