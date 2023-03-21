@@ -19,6 +19,7 @@ source_set("drivefs") {
     "//chrome/browser/profiles:profile",
     "//chromeos/components/drivefs/mojom",
     "//components/drive",
+    "//components/keep_alive_registry:keep_alive_registry",
     "//extensions/browser/api/messaging",
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/common",
@@ -36,6 +37,8 @@ source_set("unit_tests") {
   deps = [
     ":drivefs",
     "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
     "//extensions/browser/api/messaging:native_messaging",
     "//mojo/public/cpp/bindings",
   ]

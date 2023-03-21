@@ -9,7 +9,8 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,7 +65,9 @@ class DriveFsNativeMessageHostTest
               (const std::string& message),
               (override));
 
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+
   drivefs::mojom::ExtensionConnectionParamsPtr params_;
   mojo::Receiver<drivefs::mojom::NativeMessagingHost> receiver_{this};
   mojo::Remote<drivefs::mojom::NativeMessagingPort> extension_port_;
@@ -78,7 +81,7 @@ TEST_F(DriveFsNativeMessageHostTest, DriveFsInitiatedMessaging) {
 
   std::unique_ptr<extensions::NativeMessageHost> host =
       CreateDriveFsInitiatedNativeMessageHostInternal(
-          extension_port_.BindNewPipeAndPassReceiver(),
+          &profile_, extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;
   EXPECT_CALL(client, PostMessageFromNativeHost("foo"))
@@ -115,7 +118,7 @@ TEST_F(DriveFsNativeMessageHostTest, ExtensionInitiatedMessaging) {
 TEST_F(DriveFsNativeMessageHostTest, NativeHostSendsMessageBeforeStart) {
   std::unique_ptr<extensions::NativeMessageHost> host =
       CreateDriveFsInitiatedNativeMessageHostInternal(
-          extension_port_.BindNewPipeAndPassReceiver(),
+          &profile_, extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;
 
@@ -139,7 +142,7 @@ TEST_F(DriveFsNativeMessageHostTest, Error) {
 
   std::unique_ptr<extensions::NativeMessageHost> host =
       CreateDriveFsInitiatedNativeMessageHostInternal(
-          extension_port_.BindNewPipeAndPassReceiver(),
+          &profile_, extension_port_.BindNewPipeAndPassReceiver(),
           receiver_.BindNewPipeAndPassRemote());
   MockClient client;
   EXPECT_CALL(*this, HandleMessageFromExtension).Times(0);

@@ -39,6 +39,7 @@ std::unique_ptr<extensions::NativeMessageHost> CreateDriveFsNativeMessageHost(
 // `ConnectToDriveFsNativeMessageExtension` to construct a native message host.
 std::unique_ptr<extensions::NativeMessageHost>
 CreateDriveFsInitiatedNativeMessageHostInternal(
+    Profile* profile,
     mojo::PendingReceiver<drivefs::mojom::NativeMessagingPort>
         extension_receiver,
     mojo::PendingRemote<drivefs::mojom::NativeMessagingHost> drivefs_remote);

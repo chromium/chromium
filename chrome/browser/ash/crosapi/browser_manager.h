@@ -60,6 +60,10 @@ class SecurityTokenSessionController;
 }
 }  // namespace ash
 
+namespace drive {
+class DriveIntegrationService;
+}
+
 namespace extensions {
 class AutotestPrivateGetLacrosInfoFunction;
 }
@@ -495,6 +499,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // always be running.
   friend class PersistentForcedExtensionKeepAlive;
   friend class PersistentForcedExtensionKeepAliveTest;
+  // DriveFS requires Lacros to be alive so it can connect to the Docs Offline
+  // extension. This allows Files App to make Docs files available offline.
+  friend class drive::DriveIntegrationService;
 
   // Processes the action depending on the current state.
   // Ignoring a few exceptional cases, the logic is as follows:
@@ -517,6 +524,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     kExtensions,
     kPersistentForcedExtension,
     kSmartCardSessionController,
+    kDriveFsNativeMessaging,
   };
 
   // Any instance of this class will ensure that the Lacros browser will stay

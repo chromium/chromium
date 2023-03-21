@@ -39,6 +39,7 @@ enum class KeepAliveOrigin {
   // c/b/chromeos
   LOGIN_DISPLAY_HOST_WEBUI,
   PIN_MIGRATION,
+  DRIVEFS_NATIVE_MESSAGE_HOST_LACROS,
 
   // c/b/devtools
   REMOTE_DEBUGGING,

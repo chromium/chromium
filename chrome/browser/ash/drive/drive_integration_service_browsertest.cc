@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_pref_names.h"
@@ -650,6 +651,8 @@ class DriveIntegrationServiceBrowserTestLacros
   Profile* profile() { return ProfileManager::GetPrimaryUserProfile(); }
 
  private:
+  base::AutoReset<bool> set_lacros_enabled_ =
+      ash::standalone_browser::BrowserSupport::SetLacrosEnabledForTest(true);
   base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
       crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
 };

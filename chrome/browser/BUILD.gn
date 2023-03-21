@@ -5507,6 +5507,7 @@ static_library("browser") {
     deps += [
       "//ash/webui/projector_app/public/cpp",
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/policy:onc",
@@ -5546,6 +5547,7 @@ static_library("browser") {
 
     allow_circular_includes_from += [
       "//chrome/browser/chromeos",
+      "//chrome/browser/chromeos/drivefs",
       "//chrome/browser/policy:onc",
 
       # TODO(b/215757706): Find a way to avoid the circular include.

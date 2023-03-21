@@ -131,7 +131,11 @@ enum class ProfileKeepAliveOrigin {
   // finish signin in the user's account.
   kProfileCreationSamlFlow = 30,
 
-  kMaxValue = kProfileCreationSamlFlow,
+  // Used when DriveFS on ChromeOS wants to connect to an extension in Lacros.
+  // This keeps the profile alive while the connection is active.
+  kDriveFsNativeMessageHostLacros = 31,
+
+  kMaxValue = kDriveFsNativeMessageHostLacros,
 };
 
 std::ostream& operator<<(std::ostream& out,
