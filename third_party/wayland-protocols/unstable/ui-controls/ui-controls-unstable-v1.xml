@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_ui_controls_v1" version="1">
+  <interface name="zcr_ui_controls_v1" version="2">
     <description summary="requests for input emulation">
       This global provides requests for different type of input emulation that
       mirror the semantics of Chrome's ui_controls functions.
