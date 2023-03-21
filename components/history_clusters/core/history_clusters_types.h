@@ -32,22 +32,19 @@ struct QueryClustersFilterParams {
   QueryClustersFilterParams(const QueryClustersFilterParams&);
   ~QueryClustersFilterParams();
 
-  // The maximum number of clusters to return. If equal to 0, no max will be
-  // applied. If set to a positive value, the returned clusters will be returned
-  // based on likelihood of subsequent user engagemnent.
-  size_t max_clusters = 0;
+  // Parameters related to the minimum requirements for returned clusters.
 
   // The minimum number of visits within a cluster that have associated images.
   // Note that this also implicitly works as a visit filter such that if fewer
   // than `min_visits_with_images` are in a cluster, it will be filtered out.
   int min_visits_with_images = 0;
 
-  // The categories that a cluster must be a part of for it to be included.
+  // The category IDs that a cluster must be a part of for it to be included.
   // If both `categories_allowlist` and `categories_blocklist` are empty, the
   // returned clusters will not be filtered.
   base::flat_set<std::string> categories_allowlist;
 
-  // The categories that a cluster must not contain for it to be included.
+  // The category IDs that a cluster must not contain for it to be included.
   // If both `categories_allowlist` and `categories_blocklist` are empty, the
   // returned clusters will not be filtered.
   base::flat_set<std::string> categories_blocklist;
@@ -60,6 +57,17 @@ struct QueryClustersFilterParams {
 
   // Whether the returned clusters will be shown on prominent UI surfaces.
   bool is_shown_on_prominent_ui_surfaces = false;
+
+  // Parameters related to ranking clusters after minimum-required filtering
+  // performed.
+
+  // The maximum number of clusters to return. If equal to 0, no max will be
+  // applied. If set to a positive value, the returned clusters will be returned
+  // based on likelihood of subsequent user engagement.
+  size_t max_clusters = 0;
+
+  // The category IDs that boost a cluster's likelihood of being included.
+  base::flat_set<std::string> categories_boostlist;
 };
 
 struct QueryClustersContinuationParams {

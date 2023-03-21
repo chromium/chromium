@@ -48,6 +48,10 @@ class FilterClusterProcessor : public ClusterProcessor {
   // `filter_params_`.
   bool DoesClusterMatchFilter(history::Cluster& cluster) const;
 
+  // Sorts clusters based on `filter_params_`.
+  void SortClustersUsingFilterParams(
+      std::vector<history::Cluster>* clusters) const;
+
   // The clustering request source that requires this filtering. Used for
   // metrics purposes.
   ClusteringRequestSource clustering_request_source_;
