@@ -673,18 +673,18 @@ bool GPUQueue::CopyFromCanvasSourceImage(
 // platform requires interop supported. According to the bug, this change will
 // be a long time task. So disable using webgpu mailbox texture uploading path
 // on linux platform.
+// TODO(crbug.com/1424119): using a webgpu mailbox texture on the OpenGLES
+// backend is failing for unknown reasons.
 #if BUILDFLAG(IS_LINUX)
-  use_webgpu_mailbox_texture = false;
-  unaccelerated_image = image->MakeUnaccelerated();
-  image = unaccelerated_image.get();
+  bool forceReadback = true;
+#else
+  bool forceReadback =
+      device()->adapter()->backendType() == WGPUBackendType_OpenGLES;
 #endif  // BUILDFLAG(IS_LINUX)
-
-  // TODO(crbug.com/1424119):
-  // Using a webgpu mailbox texture to upload a cpu-backed resource on OpenGLES uploads all
-  // zeros. Disable that upload path if the image is not texture-backed.
-  auto backendType = device()->adapter()->backendType();
-  if (backendType == WGPUBackendType_OpenGLES && !image->IsTextureBacked()) {
+  if (forceReadback) {
     use_webgpu_mailbox_texture = false;
+    unaccelerated_image = image->MakeUnaccelerated();
+    image = unaccelerated_image.get();
   }
 
   bool noop = copy_size.width == 0 || copy_size.height == 0 ||
