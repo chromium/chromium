@@ -398,7 +398,6 @@ void ReadingListModelImpl::SetReadStatusIfExists(const GURL& url, bool read) {
   }
   UpdateEntryStateCountersOnEntryRemoval(entry);
   entry.SetRead(read, clock_->Now());
-  entry.MarkEntryUpdated(clock_->Now());
   UpdateEntryStateCountersOnEntryInsertion(entry);
 
   std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
