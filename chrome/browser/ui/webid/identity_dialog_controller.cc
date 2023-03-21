@@ -45,6 +45,7 @@ void IdentityDialogController::ShowFailureDialog(
     content::WebContents* rp_web_contents,
     const std::string& top_frame_for_display,
     const std::string& idp_for_display,
+    const content::IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback) {
   const GURL rp_url = rp_web_contents->GetLastCommittedURL();
   rp_web_contents_ = rp_web_contents;
@@ -55,7 +56,8 @@ void IdentityDialogController::ShowFailureDialog(
   //   TODO: If the failure dialog is already being shown, notify user that
   //   sign-in attempt failed.
 
-  account_view_->ShowFailureDialog(top_frame_for_display, idp_for_display);
+  account_view_->ShowFailureDialog(top_frame_for_display, idp_for_display,
+                                   idp_metadata);
 }
 
 void IdentityDialogController::ShowIdpSigninFailureDialog(

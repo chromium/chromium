@@ -1103,7 +1103,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // failed.
   request_dialog_controller_->ShowFailureDialog(
       rp_web_contents, FormatOriginForDisplay(GetEmbeddingOrigin()),
-      FormatOriginForDisplay(idp_origin),
+      FormatOriginForDisplay(idp_origin), idp_info->metadata,
       base::BindOnce(&FederatedAuthRequestImpl::OnDismissFailureDialog,
                      weak_ptr_factory_.GetWeakPtr(),
                      FederatedAuthRequestResult::kError,

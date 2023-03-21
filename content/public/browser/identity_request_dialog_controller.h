@@ -122,6 +122,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   virtual void ShowFailureDialog(WebContents* rp_web_contents,
                                  const std::string& top_frame_for_display,
                                  const std::string& idp_for_display,
+                                 const IdentityProviderMetadata& idp_metadata,
                                  DismissCallback dismiss_callback);
 
   // Show dialog notifying user that IdP sign-in failed.

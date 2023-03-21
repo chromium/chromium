@@ -566,7 +566,8 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 
 void AccountSelectionBubbleView::ShowFailureDialog(
     const std::u16string& top_frame_for_display,
-    const std::u16string& idp_for_display) {
+    const std::u16string& idp_for_display,
+    const content::IdentityProviderMetadata& idp_metadata) {
   const std::u16string title = l10n_util::GetStringFUTF16(
       IDS_FAILURE_DIALOG_TITLE, top_frame_for_display, idp_for_display);
   title_label_->SetText(title);

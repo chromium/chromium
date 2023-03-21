@@ -50,6 +50,7 @@ class IdentityDialogController
   void ShowFailureDialog(content::WebContents* rp_web_contents,
                          const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
+                         const content::IdentityProviderMetadata& idp_metadata,
                          DismissCallback dismiss_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 

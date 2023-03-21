@@ -53,8 +53,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox) override;
-  void ShowFailureDialog(const std::string& top_frame_etld_plus_one,
-                         const std::string& idp_etld_plus_one) override;
+  void ShowFailureDialog(
+      const std::string& top_frame_etld_plus_one,
+      const std::string& idp_etld_plus_one,
+      const content::IdentityProviderMetadata& idp_metadata) override;
 
   // content::WebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;

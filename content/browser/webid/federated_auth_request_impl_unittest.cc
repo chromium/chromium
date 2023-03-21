@@ -545,6 +545,7 @@ class TestDialogController
   void ShowFailureDialog(content::WebContents* rp_web_contents,
                          const std::string& top_frame_for_display,
                          const std::string& idp_for_display,
+                         const IdentityProviderMetadata& idp_metadata,
                          IdentityRequestDialogController::DismissCallback
                              dismiss_callback) override {
     if (!state_) {

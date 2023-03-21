@@ -150,7 +150,8 @@ void AccountSelectionViewAndroid::Show(
 
 void AccountSelectionViewAndroid::ShowFailureDialog(
     const std::string& top_frame_for_display,
-    const std::string& idp_for_display) {
+    const std::string& idp_for_display,
+    const content::IdentityProviderMetadata& idp_metadata) {
   // TODO(crbug.com/1357790): add support on Android.
 }
 
