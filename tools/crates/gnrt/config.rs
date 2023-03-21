@@ -9,20 +9,27 @@ use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-/// Extra GN configuration for targets. Contains one entry for each crate with
-/// custom config.
+/// Customizes GN output for a session.
 #[derive(Clone, Debug, Deserialize)]
-pub struct ConfigFile {
-    #[serde(flatten)]
-    pub per_lib_config: BTreeMap<String, PerLibConfig>,
+pub struct BuildConfig {
+    /// Configuration that applies to all crates
+    #[serde(default, rename = "all")]
+    pub all_config: CrateConfig,
+    /// Additional configuration options for specific crates. Keyed by crate
+    /// name. Config is additive with `all_config`.
+    #[serde(rename = "crate")]
+    pub per_crate_config: BTreeMap<String, CrateConfig>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
-pub struct PerLibConfig {
-    /// List of `cfg(...)` options for building this crate.
+#[derive(Clone, Debug, Default, Deserialize)]
+pub struct CrateConfig {
+    /// `cfg(...)` options for building this crate.
     #[serde(default)]
     pub cfg: Vec<String>,
-    /// List of compile-time environment variables for this crate.
+    /// Compile-time environment variables for this crate.
     #[serde(default)]
     pub env: Vec<String>,
+    /// Extra rustc flags.
+    #[serde(default)]
+    pub rustflags: Vec<String>,
 }

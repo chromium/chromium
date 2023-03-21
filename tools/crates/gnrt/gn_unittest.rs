@@ -48,6 +48,12 @@ fn test() {
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
+                    rustflags: vec![
+                        "--cfg=foo".to_string(),
+                        "--cfg=feature=\"std\"".to_string(),
+                        "-Zunstable-feature".to_string(),
+                    ],
+                    rustenv: vec!["BAR_ENV=123".to_string()],
                     gn_variables_lib: "variables = []".to_string(),
                 },
             },
@@ -74,7 +80,7 @@ edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_authors = "Somebody <somebody@foo.org>"
 cargo_pkg_name = "foo"
-cargo_pkg_description = "A generic framework for fooNewline'"
+cargo_pkg_description = "A generic framework for fooNewline\""
 library_configs -= [ "//build/config/compiler:chromium_code" ]
 library_configs += [ "//build/config/compiler:no_chromium_code" ]
 executable_configs -= [ "//build/config/compiler:chromium_code" ]
@@ -92,6 +98,14 @@ build_root = "crate/build.rs"
 build_sources = [ "crate/build.rs" ]
 build_script_outputs = [
 "binding.rs",
+]
+rustenv = [
+"BAR_ENV=123",
+]
+rustflags = [
+"--cfg=foo",
+"--cfg=feature=\"std\"",
+"-Zunstable-feature",
 ]
 variables = []
 }
@@ -124,6 +138,8 @@ variables = []
                         features: vec![],
                         build_root: None,
                         build_script_outputs: vec![],
+                        rustflags: vec![],
+                        rustenv: vec![],
                         gn_variables_lib: String::new(),
                     },
                 },
@@ -224,6 +240,8 @@ testonly = true
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
+                    rustflags: vec![],
+                    rustenv: vec![],
                     gn_variables_lib: String::new(),
                 },
             },
@@ -379,13 +397,14 @@ fn test() {
 #[gtest(GnTest, StringEscaping)]
 fn test() {
     fn escaped(s: &str) -> String {
+        use std::fmt::Write;
         let mut out = String::new();
-        write_str_escaped_for_testing(&mut out, s).unwrap();
+        write!(Escaper::new_for_testing(&mut out), "{s}").unwrap();
         out
     }
 
     expect_eq!("foo bar", escaped("foo bar"));
     expect_eq!("foobar", escaped("foo\nbar"));
-    expect_eq!(r#"foo 'bar'"#, escaped(r#"foo "bar""#));
+    expect_eq!(r#"foo \"bar\""#, escaped(r#"foo "bar""#));
     expect_eq!("foo 'bar'", escaped("foo 'bar'"));
 }

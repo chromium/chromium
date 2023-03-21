@@ -37,6 +37,7 @@ cargo_crate("addr2line") {
     "core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("adler") {
   crate_type = "rlib"
@@ -68,6 +69,7 @@ cargo_crate("adler") {
     "core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("alloc") {
   crate_type = "rlib"
@@ -89,6 +91,7 @@ cargo_crate("alloc") {
     ":compiler_builtins",
     ":core",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("cc") {
   crate_type = "rlib"
@@ -107,6 +110,7 @@ cargo_crate("cc") {
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("cfg_if") {
   crate_type = "rlib"
@@ -137,6 +141,7 @@ cargo_crate("cfg_if") {
     "core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("compiler_builtins") {
   crate_type = "rlib"
@@ -164,6 +169,7 @@ cargo_crate("compiler_builtins") {
     "core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("core") {
   crate_type = "rlib"
@@ -183,6 +189,7 @@ cargo_crate("core") {
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("getopts") {
   crate_type = "rlib"
@@ -215,6 +222,7 @@ cargo_crate("getopts") {
     "rustc-dep-of-std",
     "std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("gimli") {
   crate_type = "rlib"
@@ -250,6 +258,7 @@ cargo_crate("gimli") {
     "read-core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("hashbrown") {
   crate_type = "rlib"
@@ -285,6 +294,7 @@ cargo_crate("hashbrown") {
     "rustc-dep-of-std",
     "rustc-internal-api",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("libc") {
   crate_type = "rlib"
@@ -313,6 +323,7 @@ cargo_crate("libc") {
     "--cfg=libc_align",
     "--cfg=libc_priv_mod_use",
     "--cfg=libc_core_cvoid",
+    "-Zforce-unstable-if-unmarked",
   ]
 }
 cargo_crate("memchr") {
@@ -344,6 +355,7 @@ cargo_crate("memchr") {
     "core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("miniz_oxide") {
   crate_type = "rlib"
@@ -378,6 +390,7 @@ cargo_crate("miniz_oxide") {
     "core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("object") {
   crate_type = "rlib"
@@ -419,6 +432,7 @@ cargo_crate("object") {
     "rustc-dep-of-std",
     "unaligned",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("panic_abort") {
   crate_type = "rlib"
@@ -443,6 +457,7 @@ cargo_crate("panic_abort") {
     ":core",
     ":libc",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("panic_unwind") {
   crate_type = "rlib"
@@ -468,6 +483,7 @@ cargo_crate("panic_unwind") {
     ":libc",
     ":unwind",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("proc_macro") {
   crate_type = "rlib"
@@ -488,6 +504,7 @@ cargo_crate("proc_macro") {
     ":core",
     ":std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("profiler_builtins") {
   crate_type = "rlib"
@@ -509,6 +526,7 @@ cargo_crate("profiler_builtins") {
     ":core",
   ]
   build_deps = [ ":cc" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("rustc_demangle") {
   crate_type = "rlib"
@@ -539,6 +557,7 @@ cargo_crate("rustc_demangle") {
     "core",
     "rustc-dep-of-std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("rustc_std_workspace_alloc") {
   crate_type = "rlib"
@@ -557,6 +576,7 @@ cargo_crate("rustc_std_workspace_alloc") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ ":alloc" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("rustc_std_workspace_core") {
   crate_type = "rlib"
@@ -575,6 +595,7 @@ cargo_crate("rustc_std_workspace_core") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ ":core" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("rustc_std_workspace_std") {
   crate_type = "rlib"
@@ -593,6 +614,7 @@ cargo_crate("rustc_std_workspace_std") {
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ ":std" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("std") {
   crate_type = "rlib"
@@ -642,8 +664,11 @@ cargo_crate("std") {
     "std_detect_dlsym_getauxval",
     "std_detect_file_io",
   ]
-  rustflags = [ "--cfg=backtrace_in_libstd" ]
   rustenv = [ "STD_ENV_ARCH=$rust_target_arch" ]
+  rustflags = [
+    "--cfg=backtrace_in_libstd",
+    "-Zforce-unstable-if-unmarked",
+  ]
 }
 cargo_crate("std_detect") {
   crate_type = "rlib"
@@ -683,6 +708,7 @@ cargo_crate("std_detect") {
     "std_detect_dlsym_getauxval",
     "std_detect_file_io",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("test") {
   crate_type = "rlib"
@@ -709,8 +735,8 @@ cargo_crate("test") {
     ":proc_macro",
     ":std",
   ]
-
   rustenv = [ "CFG_DISABLE_UNSTABLE_FEATURES=0" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("unicode_width") {
   crate_type = "rlib"
@@ -745,6 +771,7 @@ cargo_crate("unicode_width") {
     "rustc-dep-of-std",
     "std",
   ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }
 cargo_crate("unwind") {
   crate_type = "rlib"
@@ -768,4 +795,5 @@ cargo_crate("unwind") {
     ":libc",
   ]
   build_deps = [ ":cc" ]
+  rustflags = [ "-Zforce-unstable-if-unmarked" ]
 }

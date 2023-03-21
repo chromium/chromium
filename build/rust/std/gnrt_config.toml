@@ -2,7 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-[libc]
+# Provides per-crate and overall configuration options to gnrt.
+
+[all]
+# force-unstable-if-unmarked prevents normal crates from inadvertently using
+# symbols from std-internal dependencies in the sysroot. This is normally passed
+# during an x.py build, but we have to do it manually.
+rustflags = ['-Zforce-unstable-if-unmarked']
+
+[crate.libc]
 # Requires:
 # * cfg(libc_align) for new enough rustc, which is normally provided by build.rs
 #   but we don't run build scripts for std crates.
@@ -12,7 +20,7 @@
 # See https://github.com/rust-lang/libc/blob/master/build.rs
 cfg = ['libc_align', 'libc_priv_mod_use', 'libc_core_cvoid']
 
-[std]
+[crate.std]
 # Requires:
 # * cfg(backtrace_in_libstd) because it directly includes .rs files from the
 #   backtrace code rather than including it as a dependency. backtrace's
@@ -25,7 +33,7 @@ cfg = ['libc_align', 'libc_priv_mod_use', 'libc_core_cvoid']
 cfg = ['backtrace_in_libstd']
 env = ['STD_ENV_ARCH=$rust_target_arch']
 
-[test]
+[crate.test]
 # Requires:
 # * CFG_DISABLE_UNSTABLE_FEATURES=0 to match how it's built by x.py.
 env = ['CFG_DISABLE_UNSTABLE_FEATURES=0']
