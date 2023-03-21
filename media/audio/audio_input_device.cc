@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "audio_device_stats_reporter.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -98,6 +99,8 @@ class AudioInputDevice::AudioThreadCallback
   const int got_data_callback_interval_in_frames_;
   int frames_since_last_got_data_callback_;
   base::RepeatingClosure got_data_callback_;
+
+  AudioDeviceStatsReporter stats_reporter_;
 };
 
 AudioInputDevice::AudioInputDevice(std::unique_ptr<AudioInputIPC> ipc,
@@ -384,7 +387,9 @@ AudioInputDevice::AudioThreadCallback::AudioThreadCallback(
       got_data_callback_interval_in_frames_(kGotDataCallbackIntervalSeconds *
                                             audio_parameters.sample_rate()),
       frames_since_last_got_data_callback_(0),
-      got_data_callback_(std::move(got_data_callback_)) {
+      got_data_callback_(std::move(got_data_callback_)),
+      stats_reporter_(audio_parameters,
+                      AudioDeviceStatsReporter::Type::kInput) {
   // CHECK that the shared memory is large enough. The memory allocated must
   // be at least as large as expected.
   CHECK_LE(memory_length_, shared_memory_region_.GetSize());
@@ -471,6 +476,12 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
       base::TimeTicks() + base::Microseconds(buffer->params.capture_time_us);
   const base::TimeTicks now_time = base::TimeTicks::Now();
   DCHECK_GE(now_time, capture_time);
+
+  AudioGlitchInfo glitch_info{
+      .duration = base::Microseconds(buffer->params.glitch_duration_us),
+      .count = buffer->params.glitch_count};
+  base::TimeDelta delay = now_time - capture_time;
+  stats_reporter_.ReportCallback(delay, glitch_info);
 
   capture_callback_->Capture(audio_bus, capture_time, buffer->params.volume,
                              buffer->params.key_pressed);

@@ -26,7 +26,8 @@ AudioOutputDeviceThreadCallback::AudioOutputDeviceThreadCallback(
       shared_memory_region_(std::move(shared_memory_region)),
       render_callback_(render_callback),
       create_time_(base::TimeTicks::Now()),
-      stats_reporter_(audio_parameters) {
+      stats_reporter_(audio_parameters,
+                      AudioDeviceStatsReporter::Type::kOutput) {
   // CHECK that the shared memory is large enough. The memory allocated must be
   // at least as large as expected.
   CHECK(memory_length_ <= shared_memory_region_.GetSize());

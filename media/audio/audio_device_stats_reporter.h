@@ -16,20 +16,25 @@
 
 namespace media {
 
-// Uploads audio UMA stats at the AudioOutputDevice level. Uploads Short stats
-// on destruction, for streams shorter than 1000 callbacks. For streams of at
-// least 1000 callbacks it uploads Interval stats every 1000 callbacks and drops
-// any unuploaded stats on destruction.
+// Uploads audio UMA stats at the AudioOutputDevice/AudioInputDevice level.
+// Uploads Short stats on destruction, for streams shorter than 1000 callbacks.
+// For streams of at least 1000 callbacks it uploads Interval stats every 1000
+// callbacks and drops any unuploaded stats on destruction.
 class MEDIA_EXPORT AudioDeviceStatsReporter {
  public:
-  explicit AudioDeviceStatsReporter(const AudioParameters& params);
+  enum class Type { kInput, kOutput };
+
+  AudioDeviceStatsReporter(const AudioParameters& params, Type type);
   AudioDeviceStatsReporter(const AudioDeviceStatsReporter&) = delete;
   AudioDeviceStatsReporter& operator=(const AudioDeviceStatsReporter&) = delete;
   virtual ~AudioDeviceStatsReporter();
 
-  // Should be called by AudioOutputDevice every time it pulls more data using
-  // AudioRendererSink::RenderCallback::Render(). Uploads Interval stats every
-  // 1000 callbacks.
+  // In the case when type is kOutput, this be called by AudioOutputDevice
+  // every time it pulls more data using
+  // AudioRendererSink::RenderCallback::Render(). In the case of kInput, it
+  // should be called by AudioInputDevice every time it pushes data using
+  // AudioCapturerSource::CaptureCallback::Capture(). Uploads Interval stats
+  // every 1000 callbacks.
   void ReportCallback(base::TimeDelta delay,
                       const media::AudioGlitchInfo& glitch_info);
 
@@ -58,13 +63,15 @@ class MEDIA_EXPORT AudioDeviceStatsReporter {
       const std::string& stat_name,
       media::AudioLatency::LatencyType latency,
       int max_value,
-      size_t bucket_count);
+      size_t bucket_count,
+      Type type);
 
   static RealtimeLogCallback CreateRealtimeCallback(
       const std::string& stat_name,
       media::AudioLatency::LatencyType latency,
       int max_value,
-      size_t bucket_count);
+      size_t bucket_count,
+      Type type);
 
   void UploadStats(const Stats& stats, SamplingPeriod sampling_period);
 
@@ -83,8 +90,9 @@ class MEDIA_EXPORT AudioDeviceStatsReporter {
   bool stream_is_short_ = true;
 
   // Whether or not we have received and discarded the data from the first
-  // callback.
-  bool discarded_first_callback_ = false;
+  // callback. For input, this is always true, as the first callback should not
+  // be discarded.
+  bool discarded_first_callback_;
 };
 
 }  // namespace media

@@ -1317,6 +1317,60 @@ chromium-metrics-reviews@google.com.
   <summary>Measures the time taken for AudioInputController::</summary>
 </histogram>
 
+<histogram name="Media.AudioInputDevice.AudioServiceDelay" units="ms"
+    expires_after="2023-08-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The audio capture delay in the Audio Service, including the IPC and the OS.
+    Logged at every CaptureCallback::Capture() call at AudioInputDevice level.
+  </summary>
+</histogram>
+
+<histogram name="Media.AudioInputDevice.AudioServiceDelayDifference{Duration}"
+    units="ms" expires_after="2023-08-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The difference between the largest and the lowest audio capture delay
+    observed during the sample interval. This stat considers the audio capture
+    delay in the Audio Service, including the IPC and the OS. Logged at the end
+    of each 1000-callback interval for Intervals. Logged at the end of the
+    stream for Short.
+  </summary>
+  <token key="Duration" variants="AudioAggregationDuration"/>
+</histogram>
+
+<histogram name="Media.AudioInputDevice.AudioServiceGlitchCount{Duration}"
+    units="glitches" expires_after="2024-02-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The number of events causing audio capture glitches in the Audio Service,
+    including the IPC and the OS. A glitch is when capture data is dropped due
+    to a buffer overflow. Logged at the end of each 1000-callback interval for
+    Intervals. Logged at the end of the stream for Short.
+  </summary>
+  <token key="Duration" variants="AudioAggregationDuration"/>
+</histogram>
+
+<histogram name="Media.AudioInputDevice.AudioServiceGlitchDuration{Duration}"
+    units="permille" expires_after="2024-02-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    The proportion of the audio capture interval that was dropped due to buffer
+    overflows in the Audio Service, including the IPC and the OS. Logged at the
+    end of each 1000-callback interval for Intervals. Logged at the end of the
+    stream for Short.
+  </summary>
+  <token key="Duration" variants="AudioAggregationDuration"/>
+</histogram>
+
 <histogram name="Media.AudioOutputController.CallbackError" enum="BooleanError"
     expires_after="2023-08-20">
   <owner>olka@chromium.org</owner>
