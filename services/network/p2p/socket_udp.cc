@@ -198,17 +198,53 @@ void P2PSocketUdp::Init(
 
 void P2PSocketUdp::DoRead() {
   while (true) {
+    DCHECK(recv_buffer_);
     const int result = socket_->RecvFrom(
         recv_buffer_.get(), kUdpReadBufferSize, &recv_address_,
         base::BindOnce(&P2PSocketUdp::OnRecv, base::Unretained(this)));
-    if (result == net::ERR_IO_PENDING || !HandleReadResult(result))
-      return;
+    if (!HandleReadResult(result)) {
+      break;
+    }
   }
+
+  MaybeDrainReceivedPackets(true);
 }
 
 void P2PSocketUdp::OnRecv(int result) {
   if (HandleReadResult(result))
     DoRead();
+}
+
+void P2PSocketUdp::MaybeDrainReceivedPackets(bool force) {
+  if (pending_received_packets_.empty()) {
+    return;
+  }
+
+  // Early drain pending received packets:
+  // - If reaching maxmium allowed batching size for burst packets arrived.
+  // - If reaching maxmium allowed batching buffering to mitigate impact on
+  // latency.
+  if (!force) {
+    base::TimeDelta batching_buffering;
+    if (pending_received_packets_.size() > 1) {
+      batching_buffering = pending_received_packets_.back()->timestamp -
+                           pending_received_packets_.front()->timestamp;
+    }
+
+    if (pending_received_packets_.size() < kUdpMaxBatchingRecvPackets &&
+        batching_buffering < kUdpMaxBatchingRecvBuffering) {
+      return;
+    }
+  }
+
+  std::vector<mojom::P2PReceivedPacketPtr> received_packets;
+  received_packets.swap(pending_received_packets_);
+
+  TRACE_EVENT1("p2p", __func__, "number_of_packets", received_packets.size());
+  client_->DataReceived(std::move(received_packets));
+
+  // Release `IOBuffer` of received packets.
+  std::vector<scoped_refptr<net::IOBuffer>>().swap(pending_received_buffers_);
 }
 
 bool P2PSocketUdp::HandleReadResult(int result) {
@@ -230,11 +266,21 @@ bool P2PSocketUdp::HandleReadResult(int result) {
       }
     }
 
-    client_->DataReceived(
-        recv_address_, data,
+    delegate_->DumpPacket(data, true);
+    auto packet = mojom::P2PReceivedPacket::New(
+        data, recv_address_,
         base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
 
-    delegate_->DumpPacket(data, true);
+    // Save the packet to buffer and check if more packets available to batch
+    // together. Socket is non-blocking IO, and that it immediately returns
+    // 'ERR_IO_PENDING' if drained.
+    pending_received_packets_.push_back(std::move(packet));
+    pending_received_buffers_.push_back(std::move(recv_buffer_));
+    recv_buffer_ = base::MakeRefCounted<net::IOBuffer>(kUdpReadBufferSize);
+
+    MaybeDrainReceivedPackets(false);
+  } else if (result == net::ERR_IO_PENDING) {
+    return false;
   } else if (result < 0 && !IsTransientError(result)) {
     LOG(ERROR) << "Error when reading from UDP socket: " << result;
     OnError();

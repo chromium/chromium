@@ -29,6 +29,13 @@ struct P2PSendPacketMetrics;
 [Native]
 enum P2PSocketOption;
 
+// Represents the packet received on the socket.
+struct P2PReceivedPacket {
+  mojo_base.mojom.ReadOnlyBuffer data;
+  IPEndPoint socket_address;
+  mojo_base.mojom.TimeTicks timestamp;
+};
+
 interface P2PNetworkNotificationClient {
   NetworkListChanged(array<NetworkInterface> networks,
                      IPAddress default_ipv4_local_address,
@@ -65,9 +72,12 @@ interface P2PSocket {
 };
 
 interface P2PSocketClient {
+  // Invoked when socket is created.
   SocketCreated(IPEndPoint local_address, IPEndPoint remote_address);
+
+  // Invoked once for each packet after the send is complete.
   SendComplete(P2PSendPacketMetrics send_metrics);
-  DataReceived(IPEndPoint socket_address,
-               mojo_base.mojom.ReadOnlyBuffer data,
-               mojo_base.mojom.TimeTicks timestamp);
+
+  // Invoked when packets are received on the socket.
+  DataReceived(array<P2PReceivedPacket> packets);
 };

@@ -133,13 +133,17 @@ void P2PSocketClientImpl::SendComplete(
     delegate_->OnSendComplete(send_metrics);
 }
 
-void P2PSocketClientImpl::DataReceived(const net::IPEndPoint& socket_address,
-                                       base::span<const uint8_t> data,
-                                       base::TimeTicks timestamp) {
+void P2PSocketClientImpl::DataReceived(
+    WTF::Vector<P2PReceivedPacketPtr> packets) {
+  DCHECK(!packets.empty());
   DCHECK_EQ(kStateOpen, state_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (delegate_)
-    delegate_->OnDataReceived(socket_address, data, timestamp);
+  if (delegate_) {
+    for (auto& packet : packets) {
+      delegate_->OnDataReceived(packet->socket_address, packet->data,
+                                packet->timestamp);
+    }
+  }
 }
 
 void P2PSocketClientImpl::OnConnectionError() {

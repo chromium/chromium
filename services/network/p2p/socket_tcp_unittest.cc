@@ -40,14 +40,15 @@ using ::testing::Return;
 
 namespace network {
 
-// Creates a GMock matcher that matches `base::span` to `std::vector`.
-MATCHER_P(SpanEq, expected, "") {
-  std::vector<uint8_t> result(arg.data(), arg.data() + arg.size());
-  return result == expected;
-}
-
 class P2PSocketTcpTestBase : public testing::Test {
  protected:
+  // It is the helper method to get easy access to matcher.
+  MOCK_METHOD(void,
+              SinglePacketReceptionHelper,
+              (const net::IPEndPoint& socket_address,
+               base::span<const uint8_t> data,
+               base::TimeTicks timestamp));
+
   explicit P2PSocketTcpTestBase(P2PSocketType type) : socket_type_(type) {}
 
   void SetUp() override {
@@ -59,6 +60,18 @@ class P2PSocketTcpTestBase : public testing::Test {
         std::move(socket), socket_client.InitWithNewPipeAndPassReceiver());
 
     EXPECT_CALL(*fake_client_.get(), SocketCreated(_, _)).Times(1);
+
+    // Unpack received batching packets for testing.
+    ON_CALL(*fake_client_.get(), DataReceived(_))
+        .WillByDefault(
+            [this](const std::vector<network::mojom::P2PReceivedPacketPtr>
+                       packets) {
+              for (auto& packet : packets) {
+                SinglePacketReceptionHelper(packet->socket_address,
+                                            packet->data, packet->timestamp);
+              }
+              return;
+            });
 
     if (socket_type_ == P2P_SOCKET_TCP_CLIENT) {
       socket_impl_ = std::make_unique<P2PSocketTcp>(
@@ -172,9 +185,10 @@ TEST_F(P2PSocketTcpTest, ReceiveStun) {
   received_data.append(IntToSize(packet3.size()));
   received_data.append(packet3.begin(), packet3.end());
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(packet1), _));
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(packet2), _));
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(packet3), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(3);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet1), _));
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet2), _));
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet3), _));
 
   size_t pos = 0;
   size_t step_sizes[] = {3, 2, 1};
@@ -221,7 +235,8 @@ TEST_F(P2PSocketTcpTest, SendAfterStunRequest) {
 
   EXPECT_CALL(*fake_client_.get(), SendComplete(_));
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
   socket_->AppendInputData(&received_data[0], received_data.size());
 
   rtc::PacketOptions options;
@@ -304,7 +319,8 @@ TEST_F(P2PSocketTcpTest, SendDataWithPacketOptions) {
   received_data.append(request_packet.begin(), request_packet.end());
 
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(1);
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
   socket_->AppendInputData(&received_data[0], received_data.size());
 
   rtc::PacketOptions options;
@@ -340,7 +356,8 @@ TEST_F(P2PSocketTcpTest, IgnoreEmptyFrame) {
   received_data.append(IntToSize(empty_packet.size()));
   received_data.append(empty_packet.begin(), empty_packet.end());
   socket_->AppendInputData(&received_data[0], received_data.size());
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, _, _)).Times(0);
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(0);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, _, _)).Times(0);
 }
 
 // Verify that we can send STUN message and that they are formatted
@@ -394,9 +411,10 @@ TEST_F(P2PSocketStunTcpTest, ReceiveStun) {
   received_data.append(packet2.begin(), packet2.end());
   received_data.append(packet3.begin(), packet3.end());
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(packet1), _));
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(packet2), _));
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(packet3), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(3);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet1), _));
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet2), _));
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet3), _));
 
   size_t pos = 0;
   size_t step_sizes[] = {3, 2, 1};

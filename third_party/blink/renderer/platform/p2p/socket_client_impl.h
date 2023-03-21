@@ -20,11 +20,9 @@
 #include "third_party/blink/renderer/platform/p2p/socket_client.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace base {
-class TimeTicks;
-}  // namespace base
-
 namespace blink {
+
+using network::mojom::blink::P2PReceivedPacketPtr;
 
 class P2PSocketDispatcher;
 
@@ -90,9 +88,7 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
   void SocketCreated(const net::IPEndPoint& local_address,
                      const net::IPEndPoint& remote_address) override;
   void SendComplete(const network::P2PSendPacketMetrics& send_metrics) override;
-  void DataReceived(const net::IPEndPoint& socket_address,
-                    base::span<const uint8_t> data,
-                    base::TimeTicks timestamp) override;
+  void DataReceived(WTF::Vector<P2PReceivedPacketPtr> packets) override;
 
   void OnConnectionError();
 

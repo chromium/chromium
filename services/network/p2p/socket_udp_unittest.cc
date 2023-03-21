@@ -34,15 +34,10 @@
 using ::testing::_;
 using ::testing::DeleteArg;
 using ::testing::DoAll;
+using ::testing::InSequence;
 using ::testing::Return;
 
 namespace {
-
-// Creates a GMock matcher that matches `base::span` to `std::vector`.
-MATCHER_P(SpanEq, expected, "") {
-  std::vector<uint8_t> result(arg.data(), arg.data() + arg.size());
-  return result == expected;
-}
 
 // TODO(nisse): We can't currently use rtc::ScopedFakeClock, because
 // we don't link with webrtc rtc_base_tests_utils. So roll our own.
@@ -64,16 +59,20 @@ class ScopedFakeClock : public rtc::ClockInterface {
 
 class FakeDatagramServerSocket : public net::DatagramServerSocket {
  public:
-  typedef std::pair<net::IPEndPoint, std::vector<uint8_t>> UDPPacket;
+  typedef std::
+      tuple<net::IPEndPoint, std::vector<uint8_t>, absl::optional<uint64_t>>
+          UDPPacket;
 
   // P2PSocketUdp destroys a socket on errors so sent packets
   // need to be stored outside of this object.
   FakeDatagramServerSocket(base::circular_deque<UDPPacket>* sent_packets,
-                           std::vector<uint16_t>* used_ports)
+                           std::vector<uint16_t>* used_ports,
+                           ScopedFakeClock* fake_clock)
       : sent_packets_(sent_packets),
         recv_address_(nullptr),
         recv_size_(0),
-        used_ports_(used_ports) {}
+        used_ports_(used_ports),
+        fake_clock_ptr_(fake_clock) {}
 
   void Close() override {}
 
@@ -110,9 +109,16 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
     if (incoming_packets_.size() > 0) {
       scoped_refptr<net::IOBuffer> buffer(buf);
       int size = std::min(
-          static_cast<int>(incoming_packets_.front().second.size()), buf_len);
-      memcpy(buffer->data(), &*incoming_packets_.front().second.begin(), size);
-      *address = incoming_packets_.front().first;
+          static_cast<int>(std::get<1>(incoming_packets_.front()).size()),
+          buf_len);
+      memcpy(buffer->data(), &*(std::get<1>(incoming_packets_.front())).begin(),
+             size);
+      *address = std::get<0>(incoming_packets_.front());
+      absl::optional<uint64_t> received_time =
+          std::get<2>(incoming_packets_.front());
+      if (received_time) {
+        fake_clock_ptr_->SetTimeNanos(*received_time);
+      }
       incoming_packets_.pop_front();
       return size;
     } else {
@@ -130,7 +136,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
              net::CompletionOnceCallback callback) override {
     scoped_refptr<net::IOBuffer> buffer(buf);
     std::vector<uint8_t> data_vector(buffer->data(), buffer->data() + buf_len);
-    sent_packets_->push_back(UDPPacket(address, data_vector));
+    sent_packets_->push_back(UDPPacket(address, data_vector, absl::nullopt));
     return buf_len;
   }
 
@@ -144,14 +150,36 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
 
   void ReceivePacket(const net::IPEndPoint& address,
                      std::vector<uint8_t> data) {
+    AddRecvPacket(address, data);
+    FireRecvCallback();
+  }
+
+  // Add a packet into the buffer, and specify the fake clock time when
+  // the packet is received by socket.
+  void AddRecvPacket(
+      const net::IPEndPoint& address,
+      const std::vector<uint8_t> data,
+      const absl::optional<uint64_t> received_time = absl::nullopt) {
+    incoming_packets_.push_back(UDPPacket(address, data, received_time));
+  }
+
+  void FireRecvCallback() {
     if (!recv_callback_.is_null()) {
-      int size = std::min(recv_size_, static_cast<int>(data.size()));
-      memcpy(recv_buffer_->data(), &*data.begin(), size);
-      *recv_address_ = address;
+      DCHECK(!incoming_packets_.empty());
+      int size = std::min(
+          recv_size_,
+          static_cast<int>(std::get<1>(incoming_packets_.front()).size()));
+      memcpy(recv_buffer_->data(),
+             &*std::get<1>(incoming_packets_.front()).begin(), size);
+      *recv_address_ = std::get<0>(incoming_packets_.front());
+      absl::optional<uint64_t> received_time =
+          std::get<2>(incoming_packets_.front());
+      if (received_time) {
+        fake_clock_ptr_->SetTimeNanos(*received_time);
+      }
+      incoming_packets_.pop_front();
       recv_buffer_ = nullptr;
       std::move(recv_callback_).Run(size);
-    } else {
-      incoming_packets_.push_back(UDPPacket(address, data));
     }
   }
 
@@ -206,13 +234,18 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   int recv_size_;
   net::CompletionOnceCallback recv_callback_;
   raw_ptr<std::vector<uint16_t>> used_ports_;
+
+  // Owned by |P2PSocketUdpTest|.
+  raw_ptr<ScopedFakeClock> fake_clock_ptr_;
 };
 
 std::unique_ptr<net::DatagramServerSocket> CreateFakeDatagramServerSocket(
     base::circular_deque<FakeDatagramServerSocket::UDPPacket>* sent_packets,
     std::vector<uint16_t>* used_ports,
+    ScopedFakeClock* fake_clock,
     net::NetLog* net_log) {
-  return std::make_unique<FakeDatagramServerSocket>(sent_packets, used_ports);
+  return std::make_unique<FakeDatagramServerSocket>(sent_packets, used_ports,
+                                                    fake_clock);
 }
 
 }  // namespace
@@ -221,6 +254,13 @@ namespace network {
 
 class P2PSocketUdpTest : public testing::Test {
  protected:
+  // It is the helper method to get easy access to matcher.
+  MOCK_METHOD(void,
+              SinglePacketReceptionHelper,
+              (const net::IPEndPoint& socket_address,
+               base::span<const uint8_t> data,
+               base::TimeTicks timestamp));
+
   void SetUp() override {
     mojo::PendingRemote<mojom::P2PSocketClient> socket_client;
     mojo::PendingRemote<mojom::P2PSocket> socket;
@@ -231,12 +271,24 @@ class P2PSocketUdpTest : public testing::Test {
 
     EXPECT_CALL(*fake_client_.get(), SocketCreated(_, _)).Times(1);
 
+    // Unpack received batching packets for testing.
+    ON_CALL(*fake_client_.get(), DataReceived(_))
+        .WillByDefault(
+            [this](const std::vector<network::mojom::P2PReceivedPacketPtr>
+                       packets) {
+              for (auto& packet : packets) {
+                SinglePacketReceptionHelper(packet->socket_address,
+                                            packet->data, packet->timestamp);
+              }
+              return;
+            });
+
     socket_impl_ = std::make_unique<P2PSocketUdp>(
         &socket_delegate_, std::move(socket_client), std::move(socket_receiver),
         &throttler_, TRAFFIC_ANNOTATION_FOR_TESTS,
         /*net_log=*/nullptr,
         base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets_,
-                            nullptr));
+                            nullptr, &fake_clock_));
 
     local_address_ = ParseAddress(kTestLocalIpAddress, kTestPort1);
     socket_impl_->Init(
@@ -289,9 +341,9 @@ TEST_F(P2PSocketUdpTest, SendStunNoAuth) {
   socket_impl_->Send(packet3, P2PPacketInfo(dest1_, options, 0));
 
   ASSERT_EQ(sent_packets_.size(), 3U);
-  ASSERT_EQ(sent_packets_[0].second, packet1);
-  ASSERT_EQ(sent_packets_[1].second, packet2);
-  ASSERT_EQ(sent_packets_[2].second, packet3);
+  ASSERT_EQ(std::get<1>(sent_packets_[0]), packet1);
+  ASSERT_EQ(std::get<1>(sent_packets_[1]), packet2);
+  ASSERT_EQ(std::get<1>(sent_packets_[2]), packet3);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -321,7 +373,8 @@ TEST_F(P2PSocketUdpTest, SendAfterStunRequest) {
   std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
   socket_->ReceivePacket(dest1_, request_packet);
 
   // Now we should be able to send any data to |dest1_|.
@@ -333,7 +386,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunRequest) {
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
 
   ASSERT_EQ(1U, sent_packets_.size());
-  ASSERT_EQ(dest1_, sent_packets_[0].first);
+  ASSERT_EQ(dest1_, std::get<0>(sent_packets_[0]));
 
   base::RunLoop().RunUntilIdle();
 }
@@ -345,7 +398,8 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponse) {
   std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
   socket_->ReceivePacket(dest1_, request_packet);
 
   // Now we should be able to send any data to |dest1_|.
@@ -357,7 +411,7 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponse) {
   socket_impl_->Send(packet, P2PPacketInfo(dest1_, options, 0));
 
   ASSERT_EQ(1U, sent_packets_.size());
-  ASSERT_EQ(dest1_, sent_packets_[0].first);
+  ASSERT_EQ(dest1_, std::get<0>(sent_packets_[0]));
 
   base::RunLoop().RunUntilIdle();
 }
@@ -369,7 +423,8 @@ TEST_F(P2PSocketUdpTest, SendAfterStunResponseDifferentHost) {
   std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
   socket_->ReceivePacket(dest1_, request_packet);
 
   // Should fail when trying to send the same packet to |dest2_|.
@@ -413,7 +468,8 @@ TEST_F(P2PSocketUdpTest, ThrottleAfterLimitAfterReceive) {
   std::vector<uint8_t> request_packet;
   CreateStunRequest(&request_packet);
 
-  EXPECT_CALL(*fake_client_.get(), DataReceived(_, SpanEq(request_packet), _))
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _))
       .Times(1);
   socket_->ReceivePacket(dest1_, request_packet);
 
@@ -504,7 +560,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
   std::vector<uint16_t> used_ports;
   P2PSocketUdp::DatagramServerSocketFactory fake_socket_factory =
       base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets,
-                          &used_ports);
+                          &used_ports, &fake_clock_);
   P2PMessageThrottler throttler;
 
   mojo::PendingRemote<mojom::P2PSocketClient> socket_client;
@@ -569,7 +625,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictValidPort) {
   std::vector<uint16_t> used_ports;
   P2PSocketUdp::DatagramServerSocketFactory fake_socket_factory =
       base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets,
-                          &used_ports);
+                          &used_ports, &fake_clock_);
   P2PMessageThrottler throttler;
 
   mojo::PendingRemote<mojom::P2PSocketClient> socket_client;
@@ -610,7 +666,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictInvalidPort) {
   std::vector<uint16_t> used_ports;
   P2PSocketUdp::DatagramServerSocketFactory fake_socket_factory =
       base::BindRepeating(&CreateFakeDatagramServerSocket, &sent_packets,
-                          &used_ports);
+                          &used_ports, &fake_clock_);
   P2PMessageThrottler throttler;
 
   mojo::PendingRemote<mojom::P2PSocketClient> socket_client;
@@ -638,6 +694,195 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictInvalidPort) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(fake_client2.connection_error());
+}
+
+// Verify that we can receive packets from the sockets, and that the
+// discontinuous packets are not batched.
+TEST_F(P2PSocketUdpTest, ReceiveDiscontinuousPackets) {
+  // Receive STUN request from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Now we should be able to receive any data from |dest1_|.
+  constexpr uint64_t kPacketIntervalNs =
+      P2PSocketUdp::kUdpMaxBatchingRecvBuffering.InNanoseconds() / 2;
+
+  std::vector<uint8_t> packet1;
+  std::vector<uint8_t> packet2;
+  std::vector<uint8_t> packet3;
+
+  CreateRandomPacket(&packet1);
+  CreateRandomPacket(&packet2);
+  CreateRandomPacket(&packet3);
+
+  InSequence s;
+  // The socket returns `ERR_IO_PENDING` in between packets. It
+  // indicates no more packets in the socket at that moment. The
+  // packet1/packet2/packet3 are regarded as discontinuous.
+  // Expect that the discontinuous packets are not batched.
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet1), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet2), _));
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packet3), _));
+
+  // Start to receive packets.
+  socket_->ReceivePacket(dest1_, packet1);
+
+  fake_clock_.SetTimeNanos(kPacketIntervalNs);
+  socket_->ReceivePacket(dest1_, packet2);
+
+  fake_clock_.SetTimeNanos(2 * kPacketIntervalNs);
+  socket_->ReceivePacket(dest1_, packet3);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+// Verify that we can receive burst packets from the sockets, and that all the
+// packets are batched together.
+TEST_F(P2PSocketUdpTest, ReceiveBurstPacketsBasic) {
+  // Receive STUN request from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Now we should be able to receive any data from |dest1_|.
+  constexpr size_t kNumPackets = P2PSocketUdp::kUdpMaxBatchingRecvPackets;
+
+  std::vector<std::vector<uint8_t>> packets(kNumPackets);
+  for (size_t i = 0; i < kNumPackets; i++) {
+    CreateRandomPacket(&packets[i]);
+    socket_->AddRecvPacket(dest1_, packets[i]);
+  }
+
+  InSequence s;
+  // Expect to receive all the packets in one batching.
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  for (size_t i = 0; i < kNumPackets; i++) {
+    EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packets[i]), _));
+  }
+  // Start to receive burst packets.
+  socket_->FireRecvCallback();
+
+  base::RunLoop().RunUntilIdle();
+}
+
+// Verify that we can receive burst packets, and that the batching size does not
+// exceed limit.
+TEST_F(P2PSocketUdpTest, ReceiveBurstPacketsExceedingMaxBatchingSize) {
+  // Receive STUN request from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Now we should be able to receive any data from |dest1_|.
+  constexpr size_t kNumPacketsExceedingMaxBatching = 3;
+  DCHECK_LE(kNumPacketsExceedingMaxBatching,
+            P2PSocketUdp::kUdpMaxBatchingRecvPackets);
+  constexpr size_t kNumPacketsAll = P2PSocketUdp::kUdpMaxBatchingRecvPackets +
+                                    kNumPacketsExceedingMaxBatching;
+
+  std::vector<std::vector<uint8_t>> packets(kNumPacketsAll);
+  for (size_t i = 0; i < kNumPacketsAll; i++) {
+    CreateRandomPacket(&packets[i]);
+    socket_->AddRecvPacket(dest1_, packets[i]);
+  }
+
+  InSequence s;
+  size_t i = 0;
+  // Expect to receive maximum allowed number of packets in the first batching.
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  for (; i < P2PSocketUdp::kUdpMaxBatchingRecvPackets; i++) {
+    EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packets[i]), _));
+  }
+  // Expect to receive the remainder packets in the second batching.
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  for (; i < kNumPacketsAll; i++) {
+    EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packets[i]), _));
+  }
+  // Start to receive burst packets.
+  socket_->FireRecvCallback();
+
+  base::RunLoop().RunUntilIdle();
+}
+
+// Verify that we can receive burst packets, and that the batching cancels if
+// buffering time exceeds limit.
+TEST_F(P2PSocketUdpTest, ReceiveBurstPacketsExceedingMaxBatchingBuffering) {
+  // Receive STUN request from |dest1_|.
+  std::vector<uint8_t> request_packet;
+  CreateStunRequest(&request_packet);
+
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(request_packet), _));
+  socket_->ReceivePacket(dest1_, request_packet);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Now we should be able to receive any data from |dest1_|.
+  constexpr size_t kNumPacketsWithProcessLatency = 16;
+  constexpr size_t kNumPacketsExceedingMaximumBuffering = 8;
+  constexpr size_t kNumPacketsAll =
+      kNumPacketsWithProcessLatency + kNumPacketsExceedingMaximumBuffering;
+  DCHECK_LE(kNumPacketsAll, P2PSocketUdp::kUdpMaxBatchingRecvPackets);
+
+  std::vector<std::vector<uint8_t>> packets(kNumPacketsAll);
+  for (size_t i = 0; i < kNumPacketsAll; i++) {
+    CreateRandomPacket(&packets[i]);
+  }
+
+  constexpr uint64_t kMaximumBatchingBufferingNs =
+      P2PSocketUdp::kUdpMaxBatchingRecvBuffering.InNanoseconds();
+  // Latency of `P2PSocketUdp` to retrieve one packet from socket.
+  constexpr uint64_t kPacketProcessLatencyNs =
+      kMaximumBatchingBufferingNs / kNumPacketsWithProcessLatency;
+
+  // Add packets with process latency. The total latency does not exceed limit.
+  for (size_t i = 0; i < kNumPacketsWithProcessLatency; i++) {
+    socket_->AddRecvPacket(dest1_, packets[i], kPacketProcessLatencyNs * i);
+  }
+  // Add the packet with maximum buffering time plus 1 microsecond, which
+  // immediately cancels batching more packets.
+  socket_->AddRecvPacket(
+      dest1_, packets[kNumPacketsWithProcessLatency],
+      kMaximumBatchingBufferingNs + rtc::kNumNanosecsPerMicrosec);
+  // Add the remainder packets.
+  for (size_t i = kNumPacketsWithProcessLatency + 1; i < kNumPacketsAll; i++) {
+    socket_->AddRecvPacket(dest1_, packets[i]);
+  }
+
+  InSequence s;
+  // Expect to receive the first batching packets.
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  for (size_t i = 0; i < kNumPacketsWithProcessLatency + 1; i++) {
+    EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packets[i]), _));
+  }
+  // Expect to receive the remainder packets in the second batching.
+  EXPECT_CALL(*fake_client_.get(), DataReceived(_)).Times(1);
+  for (size_t i = kNumPacketsWithProcessLatency + 1; i < kNumPacketsAll; i++) {
+    EXPECT_CALL(*this, SinglePacketReceptionHelper(_, SpanEq(packets[i]), _));
+  }
+  // Start to receive burst packets.
+  socket_->FireRecvCallback();
+
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace network

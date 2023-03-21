@@ -18,10 +18,6 @@
 #include "services/network/public/cpp/p2p_socket_type.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 
-namespace base {
-class TimeTicks;
-}  // namespace base
-
 namespace sharing {
 
 class P2PSocketClientDelegate;
@@ -85,9 +81,8 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
   void SocketCreated(const net::IPEndPoint& local_address,
                      const net::IPEndPoint& remote_address) override;
   void SendComplete(const network::P2PSendPacketMetrics& send_metrics) override;
-  void DataReceived(const net::IPEndPoint& socket_address,
-                    base::span<const uint8_t> data,
-                    base::TimeTicks timestamp) override;
+  void DataReceived(
+      std::vector<network::mojom::P2PReceivedPacketPtr> packets) override;
 
   void OnConnectionError();
 

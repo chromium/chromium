@@ -126,13 +126,17 @@ void P2PSocketClient::SendComplete(
     delegate_->OnSendComplete(send_metrics);
 }
 
-void P2PSocketClient::DataReceived(const net::IPEndPoint& socket_address,
-                                   base::span<const uint8_t> data,
-                                   base::TimeTicks timestamp) {
+void P2PSocketClient::DataReceived(
+    std::vector<network::mojom::P2PReceivedPacketPtr> packets) {
+  DCHECK(!packets.empty());
   DCHECK_EQ(STATE_OPEN, state_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (delegate_)
-    delegate_->OnDataReceived(socket_address, data, timestamp);
+  if (delegate_) {
+    for (auto& packet : packets) {
+      delegate_->OnDataReceived(packet->socket_address, packet->data,
+                                packet->timestamp);
+    }
+  }
 }
 
 void P2PSocketClient::OnConnectionError() {

@@ -242,9 +242,15 @@ bool P2PSocketTcpBase::OnPacket(base::span<const uint8_t> data) {
     return true;
   }
 
-  client_->DataReceived(
-      remote_address_.ip_address, data,
+  auto packet = mojom::P2PReceivedPacket::New(
+      data, remote_address_.ip_address,
       base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()));
+
+  std::vector<mojom::P2PReceivedPacketPtr> received_packets;
+  received_packets.push_back(std::move(packet));
+
+  // TODO(crbug.com/1376527): Batch multiple packets in the TCP case as well.
+  client_->DataReceived(std::move(received_packets));
 
   delegate_->DumpPacket(data, true);
   return true;
