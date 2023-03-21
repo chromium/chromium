@@ -7,15 +7,19 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace google_apis::tasks {
 namespace {
 
 constexpr char kFieldsParameterName[] = "fields";
+constexpr char kMaxResultsParameterName[] = "maxResults";
+constexpr char kPageTokenParameterName[] = "pageToken";
 
 constexpr char kTaskListsListUrl[] = "tasks/v1/users/@me/lists";
 constexpr char kTaskListsListRequestedFields[] = "kind,items(id,title,updated)";
@@ -30,19 +34,40 @@ GURL GetBaseUrl() {
 
 }  // namespace
 
-GURL GetListTaskListsUrl() {
+GURL GetListTaskListsUrl(absl::optional<int> max_results,
+                         const std::string& page_token) {
   GURL url = GetBaseUrl().Resolve(kTaskListsListUrl);
   url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
                                            kTaskListsListRequestedFields);
+  if (max_results.has_value()) {
+    url = net::AppendOrReplaceQueryParameter(
+        url, kMaxResultsParameterName,
+        base::NumberToString(max_results.value()));
+  }
+  if (!page_token.empty()) {
+    url = net::AppendOrReplaceQueryParameter(url, kPageTokenParameterName,
+                                             page_token);
+  }
   return url;
 }
 
-GURL GetListTasksUrl(const std::string& task_list_id) {
+GURL GetListTasksUrl(const std::string& task_list_id,
+                     absl::optional<int> max_results,
+                     const std::string& page_token) {
   DCHECK(!task_list_id.empty());
   GURL url = GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
       kTasksListUrlTemplate, {task_list_id}, nullptr));
   url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
                                            kTasksListRequestedFields);
+  if (max_results.has_value()) {
+    url = net::AppendOrReplaceQueryParameter(
+        url, kMaxResultsParameterName,
+        base::NumberToString(max_results.value()));
+  }
+  if (!page_token.empty()) {
+    url = net::AppendOrReplaceQueryParameter(url, kPageTokenParameterName,
+                                             page_token);
+  }
   return url;
 }
 

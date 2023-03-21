@@ -22,20 +22,27 @@
 #include "url/gurl.h"
 
 namespace google_apis::tasks {
+namespace {
+
+constexpr int kMaxAllowedMaxResults = 100;
+
+}
 
 // ----- ListTaskListsRequest -----
 
 ListTaskListsRequest::ListTaskListsRequest(RequestSender* sender,
-                                           Callback callback)
+                                           Callback callback,
+                                           const std::string& page_token)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      page_token_(page_token) {
   DCHECK(!callback_.is_null());
 }
 
 ListTaskListsRequest::~ListTaskListsRequest() = default;
 
 GURL ListTaskListsRequest::GetURL() const {
-  return GetListTaskListsUrl();
+  return GetListTaskListsUrl(kMaxAllowedMaxResults, page_token_);
 }
 
 ApiErrorCode ListTaskListsRequest::MapReasonToError(ApiErrorCode code,
@@ -90,10 +97,12 @@ void ListTaskListsRequest::OnDataParsed(std::unique_ptr<TaskLists> task_lists) {
 
 ListTasksRequest::ListTasksRequest(RequestSender* sender,
                                    Callback callback,
-                                   const std::string& task_list_id)
+                                   const std::string& task_list_id,
+                                   const std::string& page_token)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
       callback_(std::move(callback)),
-      task_list_id_(task_list_id) {
+      task_list_id_(task_list_id),
+      page_token_(page_token) {
   DCHECK(!callback_.is_null());
   DCHECK(!task_list_id_.empty());
 }
@@ -101,7 +110,7 @@ ListTasksRequest::ListTasksRequest(RequestSender* sender,
 ListTasksRequest::~ListTasksRequest() = default;
 
 GURL ListTasksRequest::GetURL() const {
-  return GetListTasksUrl(task_list_id_);
+  return GetListTasksUrl(task_list_id_, kMaxAllowedMaxResults, page_token_);
 }
 
 ApiErrorCode ListTasksRequest::MapReasonToError(ApiErrorCode code,

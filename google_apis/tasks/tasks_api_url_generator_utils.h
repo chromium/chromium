@@ -7,17 +7,30 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 class GURL;
 
 namespace google_apis::tasks {
 
 // Returns a URL to fetch all the authenticated user's task lists.
+// `max_results` - maximum number of task lists returned on one page.
+//                 Adds `maxResults` query parameter if not `absl::nullopt`.
+// `page_token` - token specifying the result page to return.
+//                Adds `pageToken` query parameter if not empty.
 // https://developers.google.com/tasks/reference/rest/v1/tasklists/list
-GURL GetListTaskListsUrl();
+GURL GetListTaskListsUrl(absl::optional<int> max_results,
+                         const std::string& page_token);
 
 // Returns a URL to fetch all tasks in the specified task list.
+// `max_results` - maximum number of tasks returned on one page.
+//                 Adds `maxResults` query parameter if not `absl::nullopt`.
+// `page_token` - token specifying the result page to return.
+//                Adds `pageToken` query parameter if not empty.
 // https://developers.google.com/tasks/reference/rest/v1/tasks/list
-GURL GetListTasksUrl(const std::string& task_list_id);
+GURL GetListTasksUrl(const std::string& task_list_id,
+                     absl::optional<int> max_results,
+                     const std::string& page_token);
 
 }  // namespace google_apis::tasks
 

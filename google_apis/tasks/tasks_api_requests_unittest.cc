@@ -25,6 +25,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis::tasks {
 namespace {
@@ -109,7 +110,27 @@ TEST_F(TasksApiRequestsTest, ListTaskListsRequest) {
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
-  EXPECT_EQ(last_request().GetURL(), GetListTaskListsUrl());
+  EXPECT_EQ(last_request().GetURL(),
+            GetListTaskListsUrl(/*max_results=*/100, /*page_token=*/""));
+  EXPECT_TRUE(future.Get().value());
+  EXPECT_EQ(future.Get().value()->items().size(), 2u);
+}
+
+TEST_F(TasksApiRequestsTest, ListTaskListsWithOptionalArgsRequest) {
+  set_test_file_path("tasks/task_lists.json");
+
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<TaskLists>, ApiErrorCode>>
+      future;
+  auto request = std::make_unique<ListTaskListsRequest>(
+      request_sender(), future.GetCallback(), /*page_token=*/"qwerty");
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
+  EXPECT_EQ(last_request().GetURL(),
+            GetListTaskListsUrl(/*max_results=*/100, /*page_token=*/"qwerty"));
   EXPECT_TRUE(future.Get().value());
   EXPECT_EQ(future.Get().value()->items().size(), 2u);
 }
@@ -141,7 +162,29 @@ TEST_F(TasksApiRequestsTest, ListTasksRequest) {
 
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
-  EXPECT_EQ(last_request().GetURL(), GetListTasksUrl(kTaskListId));
+  EXPECT_EQ(last_request().GetURL(),
+            GetListTasksUrl(kTaskListId, /*max_results=*/100,
+                            /*page_token=*/""));
+  EXPECT_TRUE(future.Get().value());
+  EXPECT_EQ(future.Get().value()->items().size(), 2u);
+}
+
+TEST_F(TasksApiRequestsTest, ListTasksWithOptionalArgsRequest) {
+  set_test_file_path("tasks/tasks.json");
+
+  base::test::TestFuture<base::expected<std::unique_ptr<Tasks>, ApiErrorCode>>
+      future;
+  auto request =
+      std::make_unique<ListTasksRequest>(request_sender(), future.GetCallback(),
+                                         kTaskListId, /*page_token=*/"qwerty");
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
+  EXPECT_EQ(last_request().GetURL(),
+            GetListTasksUrl(kTaskListId, /*max_results=*/100,
+                            /*page_token=*/"qwerty"));
   EXPECT_TRUE(future.Get().value());
   EXPECT_EQ(future.Get().value()->items().size(), 2u);
 }

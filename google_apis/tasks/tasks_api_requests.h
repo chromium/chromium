@@ -35,13 +35,16 @@ class Tasks;
 
 // Fetches all the authenticated user's task lists and invokes `callback_` when
 // done.
+// `page_token` - token specifying the result page to return. Optional.
 // https://developers.google.com/tasks/reference/rest/v1/tasklists/list
 class ListTaskListsRequest : public UrlFetchRequestBase {
  public:
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<TaskLists>, ApiErrorCode>)>;
 
-  ListTaskListsRequest(RequestSender* sender, Callback callback);
+  ListTaskListsRequest(RequestSender* sender,
+                       Callback callback,
+                       const std::string& page_token = "");
   ListTaskListsRequest(const ListTaskListsRequest&) = delete;
   ListTaskListsRequest& operator=(const ListTaskListsRequest&) = delete;
   ~ListTaskListsRequest() override;
@@ -63,12 +66,14 @@ class ListTaskListsRequest : public UrlFetchRequestBase {
   void OnDataParsed(std::unique_ptr<TaskLists> task_lists);
 
   Callback callback_;
+  const std::string page_token_;
 
   base::WeakPtrFactory<ListTaskListsRequest> weak_ptr_factory_{this};
 };
 
 // Fetches all tasks in the specified task list (`task_list_id`) and invokes
 // `callback_` when done.
+// `page_token` - token specifying the result page to return. Optional.
 // https://developers.google.com/tasks/reference/rest/v1/tasks/list
 class ListTasksRequest : public UrlFetchRequestBase {
  public:
@@ -77,7 +82,8 @@ class ListTasksRequest : public UrlFetchRequestBase {
 
   ListTasksRequest(RequestSender* sender,
                    Callback callback,
-                   const std::string& task_list_id);
+                   const std::string& task_list_id,
+                   const std::string& page_token = "");
   ListTasksRequest(const ListTasksRequest&) = delete;
   ListTasksRequest& operator=(const ListTasksRequest&) = delete;
   ~ListTasksRequest() override;
@@ -99,7 +105,8 @@ class ListTasksRequest : public UrlFetchRequestBase {
   void OnDataParsed(std::unique_ptr<Tasks> task_lists);
 
   Callback callback_;
-  std::string task_list_id_;
+  const std::string task_list_id_;
+  const std::string page_token_;
 
   base::WeakPtrFactory<ListTasksRequest> weak_ptr_factory_{this};
 };

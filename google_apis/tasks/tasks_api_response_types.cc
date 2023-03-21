@@ -15,7 +15,6 @@
 #include "base/values.h"
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_apis::tasks {
 namespace {
@@ -25,6 +24,7 @@ using ::base::JSONValueConverter;
 constexpr char kTaskListsKind[] = "tasks#taskLists";
 constexpr char kTasksKind[] = "tasks#tasks";
 
+constexpr char kApiResponseNextPageTokenKey[] = "nextPageToken";
 constexpr char kApiResponseParentKey[] = "parent";
 constexpr char kApiResponseStatusKey[] = "status";
 constexpr char kApiResponseTitleKey[] = "title";
@@ -38,12 +38,6 @@ constexpr auto kTaskStatuses =
 bool ConvertTaskStatus(base::StringPiece input, Task::Status* output) {
   *output = kTaskStatuses.contains(input) ? kTaskStatuses.at(input)
                                           : Task::Status::kUnknown;
-  return true;
-}
-
-bool ConvertToOptionalString(base::StringPiece input,
-                             absl::optional<std::string>* output) {
-  *output = std::string(input);
   return true;
 }
 
@@ -68,6 +62,8 @@ TaskLists::~TaskLists() = default;
 
 void TaskLists::RegisterJSONConverter(
     JSONValueConverter<TaskLists>* converter) {
+  converter->RegisterStringField(kApiResponseNextPageTokenKey,
+                                 &TaskLists::next_page_token_);
   converter->RegisterRepeatedMessage<TaskList>(kApiResponseItemsKey,
                                                &TaskLists::items_);
 }
@@ -93,8 +89,7 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterStringField(kApiResponseTitleKey, &Task::title_);
   converter->RegisterCustomField<Task::Status>(
       kApiResponseStatusKey, &Task::status_, &ConvertTaskStatus);
-  converter->RegisterCustomField<absl::optional<std::string>>(
-      kApiResponseParentKey, &Task::parent_id_, &ConvertToOptionalString);
+  converter->RegisterStringField(kApiResponseParentKey, &Task::parent_id_);
 }
 
 // ----- Tasks -----
@@ -103,6 +98,8 @@ Tasks::Tasks() = default;
 Tasks::~Tasks() = default;
 
 void Tasks::RegisterJSONConverter(JSONValueConverter<Tasks>* converter) {
+  converter->RegisterStringField(kApiResponseNextPageTokenKey,
+                                 &Tasks::next_page_token_);
   converter->RegisterRepeatedMessage<Task>(kApiResponseItemsKey,
                                            &Tasks::items_);
 }

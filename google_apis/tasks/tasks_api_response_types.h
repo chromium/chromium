@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 template <class StructType>
@@ -67,11 +66,18 @@ class TaskLists {
   // Creates a `TaskLists` from parsed JSON.
   static std::unique_ptr<TaskLists> CreateFrom(const base::Value& value);
 
+  // Returns a token that can be used to request the next page of this result.
+  const std::string& next_page_token() const { return next_page_token_; }
+  void set_next_page_token(const std::string& next_page_token) {
+    next_page_token_ = next_page_token;
+  }
+
   // Returns `TaskList` items stored in this container.
   const std::vector<std::unique_ptr<TaskList>>& items() const { return items_; }
   std::vector<std::unique_ptr<TaskList>>* mutable_items() { return &items_; }
 
  private:
+  std::string next_page_token_;
   std::vector<std::unique_ptr<TaskList>> items_;
 };
 
@@ -107,14 +113,14 @@ class Task {
   void set_status(Status status) { status_ = status; }
 
   // Parent task identifier.
-  absl::optional<std::string> parent_id() const { return parent_id_; }
+  const std::string& parent_id() const { return parent_id_; }
   void set_parent_id(const std::string& parent_id) { parent_id_ = parent_id; }
 
  private:
   std::string id_;
   std::string title_;
   Status status_ = Status::kUnknown;
-  absl::optional<std::string> parent_id_;
+  std::string parent_id_;
 };
 
 // Container for multiple `Task`s.
@@ -132,11 +138,18 @@ class Tasks {
   // Creates a `Tasks` from parsed JSON.
   static std::unique_ptr<Tasks> CreateFrom(const base::Value& value);
 
+  // Returns a token that can be used to request the next page of this result.
+  const std::string& next_page_token() const { return next_page_token_; }
+  void set_next_page_token(const std::string& next_page_token) {
+    next_page_token_ = next_page_token;
+  }
+
   // Returns `Task` items stored in this container.
   const std::vector<std::unique_ptr<Task>>& items() const { return items_; }
   std::vector<std::unique_ptr<Task>>* mutable_items() { return &items_; }
 
  private:
+  std::string next_page_token_;
   std::vector<std::unique_ptr<Task>> items_;
 };
 
