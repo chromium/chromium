@@ -196,6 +196,11 @@ AppListNotifier* AppListTestViewDelegate::GetNotifier() {
   return nullptr;
 }
 
+std::unique_ptr<ScopedIphSession>
+AppListTestViewDelegate::CreateLauncherSearchIphSession() {
+  return nullptr;
+}
+
 void AppListTestViewDelegate::RecordAppLaunched(
     ash::AppListLaunchedFrom launched_from) {
   RecordAppListAppLaunched(launched_from, app_list_view_state_,

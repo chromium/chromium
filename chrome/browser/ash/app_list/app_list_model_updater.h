@@ -120,6 +120,7 @@ class AppListModelUpdater {
   virtual size_t BadgedItemCount() = 0;
   // For SearchModel:
   virtual bool SearchEngineIsGoogle() = 0;
+  virtual void QueryWouldTriggerLauncherSearchIph() = 0;
 
   // Notifies when the app list gets hidden.
   virtual void OnAppListHidden() = 0;

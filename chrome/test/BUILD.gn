@@ -4289,6 +4289,7 @@ if (!is_android) {
       }
       if (enable_assistant_integration_tests) {
         sources += [
+          "../browser/ash/app_list/launcher_search_iph_browsertest.cc",
           "../browser/ui/ash/assistant/assistant_browsertest.cc",
           "../browser/ui/ash/assistant/assistant_test_mixin.cc",
           "../browser/ui/ash/assistant/assistant_test_mixin.h",

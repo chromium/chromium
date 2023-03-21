@@ -17,6 +17,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 
 namespace gfx {
 class ImageSkia;
@@ -84,6 +85,10 @@ class SearchBoxViewBase : public views::View,
   views::ImageButton* close_button();
   views::ImageView* search_icon();
   views::Textfield* search_box() { return search_box_; }
+
+  void SetIphView(std::unique_ptr<views::View> iph_view);
+  void DeleteIphView();
+  raw_ptr<views::View> iph_view() { return iph_view_tracker_.view(); }
 
   // Called when the query in the search box textfield changes. The search box
   // implementation is expected to handle the new query.
@@ -218,6 +223,7 @@ class SearchBoxViewBase : public views::View,
   void OnEnabledChanged();
 
   // Owned by views hierarchy.
+  raw_ptr<views::BoxLayoutView> iph_container_;
   views::BoxLayoutView* content_container_;
   SearchIconImageView* search_icon_ = nullptr;
   SearchBoxImageButton* assistant_button_ = nullptr;
@@ -232,6 +238,8 @@ class SearchBoxViewBase : public views::View,
   views::Label* category_ghost_text_ = nullptr;
 
   views::View* search_box_button_container_ = nullptr;
+
+  views::ViewTracker iph_view_tracker_;
 
   // Whether the search box is active.
   bool is_search_box_active_ = false;

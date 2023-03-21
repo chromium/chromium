@@ -161,6 +161,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   int GetSearchBoxIconSize();
   int GetSearchBoxButtonSize();
 
+  // Sets whether an IPH can be shown now or not.
+  void SetIsIphAllowed(bool iph_allowed);
+
  private:
   class FocusRingLayer;
 
@@ -182,6 +185,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Updates the search box placeholder text and accessible name.
   void UpdatePlaceholderTextAndAccessibleName();
+
+  // Updates the visibility of an IPH view.
+  void UpdateIphViewVisibility();
 
   // Notifies SearchBoxViewDelegate that the autocomplete text is valid.
   void AcceptAutocompleteText();
@@ -209,6 +215,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxModelObserver:
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
+  void OnWouldTriggerIphChanged() override;
 
   // Updates search_box() for the |selected_result|. Should be called when the
   // selected search result changes.
@@ -249,6 +256,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // The corner radius of the search box background.
   int corner_radius_ = 0;
+
+  // Whether an IPH is allowed to be shown or not.
+  bool is_iph_allowed_ = false;
 
   // Set by SearchResultPageView when the accessibility selection moves to a
   // search result view - the value is the ID of the currently selected result

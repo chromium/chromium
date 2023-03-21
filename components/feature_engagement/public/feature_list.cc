@@ -178,6 +178,7 @@ const base::Feature* const kAllFeatures[] = {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     &kIPHGoogleOneOfferNotificationFeature,
+    &kIPHLauncherSearchHelpUiFeature,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 }  // namespace

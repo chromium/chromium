@@ -83,6 +83,13 @@ AppListNotifier* TestAppListClient::GetNotifier() {
   return nullptr;
 }
 
+void TestAppListClient::QueryWouldTriggerLauncherSearchIph() {}
+
+std::unique_ptr<ScopedIphSession>
+TestAppListClient::CreateLauncherSearchIphSession() {
+  return nullptr;
+}
+
 std::vector<TestAppListClient::SearchResultActionId>
 TestAppListClient::GetAndResetInvokedResultActions() {
   std::vector<SearchResultActionId> result;

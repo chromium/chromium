@@ -53,6 +53,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void RemoveItem(const std::string& id, bool is_uninstall) override;
   void SetStatus(ash::AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
+  void QueryWouldTriggerLauncherSearchIph() override;
   void PublishSearchResults(
       const std::vector<ChromeSearchResult*>& results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
@@ -200,6 +201,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   // Updates the position carried by `data` based on the icon color if the app
   // list is sorted by color.
   void MaybeUpdatePositionWhenIconColorChange(ash::AppListItemMetadata* data);
+
+  void OnFeatureEngagementTrackerInitialized(bool success);
 
   // Indicates the profile that the model updater is associated with.
   Profile* const profile_ = nullptr;

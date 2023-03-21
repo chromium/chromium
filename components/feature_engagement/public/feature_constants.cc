@@ -481,6 +481,9 @@ BASE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature,
 BASE_FEATURE(kIPHGoogleOneOfferNotificationFeature,
              "IPH_GoogleOneOfferNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHLauncherSearchHelpUiFeature,
+             "IPH_LauncherSearchHelpUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace feature_engagement
