@@ -7,7 +7,6 @@ import("../../build_webui_tests.gni")
 build_webui_tests("build") {
   resource_path_prefix = "emoji_picker"
 
-  # TODO(b/270220102): Fully migrate these tests to TS.
   ts_path_mappings = [ "chrome://emoji-picker/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/chromeos/emoji_picker/tsc/*",
                            target_gen_dir) ]
@@ -17,7 +16,6 @@ build_webui_tests("build") {
     "//ui/webui/resources/js:build_ts",
   ]
   files = [
-    "emoji_picker_browsertest.js",
     "emoji_picker_extension_categories.ts",
     "emoji_picker_extension_emoji_test.ts",
     "emoji_picker_extension_emoticon_test.ts",
