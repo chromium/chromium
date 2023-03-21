@@ -159,6 +159,7 @@ void AppUninstall::FirstTaskRun() {
     if (!global_prefs_) {
       VLOG(0) << "Failed to acquire global prefs; shutting down.";
       Shutdown(kErrorFailedToLockPrefsMutex);
+      return;
     }
     auto persisted_data = base::MakeRefCounted<PersistedData>(
         updater_scope(), global_prefs_->GetPrefService());
