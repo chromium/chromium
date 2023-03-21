@@ -79,12 +79,23 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   }
   const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
+  // Whether |this| is ready to serve the final response of the prefetch, or if
+  // there are any redirects to serve first.
+  bool IsReadyToServeFinalResponse() const;
+
   using RequestHandler = base::OnceCallback<void(
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)>;
-  RequestHandler ServingResponseHandler(
+
+  // Creates a request handler to serve the final response of the prefetch, and
+  // also makes |this| self owned.
+  RequestHandler ServingFinalResponseHandler(
       std::unique_ptr<PrefetchStreamingURLLoader> self);
+
+  // Creates a request handler to serve the next redirect. Ownership of |this|
+  // does not change.
+  RequestHandler ServingRedirectHandler();
 
   // The streaming URL loader can be deleted in one of its callbacks, so instead
   // of deleting it immediately, it is made self owned and then deletes itself.
@@ -102,11 +113,22 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
 
+  // Adds an event to the queue that will be run when serving the prefetch. If
+  // |pause_after_event| is true, then the event queue will pause after running
+  // the event.
+  void AddEventToQueue(base::OnceClosure closure, bool pause_after_event);
+
   // Sends all stored events in |event_queue_| to |serving_url_loader_client_|.
   void RunEventQueue();
 
-  // Sends the |completion_status_| to |serving_url_loader_client_|.
+  // Helper functions to send the appropriate events to
+  // |serving_url_loader_client_|.
   void ForwardCompletionStatus();
+  void ForwardEarlyHints(network::mojom::EarlyHintsPtr early_hints);
+  void ForwardTransferSizeUpdate(int32_t transfer_size_diff);
+  void ForwardRedirect(const net::RedirectInfo& redirect_info,
+                       network::mojom::URLResponseHeadPtr);
+  void ForwardResponse();
 
   void DisconnectPrefetchURLLoaderMojo();
   void OnServingURLLoaderMojoDisconnect();
@@ -177,9 +199,26 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   absl::optional<base::TimeTicks> response_complete_time_;
 
+  // These store the most recent redirect in the event that |this| needs to wait
+  // for the prefetch eligibility check to complete before deciding whether to
+  // follow the redirect or not.
+  net::RedirectInfo redirect_info_;
+  network::mojom::URLResponseHeadPtr redirect_head_;
+
   // The URL Loader events that occur before serving the prefetch are queued up
-  // until the prefetch is served.
-  std::vector<base::OnceClosure> event_queue_;
+  // until the prefetch is served. The first value is the closure to run the
+  // event, and the second value is whether or not the event queue should be
+  // paused after running the event.
+  std::vector<std::pair<base::OnceClosure, bool>> event_queue_;
+
+  // The status of the event queue.
+  enum class EventQueueStatus {
+    kNotStarted,
+    kRunning,
+    kPaused,
+    kFinished,
+  };
+  EventQueueStatus event_queue_status_{EventQueueStatus::kNotStarted};
 
   // The URL loader client that will serve the prefetched data.
   mojo::Receiver<network::mojom::URLLoader> serving_url_loader_receiver_{this};

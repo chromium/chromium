@@ -3332,7 +3332,15 @@ TEST_F(PrefetchServiceTest, MAYBE_PrefetchEligibleRedirect) {
 
   base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
       GetPrefetchToServe(GURL("https://example.com"));
-  EXPECT_FALSE(serveable_prefetch_container);
+  EXPECT_TRUE(serveable_prefetch_container);
+  ASSERT_TRUE(serveable_prefetch_container);
+  EXPECT_TRUE(serveable_prefetch_container->HasPrefetchStatus());
+  EXPECT_EQ(serveable_prefetch_container->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+  EXPECT_TRUE(
+      serveable_prefetch_container->IsPrefetchServable(base::TimeDelta::Max()));
+  ASSERT_TRUE(serveable_prefetch_container->GetHead());
+  EXPECT_TRUE(serveable_prefetch_container->GetHead()->was_in_prefetch_cache);
 
   ExpectCorrectUkmLogs(PreloadingEligibility::kEligible,
                        PreloadingHoldbackStatus::kAllowed,

@@ -205,7 +205,7 @@ TEST_F(PrefetchContainerTest, CookieListener) {
   EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl2));
   EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl3));
 
-  prefetch_container.StopCookieListener(kTestUrl3);
+  prefetch_container.StopAllCookieListeners();
   ASSERT_TRUE(SetCookie(kTestUrl2, "test-cookie3"));
 
   EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl1));
@@ -267,6 +267,126 @@ TEST_F(PrefetchContainerTest, CookieCopy) {
   histogram_tester.ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
       base::Milliseconds(70), 1);
+}
+
+TEST_F(PrefetchContainerTest, CookieCopyWithRedirects) {
+  const GURL kTestUrl = GURL("https://test.com");
+  const GURL kRedirectUrl1 = GURL("https://redirect1.com");
+  const GURL kRedirectUrl2 = GURL("https://redirect2.com");
+  base::HistogramTester histogram_tester;
+  PrefetchContainer prefetch_container(
+      GlobalRenderFrameHostId(1234, 5678), kTestUrl,
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(), nullptr);
+
+  prefetch_container.AddRedirectHop(kRedirectUrl1);
+  prefetch_container.AddRedirectHop(kRedirectUrl2);
+
+  prefetch_container.RegisterCookieListener(kTestUrl, cookie_manager());
+  prefetch_container.RegisterCookieListener(kRedirectUrl1, cookie_manager());
+  prefetch_container.RegisterCookieListener(kRedirectUrl2, cookie_manager());
+
+  EXPECT_EQ(prefetch_container.GetCurrentURLToServe(), kTestUrl);
+
+  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.OnIsolatedCookieCopyStart();
+  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+
+  // Once the cookie copy process has started, all cookie listeners are stopped.
+  ASSERT_TRUE(SetCookie(kTestUrl, "test-cookie"));
+  ASSERT_TRUE(SetCookie(kRedirectUrl1, "test-cookie"));
+  ASSERT_TRUE(SetCookie(kRedirectUrl2, "test-cookie"));
+
+  EXPECT_FALSE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl));
+  EXPECT_FALSE(
+      prefetch_container.HaveDefaultContextCookiesChanged(kRedirectUrl1));
+  EXPECT_FALSE(
+      prefetch_container.HaveDefaultContextCookiesChanged(kRedirectUrl2));
+
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+
+  // The URL interceptor checks on the cookie copy status when trying to serve a
+  // prefetch. If its still in progress, it registers a callback to be called
+  // once the copy is complete.
+  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  prefetch_container.OnInterceptorCheckCookieCopy();
+  task_environment()->FastForwardBy(base::Milliseconds(40));
+  bool callback_called = false;
+  prefetch_container.SetOnCookieCopyCompleteCallback(
+      base::BindOnce([](bool* callback_called) { *callback_called = true; },
+                     &callback_called));
+
+  prefetch_container.OnIsolatedCookieCopyComplete();
+
+  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_TRUE(callback_called);
+
+  // Simulate copying cookies for the next redirect hop.
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_EQ(prefetch_container.GetCurrentURLToServe(), kRedirectUrl1);
+  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+
+  prefetch_container.OnIsolatedCookieCopyStart();
+  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+
+  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+
+  prefetch_container.OnInterceptorCheckCookieCopy();
+  task_environment()->FastForwardBy(base::Milliseconds(40));
+
+  callback_called = false;
+  prefetch_container.SetOnCookieCopyCompleteCallback(
+      base::BindOnce([](bool* callback_called) { *callback_called = true; },
+                     &callback_called));
+
+  prefetch_container.OnIsolatedCookieCopyComplete();
+  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_TRUE(callback_called);
+
+  // Simulate copying cookies for the last redirect hop.
+  prefetch_container.AdvanceCurrentURLToServe();
+  EXPECT_EQ(prefetch_container.GetCurrentURLToServe(), kRedirectUrl2);
+  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+
+  prefetch_container.OnIsolatedCookieCopyStart();
+  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  task_environment()->FastForwardBy(base::Milliseconds(10));
+
+  prefetch_container.OnIsolatedCookiesReadCompleteAndWriteStart();
+  task_environment()->FastForwardBy(base::Milliseconds(20));
+  EXPECT_TRUE(prefetch_container.IsIsolatedCookieCopyInProgress());
+
+  prefetch_container.OnInterceptorCheckCookieCopy();
+  task_environment()->FastForwardBy(base::Milliseconds(40));
+
+  callback_called = false;
+  prefetch_container.SetOnCookieCopyCompleteCallback(
+      base::BindOnce([](bool* callback_called) { *callback_called = true; },
+                     &callback_called));
+
+  prefetch_container.OnIsolatedCookieCopyComplete();
+  EXPECT_FALSE(prefetch_container.IsIsolatedCookieCopyInProgress());
+  EXPECT_TRUE(callback_called);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieReadTime",
+      base::Milliseconds(10), 3);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieWriteTime",
+      base::Milliseconds(60), 3);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyStartToInterceptorCheck",
+      base::Milliseconds(30), 3);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.Mainframe.CookieCopyTime",
+      base::Milliseconds(70), 3);
 }
 
 TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {

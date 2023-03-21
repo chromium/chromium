@@ -86,6 +86,10 @@ class CONTENT_EXPORT PrefetchService {
   void GetPrefetchToServe(const GURL& url,
                           OnPrefetchToServeReady on_prefetch_to_serve_ready);
 
+  // Copies any cookies in the isolated network context associated with
+  // |prefetch_container| to the default network context.
+  void CopyIsolatedCookies(base::WeakPtr<PrefetchContainer> prefetch_container);
+
   // Removes the prefetch with the given |prefetch_container_key| from
   // |all_prefetches_|.
   void RemovePrefetch(const PrefetchContainer::Key& prefetch_container_key);
@@ -217,9 +221,9 @@ class CONTENT_EXPORT PrefetchService {
       base::WeakPtr<PrefetchContainer> prefetch_container,
       const network::URLLoaderCompletionStatus& completion_status);
 
-  // Copies any cookies in the isolated network context associated with
-  // |prefetch_container| to the default network context.
-  void CopyIsolatedCookies(base::WeakPtr<PrefetchContainer> prefetch_container);
+  // Called when the cookies from |prefetch_conatiner| are read from the
+  // isolated network context and are ready to be written to the default network
+  // context.
   void OnGotIsolatedCookiesForCopy(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       const net::CookieAccessResultList& cookie_list,

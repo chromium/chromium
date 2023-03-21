@@ -92,6 +92,14 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   DCHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
   url_ = tenative_resource_request.url;
+
+  if (redirect_prefetch_container_ &&
+      redirect_prefetch_container_->DoesCurrentURLToServeMatch(url_)) {
+    OnGotPrefetchToServe(tenative_resource_request,
+                         redirect_prefetch_container_);
+    return;
+  }
+
   GetPrefetch(url_, base::BindOnce(
                         &PrefetchURLLoaderInterceptor::OnGotPrefetchToServe,
                         weak_factory_.GetWeakPtr(), tenative_resource_request));
@@ -108,14 +116,14 @@ void PrefetchURLLoaderInterceptor::OnGotPrefetchToServe(
     replacements.ClearRef();
     replacements.ClearQuery();
     DCHECK_EQ(url_.ReplaceComponents(replacements),
-              prefetch_container->GetURL().ReplaceComponents(replacements));
+              prefetch_container->GetCurrentURLToServe().ReplaceComponents(
+                  replacements));
   }
 #endif
 
   if (!prefetch_container ||
       !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration()) ||
-      prefetch_container->HaveDefaultContextCookiesChanged(
-          prefetch_container->GetURL())) {
+      prefetch_container->HaveDefaultContextCookiesChanged(url_)) {
     DoNotInterceptNavigation();
     return;
   }
@@ -206,6 +214,10 @@ void PrefetchURLLoaderInterceptor::
     EnsureCookiesCopiedAndInterceptPrefetchedNavigation(
         const network::ResourceRequest& tenative_resource_request,
         base::WeakPtr<PrefetchContainer> prefetch_container) {
+  if (!prefetch_container->HasIsolatedCookieCopyStarted()) {
+    StartCookieCopy(prefetch_container);
+  }
+
   if (prefetch_container) {
     prefetch_container->OnInterceptorCheckCookieCopy();
   }
@@ -223,6 +235,17 @@ void PrefetchURLLoaderInterceptor::
   RecordCookieWaitTime(base::TimeDelta());
 
   InterceptPrefetchedNavigation(tenative_resource_request, prefetch_container);
+}
+
+void PrefetchURLLoaderInterceptor::StartCookieCopy(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  PrefetchService* prefetch_service =
+      PrefetchServiceFromFrameTreeNodeId(frame_tree_node_id_);
+  if (!prefetch_service) {
+    return;
+  }
+
+  prefetch_service->CopyIsolatedCookies(prefetch_container);
 }
 
 void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
@@ -260,15 +283,26 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
   // lifetime, and will delete itself once the prefetch response is completed
   // and served.
   DCHECK(prefetch_container->GetStreamingLoader());
-  std::unique_ptr<PrefetchStreamingURLLoader> prefetch_streaming_url_loader =
-      prefetch_container->ReleaseStreamingLoader();
-  auto* raw_prefetch_streaming_url_loader = prefetch_streaming_url_loader.get();
-
   scoped_refptr<network::SingleRequestURLLoaderFactory>
-      single_request_url_loader_factory =
-          base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-              raw_prefetch_streaming_url_loader->ServingResponseHandler(
-                  std::move(prefetch_streaming_url_loader)));
+      single_request_url_loader_factory;
+  if (prefetch_container->GetStreamingLoader()->IsReadyToServeFinalResponse()) {
+    std::unique_ptr<PrefetchStreamingURLLoader> prefetch_streaming_url_loader =
+        prefetch_container->ReleaseStreamingLoader();
+    auto* raw_prefetch_streaming_url_loader =
+        prefetch_streaming_url_loader.get();
+
+    single_request_url_loader_factory =
+        base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+            raw_prefetch_streaming_url_loader->ServingFinalResponseHandler(
+                std::move(prefetch_streaming_url_loader)));
+    redirect_prefetch_container_ = nullptr;
+  } else {
+    single_request_url_loader_factory =
+        base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+            prefetch_container->GetStreamingLoader()->ServingRedirectHandler());
+    redirect_prefetch_container_ = prefetch_container;
+    prefetch_container->AdvanceCurrentURLToServe();
+  }
 
   // Create URL loader factory pipe that can be possibly proxied by Extensions.
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver;
@@ -306,6 +340,7 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
 }
 
 void PrefetchURLLoaderInterceptor::DoNotInterceptNavigation() {
+  redirect_prefetch_container_ = nullptr;
   std::move(loader_callback_).Run({});
 }
 

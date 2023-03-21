@@ -125,6 +125,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The length of the redirect chain for this prefetch.
   size_t GetRedirectChainSize() const { return redirect_chain_.size(); }
+  GURL GetMatchingURLFromRedirectChain() const;
 
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.
@@ -135,13 +136,15 @@ class CONTENT_EXPORT PrefetchContainer {
   // |redirect_chain_|.
   void RegisterCookieListener(const GURL& url,
                               network::mojom::CookieManager* cookie_manager);
-  void StopCookieListener(const GURL& url);
+  void StopAllCookieListeners();
   bool HaveDefaultContextCookiesChanged(const GURL& url) const;
 
   // Before a prefetch can be served, any cookies added to the isolated network
   // context must be copied over to the default network context. These functions
   // are used to check and update the status of this process, as well as record
-  // metrics about how long this process takes.
+  // metrics about how long this process takes. These functions all operate on
+  // the element in |redirect_chain_| at index
+  // |index_redirect_chain_to_serve_|.
   bool HasIsolatedCookieCopyStarted() const;
   bool IsIsolatedCookieCopyInProgress() const;
   void OnIsolatedCookieCopyStart();
@@ -193,6 +196,18 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Whether or not |this| is servable.
   bool IsPrefetchServable(base::TimeDelta cacheable_duration) const;
+
+  // Checks if the given URL matches the element in |redirect_chain_| at index
+  // |index_redirect_chain_to_serve_|.
+  bool DoesCurrentURLToServeMatch(const GURL& url) const;
+
+  // Returns the URL that can be served next. This is the url of the element in
+  // |redirect_chain_| at index |index_redirect_chain_to_serve_|.
+  const GURL& GetCurrentURLToServe() const;
+
+  // Called when one element of |redirect_chain_| is served and the next element
+  // can now be served.
+  void AdvanceCurrentURLToServe() { index_redirect_chain_to_serve_++; }
 
   // Called when |this| has received prefetched response's head.
   // Once this is called, we should be able to call GetHead() and receive a
@@ -283,6 +298,25 @@ class CONTENT_EXPORT PrefetchContainer {
     // This tracks whether the cookies associated with |url_| have changed at
     // some point after the initial eligibility check.
     std::unique_ptr<PrefetchCookieListener> cookie_listener_;
+
+    // The different possible states of the cookie copy process.
+    enum class CookieCopyStatus {
+      kNotStarted,
+      kInProgress,
+      kCompleted,
+    };
+
+    // The current state of the cookie copy process for this prefetch.
+    CookieCopyStatus cookie_copy_status_ = CookieCopyStatus::kNotStarted;
+
+    // The timestamps of when the overall cookie copy process starts, and midway
+    // when the cookies are read from the isolated network context and are about
+    // to be written to the default network context.
+    absl::optional<base::TimeTicks> cookie_copy_start_time_;
+    absl::optional<base::TimeTicks> cookie_read_end_and_write_start_time_;
+
+    // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
+    base::OnceClosure on_cookie_copy_complete_callback_;
   };
 
   // Helper function to get the |SinglePrefetch| for the given URL.
@@ -327,6 +361,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // The redirect chain resulting from prefetching |prefetch_url_|.
   std::vector<std::unique_ptr<SinglePrefetch>> redirect_chain_;
 
+  // The index of the element in |redirect_chain_| that can be served.
+  size_t index_redirect_chain_to_serve_ = 0;
+
   // The network context used for this prefetch.
   std::unique_ptr<PrefetchNetworkContext> network_context_;
 
@@ -354,25 +391,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The result of probe when checked on navigation.
   absl::optional<PrefetchProbeResult> probe_result_;
-
-  // The different possible states of the cookie copy process.
-  enum class CookieCopyStatus {
-    kNotStarted,
-    kInProgress,
-    kCompleted,
-  };
-
-  // The current state of the cookie copy process for this prefetch.
-  CookieCopyStatus cookie_copy_status_ = CookieCopyStatus::kNotStarted;
-
-  // The timestamps of when the overall cookie copy process starts, and midway
-  // when the cookies are read from the isolated network context and are about
-  // to be written to the default network context.
-  absl::optional<base::TimeTicks> cookie_copy_start_time_;
-  absl::optional<base::TimeTicks> cookie_read_end_and_write_start_time_;
-
-  // A callback that runs once |cookie_copy_status_| is set to |kCompleted|.
-  base::OnceClosure on_cookie_copy_complete_callback_;
 
   // Reference to metrics related to the page that considered using this
   // prefetch.
