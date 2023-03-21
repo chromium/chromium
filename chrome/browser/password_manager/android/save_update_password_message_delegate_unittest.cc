@@ -460,15 +460,17 @@ SaveUpdatePasswordMessageDelegateTest::GetExploratoryStringsMessageDescription(
   }
 
   switch (new_string_version) {
-    case 1:
-      return l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_SAVE_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V1,
-          account_email);
     case 2:
       return l10n_util::GetStringFUTF16(
           is_update
               ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V2
               : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V2,
+          account_email);
+    case 3:
+      return l10n_util::GetStringFUTF16(
+          is_update
+              ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V3
+              : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION_V3,
           account_email);
     default:
       ADD_FAILURE() << "All string version param values should be handled";
@@ -1306,17 +1308,17 @@ INSTANTIATE_TEST_SUITE_P(
         FeatureConfigTestParam{
             .with_unified_password_manager_android = true,
             .with_exploratory_save_update_password_strings = true,
-            .save_update_prompt_syncing_string_version = 1},
+            .save_update_prompt_syncing_string_version = 2},
         FeatureConfigTestParam{
             .with_unified_password_manager_android = true,
             .with_exploratory_save_update_password_strings = true,
-            .save_update_prompt_syncing_string_version = 2},
+            .save_update_prompt_syncing_string_version = 3},
         // Exploratory strings with UPM disabled
         FeatureConfigTestParam{
             .with_unified_password_manager_android = false,
             .with_exploratory_save_update_password_strings = true,
-            .save_update_prompt_syncing_string_version = 1},
+            .save_update_prompt_syncing_string_version = 2},
         FeatureConfigTestParam{
             .with_unified_password_manager_android = false,
             .with_exploratory_save_update_password_strings = true,
-            .save_update_prompt_syncing_string_version = 2}));
+            .save_update_prompt_syncing_string_version = 3}));

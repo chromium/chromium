@@ -329,9 +329,10 @@ extern const base::FeatureParam<int> kMaxShownUPMErrorsBeforeEviction = {
     "max_shown_auth_errors_before_eviction", -1};
 
 // The string version to use for the save/update password prompts when the user
-// is syncing passwords. The only supported versions currently are 1 and 2.
+// is syncing passwords. Version 1 is outdated, so the only supported versions
+// currently are 2 and 3.
 extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion = {
-    &kExploratorySaveUpdatePasswordStrings, "syncing_string_version", 1};
+    &kExploratorySaveUpdatePasswordStrings, "syncing_string_version", 2};
 #endif
 
 // Field trial identifier for password generation requirements.
