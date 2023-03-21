@@ -27,6 +27,10 @@ class MockMessageDispatcherBridge : public MessageDispatcherBridge {
               (MessageWrapper * message,
                DismissReason dismiss_reason),
               (override));
+  MOCK_METHOD(bool,
+              EnqueueWindowScopedMessage,
+              (MessageWrapper*, ui::WindowAndroid*, MessagePriority),
+              (override));
   int MapToJavaDrawableId(int resource_id) override;
   void SetMessagesEnabledForEmbedder(bool messages_enabled_for_embedder);
 };
