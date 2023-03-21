@@ -23,7 +23,7 @@ void DeserializeHistogramAndAddSamples(PickleIterator* iter) {
   if (!histogram)
     return;
 
-  if (histogram->flags() & HistogramBase::kIPCSerializationSourceFlag) {
+  if (histogram->HasFlags(HistogramBase::kIPCSerializationSourceFlag)) {
     DVLOG(1) << "Single process mode, histogram observed and not copied: "
              << histogram->histogram_name();
     return;

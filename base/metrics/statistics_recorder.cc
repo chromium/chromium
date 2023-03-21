@@ -414,8 +414,7 @@ StatisticsRecorder::Histograms StatisticsRecorder::GetHistograms(
 
   out.reserve(top_->histograms_.size());
   for (const auto& entry : top_->histograms_) {
-    bool is_persistent =
-        (entry.second->flags() & HistogramBase::kIsPersistent) != 0;
+    bool is_persistent = entry.second->HasFlags(HistogramBase::kIsPersistent);
     if (!include_persistent && is_persistent)
       continue;
     out.push_back(entry.second);

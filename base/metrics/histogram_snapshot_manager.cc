@@ -28,8 +28,9 @@ void HistogramSnapshotManager::PrepareDeltas(
     HistogramBase::Flags required_flags) {
   for (HistogramBase* const histogram : histograms) {
     histogram->SetFlags(flags_to_set);
-    if ((histogram->flags() & required_flags) == required_flags)
+    if (histogram->HasFlags(required_flags)) {
       PrepareDelta(histogram);
+    }
   }
 }
 
@@ -39,7 +40,7 @@ void HistogramSnapshotManager::SnapshotUnloggedSamples(
   DCHECK(!unlogged_samples_snapshot_taken_);
   unlogged_samples_snapshot_taken_ = true;
   for (HistogramBase* const histogram : histograms) {
-    if ((histogram->flags() & required_flags) == required_flags) {
+    if (histogram->HasFlags(required_flags)) {
       const HistogramSnapshotPair& histogram_snapshot_pair =
           histograms_and_snapshots_.emplace_back(
               histogram, histogram->SnapshotUnloggedSamples());

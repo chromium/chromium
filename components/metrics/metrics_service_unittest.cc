@@ -290,7 +290,7 @@ class MetricsServiceTest : public testing::Test {
       const base::HistogramBase* histogram = FindHistogram(histograms, hash);
       EXPECT_TRUE(histogram) << hash;
 
-      EXPECT_EQ(kStabilityFlags, histogram->flags() & kStabilityFlags) << hash;
+      EXPECT_TRUE(histogram->HasFlags(kStabilityFlags)) << hash;
     }
   }
 

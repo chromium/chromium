@@ -166,6 +166,7 @@ class BASE_EXPORT HistogramBase {
   int32_t flags() const { return flags_.load(std::memory_order_relaxed); }
   void SetFlags(int32_t flags);
   void ClearFlags(int32_t flags);
+  bool HasFlags(int32_t flags) const;
 
   virtual HistogramType GetHistogramType() const = 0;
 
