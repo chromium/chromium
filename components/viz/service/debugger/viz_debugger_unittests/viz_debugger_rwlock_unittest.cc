@@ -102,11 +102,10 @@ class ReaderThread : public base::PlatformThread::Delegate {
 
 TEST_F(RWLockTest, ReadWrite) {
   static const unsigned kNumReaders = 4;
+  std::vector<int> arr(kNumReaders);  // Must outlive `writer` and `readers`.
   WriterThread writer;
   ReaderThread readers[kNumReaders];
   base::PlatformThreadHandle handles[kNumReaders];
-
-  std::vector<int> arr(kNumReaders);
 
   // Initialize and start each reader thread.
   for (uint32_t i = 0; i < kNumReaders; ++i) {
