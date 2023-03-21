@@ -45,6 +45,10 @@ namespace base {
 class CommandLine;
 }  // namespace base
 
+namespace content {
+class TestWebUI;
+}
+
 namespace web_app::integration_tests {
 
 // Enumerations used by the integration tests framework actions. These are C++
@@ -455,7 +459,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  webapps::AppHomePageHandler GetTestAppHomePageHandler();
+  webapps::AppHomePageHandler GetTestAppHomePageHandler(
+      content::TestWebUI* web_ui);
 #endif
 
   base::test::ScopedFeatureList scoped_feature_list_;

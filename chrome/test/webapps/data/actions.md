@@ -74,7 +74,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | # Uninstall |
 | uninstall_from_os | Site |  | 87 | Implemented | Uninstalls the app from OS integration - e.g. Windows Control Panel / Start menu |  |
 | uninstall_from_app_settings | Site |  | 98 | Implemented | uninstall an app from app settings page, the app has to be locally installed. | phillis@ |
-| uninstall_from_list | Site |  | 10 | Implemented | Uninstall the webapp from wherever apps are listed by chrome. On WML, this is from chrome://apps, and on ChromeOS, this is from the 'launcher' |  |
 | uninstall_from_menu | Site |  | 43 | Implemented | Uninstall the webapp from the 3-dot menu in the webapp window |  |
 | uninstall_policy_app | Site |  | 44 | Implemented | Remove a force-installed policy app to the user profile (must be managed profile) |  |
 | uninstall_by_user | Site | uninstall_from_list($1) & uninstall_from_menu($1) & uninstall_from_os($1) & uninstall_from_app_settings($1) | 67 | Parameterized |  |  |
@@ -188,3 +187,4 @@ Actions that the user can take by going to chrome://apps and either left clickin
 | disable_run_on_os_login_from_app_home | Site |  | 152 | Implemented | Unchecks the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
 | check_user_cannot_set_run_on_os_login_app_home | Site | | 157 | Implemented | Checks that the user cannot set the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
 | install_locally | Site |  | 46 | Implemented | Find the app in the app list (chrome://apps) and install it by right-clicking on the app and selecting the 'install' option. Win/Mac/Linux only. |  |
+| uninstall_from_list | Site |  | 10 | Implemented | Uninstall the webapp from wherever apps are listed by chrome. On WML, this is from chrome://apps, and on ChromeOS, this is from the 'launcher' |  |

@@ -1033,7 +1033,12 @@ void WebAppIntegrationTestDriver::DisableRunOnOsLoginFromAppHome(Site site) {
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto app_home_page_handler = GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home_page_handler.SetRunOnOsLoginMode(app_id,
                                             web_app::RunOnOsLoginMode::kNotRun);
 #endif
@@ -1063,7 +1068,12 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppHome(Site site) {
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto app_home_page_handler = GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home_page_handler.SetRunOnOsLoginMode(
       app_id, web_app::RunOnOsLoginMode::kWindowed);
 #endif
@@ -1146,8 +1156,12 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
 
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
@@ -1949,8 +1963,12 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppHome(Site site) {
                                     true);
   AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
 #else
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home_page_handler.SetUserDisplayMode(
       app_id, web_app::mojom::UserDisplayMode::kBrowser);
 #endif
@@ -1991,8 +2009,12 @@ void WebAppIntegrationTestDriver::SetOpenInWindowFromAppHome(Site site) {
                                     true);
   AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
 #else
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home_page_handler.SetUserDisplayMode(
       app_id, web_app::mojom::UserDisplayMode::kStandalone);
 #endif
@@ -2126,13 +2148,10 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
-  DCHECK(web_contents);
+  CHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
-  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
-                                 &test_web_ui);
-  base::Value::List web_app_ids;
-  web_app_ids.Append(app_id);
-  handler.HandleUninstallApp(web_app_ids);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
+  app_home_page_handler.UninstallApp(app_id);
 #endif
   uninstall_waiter.Wait();
   site_remember_deny_open_file_.erase(site);
@@ -2188,7 +2207,6 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
       << "No app installed for site: " << static_cast<int>(site);
 
   UninstallCompleteWaiter uninstall_waiter(profile(), app_id);
-
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
   Browser* app_browser = GetAppBrowserForSite(site);
@@ -2316,8 +2334,12 @@ void WebAppIntegrationTestDriver::CheckAppListEmpty() {
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->apps.empty());
 #if !BUILDFLAG(IS_CHROMEOS)
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   base::test::TestFuture<std::vector<app_home::mojom::AppInfoPtr>>
       result_future;
   app_home_page_handler.GetApps(result_future.GetCallback());
@@ -2334,8 +2356,12 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
   GURL icon_url;
   int icon_size_to_test = icon_size::k128;
 #if !BUILDFLAG(IS_CHROMEOS)
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home::mojom::AppInfoPtr expected_app;
   expected_app = app_home_page_handler.GetApp(active_app_id_);
 
@@ -2349,10 +2375,10 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
   base::RunLoop run_loop;
 
   NavigateTabbedBrowserToSite(icon_url, NavigationMode::kNewTab);
-  content::WebContents* web_contents =
+  content::WebContents* web_contents_active =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  web_contents->DownloadImage(
+  web_contents_active->DownloadImage(
       icon_url, false, gfx::Size(), 0, false,
       base::BindLambdaForTesting([&](int id, int http_status_code,
                                      const GURL& image_url,
@@ -2384,8 +2410,12 @@ void WebAppIntegrationTestDriver::CheckAppInListNotLocallyInstalled(Site site) {
   ASSERT_TRUE(app_state.has_value());
   EXPECT_FALSE(app_state->is_installed_locally);
 #if !BUILDFLAG(IS_CHROMEOS)
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home::mojom::AppInfoPtr expected_app;
   const AppId app_id = GetAppIdBySiteMode(site);
   expected_app = app_home_page_handler.GetApp(app_id);
@@ -2406,8 +2436,12 @@ void WebAppIntegrationTestDriver::CheckAppInListWindowed(Site site) {
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kStandalone);
 #if !BUILDFLAG(IS_CHROMEOS)
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home::mojom::AppInfoPtr expected_app;
   const AppId app_id = GetAppIdBySiteMode(site);
   expected_app = app_home_page_handler.GetApp(app_id);
@@ -2428,8 +2462,12 @@ void WebAppIntegrationTestDriver::CheckAppInListTabbed(Site site) {
   ASSERT_TRUE(app_state.has_value());
   EXPECT_EQ(app_state->user_display_mode, mojom::UserDisplayMode::kBrowser);
 #if !BUILDFLAG(IS_CHROMEOS)
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home::mojom::AppInfoPtr expected_app;
   const AppId app_id = GetAppIdBySiteMode(site);
   expected_app = app_home_page_handler.GetApp(app_id);
@@ -2501,8 +2539,12 @@ void WebAppIntegrationTestDriver::CheckAppNotInList(Site site) {
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   EXPECT_FALSE(app_state.has_value());
 #if !BUILDFLAG(IS_CHROMEOS)
-  webapps::AppHomePageHandler app_home_page_handler =
-      GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home::mojom::AppInfoPtr expected_app;
   const AppId app_id = GetAppIdBySiteMode(site);
   expected_app = app_home_page_handler.GetApp(app_id);
@@ -2957,7 +2999,12 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLoginAppHome(
   absl::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
-  auto app_home_page_handler = GetTestAppHomePageHandler();
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  CHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
 
   app_home::mojom::AppInfoPtr app;
   app = app_home_page_handler.GetApp(app_state->id);
@@ -3873,15 +3920,11 @@ WebAppIntegrationTestDriver::GetTestServerForSiteMode(Site site) const {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 webapps::AppHomePageHandler
-WebAppIntegrationTestDriver::GetTestAppHomePageHandler() {
-  content::TestWebUI test_web_ui;
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  DCHECK(web_contents);
-  test_web_ui.set_web_contents(web_contents);
+WebAppIntegrationTestDriver::GetTestAppHomePageHandler(
+    content::TestWebUI* web_ui) {
   mojo::PendingReceiver<app_home::mojom::Page> page;
   mojo::Remote<app_home::mojom::PageHandler> page_handler;
-  return webapps::AppHomePageHandler(&test_web_ui, profile(),
+  return webapps::AppHomePageHandler(web_ui, profile(),
                                      page_handler.BindNewPipeAndPassReceiver(),
                                      page.InitWithNewPipeAndPassRemote());
 }

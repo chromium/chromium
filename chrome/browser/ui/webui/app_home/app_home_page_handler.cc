@@ -470,6 +470,7 @@ void AppHomePageHandler::UninstallWebApp(const std::string& web_app_id) {
       weak_ptr_factory_.GetWeakPtr());
 
   Browser* browser = GetCurrentBrowser();
+  CHECK(browser);
   web_app::WebAppUiManagerImpl::Get(web_app_provider_)
       ->dialog_manager()
       .UninstallWebApp(web_app_id, webapps::WebappUninstallSource::kAppsPage,
