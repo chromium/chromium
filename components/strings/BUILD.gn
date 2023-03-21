@@ -4,6 +4,7 @@
 
 import("//build/config/locales.gni")
 import("//components/feed/features.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -35,6 +36,7 @@ grit("components_strings") {
     "enable_pdf=$enable_pdf",
     "enable_plugins=$enable_plugins",
     "enable_print_preview=$enable_print_preview",
+    "enable_screen_ai_service=$enable_screen_ai_service",
     "enable_vr=$enable_vr",
   ]
 

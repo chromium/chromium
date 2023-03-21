@@ -9,6 +9,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
 import("//build/config/win/manifest.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
@@ -51,6 +52,7 @@ if (is_android) {
       "enable_arcore=$enable_arcore",
       "enable_pdf=$enable_pdf",
       "enable_print_preview=$enable_print_preview",
+      "enable_screen_ai_service=$enable_screen_ai_service",
       "enable_vr=$enable_vr",
     ]
 

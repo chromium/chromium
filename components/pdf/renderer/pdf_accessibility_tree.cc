@@ -30,6 +30,7 @@
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/null_ax_action_target.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -398,6 +399,32 @@ ui::AXNodeData* CreateNode(
 
   return node_ptr;
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+// TODO(crbug.com/1393069): Need to test this status node with screen readers
+// on other desktop platforms, such as Windows, macOS, and Linux, as well as in
+// the embedded PDF case.
+ui::AXNodeData* CreateStatusNode(
+    content::RenderAccessibility* render_accessibility,
+    std::vector<std::unique_ptr<ui::AXNodeData>>* nodes,
+    ui::AXNodeData* pdf_root_node) {
+  // Create a status node that conveys a notification message and add it under
+  // the PDF root node as the first node.
+  ui::AXNodeData* node_ptr =
+      CreateNode(ax::mojom::Role::kStatus, ax::mojom::Restriction::kReadOnly,
+                 render_accessibility, nodes);
+  // Set the origin of this status node to be offscreen with a 1x1 rectangle as
+  // this status node doesn't have a visual element. The origin of the doc is
+  // (0, 0), so setting (-1, -1) will make this node offscreen.
+  node_ptr->relative_bounds.bounds = gfx::RectF(-1, -1, 1, 1);
+  // As we create this status node right after the PDF root node, this node
+  // will be added as the first node to the PDF accessibility tree.
+  DCHECK(pdf_root_node->child_ids.empty());
+  pdf_root_node->child_ids.push_back(node_ptr->id);
+  VLOG(2) << "Creating an OCR status node.";
+  return node_ptr;
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 ax::mojom::Role GetRoleForButtonType(chrome_pdf::ButtonType button_type) {
   switch (button_type) {
@@ -1156,6 +1183,8 @@ class PdfAccessibilityTreeBuilder {
       para_node->child_ids.push_back(image_node->id);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       if (!images_[i].image_data.drawsNothing() && ocr_service_) {
+        // Keep track of the number of remaining OCR requests that are sent.
+        pdf_accessibility_tree_->IncrementNumberOfRemainingOcrRequests();
         ocr_service_->ScheduleImageProcessing(
             images_[i], base::BindOnce(&PdfAccessibilityTree::OnOcrDataReceived,
                                        pdf_accessibility_tree_, image_node->id,
@@ -1242,6 +1271,8 @@ PdfAccessibilityTree::PdfAccessibilityTree(
         GetRenderAccessibilityIfEnabled();
     // PdfAccessibilityTree is created even when accessibility services are not
     // enabled and we rely on them to use PdfOcr service.
+    // TODO(crbug.com/1393069): Ensure that ui::AXMode::kPDFOcr is set in the
+    // AXMode only when both the PDF OCR pref and screen reader are on.
     if (render_accessibility &&
         render_accessibility->GetAXMode().has_mode(ui::AXMode::kPDFOcr)) {
       VLOG(2) << "Creating OCR service.";
@@ -1472,6 +1503,16 @@ void PdfAccessibilityTree::DoSetAccessibilityDocInfo(
   // width and height will be updated as we add each page so that the
   // doc's bounding box surrounds all pages.
   doc_node_->relative_bounds.bounds = gfx::RectF(0, 0, 1, 1);
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // This notification node needs to be added as the first node in the PDF
+  // accessibility tree so that the user will reach out to this node first when
+  // navigating the PDF accessibility tree.
+  if (features::IsPdfOcrEnabled()) {
+    ocr_status_node_ =
+        CreateStatusNode(render_accessibility, &nodes_, doc_node_);
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 void PdfAccessibilityTree::SetAccessibilityPageInfo(
@@ -1533,6 +1574,22 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
                  page_objects);
 
   did_get_a_text_run_ |= !text_runs.empty();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsPdfOcrEnabled() && !did_get_a_text_run_) {
+    if (render_accessibility->GetAXMode().has_mode(ui::AXMode::kPDFOcr)) {
+      // Notify users via the status node that PDF OCR is about to run since
+      // the AXMode was set for PDF OCR.
+      SetStatusMessage(IDS_PDF_OCR_IN_PROGRESS);
+    } else {
+      // Notify users of the PDF OCR feature when they encounter an inaccessible
+      // PDF before turning on the feature via the status node.
+      // TODO(crbug.com/1393069): Need to send out this notification only a few
+      // times in case that the user may not want to use the PDF OCR feature
+      // and to be notified of this feature anymore.
+      SetStatusMessage(IDS_PDF_OCR_FEATURE_ALERT);
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (page_index == page_count_ - 1)
     Finish();
@@ -1589,6 +1646,29 @@ void PdfAccessibilityTree::Finish() {
   base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
                             did_get_a_text_run_);
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void PdfAccessibilityTree::FinishWithStatus() {
+  VLOG(2) << "Performing OCR on PDF is complete.";
+  SetStatusMessage(IDS_PDF_OCR_COMPLETED);
+
+  ui::AXTreeUpdate update;
+  update.root_id = doc_node_->id;
+  update.nodes.push_back(*doc_node_);
+  update.nodes.push_back(*ocr_status_node_);
+
+  if (!tree_.Unserialize(update)) {
+    LOG(FATAL) << tree_.error();
+  }
+}
+
+void PdfAccessibilityTree::SetStatusMessage(int message_id) {
+  DCHECK(ocr_status_node_);
+  const std::string message = l10n_util::GetStringUTF8(message_id);
+  VLOG(2) << "Setting the status node with message: " << message;
+  ocr_status_node_->SetName(message);
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PdfAccessibilityTree::UpdateAXTreeDataFromSelection() {
   tree_data_.sel_is_backward = false;
@@ -1803,8 +1883,18 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   // more convenient and less complex if an `ui::AXTree` was never constructed
   // and if the `ui::AXTreeSource` was able to use the collection of `nodes_`
   // directly.
+
+  // Check if it finishes running OCR on PDF.
+  DCHECK_NE(num_remaining_ocr_requests_, 0u);
+  bool is_last_ocr_request = --num_remaining_ocr_requests_ == 0u;
+
   if (child_tree_id == ui::AXTreeIDUnknown()) {
     VLOG(1) << "Empty OCR data received.";
+    // TODO(crbug.com/1393069): Investigate more to understand cases in which
+    // OCR gave no results and update the status node with a relevant message.
+    if (is_last_ocr_request) {
+      FinishWithStatus();
+    }
     return;
   }
 
@@ -1856,7 +1946,16 @@ void PdfAccessibilityTree::OnOcrDataReceived(
 
   if (!tree_.Unserialize(update))
     LOG(FATAL) << tree_.error();
+
+  if (is_last_ocr_request) {
+    FinishWithStatus();
+  }
+
   render_accessibility->SetPluginTreeSource(this);
+}
+
+void PdfAccessibilityTree::IncrementNumberOfRemainingOcrRequests() {
+  ++num_remaining_ocr_requests_;
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

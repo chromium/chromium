@@ -16,6 +16,7 @@ import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/expectations/expectations.gni")
 import("//chrome/android/trichrome.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -1127,6 +1128,7 @@ grit("generate_components_strings") {
     "enable_arcore=$enable_arcore",
     "enable_pdf=$enable_pdf",
     "enable_print_preview=$enable_print_preview",
+    "enable_screen_ai_service=$enable_screen_ai_service",
     "enable_vr=$enable_vr",
   ]
 
