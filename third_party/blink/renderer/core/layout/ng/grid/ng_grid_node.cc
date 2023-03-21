@@ -17,8 +17,6 @@ GridItems NGGridNode::ConstructGridItems(
     const NGGridPlacementData& placement_data,
     HeapVector<Member<LayoutBox>>* oof_children,
     bool* has_nested_subgrid) const {
-  DCHECK(has_nested_subgrid);
-
   return ConstructGridItems(placement_data, Style(),
                             placement_data.HasStandaloneAxis(kForColumns),
                             placement_data.HasStandaloneAxis(kForRows),

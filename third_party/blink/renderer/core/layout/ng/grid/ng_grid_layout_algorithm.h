@@ -185,17 +185,19 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutData& layout_data,
       const LogicalSize& containing_grid_area_size,
       absl::optional<LayoutUnit> opt_fixed_block_size,
+      NGGridLayoutSubtree&& layout_subtree,
+      bool min_block_size_should_encompass_intrinsic_size = false,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
-          absl::nullopt,
-      bool min_block_size_should_encompass_intrinsic_size = false) const;
+          absl::nullopt) const;
 
   NGConstraintSpace CreateConstraintSpaceForLayout(
       const GridItemData& grid_item,
       const NGGridLayoutData& layout_data,
       LogicalRect* containing_grid_area,
+      NGGridLayoutSubtree&& layout_subtree = NGGridLayoutSubtree(),
+      bool min_block_size_should_encompass_intrinsic_size = false,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
-          absl::nullopt,
-      bool min_block_size_should_encompass_intrinsic_size = false) const;
+          absl::nullopt) const;
 
   NGConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& grid_item,
@@ -218,7 +220,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // of each item before fragmentation occurs.
   void PlaceGridItems(
       const GridItems& grid_items,
-      const NGGridLayoutData& layout_data,
+      const NGGridLayoutSubtree& layout_subtree,
       Vector<EBreakBetween>* out_row_break_between,
       Vector<GridItemPlacementData>* out_grid_items_placement_data = nullptr);
 

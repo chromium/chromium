@@ -524,21 +524,13 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
         target_stretch_block_sizes);
   }
 
-  void SetSubgriddedColumns(
-      std::unique_ptr<NGGridLayoutTrackCollection> columns) {
+  void SetGridLayoutSubtree(NGGridLayoutSubtree&& grid_layout_subtree) {
 #if DCHECK_IS_ON()
-    DCHECK(!is_subgridded_columns_set_);
-    is_subgridded_columns_set_ = true;
+    DCHECK(!is_grid_layout_subtree_set_);
+    is_grid_layout_subtree_set_ = true;
 #endif
-    space_.EnsureRareData()->SetSubgriddedColumns(std::move(columns));
-  }
-
-  void SetSubgriddedRows(std::unique_ptr<NGGridLayoutTrackCollection> rows) {
-#if DCHECK_IS_ON()
-    DCHECK(!is_subgridded_rows_set_);
-    is_subgridded_rows_set_ = true;
-#endif
-    space_.EnsureRareData()->SetSubgriddedRows(std::move(rows));
+    space_.EnsureRareData()->SetGridLayoutSubtree(
+        std::move(grid_layout_subtree));
   }
 
   // Creates a new constraint space.
@@ -594,8 +586,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   bool is_table_row_data_set_ = false;
   bool is_table_section_data_set_ = false;
   bool is_line_clamp_context_set_ = false;
-  bool is_subgridded_columns_set_ = false;
-  bool is_subgridded_rows_set_ = false;
+  bool is_grid_layout_subtree_set_ = false;
 
   bool to_constraint_space_called_ = false;
 #endif
