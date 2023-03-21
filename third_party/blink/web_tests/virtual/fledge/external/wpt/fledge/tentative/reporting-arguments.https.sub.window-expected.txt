@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Seller passes number to bidder.
+PASS Seller passes string to bidder.
+PASS Seller passes array to bidder.
+PASS Seller passes object to bidder.
+PASS browserSignals.topWindowHostname test.
+PASS browserSignals.seller test.
+PASS browserSignals.topLevelSeller and browserSignals.componentSeller test.
+PASS browserSignals.renderUrl test.
+PASS browserSignals.bid test.
+PASS browserSignals.desirability test.
+PASS browserSignals.topLevelSellerSignals test.
+PASS browserSignals.dataVersion test.
+PASS browserSignals.modifiedBid test.
+PASS browserSignals.highestScoringOtherBid with no other interest groups test.
+PASS browserSignals.highestScoringOtherBid with other groups that do not bid.
+PASS browserSignals.highestScoringOtherBid with other bids.
+PASS browserSignals.interestGroupName test.
+PASS browserSignals.madeHighestScoringOtherBid with no other bids.
+PASS browserSignals.madeHighestScoringOtherBid with group that did not bid.
+PASS browserSignals.madeHighestScoringOtherBid with other bid.
+Harness: the test ran to completion.
+

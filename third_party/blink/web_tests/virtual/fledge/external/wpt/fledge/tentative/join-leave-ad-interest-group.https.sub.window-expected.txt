@@ -1,0 +1,86 @@
+This is a testharness.js-based test.
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":null}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{"name":"default name"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{"owner":null,"name":"default name"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{"owner":"http://web-platform.test:8444","name":"default name"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{"owner":"wss://web-platform.test:8444","name":"default name"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{"owner":"www.web-platform.test","name":"default name"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":false,"interestGroup":{"owner":"https://web-platform.test:8444"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":""}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priority":1}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priority":0}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priority":-1.5}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priorityVector":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priorityVector":1}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priorityVector":{"a":"apple"}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priorityVector":{}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priorityVector":{"a":1}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","priorityVector":{"a":1,"b":-4.5,"a.b":0}}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","prioritySignalsOverrides":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","prioritySignalsOverrides":1}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","prioritySignalsOverrides":{"a":"apple"}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","prioritySignalsOverrides":{}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","prioritySignalsOverrides":{"a":1}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","prioritySignalsOverrides":{"a":1,"b":-4.5,"a.b":0}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","enableBiddingSignalsPrioritization":true}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","enableBiddingSignalsPrioritization":false}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingLogicUrl":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingLogicUrl":"https://www.web-platform.test/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingLogicUrl":"data:text/javascript,Foo"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingLogicUrl":"https://web-platform.test:8444/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingLogicUrl":"relative/path"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingWasmHelperUrl":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingWasmHelperUrl":"https://www.web-platform.test/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingWasmHelperUrl":"data:application/wasm,Foo"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingWasmHelperUrl":"https://web-platform.test:8444/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","biddingWasmHelperUrl":"relative/path"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","dailyUpdateUrl":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","dailyUpdateUrl":"https://www.web-platform.test/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","dailyUpdateUrl":"data:application/wasm,Foo"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","dailyUpdateUrl":"https://web-platform.test:8444/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","dailyUpdateUrl":"relative/path"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","executionMode":"compatibility"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","executionMode":"groupByOrigin"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","executionMode":"unknownValuesAreValid"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsUrl":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsUrl":"https://www.web-platform.test/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsUrl":"data:application/json,{}"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsUrl":"https://web-platform.test:8444/foo.js"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsUrl":"relative/path"}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsKeys":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsKeys":{}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsKeys":[]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","trustedBiddingSignalsKeys":["a",4,"Foo"]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","userBiddingSignals":null}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","userBiddingSignals":"foo"}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","userBiddingSignals":15}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","userBiddingSignals":[5,"foo",[-6.4,{"a":"b"}]]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","userBiddingSignals":{"a":[5,"foo",{"b":-6.4}]}}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":5}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":{}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":[]}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":[{}]}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":[{"1":[2,3],"metadata":[{"a":"b"},"c"]}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":[{"renderUrl":"https://somewhere.test/"}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":[{"renderUrl":"https://somewhere.test/"},{"renderUrl":"https://somewhere-else.test/"}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":[{"renderUrl":"https://somewhere.test/","metadata":null}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","ads":[{"renderUrl":"https://somewhere.test/","metadata":null,"someOtherField":"foo"}]}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":null}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":5}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":{}}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[]}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{}]}}
+PASS Join and leave interest group: {"expectJoinSucces":false,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"1":[2,3],"metadata":[{"a":"b"},"c"]}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/"}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/"},{"renderUrl":"https://elsewhere.test/"}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/","metadata":null}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/","metadata":null,"someOtherField":"foo"}]}}
+PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","extra":false,"fields":{"do":"not"},"matter":"at","all":[3,4,5]}}
+PASS Join same interest group overwrites old matching group.
+PASS Leaving interest group actually leaves interest group.
+PASS Leave an interest group that was never joined.
+Harness: the test ran to completion.
+

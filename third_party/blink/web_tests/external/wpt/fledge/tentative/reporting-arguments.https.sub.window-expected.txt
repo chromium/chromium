@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+FAIL Seller passes number to bidder. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Seller passes string to bidder. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Seller passes array to bidder. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL Seller passes object to bidder. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.topWindowHostname test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.seller test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.topLevelSeller and browserSignals.componentSeller test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.renderUrl test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.bid test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.desirability test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.topLevelSellerSignals test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.dataVersion test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.modifiedBid test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.highestScoringOtherBid with no other interest groups test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.highestScoringOtherBid with other groups that do not bid. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.highestScoringOtherBid with other bids. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.interestGroupName test. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.madeHighestScoringOtherBid with no other bids. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.madeHighestScoringOtherBid with group that did not bid. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+FAIL browserSignals.madeHighestScoringOtherBid with other bid. promise_test: Unhandled rejection with value: object "TypeError: navigator.joinAdInterestGroup is not a function"
+Harness: the test ran to completion.
+
