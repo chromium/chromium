@@ -70850,6 +70850,9 @@ Called by update_use_counter_css.py.-->
   <int value="5"
       label="HTTP request internally upgraded by HFM/HTTP Upgrading"/>
   <int value="6" label="Non-HTTP/HTTPS request"/>
+  <int value="7"
+      label="HTTP allowed by content/enterprise setting (NOT by failing
+             auto-upgrade or clicking through warning)."/>
 </enum>
 
 <enum name="NavigationRequiresDedicatedProcess">

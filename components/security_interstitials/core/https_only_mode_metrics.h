@@ -81,7 +81,11 @@ enum class NavigationRequestSecurityLevel {
   // Request was for a URL with a scheme other than HTTP or HTTPS.
   kOtherScheme = 6,
 
-  kMaxValue = kOtherScheme,
+  // Request was explicitly allowlisted by content or enterprise settings
+  // (NOT by clicking through the HFM interstitial / an upgrade failing).
+  kAllowlisted = 7,
+
+  kMaxValue = kAllowlisted,
 };
 
 // Helper to record an HTTPS-First Mode navigation event.

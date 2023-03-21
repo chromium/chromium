@@ -8,6 +8,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
@@ -20,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
@@ -1359,11 +1362,84 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
     // navigation despite the HttpsUpgradeMode policy setting.
     EXPECT_FALSE(content::NavigateToURL(contents, http_url));
     EXPECT_EQ(https_url, contents->GetLastCommittedURL());
-  } else {
-    // If HTTPS-First Mode is not enabled, then the policy should cause
-    // HTTPS-Upgrades to be disabled.
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kUpgraded,
+                                    1);
+  } else if (IsHttpUpgradingEnabled()) {
+    // If HTTPS-First Mode is not enabled but upgrading is, then the policy
+    // should prevent the upgrade.
     EXPECT_TRUE(content::NavigateToURL(contents, http_url));
     EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kAllowlisted, 1);
+  }
+}
+
+// Test that HTTPS Upgrades are skipped if the "Insecure content" site setting
+// is set to "allow".
+// MIXED_SCRIPT isn't enabled as a content setting on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InsecureContentSettingDisablesUpgrades \
+  DISABLED_InsecureContentSettingDisablesUpgrades
+#else
+#define MAYBE_InsecureContentSettingDisablesUpgrades \
+  InsecureContentSettingDisablesUpgrades
+#endif
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       MAYBE_InsecureContentSettingDisablesUpgrades) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
+  GURL https_url = https_server()->GetURL("foo.test", "/simple.html");
+  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile);
+
+  // Set insecure content setting to allowed for `http_url`.
+  host_content_settings_map->SetContentSettingDefaultScope(
+      http_url, GURL(), ContentSettingsType::MIXEDSCRIPT,
+      CONTENT_SETTING_ALLOW);
+
+  if (IsHttpInterstitialEnabled()) {
+    // If HTTPS-First Mode is enabled, upgrades should still be applied.
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kUpgraded,
+                                    1);
+  } else {
+    // Otherwise, the upgrades should be skipped.
+    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kAllowlisted, 1);
+  }
+
+  // Unset the content settings.
+  host_content_settings_map->ClearSettingsForOneType(
+      ContentSettingsType::MIXEDSCRIPT);
+
+  // Set insecure content setting to allowed for `https_url`.
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetContentSettingDefaultScope(https_url, GURL(),
+                                      ContentSettingsType::MIXEDSCRIPT,
+                                      CONTENT_SETTING_ALLOW);
+  if (IsHttpInterstitialEnabled()) {
+    // If HTTPS-First Mode is enabled, upgrades should still be applied.
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+    histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                    NavigationRequestSecurityLevel::kUpgraded,
+                                    2);
+  } else {
+    // Otherwise, the upgrades should be skipped.
+    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+    histograms()->ExpectBucketCount(
+        kNavigationRequestSecurityLevelHistogram,
+        NavigationRequestSecurityLevel::kAllowlisted, 2);
   }
 }
 
