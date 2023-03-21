@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <utility>
 
@@ -12,12 +13,14 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_copy_to_fd.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
 #include "chrome/browser/ash/fusebox/fusebox_read_writer.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -57,13 +60,6 @@ bool UseEmptyTruncateWorkaround(const base::StringPiece fs_url_as_string,
   return (length == 0) &&
          base::StartsWith(fs_url_as_string,
                           file_manager::util::kFuseBoxSubdirPrefixMTP);
-}
-
-bool HaveSameSubdir(base::StringPiece src, base::StringPiece dst) {
-  size_t s = src.find('/');
-  size_t d = dst.find('/');
-  return (s != std::string::npos) && (d != std::string::npos) &&
-         (src.substr(0, s) == dst.substr(0, d));
 }
 
 std::pair<std::string, bool> ResolvePrefixMap(
@@ -320,13 +316,12 @@ void RunMkDirCallback(
           metadata_fields, std::move(outer_callback)));
 }
 
-void RunRenameCallback(
+void RunRenameCallbackPosixErrorCode(
     Server::RenameCallback callback,
     scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
-    base::File::Error error_code) {
+    int posix_error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  int posix_error_code = FileErrorToErrno(error_code);
   if (posix_error_code) {
     RenameResponseProto response_proto;
     response_proto.set_posix_error_code(posix_error_code);
@@ -336,6 +331,14 @@ void RunRenameCallback(
 
   RenameResponseProto response_proto;
   std::move(callback).Run(response_proto);
+}
+
+void RunRenameCallbackBaseFileError(
+    Server::RenameCallback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    base::File::Error error_code) {
+  RunRenameCallbackPosixErrorCode(std::move(callback), std::move(fs_context),
+                                  FileErrorToErrno(error_code));
 }
 
 void RunRmDirCallback(
@@ -510,6 +513,80 @@ void DoEmptyTruncateWorkaround(
           base::Unretained(fs_context->operation_runner()), fs_url,
           base::BindOnce(&EmptyTruncateWorkaroundCallback1, fs_context, fs_url,
                          std::move(callback))));
+}
+
+void CrossFileSystemRenameCallback3(
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    base::OnceCallback<void(int posix_error_code)> callback,
+    base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  std::move(callback).Run(FileErrorToErrno(error_code));
+}
+
+void CrossFileSystemRenameCallback2(
+    base::ScopedFD scoped_fd,
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    const storage::FileSystemURL src_fs_url,
+    base::OnceCallback<void(int posix_error_code)> callback,
+    base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (error_code != base::File::FILE_OK) {
+    std::move(callback).Run(FileErrorToErrno(error_code));
+    return;
+  }
+
+  fs_context->operation_runner()->RemoveFile(
+      src_fs_url, base::BindOnce(&CrossFileSystemRenameCallback3, fs_context,
+                                 std::move(callback)));
+}
+
+void CrossFileSystemRenameCallback1(
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    const storage::FileSystemURL src_fs_url,
+    const storage::FileSystemURL dst_fs_url,
+    base::OnceCallback<void(int posix_error_code)> callback,
+    base::expected<base::ScopedFD, int> result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (!result.has_value()) {
+    std::move(callback).Run(result.error());
+    return;
+  }
+
+  std::string fd_path =
+      base::StringPrintf("/proc/self/fd/%d", result.value().get());
+
+  fs_context->operation_runner()->CopyInForeignFile(
+      base::FilePath(fd_path), dst_fs_url,
+      base::BindOnce(&CrossFileSystemRenameCallback2, std::move(result.value()),
+                     fs_context, std::move(src_fs_url), std::move(callback)));
+}
+
+// Implement a cross-file-system rename (a move) as three steps:
+// 1. CopyToFileDescriptor, from src to an O_TMPFILE file.
+// 2. CopyInForeignFile, from the O_TMPFILE file to dst.
+// 3. RemoveFile, of the src. The base::ScopedFD destructor will delete (both
+//    in the C++ sense and in the file system sense) the O_TMPFILE file.
+void DoCrossFileSystemRename(
+    scoped_refptr<storage::FileSystemContext> fs_context,
+    std::string profile_path,
+    const storage::FileSystemURL src_fs_url,
+    const storage::FileSystemURL dst_fs_url,
+    base::OnceCallback<void(int posix_error_code)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  base::ScopedFD temp_file(open(profile_path.c_str(),
+                                O_CLOEXEC | O_EXCL | O_TMPFILE | O_RDWR, 0600));
+  if (!temp_file.is_valid()) {
+    std::move(callback).Run(ENOSPC);
+    return;
+  }
+  CopyToFileDescriptor(
+      fs_context, src_fs_url, std::move(temp_file),
+      base::BindOnce(&CrossFileSystemRenameCallback1, fs_context, src_fs_url,
+                     std::move(dst_fs_url), std::move(callback)));
 }
 
 }  // namespace
@@ -995,15 +1072,6 @@ void Server::Rename(const RenameRequestProto& request_proto,
   std::string dst_fs_url_as_string = request_proto.has_dst_file_system_url()
                                          ? request_proto.dst_file_system_url()
                                          : std::string();
-
-  // TODO(b/255703917): allow cross-subdir renames.
-  if (!HaveSameSubdir(src_fs_url_as_string, dst_fs_url_as_string)) {
-    RenameResponseProto response_proto;
-    response_proto.set_posix_error_code(EINVAL);
-    std::move(callback).Run(response_proto);
-    return;
-  }
-
   auto src_parsed =
       ParseFileSystemURL(moniker_map_, prefix_map_, src_fs_url_as_string);
   if (!src_parsed.has_value()) {
@@ -1032,8 +1100,49 @@ void Server::Rename(const RenameRequestProto& request_proto,
     return;
   }
 
-  auto outer_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
-      &RunRenameCallback, std::move(callback), src_parsed->fs_context));
+  // Use a temporary file (and CopyInForeignFile), for cross-file-system moves
+  // where the destination file system doesn't support incremental writes, but
+  // both source and destination are on Fusebox-served subdirs.
+  //
+  // Otherwise, the storage::FileSystemOperationRunner::Move call further below
+  // would require the various backends to support either src
+  // CreateSnapshotFile and dst CopyInForeignFile (when using
+  // storage::SnapshotCopyOrMoveImpl) or src CreateFileStreamReader and dst
+  // CreateFileStreamWriter (when using storage::StreamCopyOrMoveImpl).
+  //
+  // Care is needed to pick the right approach, based on both source and
+  // destination file system types, as many backends subclass (with stub
+  // methods to satisfy the C++ compiler) but don't completely satisfy the
+  // storage::AsyncFileUtil or ash::FileSystemBackendDelegate interfaces.
+  //
+  // As of March 2023, these below are all unimplemented, often but not always
+  // marked NOTIMPLEMENTED, NOTREACHED, or TODO:
+  //   - ArcDocumentsProviderAsyncFileUtil::CopyInForeignFile
+  //   - ArcDocumentsProviderAsyncFileUtil::CreateSnapshotFile
+  //   - MTPFileSystemBackendDelegate::CreateFileStreamWriter
+  //   - ProviderAsyncFileUtil::CopyInForeignFile
+  //   - ProviderAsyncFileUtil::CreateSnapshotFile
+  if (!src_parsed->fs_url.IsInSameFileSystem(dst_parsed->fs_url) &&
+      UseTempFile(dst_fs_url_as_string)) {
+    auto outer_callback = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&RunRenameCallbackPosixErrorCode, std::move(callback),
+                       src_parsed->fs_context));
+
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DoCrossFileSystemRename, src_parsed->fs_context,
+                       std::string(ProfileManager::GetActiveUserProfile()
+                                       ->GetPath()
+                                       .AsUTF8Unsafe()),
+                       std::move(src_parsed->fs_url),
+                       std::move(dst_parsed->fs_url),
+                       std::move(outer_callback)));
+    return;
+  }
+
+  auto outer_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&RunRenameCallbackBaseFileError, std::move(callback),
+                     src_parsed->fs_context));
 
   constexpr storage::FileSystemOperation::CopyOrMoveOptionSet options =
       storage::FileSystemOperation::CopyOrMoveOptionSet(
