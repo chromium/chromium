@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Tutorial;
@@ -59,7 +60,10 @@ public class VideoPlayerActivity extends SynchronousInitializationActivity {
         int featureType =
                 IntentUtils.safeGetIntExtra(getIntent(), EXTRA_VIDEO_TUTORIAL, FeatureType.INVALID);
         videoTutorialService.getTutorial(featureType, mCoordinator::playVideoTutorial);
-        BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator::onBackPressed);
+        if (!BackPressManager.isSecondaryActivityEnabled()) {
+            // See comments in VideoPlayerMediator#handleBackPressed.
+            BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator::onBackPressed);
+        }
     }
 
     private Pair<WebContents, ContentView> createWebContents() {

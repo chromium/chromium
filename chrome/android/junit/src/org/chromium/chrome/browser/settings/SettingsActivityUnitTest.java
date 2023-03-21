@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,12 +30,18 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfileManagerUtils;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Unit tests for {@link SettingsActivity}.
@@ -83,6 +90,29 @@ public class SettingsActivityUnitTest {
 
         assertTrue("SettingsActivity is using a wrong fragment.",
                 mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
+    }
+
+    @Test
+    public void testBackPress() throws TimeoutException {
+        CachedFeatureFlags.setFeaturesForTesting(
+                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY, true));
+        launchSettingsActivity(TestSettingsFragment.class.getName());
+        assertTrue("SettingsActivity is using a wrong fragment.",
+                mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
+        TestSettingsFragment mainFragment =
+                (TestSettingsFragment) mSettingsActivity.getMainFragment();
+        mainFragment.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertTrue("TestSettingsFragment will handle back press",
+                mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+
+        // Simulate back press.
+        TestThreadUtils.runOnUiThreadBlocking(
+                mSettingsActivity.getOnBackPressedDispatcher()::onBackPressed);
+        mainFragment.getBackPressCallback().waitForFirst();
+
+        mainFragment.getHandleBackPressChangedSupplier().set(false);
+        Assert.assertFalse("TestSettingsFragment will not handle back press",
+                mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
     }
 
     @Test

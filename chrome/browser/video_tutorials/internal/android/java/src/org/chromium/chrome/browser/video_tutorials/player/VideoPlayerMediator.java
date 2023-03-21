@@ -75,6 +75,8 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     }
 
     boolean handleBackPressed() {
+        // TODO(crbug.com/1406012): Remove these metrics or introduce new metrics in other lifecycle
+        //                          hooks because this method never consumes back event.
         boolean isShowingLanguagePicker = mModel.get(VideoPlayerProperties.SHOW_LANGUAGE_PICKER);
         boolean isShowingLoadingScreen = mModel.get(VideoPlayerProperties.SHOW_LOADING_SCREEN);
         boolean isShowingVideoPlayer = !isShowingLanguagePicker && !isShowingLoadingScreen;

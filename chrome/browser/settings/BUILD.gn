@@ -53,6 +53,9 @@ android_library("junit_test_support") {
   sources = [ "android/java/src/org/chromium/chrome/browser/settings/TestSettingsFragment.java" ]
   deps = [
     ":junit_test_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_jvm_java",
     "//third_party/androidx:androidx_preference_preference_java",
   ]

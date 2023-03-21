@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -80,6 +81,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFr
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
@@ -97,18 +99,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  */
 public class SettingsActivity extends ChromeBaseAppCompatActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SnackbarManageable {
-    /**
-     * Preference fragments may implement this interface to intercept "Back" button taps in this
-     * activity.
-     */
-    public interface OnBackPressedListener {
-        /**
-         * Called when the user taps "Back".
-         * @return Whether "Back" button was handled by the fragment. If this method returns false,
-         *         the activity should handle the event itself.
-         */
-        boolean onBackPressed();
-    }
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
@@ -186,7 +176,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         setStatusBarColor();
         initBottomSheet();
-        BackPressHelper.create(this, getOnBackPressedDispatcher(), this::handleBackPressed);
     }
 
     @Override
@@ -320,6 +309,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((PrivacySandboxSettingsBaseFragment) fragment)
                     .setSnackbarManager(getSnackbarManager());
         }
+        initBackPressHandler();
     }
 
     @Override
@@ -403,11 +393,18 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean handleBackPressed() {
+    private void initBackPressHandler() {
         Fragment activeFragment = getMainFragment();
-        if (!(activeFragment instanceof OnBackPressedListener)) return false;
-        OnBackPressedListener listener = (OnBackPressedListener) activeFragment;
-        return listener.onBackPressed();
+        if (BackPressManager.isSecondaryActivityEnabled()) {
+            if (activeFragment instanceof BackPressHandler) {
+                BackPressHelper.create(activeFragment.getViewLifecycleOwner(),
+                        getOnBackPressedDispatcher(), (BackPressHandler) activeFragment);
+            }
+        } else if (activeFragment instanceof BackPressHelper.ObsoleteBackPressedHandler) {
+            BackPressHelper.create(activeFragment.getViewLifecycleOwner(),
+                    getOnBackPressedDispatcher(),
+                    (BackPressHelper.ObsoleteBackPressedHandler) activeFragment);
+        }
     }
 
     @Override

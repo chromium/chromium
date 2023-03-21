@@ -35,13 +35,13 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.BackPressHelper;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -76,7 +76,7 @@ import java.util.Set;
 public class ManageSyncSettings extends PreferenceFragmentCompat
         implements PassphraseDialogFragment.Listener, PassphraseCreationDialogFragment.Listener,
                    PassphraseTypeDialogFragment.Listener, Preference.OnPreferenceChangeListener,
-                   SyncService.SyncStateChangedListener, SettingsActivity.OnBackPressedListener,
+                   SyncService.SyncStateChangedListener, BackPressHelper.ObsoleteBackPressedHandler,
                    Listener, SyncErrorCardPreference.SyncErrorCardPreferenceListener,
                    FragmentHelpAndFeedbackLauncher {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
@@ -656,6 +656,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     @Override
     public boolean onBackPressed() {
+        // TODO(crbug.com/1406012): Remove these metrics or introduce new metrics in other lifecycle
+        //                          hooks because this method never consumes back event.
         if (mIsFromSigninScreen) {
             RecordUserAction.record("Signin_Signin_BackOnAdvancedSyncSettings");
         }
