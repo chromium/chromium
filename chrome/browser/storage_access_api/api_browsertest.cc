@@ -398,6 +398,64 @@ class StorageAccessAPIBrowserTest : public StorageAccessAPIBaseBrowserTest,
   StorageAccessAPIBrowserTest() : StorageAccessAPIBaseBrowserTest(GetParam()) {}
 };
 
+// Check default values for permissions.query on storage-access.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest, PermissionQueryDefault) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+
+  EXPECT_EQ(QueryPermission(GetPrimaryMainFrame()), "prompt");
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+}
+
+// Test that permissions.query changes to "granted" when a storage access
+// request was successful.
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest, PermissionQueryGranted) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+
+  // Grant initial permission.
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "granted");
+
+  // Ensure that after a navigation the permission state is preserved.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "granted");
+}
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest, PermissionQueryCrossSite) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  NavigateToPageWithFrame(kHostB);
+  NavigateFrameTo(kHostA, "/echoheader?cookie");
+
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+
+  // Grant initial permission.
+  EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  EXPECT_EQ(QueryPermission(GetFrame()), "granted");
+
+  // Ensure that the scope of the permission grant is for the entire site.
+  NavigateFrameTo(kHostASubdomain, "/echoheader?cookie");
+  EXPECT_EQ(QueryPermission(GetFrame()), "granted");
+
+  // The permission should not be available cross-site.
+  NavigateFrameTo(kHostC, "/echoheader?cookie");
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+}
+
 // Validate that a cross-site iframe can bypass third-party cookie blocking via
 // the Storage Access API.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,

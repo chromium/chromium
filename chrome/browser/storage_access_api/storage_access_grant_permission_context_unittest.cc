@@ -41,12 +41,20 @@ GURL GetTopLevelURL() {
   return GURL("https://embedder.com");
 }
 
+GURL GetTopLevelURLSubdomain() {
+  return GURL("https://sub.embedder.com");
+}
+
 GURL GetDummyEmbeddingUrlWithSubdomain() {
   return GURL("https://subdomain.example_embedder_1.com");
 }
 
 GURL GetRequesterURL() {
   return GURL("https://requester.example.com");
+}
+
+GURL GetRequesterURLSubdomain() {
+  return GURL("https://another-requester.example.com");
 }
 
 GURL GetDummyEmbeddingUrl(int dummy_id) {
@@ -126,6 +134,38 @@ class StorageAccessGrantPermissionContextTest
     EXPECT_FALSE(manager->IsRequestInProgress());
   }
 
+  // Helper to ensure that a given content setting is consistently applied on a
+  // cross-site scope.
+  void CheckCrossSiteContentSettings(ContentSetting expected_setting) {
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(profile());
+    DCHECK(settings_map);
+
+    auto setting =
+        settings_map->GetContentSetting(GetRequesterURL(), GetTopLevelURL(),
+                                        ContentSettingsType::STORAGE_ACCESS);
+
+    EXPECT_EQ(setting, expected_setting);
+
+    setting = settings_map->GetContentSetting(
+        GetRequesterURLSubdomain(), GetTopLevelURL(),
+        ContentSettingsType::STORAGE_ACCESS);
+
+    EXPECT_EQ(setting, expected_setting);
+
+    setting = settings_map->GetContentSetting(
+        GetRequesterURLSubdomain(), GetTopLevelURLSubdomain(),
+        ContentSettingsType::STORAGE_ACCESS);
+
+    EXPECT_EQ(setting, expected_setting);
+
+    setting = settings_map->GetContentSetting(
+        GetRequesterURL(), GetTopLevelURLSubdomain(),
+        ContentSettingsType::STORAGE_ACCESS);
+
+    EXPECT_EQ(setting, expected_setting);
+  }
+
   permissions::PermissionRequestID CreateFakeID() {
     return permissions::PermissionRequestID(
         web_contents()->GetPrimaryMainFrame(),
@@ -181,6 +221,56 @@ class StorageAccessGrantPermissionContextAPIEnabledTest
  private:
   base::HistogramTester histogram_tester_;
 };
+
+// Test that after a successful explicit storage access grant, there's a content
+// setting that applies on an (embedded site, top-level site) scope.
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
+       ExplicitGrantAcceptCrossSiteContentSettings) {
+  StorageAccessGrantPermissionContext permission_context(profile());
+
+  ExhaustImplicitGrants(GetRequesterURL(), permission_context);
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
+
+  // Assert that all content settings are in their initial state.
+  CheckCrossSiteContentSettings(ContentSetting::CONTENT_SETTING_ASK);
+
+  base::test::TestFuture<ContentSetting> future;
+  permission_context.DecidePermissionForTesting(
+      CreateFakeID(), GetRequesterURL(), GetTopLevelURL(),
+      /*user_gesture=*/true, future.GetCallback());
+
+  // Run until the prompt is ready.
+  base::RunLoop().RunUntilIdle();
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->IsRequestInProgress());
+
+  // Accept the prompt and validate we get the expected setting back in our
+  // callback.
+  manager->Accept();
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
+
+  histogram_tester().ExpectTotalCount(kGrantIsImplicitHistogram, 6);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/true, 5);
+  histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
+                                       /*sample=*/false, 1);
+  histogram_tester().ExpectTotalCount(kPromptResultHistogram, 1);
+  histogram_tester().ExpectBucketCount(
+      kPromptResultHistogram,
+      /*sample=*/permissions::PermissionAction::GRANTED, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(kRequestOutcomeHistogram,
+                                              RequestOutcome::kGrantedByUser),
+            1);
+
+  // Assert that the permission grant set a content setting that applies
+  // at the right scope.
+  CheckCrossSiteContentSettings(ContentSetting::CONTENT_SETTING_ALLOW);
+}
 
 // When the Storage Access API feature is enabled and we have a user gesture we
 // should get a decision.

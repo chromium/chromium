@@ -11,7 +11,10 @@
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
@@ -22,13 +25,15 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
+using content_settings::URLToSchemefulSitePattern;
+
 namespace content {
 
 namespace {
 
 std::vector<ContentSettingPatternSource> GetContentSettings(
-    const GURL& permission_origin,
-    const GURL& embedding_origin,
+    const ContentSettingsPattern& permission_pattern,
+    const ContentSettingsPattern& embedding_pattern,
     blink::mojom::PermissionStatus status) {
   absl::optional<ContentSetting> setting;
   switch (status) {
@@ -43,8 +48,7 @@ std::vector<ContentSettingPatternSource> GetContentSettings(
   }
   std::vector<ContentSettingPatternSource> patterns;
   if (setting) {
-    patterns.emplace_back(ContentSettingsPattern::FromURL(permission_origin),
-                          ContentSettingsPattern::FromURL(embedding_origin),
+    patterns.emplace_back(permission_pattern, embedding_pattern,
                           base::Value(*setting), /*source=*/"",
                           /*incognito=*/false);
   }
@@ -72,8 +76,20 @@ WebTestPermissionManager::PermissionDescription::PermissionDescription(
 
 bool WebTestPermissionManager::PermissionDescription::operator==(
     const PermissionDescription& other) const {
-  return type == other.type && origin == other.origin &&
-         embedding_origin == other.embedding_origin;
+  if (type != other.type) {
+    return false;
+  }
+
+  if (type == blink::PermissionType::STORAGE_ACCESS_GRANT) {
+    const net::SchemefulSite requesting_site(origin);
+    const net::SchemefulSite other_requesting_site(other.origin);
+    const net::SchemefulSite embedding_site(embedding_origin);
+    const net::SchemefulSite other_embedding_site(other.embedding_origin);
+    return requesting_site == other_requesting_site &&
+           embedding_site == other_embedding_site;
+  }
+
+  return origin == other.origin && embedding_origin == other.embedding_origin;
 }
 
 bool WebTestPermissionManager::PermissionDescription::operator!=(
@@ -83,10 +99,19 @@ bool WebTestPermissionManager::PermissionDescription::operator!=(
 
 size_t WebTestPermissionManager::PermissionDescription::Hash::operator()(
     const PermissionDescription& description) const {
-  size_t hash = std::hash<int>()(static_cast<int>(description.type));
-  hash += std::hash<std::string>()(description.embedding_origin.spec());
-  hash += std::hash<std::string>()(description.origin.spec());
-  return hash;
+  const int type_int = static_cast<int>(description.type);
+
+  if (description.type == blink::PermissionType::STORAGE_ACCESS_GRANT) {
+    const net::SchemefulSite requesting_site(description.origin);
+    const net::SchemefulSite embedding_site(description.embedding_origin);
+    const size_t hash =
+        base::HashInts(type_int, base::FastHash(embedding_site.Serialize()));
+    return base::HashInts(hash, base::FastHash(requesting_site.Serialize()));
+  }
+
+  const size_t hash = base::HashInts(
+      type_int, base::FastHash(description.embedding_origin.spec()));
+  return base::HashInts(hash, base::FastHash(description.origin.spec()));
 }
 
 WebTestPermissionManager::WebTestPermissionManager(
@@ -399,8 +424,10 @@ void WebTestPermissionManager::OnPermissionChanged(
       browser_context_->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess()
           ->SetStorageAccessGrantSettings(
-              GetContentSettings(permission.origin, permission.embedding_origin,
-                                 status),
+              GetContentSettings(
+                  URLToSchemefulSitePattern(permission.origin),
+                  URLToSchemefulSitePattern(permission.embedding_origin),
+                  status),
               base::BindOnce(std::move(permission_callback), /*success=*/true));
       break;
     case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS: {
@@ -427,10 +454,14 @@ void WebTestPermissionManager::OnPermissionChanged(
       browser_context_->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess()
           ->SetAllStorageAccessSettings(
-              GetContentSettings(permission.origin, permission.embedding_origin,
-                                 status),
-              GetContentSettings(permission.origin, permission.embedding_origin,
-                                 status),
+              GetContentSettings(
+                  ContentSettingsPattern::FromURL(permission.origin),
+                  ContentSettingsPattern::FromURL(permission.embedding_origin),
+                  status),
+              GetContentSettings(
+                  ContentSettingsPattern::FromURL(permission.origin),
+                  ContentSettingsPattern::FromURL(permission.embedding_origin),
+                  status),
               base::BindOnce(barrier_callback, true));
       break;
     }

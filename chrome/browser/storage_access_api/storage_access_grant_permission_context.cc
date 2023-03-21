@@ -37,6 +37,8 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
+using content_settings::URLToSchemefulSitePattern;
+
 namespace {
 
 constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
@@ -334,20 +336,11 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   // This permission was allowed so store it either ephemerally or more
   // permanently depending on if the allow came from a prompt or automatic
   // grant.
-  const net::SchemefulSite embedding_site(embedding_origin);
-  const GURL embedding_site_as_url = embedding_site.GetURL();
-  ContentSettingsPattern secondary_site_pattern =
-      ContentSettingsPattern::CreateBuilder()
-          ->WithScheme(embedding_site_as_url.scheme())
-          ->WithDomainWildcard()
-          ->WithHost(embedding_site_as_url.host())
-          ->WithPathWildcard()
-          ->WithPortWildcard()
-          ->Build();
   settings_map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
-      secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
-      content_setting, ComputeConstraints(outcome, implicit_result));
+      URLToSchemefulSitePattern(requesting_origin),
+      URLToSchemefulSitePattern(embedding_origin),
+      ContentSettingsType::STORAGE_ACCESS, content_setting,
+      ComputeConstraints(outcome, implicit_result));
 
   ContentSettingsForOneType grants;
   settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS,

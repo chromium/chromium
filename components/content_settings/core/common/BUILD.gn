@@ -55,6 +55,7 @@ source_set("unit_tests") {
   sources = [
     "content_settings_pattern_parser_unittest.cc",
     "content_settings_pattern_unittest.cc",
+    "content_settings_utils_unittest.cc",
     "cookie_settings_base_unittest.cc",
   ]
 

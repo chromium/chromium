@@ -18,6 +18,10 @@ namespace content_settings {
 // Converts |value| to |ContentSetting|.
 ContentSetting ValueToContentSetting(const base::Value& value);
 
+// Converts a given url to a ContentSettingsPattern that represents a site, i.e.
+// with domain, path, and port wildcards.
+ContentSettingsPattern URLToSchemefulSitePattern(const GURL& url);
+
 // Returns a base::Value representation of |setting| if |setting| is
 // a valid content setting. Otherwise, returns an empty value.
 base::Value ContentSettingToValue(ContentSetting setting);

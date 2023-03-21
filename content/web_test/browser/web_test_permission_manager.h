@@ -117,6 +117,10 @@ class WebTestPermissionManager
     PermissionDescription(blink::PermissionType type,
                           const GURL& origin,
                           const GURL& embedding_origin);
+    // Note that the comparison operator does not always require strict
+    // origin equality for the requesting and embedding origin. For permission
+    // types such as STORAGE_ACCESS_GRANT, which are scoped to (requesting
+    // site, embedding site), it will apply a same-site check instead.
     bool operator==(const PermissionDescription& other) const;
     bool operator!=(const PermissionDescription& other) const;
 
