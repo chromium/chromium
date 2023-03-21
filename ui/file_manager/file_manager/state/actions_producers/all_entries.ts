@@ -10,6 +10,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {addChildEntries, AddChildEntriesAction} from '../actions/all_entries.js';
+import {getFileData, getStore} from '../store.js';
 
 /**
  * @fileoverview Action producers related to entries.
@@ -22,29 +23,56 @@ import {addChildEntries, AddChildEntriesAction} from '../actions/all_entries.js'
  */
 export async function*
     readSubDirectories(
-        entry: Entry|FilesAppEntry|null,
-        successCallback?: (entries: Array<Entry|FilesAppEntry>) => void,
-        errorCallback?: () => void): ActionsProducerGen<AddChildEntriesAction> {
+        entry: Entry|FilesAppEntry|null, recursive: boolean = false,
+        metricNameForTracking: string = ''):
+        ActionsProducerGen<AddChildEntriesAction> {
   if (!entry || !entry.isDirectory || ('disabled' in entry && entry.disabled)) {
-    errorCallback && errorCallback();
     return;
+  }
+
+  // Track time for reading sub directories if metric for tracking is passed.
+  if (metricNameForTracking) {
+    metrics.startInterval(metricNameForTracking);
   }
 
   // Type casting here because TS can't exclude the invalid entry types via the
   // above if checks.
   const validEntry = entry as DirectoryEntry | FilesAppDirEntry;
+  const childEntriesToReadDeeper: Array<Entry|FilesAppEntry> = [];
   if (isDriveRootEntryList(validEntry)) {
     for await (
         const action of readSubDirectoriesForDriveRootEntryList(validEntry)) {
       yield action;
+      if (action) {
+        childEntriesToReadDeeper.push(...action.payload.entries);
+      }
     }
   } else {
     const childEntries = await readChildEntriesForDirectoryEntry(validEntry);
     // Only dispatch directories.
     const subDirectories =
         childEntries.filter(childEntry => childEntry.isDirectory);
-    successCallback && successCallback(subDirectories);
     yield addChildEntries({parentKey: entry.toURL(), entries: subDirectories});
+    childEntriesToReadDeeper.push(...subDirectories);
+  }
+
+  // Track time for reading sub directories if metric for tracking is passed.
+  if (metricNameForTracking) {
+    metrics.recordInterval(metricNameForTracking);
+  }
+
+  // Read sub directories for children when recursive is true.
+  if (recursive) {
+    // We only read deeper if the parent entry is expanded in the tree.
+    const fileData = getFileData(getStore().getState(), entry.toURL());
+    if (fileData?.expanded) {
+      for (const childEntry of childEntriesToReadDeeper) {
+        for await (const action of readSubDirectories(
+            childEntry, /* recursive */ true)) {
+          yield action;
+        }
+      }
+    }
   }
 }
 
@@ -74,8 +102,6 @@ async function*
    * to hide them based on curtain conditions.
    */
   const filteredChildren: Array<Entry|FilesAppEntry> = [];
-  const grandChildEntriesToDispatch:
-      Array<{key: string, entries: Array<Entry|FilesAppEntry>}> = [];
 
   const isFakeEntryVisible =
       window.fileManager.dialogType !== DialogType.SELECT_SAVEAS_FILE;
@@ -102,17 +128,9 @@ async function*
         metricNameMap[childEntry.fullPath]!, grandChildEntries.length);
     if (grandChildEntries.length > 0) {
       filteredChildren.push(childEntry);
-      grandChildEntriesToDispatch.push({
-        key: childEntry.toURL(),
-        // Only dispatch directories.
-        entries: grandChildEntries.filter(entry => entry.isDirectory),
-      });
     }
   }
   yield addChildEntries({parentKey: entry.toURL(), entries: filteredChildren});
-  for (const item of grandChildEntriesToDispatch) {
-    yield addChildEntries({parentKey: item.key, entries: item.entries});
-  }
 }
 
 /**

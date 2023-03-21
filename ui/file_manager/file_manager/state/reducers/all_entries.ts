@@ -267,11 +267,17 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
   const fileData = convertEntryToFileData(entry);
 
   allEntries[key] = {
-    ...existingFileData,
     ...fileData,
-    // if the entry is existed, we want to keep the existing
-    // children to prevent sudden removal of the children items on the UI.
-    children: existingFileData.children || [],
+    // For existing entries already in the store, we want to keep the existing
+    // value for the following fields. For example, for "expanded" entries with
+    // expanded=true, we don't want to override it with expanded=false derived
+    // from `convertEntryToFileData` function above.
+    expanded: existingFileData.expanded || fileData.expanded,
+    isEjectable: existingFileData.isEjectable || fileData.isEjectable,
+    shouldDelayLoadingChildren: existingFileData.shouldDelayLoadingChildren ||
+        fileData.shouldDelayLoadingChildren,
+    // Keep children to prevent sudden removal of the children items on the UI.
+    children: existingFileData.children || fileData.children,
   };
 
   state.allEntries = allEntries;

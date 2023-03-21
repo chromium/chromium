@@ -2,38 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {State} from '../../externs/ts/state.js';
-import {constants} from '../../foreground/js/constants.js';
 import {setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {convertEntryToFileData} from '../reducers/all_entries.js';
+import {getEmptyState} from '../store.js';
 
 import {readSubDirectories} from './all_entries.js';
-
-// Global variables to check if the callback is called or not.
-let isSuccessCallbackCalled = false;
-let isErrorCallbackCalled = false;
-
-function successCallback() {
-  isSuccessCallbackCalled = true;
-}
-function errorCallback() {
-  isErrorCallbackCalled = true;
-}
 
 export function setUp() {
   // sortEntries() requires the directoryModel on the window.fileManager.
   setUpFileManagerOnWindow();
   // Mock metrics.recordSmallCount.
-  metrics.recordSmallCount = function(_name, _value) {};
-  // Reset global callback flags.
-  isSuccessCallbackCalled = false;
-  isErrorCallbackCalled = false;
+  metrics.recordSmallCount = function() {};
+  metrics.startInterval = function() {};
+  metrics.recordInterval = function() {};
 }
 
 /**
@@ -41,7 +27,7 @@ export function setUp() {
  * store.
  */
 export async function testReadSubDirectories(done: () => void) {
-  const store = setupStore();
+  const initialState = getEmptyState();
   // Populate fake entries in the file system.
   const {volumeManager} = window.fileManager;
   const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
@@ -56,11 +42,13 @@ export async function testReadSubDirectories(done: () => void) {
   const downloadsEntry = fakeFs.entries['/Downloads'];
   // The entry to be read should be in the store before reading.
   const downloadsEntryFileData = convertEntryToFileData(downloadsEntry);
-  store.getState().allEntries[downloadsEntry.toURL()] = downloadsEntryFileData;
+  initialState.allEntries[downloadsEntry.toURL()] = downloadsEntryFileData;
+  // Put it in the uiEntries so it won't be cleared.
+  initialState.uiEntries.push(downloadsEntry.toURL());
+  const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(
-      readSubDirectories(downloadsEntry, successCallback, errorCallback));
+  store.dispatch(readSubDirectories(downloadsEntry));
 
   // Expect store to have all its sub directories.
   const aDirEntry = fakeFs.entries['/Downloads/a'];
@@ -74,8 +62,57 @@ export async function testReadSubDirectories(done: () => void) {
       [aDirEntry.toURL(), cDirEntry.toURL()];
 
   await waitDeepEquals(store, want, (state) => state.allEntries);
-  assertTrue(isSuccessCallbackCalled);
-  assertFalse(isErrorCallbackCalled);
+
+  done();
+}
+
+/**
+ * Tests that reading sub directories recursively will put the reading result of
+ * children of grand children into the store.
+ */
+export async function testReadSubDirectoriesRecursively(done: () => void) {
+  const initialState = getEmptyState();
+  // Populate fake entries in the file system.
+  const {volumeManager} = window.fileManager;
+  const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS)!;
+  const fakeFs = downloadsVolumeInfo.fileSystem as MockFileSystem;
+  fakeFs.populate([
+    '/Downloads/',
+    '/Downloads/a/',
+    '/Downloads/b/',
+    '/Downloads/a/111/',
+    '/Downloads/b/222/',
+  ]);
+  const downloadsEntry = fakeFs.entries['/Downloads'];
+  const bDirEntry = fakeFs.entries['/Downloads/b'];
+  // The entry to be read should be in the store before reading.
+  const downloadsEntryFileData = convertEntryToFileData(downloadsEntry);
+  // Set downloadsEntry.expanded = true, so it will be read recursively.
+  downloadsEntryFileData.expanded = true;
+  initialState.allEntries[downloadsEntry.toURL()] = downloadsEntryFileData;
+  const store = setupStore(initialState);
+
+  // Dispatch read sub directories action producer.
+  store.dispatch(readSubDirectories(downloadsEntry, /* recursive= */ true));
+
+  // Expect store to have all its sub directories.
+  const aDirEntry = fakeFs.entries['/Downloads/a'];
+  const dirEntry1 = fakeFs.entries['/Downloads/a/111'];
+  const dirEntry2 = fakeFs.entries['/Downloads/b/222'];
+  const want: State['allEntries'] = {
+    [downloadsEntry.toURL()]: downloadsEntryFileData,
+    [aDirEntry.toURL()]: convertEntryToFileData(aDirEntry),
+    [bDirEntry.toURL()]: convertEntryToFileData(bDirEntry),
+    [dirEntry1.toURL()]: convertEntryToFileData(dirEntry1),
+    [dirEntry2.toURL()]: convertEntryToFileData(dirEntry2),
+  };
+  want[downloadsEntry.toURL()].children =
+      [aDirEntry.toURL(), bDirEntry.toURL()];
+  want[aDirEntry.toURL()].children = [dirEntry1.toURL()];
+  want[bDirEntry.toURL()].children = [dirEntry2.toURL()];
+
+  await waitDeepEquals(store, want, (state) => state.allEntries);
 
   done();
 }
@@ -84,12 +121,10 @@ export async function testReadSubDirectories(done: () => void) {
 export async function testReadSubDirectoriesWithNullEntry(done: () => void) {
   const store = setupStore();
 
-  // Dispatch read sub directories action producer.
-  store.dispatch(readSubDirectories(null, successCallback, errorCallback));
+  // Check reading null entry will do nothing.
+  store.dispatch(readSubDirectories(null));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
-  assertFalse(isSuccessCallbackCalled);
-  assertTrue(isErrorCallbackCalled);
 
   done();
 }
@@ -105,19 +140,17 @@ export async function testReadSubDirectoriesWithNonDirectoryEntry(
     '/a.txt',
   ]);
 
-  // Check reading non directory entry will call error callback.
-  store.dispatch(readSubDirectories(
-      fakeFs.entries['/a.txt'], successCallback, errorCallback));
+  // Check reading non directory entry will do nothing.
+  store.dispatch(readSubDirectories(fakeFs.entries['/a.txt']));
 
   await waitDeepEquals(store, {}, (state) => state.allEntries);
-  assertFalse(isSuccessCallbackCalled);
-  assertTrue(isErrorCallbackCalled);
 
   done();
 }
 
 /** Tests that reading a disabled entry does nothing. */
-export async function testReadSubDirectoriesWithDisabledEntry() {
+export async function testReadSubDirectoriesWithDisabledEntry(
+    done: () => void) {
   const store = setupStore();
 
   // Make downloadsEntry as disabled.
@@ -127,12 +160,12 @@ export async function testReadSubDirectoriesWithDisabledEntry() {
   const downloadsEntry = new VolumeEntry(downloadsVolumeInfo);
   downloadsEntry.disabled = true;
 
-  // Check reading disabled volume entry will call error callback.
-  store.dispatch(
-      readSubDirectories(downloadsEntry, successCallback, errorCallback));
+  // Check reading disabled volume entry will do nothing.
+  store.dispatch(readSubDirectories(downloadsEntry));
 
-  assertFalse(isSuccessCallbackCalled);
-  assertTrue(isErrorCallbackCalled);
+  await waitDeepEquals(store, {}, (state) => state.allEntries);
+
+  done();
 }
 
 /**
@@ -141,7 +174,7 @@ export async function testReadSubDirectoriesWithDisabledEntry() {
  */
 export async function testReadSubDirectoriesForFakeDriveEntry(
     done: () => void) {
-  const store = setupStore();
+  const initialState = getEmptyState();
   // MockVolumeManager will populate Drive's /root, /team_drives, /Computers
   // automatically.
   const {volumeManager} = window.fileManager;
@@ -171,12 +204,13 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   ]);
   // Drive root entry list needs to be in the store before reading.
   const fakeDriveEntryFileData = convertEntryToFileData(driveRootEntryList);
-  store.getState().allEntries[driveRootEntryList.toURL()] =
-      fakeDriveEntryFileData;
+  initialState.allEntries[driveRootEntryList.toURL()] = fakeDriveEntryFileData;
+  // Put it in the uiEntries so it won't be cleared.
+  initialState.uiEntries.push(driveRootEntryList.toURL());
+  const store = setupStore(initialState);
 
   // Dispatch read sub directories action producer.
-  store.dispatch(
-      readSubDirectories(driveRootEntryList, successCallback, errorCallback));
+  store.dispatch(readSubDirectories(driveRootEntryList));
 
   // Expect its direct sub directories and grand sub directories of /Computers
   // should be in the store.
@@ -188,7 +222,6 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
     [offlineEntry.toURL()]: convertEntryToFileData(offlineEntry),
     // /team_drives/ won't be here because it doesn't have children.
   };
-  want[computersEntry.toURL()].icon = constants.ICON_TYPES.COMPUTERS_GRAND_ROOT;
   want[driveRootEntryList.toURL()].children = [
     driveEntry.toURL(),
     computersEntry.toURL(),
