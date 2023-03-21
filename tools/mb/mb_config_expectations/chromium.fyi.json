@@ -560,7 +560,6 @@
     "gn_args": {
       "disable_brotli_filter": false,
       "disable_file_support": true,
-      "enable_remoting": false,
       "enable_run_ios_unittests_with_xctest": true,
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
@@ -596,7 +595,6 @@
     "gn_args": {
       "disable_brotli_filter": false,
       "disable_file_support": true,
-      "enable_remoting": false,
       "enable_run_ios_unittests_with_xctest": true,
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,

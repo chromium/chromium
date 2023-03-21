@@ -2896,7 +2896,7 @@
     ],
 
     'ios_simulator_code_coverage_partial_instrumentation_xctest_reclient': [
-      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest',
+      'use_clang_coverage', 'debug_static_bot_reclient', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'enable_remoting',
     ],
 
     'ios_simulator_debug_static_bot_invert_fieldtrials_xctest_reclient': [
@@ -4033,7 +4033,7 @@
 
     'cronet_ios': {
       'mixins': ['cronet_common'],
-      'gn_args': ('disable_brotli_filter=false enable_remoting=false use_partition_alloc=false use_allocator_shim=false ios_stack_profiler_enabled=false'),
+      'gn_args': ('disable_brotli_filter=false use_partition_alloc=false use_allocator_shim=false ios_stack_profiler_enabled=false'),
     },
 
     'custom_args': {
@@ -4145,6 +4145,10 @@
     'enable_dangling_raw_ptr_feature_flag': {
       'gn_args': 'enable_dangling_raw_ptr_feature_flag=true',
       'mixins': ["enable_dangling_raw_ptr_checks", "enable_backup_ref_ptr_feature_flag"],
+    },
+
+    'enable_remoting': {
+      'gn_args': 'enable_remoting=true',
     },
 
     'enable_rust': {
