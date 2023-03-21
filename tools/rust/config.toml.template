@@ -6,12 +6,17 @@
 changelog-seen = 2
 
 [llvm]
+# We use LLVM that we've built ourselves.
 download-ci-llvm = false
 
-# These don't affect the LLVM build (which we don't do) but rather how the
-# rustc_llvm crate is linked.
+# Linux uses libstdc++ to build LLVM, and we want to statically link it into
+# rustc. This affects how rustc links in libstdc++, not how LLVM does (which we
+# build separately ourselves).
+#
+# For Clang, we dynamically link libstdc++, and provide the shared library along
+# with the Clang binary. We could potentially do the same for Rustc in the
+# future.
 static-libstdcpp = true
-ldflags = "$RUSTC_LLVM_LDFLAGS"
 
 [rust]
 download-rustc = false
@@ -37,32 +42,36 @@ prefix = "$INSTALL_DIR"
 sysconfdir = "etc"
 
 [target.x86_64-pc-windows-msvc]
-llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
-ranlib = "$LLVM_BIN/llvm-ranlib"
+llvm-config = "$LLVM_CONFIG_WINDOWS_x86_64"
+# TODO(danakj): We don't ship this in the clang toolchain package.
+# ranlib = "$LLVM_BIN/llvm-ranlib"
 ar = "$LLVM_BIN/llvm-lib"
 cc = "$LLVM_BIN/clang-cl"
 cxx = "$LLVM_BIN/clang-cl"
 linker = "$LLVM_BIN/lld-link"
 
-[target.arm64-apple-darwin]
-llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
-ranlib = "$LLVM_BIN/llvm-ranlib"
+[target.aarch64-apple-darwin]
+llvm-config = "$LLVM_CONFIG_APPLE_AARCH64"
+# TODO(danakj): We don't ship this in the clang toolchain package.
+# ranlib = "$LLVM_BIN/llvm-ranlib"
 ar = "$LLVM_BIN/llvm-ar"
 cc = "$LLVM_BIN/clang"
 cxx = "$LLVM_BIN/clang++"
 linker = "$LLVM_BIN/clang"
 
 [target.x86_64-apple-darwin]
-llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
-ranlib = "$LLVM_BIN/llvm-ranlib"
+llvm-config = "$LLVM_CONFIG_APPLE_X86_64"
+# TODO(danakj): We don't ship this in the clang toolchain package.
+# ranlib = "$LLVM_BIN/llvm-ranlib"
 ar = "$LLVM_BIN/llvm-ar"
 cc = "$LLVM_BIN/clang"
 cxx = "$LLVM_BIN/clang++"
 linker = "$LLVM_BIN/clang"
 
 [target.x86_64-unknown-linux-gnu]
-llvm-config = "$LLVM_LIB_ROOT/bin/llvm-config"
-ranlib = "$LLVM_BIN/llvm-ranlib"
+llvm-config = "$LLVM_CONFIG_LINUX_X86_64"
+# TODO(danakj): We don't ship this in the clang toolchain package.
+# ranlib = "$LLVM_BIN/llvm-ranlib"
 ar = "$LLVM_BIN/llvm-ar"
 cc = "$LLVM_BIN/clang"
 cxx = "$LLVM_BIN/clang++"

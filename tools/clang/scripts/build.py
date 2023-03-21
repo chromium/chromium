@@ -8,6 +8,15 @@ create the prebuilt binaries downloaded by update.py and used by developers.
 
 The expectation is that update.py downloads prebuilt binaries for everyone, and
 nobody should run this script as part of normal development.
+
+DEAR MAC USER: YOU NEED XCODE INSTALLED TO BUILD LLVM/CLANG WITH THIS SCRIPT.
+The Xcode command line tools that are installed as part of the Chromium
+development setup process are not sufficient. CMake will fail to configure, as
+the non-system Clang we use will not find any standard library headers. To use
+this build script on Mac:
+1. Download Xcode. (Visit http://go/xcode for googlers.)
+2. Install to /Applications
+3. sudo xcode-select --switch /Applications/Xcode.app
 """
 
 from __future__ import print_function
@@ -543,6 +552,14 @@ def main():
                       help='do not create or update any checkouts')
   parser.add_argument('--build-dir',
                       help='Override build directory')
+  parser.add_argument('--install-dir',
+                      help='override the install directory for the final '
+                      'compiler. If not specified, no install happens for '
+                      'the compiler.')
+  parser.add_argument('--no-tools',
+                      action='store_true',
+                      help='don\'t build any chromium tools or '
+                      'clang-extra-tools. Overrides --extra-tools.')
   parser.add_argument('--extra-tools', nargs='*', default=[],
                       help='select additional chrome tools to build')
   parser.add_argument('--use-system-cmake', action='store_true',
@@ -980,22 +997,29 @@ def main():
   if args.bolt:
     ldflags += ['-Wl,--emit-relocs', '-Wl,-znow']
 
-  default_tools = ['plugins', 'blink_gc_plugin', 'translation_unit']
-  chrome_tools = list(set(default_tools + args.extra_tools))
+  chrome_tools = []
+  if not args.no_tools:
+    default_tools = ['plugins', 'blink_gc_plugin', 'translation_unit']
+    chrome_tools = list(set(default_tools + args.extra_tools))
   if cc is not None:  base_cmake_args.append('-DCMAKE_C_COMPILER=' + cc)
   if cxx is not None: base_cmake_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
   if lld is not None: base_cmake_args.append('-DCMAKE_LINKER=' + lld)
+  final_install_dir = args.install_dir if args.install_dir else LLVM_BUILD_DIR
   cmake_args = base_cmake_args + [
       '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
       '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
       '-DCMAKE_EXE_LINKER_FLAGS=' + ' '.join(ldflags),
       '-DCMAKE_SHARED_LINKER_FLAGS=' + ' '.join(ldflags),
       '-DCMAKE_MODULE_LINKER_FLAGS=' + ' '.join(ldflags),
-      '-DCMAKE_INSTALL_PREFIX=' + LLVM_BUILD_DIR,
-      '-DLLVM_EXTERNAL_PROJECTS=chrometools',
-      '-DLLVM_EXTERNAL_CHROMETOOLS_SOURCE_DIR=' +
-          os.path.join(CHROMIUM_DIR, 'tools', 'clang'),
-      '-DCHROMIUM_TOOLS=%s' % ';'.join(chrome_tools)]
+      '-DCMAKE_INSTALL_PREFIX=' + final_install_dir,
+  ]
+  if not args.no_tools:
+    cmake_args.extend([
+        '-DLLVM_EXTERNAL_PROJECTS=chrometools',
+        '-DLLVM_EXTERNAL_CHROMETOOLS_SOURCE_DIR=' +
+        os.path.join(CHROMIUM_DIR, 'tools', 'clang'),
+        '-DCHROMIUM_TOOLS=%s' % ';'.join(chrome_tools)
+    ])
   if args.pgo:
     cmake_args.append('-DLLVM_PROFDATA_FILE=' + LLVM_PROFDATA_FILE)
   if args.thinlto:
@@ -1309,6 +1333,8 @@ def main():
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'check-all'],
                env=env,
                msvc_arch='x64')
+  if args.install_dir:
+    RunCommand(['ninja', 'install'], msvc_arch='x64')
 
   WriteStampFile(PACKAGE_VERSION, STAMP_FILE)
   WriteStampFile(PACKAGE_VERSION, FORCE_HEAD_REVISION_FILE)

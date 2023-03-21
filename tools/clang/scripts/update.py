@@ -232,16 +232,16 @@ def DownloadAndUnpackClangWinRuntime(output_dir):
     sys.exit(1)
 
 
-def UpdatePackage(package_name, host_os):
+def UpdatePackage(package_name, host_os, dir=LLVM_BUILD_DIR):
   stamp_file = None
   package_file = None
 
-  stamp_file = os.path.join(LLVM_BUILD_DIR, package_name + '_revision')
+  stamp_file = os.path.join(dir, package_name + '_revision')
   if package_name == 'clang':
     stamp_file = STAMP_FILE
     package_file = 'clang'
   elif package_name == 'coverage_tools':
-    stamp_file = os.path.join(LLVM_BUILD_DIR, 'cr_coverage_revision')
+    stamp_file = os.path.join(dir, 'cr_coverage_revision')
     package_file = 'llvm-code-coverage'
   elif package_name == 'objdump':
     package_file = 'llvmobjdump'
@@ -278,17 +278,17 @@ def UpdatePackage(package_name, host_os):
 
   # Updating the main clang package nukes the output dir. Any other packages
   # need to be updated *after* the clang package.
-  if package_name == 'clang' and os.path.exists(LLVM_BUILD_DIR):
-    RmTree(LLVM_BUILD_DIR)
+  if package_name == 'clang' and os.path.exists(dir):
+    RmTree(dir)
 
-  DownloadAndUnpackPackage(package_file, LLVM_BUILD_DIR, host_os)
+  DownloadAndUnpackPackage(package_file, dir, host_os)
 
   if package_name == 'clang' and 'mac' in target_os:
-    DownloadAndUnpackClangMacRuntime(LLVM_BUILD_DIR)
+    DownloadAndUnpackClangMacRuntime(dir)
   if package_name == 'clang' and 'win' in target_os:
     # When doing win/cross builds on other hosts, get the Windows runtime
     # libraries, and llvm-symbolizer.exe (needed in asan builds).
-    DownloadAndUnpackClangWinRuntime(LLVM_BUILD_DIR)
+    DownloadAndUnpackClangWinRuntime(dir)
 
   WriteStampFile(expected_stamp, stamp_file)
   return 0

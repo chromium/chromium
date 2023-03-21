@@ -9,7 +9,7 @@
 
 import("//build/rust/rust_static_library.gni")
 
-_clang_libs_dir = "//third_party/llvm-build/Release+Asserts/lib"
+_clang_libs_dir = "//third_party/rust-toolchain/lib/llvmlib/lib"
 
 if (toolchain_has_rust) {
   # This requires you to configure your .gclient file with
