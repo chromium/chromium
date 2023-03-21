@@ -814,7 +814,6 @@ template("test") {
       # We use a special trigger script for CrOS hardware tests.
       data += [ "//testing/trigger_scripts/chromeos_device_trigger.py" ]
 
-      output_name = target_name
       write_runtime_deps = _runtime_deps_file
       data += [ _runtime_deps_file ]
       deps += [ ":$_gen_runner_target" ]
