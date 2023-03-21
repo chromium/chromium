@@ -421,9 +421,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
-    expires_after="2023-04-27">
-  <owner>djean@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
+    expires_after="2024-03-21">
+  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     The number of tabs opened in the previous session when the app starts after
     {Event}. Can be used to understand if there is a correlation between
