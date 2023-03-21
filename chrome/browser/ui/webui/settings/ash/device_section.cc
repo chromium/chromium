@@ -804,6 +804,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"keyboardKeySearch", IDS_SETTINGS_KEYBOARD_KEY_SEARCH},
       {"keyboardRemapRestoreDefaultsLabel",
        IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL},
+      {"noKeyboardsConnected", IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE},
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 

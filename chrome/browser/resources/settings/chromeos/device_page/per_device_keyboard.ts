@@ -19,14 +19,15 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {KeyboardSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
@@ -36,7 +37,10 @@ import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_set
 import {getTemplate} from './per_device_keyboard.html.js';
 
 const SettingsPerDeviceKeyboardElementBase =
-    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
+    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          RouteObserverMixinInterface & DeepLinkingMixinInterface,
+    };
 
 export class SettingsPerDeviceKeyboardElement extends
     SettingsPerDeviceKeyboardElementBase {
@@ -119,6 +123,10 @@ export class SettingsPerDeviceKeyboardElement extends
 
   onKeyboardListUpdated(keyboards: Keyboard[]): void {
     this.keyboards = keyboards;
+  }
+
+  protected hasKeyboards(): boolean {
+    return this.keyboards.length > 0;
   }
 }
 

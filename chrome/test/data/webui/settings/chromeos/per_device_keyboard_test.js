@@ -5,6 +5,7 @@
 import {DevicePageBrowserProxyImpl, FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
@@ -86,5 +87,18 @@ suite('PerDeviceKeyboard', function() {
     perDeviceKeyboardPage.shadowRoot.querySelector('#showLanguagesInput')
         .click();
     assertEquals(routes.OS_LANGUAGES_INPUT, Router.getInstance().currentRoute);
+  });
+
+  test('Help message shown when no keyboards are connected', async () => {
+    await initializePerDeviceKeyboardPage();
+    provider.setFakeKeyboards([]);
+    await flushTasks();
+    assertTrue(isVisible(perDeviceKeyboardPage.shadowRoot.querySelector(
+        '#noKeyboardsConnectedContainer')));
+    assertEquals(
+        'No keyboard detected',
+        perDeviceKeyboardPage.shadowRoot
+            .querySelector('#noKeyboardsConnectedMessage')
+            .innerText.trim());
   });
 });
