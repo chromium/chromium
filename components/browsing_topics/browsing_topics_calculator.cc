@@ -9,7 +9,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/browsing_topics/util.h"
+#include "components/browsing_topics/common/semantic_tree.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -444,8 +444,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
   // For each top topic, derive the context domains that observed it
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
 
-  const std::map<Topic, std::vector<Topic>> parent_to_child_topic_map =
-      GetParentToChildTopicMap();
+  SemanticTree semantic_tree;
 
   for (const Topic& topic : top_topics) {
     if (!privacy_sandbox_settings_->IsTopicAllowed(
@@ -462,7 +461,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 
     // Calculate descendant topics + their observing context domains
     std::set<Topic> descendant_topics =
-        GetDescendantTopics(topic, parent_to_child_topic_map);
+        semantic_tree.GetDescendantTopics(topic);
     for (const Topic& descendant_topic : descendant_topics) {
       std::set<HashedDomain> descendant_topic_observation_domains =
           GetTopicObservationDomains(descendant_topic, topic_hosts_map,

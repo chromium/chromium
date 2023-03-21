@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_UTIL_H_
 #define COMPONENTS_BROWSING_TOPICS_UTIL_H_
 
-#include <map>
-#include <set>
-#include <vector>
-
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "components/browsing_topics/common/common_types.h"
@@ -74,14 +70,6 @@ HashedHost HashMainFrameHostForStorage(const std::string& main_frame_host);
 // Override the key to be returned for subsequent invocations of
 // `GenerateRandomHmacKey()`.
 void OverrideHmacKeyForTesting(ReadOnlyHmacKey hmac_key);
-
-// Get the mapping of parent topic to its child topics
-std::map<Topic, std::vector<Topic>> GetParentToChildTopicMap();
-
-// Return topics that are descendants of a topic according to a topic hierarchy
-std::set<Topic> GetDescendantTopics(
-    const Topic& topic,
-    const std::map<Topic, std::vector<Topic>>& parent_child_map);
 
 }  // namespace browsing_topics
 

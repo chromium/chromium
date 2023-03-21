@@ -10,7 +10,23 @@ component("common") {
   sources = [
     "common_types.cc",
     "common_types.h",
+    "semantic_tree.cc",
+    "semantic_tree.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/strings:components_strings_grit",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "semantic_tree_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//components/strings:components_strings_grit",
+  ]
 }
