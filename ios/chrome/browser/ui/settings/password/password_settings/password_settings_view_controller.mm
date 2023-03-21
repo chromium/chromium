@@ -18,9 +18,11 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,6 +34,9 @@
 #endif
 
 namespace {
+
+// Padding between the "N" text and the surrounding symbol.
+const CGFloat kNewFeatureIconPadding = 2.5;
 
 // Sections of the password settings UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -236,6 +241,24 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       [switchCell.switchView addTarget:self
                                 action:@selector(accountStorageSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
+
+      // Add new feature icon, vertically centered with the text.
+      // TODO(crbug.com/1377384): Limit impressions of the icon.
+      NSTextAttachment* iconAttachment = [[NSTextAttachment alloc] init];
+      iconAttachment.image = [PasswordSettingsViewController newFeatureIcon];
+      CGSize iconSize = iconAttachment.image.size;
+      iconAttachment.bounds = CGRectMake(
+          0, (switchCell.textLabel.font.capHeight - iconSize.height) / 2,
+          iconSize.width, iconSize.height);
+      NSMutableAttributedString* textAndIcon =
+          [[NSMutableAttributedString alloc]
+              initWithAttributedString:switchCell.textLabel.attributedText];
+      [textAndIcon appendAttributedString:[[NSAttributedString alloc]
+                                              initWithString:@" "]];
+      [textAndIcon appendAttributedString:
+                       [NSAttributedString
+                           attributedStringWithAttachment:iconAttachment]];
+      switchCell.textLabel.attributedText = textAndIcon;
       break;
     }
     case ItemTypeManagedSavePasswords: {
@@ -770,6 +793,37 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     [self.tableView reloadSections:indexSet
                   withRowAnimation:UITableViewRowAnimationAutomatic];
   }
+}
+
++ (UIImage*)newFeatureIcon {
+  UIFontDescriptor* fontDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleCaption1];
+  fontDescriptor = [fontDescriptor
+      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
+  fontDescriptor = [fontDescriptor fontDescriptorByAddingAttributes:@{
+    UIFontDescriptorTraitsAttribute :
+        @{UIFontWeightTrait : [NSNumber numberWithFloat:UIFontWeightHeavy]}
+  }];
+
+  UILabel* label = [[UILabel alloc] init];
+  label.font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
+  label.text = l10n_util::GetNSString(IDS_IOS_NEW_LABEL_FEATURE_BADGE);
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.textColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+
+  UIImageView* image = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(
+                        @"seal.fill",
+                        label.font.pointSize + 2 * kNewFeatureIconPadding)];
+  image.tintColor = [UIColor colorNamed:kBlue600Color];
+  image.translatesAutoresizingMaskIntoConstraints = NO;
+  [image addSubview:label];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [image.centerXAnchor constraintEqualToAnchor:label.centerXAnchor],
+    [image.centerYAnchor constraintEqualToAnchor:label.centerYAnchor]
+  ]];
+  return ImageFromView(image, [UIColor clearColor], UIEdgeInsetsZero);
 }
 
 @end

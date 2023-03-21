@@ -59,8 +59,10 @@ source_set("password_settings_ui") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/util:image_util",
     "//ui/base",
   ]
   public_deps = [ "//ios/chrome/browser/ui/settings:settings_root" ]
