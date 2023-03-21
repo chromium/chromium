@@ -1,0 +1,6 @@
+Test third-party cookie blocking disabled between sites in same First-Party Set
+Test started
+Number of cookies: 0
+Number of cookies: 1
+Cookie not blocked: true
+

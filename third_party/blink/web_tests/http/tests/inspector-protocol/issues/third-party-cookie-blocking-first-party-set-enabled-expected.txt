@@ -1,0 +1,7 @@
+Test third-party cookie blocking enabled between sites in same First-Party Set
+Test started
+Number of cookies: 0
+Number of cookies: 1
+Cookie blocked: true
+Reasons: UserPreferences
+
