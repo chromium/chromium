@@ -2553,6 +2553,46 @@
     You'll still be able to use this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> after that time, but it will no longer get automatic software and security updates
   </message>
 
+  <!-- EOL Incentive Offer Notification Strings -->
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_OFFER" desc="Notification title shown to offer a dollar amount discount on a new chromebook, to incentivize the user to upgrade.">
+    Save &#36;50 or more on a new Chromebook, when you upgrade today
+  </message>
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_OFFER_WITH_WARNING_EXPIRING_SOON" desc="Notification title to inform user that updates end soon on this device, and to show an offer for buying a new Chromebook.">
+    Security updates end soon. Save &#36;50 or more on a new Chromebook.
+  </message>
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_OFFER_WITH_WARNING_EXPIRED" desc="Notification title to inform user that updates have ended on this device, and to show an offer for buying a new Chromebook.">
+    Security updates have ended. Save &#36;50 or more on a new Chromebook.
+  </message>
+
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_OFFER_EXPIRING_SOON" desc="Notification message shown to inform the user that this device will soon no longer receive the latest software updates, and that the user can upgrade to a new chromebook using an offer.">
+    You will stop getting security updates for this Chromebook in <ph name="MONTH_AND_YEAR">$1<ex>June 2023</ex></ph>. Time to upgrade for the latest security and software. Offer terms apply.
+  </message>
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_OFFER_EXPIRED" desc="Notification message shown to inform the user that this device will longer receive the latest software updates, and that the user can upgrade to get updates using an offer.">
+    Your Chromebook is no longer receiving security updates. Time to upgrade for the latest security and software. Offer terms apply.
+  </message>
+
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_OFFER_SHOP_BUTTON" desc="The first button label shown in the end of life offer notification to open a link to shop for chromebooks.">
+    Shop Now
+  </message>
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_OFFER_ABOUT_BUTTON" desc="The second button label shown in the end of life offer notification to learn more about device software updates.">
+    About Updates
+  </message>
+
+  <!-- EOL Incentive No Offer Notification Strings -->
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_NO_OFFER_EXPIRING_SOON" desc="Notification title to inform user that updates end soon and to get a new chromebook.">
+    Security updates end soon. Upgrade to a new Chromebook.
+  </message>
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_NO_OFFER_EXPIRED" desc="Notification title to inform user that updates have ended and to get a new chromebook.">
+    Security updates have ended. Upgrade to a new Chromebook.
+  </message>
+
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_NO_OFFER_EXPIRING_SOON" desc="Notification message shown to inform the user that this device will soon no longer receive the latest software updates, and that the user can upgrade their device to get updates.">
+    You will stop getting security and software updates for this Chromebook in <ph name="MONTH_AND_YEAR">$1<ex>June 2023</ex></ph>. Upgrade your Chromebook for the best experience.
+  </message>
+  <message name="IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_NO_OFFER_EXPIRED" desc="Notification message shown to inform the user that this device is longer receiving the latest software updates, and that the user can upgrade their device to get updates.">
+    Your Chromebook is no longer receiving security and software updates. Upgrade your Chromebook for the best experience.
+  </message>
+
   <!-- TPM Firmware Update Notification Strings -->
   <message name="IDS_TPM_FIRMWARE_UPDATE_NOTIFICATION_TITLE" desc="Notification title shown to inform the user that there is a pending TPM firmware update for the device.">
     Security upgrade available

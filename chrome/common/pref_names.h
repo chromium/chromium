@@ -296,7 +296,6 @@ extern const char kFirstEolWarningDismissed[];
 extern const char kSecondEolWarningDismissed[];
 extern const char kEolApproachingIncentiveNotificationDismissed[];
 extern const char kEolPassedFinalIncentiveDismissed[];
-extern const char kEolIncentiveNotificationSilenced[];
 extern const char kPinUnlockFeatureNotificationShown[];
 extern const char kFingerprintUnlockFeatureNotificationShown[];
 extern const char kPinUnlockAutosubmitEnabled[];

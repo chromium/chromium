@@ -507,8 +507,6 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kEolApproachingIncentiveNotificationDismissed, false);
   registry->RegisterBooleanPref(::prefs::kEolPassedFinalIncentiveDismissed,
                                 false);
-  registry->RegisterBooleanPref(::prefs::kEolIncentiveNotificationSilenced,
-                                false);
 
   registry->RegisterBooleanPref(::prefs::kCastReceiverEnabled, false);
   registry->RegisterBooleanPref(::prefs::kShowArcSettingsOnSessionStart, false);

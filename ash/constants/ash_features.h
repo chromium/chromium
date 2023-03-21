@@ -230,9 +230,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnrollmentNudgingForTesting);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolWarningNotifications);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolIncentive);
-enum class EolIncentiveType { kNoOffer, kOffer };
+enum class EolIncentiveParam { kNoOffer, kOffer, kOfferWithWarning };
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<EolIncentiveType> kEolIncentiveTypeParam;
+extern const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoHapticFeedbackSupport);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoLinuxDmabufV3);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoLinuxDmabufV4);

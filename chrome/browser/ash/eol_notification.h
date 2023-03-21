@@ -73,7 +73,9 @@ class EolNotification final : public message_center::NotificationObserver {
       eol_incentive_util::EolIncentiveType incentive_type);
 
   // Creates the EOL incentive notification.
-  void ShowIncentiveNotification();
+  void ShowIncentiveNotification(
+      base::Time eol_date,
+      eol_incentive_util::EolIncentiveType incentive_type);
 
   // Resets all notification dismissed prefs back to false.
   void ResetDismissedPrefs();

@@ -759,11 +759,12 @@ BASE_FEATURE(kEolWarningNotifications,
 // Enables Device End Of Lifetime incentive notifications.
 BASE_FEATURE(kEolIncentive, "EolIncentive", base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<EolIncentiveType>::Option eol_incentive_options[] = {
-    {EolIncentiveType::kNoOffer, "no_offer"},
-    {EolIncentiveType::kOffer, "offer"}};
-const base::FeatureParam<EolIncentiveType> kEolIncentiveTypeParam{
-    &kEolIncentive, "incentive_type", EolIncentiveType::kNoOffer,
+const base::FeatureParam<EolIncentiveParam>::Option eol_incentive_options[] = {
+    {EolIncentiveParam::kNoOffer, "no_offer"},
+    {EolIncentiveParam::kOffer, "offer"},
+    {EolIncentiveParam::kOfferWithWarning, "offer_with_warning"}};
+const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam{
+    &kEolIncentive, "incentive_type", EolIncentiveParam::kNoOffer,
     &eol_incentive_options};
 
 // Enable or disable support for touchpad with haptic feedback.

@@ -17,6 +17,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/eol_incentive_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -51,7 +52,7 @@ constexpr int kSecondWarningDaysInAdvance = 90;
 
 // The first and second incentive notification button indices.
 constexpr int kButtonClaim = 0;
-constexpr int kButtonSilence = 1;
+constexpr int kButtonAboutUpdates = 1;
 
 // The number of days past the EOL within which the last incentive notification
 // is shown.
@@ -215,16 +216,24 @@ void EolNotification::Click(const absl::optional<int>& button_index,
       dismiss_pref_ == prefs::kEolPassedFinalIncentiveDismissed) {
     switch (*button_index) {
       case kButtonClaim:
-        // TODO (b/271150076): Fetch and open link on button click.
+        // Open link for eol incentive notification.
+        NewWindowDelegate::GetPrimary()->OpenUrl(
+            GURL(features::kEolIncentiveParam.Get() ==
+                         features::EolIncentiveParam::kNoOffer
+                     ? chrome::kEolIncentiveNotificationNoOfferURL
+                     : chrome::kEolIncentiveNotificationOfferURL),
+            NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+            NewWindowDelegate::Disposition::kNewForegroundTab);
         break;
-      case kButtonSilence:
-        // Close and do not show any eol notification again.
-        profile_->GetPrefs()->SetBoolean(
-            prefs::kEolIncentiveNotificationSilenced, true);
-        profile_->GetPrefs()->SetBoolean(prefs::kEolNotificationDismissed,
-                                         true);
+      case kButtonAboutUpdates:
+        // Open link to learn more about updates.
+        NewWindowDelegate::GetPrimary()->OpenUrl(
+            GURL(chrome::kEolNotificationURL),
+            NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+            NewWindowDelegate::Disposition::kNewForegroundTab);
         break;
     }
+    profile_->GetPrefs()->SetBoolean(prefs::kEolNotificationDismissed, true);
   } else {
     switch (*button_index) {
       case BUTTON_MORE_INFO: {
@@ -260,11 +269,6 @@ void EolNotification::MaybeShowEolIncentiveNotification(
   const base::TimeDelta time_to_eol = eol_date - now;
   const int days_to_eol = time_to_eol.InDays();
 
-  if (profile_->GetPrefs()->GetBoolean(
-          prefs::kEolIncentiveNotificationSilenced)) {
-    return;
-  }
-
   switch (incentive_type) {
     case eol_incentive_util::EolIncentiveType::kNone:
     case eol_incentive_util::EolIncentiveType::kEolPassed:
@@ -292,10 +296,12 @@ void EolNotification::MaybeShowEolIncentiveNotification(
     return;
   }
 
-  ShowIncentiveNotification();
+  ShowIncentiveNotification(eol_date, incentive_type);
 }
 
-void EolNotification::ShowIncentiveNotification() {
+void EolNotification::ShowIncentiveNotification(
+    base::Time eol_date,
+    eol_incentive_util::EolIncentiveType incentive_type) {
   message_center::RichNotificationData data;
   ash::SystemNotificationBuilder notification_builder;
 
@@ -313,19 +319,78 @@ void EolNotification::ShowIncentiveNotification() {
   data.image = gfx::Image(gfx::ImageSkiaOperations::CreateSuperimposedImage(
       background, incentive_image));
 
-  // TODO (b/271150076): Add localized string IDS once strings get finalized.
-  data.buttons.emplace_back(u"Claim Offer");
-  data.buttons.emplace_back(u"Don't Show This Again");
-  notification_builder.SetTitle(u"Don't miss out on new features")
-      .SetMessage(
-          u"This device will no longer get automatic software and security "
-          u"updates after Month Year. Update to a newer model to get future "
-          u"updates and get [offer].")
-      .SetCatalogName(NotificationCatalogName::kEOLIncentive);
+  features::EolIncentiveParam incentive_param =
+      ash::features::kEolIncentiveParam.Get();
+
+  switch (incentive_param) {
+    case features::EolIncentiveParam::kNoOffer:
+      data.buttons.emplace_back(GetStringUTF16(IDS_LEARN_MORE));
+
+      if (incentive_type ==
+          eol_incentive_util::EolIncentiveType::kEolApproaching) {
+        notification_builder
+            .SetTitle(GetStringUTF16(
+                IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_NO_OFFER_EXPIRING_SOON))
+            .SetMessageWithArgs(
+                IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_NO_OFFER_EXPIRING_SOON,
+                {TimeFormatMonthAndYearForTimeZone(eol_date,
+                                                   icu::TimeZone::getGMT())});
+      } else {
+        notification_builder
+            .SetTitle(GetStringUTF16(
+                IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_NO_OFFER_EXPIRED))
+            .SetMessage(GetStringUTF16(
+                IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_NO_OFFER_EXPIRED));
+      }
+      break;
+    case features::EolIncentiveParam::kOffer:
+      data.buttons.emplace_back(
+          GetStringUTF16(IDS_EOL_INCENTIVE_NOTIFICATION_OFFER_SHOP_BUTTON));
+      data.buttons.emplace_back(
+          GetStringUTF16(IDS_EOL_INCENTIVE_NOTIFICATION_OFFER_ABOUT_BUTTON));
+      notification_builder.SetTitle(
+          GetStringUTF16(IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_OFFER));
+
+      if (incentive_type ==
+          eol_incentive_util::EolIncentiveType::kEolApproaching) {
+        notification_builder.SetMessageWithArgs(
+            IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_OFFER_EXPIRING_SOON,
+            {TimeFormatMonthAndYearForTimeZone(eol_date,
+                                               icu::TimeZone::getGMT())});
+      } else {
+        notification_builder.SetMessage(GetStringUTF16(
+            IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_OFFER_EXPIRED));
+      }
+      break;
+    case features::EolIncentiveParam::kOfferWithWarning:
+      data.buttons.emplace_back(
+          GetStringUTF16(IDS_EOL_INCENTIVE_NOTIFICATION_OFFER_SHOP_BUTTON));
+      data.buttons.emplace_back(
+          GetStringUTF16(IDS_EOL_INCENTIVE_NOTIFICATION_OFFER_ABOUT_BUTTON));
+
+      if (incentive_type ==
+          eol_incentive_util::EolIncentiveType::kEolApproaching) {
+        notification_builder
+            .SetTitle(GetStringUTF16(
+                IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_OFFER_WITH_WARNING_EXPIRING_SOON))
+            .SetMessageWithArgs(
+                IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_OFFER_EXPIRING_SOON,
+                {TimeFormatMonthAndYearForTimeZone(eol_date,
+                                                   icu::TimeZone::getGMT())});
+      } else {
+        notification_builder
+            .SetTitle(GetStringUTF16(
+                IDS_EOL_INCENTIVE_NOTIFICATION_TITLE_OFFER_WITH_WARNING_EXPIRED))
+            .SetMessage(GetStringUTF16(
+                IDS_EOL_INCENTIVE_NOTIFICATION_MESSAGE_OFFER_EXPIRED));
+      }
+      break;
+  }
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT,
       notification_builder.SetId(kEolNotificationId)
+          .SetCatalogName(NotificationCatalogName::kEOLIncentive)
           .SetOriginUrl(GURL(kEolNotificationId))
           .SetOptionalFields(data)
           .SetDelegate(
@@ -342,8 +407,6 @@ void EolNotification::ResetDismissedPrefs() {
   profile_->GetPrefs()->SetBoolean(
       prefs::kEolApproachingIncentiveNotificationDismissed, false);
   profile_->GetPrefs()->SetBoolean(prefs::kEolPassedFinalIncentiveDismissed,
-                                   false);
-  profile_->GetPrefs()->SetBoolean(prefs::kEolIncentiveNotificationSilenced,
                                    false);
 }
 

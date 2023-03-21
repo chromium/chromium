@@ -381,15 +381,4 @@ TEST_F(EolIncentiveNotificationTest,
       profile()->GetPrefs()->GetBoolean(prefs::kEolNotificationDismissed));
 }
 
-TEST_F(EolIncentiveNotificationTest, TestIncentiveSilenced) {
-  SetCurrentTimeToUtc("1 December 2023");
-  SetEolDateUtc("1 December 2023");
-  profile()->GetPrefs()->SetBoolean(prefs::kEolIncentiveNotificationSilenced,
-                                    true);
-
-  CheckEolInfo();
-  auto notification = tester_->GetNotification("chrome://product_eol");
-  ASSERT_FALSE(notification);
-}
-
 }  // namespace ash

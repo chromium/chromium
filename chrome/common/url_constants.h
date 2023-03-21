@@ -358,6 +358,12 @@ extern const char kEchoLearnMoreURL[];
 // The URL for EOL notification
 extern const char kEolNotificationURL[];
 
+// The URL for the EOL incentive with offer.
+extern const char kEolIncentiveNotificationOfferURL[];
+
+// The URL for the EOL incentive with no offer.
+extern const char kEolIncentiveNotificationNoOfferURL[];
+
 // The URL for Auto Update Policy.
 extern const char kAutoUpdatePolicyURL[];
 

@@ -840,8 +840,6 @@ const char kEolApproachingIncentiveNotificationDismissed[] =
     "approaching_eol_incentive_dismissed";
 const char kEolPassedFinalIncentiveDismissed[] =
     "passed_eol_incentive_dismissed";
-const char kEolIncentiveNotificationSilenced[] =
-    "eol_incentive_dont_show_notification";
 
 // A boolean pref that controls whether the PIN autosubmit feature is enabled.
 // This feature, when enabled, exposes the user's PIN length by showing how many
