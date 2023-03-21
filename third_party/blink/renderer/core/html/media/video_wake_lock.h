@@ -53,7 +53,11 @@ class CORE_EXPORT VideoWakeLock final
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
   void ContextDestroyed() override;
 
+  // Test helper methods.
+  float visibility_threshold_for_tests() const { return visibility_threshold_; }
   bool active_for_tests() const { return active_; }
+  float GetSizeThresholdForTests() const;
+  bool HasStrictWakeLockForTests() const;
 
  private:
   friend class VideoWakeLockTest;
@@ -61,10 +65,11 @@ class CORE_EXPORT VideoWakeLock final
   // PageVisibilityObserver implementation.
   void PageVisibilityChanged() final;
 
-  // Called by the IntersectionObserver instance when the visibility state of
-  // the video element has changed.
+  // Called by the IntersectionObserver instance when the visibility state or
+  // size of the video element on screen has changed.
   void OnVisibilityChanged(
       const HeapVector<Member<IntersectionObserverEntry>>&);
+  void OnSizeChanged(const HeapVector<Member<IntersectionObserverEntry>>&);
 
   // Called when any state is changed. Will update active state and notify the
   // service if needed.
@@ -97,8 +102,12 @@ class CORE_EXPORT VideoWakeLock final
   bool active_ = false;
   mojom::blink::PresentationConnectionState remote_playback_state_ =
       mojom::blink::PresentationConnectionState::CLOSED;
-  Member<IntersectionObserver> intersection_observer_;
+  Member<IntersectionObserver> visibility_observer_;
+  Member<IntersectionObserver> size_observer_;
   bool is_visible_ = false;
+  bool is_big_enough_ = false;
+
+  const float visibility_threshold_;
 };
 
 }  // namespace blink
