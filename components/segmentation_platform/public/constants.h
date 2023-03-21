@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/segmentation_platform/public/proto/output_config.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
@@ -108,12 +109,16 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id);
 // Returns Subsegment key for the given `segmentation_key`.
 std::string GetSubsegmentKey(const std::string& segmentation_key);
 
+// Returns PredictorType for the given `segmentation_key`
+proto::Predictor::PredictorTypeCase GetClassifierType(
+    const std::string& segmentation_key);
+
 // TODO(shaktisahu): Move these to a nicer location.
 
 // Labels for adaptive toolbar model.
-const char kAdaptiveToolbarModelLabelNewTab[] = "newtab";
-const char kAdaptiveToolbarModelLabelShare[] = "share";
-const char kAdaptiveToolbarModelLabelVoice[] = "voice";
+const char kAdaptiveToolbarModelLabelNewTab[] = "NewTab";
+const char kAdaptiveToolbarModelLabelShare[] = "Share";
+const char kAdaptiveToolbarModelLabelVoice[] = "Voice";
 
 // Labels for contextual page actions model.
 const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";

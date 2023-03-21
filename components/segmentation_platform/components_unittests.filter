@@ -30,9 +30,11 @@ ModelProviderFactoryImplTest.*
 OptimizationGuideSegmentationModelProviderTest.*
 PostProcessorTest.*
 PowerUserModelTest.*
+PrefsMigratorTest.*
 QueryTilesModelTest.*
 RequestDispatcherTest.*
 RequestHandlerTest.*
+ResultMigrationUtilsTest.*
 ResultRefreshManagerTest.*
 ResumeHeavyUserModelTest.*
 SearchUserModelTest.*
