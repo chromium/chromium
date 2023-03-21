@@ -12,9 +12,6 @@ const wchar_t kIEFavoritesOrderKey[] =
     L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\MenuOrder\\"
     L"Favorites";
 
-const wchar_t kIEStorage2Key[] =
-    L"Software\\Microsoft\\Internet Explorer\\IntelliForms\\Storage2";
-
 const wchar_t kIESettingsMainKey[] =
     L"Software\\Microsoft\\Internet Explorer\\Main";
 
@@ -32,11 +29,6 @@ namespace importer {
 std::wstring GetIEFavoritesOrderKey() {
   // Return kIEFavoritesOrderKey unless an override has been set for tests.
   return GetPotentiallyOverridenIEKey(kIEFavoritesOrderKey);
-}
-
-std::wstring GetIE7PasswordsKey() {
-  // Return kIEStorage2Key unless an override has been set for tests.
-  return GetPotentiallyOverridenIEKey(kIEStorage2Key);
 }
 
 std::wstring GetIESettingsKey() {
