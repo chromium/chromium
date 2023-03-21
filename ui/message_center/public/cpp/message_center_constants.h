@@ -101,6 +101,9 @@ const int kButtonHorizontalPadding = 16;   // In DIPs.
 const int kButtonIconTopPadding = 11;      // In DIPs.
 const int kButtonIconToTitlePadding = 16;  // In DIPs.
 
+// Max number of lines for progress notification status_view_.
+const int kMaxLinesForStatusView = 3;
+
 // Progress bar.
 const int kProgressBarTopPadding = 16;
 #if BUILDFLAG(IS_APPLE)

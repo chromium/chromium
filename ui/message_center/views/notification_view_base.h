@@ -249,6 +249,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   NotificationInputContainer* inline_reply() { return inline_reply_; }
 
+  views::Label* status_view() { return status_view_; }
   const views::Label* status_view() const { return status_view_; }
   const std::vector<views::View*> item_views() const { return item_views_; }
 

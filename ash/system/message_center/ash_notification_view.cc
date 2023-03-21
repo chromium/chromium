@@ -1292,6 +1292,11 @@ void AshNotificationView::CreateOrUpdateProgressViews(
   // bar. This is the opposite of what is required of the chrome notification.
   CreateOrUpdateProgressStatusView(notification);
   CreateOrUpdateProgressBarView(notification);
+
+  if (status_view()) {
+    status_view()->SetMultiLine(true);
+    status_view()->SetMaxLines(message_center::kMaxLinesForStatusView);
+  }
 }
 
 void AshNotificationView::UpdateControlButtonsVisibility() {
