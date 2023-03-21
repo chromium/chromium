@@ -4,7 +4,7 @@
         var(--color-new-tab-page-history-clusters-module-item-background);
     border-radius: 12px;
     color: var(--color-new-tab-page-primary-foreground);
-    height: 100%;
+    display: inline-block;
     width: 100%;
   }
 
@@ -40,8 +40,8 @@
   :host([large-format]) #image {
     border-radius: 7px;
     height: 152px;
-    margin: 16px 16px;
-    width: 320px;
+    margin: 16px;
+    width: calc(100% - 32px);
   }
 
   :host([medium-format]) #image {
@@ -103,10 +103,12 @@
     display: flex;
     flex-direction: row;
     font-size: 11px;
+    margin-bottom: 24px;
     margin-inline: 16px;
   }
 
   :host([medium-format]) #info-container {
+    margin-bottom: 14px;
     margin-inline-start: 8px;
   }
 

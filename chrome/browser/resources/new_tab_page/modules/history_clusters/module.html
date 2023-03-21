@@ -33,17 +33,33 @@
 
   .main-tile {
     grid-column: 1 / 2;
-    grid-row: 1 / 3
+    grid-row: 1 / 3;
   }
 
   .secondary-tile {
     grid-column: 2 / 3;
-    grid-row: 1 / 2
+    grid-row: 1 / 2;
   }
 
   .related-searches-tile {
     grid-column: 2 / 3;
-    grid-row: 2 / 3
+    grid-row: 2 / 3;
+  }
+
+  @media (max-width: 879px) {
+    .small-tiles,
+    .secondary-tile,
+    .related-searches-tile {
+      display: none;
+    }
+
+    .layout {
+      display: block;
+    }
+
+    .main-tile {
+      min-height: 100%;
+    }
   }
 
   #layout3 .main-tile {
