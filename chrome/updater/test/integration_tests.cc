@@ -877,7 +877,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 #if !defined(COMPONENT_BUILD)
 // TODO(crbug.com/1398845) Enable test once version-skewed updater is available
 // for unbranded Linux.
-#if !(BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING))
+#if !BUILDFLAG(IS_LINUX) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // TODO(crbug.com/1097297) Enable these tests once the `Brand the updater and
 // qualification app ids` change is available on CIPD.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -960,7 +960,7 @@ TEST_F(IntegrationTest, InstallLowerVersion) {
 #endif  // IS_WIN
 }
 
-#endif  // !(BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING))
+#endif  // !BUILDFLAG(IS_LINUX) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif
 #endif
 
