@@ -200,6 +200,8 @@ void ClientSidePhishingModelOptimizationGuide::OnModelAndVisualTfLiteFileLoaded(
           VLOG(0) << "Failed to verify CSD Flatbuffer indices and fields";
         } else {
           if (tflite_valid) {
+            thresholds_.Clear();  // Clear the previous model's thresholds
+                                  // before adding on the new ones
             for (const flat::TfLiteModelMetadata_::Threshold* flat_threshold :
                  *(flatbuffer_model->tflite_metadata()->thresholds())) {
               TfLiteModelMetadata::Threshold* threshold = thresholds_.Add();

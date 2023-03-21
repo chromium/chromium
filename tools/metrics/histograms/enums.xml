@@ -91607,6 +91607,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="BACKUP_NETWORK_SUCCESS"/>
 </enum>
 
+<enum name="SBClientDetectionClassifyThresholdsResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model size was mismatched"/>
+  <int value="2" label="Model label was not found"/>
+</enum>
+
 <enum name="SBClientDetectionPreClassificationCheckFail">
   <int value="0" label="PROXY_FETCH"/>
   <int value="1" label="PRIVATE_IP"/>

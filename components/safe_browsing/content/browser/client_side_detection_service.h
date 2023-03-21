@@ -50,6 +50,15 @@ namespace safe_browsing {
 class ClientPhishingRequest;
 class ClientSideDetectionHost;
 
+// Enum used to keep stats on classification using threshold comparison.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SBClientDetectionClassifyThresholdsResult {
+  kSuccess = 0,
+  kModelSizeMismatch = 1,
+  kMaxValue = kModelSizeMismatch,
+};
+
 // Main service which pushes models to the renderers, responds to classification
 // requests. This owns two ModelLoader objects.
 class ClientSideDetectionService
@@ -152,6 +161,11 @@ class ClientSideDetectionService
   // override it.
   virtual const base::File& GetVisualTfLiteModel();
 
+  // Returns the visual TFLite model thresholds from the model class
+  virtual const google::protobuf::RepeatedPtrField<
+      TfLiteModelMetadata::Threshold>&
+  GetVisualTfLiteModelThresholds();
+
   // Compare the scores from classification to TFLite model thresholds
   void ClassifyPhishingThroughThresholds(ClientPhishingRequest* verdict);
 
@@ -240,11 +254,6 @@ class ClientSideDetectionService
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
-
-  // Returns the visual TFLite model thresholds from the model class
-  virtual const google::protobuf::RepeatedPtrField<
-      TfLiteModelMetadata::Threshold>&
-  GetVisualTfLiteModelThresholds();
 
   // Whether the service is running or not.  When the service is not running,
   // it won't download the model nor report detected phishing URLs.
