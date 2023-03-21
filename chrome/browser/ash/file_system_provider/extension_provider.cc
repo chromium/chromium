@@ -38,6 +38,26 @@ GetServiceWorkerLifetimeManager(Profile* profile) {
       profile);
 }
 
+IconSet DefaultIconSet(const extensions::ExtensionId& extension_id) {
+  IconSet icon_set;
+  icon_set.SetIcon(
+      IconSet::IconSize::SIZE_16x16,
+      GURL(std::string("chrome://extension-icon/") + extension_id + "/16/1"));
+  icon_set.SetIcon(
+      IconSet::IconSize::SIZE_32x32,
+      GURL(std::string("chrome://extension-icon/") + extension_id + "/32/1"));
+  return icon_set;
+}
+
+IconSet AppServiceIconSet(const extensions::ExtensionId& extension_id) {
+  IconSet icon_set;
+  icon_set.SetIcon(IconSet::IconSize::SIZE_16x16,
+                   apps::AppIconSource::GetIconURL(extension_id, 16));
+  icon_set.SetIcon(IconSet::IconSize::SIZE_32x32,
+                   apps::AppIconSource::GetIconURL(extension_id, 32));
+  return icon_set;
+}
+
 }  // namespace
 
 // static
@@ -119,7 +139,8 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
                                      std::string name)
     : provider_id_(std::move(id)),
       capabilities_(std::move(capabilities)),
-      name_(std::move(name)) {
+      name_(std::move(name)),
+      icon_set_(DefaultIconSet(provider_id_.GetExtensionId())) {
   request_dispatcher_ = std::make_unique<RequestDispatcherImpl>(
       provider_id_.GetExtensionId(), extensions::EventRouter::Get(profile),
       base::BindRepeating(&ExtensionProvider::OnLacrosOperationForwarded,
@@ -144,22 +165,9 @@ void ExtensionProvider::ObserveAppServiceForIcons(Profile* profile) {
 
     if (AppServiceProxy->AppRegistryCache().GetAppType(
             provider_id_.GetExtensionId()) != apps::AppType::kUnknown) {
-      icon_set_.SetIcon(
-          IconSet::IconSize::SIZE_16x16,
-          apps::AppIconSource::GetIconURL(provider_id_.GetExtensionId(), 16));
-      icon_set_.SetIcon(
-          IconSet::IconSize::SIZE_32x32,
-          apps::AppIconSource::GetIconURL(provider_id_.GetExtensionId(), 32));
-      return;
+      icon_set_ = AppServiceIconSet(provider_id_.GetExtensionId());
     }
   }
-
-  icon_set_.SetIcon(IconSet::IconSize::SIZE_16x16,
-                    GURL(std::string("chrome://extension-icon/") +
-                         provider_id_.GetExtensionId() + "/16/1"));
-  icon_set_.SetIcon(IconSet::IconSize::SIZE_32x32,
-                    GURL(std::string("chrome://extension-icon/") +
-                         provider_id_.GetExtensionId() + "/32/1"));
 }
 
 void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
@@ -167,13 +175,7 @@ void ExtensionProvider::OnAppUpdate(const apps::AppUpdate& update) {
       !update.IconKeyChanged()) {
     return;
   }
-
-  icon_set_.SetIcon(
-      IconSet::IconSize::SIZE_16x16,
-      apps::AppIconSource::GetIconURL(provider_id_.GetExtensionId(), 16));
-  icon_set_.SetIcon(
-      IconSet::IconSize::SIZE_32x32,
-      apps::AppIconSource::GetIconURL(provider_id_.GetExtensionId(), 32));
+  icon_set_ = AppServiceIconSet(provider_id_.GetExtensionId());
 }
 
 void ExtensionProvider::OnAppRegistryCacheWillBeDestroyed(
