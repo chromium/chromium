@@ -119,19 +119,10 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
   base::WeakPtrFactory<SegmentationPlatformTest> weak_ptr_factory_{this};
 };
 
-IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, PRE_RunDefaultModel) {
-  WaitForPlatformInit();
-  // The default model is executed and result stored in prefs.
-  WaitForPrefUpdate();
-
-  // The result from platform is not available since it only returns result from
-  // a previous session.
-  ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
-                               /*result_expected=*/false);
-}
-
 IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, RunDefaultModel) {
   WaitForPlatformInit();
+  WaitForPrefUpdate();
+
   // Result is available from previous session's selection.
   ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
                                /*result_expected=*/true);

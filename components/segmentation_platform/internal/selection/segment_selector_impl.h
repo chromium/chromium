@@ -107,6 +107,8 @@ class SegmentSelectorImpl : public SegmentSelector {
       SegmentId current_segment_id,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
+  void RecordFieldTrials() const;
+
   // Loops through all segments, performs discrete mapping, honors finch
   // supplied tie-breakers, TTL, inertia etc, and finds the highest rank.
   // Ignores the segments that have no results.
@@ -144,8 +146,12 @@ class SegmentSelectorImpl : public SegmentSelector {
   const PlatformOptions platform_options_;
 
   // Segment selection result is read from prefs on init and used for serving
-  // the clients in the current session.
-  SegmentSelectionResult selected_segment_last_session_;
+  // the clients in the current session. The selection could be updated if it
+  // was unused by the client and a result refresh was triggered. If used by
+  // client, then the result is not updated and effective onnly in the next
+  // session.
+  SegmentSelectionResult selected_segment_;
+  bool used_result_in_current_session_ = false;
 
   // Pointer to the training data collector.
   raw_ptr<TrainingDataCollector, DanglingUntriaged> training_data_collector_{};

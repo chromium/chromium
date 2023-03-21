@@ -61,6 +61,15 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
   }
 }
 
+SegmentSelectionResult MakeResultFromSelection(
+    const SelectedSegment& selection) {
+  SegmentSelectionResult result;
+  result.segment = selection.segment_id;
+  result.is_ready = true;
+  result.rank = selection.rank;
+  return result;
+}
+
 }  // namespace
 
 using proto::SegmentId_Name;
@@ -104,28 +113,18 @@ SegmentSelectorImpl::SegmentSelectorImpl(
   // Read selected segment from prefs.
   const auto& selected_segment =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
-  const std::string& trial_name = config_->GetSegmentationFilterName();
-  std::string group_name;
   if (selected_segment.has_value()) {
-    selected_segment_last_session_.segment = selected_segment->segment_id;
-    selected_segment_last_session_.is_ready = true;
-    selected_segment_last_session_.rank = selected_segment->rank;
+    selected_segment_ = MakeResultFromSelection(*selected_segment);
     stats::RecordSegmentSelectionFailure(
         *config_,
         stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
 
-    group_name = config_->GetSegmentUmaName(selected_segment->segment_id);
   } else {
     stats::RecordSegmentSelectionFailure(
         *config_, stats::SegmentationSelectionFailureReason::
                       kInvalidSelectionResultInPrefs);
-    group_name = "Unselected";
   }
-
-  // Can be nullptr in tests.
-  if (!config_->on_demand_execution && field_trial_register_) {
-    field_trial_register_->RegisterFieldTrial(trial_name, group_name);
-  }
+  RecordFieldTrials();
 }
 
 SegmentSelectorImpl::~SegmentSelectorImpl() = default;
@@ -148,7 +147,7 @@ void SegmentSelectorImpl::OnPlatformInitialized(
   // segments.
   // TODO(ssid): Store the scores in prefs so that this can be recorded earlier
   // in startup.
-  if (selected_segment_last_session_.is_ready) {
+  if (selected_segment_.is_ready) {
     for (const auto& segment_id : config_->segments) {
       experimental_group_recorder_.emplace_back(
           std::make_unique<ExperimentalGroupRecorder>(
@@ -161,12 +160,13 @@ void SegmentSelectorImpl::OnPlatformInitialized(
 void SegmentSelectorImpl::GetSelectedSegment(
     SegmentSelectionCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), selected_segment_last_session_));
+      FROM_HERE, base::BindOnce(std::move(callback), selected_segment_));
+  used_result_in_current_session_ = true;
 }
 
 SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
-  return selected_segment_last_session_;
+  used_result_in_current_session_ = true;
+  return selected_segment_;
 }
 
 void SegmentSelectorImpl::GetSelectedSegmentOnDemand(
@@ -355,12 +355,32 @@ void SegmentSelectorImpl::UpdateSelectedSegment(SegmentId new_selection,
   result_prefs_->SaveSegmentationResultToPref(config_->segmentation_key,
                                               updated_selection);
 
+  if (!used_result_in_current_session_) {
+    selected_segment_ = MakeResultFromSelection(*updated_selection);
+    RecordFieldTrials();
+  }
+
   // TODO(ssid): Migrate to pref writer when implemented.
   for (const auto& segment : config_->segments) {
     training_data_collector_->OnDecisionTime(
         segment.first, nullptr,
         proto::TrainingOutputs::TriggerConfig::PERIODIC);
   }
+}
+
+void SegmentSelectorImpl::RecordFieldTrials() const {
+  // Register can be nullptr in tests.
+  if (config_->on_demand_execution || !field_trial_register_) {
+    return;
+  }
+  const std::string& trial_name = config_->GetSegmentationFilterName();
+  std::string group_name;
+  if (selected_segment_.is_ready) {
+    group_name = config_->GetSegmentUmaName(*selected_segment_.segment);
+  } else {
+    group_name = "Unselected";
+  }
+  field_trial_register_->RegisterFieldTrial(trial_name, group_name);
 }
 
 }  // namespace segmentation_platform
