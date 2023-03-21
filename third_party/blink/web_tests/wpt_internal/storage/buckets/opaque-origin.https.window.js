@@ -1,4 +1,5 @@
 // META: title=Storage Buckets API: Interface is not exposed in opaque origins.
+// META: script=resources/util.js
 // META: global=window
 
 const kSandboxWindowUrl = 'resources/opaque-origin-sandbox.html';
@@ -38,20 +39,20 @@ async function verify_results_from_sandboxed_child_window(test) {
 }
 
 promise_test(async testCase => {
+  prepareForBucketTest(testCase);
   add_iframe(testCase, kSandboxWindowUrl, /*sandbox=*/ 'allow-scripts');
   await verify_results_from_sandboxed_child_window(testCase);
 }, 'StorageBucketManager methods must reject in a sandboxed iframe.');
 
-promise_test(
-  async testCase => {
-    const child_window_url = kSandboxWindowUrl +
-        '?pipe=header(Content-Security-Policy, sandbox allow-scripts)';
+promise_test(async testCase => {
+  prepareForBucketTest(testCase);
+  const child_window_url = kSandboxWindowUrl +
+      '?pipe=header(Content-Security-Policy, sandbox allow-scripts)';
 
-    const child_window = window.open(child_window_url);
-    testCase.add_cleanup(() => {
-      child_window.close();
-    });
+  const child_window = window.open(child_window_url);
+  testCase.add_cleanup(() => {
+    child_window.close();
+  });
 
-    await verify_results_from_sandboxed_child_window(testCase);
-  },
-  'StorageBucketManager methods must reject in a sandboxed opened window.');
+  await verify_results_from_sandboxed_child_window(testCase);
+}, 'StorageBucketManager methods must reject in a sandboxed opened window.');

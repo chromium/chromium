@@ -1,4 +1,5 @@
 // META: title=Buckets API: Basic tests for bucket names.
+// META: script=resources/util.js
 // META: global=window,worker
 
 const kGoodBucketNameTests = [
@@ -28,13 +29,11 @@ kGoodBucketNameTests.forEach(test_data => {
   const test_description = test_data[1];
 
   promise_test(async testCase => {
+    await prepareForBucketTest(testCase);
     await navigator.storageBuckets.open(bucket_name);
-    testCase.add_cleanup(async () => {
-      await navigator.storageBuckets.delete(bucket_name);
-    });
 
     const buckets = await navigator.storageBuckets.keys();
-    assert_equals(buckets.join(), bucket_name);
+    assert_array_equals(buckets, [bucket_name]);
   }, `open() allows bucket names ${test_description}`);
 });
 
@@ -44,7 +43,8 @@ kBadBucketNameTests.forEach(test_data => {
   const test_description = test_data[1];
 
   promise_test(async testCase => {
-    await promise_rejects_js(
+    await prepareForBucketTest(testCase);
+    return promise_rejects_js(
         testCase, TypeError,
         navigator.storageBuckets.open(bucket_name));
   }, `open() throws an error if bucket names ${test_description}`);
@@ -56,6 +56,7 @@ kGoodBucketNameTests.forEach(test_data => {
   const test_description = test_data[1];
 
   promise_test(async testCase => {
+    await prepareForBucketTest(testCase);
     await navigator.storageBuckets.open(bucket_name);
     let buckets = await navigator.storageBuckets.keys();
     assert_equals(buckets.length, 1);
@@ -73,19 +74,19 @@ kBadBucketNameTests.forEach(test_data => {
   const test_description = test_data[1];
 
   promise_test(async testCase => {
-    await promise_rejects_js(
+    await prepareForBucketTest(testCase);
+    return promise_rejects_js(
         testCase, TypeError,
         navigator.storageBuckets.delete(bucket_name));
   }, `delete() throws an error if bucket names ${test_description}`);
 });
 
 promise_test(async testCase => {
+  await prepareForBucketTest(testCase);
+
   await navigator.storageBuckets.open('bucket_name');
   await navigator.storageBuckets.open('bucket_name');
-  testCase.add_cleanup(async () => {
-    await navigator.storageBuckets.delete('bucket_name');
-  });
 
   const buckets = await navigator.storageBuckets.keys();
-  assert_equals(buckets.join(), 'bucket_name');
+  assert_array_equals(buckets, ['bucket_name']);
 }, 'open() does not store duplicate bucket names');

@@ -14,7 +14,7 @@
   }
 
   try {
-    navigator.storageBuckets.open('bucket')
+    navigator.storageBuckets.open('opaque-origin-bucket')
       .then(() => {
         post_message('navigator.storageBuckets.open(): FULFILLED');
       }).catch(error => {
@@ -38,7 +38,7 @@
   }
 
   try {
-    navigator.storageBuckets.delete('bucket')
+    navigator.storageBuckets.delete('opaque-origin-bucket')
       .then(() => {
         post_message('navigator.storageBuckets.delete(): FULFILLED');
       }).catch(error => {

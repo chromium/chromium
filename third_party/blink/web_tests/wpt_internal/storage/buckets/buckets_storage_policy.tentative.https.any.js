@@ -1,4 +1,5 @@
 // META: title=Buckets API: Tests for bucket storage policies.
+// META: script=resources/util.js
 // META: global=window,worker
 
 'use strict';
@@ -15,12 +16,7 @@ async function testQuota(storageKeyQuota, quota, name) {
 }
 
 promise_test(async testCase => {
-  testCase.add_cleanup(async () => {
-    const bucketNames = await navigator.storageBuckets.keys();
-    for (const bucketName of bucketNames) {
-      await navigator.storageBuckets.delete(bucketName);
-    }
-  });
+  await prepareForBucketTest(testCase);
 
   const storageKeyQuota = (await navigator.storage.estimate()).quota;
 
