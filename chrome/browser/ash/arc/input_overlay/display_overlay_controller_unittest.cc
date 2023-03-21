@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/lottie/resource.h"
 
 namespace arc::input_overlay {
 
@@ -38,6 +39,10 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
 
  private:
   void SetUp() override {
+    ui::ResourceBundle::SetLottieParsingFunctions(
+        &lottie::ParseLottieAsStillImage,
+        &lottie::ParseLottieAsThemedStillImage);
+
     exo::test::ExoTestBase::SetUp();
     arc_test_window_ = std::make_unique<test::ArcTestWindow>(
         exo_test_helper(), ash::Shell::GetPrimaryRootWindow(),

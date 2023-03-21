@@ -7,6 +7,7 @@
 #include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/views_utils.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
@@ -64,9 +65,6 @@ constexpr int kBorderRowPortrait2 = 12;
 constexpr int kBorderRowPortrait3 = 24;
 constexpr int kBorderRowPortrait4 = 28;
 constexpr int kBorderSidesPortrait = 32;
-
-// Banner size.
-constexpr int kBannerHeightPortrait = 125;
 
 // About focus ring.
 // Gap between focus ring outer edge to label.
@@ -141,33 +139,23 @@ void EducationalView::Init(const gfx::Size& parent_size) {
   SetBackground(views::CreateThemedRoundedRectBackground(
       ash::kColorAshDialogBackgroundColor, kDialogCornerRadius));
 
+  bool is_dark = ash::DarkLightModeController::Get()->IsDarkModeEnabled();
   const int parent_width = parent_size.width();
   {
     // UI's banner.
-    const gfx::ImageSkia* skia_banner =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IsDarkModeEnabled()
-                ? IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK
-                : IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION);
-    CHECK(skia_banner);
+    auto banner = std::make_unique<views::ImageView>();
+    banner->SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+        is_dark ? IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON
+                : IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON));
 
-    // Resize to a smaller banner iff in portrait mode.
-    gfx::ImageSkia resized_banner;
     if (portrait_mode_) {
-      // TODO(djacobo): Confirm scale factor, for now 70% looks fine.
-      resized_banner = gfx::ImageSkiaOperations::CreateResizedImage(
-          *skia_banner, skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(GetDialogWidth(parent_width) * 0.7,
-                    kBannerHeightPortrait * 0.7));
+      // Resize the banner image size proportionally.
+      auto size = banner->CalculatePreferredSize();
+      int width =
+          GetDialogWidth(parent_width) - GetBorderSides(portrait_mode_) * 2;
+      float ratio = 1.0 * width / size.width();
+      banner->SetImageSize(gfx::Size(width, size.height() * ratio));
     }
-    auto banner =
-        std::make_unique<views::ImageView>(ui::ImageModel::FromImageSkia(
-            portrait_mode_ ? resized_banner : *skia_banner));
-    banner->SetProperty(views::kMarginsKey,
-                        gfx::Insets::TLBR(GetBorderRow4(portrait_mode_),
-                                          GetBorderRow4(portrait_mode_),
-                                          GetBorderRow1(portrait_mode_),
-                                          GetBorderRow4(portrait_mode_)));
     AddChildView(std::move(banner));
   }
   {
@@ -183,9 +171,8 @@ void EducationalView::Init(const gfx::Size& parent_size) {
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA),
             /*view_defining_max_width=*/nullptr,
             /*enabled_color_type=*/
-            ash::features::IsDarkLightModeEnabled()
-                ? cros_tokens::kTextColorPrimary
-                : cros_tokens::kTextColorPrimaryLight,
+            is_dark ? cros_tokens::kTextColorPrimary
+                    : cros_tokens::kTextColorPrimaryLight,
             /*font_list=*/
             gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL,
@@ -197,9 +184,8 @@ void EducationalView::Init(const gfx::Size& parent_size) {
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
             /*view_defining_max_width=*/nullptr,
             /*enabled_color_type=*/
-            ash::features::IsDarkLightModeEnabled()
-                ? cros_tokens::kColorSelection
-                : cros_tokens::kColorSelectionLight,
+            is_dark ? cros_tokens::kColorSelection
+                    : cros_tokens::kColorSelectionLight,
             /*font_list=*/
             gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
@@ -226,9 +212,8 @@ void EducationalView::Init(const gfx::Size& parent_size) {
                 IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION_ALPHA),
             /*view_defining_max_width=*/nullptr,
             /*enabled_color_type=*/
-            ash::features::IsDarkLightModeEnabled()
-                ? cros_tokens::kTextColorPrimary
-                : cros_tokens::kTextColorPrimaryLight,
+            is_dark ? cros_tokens::kTextColorPrimary
+                    : cros_tokens::kTextColorPrimaryLight,
             /*font_list=*/
             gfx::FontList({ash::login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kDescriptionFontSize,
