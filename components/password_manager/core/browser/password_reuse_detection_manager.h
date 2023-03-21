@@ -24,6 +24,11 @@ namespace password_manager {
 
 class PasswordManagerClient;
 
+// TODO(crbug.com/1322599): The identical files of this class reside in
+// components/safe_browsing/core/browser/password_protection/. This file and its
+// .cc file will be removed from the password manager directory in a follow-up
+// CL.
+
 // Class for managing password reuse detection. Now it receives keystrokes and
 // does nothing with them. TODO(crbug.com/657041): write other features of this
 // class when they are implemented. This class is one per-tab.

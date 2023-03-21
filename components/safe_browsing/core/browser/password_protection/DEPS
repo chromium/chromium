@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/autofill/core/browser/logging",
   "+components/password_manager/core/browser/password_reuse_detector.h",
+  "+components/password_manager/core/browser",
   "+components/url_formatter",
   "+components/signin/public/identity_manager",
+  "+ui/events/keycodes/keyboard_codes_posix.h",
   "+ui/gfx/geometry",
 ]
