@@ -366,7 +366,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="BackForwardCache.PageWithForm.RestoreResult"
-    enum="BackForwardCacheHistoryNavigationOutcome" expires_after="2023-06-30">
+    enum="BackForwardCacheHistoryNavigationOutcome" expires_after="2023-09-17">
   <owner>wenyufu@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -383,7 +383,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="BackForwardCache.PageWithForm.Storable"
-    enum="BackForwardCachePageWithFormStorable" expires_after="2023-06-30">
+    enum="BackForwardCachePageWithFormStorable" expires_after="2023-09-17">
   <owner>wenyufu@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -691,7 +691,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.Guest.IsHTTPOrHTTPS"
-    enum="BooleanHttpBasedOrOtherScheme" expires_after="2023-07-16">
+    enum="BooleanHttpBasedOrOtherScheme" expires_after="2023-09-17">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -704,7 +704,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.Guest.IsMainFrame" enum="BooleanMainFrame"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -750,7 +750,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.IsGuest" enum="NavigationIsGuest"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -866,7 +866,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrame.MaxFrameCount" units="frames"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -1046,7 +1046,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadBrowserToRendererIpcTime" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -1056,7 +1056,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadLegacyPostTaskTime" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>

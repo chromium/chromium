@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"
-    enum="TrackedPreference" expires_after="2023-05-14">
+    enum="TrackedPreference" expires_after="2023-09-17">
   <owner>proberge@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>

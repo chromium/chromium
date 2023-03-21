@@ -1619,7 +1619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioSystem.GetDeviceDescription.Result"
-    enum="BooleanSuccess" expires_after="2023-07-16">
+    enum="BooleanSuccess" expires_after="2023-09-17">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>
@@ -1718,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ConditionalFocus.Decision"
-    enum="ConditionalFocusDecision" expires_after="2023-07-18">
+    enum="ConditionalFocusDecision" expires_after="2023-09-17">
   <owner>eladalon@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -2541,7 +2541,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.Widevine.HardwareSecure.Support"
-    enum="BooleanSupported" expires_after="2023-09-10">
+    enum="BooleanSupported" expires_after="2023-09-17">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3315,7 +3315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Latency" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3328,7 +3328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevices.GetDisplayMedia.Result"
-    enum="UserMediaRequestResult" expires_after="2023-07-16">
+    enum="UserMediaRequestResult" expires_after="2023-09-17">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
@@ -3495,7 +3495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundationRenderer.PlaybackError" enum="Hresult"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -3550,7 +3550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaStreamManager.DisplayVideoDeviceUpdate"
-    enum="MediaStreamRequestResult2" expires_after="2023-07-16">
+    enum="MediaStreamRequestResult2" expires_after="2023-09-17">
   <owner>eladalon@chromium.org</owner>
   <owner>tovep@chromium.org</owner>
   <summary>
@@ -5292,7 +5292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartErrorCode" enum="VideoCaptureError"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>toprice@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
   <summary>
@@ -6402,7 +6402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.PresentationRequest.AvailabilityUrlType"
-    enum="PresentationUrlType" expires_after="2023-07-18">
+    enum="PresentationUrlType" expires_after="2023-09-17">
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>

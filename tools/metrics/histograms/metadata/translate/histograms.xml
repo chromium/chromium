@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.PageNotIn"
-    enum="LocaleCodeISO639" expires_after="2023-06-04">
+    enum="LocaleCodeISO639" expires_after="2023-09-17">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.TFLiteModelEvaluationDuration"
-    units="ms" expires_after="2023-07-16">
+    units="ms" expires_after="2023-09-17">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>

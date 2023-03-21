@@ -854,7 +854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.PersistentProto.ReadStatus"
-    enum="PersistentProtoReadStatus" expires_after="2023-07-16">
+    enum="PersistentProtoReadStatus" expires_after="2023-09-17">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -867,7 +867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.PersistentProto.WriteStatus"
-    enum="PersistentProtoWriteStatus" expires_after="2023-07-16">
+    enum="PersistentProtoWriteStatus" expires_after="2023-09-17">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>

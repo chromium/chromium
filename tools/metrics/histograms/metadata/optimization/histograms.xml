@@ -658,7 +658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentAnnotations.EntityCollection_50"
-    enum="OptimizationGuidePageEntityCollection" expires_after="2023-07-16">
+    enum="OptimizationGuidePageEntityCollection" expires_after="2023-09-17">
   <owner>tbansal@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

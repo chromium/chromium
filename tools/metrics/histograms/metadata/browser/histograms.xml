@@ -921,7 +921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationTime.Online" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

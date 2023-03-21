@@ -1630,7 +1630,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.UnhandledExceptionCountInMainThread"
-    units="BooleanOccurred" expires_after="2023-07-09">
+    units="BooleanOccurred" expires_after="2023-09-17">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
@@ -1645,7 +1645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.UnhandledExceptionCountInWorker" units="BooleanOccurred"
-    expires_after="2023-07-09">
+    expires_after="2023-09-17">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>

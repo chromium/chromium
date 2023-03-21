@@ -662,7 +662,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.BetterAuth.CardUnmaskDuration.Fido" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-09-17">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
@@ -4492,7 +4492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UnmaskPrompt.GetRealPanDuration" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-09-17">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <summary>

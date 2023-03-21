@@ -1437,7 +1437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ErrorMessageDismissalReason"
-    enum="MessageDismissReason" expires_after="2023-07-02">
+    enum="MessageDismissReason" expires_after="2023-09-17">
   <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -1449,7 +1449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ErrorMessageDisplayReason"
-    enum="PasswordStoreBackendErrorType" expires_after="2023-07-02">
+    enum="PasswordStoreBackendErrorType" expires_after="2023-09-17">
   <owner>izuzic@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -1515,7 +1515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FillingSuccessIOS" enum="BooleanSuccess"
-    expires_after="2023-07-09">
+    expires_after="2023-09-17">
   <owner>theocristea@google.com</owner>
   <owner>kazinova@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
@@ -1536,7 +1536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FirstRendererFillingResult"
-    enum="PasswordManagerFirstRendererFillingResult" expires_after="2023-05-07">
+    enum="PasswordManagerFirstRendererFillingResult" expires_after="2023-09-17">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2105,7 +2105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.MigratedSettingsUPMAndroid"
-    enum="BooleanEnabled" expires_after="2023-07-16">
+    enum="BooleanEnabled" expires_after="2023-09-17">
   <owner>ioanap@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -3346,7 +3346,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.SyncControllerDelegateNotifiesCredentialManager.Success"
-    enum="Boolean" expires_after="2023-07-16">
+    enum="Boolean" expires_after="2023-09-17">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -3539,7 +3539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UnenrolledFromUPMDueToErrors" enum="Boolean"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
@@ -3587,7 +3587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UnifiedPasswordManager.WasMigrationDone"
-    enum="BooleanSuccess" expires_after="2023-07-16">
+    enum="BooleanSuccess" expires_after="2023-09-17">
   <owner>vsemeniuk@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>

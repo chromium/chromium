@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
-    expires_after="2023-07-09">
+    expires_after="2023-09-17">
   <owner>justincohen@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad"
-    enum="CartDiscountConsentStatus" expires_after="2023-07-16">
+    enum="CartDiscountConsentStatus" expires_after="2023-09-17">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -1102,7 +1102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Lens.UploadDialog.DialogError"
-    enum="NewTabPageLensUploadDialogErrors" expires_after="2023-06-30">
+    enum="NewTabPageLensUploadDialogErrors" expires_after="2023-09-17">
   <owner>nguyenbryan@google.com</owner>
   <owner>yowakita@google.com</owner>
   <owner>bbonnet@google.com</owner>

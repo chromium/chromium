@@ -1363,7 +1363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Modemfwd.CheckForWedgedModemResult"
-    enum="ModemfwdCheckForWedgedModemResult" expires_after="2023-06-18">
+    enum="ModemfwdCheckForWedgedModemResult" expires_after="2023-09-17">
   <owner>andrewlassalle@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>

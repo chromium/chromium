@@ -289,7 +289,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Camera.AutoFraming.EnabledCount" units="times"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>kamesan@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -309,7 +309,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Camera.AutoFraming.Error" enum="AutoFramingError"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>kamesan@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -534,7 +534,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Camera.HDRnet.MaxOutputBuffersRendered"
-    units="buffers" expires_after="2023-07-16">
+    units="buffers" expires_after="2023-09-17">
   <owner>jcliang@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
@@ -1473,7 +1473,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.Intents.IntentPickerAction"
-    enum="IntentPickerDialogAction" expires_after="2023-09-10">
+    enum="IntentPickerDialogAction" expires_after="2023-09-17">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>

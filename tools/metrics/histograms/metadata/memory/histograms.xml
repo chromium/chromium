@@ -424,7 +424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Browser.SharedMemoryFootprint" units="MB"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>erikchen@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the browser process.
@@ -1218,7 +1218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Extension.PrivateMemoryFootprint" units="MB"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>erikchen@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -1407,7 +1407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.Count" units="low-memory kills"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
   <summary>
@@ -1562,7 +1562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.NetworkService.SharedMemoryFootprint" units="MiB"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -2218,7 +2218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ProcessCount" units="processes"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>creis@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <summary>
@@ -2332,7 +2332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count.All" units="processes"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -2465,7 +2465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.System.MemAvailableMB" units="MB"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>andreaorru@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>
@@ -2477,7 +2477,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.System.MemUsedMB" units="MB" expires_after="2023-07-16">
+<histogram name="Memory.System.MemUsedMB" units="MB" expires_after="2023-09-17">
   <owner>andreaorru@chromium.org</owner>
   <owner>hidehiko@chromium.org</owner>
   <summary>

@@ -2043,7 +2043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cast.Sender.RemotePlayback.InitiationLocation"
-    enum="RemotePlaybackInitiationLocation" expires_after="2023-07-16">
+    enum="RemotePlaybackInitiationLocation" expires_after="2023-09-17">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5973,7 +5973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Feedback.ChromeOSApp.PostSubmitAction"
-    enum="FeedbackAppPostSubmitAction" expires_after="2023-07-15">
+    enum="FeedbackAppPostSubmitAction" expires_after="2023-09-17">
   <owner>longbowei@google.com</owner>
   <owner>xiangdongkong@google.com</owner>
   <owner>cros-feedback-app@google.com</owner>
@@ -6234,7 +6234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.GoogleAppsInteraction"
-    enum="NuxGoogleAppsInteractions" expires_after="2023-07-16">
+    enum="NuxGoogleAppsInteractions" expires_after="2023-09-17">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -6248,7 +6248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.GoogleAppsSelection"
-    enum="NuxGoogleAppsSelections" expires_after="2023-07-16">
+    enum="NuxGoogleAppsSelections" expires_after="2023-09-17">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -6312,7 +6312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.SignInInterstitialInteraction"
-    enum="NuxSignInInterstitialInteractions" expires_after="2023-07-16">
+    enum="NuxSignInInterstitialInteractions" expires_after="2023-09-17">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -6325,7 +6325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.Sentinel.Created" enum="FirstRunSentinelResult"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>Result of sentinel file has been written.</summary>
@@ -6350,7 +6350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.Stage" enum="FirstRunStageResult"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>tinazwang@chromium.org</owner>
   <owner>bling-get-started@google.com</owner>
   <summary>
@@ -6618,7 +6618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.UnknownGamepadConnected" enum="GamepadSource"
-    expires_after="2023-06-04">
+    expires_after="2023-09-17">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -7785,7 +7785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LoadingPredictor.PreconnectHitsPercentage" units="%"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -7819,7 +7819,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="LoadingPredictor.PreconnectLearningRecall"
-    units="%" expires_after="2023-07-16">
+    units="%" expires_after="2023-09-17">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
   <summary>
@@ -8246,7 +8246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mojo.Channel.WriteQueuePendingMessages" units="count"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>amistry@chromium.org</owner>
   <owner>bgeffon@chromium.org</owner>
   <owner>rockot@google.com</owner>
@@ -9092,7 +9092,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.BackendUsage" enum="LinuxPasswordStoreUsage"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>cfroussios@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -12789,7 +12789,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.ChromeLocalesSupport"
-    units="locales" expires_after="2023-07-16">
+    units="locales" expires_after="2023-09-17">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -14170,7 +14170,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UserImage.Changed2" enum="ChromeOSUserImageId2"
-    expires_after="2023-07-14">
+    expires_after="2023-09-17">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -14597,7 +14597,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.VoiceResultConfidenceValue" units="%"
-    expires_after="2023-09-10">
+    expires_after="2023-09-17">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

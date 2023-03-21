@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.PermissionRequested" enum="PermissionType"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -956,7 +956,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAge" units="ms"
-    expires_after="2023-07-19">
+    expires_after="2023-09-17">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -967,7 +967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent"
-    enum="Boolean" expires_after="2023-07-19">
+    enum="Boolean" expires_after="2023-09-17">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -979,7 +979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAge" units="ms"
-    expires_after="2023-07-19">
+    expires_after="2023-09-17">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -990,7 +990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent"
-    enum="Boolean" expires_after="2023-07-19">
+    enum="Boolean" expires_after="2023-09-17">
   <owner>birnie@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1061,7 +1061,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ManualRefreshInterval" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="ChildProcess.FieldTrials.CreateFromShmemSuccess"
-    enum="BooleanSuccess" expires_after="2023-07-15">
+    enum="BooleanSuccess" expires_after="2023-09-17">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

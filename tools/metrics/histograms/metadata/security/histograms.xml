@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
-    expires_after="2023-06-25">
+    expires_after="2023-09-17">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportDeduplicated" enum="Boolean"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -453,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportersHWM" units="reporters"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -463,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSampled" enum="Boolean"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSize" units="bytes"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -484,7 +484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportSucceeded" enum="Boolean"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -495,7 +495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.DroppedDueToLogNotFound"
-    enum="Boolean" expires_after="2023-07-15">
+    enum="Boolean" expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.LookupQueryResult"
-    enum="SCTLookupQueryResult" expires_after="2023-07-15">
+    enum="SCTLookupQueryResult" expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.PopularSCTSkipped" enum="Boolean"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>nsatragno@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -529,7 +529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.ReportCount" units="reports"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>cthomp@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>
@@ -892,7 +892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.OutOfProcessIframes" units="oopifs"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>

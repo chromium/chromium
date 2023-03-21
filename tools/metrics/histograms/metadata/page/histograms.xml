@@ -758,7 +758,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstContentfulPaint"
-    units="ms" expires_after="2023-07-16">
+    units="ms" expires_after="2023-09-17">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
   <summary>
@@ -796,7 +796,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.FencedFrames.PaintTiming.NavigationToLargestContentfulPaint2"
-    units="ms" expires_after="2023-07-16">
+    units="ms" expires_after="2023-09-17">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
   <summary>
@@ -2394,7 +2394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.PageType" enum="PageLoadTrackerPageType"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
   <summary>
@@ -2442,7 +2442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.Prerender2.Event"
-    enum="PageLoadPrerenderEvent" expires_after="2023-07-16">
+    enum="PageLoadPrerenderEvent" expires_after="2023-09-17">
   <owner>asamidoi@chromium.org</owner>
   <owner>src/content/browser/preloading/prerender/OWNERS</owner>
   <summary>
@@ -2781,7 +2781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PageTiming.NavigationToFirstForeground" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>

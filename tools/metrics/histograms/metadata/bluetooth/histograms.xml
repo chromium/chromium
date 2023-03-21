@@ -1211,7 +1211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps"
-    enum="FastPairRetroactiveEngagementFlowEvent" expires_after="2023-08-20">
+    enum="FastPairRetroactiveEngagementFlowEvent" expires_after="2023-09-17">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -1859,7 +1859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-07-16">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2023-09-17">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

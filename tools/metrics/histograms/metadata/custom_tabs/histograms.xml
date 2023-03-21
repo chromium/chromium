@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.HadInteractionOnClose.FormStillActive"
-    enum="Boolean" expires_after="2023-07-18">
+    enum="Boolean" expires_after="2023-09-17">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.SessionDisconnectStatus"
-    enum="CustomTabsSessionDisconnectStatus" expires_after="2023-07-16">
+    enum="CustomTabsSessionDisconnectStatus" expires_after="2023-09-17">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -809,7 +809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.SplashScreenShown" enum="Boolean"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

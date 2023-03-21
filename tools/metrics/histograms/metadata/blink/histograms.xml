@@ -963,7 +963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.ApprovedClientsSize" units="clients"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1078,7 +1078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.CloseVerifySheet.Android" enum="Boolean"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1088,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.CloseVerifySheet.Desktop" enum="Boolean"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1183,7 +1183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Status.RequestIdToken"
-    enum="FedCmRequestIdTokenStatus" expires_after="2023-07-16">
+    enum="FedCmRequestIdTokenStatus" expires_after="2023-09-17">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1263,7 +1263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.ShowAccountsDialog" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1299,7 +1299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.WebContentsVisible" enum="Boolean"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1451,7 +1451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Fonts.VariableFontsRatio"
-    enum="WebFontInstantiationResult" expires_after="2023-07-16">
+    enum="WebFontInstantiationResult" expires_after="2023-09-17">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -1683,7 +1683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.ChunkCount4" units="chunks"
-    expires_after="2023-06-30">
+    expires_after="2023-09-17">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1697,7 +1697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.InputCharacterCount4" units="characters"
-    expires_after="2023-06-30">
+    expires_after="2023-09-17">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1785,7 +1785,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMax4" units="tokens"
-    expires_after="2023-06-30">
+    expires_after="2023-09-17">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1798,7 +1798,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.TokensParsedMin4" units="tokens"
-    expires_after="2023-06-30">
+    expires_after="2023-09-17">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -1852,7 +1852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.HTMLParsing.YieldedTimeMin4" units="microseconds"
-    expires_after="2023-06-30">
+    expires_after="2023-09-17">
   <owner>masonf@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
@@ -2521,7 +2521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.NotificationManager.GetPermissionStatusTime" units="ms"
-    expires_after="2023-07-19">
+    expires_after="2023-09-17">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -2711,7 +2711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ResourceRequest.RedirectDelay" units="ms"
-    expires_after="2023-07-19">
+    expires_after="2023-09-17">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>

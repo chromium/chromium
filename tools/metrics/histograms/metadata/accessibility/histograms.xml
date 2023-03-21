@@ -2246,7 +2246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SodaInstaller.BinaryInstallationResult" enum="BooleanSuccess"
-    expires_after="2023-06-01">
+    expires_after="2023-09-17">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>yilkal@chromium.org</owner>

@@ -457,7 +457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.RendererTermination.AliveRenderersCount" units="renderers"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>ajuma@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.RendererTermination.TotalTabCount" units="tabs"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>ajuma@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
@@ -520,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.StateAtRendererTermination" enum="TabForegroundState"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>gambard@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -1057,7 +1057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabManager.Discarding.ReloadToCloseTime" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1342,7 +1342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.NTPCountAtStartup" units="tabs"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>gogerald@chromium.org</owner>
   <owner>nasims@google.com</owner>
   <summary>[iOS] The number of NTP tabs open at cold launch.</summary>
@@ -2424,7 +2424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.Tasks.OrderValidOnStartup" units="boolean"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -2434,7 +2434,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.Tasks.TabAddedWithValidProposedPosition" units="boolean"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>

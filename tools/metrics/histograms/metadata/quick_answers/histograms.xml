@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>

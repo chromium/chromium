@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Install.GooglePlayErrorCode"
-    enum="WebApkInstallGooglePlayErrorCode" expires_after="2023-07-16">
+    enum="WebApkInstallGooglePlayErrorCode" expires_after="2023-09-17">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.WebappRegistry.NumberOfOrigins" units="count"
-    expires_after="2023-07-15">
+    expires_after="2023-09-17">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>

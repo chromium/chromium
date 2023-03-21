@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Messages.Stacking" enum="StackingAnimationType"
-    expires_after="2023-09-10">
+    expires_after="2023-09-17">
   <owner>lazzzis@chromium.org</owner>
   <owner>src/components/messages/OWNERS</owner>
   <summary>
@@ -3636,7 +3636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabSwitcher.SetupRecyclerView.Time" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>skavuluru@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -3744,7 +3744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Toolbar.BitmapCapture" enum="ToolbarCaptureType"
-    expires_after="2023-07-16">
+    expires_after="2023-09-17">
   <owner>skym@chromium.org</owner>
   <owner>seacow@google.com</owner>
   <summary>
