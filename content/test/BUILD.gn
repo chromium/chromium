@@ -1018,6 +1018,13 @@ static_library("browsertest_support") {
     deps += [ "//chromeos/lacros:lacros" ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "../browser/smart_card/mock_smart_card_context_factory.cc",
+      "../browser/smart_card/mock_smart_card_context_factory.h",
+    ]
+  }
+
   configs += [ "//v8:external_startup_data" ]
 }
 

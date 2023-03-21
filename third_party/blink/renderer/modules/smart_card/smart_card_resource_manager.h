@@ -32,6 +32,7 @@ class MODULES_EXPORT SmartCardResourceManager final
 
  public:
   using SmartCardReaderInfoPtr = mojom::blink::SmartCardReaderInfoPtr;
+  using SmartCardResponseCode = mojom::blink::SmartCardResponseCode;
 
   static const char kSupplementName[];
 
@@ -56,6 +57,7 @@ class MODULES_EXPORT SmartCardResourceManager final
   void ReaderAdded(SmartCardReaderInfoPtr reader_info) override;
   void ReaderRemoved(SmartCardReaderInfoPtr reader_info) override;
   void ReaderChanged(SmartCardReaderInfoPtr reader_info) override;
+  void Error(SmartCardResponseCode response_code) override;
 
  private:
   SmartCardReader* GetOrCreateReader(SmartCardReaderInfoPtr info);
@@ -64,6 +66,7 @@ class MODULES_EXPORT SmartCardResourceManager final
 
   void FinishGetReaders(ScriptPromiseResolver*,
                         mojom::blink::SmartCardGetReadersResultPtr);
+  void UpdateReadersCache(mojom::blink::SmartCardGetReadersResultPtr);
 
   void OnServiceClientRegistered(bool supports_reader_presence_observer);
   void ResolveWatchForReadersPromise(ScriptPromiseResolver* resolver);
@@ -74,6 +77,7 @@ class MODULES_EXPORT SmartCardResourceManager final
       this};
   HeapHashSet<Member<ScriptPromiseResolver>> get_readers_promises_;
   HeapHashSet<Member<ScriptPromiseResolver>> watch_for_readers_promises_;
+  bool tracking_started_ = false;
 
   // maps a reader name to its object
   HeapHashMap<String, WeakMember<SmartCardReader>> reader_cache_;

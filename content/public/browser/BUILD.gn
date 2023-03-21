@@ -634,7 +634,6 @@ source_set("browser_sources") {
       "chromeos/multi_capture_service.h",
       "firewall_hole_proxy.h",
       "lock_screen_storage.h",
-      "smart_card_delegate.cc",
       "smart_card_delegate.h",
     ]
   }

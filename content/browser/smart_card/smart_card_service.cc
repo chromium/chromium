@@ -30,8 +30,9 @@ class DocumentHelper
   ~DocumentHelper() override = default;
 
   // blink::mojom::SmartCardService:
-  void GetReaders(GetReadersCallback callback) override {
-    service_->GetReaders(std::move(callback));
+  void GetReadersAndStartTracking(
+      GetReadersAndStartTrackingCallback callback) override {
+    service_->GetReadersAndStartTracking(std::move(callback));
   }
 
   void RegisterClient(mojo::PendingAssociatedRemote<
@@ -46,12 +47,13 @@ class DocumentHelper
 
 }  // namespace
 
-SmartCardService::SmartCardService(SmartCardDelegate& delegate)
-    : delegate_(delegate) {
-  scoped_observation_.Observe(&delegate);
-}
+SmartCardService::SmartCardService(SmartCardDelegate& delegate,
+                                   SmartCardReaderTracker& reader_tracker)
+    : delegate_(delegate), reader_tracker_(reader_tracker) {}
 
-SmartCardService::~SmartCardService() = default;
+SmartCardService::~SmartCardService() {
+  reader_tracker_->Stop(this);
+}
 
 // static
 void SmartCardService::Create(
@@ -86,18 +88,22 @@ void SmartCardService::Create(
     return;
   }
 
+  SmartCardReaderTracker& reader_tracker =
+      SmartCardReaderTracker::GetForBrowserContext(*browser_context, *delegate);
+
   // DocumentHelper observes the lifetime of the document connected to
   // `render_frame_host` and destroys the SmartCardService when the Mojo
   // connection is disconnected, RenderFrameHost is deleted, or the
   // RenderFrameHost commits a cross-document navigation. It forwards its Mojo
   // interface to SmartCardService.
-  new DocumentHelper(std::make_unique<SmartCardService>(*delegate),
-                     *render_frame_host, std::move(receiver));
+  new DocumentHelper(
+      std::make_unique<SmartCardService>(*delegate, reader_tracker),
+      *render_frame_host, std::move(receiver));
 }
 
-void SmartCardService::GetReaders(
-    SmartCardService::GetReadersCallback callback) {
-  delegate_->GetReaders(std::move(callback));
+void SmartCardService::GetReadersAndStartTracking(
+    GetReadersAndStartTrackingCallback callback) {
+  reader_tracker_->Start(this, std::move(callback));
 }
 
 void SmartCardService::RegisterClient(
@@ -129,6 +135,13 @@ void SmartCardService::OnReaderChanged(
     const blink::mojom::SmartCardReaderInfo& reader_info) {
   NOTIMPLEMENTED();
   // TODO(crbug.com/1386175): Implement and test.
+}
+
+void SmartCardService::OnError(
+    blink::mojom::SmartCardResponseCode response_code) {
+  for (auto& client : clients_) {
+    client->Error(response_code);
+  }
 }
 
 }  // namespace content

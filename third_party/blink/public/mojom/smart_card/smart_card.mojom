@@ -82,6 +82,11 @@ interface SmartCardServiceClient {
   // Notifies that the smart card reader info has changed.
   // The name is the only attribute that never changes.
   ReaderChanged(SmartCardReaderInfo reader_info);
+
+  // Notifies that a runtime error prevents monitoring of smart card reader
+  // changes/additions/removals from continuing. Can be retried by calling:
+  // SmartCardService::GetReadersAndStartTracking again.
+  Error(SmartCardResponseCode response_code);
 };
 
 // Interface for accessing smart card readers from the render process.
@@ -94,11 +99,18 @@ interface SmartCardService {
   RegisterClient(pending_associated_remote<SmartCardServiceClient> client)
       => (bool can_notify_added_removed);
 
-  // Enumerates all smart card readers in the system.
+  // Enumerates all smart card readers in the system and requests the service to
+  // start monitoring for additions, removals or changes.
+  //
   // If the client is denied access to smart cards, the call succeeds but the
   // `result.readers` array will be empty.
-  // If the call fails a `result.response_code` will be returned instead.
-  GetReaders() => (SmartCardGetReadersResult result);
+  //
+  // If it fails to enumerate all smart card readers, a `result.response_code`
+  // will be returned instead.
+  //
+  // Failing to subsequently start tracking changes will be reported via
+  // SmartCardServiceClient::Error.
+  GetReadersAndStartTracking() => (SmartCardGetReadersResult result);
 
   // TODO(crbug.com/1386175): Expose SmartCardConnection
 };
