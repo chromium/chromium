@@ -2760,6 +2760,7 @@
       'gpu_tests', 'release_trybot_reclient', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
       'enable_dangling_raw_ptr_feature_flag',
+      "enable_backup_ref_ptr_feature_flag",
     ],
 
     # Keep in sync with
@@ -2773,6 +2774,7 @@
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
       'enable_dangling_raw_ptr_feature_flag',
+      "enable_backup_ref_ptr_feature_flag",
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
@@ -2818,7 +2820,7 @@
     'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_checks'
+      'enable_dangling_raw_ptr_feature_flag',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
@@ -4145,7 +4147,7 @@
     # runs.
     'enable_dangling_raw_ptr_feature_flag': {
       'gn_args': 'enable_dangling_raw_ptr_feature_flag=true',
-      'mixins': ["enable_dangling_raw_ptr_checks", "enable_backup_ref_ptr_feature_flag"],
+      'mixins': ["enable_dangling_raw_ptr_checks"],
     },
 
     'enable_remoting': {
