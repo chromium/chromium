@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -22,7 +23,12 @@ namespace supervised_user {
 class WebContentHandler;
 }
 
-class Profile;
+namespace favicon {
+class LargeIconService;
+}  // namespace favicon
+
+class PrefService;
+class SupervisedUserService;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 class SupervisedUserFaviconRequestHandler;
@@ -80,13 +86,16 @@ class SupervisedUserInterstitial {
   static std::unique_ptr<SupervisedUserInterstitial> Create(
       content::WebContents* web_contents,
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
+      SupervisedUserService& supervised_user_service,
+      favicon::LargeIconService* large_icon_service,
       const GURL& url,
       supervised_user::FilteringBehaviorReason reason,
       int frame_id,
       int64_t interstitial_navigation_id);
 
   static std::string GetHTMLContents(
-      Profile* profile,
+      SupervisedUserService* supervised_user_service,
+      PrefService* pref_service,
       supervised_user::FilteringBehaviorReason reason,
       bool already_sent_request,
       bool is_main_frame);
@@ -108,6 +117,8 @@ class SupervisedUserInterstitial {
   SupervisedUserInterstitial(
       content::WebContents* web_contents,
       std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
+      SupervisedUserService& supervised_user_service,
+      favicon::LargeIconService* large_icon_service,
       const GURL& url,
       supervised_user::FilteringBehaviorReason reason,
       int frame_id,
@@ -120,12 +131,16 @@ class SupervisedUserInterstitial {
 
   void OutputRequestPermissionSourceMetric();
 
+  const raw_ref<SupervisedUserService> supervised_user_service_;
+
+  // Can be null depending on the Platform. An actual instance
+  // is needed only for local web approvals on Chrome OS.
+  const raw_ptr<favicon::LargeIconService> large_icon_service_;
+
   std::unique_ptr<supervised_user::WebContentHandler> web_content_handler_;
 
   // Owns SupervisedUserNavigationObserver which owns us.
   raw_ptr<content::WebContents> web_contents_;
-
-  raw_ptr<Profile> profile_;
 
   // The last committed url for this frame.
   GURL url_;

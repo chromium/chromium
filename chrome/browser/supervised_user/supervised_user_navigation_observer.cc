@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -301,9 +303,13 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
     int64_t navigation_id,
     int frame_id,
     const OnInterstitialResultCallback& callback) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   std::unique_ptr<SupervisedUserInterstitial> interstitial =
       SupervisedUserInterstitial::Create(
-          web_contents(), CreateWebContentHandler(web_contents()), url, reason,
+          web_contents(), CreateWebContentHandler(web_contents()),
+          *supervised_user_service_,
+          LargeIconServiceFactory::GetForBrowserContext(profile), url, reason,
           frame_id, navigation_id);
 
   supervised_user_interstitials_[frame_id] = std::move(interstitial);

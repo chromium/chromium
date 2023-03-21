@@ -286,11 +286,13 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
       break;
     }
     case kCancelWithInterstitial: {
+      Profile* profile = Profile::FromBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext());
       std::string interstitial_html =
           SupervisedUserInterstitial::GetHTMLContents(
-              Profile::FromBrowserContext(
-                  navigation_handle()->GetWebContents()->GetBrowserContext()),
-              reason_, already_sent_request, is_main_frame);
+              SupervisedUserServiceFactory::GetForProfile(profile),
+              profile->GetPrefs(), reason_, already_sent_request,
+              is_main_frame);
       CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
           CANCEL, net::ERR_BLOCKED_BY_CLIENT, interstitial_html));
     }
