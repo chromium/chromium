@@ -228,13 +228,12 @@ void ConnectivityCheckerImpl::CheckInternal() {
       &ConnectivityCheckerImpl::OnConnectivityCheckComplete, weak_this_);
   url_loader_->DownloadHeadersOnly(url_loader_factory_.get(),
                                    std::move(callback));
-
-  timeout_.Reset(base::BindOnce(&ConnectivityCheckerImpl::OnUrlRequestTimeout,
-                                weak_this_));
   // Exponential backoff for timeout in 3, 6 and 12 sec.
   const base::TimeDelta timeout =
       kRequestTimeout *
       std::pow(2, std::min(check_errors_, static_cast<unsigned int>(2)));
+  timeout_.Reset(base::BindOnce(&ConnectivityCheckerImpl::OnUrlRequestTimeout,
+                                weak_this_, timeout));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_.callback(), timeout);
 }
@@ -357,11 +356,11 @@ void ConnectivityCheckerImpl::OnUrlRequestError(ErrorType type) {
                                 disconnected_probe_period_);
 }
 
-void ConnectivityCheckerImpl::OnUrlRequestTimeout() {
+void ConnectivityCheckerImpl::OnUrlRequestTimeout(base::TimeDelta timeout) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(url_loader_);
   url_loader_ = nullptr;
-  LOG(ERROR) << "time out";
+  LOG(WARNING) << "timed out after " << timeout;
   OnUrlRequestError(ErrorType::REQUEST_TIMEOUT);
 }
 

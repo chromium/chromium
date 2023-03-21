@@ -132,8 +132,9 @@ class ConnectivityCheckerImpl
   // Called when URL request failed.
   void OnUrlRequestError(ErrorType type);
 
-  // Called when URL request timed out.
-  void OnUrlRequestTimeout();
+  // Called when URL request timed out. |Timeout| stores how long we waited
+  // for the URL request to finish before giving up.
+  void OnUrlRequestTimeout(base::TimeDelta timeout);
 
   void CheckInternal();
 
