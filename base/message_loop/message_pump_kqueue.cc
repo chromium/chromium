@@ -14,6 +14,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/time/time_override.h"
 

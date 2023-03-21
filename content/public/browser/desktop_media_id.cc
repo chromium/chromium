@@ -10,6 +10,7 @@
 
 #include "base/containers/id_map.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

@@ -6,18 +6,44 @@
 
 #include <stdint.h>
 
+#include <functional>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base::test::id_map {
+struct RepeatingKeyType {
+  explicit RepeatingKeyType(int i) : i(i) {}
+
+  constexpr void operator++() {}
+  constexpr RepeatingKeyType& operator++(int) { return *this; }
+
+  constexpr bool operator==(const RepeatingKeyType& o) const {
+    return i == o.i;
+  }
+  constexpr bool operator<(const RepeatingKeyType& o) const { return i < o.i; }
+
+  int i = 0;
+};
+}  // namespace base::test::id_map
+
+namespace std {
+template <>
+struct hash<::base::test::id_map::RepeatingKeyType> {
+  constexpr size_t operator()(
+      const ::base::test::id_map::RepeatingKeyType& k) const noexcept {
+    return std::hash<int>()(k.i);
+  }
+};
+}  // namespace std
+
 namespace base {
 
 namespace {
 
-class TestObject {
-};
+class TestObject {};
 
 class DestructorCounter {
  public:
@@ -108,8 +134,9 @@ TEST(IDMapTest, IteratorRemainsValidWhenRemovingOtherElements) {
   const int kCount = 5;
   TestObject obj[kCount];
 
-  for (auto& i : obj)
+  for (auto& i : obj) {
     map.Add(&i);
+  }
 
   // IDMap has no predictable iteration order.
   int32_t ids_in_iteration_order[kCount];
@@ -217,8 +244,9 @@ TEST(IDMapTest, IteratorRemainsValidWhenClearing) {
   const int kCount = 5;
   TestObject obj[kCount];
 
-  for (auto& i : obj)
+  for (auto& i : obj) {
     map.Add(&i);
+  }
 
   // IDMap has no predictable iteration order.
   int32_t ids_in_iteration_order[kCount];
@@ -379,20 +407,44 @@ TEST(IDMapTest, Int64KeyType) {
 
 TEST(IDMapTest, RemovedValueHandling) {
   TestObject obj;
-  IDMap<TestObject*> map;
-  int key = map.Add(&obj);
+  {
+    IDMap<TestObject*> map;
+    int key = map.Add(&obj);
 
-  IDMap<TestObject*>::iterator itr(&map);
-  map.Clear();
-  EXPECT_DCHECK_DEATH(map.Remove(key));
-  EXPECT_DCHECK_DEATH(map.Replace(key, &obj));
-  EXPECT_FALSE(map.Lookup(key));
-  EXPECT_FALSE(itr.IsAtEnd());
-  EXPECT_FALSE(itr.GetCurrentValue());
+    IDMap<TestObject*>::iterator itr(&map);
+    // Queues the `key` for removal.
+    map.Clear();
+    // Removes nothing, already queued.
+    map.Remove(key);
+    // Can not replace a key that is not present. If it's queued for removal
+    // it's not present.
+    EXPECT_CHECK_DEATH(map.Replace(key, &obj));
+    EXPECT_FALSE(map.Lookup(key));
+    EXPECT_FALSE(itr.IsAtEnd());
+    EXPECT_FALSE(itr.GetCurrentValue());
 
-  EXPECT_TRUE(map.IsEmpty());
-  map.AddWithID(&obj, key);
-  EXPECT_EQ(1u, map.size());
+    EXPECT_TRUE(map.IsEmpty());
+    // Replaces the element that's queued for removal when `itr` is destroyed.
+    map.AddWithID(&obj, key);
+    EXPECT_EQ(1u, map.size());
+  }
+
+  {
+    using base::test::id_map::RepeatingKeyType;
+
+    IDMap<TestObject*, RepeatingKeyType> map;
+    RepeatingKeyType key = map.Add(&obj);
+    IDMap<TestObject*, RepeatingKeyType>::iterator itr(&map);
+    map.Remove(key);  // Queues it for removal.
+
+    // The RepeatingKeyType's operator++ does not always return a unique id. The
+    // Add() method does not make extra assumptions about this, and can replace
+    // a queued-for-removal item just like AddWithID().
+
+    // Replaces the element that's queued for removal when `itr` is destroyed.
+    RepeatingKeyType key2 = map.Add(&obj);
+    EXPECT_EQ(key, key2);
+  }
 }
 
 }  // namespace base
