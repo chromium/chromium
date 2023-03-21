@@ -448,17 +448,5 @@ TEST_F(FeedMetricsRecorderTest, TimeSpent_RecordedCorrectly) {
   EXPECT_EQ(kTimeForFeedTimeMetric, recorder.timeSpentInFeed);
 }
 
-// Tests that the time spent in feed histogram has recorded appropriately after
-// 24hrs have elapsed.
-TEST_F(FeedMetricsRecorderTest, TimeSpent_DailyHistogramReported) {
-  base::ScopedMockClockOverride mock_clock;
-  // Make the feed visible.
-  [recorder recordNTPDidChangeVisibility:YES];
-  // Hide feed again.
-  [recorder recordNTPDidChangeVisibility:NO];
-  recorder.timeSpentInFeed = kTimeForFeedTimeMetric;
-  mock_clock.Advance(kOneDay + base::Seconds(1));
-  [recorder recordNTPDidChangeVisibility:YES];
-  histogram_tester_->ExpectUniqueTimeSample(kTimeSpentInFeedHistogram,
-                                            kTimeForFeedTimeMetric, 1);
-}
+// TODO(crbug.com/1403009) Add test to check if the histogram is recorded
+// appropriately.

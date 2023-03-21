@@ -198,9 +198,9 @@ using feed::FeedUserActionType;
     }
 
     // Total time spent in feed metrics.
-    [self recordTimeSpentInFeedIfDayIsDone];
     self.timeSpentInFeed =
         base::Seconds([defaults doubleForKey:kTimeSpentInFeedAggregateKey]);
+    [self recordTimeSpentInFeedIfDayIsDone];
 
     self.previousTimeInFeedForGoodVisitSession =
         [defaults doubleForKey:kLongFeedVisitTimeAggregateKey];
@@ -1208,9 +1208,9 @@ using feed::FeedUserActionType;
 
   BOOL shouldResetData = NO;
   if (lastInteractionReported) {
-    base::TimeDelta sinceDayStart =
-        (base::Time::Now() - lastInteractionReportedInTime);
-    if (sinceDayStart >= base::Days(1) || sinceDayStart < -base::Hours(1)) {
+    base::Time now = base::Time::Now();
+    base::TimeDelta sinceDayStart = (now - lastInteractionReportedInTime);
+    if (sinceDayStart >= base::Days(1)) {
       // Check if the user has spent any time in the feed.
       if (self.timeSpentInFeed > base::Seconds(0)) {
         UMA_HISTOGRAM_LONG_TIMES(kTimeSpentInFeedHistogram,
