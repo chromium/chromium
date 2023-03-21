@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {InsetsF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import {InsetsF, RectF} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {HELP_BUBBLE_SCROLL_ANCHOR_OPTIONS, HelpBubbleElement} from './help_bubble.js';
 import {HelpBubbleArrowPosition, HelpBubbleParams} from './help_bubble.mojom-webui.js';
@@ -81,8 +81,11 @@ export class HelpBubbleController {
    */
   private isBubbleShowing_: boolean = false;
 
-  // Keep track of last-known anchor visibility status
+  /** Keep track of last known anchor visibility status. */
   private isAnchorVisible_: boolean = false;
+
+  /** Keep track of last known anchor bounds. */
+  private lastAnchorBounds_: RectF = new RectF();
 
   /*
    * This flag is used to know whether to send position updates for
@@ -138,8 +141,19 @@ export class HelpBubbleController {
     return this.isAnchorVisible_;
   }
 
-  cacheAnchorVisibility(isVisible: boolean) {
+  getLastAnchorBounds() {
+    return this.lastAnchorBounds_;
+  }
+
+  updateAnchorVisibility(isVisible: boolean, bounds: RectF): boolean {
+    const changed = isVisible !== this.isAnchorVisible_ ||
+        bounds.x !== this.lastAnchorBounds_.x ||
+        bounds.y !== this.lastAnchorBounds_.y ||
+        bounds.width !== this.lastAnchorBounds_.width ||
+        bounds.height !== this.lastAnchorBounds_.height;
     this.isAnchorVisible_ = isVisible;
+    this.lastAnchorBounds_ = bounds;
+    return changed;
   }
 
   isAnchorFixed(): boolean {

@@ -46,9 +46,7 @@ export type HelpBubbleTimedOutEvent = CustomEvent<{
   nativeId: any,
 }>;
 
-type ResizeListener = (this: Window, ev: UIEvent) => any;
-
-export function debounceEnd(fn: Function, time: number = 50) {
+export function debounceEnd(fn: Function, time: number = 50): () => void {
   let timerId: number|undefined;
   return () => {
     clearTimeout(timerId);
@@ -109,8 +107,7 @@ export class HelpBubbleElement extends PolymerElement {
   forceCloseButton: boolean;
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
-  debouncedUpdate: ResizeListener|EventListenerOrEventListenerObject|null =
-      null;
+  debouncedUpdate: (() => void)|null = null;
   padding: InsetsF = new InsetsF();
   fixed: boolean = false;
 
@@ -166,9 +163,8 @@ export class HelpBubbleElement extends PolymerElement {
     }, 50);
 
     this.$.buttonlist.addEventListener(
-        'rendered-item-count-changed',
-        this.debouncedUpdate as EventListenerOrEventListenerObject);
-    window.addEventListener('resize', this.debouncedUpdate as ResizeListener);
+        'rendered-item-count-changed', this.debouncedUpdate);
+    window.addEventListener('resize', this.debouncedUpdate);
 
     if (this.timeoutMs !== null) {
       const timedOutCallback = () => {
@@ -211,11 +207,9 @@ export class HelpBubbleElement extends PolymerElement {
       this.timeoutTimerId = null;
     }
     if (this.debouncedUpdate) {
-      window.removeEventListener(
-          'resize', this.debouncedUpdate as ResizeListener);
+      window.removeEventListener('resize', this.debouncedUpdate);
       this.$.buttonlist.removeEventListener(
-          'rendered-item-count-changed',
-          this.debouncedUpdate as EventListenerOrEventListenerObject);
+          'rendered-item-count-changed', this.debouncedUpdate);
       this.debouncedUpdate = null;
     }
   }
