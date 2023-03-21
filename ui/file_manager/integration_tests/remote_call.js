@@ -889,6 +889,9 @@ export class RemoteCallFilesApp extends RemoteCall {
     // Focus the search box.
     await this.waitAndClickElement(appId, '#search-button');
 
+    // Wait for search to fully open.
+    await this.waitForElementLost(appId, '#search-wrapper[collapsed]');
+
     // Input the text.
     await this.inputText(appId, searchBoxInput, text);
 

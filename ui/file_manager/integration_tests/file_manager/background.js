@@ -451,6 +451,9 @@ export async function navigateWithDirectoryTree(
   // Wait directory to finish scanning its content.
   await remoteCall.waitForElement(appId, `[scan-completed="${leaf}"]`);
 
+  // If the search was not closed, wait for it to close.
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+
   // Wait to navigation to final entry to finish.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, (shortcutToPath || breadcrumbsPath));
