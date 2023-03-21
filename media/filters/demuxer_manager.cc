@@ -279,8 +279,16 @@ PipelineStatus DemuxerManager::SelectHlsFallbackMechanism(
     return PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
   }
 
-  PopulateHlsHistograms(cryptographic_url);
   loaded_url_ = GetDataSourceUrlAfterRedirects().value();
+
+  // We do not support using blob and filesystem schemes with the Android
+  // MediaPlayer. Fail now rather than during MediaPlayerRender initialization.
+  if (is_mp &&
+      (loaded_url_.SchemeIsBlob() || loaded_url_.SchemeIsFileSystem())) {
+    return PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED;
+  }
+
+  PopulateHlsHistograms(cryptographic_url);
 
   if (client_) {
     client_->UpdateLoadedUrl(loaded_url_);
