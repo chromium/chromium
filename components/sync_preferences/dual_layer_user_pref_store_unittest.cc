@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/sync_preferences/syncable_prefs_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,14 +70,25 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   MOCK_METHOD(void, OnInitializationCompleted, (bool succeeded), (override));
 };
 
+class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
+ public:
+  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
+      const std::string& pref_name) const override {
+    return SyncablePrefMetadata{0, syncer::PREFERENCES};
+  }
+};
+
 }  // namespace
 
 class DualLayerUserPrefStoreTestBase : public testing::Test {
  public:
   explicit DualLayerUserPrefStoreTestBase(bool initialize) {
     local_store_ = base::MakeRefCounted<TestingPrefStore>();
-    dual_layer_store_ =
-        base::MakeRefCounted<DualLayerUserPrefStore>(local_store_);
+    dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
+        local_store_, &prefs_database_);
+
+    // TODO(crbug.com/1416480): Add proper test setup to enable and disable data
+    // types appropriately.
 
     if (initialize) {
       local_store_->NotifyInitializationCompleted();
@@ -89,6 +101,7 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
  protected:
   scoped_refptr<TestingPrefStore> local_store_;
   scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
+  TestSyncablePrefsDatabase prefs_database_;
 };
 
 class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {

@@ -18,6 +18,7 @@
 #include "components/prefs/pref_value_store.h"
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
+#include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
 namespace sync_preferences {
@@ -57,9 +58,14 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
     // If EnablePreferencesAccountStorage is enabled, then a
     // DualLayerUserPrefStore is used as the main user pref store, and sync is
     // hooked up directly to the underlying account store.
+    const SyncablePrefsDatabase* syncable_prefs_database = nullptr;
+    if (pref_model_associator_client_) {
+      syncable_prefs_database =
+          &pref_model_associator_client_->GetSyncablePrefsDatabase();
+    }
     auto dual_layer_user_pref_store =
         base::MakeRefCounted<sync_preferences::DualLayerUserPrefStore>(
-            user_prefs_);
+            user_prefs_, syncable_prefs_database);
     auto pref_value_store = std::make_unique<PrefValueStore>(
         managed_prefs_.get(), supervised_user_prefs_.get(),
         extension_prefs_.get(), standalone_browser_prefs_.get(),

@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences {
 
@@ -56,11 +57,13 @@ void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
 }
 
 DualLayerUserPrefStore::DualLayerUserPrefStore(
-    scoped_refptr<PersistentPrefStore> local_pref_store)
+    scoped_refptr<PersistentPrefStore> local_pref_store,
+    const SyncablePrefsDatabase* syncable_prefs_database)
     : local_pref_store_(std::move(local_pref_store)),
       account_pref_store_(base::MakeRefCounted<ValueMapPrefStore>()),
       local_pref_store_observer_(this, /*is_account_store=*/false),
-      account_pref_store_observer_(this, /*is_account_store=*/true) {
+      account_pref_store_observer_(this, /*is_account_store=*/true),
+      syncable_prefs_database_(syncable_prefs_database) {
   local_pref_store_->AddObserver(&local_pref_store_observer_);
   account_pref_store_->AddObserver(&account_pref_store_observer_);
 }
@@ -99,7 +102,7 @@ bool DualLayerUserPrefStore::IsInitializationComplete() const {
 
 bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
                                       const base::Value** result) const {
-  if (!IsPrefKeySyncable(key)) {
+  if (!IsPrefKeySyncable(std::string(key))) {
     return local_pref_store_->GetValue(key, result);
   }
 
@@ -286,9 +289,12 @@ void DualLayerUserPrefStore::OnStoreDeletionFromDisk() {
   local_pref_store_->OnStoreDeletionFromDisk();
 }
 
-bool DualLayerUserPrefStore::IsPrefKeySyncable(base::StringPiece key) const {
-  // TODO(crbug.com/1416477): Hook up to the list of syncable prefs.
-  return true;
+bool DualLayerUserPrefStore::IsPrefKeySyncable(const std::string& key) const {
+  if (!syncable_prefs_database_) {
+    // Safer this way.
+    return false;
+  }
+  return syncable_prefs_database_->IsPreferenceSyncable(key);
 }
 
 }  // namespace sync_preferences

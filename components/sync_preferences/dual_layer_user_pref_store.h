@@ -15,8 +15,11 @@
 #include "base/strings/string_piece.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/value_map_pref_store.h"
+#include "components/sync/base/model_type.h"
 
 namespace sync_preferences {
+
+class SyncablePrefsDatabase;
 
 // A two-layer user PrefStore that combines local preferences (scoped to this
 // profile) with account-scoped preferences (scoped to the user's signed-in
@@ -29,8 +32,8 @@ namespace sync_preferences {
 //   account store.
 class DualLayerUserPrefStore : public PersistentPrefStore {
  public:
-  explicit DualLayerUserPrefStore(
-      scoped_refptr<PersistentPrefStore> local_pref_store);
+  DualLayerUserPrefStore(scoped_refptr<PersistentPrefStore> local_pref_store,
+                         const SyncablePrefsDatabase* syncable_prefs_database);
 
   DualLayerUserPrefStore(const DualLayerUserPrefStore&) = delete;
   DualLayerUserPrefStore& operator=(const DualLayerUserPrefStore&) = delete;
@@ -96,7 +99,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   };
 
   // Returns whether the pref with the given `key` is registered as syncable.
-  bool IsPrefKeySyncable(base::StringPiece key) const;
+  bool IsPrefKeySyncable(const std::string& key) const;
 
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.
@@ -113,6 +116,8 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   bool is_setting_prefs_ = false;
 
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
+
+  const SyncablePrefsDatabase* const syncable_prefs_database_ = nullptr;
 };
 
 }  // namespace sync_preferences
