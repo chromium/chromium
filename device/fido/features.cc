@@ -69,7 +69,7 @@ BASE_FEATURE(kWebAuthnMacPlatformAuthenticatorOptionalUv,
 
 BASE_FEATURE(kWebAuthnPhoneConfirmationSheet,
              "WebAuthenticationPhoneConfirmationSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Add in M113. Remove in or after M116.
 BASE_FEATURE(kWebAuthnNewPrioritiesImpl,
