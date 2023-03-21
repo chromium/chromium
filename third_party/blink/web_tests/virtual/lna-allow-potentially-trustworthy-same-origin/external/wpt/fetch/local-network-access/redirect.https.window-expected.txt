@@ -17,7 +17,7 @@ FAIL treat-as-public to local to private: success. assert_equals: response ok ex
 FAIL treat-as-public to local to private: no-cors failed first preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
 FAIL treat-as-public to local to private: no-cors failed second preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
 FAIL treat-as-public to local to private: no-cors success. assert_equals: response body expected "" but got "no preflight received"
-FAIL treat-as-public to private to local: failed first preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
+PASS treat-as-public to private to local: failed first preflight.
 FAIL treat-as-public to private to local: failed second preflight. assert_equals: error expected (string) "TypeError: Failed to fetch" but got (undefined) undefined
 FAIL treat-as-public to private to local: success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
 PASS treat-as-public to private to local: no-cors failed first preflight.
