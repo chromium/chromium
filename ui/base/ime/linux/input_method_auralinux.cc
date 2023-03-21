@@ -342,6 +342,7 @@ bool InputMethodAuraLinux::MaybeUpdateComposition(bool text_committed) {
 
 void InputMethodAuraLinux::UpdateContextFocusState() {
   surrounding_text_.reset();
+  text_range_ = gfx::Range::InvalidRange();
   selection_range_ = gfx::Range::InvalidRange();
 
   auto old_text_input_type = text_input_type_;
@@ -414,10 +415,12 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
                                  client->GetAutocorrectCharacterBounds());
 #endif
 
-    if (surrounding_text_ != text || selection_range_ != selection_range) {
+    if (surrounding_text_ != text || text_range_ != text_range ||
+        selection_range_ != selection_range) {
       surrounding_text_ = text;
+      text_range_ = text_range;
       selection_range_ = selection_range;
-      context_->SetSurroundingText(text, selection_range);
+      context_->SetSurroundingText(text, text_range, selection_range);
     }
   }
 }

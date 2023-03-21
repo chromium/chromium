@@ -47,6 +47,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
 
   // Tells the system IME the surrounding text around the cursor location.
   virtual void SetSurroundingText(const std::u16string& text,
+                                  const gfx::Range& text_range,
                                   const gfx::Range& selection_range) = 0;
 
   // Tells the system IME the content type of the text input client is changed.

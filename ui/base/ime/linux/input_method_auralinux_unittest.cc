@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -162,15 +163,18 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   }
 
   void SetSurroundingText(const std::u16string& text,
+                          const gfx::Range& text_range,
                           const gfx::Range& selection_range) override {
     TestResult::GetInstance()->RecordAction(u"surroundingtext:" + text);
-
-    std::stringstream rs;
-    rs << "selectionrangestart:" << selection_range.start();
-    std::stringstream re;
-    re << "selectionrangeend:" << selection_range.end();
-    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(rs.str()));
-    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(re.str()));
+    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(
+        base::StringPrintf("textrangestart:%zu", text_range.start())));
+    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(
+        base::StringPrintf("textrangeend:%zu", text_range.end())));
+    TestResult::GetInstance()->RecordAction(
+        base::ASCIIToUTF16(base::StringPrintf("selectionrangestart:%zu",
+                                              selection_range.start())));
+    TestResult::GetInstance()->RecordAction(base::ASCIIToUTF16(
+        base::StringPrintf("selectionrangeend:%zu", selection_range.end())));
   }
 
   void SetContentType(TextInputType type,
@@ -1054,6 +1058,8 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_NoSelectionTest) {
   input_method_auralinux_->OnCaretBoundsChanged(client.get());
 
   test_result_->ExpectAction("surroundingtext:abcdef");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:6");
   test_result_->ExpectAction("selectionrangestart:3");
   test_result_->ExpectAction("selectionrangeend:3");
   test_result_->Verify();
@@ -1072,6 +1078,8 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_SelectionTest) {
   input_method_auralinux_->OnCaretBoundsChanged(client.get());
 
   test_result_->ExpectAction("surroundingtext:abcdef");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:6");
   test_result_->ExpectAction("selectionrangestart:2");
   test_result_->ExpectAction("selectionrangeend:5");
   test_result_->Verify();
@@ -1090,6 +1098,8 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
   input_method_auralinux_->OnCaretBoundsChanged(client.get());
 
   test_result_->ExpectAction("surroundingtext:fghij");
+  test_result_->ExpectAction("textrangestart:5");
+  test_result_->ExpectAction("textrangeend:10");
   test_result_->ExpectAction("selectionrangestart:7");
   test_result_->ExpectAction("selectionrangeend:9");
   test_result_->Verify();
@@ -1110,6 +1120,8 @@ TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionSingleCharTest) {
                                               std::vector<ImeTextSpan>());
 
   test_result_->ExpectAction("surroundingtext:a");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:1");
   test_result_->ExpectAction("selectionrangestart:1");
   test_result_->ExpectAction("selectionrangeend:1");
 
@@ -1140,6 +1152,8 @@ TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionCompositionEndTest) {
                                               std::vector<ImeTextSpan>());
 
   test_result_->ExpectAction("surroundingtext:a");
+  test_result_->ExpectAction("textrangestart:0");
+  test_result_->ExpectAction("textrangeend:1");
   test_result_->ExpectAction("selectionrangestart:1");
   test_result_->ExpectAction("selectionrangeend:1");
 

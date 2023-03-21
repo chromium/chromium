@@ -257,7 +257,9 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
 
 void WaylandInputMethodContext::SetSurroundingText(
     const std::u16string& text,
+    const gfx::Range& text_range,
     const gfx::Range& selection_range) {
+  // TODO(crbug.com/1402906): Text range is not currently handled correctly.
   surrounding_text_tracker_.Update(text, selection_range);
 
   if (!text_input_)
