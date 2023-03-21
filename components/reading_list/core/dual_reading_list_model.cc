@@ -275,6 +275,7 @@ void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
 
   if (notify_observers) {
     NotifyObserversWithWillMoveEntry(url);
+    UpdateEntryStateCountersOnEntryRemoval(*entry);
   }
 
   // The update propagates to both underlying ReadingListModelImpl instances
@@ -290,6 +291,7 @@ void DualReadingListModel::SetReadStatusIfExists(const GURL& url, bool read) {
   }
 
   if (notify_observers) {
+    UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
     NotifyObserversWithDidMoveEntry(url);
     NotifyObserversWithDidApplyChanges();
   }
