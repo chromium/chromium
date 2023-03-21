@@ -485,6 +485,10 @@ void CursorWindowController::UpdateCursorImage() {
     image =
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   }
+  // Use `gfx::ToFlooredPoint` as `ImageSkiaRep::GetWidth` is implemented as
+  // `return static_cast<int>(pixel_width() / scale());`.
+  hot_point_ = gfx::ToFlooredPoint(
+      gfx::ConvertPointToDips(hot_point_in_physical_pixels, cursor_scale));
 
   gfx::ImageSkia resized = image;
 
@@ -499,8 +503,7 @@ void CursorWindowController::UpdateCursorImage() {
     resized = gfx::ImageSkiaOperations::CreateResizedImage(
         image, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
         gfx::ScaleToCeiledSize(image.size(), rescale));
-    hot_point_in_physical_pixels =
-        gfx::ScaleToCeiledPoint(hot_point_in_physical_pixels, rescale);
+    hot_point_ = gfx::ScaleToCeiledPoint(hot_point_, rescale);
   }
 
   if (cursor_color_ != kDefaultCursorColor) {
@@ -510,10 +513,6 @@ void CursorWindowController::UpdateCursorImage() {
   }
 
   delegate_->SetCursorImage(resized.size(), resized);
-
-  // TODO(danakj): Should this be rounded? Or kept as a floating point?
-  hot_point_ = gfx::ToFlooredPoint(
-      gfx::ConvertPointToDips(hot_point_in_physical_pixels, cursor_scale));
 
   if (cursor_view_widget_) {
     static_cast<cursor::CursorView*>(cursor_view_widget_->GetContentsView())
