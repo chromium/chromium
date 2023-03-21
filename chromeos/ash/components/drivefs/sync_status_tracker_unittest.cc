@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,10 +54,9 @@ inline SyncState Error(const base::FilePath path = base::FilePath(),
 }
 
 class SyncStatusTrackerTest : public testing::Test {
- public:
-  SyncStatusTrackerTest() = default;
-  SyncStatusTrackerTest(const SyncStatusTrackerTest&) = delete;
-  SyncStatusTrackerTest& operator=(const SyncStatusTrackerTest&) = delete;
+ protected:
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   SyncStatusTracker t;
 };
@@ -247,6 +249,28 @@ TEST_F(SyncStatusTrackerTest, OnlyDirtyNodesAreReturned) {
                                             Completed(abc),                 //
                                             Moved(abcd),                    //
                                             InProgress(b, 20. / 100.)));    //
+}
+
+TEST_F(SyncStatusTrackerTest, StaleNodesGetDeleted) {
+  t.SetQueued(0, abcd, 100);
+
+  ASSERT_EQ(t.GetSyncState(abcd), Queued(abcd));
+
+  t.GetChangesAndClean();
+  ASSERT_EQ(t.GetSyncState(abcd), Queued(abcd));
+
+  // Paths not updated in the last 10s should be purged, so let's test at both
+  // edges (9s and 11s).
+  task_environment.FastForwardBy(base::Seconds(9));
+  auto changes = t.GetChangesAndClean();
+  ASSERT_EQ(t.GetSyncState(abcd), Queued(abcd));
+  ASSERT_TRUE(changes.empty());
+
+  task_environment.FastForwardBy(base::Seconds(2));
+  changes = t.GetChangesAndClean();
+  ASSERT_EQ(t.GetSyncState(abcd), NotFound(abcd));
+  ASSERT_EQ(changes.size(), 5u);
+  ASSERT_EQ(changes.back(), Moved(abcd));
 }
 
 }  // namespace

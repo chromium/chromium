@@ -80,7 +80,7 @@ class DriveFsHost::MountState : public DriveFsSession,
           FROM_HERE, kIndividualSyncStatusIntervalMs,
           base::BindRepeating(
               &DriveFsHost::MountState::DispatchBatchIndividualSyncEvents,
-              weak_ptr_factory_.GetWeakPtr()));
+              base::Unretained(this)));
     }
   }
 
@@ -169,6 +169,12 @@ class DriveFsHost::MountState : public DriveFsSession,
 
     for (auto& observer : host_->observers_) {
       observer.OnIndividualSyncingStatusesDelta(filtered_states);
+    }
+
+    // If we still have files in the tracker, keep running, as we might have
+    // stale nodes that will eventually get removed.
+    if (sync_status_tracker_->GetFileCount()) {
+      sync_throttle_timer_->Reset();
     }
   }
 
@@ -383,7 +389,6 @@ class DriveFsHost::MountState : public DriveFsSession,
   // Used to dispatch individual sync status updates in a debounced manner, only
   // sending the sync states that have changed since the last dispatched event.
   std::unique_ptr<base::RetainingOneShotTimer> sync_throttle_timer_;
-  base::WeakPtrFactory<DriveFsHost::MountState> weak_ptr_factory_{this};
 };
 
 DriveFsHost::DriveFsHost(

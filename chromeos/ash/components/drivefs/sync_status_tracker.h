@@ -17,6 +17,8 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 
 namespace drivefs {
 
@@ -77,7 +79,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
 
     // Completed events might fire more than once for the same id.
     // Only use completed events to update currently tracked nodes.
-    if (id_to_node_.count(id)) {
+    if (id_to_leaf_.count(id)) {
       SetSyncState(id, path, SyncStatus::kCompleted);
     }
   }
@@ -110,9 +112,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
   // function. Upon calling it, the trie is reset to a pristine state, meaning
   // it will report 0 accumulated changes until more changes are registered
   // through SetCompleted, SetQueued, SetInProgress, and SetError.
-  const std::vector<const SyncState> GetChangesAndClean();
+  std::vector<SyncState> GetChangesAndClean();
 
-  size_t GetFileCount() const { return id_to_node_.size(); }
+  size_t GetFileCount() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return id_to_leaf_.size();
+  }
 
  private:
   struct NodeState;
@@ -147,8 +152,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SyncStatusTracker {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<Node> root_ = std::make_unique<Node>();
-  base::flat_map<int64_t, Node*> id_to_node_;
+  // DriveFs is not guaranteed to send completed events for all stable_ids that
+  // it dispatches, hence we need to regularly purge stale sync statuses from
+  // the Sync Status Tracker. See b/272157533 for more details. Nodes that
+  // haven't been updated in the last 10 seconds are considered stale.
+  static constexpr auto kMaxStaleTime = base::Seconds(10);
+
+  std::unique_ptr<Node> root_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      std::make_unique<Node>();
+  base::flat_map<int64_t, Node*> id_to_leaf_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 struct SyncStatusTracker::NodeState {
@@ -190,6 +203,8 @@ struct SyncStatusTracker::Node {
   Node();
   ~Node();
 
+  bool IsLeaf() const { return children.empty(); }
+
   typedef base::flat_map<base::FilePath::StringType, std::unique_ptr<Node>>
       PathToChildMap;
 
@@ -198,6 +213,7 @@ struct SyncStatusTracker::Node {
   base::FilePath::StringType path_part;
   Node* parent = nullptr;
   NodeState state;
+  base::Time last_update;
 };
 
 }  // namespace drivefs

@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 
 namespace drivefs {
 
@@ -61,12 +62,19 @@ SyncState SyncStatusTracker::GetSyncState(const base::FilePath path) const {
               : SyncState::CreateNotFound(std::move(path));
 }
 
-const std::vector<const SyncState> SyncStatusTracker::GetChangesAndClean() {
+std::vector<SyncState> SyncStatusTracker::GetChangesAndClean() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<const SyncState> updated_sync_states;
+  std::vector<SyncState> updated_sync_states;
 
   int64_t total_mem_usage_in_bytes = 0;
+
+  for (const auto &[id, node] : id_to_leaf_) {
+    // If the node is stale, set it as "completed" so that it's later removed.
+    if (base::Time::Now() - node->last_update > kMaxStaleTime) {
+      SetNodeState(node, kNotFound, 0, 0);
+    }
+  }
 
   // Traverse trie.
   std::vector<Node*> stack = {root_.get()};
@@ -94,7 +102,7 @@ const std::vector<const SyncState> SyncStatusTracker::GetChangesAndClean() {
   }
 
   // Reset root node if it's childless.
-  if (root_->children.empty()) {
+  if (root_->IsLeaf()) {
     root_->state.Set(kNotFound, 0, 0);
   }
 
@@ -106,6 +114,8 @@ const std::vector<const SyncState> SyncStatusTracker::GetChangesAndClean() {
 
 SyncStatusTracker::Node* SyncStatusTracker::FindNode(
     const base::FilePath& path) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const auto components = path.GetComponents();
   DCHECK(!components.empty() && components.front() == "/");
   const base::span<const base::FilePath::StringType> path_parts(
@@ -155,32 +165,34 @@ void SyncStatusTracker::SetSyncState(const int64_t id,
   // moved/renamed. Mark it as "moved" and remove its status/progress changes
   // from its current ancestors so they are not duplicated with its new
   // ancestors in the trie.
-  if (auto it = id_to_node_.find(id);
-      it != id_to_node_.end() && it->second != node) {
+  if (auto it = id_to_leaf_.find(id);
+      it != id_to_leaf_.end() && it->second != node) {
     SetNodeState(it->second, kMoved, 0, 0);
   }
-  id_to_node_[id] = node;
+  id_to_leaf_[id] = node;
 }
 
 bool SyncStatusTracker::ShouldRemoveNode(const Node* node) const {
   DCHECK(node);
   const auto status = node->state.GetStatus();
-  return node->children.empty() &&
+  return node->IsLeaf() &&
          (status == SyncStatus::kCompleted || status == SyncStatus::kMoved);
 }
 
 void SyncStatusTracker::RemoveNode(const Node* node) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   DCHECK(node);
   Node* parent = node->parent;
   if (!parent) {
     return;
   }
   if (node->id) {
-    id_to_node_.erase(node->id);
+    id_to_leaf_.erase(node->id);
   }
   parent->children.erase(node->path_part);
   Node* grandparent = parent->parent;
-  while (grandparent && parent->children.empty()) {
+  while (grandparent && parent->IsLeaf()) {
     grandparent->children.erase(parent->path_part);
     parent = grandparent;
     grandparent = grandparent->parent;
@@ -201,6 +213,7 @@ void SyncStatusTracker::SetNodeState(Node* const node,
                                      const int64_t transferred = 0,
                                      const int64_t total = 0) {
   const NodeState& delta = node->state.Set(status, transferred, total);
+  node->last_update = base::Time::Now();
 
   // Nothing to do if there were no changes.
   if (delta.IsPristine()) {
