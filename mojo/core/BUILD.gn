@@ -344,6 +344,7 @@ source_set("test_sources") {
     "node_channel_unittest.cc",
     "options_validation_unittest.cc",
     "platform_handle_dispatcher_unittest.cc",
+    "platform_wrapper_unittest.cc",
     "quota_unittest.cc",
     "shared_buffer_dispatcher_unittest.cc",
     "shared_buffer_unittest.cc",
@@ -359,7 +360,6 @@ source_set("test_sources") {
       "ipcz_driver/transport_test.cc",
       "multiprocess_message_pipe_unittest.cc",
       "node_controller_unittest.cc",
-      "platform_wrapper_unittest.cc",
     ]
   }
 

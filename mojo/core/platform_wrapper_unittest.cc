@@ -24,7 +24,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/scoped_handle.h"
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_mach_port.h"
 #endif
 
@@ -37,7 +37,7 @@
 #if BUILDFLAG(IS_FUCHSIA)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE \
   MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE SIMPLE_PLATFORM_HANDLE_TYPE
@@ -65,7 +65,13 @@ namespace {
 
 using PlatformWrapperTest = test::MojoTestBase;
 
-TEST_F(PlatformWrapperTest, WrapPlatformHandle) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_WrapPlatformHandle DISABLED_WrapPlatformHandle
+#else
+#define MAYBE_WrapPlatformHandle WrapPlatformHandle
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(PlatformWrapperTest, MAYBE_WrapPlatformHandle) {
   // Create a temporary file and write a message to it.
   base::FilePath temp_file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));
@@ -114,7 +120,14 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-TEST_F(PlatformWrapperTest, WrapPlatformSharedMemoryRegion) {
+#if BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1418597): Test currently fails on iOS.
+#define MAYBE_WrapPlatformSharedMemoryRegion \
+  DISABLED_WrapPlatformSharedMemoryRegion
+#else
+#define MAYBE_WrapPlatformSharedMemoryRegion WrapPlatformSharedMemoryRegion
+#endif  // BUILDFLAG(IS_IOS)
+TEST_F(PlatformWrapperTest, MAYBE_WrapPlatformSharedMemoryRegion) {
   // Allocate a new platform shared buffer and write a message into it.
   const std::string kMessage = "Hello, world!";
   auto region = base::UnsafeSharedMemoryRegion::Create(kMessage.size());
@@ -134,7 +147,7 @@ TEST_F(PlatformWrapperTest, WrapPlatformSharedMemoryRegion) {
 #if BUILDFLAG(IS_WIN)
     os_buffer.value =
         reinterpret_cast<uint64_t>(platform_region.PassPlatformHandle().Take());
-#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
     os_buffer.value =
         static_cast<uint64_t>(platform_region.PassPlatformHandle().release());
 #elif BUILDFLAG(IS_POSIX)
@@ -199,7 +212,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
 #elif BUILDFLAG(IS_FUCHSIA)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE, os_buffer.type);
   auto platform_handle = zx::vmo(static_cast<zx_handle_t>(os_buffer.value));
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT, os_buffer.type);
   auto platform_handle =
       base::mac::ScopedMachSendRight(static_cast<mach_port_t>(os_buffer.value));
