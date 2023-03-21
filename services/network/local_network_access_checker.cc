@@ -110,6 +110,17 @@ Result LocalNetworkAccessChecker::Check(
   mojom::IPAddressSpace resource_address_space =
       TransportInfoToIPAddressSpace(transport_info);
 
+  // If we are connecting to a local IP endpoint over HTTP without a target IP
+  // address space, record whether we could have successfully inferred the
+  // target IP address space from the request URL.
+  if (resource_address_space == mojom::IPAddressSpace::kLocal &&
+      is_request_url_scheme_http_ &&
+      target_address_space_ == mojom::IPAddressSpace::kUnknown) {
+    base::UmaHistogramBoolean(
+        "Security.PrivateNetworkAccess.PrivateIpInferrable",
+        request_url_local_ip_.has_value());
+  }
+
   auto result = CheckInternal(resource_address_space);
 
   base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",
@@ -118,16 +129,6 @@ Result LocalNetworkAccessChecker::Check(
   if (transport_info.type == net::TransportType::kCached) {
     base::UmaHistogramEnumeration(
         "Security.PrivateNetworkAccess.CachedResourceCheckResult", result);
-  }
-
-  // If we are connecting to a local IP endpoint over HTTP, and have failed
-  // the check, record whether we could have avoided the failure by inferring
-  // the target IP address space from the request URL.
-  if (resource_address_space == mojom::IPAddressSpace::kLocal &&
-      is_request_url_scheme_http_ && result == Result::kBlockedByPolicyBlock) {
-    base::UmaHistogramBoolean(
-        "Security.PrivateNetworkAccess.PrivateIpInferrable",
-        request_url_local_ip_.has_value());
   }
 
   response_address_space_ = resource_address_space;

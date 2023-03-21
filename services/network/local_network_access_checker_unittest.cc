@@ -739,11 +739,11 @@ TEST(LocalNetworkAccessCheckerTest,
 }
 
 TEST(LocalNetworkAccessCheckerTest,
-     RecordsLocalIpInferrableHistogramWrongPolicy) {
+     RecordsLocalIpInferrableHistogramPolicyAllow) {
   mojom::ClientSecurityState client_security_state;
   client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
   client_security_state.local_network_request_policy =
-      mojom::LocalNetworkRequestPolicy::kPreflightWarn;
+      mojom::LocalNetworkRequestPolicy::kAllow;
 
   base::HistogramTester histogram_tester;
 
@@ -754,8 +754,8 @@ TEST(LocalNetworkAccessCheckerTest,
 
   checker.Check(DirectTransport(LocalEndpoint()));
 
-  histogram_tester.ExpectTotalCount(
-      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", true, 1);
 }
 
 TEST(LocalNetworkAccessCheckerTest,
@@ -774,8 +774,8 @@ TEST(LocalNetworkAccessCheckerTest,
 
   checker.Check(DirectTransport(LocalEndpoint()));
 
-  histogram_tester.ExpectTotalCount(
-      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", true, 1);
 }
 
 TEST(LocalNetworkAccessCheckerTest, RecordsLocalIpInferrableHistogramTrue) {
