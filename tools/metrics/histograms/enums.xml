@@ -4004,6 +4004,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Launched from full apps list"/>
   <int value="1" label="Launched from a notification"/>
   <int value="2" label="Launched from recent apps in Phone Hub"/>
+  <int value="3" label="Unknown launch entrypoint."/>
 </enum>
 
 <enum name="AppsWindowType">

@@ -169,4 +169,8 @@ enum AppStreamLaunchEntryPoint {
   APPS_LIST = 0,    // App stream was launched from the full apps list.
   NOTIFICATION = 1, // App stream was launched from a notification.
   RECENT_APPS = 2,  // App stream was launched from the recent apps.
+  // The initial value set before app streaming started. Should never be
+  // recorded histogram since by the time we start app streaming, a proper
+  // value should have been set.
+  UNKNOWN = 3,
 };
