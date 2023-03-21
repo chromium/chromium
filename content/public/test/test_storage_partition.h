@@ -14,6 +14,7 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -50,6 +51,9 @@ class TestStoragePartition : public StoragePartition {
   TestStoragePartition& operator=(const TestStoragePartition&) = delete;
 
   ~TestStoragePartition() override;
+
+  void set_config(StoragePartitionConfig config) { config_ = config; }
+  const StoragePartitionConfig& GetConfig() override;
 
   void set_path(base::FilePath file_path) { file_path_ = file_path; }
   base::FilePath GetPath() override;
@@ -234,6 +238,7 @@ class TestStoragePartition : public StoragePartition {
   void InvalidateWeakPtrs();
 
  private:
+  StoragePartitionConfig config_;
   base::FilePath file_path_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;

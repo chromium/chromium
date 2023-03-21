@@ -15,6 +15,10 @@ namespace content {
 TestStoragePartition::TestStoragePartition() {}
 TestStoragePartition::~TestStoragePartition() {}
 
+const StoragePartitionConfig& TestStoragePartition::GetConfig() {
+  return config_;
+}
+
 base::FilePath TestStoragePartition::GetPath() {
   return file_path_;
 }

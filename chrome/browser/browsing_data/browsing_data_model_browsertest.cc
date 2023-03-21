@@ -11,6 +11,9 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
@@ -18,6 +21,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -108,6 +112,17 @@ void AccessTopics(const content::ToRenderFrameHost& adapter) {
   EXPECT_EQ("Success", EvalJs(adapter, command));
 }
 
+void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
+                          int size) {
+  auto command =
+      content::JsReplace("localStorage.setItem('key', '!'.repeat($1))", size);
+  EXPECT_TRUE(ExecJs(render_frame_host, command));
+  base::RunLoop run_loop;
+  render_frame_host->GetStoragePartition()->GetLocalStorageControl()->Flush(
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
   while (model->size() != expected_size) {
     base::RunLoop run_loop;
@@ -134,6 +149,8 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
                 network::features::TrustTokenOriginTrialSpec::
                     kOriginTrialNotRequired)}}},
          {features::kPrivacySandboxAdsAPIsOverride, {}},
+         {features::kIsolatedWebApps, {}},
+         {features::kIsolatedWebAppDevMode, {}},
          {blink::features::kSharedStorageAPI, {}},
          {blink::features::kInterestGroupStorage, {}},
          {blink::features::kAdInterestGroupAPI, {}},
@@ -165,13 +182,13 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
     base::test::TestFuture<std::unique_ptr<BrowsingDataModel>>
         browsing_data_model;
     BrowsingDataModel::BuildFromDisk(
-        browser()->profile()->GetDefaultStoragePartition(),
+        browser()->profile(),
         ChromeBrowsingDataModelDelegate::CreateForProfile(browser()->profile()),
         browsing_data_model.GetCallback());
     return browsing_data_model.Take();
   }
 
-  content::StoragePartition* storage_partition() {
+  content::StoragePartition* default_storage_partition() {
     return browser()->profile()->GetDefaultStoragePartition();
   }
 
@@ -193,7 +210,8 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
                        SharedStorageHandledCorrectly) {
   // Add origin shared storage.
-  auto* shared_storage_manager = storage_partition()->GetSharedStorageManager();
+  auto* shared_storage_manager =
+      default_storage_partition()->GetSharedStorageManager();
   ASSERT_NE(nullptr, shared_storage_manager);
 
   base::test::TestFuture<OperationResult> future;
@@ -482,4 +500,44 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   // Validate that the allowed browsing data model is cleared.
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       IsolatedWebAppUsageInDefaultStoragePartitionModel) {
+  // Check that no IWAs are installed at the beginning of the test.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  Profile* profile = browser()->profile();
+  auto dev_server = web_app::CreateAndStartDevServer(
+      FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+
+  auto iwa_url_info1 = web_app::InstallDevModeProxyIsolatedWebApp(
+      profile, dev_server->GetOrigin());
+  auto* iwa_frame1 =
+      web_app::OpenIsolatedWebApp(profile, iwa_url_info1.app_id());
+  AddLocalStorageUsage(iwa_frame1, 100);
+
+  auto iwa_url_info2 = web_app::InstallDevModeProxyIsolatedWebApp(
+      profile, dev_server->GetOrigin());
+  auto* iwa_frame2 =
+      web_app::OpenIsolatedWebApp(profile, iwa_url_info2.app_id());
+  AddLocalStorageUsage(iwa_frame2, 500);
+
+  browsing_data_model = BuildBrowsingDataModel();
+
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{iwa_url_info1.origin().host(),
+        iwa_url_info1.origin(),
+        {static_cast<BrowsingDataModel::StorageType>(
+             ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
+         /*storage_size=*/105, /*cookie_count=*/0}},
+       {iwa_url_info2.origin().host(),
+        iwa_url_info2.origin(),
+        {static_cast<BrowsingDataModel::StorageType>(
+             ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
+         /*storage_size=*/505, /*cookie_count=*/0}}});
 }

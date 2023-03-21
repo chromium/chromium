@@ -18,6 +18,7 @@
 #include "url/origin.h"
 
 namespace content {
+class BrowserContext;
 class StoragePartition;
 }
 
@@ -169,8 +170,16 @@ class BrowsingDataModel {
   size_t size() const { return browsing_data_entries_.size(); }
 
   // Consults supported storage backends to create and populate a Model based
-  // on the current state of `storage_partition`.
+  // on the current state of `browser_context`.
   static void BuildFromDisk(
+      content::BrowserContext* browser_context,
+      std::unique_ptr<Delegate> delegate,
+      base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
+          complete_callback);
+
+  // Consults supported storage backends to create and populate a Model based
+  // on the current state of `storage_partition`.
+  static void BuildFromNonDefaultStoragePartition(
       content::StoragePartition* storage_partition,
       std::unique_ptr<Delegate> delegate,
       base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
@@ -204,6 +213,12 @@ class BrowsingDataModel {
 
  protected:
   friend class BrowsingDataModelTest;
+
+  static void BuildFromStoragePartition(
+      content::StoragePartition* storage_partition,
+      std::unique_ptr<Delegate> delegate,
+      base::OnceCallback<void(std::unique_ptr<BrowsingDataModel>)>
+          complete_callback);
 
   // Private as one of the static BuildX functions should be used instead.
   explicit BrowsingDataModel(

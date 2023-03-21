@@ -148,10 +148,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OverridePrivateAggregationManagerForTesting(
       std::unique_ptr<PrivateAggregationManager> private_aggregation_manager);
 
-  // Returns the StoragePartitionConfig that represents this StoragePartition.
-  const StoragePartitionConfig& GetConfig();
-
   // StoragePartition interface.
+  const StoragePartitionConfig& GetConfig() override;
   base::FilePath GetPath() override;
   network::mojom::NetworkContext* GetNetworkContext() override;
   network::mojom::URLLoaderFactoryParamsPtr CreateURLLoaderFactoryParams();

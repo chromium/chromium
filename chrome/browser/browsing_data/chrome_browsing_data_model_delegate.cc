@@ -4,14 +4,54 @@
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 
+#include <memory>
+
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
+#include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#endif
+
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry>
+IsolatedWebAppBrowsingDataToDelegateEntries(
+    base::flat_map<url::Origin, int64_t> isolated_web_app_browsing_data) {
+  std::vector<ChromeBrowsingDataModelDelegate::DelegateEntry> entries;
+  for (auto const& [origin, size] : isolated_web_app_browsing_data) {
+    entries.emplace_back(
+        origin,
+        static_cast<BrowsingDataModel::StorageType>(
+            ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
+        size);
+  }
+  return entries;
+}
+#endif
+
+}  // namespace
 
 // static
 std::unique_ptr<ChromeBrowsingDataModelDelegate>
 ChromeBrowsingDataModelDelegate::CreateForProfile(Profile* profile) {
-  return std::make_unique<ChromeBrowsingDataModelDelegate>(profile);
+  return base::WrapUnique(new ChromeBrowsingDataModelDelegate(
+      profile, profile->GetDefaultStoragePartition()));
+}
+
+// static
+std::unique_ptr<ChromeBrowsingDataModelDelegate>
+ChromeBrowsingDataModelDelegate::CreateForStoragePartition(
+    Profile* profile,
+    content::StoragePartition* storage_partition) {
+  return base::WrapUnique(
+      new ChromeBrowsingDataModelDelegate(profile, storage_partition));
 }
 
 // static
@@ -26,15 +66,29 @@ void ChromeBrowsingDataModelDelegate::BrowsingDataAccessed(
 }
 
 ChromeBrowsingDataModelDelegate::ChromeBrowsingDataModelDelegate(
-    Profile* profile)
-    : profile_(profile) {}
+    Profile* profile,
+    content::StoragePartition* storage_partition)
+    : profile_(profile), storage_partition_(storage_partition) {}
 
 ChromeBrowsingDataModelDelegate::~ChromeBrowsingDataModelDelegate() = default;
 
 void ChromeBrowsingDataModelDelegate::GetAllDataKeys(
     base::OnceCallback<void(std::vector<DelegateEntry>)> callback) {
-  // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
+#if !BUILDFLAG(IS_ANDROID)
+  if (storage_partition_->GetConfig().is_default()) {
+    auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
+    DCHECK(web_app_provider);
+    web_app_provider->scheduler().GetIsolatedWebAppBrowsingData(
+        base::BindOnce(&IsolatedWebAppBrowsingDataToDelegateEntries)
+            .Then(std::move(callback)));
+  } else {
+    std::move(callback).Run({});
+  }
+#else
   std::move(callback).Run({});
+#endif
+
+  // TODO(crbug.com/1271155): Implement data retrieval for remaining data types.
 }
 
 void ChromeBrowsingDataModelDelegate::RemoveDataKey(

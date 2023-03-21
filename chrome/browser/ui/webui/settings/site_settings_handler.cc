@@ -2130,11 +2130,8 @@ void SiteSettingsHandler::RebuildModels() {
 
   num_models_being_built_ = 2;
 
-  content::StoragePartition* storage_partition =
-      profile_->GetDefaultStoragePartition();
   BrowsingDataModel::BuildFromDisk(
-      storage_partition,
-      ChromeBrowsingDataModelDelegate::CreateForProfile(profile_),
+      profile_, ChromeBrowsingDataModelDelegate::CreateForProfile(profile_),
       base::BindOnce(&SiteSettingsHandler::BrowsingDataModelCreated,
                      weak_ptr_factory_.GetWeakPtr()));
 

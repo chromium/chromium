@@ -284,8 +284,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
     profile_ = testing_profile_manager_->CreateTestingProfile(
-        kTestUserEmail, {{HistoryServiceFactory::GetInstance(),
-                          HistoryServiceFactory::GetDefaultFactory()}});
+        kTestUserEmail,
+        {{HistoryServiceFactory::GetInstance(),
+          HistoryServiceFactory::GetDefaultFactory()}},
+        /*is_main_profile=*/true);
     EXPECT_TRUE(profile_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

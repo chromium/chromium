@@ -75,9 +75,10 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
 
     content::StoragePartition* storage_partition =
         profile_->GetStoragePartition(storage_partition_config);
-    BrowsingDataModel::BuildFromDisk(
+    BrowsingDataModel::BuildFromNonDefaultStoragePartition(
         storage_partition,
-        ChromeBrowsingDataModelDelegate::CreateForProfile(profile_),
+        ChromeBrowsingDataModelDelegate::CreateForStoragePartition(
+            profile_, storage_partition),
         base::BindOnce(&StoragePartitionSizeEstimator::BrowsingDataModelLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
 

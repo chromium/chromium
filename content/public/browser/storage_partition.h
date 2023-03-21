@@ -80,6 +80,7 @@ class InterestGroupManager;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
+class StoragePartitionConfig;
 class ZoomLevelDelegate;
 class NavigationRequest;
 
@@ -91,6 +92,9 @@ class NavigationRequest;
 // the cookies, localStorage, etc., that normal web renderers have access to.
 class CONTENT_EXPORT StoragePartition {
  public:
+  // Returns the StoragePartitionConfig that represents this StoragePartition.
+  virtual const StoragePartitionConfig& GetConfig() = 0;
+
   virtual base::FilePath GetPath() = 0;
 
   // Returns a raw mojom::NetworkContext pointer. When network service crashes

@@ -126,8 +126,9 @@ HostContentSettingsMap* PageSpecificContentSettingsDelegate::GetSettingsMap() {
 
 std::unique_ptr<BrowsingDataModel::Delegate>
 PageSpecificContentSettingsDelegate::CreateBrowsingDataModelDelegate() {
-  return ChromeBrowsingDataModelDelegate::CreateForProfile(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  return ChromeBrowsingDataModelDelegate::CreateForStoragePartition(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+      web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
 }
 
 namespace {
