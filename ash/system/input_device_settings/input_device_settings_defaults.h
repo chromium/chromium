@@ -18,6 +18,7 @@ constexpr base::TimeDelta kDefaultAutoRepeatInterval =
 constexpr bool kDefaultAutoRepeatEnabled = true;
 constexpr bool kDefaultSuppressMetaFKeyRewrites = false;
 constexpr bool kDefaultTopRowAreFKeys = false;
+constexpr bool kDefaultTopRowAreFKeysExternal = true;
 
 // Default settings for all pointers, defined in
 // chrome/browser/ash/preferences.cc.

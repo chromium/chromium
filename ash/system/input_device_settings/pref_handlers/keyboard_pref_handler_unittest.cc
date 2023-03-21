@@ -378,6 +378,23 @@ TEST_F(KeyboardPrefHandlerTest, NewKeyboardsDefaultSettings) {
                                        *settings_dict);
 }
 
+TEST_F(KeyboardPrefHandlerTest,
+       TopRowAreFKeysEnabledByDefaultForExternalKeyboard) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+  keyboard.is_external = kDefaultTopRowAreFKeysExternal;
+  mojom::KeyboardSettingsPtr settings =
+      CallInitializeKeyboardSettings(keyboard);
+  EXPECT_TRUE(settings->top_row_are_fkeys);
+
+  mojom::Keyboard keyboard2;
+  keyboard.device_key = kKeyboardKey2;
+  mojom::KeyboardSettingsPtr settings2 =
+      CallInitializeKeyboardSettings(keyboard2);
+  // `top_row_are_fkeys` defaults to false for internal keyboards.
+  EXPECT_FALSE(settings2->top_row_are_fkeys);
+}
+
 TEST_F(KeyboardPrefHandlerTest, InvalidModifierRemappings) {
   CallUpdateKeyboardSettings(kKeyboardKey1, kKeyboardSettings1);
   auto devices_dict =

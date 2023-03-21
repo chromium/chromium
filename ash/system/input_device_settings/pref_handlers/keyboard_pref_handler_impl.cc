@@ -45,13 +45,15 @@ static constexpr auto kMetaKeyMapping =
          {mojom::MetaKey::kCommand,
           ::prefs::kLanguageRemapExternalCommandKeyTo}});
 
-mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings() {
+mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(bool is_external) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
   settings->auto_repeat_delay = kDefaultAutoRepeatDelay;
   settings->auto_repeat_interval = kDefaultAutoRepeatInterval;
   settings->auto_repeat_enabled = kDefaultAutoRepeatEnabled;
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
-  settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  // This setting should be enabled by default for external keyboards.
+  settings->top_row_are_fkeys =
+      is_external ? kDefaultTopRowAreFKeysExternal : kDefaultTopRowAreFKeys;
   return settings;
 }
 
@@ -106,7 +108,7 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     PrefService* pref_service,
     mojom::Keyboard* keyboard) {
   if (!pref_service) {
-    keyboard->settings = GetDefaultKeyboardSettings();
+    keyboard->settings = GetDefaultKeyboardSettings(keyboard->is_external);
     return;
   }
 
@@ -143,7 +145,8 @@ mojom::KeyboardSettingsPtr KeyboardPrefHandlerImpl::RetrieveKeyboardSettings(
           .value_or(kDefaultSuppressMetaFKeyRewrites);
   settings->top_row_are_fkeys =
       settings_dict.FindBool(prefs::kKeyboardSettingTopRowAreFKeys)
-          .value_or(kDefaultTopRowAreFKeys);
+          .value_or(keyboard.is_external ? kDefaultTopRowAreFKeysExternal
+                                         : kDefaultTopRowAreFKeys);
 
   const auto* modifier_remappings_dict =
       settings_dict.FindDict(prefs::kKeyboardSettingModifierRemappings);
@@ -189,7 +192,7 @@ mojom::KeyboardSettingsPtr KeyboardPrefHandlerImpl::GetNewKeyboardSettings(
     return GetKeyboardSettingsFromGlobalPrefs(prefs, keyboard);
   }
 
-  return GetDefaultKeyboardSettings();
+  return GetDefaultKeyboardSettings(keyboard.is_external);
 }
 
 void KeyboardPrefHandlerImpl::UpdateKeyboardSettings(
