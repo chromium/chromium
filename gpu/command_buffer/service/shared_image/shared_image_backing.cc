@@ -96,10 +96,11 @@ void SharedImageBacking::OnContextLost() {
   have_context_ = false;
 }
 
-SkImageInfo SharedImageBacking::AsSkImageInfo() const {
-  return SkImageInfo::Make(size_.width(), size_.height(),
+SkImageInfo SharedImageBacking::AsSkImageInfo(int plane_index) const {
+  gfx::Size plane_size = format_.GetPlaneSize(plane_index, size_);
+  return SkImageInfo::Make(plane_size.width(), plane_size.height(),
                            viz::ToClosestSkColorType(
-                               /*gpu_compositing=*/true, format()),
+                               /*gpu_compositing=*/true, format(), plane_index),
                            alpha_type_, color_space_.ToSkColorSpace());
 }
 

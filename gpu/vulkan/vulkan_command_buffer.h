@@ -61,13 +61,15 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandBuffer {
                          uint32_t buffer_width,
                          uint32_t buffer_height,
                          uint32_t width,
-                         uint32_t height);
+                         uint32_t height,
+                         uint64_t buffer_offset = 0);
   void CopyImageToBuffer(VkBuffer buffer,
                          VkImage image,
                          uint32_t buffer_width,
                          uint32_t buffer_height,
                          uint32_t width,
-                         uint32_t height);
+                         uint32_t height,
+                         uint64_t buffer_offset = 0);
 
  private:
   friend class CommandBufferRecorderBase;

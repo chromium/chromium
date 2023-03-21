@@ -76,8 +76,10 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   ~ExternalVkImageBacking() override;
 
   SharedContextState* context_state() const { return context_state_.get(); }
-  const GrBackendTexture& backend_texture() const { return backend_texture_; }
-  VulkanImage* image() const { return image_.get(); }
+  const GrBackendTexture& backend_texture() const {
+    return vk_textures_[0].backend_texture;
+  }
+  VulkanImage* image() const { return vk_textures_[0].vulkan_image.get(); }
   viz::VulkanContextProvider* context_provider() const {
     return context_state()->vk_context_provider();
   }
@@ -97,7 +99,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
     }
 
     if (usage() & SHARED_IMAGE_USAGE_GLES2) {
-      return !use_separate_gl_texture() && gl_texture_;
+      return !use_separate_gl_texture() && !gl_textures_.empty();
     }
 
     if ((usage() & SHARED_IMAGE_USAGE_RASTER) &&
@@ -172,6 +174,25 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       MemoryTypeTracker* tracker) override;
 
  private:
+  struct TextureHolderVk {
+    TextureHolderVk();
+    TextureHolderVk(TextureHolderVk&& other);
+    TextureHolderVk& operator=(TextureHolderVk&& other);
+    ~TextureHolderVk();
+
+    GrVkImageInfo GetGrVkImageInfo() const;
+
+    std::unique_ptr<VulkanImage> vulkan_image;
+    GrBackendTexture backend_texture;
+    sk_sp<SkPromiseImageTexture> promise_texture;
+  };
+
+  // Holds format + offset information for Vulkan mapped memory.
+  struct MapPlaneData {
+    SkImageInfo image_info;
+    size_t offset = 0;
+  };
+
   // Makes GL context current if not already. Will return false if MakeCurrent()
   // failed.
   bool MakeGLContextCurrent();
@@ -179,15 +200,19 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   // Allocates GL texture and returns true if successful.
   bool ProduceGLTextureInternal(bool is_passthrough);
 
-  bool UploadToVkImage(const SkPixmap& pixmap);
-  bool UploadToGLTexture(const SkPixmap& pixmap);
+  bool UploadToVkImage(const std::vector<SkPixmap>& pixmap);
+  bool UploadToGLTexture(const std::vector<SkPixmap>& pixmaps);
+
+  // Return format+offset per plane along with total data bytes required when
+  // mapping VkImage.
+  std::pair<std::vector<MapPlaneData>, size_t> GetMapPlaneData() const;
+
   void CopyPixelsFromGLTextureToVkImage();
   void CopyPixelsFromVkImageToGLTexture();
 
   scoped_refptr<SharedContextState> context_state_;
-  std::unique_ptr<VulkanImage> image_;
-  GrBackendTexture backend_texture_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
+  std::vector<TextureHolderVk> vk_textures_;
+
   const raw_ptr<VulkanCommandPool, DanglingUntriaged> command_pool_;
   const bool use_separate_gl_texture_;
 
@@ -198,7 +223,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   uint32_t reads_in_progress_ = 0;
   uint32_t gl_reads_in_progress_ = 0;
 
-  std::unique_ptr<GLTextureHolder> gl_texture_;
+  std::vector<GLTextureHolder> gl_textures_;
 
   enum LatestContent {
     kInVkImage = 1 << 0,

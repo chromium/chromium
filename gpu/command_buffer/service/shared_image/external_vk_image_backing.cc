@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bits.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -30,6 +31,7 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
@@ -129,7 +131,7 @@ void WaitSemaphoresOnGrContext(GrDirectContext* gr_context,
     backend_senampres.back().initVulkan(semaphore.GetVkSemaphore());
   }
   gr_context->wait(backend_senampres.size(), backend_senampres.data(),
-                   /*deleteSemaphoreAfterWait=*/false);
+                   /*deleteSemaphoresAfterWait=*/false);
 }
 
 }  // namespace
@@ -208,7 +210,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     auto image_info = backing->AsSkImageInfo();
     DCHECK_EQ(pixel_data.size(), image_info.computeMinByteSize());
     SkPixmap pixmap(image_info, pixel_data.data(), image_info.minRowBytes());
-    backing->UploadToVkImage(pixmap);
+    backing->UploadToVkImage({pixmap});
 
     // Mark the backing as cleared.
     backing->SetCleared();
@@ -284,50 +286,70 @@ ExternalVkImageBacking::ExternalVkImageBacking(
                                       image->device_size(),
                                       /*is_thread_safe=*/false),
       context_state_(std::move(context_state)),
-      image_(std::move(image)),
-      backend_texture_(size.width(),
-                       size.height(),
-                       CreateGrVkImageInfo(image_.get())),
-      promise_texture_(SkPromiseImageTexture::Make(backend_texture_)),
       command_pool_(command_pool),
-      use_separate_gl_texture_(use_separate_gl_texture) {}
+      use_separate_gl_texture_(use_separate_gl_texture) {
+  vk_textures_.resize(1);
+  auto& vk_texture = vk_textures_[0];
+  vk_texture.vulkan_image = std::move(image);
+  gfx::Size plane_size = vk_texture.vulkan_image->size();
+  GrVkImageInfo vk_image_info =
+      CreateGrVkImageInfo(vk_texture.vulkan_image.get());
+  vk_texture.backend_texture =
+      GrBackendTexture(plane_size.width(), plane_size.height(), vk_image_info);
+  vk_texture.promise_texture =
+      SkPromiseImageTexture::Make(vk_texture.backend_texture);
+}
 
 ExternalVkImageBacking::~ExternalVkImageBacking() {
   auto semaphores = std::move(read_semaphores_);
-  if (write_semaphore_)
+  if (write_semaphore_) {
     semaphores.emplace_back(std::move(write_semaphore_));
+  }
 
   if (!semaphores.empty() && !context_state()->gr_context()->abandoned()) {
     WaitSemaphoresOnGrContext(context_state()->gr_context(), &semaphores);
     ReturnPendingSemaphoresWithFenceHelper(std::move(semaphores));
   }
 
-  fence_helper()->EnqueueVulkanObjectCleanupForSubmittedWork(std::move(image_));
-  backend_texture_ = GrBackendTexture();
+  for (auto& vk_texture : vk_textures_) {
+    fence_helper()->EnqueueVulkanObjectCleanupForSubmittedWork(
+        std::move(vk_texture.vulkan_image));
+  }
+  vk_textures_.clear();
 
-  if (gl_texture_) {
+  if (!gl_textures_.empty()) {
     // Ensure that a context is current before glDeleteTexture().
     MakeGLContextCurrent();
     if (!have_context()) {
-      gl_texture_->SetContextLost();
+      for (auto& gl_texture : gl_textures_) {
+        gl_texture.SetContextLost();
+      }
     }
-    gl_texture_.reset();
+    gl_textures_.clear();
   }
 }
 
 std::vector<GLenum> ExternalVkImageBacking::GetVkImageLayoutsForGL() {
-  GrVkImageInfo info;
-  auto result = backend_texture_.getVkImageInfo(&info);
-  DCHECK(result);
-  DCHECK_EQ(info.fCurrentQueueFamily, VK_QUEUE_FAMILY_EXTERNAL);
-  DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_UNDEFINED);
-  DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
-  return {VkImageLayoutToGLImageLayout(info.fImageLayout)};
+  std::vector<GLenum> layouts;
+  layouts.reserve(vk_textures_.size());
+  for (auto& vk_texture : vk_textures_) {
+    GrVkImageInfo info = vk_texture.GetGrVkImageInfo();
+    DCHECK_EQ(info.fCurrentQueueFamily, VK_QUEUE_FAMILY_EXTERNAL);
+    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_UNDEFINED);
+    DCHECK_NE(info.fImageLayout, VK_IMAGE_LAYOUT_PREINITIALIZED);
+    layouts.push_back(VkImageLayoutToGLImageLayout(info.fImageLayout));
+  }
+  return layouts;
 }
 
 std::vector<sk_sp<SkPromiseImageTexture>>
 ExternalVkImageBacking::GetPromiseTextures() {
-  return {promise_texture_};
+  std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
+  promise_textures.reserve(vk_textures_.size());
+  for (auto& vk_texture : vk_textures_) {
+    promise_textures.push_back(vk_texture.promise_texture);
+  }
+  return promise_textures;
 }
 
 bool ExternalVkImageBacking::BeginAccess(
@@ -344,7 +366,7 @@ bool ExternalVkImageBacking::BeginAccess(
 
   if (readonly && !reads_in_progress_) {
     UpdateContent(kInVkImage);
-    if (gl_texture_) {
+    if (!gl_textures_.empty()) {
       UpdateContent(kInGLTexture);
     }
   }
@@ -356,9 +378,13 @@ bool ExternalVkImageBacking::BeginAccess(
     // resume the GL access.
     DCHECK(!is_gl);
     DCHECK(readonly);
-    DCHECK(gl_texture_);
+    DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
 
-    std::vector<GLuint> texture_ids = {gl_texture_->GetServiceId()};
+    std::vector<GLuint> texture_ids;
+    for (auto& gl_texture : gl_textures_) {
+      texture_ids.push_back(gl_texture.GetServiceId());
+    }
+
     MakeGLContextCurrent();
 
     auto release_semaphore =
@@ -383,10 +409,12 @@ bool ExternalVkImageBacking::BeginAccess(
     // if ProduceGL*() is never called. In this case, image layout and queue
     // family will not be ready for GL access as well.
     auto* gr_context = context_state()->gr_context();
-    gr_context->setBackendTextureState(
-        backend_texture_,
-        GrBackendSurfaceMutableState(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                     VK_QUEUE_FAMILY_EXTERNAL));
+    for (auto& vk_texture : vk_textures_) {
+      gr_context->setBackendTextureState(
+          vk_texture.backend_texture,
+          GrBackendSurfaceMutableState(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                       VK_QUEUE_FAMILY_EXTERNAL));
+    }
 
     ExternalSemaphore external_semaphore =
         external_semaphore_pool()->GetOrCreateSemaphore();
@@ -442,8 +470,13 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
     // access, we need to resume GL read access.
     DCHECK(!is_gl);
     DCHECK(readonly);
-    DCHECK(gl_texture_);
-    std::vector<GLuint> texture_ids = {gl_texture_->GetServiceId()};
+    DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
+
+    std::vector<GLuint> texture_ids;
+    for (auto& gl_texture : gl_textures_) {
+      texture_ids.push_back(gl_texture.GetServiceId());
+    }
+
     MakeGLContextCurrent();
     std::vector<ExternalSemaphore> external_semaphores;
     BeginAccessInternal(true, &external_semaphores);
@@ -471,18 +504,15 @@ void ExternalVkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 
 bool ExternalVkImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  DCHECK_EQ(pixmaps.size(), 1u);
-  auto& pixmap = pixmaps[0];
-
-  if (!UploadToVkImage(pixmap)) {
+  if (!UploadToVkImage(pixmaps)) {
     return false;
   }
 
   latest_content_ = kInVkImage;
 
   // Also upload to GL texture if there is a separate one.
-  if (use_separate_gl_texture() && gl_texture_) {
-    if (!UploadToGLTexture(pixmap)) {
+  if (use_separate_gl_texture() && !gl_textures_.empty()) {
+    if (!UploadToGLTexture(pixmaps)) {
       return false;
     }
     latest_content_ |= kInGLTexture;
@@ -524,7 +554,8 @@ void ExternalVkImageBacking::AddSemaphoresToPendingListOrRelease(
 }
 
 scoped_refptr<gfx::NativePixmap> ExternalVkImageBacking::GetNativePixmap() {
-  return image_->native_pixmap();
+  DCHECK_EQ(vk_textures_.size(), 1u);
+  return vk_textures_[0].vulkan_image->native_pixmap();
 }
 
 void ExternalVkImageBacking::ReturnPendingSemaphoresWithFenceHelper(
@@ -550,7 +581,8 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
     return nullptr;
   }
 
-  auto memory_fd = image_->GetMemoryFd();
+  DCHECK_EQ(vk_textures_.size(), 1u);
+  auto memory_fd = vk_textures_[0].vulkan_image->GetMemoryFd();
   if (!memory_fd.is_valid()) {
     return nullptr;
   }
@@ -575,13 +607,14 @@ bool ExternalVkImageBacking::MakeGLContextCurrent() {
 bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
   gl::GLApi* api = gl::g_current_gl_context;
   absl::optional<ScopedDedicatedMemoryObject> memory_object;
+  auto& vk_texture = vk_textures_[0];
+  auto& vulkan_image = vk_texture.vulkan_image;
+
   if (!use_separate_gl_texture()) {
-    GrVkImageInfo image_info;
-    bool result = backend_texture_.getVkImageInfo(&image_info);
-    DCHECK(result);
+    GrVkImageInfo image_info = vk_texture.GetGrVkImageInfo();
 
 #if BUILDFLAG(IS_POSIX)
-    auto memory_fd = image_->GetMemoryFd();
+    auto memory_fd = vulkan_image->GetMemoryFd();
     if (!memory_fd.is_valid()) {
       return false;
     }
@@ -590,7 +623,7 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
                                GL_HANDLE_TYPE_OPAQUE_FD_EXT,
                                memory_fd.release());
 #elif BUILDFLAG(IS_WIN)
-    auto memory_handle = image_->GetMemoryHandle();
+    auto memory_handle = vulkan_image->GetMemoryHandle();
     if (!memory_handle.IsValid()) {
       return false;
     }
@@ -599,7 +632,7 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
         memory_object->id(), image_info.fAlloc.fSize,
         GL_HANDLE_TYPE_OPAQUE_WIN32_EXT, memory_handle.Take());
 #elif BUILDFLAG(IS_FUCHSIA)
-    zx::vmo vmo = image_->GetMemoryZirconHandle();
+    zx::vmo vmo = vulkan_image->GetMemoryZirconHandle();
     if (!vmo)
       return false;
     memory_object.emplace(api);
@@ -647,12 +680,12 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
     // Currently, no extension structs are appended to VkImageCreateInfo::pNext
     // when creating the image, so communicate that information to ANGLE.  This
     // makes sure that ANGLE recreates the VkImage identically to Chromium.
-    DCHECK(image_->usage() != 0);
+    DCHECK_NE(vulkan_image->usage(), 0u);
     if (UseMinimalUsageFlags(context_state())) {
       api->glTexStorageMemFlags2DANGLEFn(
           GL_TEXTURE_2D, 1, format_desc.storage_internal_format, size().width(),
-          size().height(), memory_object->id(), 0, image_->flags(),
-          image_->usage(), nullptr);
+          size().height(), memory_object->id(), 0, vulkan_image->flags(),
+          vulkan_image->usage(), nullptr);
     } else {
       api->glTexStorageMem2DEXTFn(
           GL_TEXTURE_2D, 1, format_desc.storage_internal_format, size().width(),
@@ -660,8 +693,8 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
     }
   }
 
-  gl_texture_ = std::make_unique<GLTextureHolder>(
-      format().resource_format(), size(), is_passthrough, nullptr);
+  auto& gl_texture = gl_textures_.emplace_back(format().resource_format(),
+                                               size(), is_passthrough, nullptr);
 
   if (is_passthrough) {
     auto texture = base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
@@ -669,7 +702,7 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
         size().width(), size().height(),
         /*depth=*/1, /*border=*/0, format_desc.data_format,
         format_desc.data_type);
-    gl_texture_->InitializeWithTexture(format_desc, std::move(texture));
+    gl_texture.InitializeWithTexture(format_desc, std::move(texture));
   } else {
     auto* texture = gles2::CreateGLES2TextureWithLightRef(texture_service_id,
                                                           GL_TEXTURE_2D);
@@ -684,7 +717,7 @@ bool ExternalVkImageBacking::ProduceGLTextureInternal(bool is_passthrough) {
                           format_desc.data_format, format_desc.data_type,
                           cleared_rect);
     texture->SetImmutable(true, true);
-    gl_texture_->InitializeWithTexture(format_desc, texture);
+    gl_texture.InitializeWithTexture(format_desc, texture);
   }
 
   return true;
@@ -698,13 +731,18 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
     return nullptr;
   }
 
-  if (!gl_texture_) {
+  if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/false)) {
       return nullptr;
     }
   }
 
-  std::vector<gles2::Texture*> textures = {gl_texture_->texture()};
+  std::vector<gles2::Texture*> textures;
+  textures.reserve(gl_textures_.size());
+  for (auto& gl_texture : gl_textures_) {
+    textures.push_back(gl_texture.texture());
+  }
+
   return std::make_unique<ExternalVkImageGLRepresentation>(
       manager, this, tracker, std::move(textures));
 }
@@ -718,14 +756,18 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
     return nullptr;
   }
 
-  if (!gl_texture_) {
+  if (gl_textures_.empty()) {
     if (!ProduceGLTextureInternal(/*is_passthrough=*/true)) {
       return nullptr;
     }
   }
 
-  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures = {
-      gl_texture_->passthrough_texture()};
+  std::vector<scoped_refptr<gles2::TexturePassthrough>> textures;
+  textures.reserve(gl_textures_.size());
+  for (auto& gl_texture : gl_textures_) {
+    textures.push_back(gl_texture.passthrough_texture());
+  }
+
   return std::make_unique<ExternalVkImageGLPassthroughRepresentation>(
       manager, this, tracker, std::move(textures));
 }
@@ -784,9 +826,29 @@ void ExternalVkImageBacking::UpdateContent(uint32_t content_flags) {
   }
 }
 
+std::pair<std::vector<ExternalVkImageBacking::MapPlaneData>, size_t>
+ExternalVkImageBacking::GetMapPlaneData() const {
+  std::vector<MapPlaneData> data;
+  size_t total_data_bytes = 0;
+  size_t num_planes = vk_textures_.size();
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    data.push_back({AsSkImageInfo(plane), total_data_bytes});
+
+    // Ensure that the start of the next plane is 4 byte aligned. For all
+    // multi-planar formats the max texel block size is 4 bytes so this will
+    // always satisfy the next planes alignment requirement.
+    size_t plane_bytes = data.back().image_info.computeMinByteSize();
+    base::bits::AlignUp<size_t>(plane_bytes, 4u);
+
+    total_data_bytes += plane_bytes;
+  }
+
+  return {data, total_data_bytes};
+}
+
 void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
   DCHECK(use_separate_gl_texture());
-  DCHECK(gl_texture_);
+  DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
 
   // Make sure GrContext is not using GL. So we don't need reset GrContext
   DCHECK(!context_state_->GrContextIsGL());
@@ -797,12 +859,10 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
     return;
   }
 
-  SkImageInfo sk_image_info = AsSkImageInfo();
-  size_t data_size = sk_image_info.computeMinByteSize();
-
+  auto [plane_data, total_data_bytes] = GetMapPlaneData();
   VkBufferCreateInfo buffer_create_info = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = data_size,
+      .size = total_data_bytes,
       .usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
   };
@@ -831,11 +891,16 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
     return;
   }
 
-  SkPixmap pixmap(sk_image_info, buffer, sk_image_info.minRowBytes());
-  if (!gl_texture_->ReadbackToMemory(pixmap)) {
-    DLOG(ERROR) << "GL readback failed";
-    vma::UnmapMemory(allocator, stage_allocation);
-    return;
+  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+    auto& sk_image_info = plane_data[plane].image_info;
+    uint8_t* memory = static_cast<uint8_t*>(buffer) + plane_data[plane].offset;
+    SkPixmap pixmap(sk_image_info, memory, sk_image_info.minRowBytes());
+
+    if (!gl_textures_[plane].ReadbackToMemory(pixmap)) {
+      DLOG(ERROR) << "GL readback failed";
+      vma::UnmapMemory(allocator, stage_allocation);
+      return;
+    }
   }
 
   vma::UnmapMemory(allocator, stage_allocation);
@@ -854,18 +919,23 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
   CHECK(command_buffer);
   {
     ScopedSingleUseCommandBufferRecorder recorder(*command_buffer);
-    GrVkImageInfo image_info;
-    bool success = backend_texture_.getVkImageInfo(&image_info);
-    DCHECK(success);
-    if (image_info.fImageLayout != VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-      command_buffer->TransitionImageLayout(
-          image_info.fImage, image_info.fImageLayout,
-          VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-      backend_texture_.setVkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+      GrVkImageInfo image_info = vk_textures_[plane].GetGrVkImageInfo();
+      if (image_info.fImageLayout != VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+        command_buffer->TransitionImageLayout(
+            image_info.fImage, image_info.fImageLayout,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        vk_textures_[plane].backend_texture.setVkImageLayout(
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+      }
+
+      auto& sk_image_info = plane_data[plane].image_info;
+      command_buffer->CopyBufferToImage(
+          stage_buffer, image_info.fImage, sk_image_info.width(),
+          sk_image_info.height(), sk_image_info.width(), sk_image_info.height(),
+          plane_data[plane].offset);
     }
-    command_buffer->CopyBufferToImage(stage_buffer, image_info.fImage,
-                                      size().width(), size().height(),
-                                      size().width(), size().height());
   }
 
   if (!need_synchronization()) {
@@ -905,7 +975,7 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
 
 void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
   DCHECK(use_separate_gl_texture());
-  DCHECK(gl_texture_);
+  DCHECK_EQ(vk_textures_.size(), gl_textures_.size());
 
   // Make sure GrContext is not using GL. So we don't need reset GrContext
   DCHECK(!context_state_->GrContextIsGL());
@@ -916,12 +986,10 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
     return;
   }
 
-  SkImageInfo sk_image_info = AsSkImageInfo();
-  size_t data_size = sk_image_info.computeMinByteSize();
-
+  auto [plane_data, total_data_bytes] = GetMapPlaneData();
   VkBufferCreateInfo buffer_create_info = {
       .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-      .size = data_size,
+      .size = total_data_bytes,
       .usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
       .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
   };
@@ -957,18 +1025,23 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
   CHECK(command_buffer);
   {
     ScopedSingleUseCommandBufferRecorder recorder(*command_buffer);
-    GrVkImageInfo image_info;
-    bool success = backend_texture_.getVkImageInfo(&image_info);
-    DCHECK(success);
-    if (image_info.fImageLayout != VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
-      command_buffer->TransitionImageLayout(
-          image_info.fImage, image_info.fImageLayout,
-          VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
-      backend_texture_.setVkImageLayout(VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+    for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+      GrVkImageInfo image_info = vk_textures_[plane].GetGrVkImageInfo();
+      if (image_info.fImageLayout != VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+        command_buffer->TransitionImageLayout(
+            image_info.fImage, image_info.fImageLayout,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+        vk_textures_[plane].backend_texture.setVkImageLayout(
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+      }
+
+      auto& sk_image_info = plane_data[plane].image_info;
+      command_buffer->CopyImageToBuffer(
+          stage_buffer, image_info.fImage, sk_image_info.width(),
+          sk_image_info.height(), sk_image_info.width(), sk_image_info.height(),
+          plane_data[plane].offset);
     }
-    command_buffer->CopyImageToBuffer(stage_buffer, image_info.fImage,
-                                      size().width(), size().height(),
-                                      size().width(), size().height());
   }
 
   command_buffer->Submit(0, nullptr, 0, nullptr);
@@ -983,15 +1056,22 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
     return;
   }
 
-  SkPixmap pixmap(sk_image_info, buffer, sk_image_info.minRowBytes());
-  if (!gl_texture_->UploadFromMemory(pixmap)) {
-    DLOG(ERROR) << "GL upload failed";
+  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+    auto& sk_image_info = plane_data[plane].image_info;
+    uint8_t* memory = static_cast<uint8_t*>(buffer) + plane_data[plane].offset;
+    SkPixmap pixmap(sk_image_info, memory, sk_image_info.minRowBytes());
+    if (!gl_textures_[plane].UploadFromMemory(pixmap)) {
+      DLOG(ERROR) << "GL upload failed";
+    }
   }
 
   vma::UnmapMemory(allocator, stage_allocation);
 }
 
-bool ExternalVkImageBacking::UploadToVkImage(const SkPixmap& pixmap) {
+bool ExternalVkImageBacking::UploadToVkImage(
+    const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), vk_textures_.size());
+
   std::vector<ExternalSemaphore> external_semaphores;
   if (!BeginAccessInternal(/*readonly=*/false, &external_semaphores)) {
     DLOG(ERROR) << "BeginAccess() failed.";
@@ -1000,11 +1080,14 @@ bool ExternalVkImageBacking::UploadToVkImage(const SkPixmap& pixmap) {
   auto* gr_context = context_state_->gr_context();
   WaitSemaphoresOnGrContext(gr_context, &external_semaphores);
 
-  bool success =
-      gr_context->updateBackendTexture(backend_texture_, &pixmap,
-                                       /*numLevels=*/1, nullptr, nullptr);
-  if (!success) {
-    DLOG(ERROR) << "updateBackendTexture() failed.";
+  bool success = true;
+  for (size_t plane = 0; plane < vk_textures_.size(); ++plane) {
+    if (!gr_context->updateBackendTexture(vk_textures_[plane].backend_texture,
+                                          &pixmaps[plane],
+                                          /*numLevels=*/1, nullptr, nullptr)) {
+      success = false;
+      DLOG(ERROR) << "updateBackendTexture() failed.";
+    }
   }
 
   if (!need_synchronization()) {
@@ -1014,10 +1097,12 @@ bool ExternalVkImageBacking::UploadToVkImage(const SkPixmap& pixmap) {
   }
 
   gr_context->flush({});
-  gr_context->setBackendTextureState(
-      backend_texture_,
-      GrBackendSurfaceMutableState(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                                   VK_QUEUE_FAMILY_EXTERNAL));
+  for (auto& vk_texture : vk_textures_) {
+    gr_context->setBackendTextureState(
+        vk_texture.backend_texture,
+        GrBackendSurfaceMutableState(VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                                     VK_QUEUE_FAMILY_EXTERNAL));
+  }
 
   auto end_access_semaphore = external_semaphore_pool()->GetOrCreateSemaphore();
   VkSemaphore vk_end_access_semaphore = end_access_semaphore.GetVkSemaphore();
@@ -1039,9 +1124,10 @@ bool ExternalVkImageBacking::UploadToVkImage(const SkPixmap& pixmap) {
   return success;
 }
 
-bool ExternalVkImageBacking::UploadToGLTexture(const SkPixmap& pixmap) {
+bool ExternalVkImageBacking::UploadToGLTexture(
+    const std::vector<SkPixmap>& pixmaps) {
   DCHECK(use_separate_gl_texture());
-  DCHECK(gl_texture_);
+  DCHECK_EQ(gl_textures_.size(), pixmaps.size());
 
   // Make sure a gl context is current, since textures are shared between all gl
   // contexts, we don't care which gl context is current.
@@ -1049,7 +1135,12 @@ bool ExternalVkImageBacking::UploadToGLTexture(const SkPixmap& pixmap) {
     return false;
   }
 
-  return gl_texture_->UploadFromMemory(pixmap);
+  for (size_t i = 0; i < gl_textures_.size(); ++i) {
+    if (!gl_textures_[i].UploadFromMemory(pixmaps[i])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool ExternalVkImageBacking::BeginAccessInternal(
@@ -1121,6 +1212,22 @@ void ExternalVkImageBacking::EndAccessInternal(
   } else {
     DCHECK(!external_semaphore);
   }
+}
+
+ExternalVkImageBacking::TextureHolderVk::TextureHolderVk() = default;
+ExternalVkImageBacking::TextureHolderVk::TextureHolderVk(
+    TextureHolderVk&& other) = default;
+ExternalVkImageBacking::TextureHolderVk&
+ExternalVkImageBacking::TextureHolderVk::operator=(TextureHolderVk&& other) =
+    default;
+ExternalVkImageBacking::TextureHolderVk::~TextureHolderVk() = default;
+
+GrVkImageInfo ExternalVkImageBacking::TextureHolderVk::GetGrVkImageInfo()
+    const {
+  GrVkImageInfo info;
+  bool result = backend_texture.getVkImageInfo(&info);
+  DCHECK(result);
+  return info;
 }
 
 }  // namespace gpu

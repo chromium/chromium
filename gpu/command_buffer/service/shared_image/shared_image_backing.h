@@ -124,8 +124,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   void OnContextLost();
 
-  // Creates SkImageInfo matching backing size, format, alpha and color space.
-  SkImageInfo AsSkImageInfo() const;
+  // Creates SkImageInfo matching backing size, format, alpha and color space
+  // for the specified `plane_index`.
+  SkImageInfo AsSkImageInfo(int plane_index = 0) const;
 
   // Disables reference counting for backing. No references should be added,
   // either before or after this is called.
