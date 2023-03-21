@@ -1255,8 +1255,10 @@ int SplitViewController::GetDividerPosition(SnapPosition snap_position,
   int next_divider_position = snap_position == SnapPosition::kPrimary
                                   ? snap_width
                                   : divider_end_position - snap_width;
-  if (split_view_type_ == SplitViewType::kTabletType)
+  if (split_view_type_ == SplitViewType::kTabletType ||
+      ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
     next_divider_position -= kSplitviewDividerShortSideLength / 2;
+  }
   return next_divider_position;
 }
 
@@ -1405,7 +1407,8 @@ void SplitViewController::EndResizeWithDivider(
   NotifyWindowResized();
 
   const int target_divider_position = GetClosestFixedDividerPosition();
-  if (divider_position_ == target_divider_position) {
+  if (divider_position_ == target_divider_position ||
+      ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) {
     EndResizeWithDividerImpl();
     EndSplitViewAfterResizingAtEdgeIfAppropriate();
   } else {
@@ -2489,10 +2492,11 @@ int SplitViewController::GetClosestFixedDividerPosition() {
   divider_closest_ratio_ = FindClosestPositionRatio(
       divider_position_ + kSplitviewDividerShortSideLength / 2,
       divider_end_position);
-  int fix_position = divider_end_position * divider_closest_ratio_;
-  if (divider_closest_ratio_ > 0.f && divider_closest_ratio_ < 1.f)
-    fix_position -= kSplitviewDividerShortSideLength / 2;
-  return fix_position;
+  int fixed_position = divider_end_position * divider_closest_ratio_;
+  if (divider_closest_ratio_ > 0.f && divider_closest_ratio_ < 1.f) {
+    fixed_position -= kSplitviewDividerShortSideLength / 2;
+  }
+  return fixed_position;
 }
 
 void SplitViewController::StopAndShoveAnimatedDivider() {
@@ -2722,13 +2726,13 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
 
 float SplitViewController::FindClosestPositionRatio(float distance,
                                                     float length) {
-  float current_ratio = distance / length;
+  const float current_ratio = distance / length;
   float closest_ratio = 0.f;
   std::vector<float> position_ratios(
       kFixedPositionRatios,
       kFixedPositionRatios + sizeof(kFixedPositionRatios) / sizeof(float));
   ModifyPositionRatios(&position_ratios);
-  for (float ratio : position_ratios) {
+  for (const float ratio : position_ratios) {
     if (std::abs(current_ratio - ratio) <
         std::abs(current_ratio - closest_ratio)) {
       closest_ratio = ratio;
@@ -3092,7 +3096,7 @@ void SplitViewController::DoSplitDividerSpawnAnimation(aura::Window* window) {
                                                                       : p.y());
 }
 
-bool SplitViewController::ShouldShowDividerWidgetInClamshell() {
+bool SplitViewController::ShouldShowDividerWidgetInClamshell() const {
   DCHECK(primary_window_);
   DCHECK(secondary_window_);
   return InClamshellSplitViewMode() &&

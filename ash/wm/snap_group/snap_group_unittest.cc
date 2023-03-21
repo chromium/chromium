@@ -57,7 +57,7 @@ gfx::Rect split_view_divider_bounds_in_screen() {
       /*is_dragging=*/false);
 }
 
-gfx::Rect work_area_bounds() {
+const gfx::Rect work_area_bounds() {
   return display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 }
 
@@ -308,26 +308,53 @@ TEST_F(SnapGroupEntryPointArm1Test, ResizeOneWindowWillExitSnapGroup) {
 // with the split view divider.
 TEST_F(SnapGroupEntryPointArm1Test,
        ResizeWithSplitViewDividerBasicFunctionalities) {
-  const gfx::Rect work_area_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   std::unique_ptr<aura::Window> w1(CreateTestWindow());
   std::unique_ptr<aura::Window> w2(CreateTestWindow());
   SnapTwoTestWindowsInArm1(w1.get(), w2.get());
 
-  auto* event_generator = GetEventGenerator();
-  wm::ActivateWindow(w1.get());
-
   const gfx::Point hover_location =
       split_view_divider_bounds_in_screen().CenterPoint();
-  const int distance_delta = work_area_bounds.width() / 4;
-  event_generator->MoveMouseTo(hover_location);
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseTo(hover_location.x() - distance_delta,
-                               hover_location.y());
-  event_generator->ReleaseLeftButton();
+  const int distance_delta = -work_area_bounds().width() / 6;
+  split_view_controller()->StartResizeWithDivider(hover_location);
+  const auto end_point =
+      gfx::Point(hover_location.x() + distance_delta, hover_location.y());
+  split_view_controller()->ResizeWithDivider(end_point);
+  split_view_controller()->EndResizeWithDivider(end_point);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(0.25f, WindowState::Get(w1.get())->snap_ratio());
-  EXPECT_EQ(0.75f, WindowState::Get(w2.get())->snap_ratio());
+  EXPECT_NEAR(0.33f, WindowState::Get(w1.get())->snap_ratio().value(),
+              /*abs_error=*/0.1);
+  EXPECT_NEAR(0.67f, WindowState::Get(w2.get())->snap_ratio().value(),
+              /*abs_error=*/0.1);
+}
+
+// Tests that the windows in a snap group can be resized to an arbitrary
+// location with the split view divider.
+TEST_F(SnapGroupEntryPointArm1Test,
+       ResizeWithSplitViewDividerToArbitraryLocations) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+  for (const int distance_delta : {-10, 6, -15}) {
+    const auto w1_cached_bounds = w1.get()->GetBoundsInScreen();
+    const auto w2_cached_bounds = w2.get()->GetBoundsInScreen();
+
+    const gfx::Point hover_location =
+        split_view_divider_bounds_in_screen().CenterPoint();
+    split_view_controller()->StartResizeWithDivider(hover_location);
+    const auto end_location =
+        gfx::Point(hover_location.x() + distance_delta, hover_location.y());
+    split_view_controller()->ResizeWithDivider(end_location);
+    EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+
+    EXPECT_EQ(w1_cached_bounds.width() + distance_delta,
+              w1.get()->GetBoundsInScreen().width());
+    EXPECT_EQ(w2_cached_bounds.width() - distance_delta,
+              w2.get()->GetBoundsInScreen().width());
+    EXPECT_EQ(w1.get()->GetBoundsInScreen().width() +
+                  w2.get()->GetBoundsInScreen().width() +
+                  kSplitviewDividerShortSideLength,
+              work_area_bounds().width());
+  }
 }
 
 // Tests that when snapping a snapped window to the same snapped state, the

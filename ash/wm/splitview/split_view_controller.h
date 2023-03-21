@@ -469,7 +469,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // resizing.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
 
-  // Returns the closest fix location for |divider_position_|.
+  // Returns the closest fixed location for `divider_position_`.
   int GetClosestFixedDividerPosition();
 
   // While the divider is animating to somewhere, stop it and shove it there.
@@ -593,7 +593,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Returns true if the `split_view_divider_` should show in clamshell mode on
   // two windows snapped when the feature flag `kSnapGroup` is enabled and the
   // feature param `kAutomaticallyLockGroup` is true.
-  bool ShouldShowDividerWidgetInClamshell();
+  bool ShouldShowDividerWidgetInClamshell() const;
 
   // Root window the split view is in.
   aura::Window* root_window_;
