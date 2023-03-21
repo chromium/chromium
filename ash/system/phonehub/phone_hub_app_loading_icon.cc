@@ -63,13 +63,13 @@ void AppLoadingIcon::StartLoadingAnimation(
   }
 
   views::AnimationBuilder builder;
+  animation_abort_handle_ = builder.GetAbortHandle();
   builder.Repeatedly()
       .SetDuration(base::Milliseconds(kAnimationFadeDownDurationInMs))
       .SetOpacity(this, kAnimationOpacityLow, gfx::Tween::ACCEL_30_DECEL_20_85)
       .Then()
       .SetDuration(base::Milliseconds(kAnimationFadeUpDurationInMs))
       .SetOpacity(this, kAnimationOpacityHigh, gfx::Tween::LINEAR);
-  animation_abort_handle_ = builder.GetAbortHandle();
 }
 
 void AppLoadingIcon::StopLoadingAnimation() {
