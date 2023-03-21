@@ -132,8 +132,7 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   int url_web_ui_token_ = -1;
 
   // Whether the high confidence allowlist can be checked. It is set to
-  // false when enterprise real time URL lookup and allowlist bypass is also
-  // enabled (SafeBrowsingRealTimeUrlLookupForEnterpriseAllowlistBypass).
+  // false when enterprise real time URL lookup is enabled.
   bool can_check_high_confidence_allowlist_;
 
   // URL Lookup service suffix for logging metrics.
