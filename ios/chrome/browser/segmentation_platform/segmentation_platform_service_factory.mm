@@ -191,6 +191,15 @@ SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
     default;
 
 // static
+DeviceSwitcherResultDispatcher*
+SegmentationPlatformServiceFactory::GetDispatcherForBrowserState(
+    ChromeBrowserState* context) {
+  return static_cast<segmentation_platform::DeviceSwitcherResultDispatcher*>(
+      GetForBrowserState(context)->GetUserData(
+          kSegmentationDeviceSwitcherUserDataKey));
+}
+
+// static
 BrowserStateKeyedServiceFactory::TestingFactory
 SegmentationPlatformServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildSegmentationPlatformService);

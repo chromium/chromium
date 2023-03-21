@@ -102,6 +102,11 @@ const char kIosBookmarkPromoAlreadySeen[] = "ios.bookmark.promo_already_seen";
 const char kIosBookmarkSigninPromoDisplayedCount[] =
     "ios.bookmark.signin_promo_displayed_count";
 
+// Boolean to represent if the Bring Android Tabs prompt has been displayed for
+// the user.
+const char kIosBringAndroidTabsPromptDisplayed[] =
+    "ios.bring_android_tabs.prompt_displayed";
+
 // Boolean that is true when the CredentialProviderPromoEnabled policy is
 // enabled.
 const char kIosCredentialProviderPromoPolicyEnabled[] =

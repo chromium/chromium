@@ -12,6 +12,7 @@ class ChromeBrowserState;
 
 namespace segmentation_platform {
 
+class DeviceSwitcherResultDispatcher;
 class SegmentationPlatformService;
 
 // Factory for SegmentationPlatformService.
@@ -27,6 +28,11 @@ class SegmentationPlatformServiceFactory
       delete;
   SegmentationPlatformServiceFactory& operator=(
       SegmentationPlatformServiceFactory&) = delete;
+
+  // Returns the dispatcher used to retrieve or store the classification result
+  // for the user in the given browser state.
+  static DeviceSwitcherResultDispatcher* GetDispatcherForBrowserState(
+      ChromeBrowserState* context);
 
   // Returns the default factory used to build SegmentationPlatformService. Can
   // be registered with SetTestingFactory to use real instances during testing.

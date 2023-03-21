@@ -34,6 +34,7 @@ extern const char kIosBookmarkCachedTopMostRow[];
 extern const char kIosBookmarkFolderDefault[];
 extern const char kIosBookmarkPromoAlreadySeen[];
 extern const char kIosBookmarkSigninPromoDisplayedCount[];
+extern const char kIosBringAndroidTabsPromptDisplayed[];
 extern const char kIosShareChromeCount[];
 extern const char kIosShareChromeLastShare[];
 extern const char kIosDiscoverFeedLastRefreshTime[];

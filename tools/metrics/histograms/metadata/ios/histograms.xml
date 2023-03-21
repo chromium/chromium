@@ -126,8 +126,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.BringAndroidTabs.PromptTabsForAndroidSwitcherState"
-    enum="IOSPromptTabsForAndroidSwitcherState" expires_after="2024-02-28">
+<histogram name="IOS.BringAndroidTabs.PromptTabsStatus"
+    enum="IOSPromptAndroidTabsStatus" expires_after="2024-02-28">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>

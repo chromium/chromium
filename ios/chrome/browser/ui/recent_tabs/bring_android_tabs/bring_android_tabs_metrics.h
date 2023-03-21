@@ -19,30 +19,31 @@ extern const char kPromptActionHistogramName[];
 // review tabs table.
 extern const char kTabListActionHistogramName[];
 
-// Name of tab count histogram; logged when the bring android tabs prompt
-// appears.
-extern const char kTabCountHistogramName[];
-
 // Name of deselected tab count histogram; logged the review Android tabs table
 // is dismissed.
 extern const char kDeselectedTabCountHistogramName[];
 
-// The result of prompting the set of tabs for an Android switcher. This is
+// Name of the prompt attempt status histogram; logged when the set of tabs is
+// prompted for an Android switcher.
+extern const char kPromptAttemptStatusHistogramName[];
+
+// The result of prompting the set of tabs for a user. This is
 // mapped to the IOSPromptTabsForAndroidSwitcherState enum in enums.xml for
 // metrics.
-enum class IOSPromptTabsForAndroidSwitcherState {
+enum class PromptAttemptStatus {
   kSyncDisabled = 0,
   kSegmentationIncomplete = 1,
-  kPromptDismissed = 2,
+  kPromptShownAndDismissed = 2,
   kTabSyncDisabled = 3,
   kNoActiveTabs = 4,
-  kSuccess = 5,
+  kNotAndroidSwitcher = 5,
+  kSuccess = 6,
   kMaxValue = kSuccess,
 };
 
 // Interactions with the initial Bring Android Tabs prompt. This is mapped to
 // the IOSBringAndroidTabsPromptActionType enum in enums.xml for metrics.
-enum class IOSBringAndroidTabsPromptActionType {
+enum class PromptActionType {
   kReviewTabs = 0,
   kOpenTabs = 1,
   kCancel = 2,
@@ -52,7 +53,7 @@ enum class IOSBringAndroidTabsPromptActionType {
 
 // Interactions with the Bring Android Tabs Tab List view. This is mapped to the
 // IOSBringAndroidTabsTabsListActionType enum in enums.xml for metrics.
-enum class IOSBringAndroidTabsTabsListActionType {
+enum class TabsListActionType {
   kCancel = 0,
   kSwipeDown = 1,
   kOpenTabs = 2,

@@ -54136,13 +54136,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="StandardPromoDisplayHandler"/>
 </enum>
 
-<enum name="IOSPromptTabsForAndroidSwitcherState">
-  <int value="0" label="SyncDisabled"/>
-  <int value="1" label="SegmentationIncomplete"/>
-  <int value="2" label="PromptDismissed"/>
-  <int value="3" label="TabSyncDisabled"/>
-  <int value="4" label="NoActiveTabs"/>
-  <int value="5" label="Success"/>
+<enum name="IOSPromptAndroidTabsStatus">
+  <int value="0" label="Sync Disabled"/>
+  <int value="1" label="Segmentation Incomplete"/>
+  <int value="2" label="Prompt Shown and Dismissed"/>
+  <int value="3" label="Tab Sync Disabled"/>
+  <int value="4" label="No Active Tabs"/>
+  <int value="5" label="Not Android Switcher"/>
+  <int value="6" label="Success"/>
 </enum>
 
 <enum name="IOSSearchExtensionAction">

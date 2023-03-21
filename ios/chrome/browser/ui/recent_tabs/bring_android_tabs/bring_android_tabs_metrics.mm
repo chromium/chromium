@@ -21,4 +21,7 @@ extern const char kTabListActionHistogramName[] =
 extern const char kDeselectedTabCountHistogramName[] =
     "IOS.BringAndroidTabs.DeselectedTabCount";
 
+extern const char kPromptAttemptStatusHistogramName[] =
+    "IOS.BringAndroidTabs.PromptTabsStatus";
+
 }  // namespace bring_android_tabs
