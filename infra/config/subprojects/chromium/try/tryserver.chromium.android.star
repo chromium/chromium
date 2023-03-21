@@ -690,7 +690,6 @@ try_.gpu.optional_tests_builder(
     check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 100,
         location_filters = [
             cq.location_filter(path_regexp = "cc/.+"),
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
