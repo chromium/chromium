@@ -12,217 +12,8 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/codec/png_codec.h"
 
-namespace {
-// Returns |src| in a packed buffer.
-std::vector<uint8_t> CopyAndRemovePadding(const uint8_t* src,
-                                          size_t stride,
-                                          gfx::Size size) {
-  DCHECK_GE(stride, static_cast<size_t>(size.width()));
-  LOG_ASSERT(src);
-
-  std::vector<uint8_t> dst;
-  dst.reserve(size.GetArea());
-
-  const auto* const kSrcLimit = src + stride * size.height();
-  for (; src < kSrcLimit; src += stride)
-    dst.insert(dst.end(), src, src + size.width());
-
-  return dst;
-}
-
-}  // namespace
 namespace media {
 namespace v4l2_test {
-
-namespace {
-
-// Unpacks an NV12 UV plane into separate U and V planes.
-void UnpackUVPlane(std::vector<uint8_t>& dest_u,
-                   std::vector<uint8_t>& dest_v,
-                   std::vector<uint8_t>& src_uv,
-                   gfx::Size size) {
-  for (int i = 0; i < size.GetArea(); i++) {
-    dest_u.push_back(src_uv[2 * i]);
-    dest_v.push_back(src_uv[2 * i + 1]);
-  }
-}
-
-// Detiles a single MM21 plane. MM21 is an NV12-like pixel format that is stored
-// in 16x32 tiles in the Y plane and 16x16 tiles in the UV plane (since it's
-// 4:2:0 subsampled, but UV are interlaced). This function converts a single
-// MM21 plane into its equivalent NV12 plane.
-void DetilePlane(std::vector<uint8_t>& dest,
-                 const gfx::Size& dest_size,
-                 uint8_t* src,
-                 const gfx::Size& src_size,
-                 const gfx::Size& tile_size) {
-  // Tile size in bytes.
-  const int tile_len = tile_size.GetArea();
-  // |width| rounded down to the nearest multiple of |tile_width|.
-  const int aligned_dst_width =
-      base::bits::AlignDown(dest_size.width(), tile_size.width());
-  // number of pixels more than a full tile width
-  const int last_tile_partial_width = dest_size.width() - aligned_dst_width;
-  // |height| rounded up to the nearest multiple of |tile_height|.
-  const int padded_dst_height =
-      base::bits::AlignUp(dest_size.height(), tile_size.height());
-  // Size of one row of tiles in bytes.
-  const int src_row_size = src_size.width() * tile_size.height();
-  // Size of the entire coded image.
-  const int coded_image_num_pixels = src_size.width() * padded_dst_height;
-
-  // Index in bytes to the start of the current tile row.
-  int src_tile_row_start = 0;
-  // Offset in pixels from top of the screen of the current tile row.
-  int y_offset = 0;
-
-  // Iterates over each row of tiles.
-  while (src_tile_row_start < coded_image_num_pixels) {
-    // Maximum relative y-axis value that we should process for the given tile
-    // row. Important for cropping.
-    const int max_in_tile_row_index =
-        dest_size.height() - y_offset < tile_size.height()
-            ? (dest_size.height() - y_offset)
-            : tile_size.height();
-
-    // Offset in bytes into the current tile row to start reading data for the
-    // next pixel row.
-    int src_row_start = 0;
-
-    // Iterates over each row of pixels within the tile row.
-    for (int in_tile_row_index = 0; in_tile_row_index < max_in_tile_row_index;
-         in_tile_row_index++) {
-      int src_index = src_tile_row_start + src_row_start;
-
-      // Iterates over each pixel in the row of pixels.
-      for (int col_index = 0; col_index < aligned_dst_width;
-           col_index += tile_size.width()) {
-        dest.insert(dest.end(), src + src_index,
-                    src + src_index + tile_size.width());
-        src_index += tile_len;
-      }
-      // Finish last partial tile in the row.
-      dest.insert(dest.end(), src + src_index,
-                  src + src_index + last_tile_partial_width);
-
-      // Shift to the next pixel row in the tile row.
-      src_row_start += tile_size.width();
-    }
-
-    src_tile_row_start += src_row_size;
-    y_offset += tile_size.height();
-  }
-}
-
-// Unpacks NV12 to I420 and optionally trims padding from source.
-// This expects a contiguous NV12 buffer, as specified by
-// V4L2_PIX_FMT_NV12.
-void ConvertNV12ToYUV(std::vector<uint8_t>& dest_y,
-                      std::vector<uint8_t>& dest_u,
-                      std::vector<uint8_t>& dest_v,
-                      const gfx::Size& dest_size,
-                      const uint8_t* src,
-                      const gfx::Size& src_size) {
-  CHECK(dest_size.width() <= src_size.width());
-  CHECK(dest_size.height() <= src_size.height());
-
-  // Copy Y plane
-  dest_y.reserve(dest_size.GetArea());
-  for (int i = 0; i < dest_size.height(); i++) {
-    dest_y.insert(dest_y.end(), src, src + dest_size.width());
-    src += src_size.width();
-  }
-
-  // Move to start of UV plane
-  if (dest_size.height() < src_size.height()) {
-    src += src_size.width() * (src_size.height() - dest_size.height());
-  }
-
-  // Pad size for U/V plane to handle odd dimensions
-  gfx::Size dest_aligned_size(base::bits::AlignUp(dest_size.width(), 2),
-                              base::bits::AlignUp(dest_size.height(), 2));
-  const int uv_height = dest_aligned_size.height() / 2;
-  const int uv_width = dest_aligned_size.width() / 2;
-
-  // Unpack UV plane
-  dest_u.reserve(dest_aligned_size.GetArea() / 4);
-  dest_v.reserve(dest_aligned_size.GetArea() / 4);
-
-  for (int i = 0; i < uv_height; i++) {
-    for (int j = 0; j < uv_width; j++) {
-      dest_u.push_back(src[0]);
-      dest_v.push_back(src[1]);
-      src += 2;
-    }
-
-    // Skip any trailing pixels on the line in the source image
-    // Skip is based on non-sub-sampled dimensions
-    if (dest_aligned_size.width() < src_size.width()) {
-      src += src_size.width() - dest_aligned_size.width();
-    }
-  }
-}
-
-void ConvertMM21ToYUV(std::vector<uint8_t>& dest_y,
-                      std::vector<uint8_t>& dest_u,
-                      std::vector<uint8_t>& dest_v,
-                      const gfx::Size& dest_size,
-                      uint8_t* src_y,
-                      uint8_t* src_uv,
-                      const gfx::Size& src_size) {
-  constexpr int kMM21TileWidth = 16;
-  constexpr int kMM21TileHeight = 32;
-
-  LOG_ASSERT(src_size.width() % kMM21TileWidth == 0)
-      << "Source buffer width (" << src_size.width()
-      << ") must be a multiple of " << kMM21TileWidth;
-  constexpr gfx::Size kYTileSize(kMM21TileWidth, kMM21TileHeight);
-  constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
-
-  // Detile and pad MM21's luma plane in a temporary |src_y_padded|.
-  std::vector<uint8_t> src_y_padded;
-  src_y_padded.reserve(src_size.GetArea());
-  DetilePlane(src_y_padded, src_size, src_y, src_size, kYTileSize);
-  dest_y =
-      CopyAndRemovePadding(src_y_padded.data(), src_size.width(), dest_size);
-
-  // Detile and pad MM21's chroma plane in a temporary |src_uv_padded|.
-  const gfx::Size src_uv_size(base::bits::AlignUp(src_size.width(), 2),
-                              base::bits::AlignUp(src_size.height(), 2) / 2);
-  std::vector<uint8_t> src_uv_padded;
-  src_uv_padded.reserve(src_uv_size.GetArea());
-  DetilePlane(src_uv_padded, src_uv_size, src_uv, src_uv_size, kUVTileSize);
-
-  // Round up plane dimensions for odd resolution bitstreams.
-  const size_t u_plane_padded_width =
-      base::bits::AlignUp(src_size.width(), 2) / 2;
-  const size_t v_plane_padded_width =
-      base::bits::AlignUp(src_size.width(), 2) / 2;
-  const size_t u_plane_padded_height =
-      base::bits::AlignUp(src_size.height(), 2) / 2;
-  const gfx::Size u_plane_padded_size(u_plane_padded_width,
-                                      u_plane_padded_height);
-
-  std::vector<uint8_t> src_u_padded;
-  std::vector<uint8_t> src_v_padded;
-  src_u_padded.reserve(src_uv_size.GetArea() / 2);
-  src_v_padded.reserve(src_uv_size.GetArea() / 2);
-
-  // Unpack NV12's UV plane into separate U and V planes.
-  UnpackUVPlane(src_u_padded, src_v_padded, src_uv_padded, u_plane_padded_size);
-
-  const gfx::Size src_u_padded_size(
-      base::bits::AlignUp(dest_size.width(), 2) / 2,
-      base::bits::AlignUp(dest_size.height(), 2) / 2);
-  const gfx::Size src_v_padded_size(
-      base::bits::AlignUp(dest_size.width(), 2) / 2,
-      base::bits::AlignUp(dest_size.height(), 2) / 2);
-  dest_u = CopyAndRemovePadding(src_u_padded.data(), u_plane_padded_width,
-                                src_u_padded_size);
-  dest_v = CopyAndRemovePadding(src_v_padded.data(), v_plane_padded_width,
-                                src_v_padded_size);
-}
-}  // namespace
 
 uint32_t FileFourccToDriverFourcc(uint32_t header_fourcc) {
   if (header_fourcc == V4L2_PIX_FMT_VP9) {
@@ -355,19 +146,36 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
                                 const MmappedBuffer::MmappedPlanes& planes,
                                 const gfx::Size& src_size,
                                 uint32_t fourcc) {
+  const gfx::Size half_dest_size((dest_size.width() + 1) / 2,
+                                 (dest_size.height() + 1) / 2);
+  const uint32_t dest_y_stride = dest_size.width();
+  const uint32_t dest_uv_stride = half_dest_size.width();
+
+  dest_y.resize(dest_size.GetArea());
+  dest_u.resize(half_dest_size.GetArea());
+  dest_v.resize(half_dest_size.GetArea());
+
   if (fourcc == V4L2_PIX_FMT_NV12) {
     CHECK_EQ(planes.size(), 1u)
         << "NV12 should have exactly 1 plane but CAPTURE queue does not.";
 
-    ConvertNV12ToYUV(dest_y, dest_u, dest_v, dest_size,
-                     static_cast<uint8_t*>(planes[0].start_addr), src_size);
+    const uint8_t* src = static_cast<uint8_t*>(planes[0].start_addr);
+    const uint8_t* src_uv = src + src_size.width() * src_size.height();
+
+    libyuv::NV12ToI420(src, src_size.width(), src_uv, src_size.width(),
+                       &dest_y[0], dest_y_stride, &dest_u[0], dest_uv_stride,
+                       &dest_v[0], dest_uv_stride, dest_size.width(),
+                       dest_size.height());
   } else if (fourcc == V4L2_PIX_FMT_MM21) {
     CHECK_EQ(planes.size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
+    const uint8_t* src_y = static_cast<uint8_t*>(planes[0].start_addr);
+    const uint8_t* src_uv = static_cast<uint8_t*>(planes[1].start_addr);
 
-    ConvertMM21ToYUV(dest_y, dest_u, dest_v, dest_size,
-                     static_cast<uint8_t*>(planes[0].start_addr),
-                     static_cast<uint8_t*>(planes[1].start_addr), src_size);
+    libyuv::MM21ToI420(src_y, src_size.width(), src_uv, src_size.width(),
+                       &dest_y[0], dest_y_stride, &dest_u[0], dest_uv_stride,
+                       &dest_v[0], dest_uv_stride, dest_size.width(),
+                       dest_size.height());
   } else {
     LOG(FATAL) << "Unsupported CAPTURE queue format";
   }
