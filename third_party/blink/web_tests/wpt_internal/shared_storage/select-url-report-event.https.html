@@ -45,7 +45,8 @@ for (const resolve_to_config of [true, false]) {
                     'mouse interaction': "resources/receiver1.html"
                 }
             }, {url: url1}
-        ], {data: {'mockResult': 0}, resolveToConfig: resolve_to_config});
+        ], {data: {'mockResult': 0}, resolveToConfig: resolve_to_config,
+            keepAlive: resolve_to_config});
     assert_true(validateSelectURLResult(select_url_result, resolve_to_config));
     attachFencedFrame(select_url_result, 'opaque-ads');
     const result0 = await nextValueFromServer(ancestor_key);

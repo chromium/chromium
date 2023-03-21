@@ -43,7 +43,7 @@ promise_test(async () => {
       let urn = await sharedStorage.selectURL(
         "test-url-selection-operation", [{url: url0}, {url: url1}, {url: url2},
                                          {url: url3}],
-        {data: {'mockResult': 0}});
+        {data: {'mockResult': 0}, keepAlive: true});
 
       // Create nested fenced frames. A report will be sent, if allowed.
       attachFencedFrame(urn, 'opaque-ads');

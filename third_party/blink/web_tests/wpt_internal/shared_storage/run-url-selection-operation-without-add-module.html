@@ -12,7 +12,7 @@ for (const resolve_to_config of [true, false]) {
       sharedStorage.selectURL(
           "test-url-selection-operation",
           [{url: "resources/frame0.html"}],
-          {resolveToConfig: resolve_to_config}));
+          {resolveToConfig: resolve_to_config, keepAlive: true}));
   }, 'selectURL() without addModule, ' +
      'selectURL() resolves to ' + (resolve_to_config ? 'config' : 'urn:uuid'));
 
@@ -22,7 +22,7 @@ for (const resolve_to_config of [true, false]) {
             "test-url-selection-operation",
             [{url: "1"}, {url: "2"}, {url: "3"}, {url: "4"}, {url: "5"},
              {url: "6"}, {url: "7"}, {url: "8"}, {url: "9"}],
-            {resolveToConfig: resolve_to_config});
+            {resolveToConfig: resolve_to_config, keepAlive: true});
     } catch (e) {
       assert_equals(e.name, 'DataError');
       assert_equals(e.message, 'Length of the \"urls\" parameter is not valid.');
@@ -37,7 +37,7 @@ for (const resolve_to_config of [true, false]) {
         await sharedStorage.selectURL(
           "test-url-selection-operation",
           [],
-          {resolveToConfig: resolve_to_config});
+          {resolveToConfig: resolve_to_config, keepAlive: true});
     } catch (e) {
       assert_equals(e.name, 'DataError');
       assert_equals(e.message, 'Length of the \"urls\" parameter is not valid.');
@@ -55,7 +55,7 @@ for (const resolve_to_config of [true, false]) {
                     'click': "https://google.com"
                 }
             }],
-            {resolveToConfig: resolve_to_config});
+            {resolveToConfig: resolve_to_config, keepAlive: true});
     } catch (e) {
       assert_equals(e.name, 'TypeError');
         assert_equals(true, e.message.startsWith(
@@ -76,7 +76,7 @@ for (const resolve_to_config of [true, false]) {
             "test-url-selection-operation", [{
                 url: "https://#"
             }],
-            {resolveToConfig: resolve_to_config});
+            {resolveToConfig: resolve_to_config, keepAlive: true});
     } catch (e) {
       assert_equals(e.name, 'DataError');
         assert_equals(e.message,
@@ -96,7 +96,7 @@ for (const resolve_to_config of [true, false]) {
                     'click': "https://#"
                 }
             }],
-            {resolveToConfig: resolve_to_config});
+            {resolveToConfig: resolve_to_config, keepAlive: true});
     } catch (e) {
       assert_equals(e.name, 'DataError');
         assert_equals(e.message,
@@ -117,7 +117,7 @@ for (const resolve_to_config of [true, false]) {
                     'click': "http://google.com"
                 }
             }],
-            {resolveToConfig: resolve_to_config});
+            {resolveToConfig: resolve_to_config, keepAlive: true});
     } catch (e) {
       assert_equals(e.name, 'DataError');
         assert_equals(e.message, 'The metadata for the url at index 0 has an ' +
@@ -135,7 +135,7 @@ for (const resolve_to_config of [true, false]) {
                 url: "resources/frame0.html",
                 reportingMetadata: {}
             }],
-            {resolveToConfig: resolve_to_config});
+            {resolveToConfig: resolve_to_config, keepAlive: true});
     } catch (e) {
       assert_equals(e.name, 'DataError');
         assert_equals(e.message, 'selectURL could not get reportingMetadata ' +

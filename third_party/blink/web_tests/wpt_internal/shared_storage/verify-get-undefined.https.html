@@ -25,7 +25,8 @@ for (const resolve_to_config of [true, false]) {
           reportingMetadata:
             {'mouse interaction': "resources/frame1.html",
             'click': "resources/frame2.html"}}],
-        {resolveToConfig: resolve_to_config});
+        {resolveToConfig: resolve_to_config,
+         keepAlive: resolve_to_config});
 
     assert_true(validateSelectURLResult(select_url_result, resolve_to_config));
     attachFencedFrame(select_url_result, 'opaque-ads');

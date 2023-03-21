@@ -7,12 +7,13 @@
 'use strict';
 
 promise_test(() => {
-  return sharedStorage.run("operation1");
+  return sharedStorage.run("operation1", {keepAlive: true});
 }, 'run()');
 
 promise_test(() => {
   return sharedStorage.run("operation1",
-    {data: {'custom-key': 'custom-value'}});
+                           {data: {'custom-key': 'custom-value'},
+                            keepAlive: true});
 }, 'run() with custom data');
 
 promise_test(async t => {

@@ -196,12 +196,16 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 
 void SharedStorageWorkletHost::RunOperationOnWorklet(
     const std::string& name,
-    const std::vector<uint8_t>& serialized_data) {
+    const std::vector<uint8_t>& serialized_data,
+    bool keep_alive_after_operation) {
   // This function is invoked from `document_service_`. Thus both `page_` and
   // `document_service_` should be valid.
   DCHECK(page_);
   DCHECK(document_service_);
   IncrementPendingOperationsCount();
+
+  DCHECK(keep_alive_after_operation_);
+  keep_alive_after_operation_ = keep_alive_after_operation;
 
   if (add_module_state_ != AddModuleState::kInitiated) {
     OnRunOperationOnWorkletFinished(
@@ -224,6 +228,7 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
     const std::vector<uint8_t>& serialized_data,
+    bool keep_alive_after_operation,
     blink::mojom::SharedStorageDocumentService::
         RunURLSelectionOperationOnWorkletCallback callback) {
   if (add_module_state_ != AddModuleState::kInitiated) {
@@ -256,6 +261,9 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
 
   GURL urn_uuid = pending_urn_uuid.value();
   IncrementPendingOperationsCount();
+
+  DCHECK(keep_alive_after_operation_);
+  keep_alive_after_operation_ = keep_alive_after_operation;
 
   std::vector<GURL> urls;
   for (const auto& url_with_metadata : urls_with_metadata)
@@ -796,6 +804,18 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
   DecrementPendingOperationsCount();
 }
 
+void SharedStorageWorkletHost::ExpireWorklet() {
+  // `this` is not in keep-alive.
+  DCHECK(document_service_);
+  DCHECK(shared_storage_worklet_host_manager_);
+
+  // This will remove this worklet host from the manager.
+  shared_storage_worklet_host_manager_->ExpireWorkletHostForDocumentService(
+      document_service_.get());
+
+  // Do not add code after this. SharedStorageWorkletHost has been destroyed.
+}
+
 bool SharedStorageWorkletHost::IsInKeepAlivePhase() const {
   return !!keep_alive_finished_callback_;
 }
@@ -836,10 +856,18 @@ void SharedStorageWorkletHost::DecrementPendingOperationsCount() {
   // and completed.
   last_operation_finished_time_ = base::TimeTicks::Now();
 
-  if (!IsInKeepAlivePhase())
+  if (!IsInKeepAlivePhase() && keep_alive_after_operation_) {
     return;
+  }
 
-  FinishKeepAlive(/*timeout_reached=*/false);
+  if (IsInKeepAlivePhase()) {
+    FinishKeepAlive(/*timeout_reached=*/false);
+    return;
+  }
+
+  ExpireWorklet();
+
+  // Do not add code after here. The worklet will be closed.
 }
 
 base::TimeDelta SharedStorageWorkletHost::GetKeepAliveTimeout() const {

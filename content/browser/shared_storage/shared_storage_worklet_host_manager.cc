@@ -41,6 +41,11 @@ void SharedStorageWorkletHostManager::OnDocumentServiceDestroyed(
       base::Unretained(this)));
 }
 
+void SharedStorageWorkletHostManager::ExpireWorkletHostForDocumentService(
+    SharedStorageDocumentServiceImpl* document_service) {
+  attached_shared_storage_worklet_hosts_.erase(document_service);
+}
+
 SharedStorageWorkletHost*
 SharedStorageWorkletHostManager::GetOrCreateSharedStorageWorkletHost(
     SharedStorageDocumentServiceImpl* document_service) {

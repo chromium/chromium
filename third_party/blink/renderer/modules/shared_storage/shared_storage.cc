@@ -535,9 +535,12 @@ ScriptPromise SharedStorage::selectURL(
     resolve_to_config = false;
   }
 
+  bool keep_alive = options->keepAlive();
+
   GetSharedStorageDocumentService(execution_context)
       ->RunURLSelectionOperationOnWorklet(
           name, std::move(converted_urls), std::move(serialized_data),
+          keep_alive,
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
                  base::TimeTicks start_time, bool resolve_to_config,
@@ -613,9 +616,11 @@ ScriptPromise SharedStorage::run(
     return promise;
   }
 
+  bool keep_alive = options->keepAlive();
+
   GetSharedStorageDocumentService(execution_context)
       ->RunOperationOnWorklet(
-          name, std::move(serialized_data),
+          name, std::move(serialized_data), keep_alive,
           WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
                         WrapPersistent(this),
                         blink::SharedStorageVoidOperation::kRun, start_time));

@@ -47,17 +47,16 @@ class CONTENT_EXPORT SharedStorageWorkletHost
  public:
   using BudgetResult = storage::SharedStorageManager::BudgetResult;
 
+  using KeepAliveFinishedCallback =
+      base::OnceCallback<void(SharedStorageWorkletHost*)>;
+
   enum class AddModuleState {
     kNotInitiated,
     kInitiated,
   };
 
-  using KeepAliveFinishedCallback =
-      base::OnceCallback<void(SharedStorageWorkletHost*)>;
-
-  explicit SharedStorageWorkletHost(
-      std::unique_ptr<SharedStorageWorkletDriver> driver,
-      SharedStorageDocumentServiceImpl& document_service);
+  SharedStorageWorkletHost(std::unique_ptr<SharedStorageWorkletDriver> driver,
+                           SharedStorageDocumentServiceImpl& document_service);
   ~SharedStorageWorkletHost() override;
 
   void AddModuleOnWorklet(
@@ -68,12 +67,14 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       blink::mojom::SharedStorageDocumentService::AddModuleOnWorkletCallback
           callback);
   void RunOperationOnWorklet(const std::string& name,
-                             const std::vector<uint8_t>& serialized_data);
+                             const std::vector<uint8_t>& serialized_data,
+                             bool keep_alive_after_operation);
   void RunURLSelectionOperationOnWorklet(
       const std::string& name,
       std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
           urls_with_metadata,
       const std::vector<uint8_t>& serialized_data,
+      bool keep_alive_after_operation,
       blink::mojom::SharedStorageDocumentService::
           RunURLSelectionOperationOnWorkletCallback callback);
 
@@ -136,6 +137,16 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       uint32_t index,
       BudgetResult budget_result);
 
+  // Called if `keep_alive_after_operation_` is false, `IsInKeepAlivePhase()` is
+  // false, and `pending_operations_count_` decrements back to 0u. Runs
+  // `on_no_retention_operations_finished_callback_` to close the worklet.
+  virtual void ExpireWorklet();
+
+  // Returns whether the the worklet has entered keep-alive phase. During
+  // keep-alive: the attempt to log console messages will be ignored; and the
+  // completion of the last pending operation will terminate the worklet.
+  bool IsInKeepAlivePhase() const;
+
   base::OneShotTimer& GetKeepAliveTimerForTesting() {
     return keep_alive_timer_;
   }
@@ -147,11 +158,6 @@ class CONTENT_EXPORT SharedStorageWorkletHost
       bool success,
       const std::string& error_message,
       uint32_t index);
-
-  // Returns whether the the worklet has entered keep-alive phase. During
-  // keep-alive: the attempt to log console messages will be ignored; and the
-  // completion of the last pending operation will terminate the worklet.
-  bool IsInKeepAlivePhase() const;
 
   // Run `keep_alive_finished_callback_` to destroy `this`. Called when the last
   // pending operation has finished, or when a timeout is reached after entering
@@ -235,6 +241,12 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // The number of unfinished worklet requests, including `addModule()`,
   // `selectURL()`, or `run()`.
   uint32_t pending_operations_count_ = 0u;
+
+  // Whether or not the lifetime of the worklet should be extended beyond when
+  // the `pending_operations_count_` returns to 0u. If false, the worklet will
+  // be closed as soon as the count next reaches 0U after being positive. This
+  // bool is updated with each call to `run()` or `selectURL()`.
+  bool keep_alive_after_operation_ = true;
 
   // Timer for starting and ending the keep-alive phase.
   base::OneShotTimer keep_alive_timer_;

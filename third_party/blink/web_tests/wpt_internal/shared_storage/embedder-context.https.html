@@ -31,7 +31,8 @@ promise_test(async () => {
     "verify-key-value", [{url: url0}, {url: url1}],
     {data: {'expectedKey': ancestorKey,
             'expectedValue': 'here is some context'},
-     resolveToConfig: true});
+     resolveToConfig: true,
+     keepAlive: true});
   assert_true(validateSelectURLResult(fencedFrameConfig1, true));
 
   attachFencedFrame(fencedFrameConfig1, 'opaque-ads');
@@ -57,7 +58,8 @@ promise_test(async () => {
   let fencedFrameConfig1 = await sharedStorage.selectURL(
     "verify-key-value", [{url: url0}, {url: url1}],
     {data: {'expectedKey': ancestorKey, 'expectedValue': 'undefined'},
-     resolveToConfig: true});
+     resolveToConfig: true,
+     keepAlive: true});
   assert_true(validateSelectURLResult(fencedFrameConfig1, true));
 
   attachFencedFrame(fencedFrameConfig1, 'opaque-ads');

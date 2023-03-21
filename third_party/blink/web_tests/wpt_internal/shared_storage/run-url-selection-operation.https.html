@@ -19,7 +19,8 @@ for (const resolve_to_config of [true, false]) {
 
     let select_url_result0 = await sharedStorage.selectURL(
         "test-url-selection-operation", [{url: url0}, {url: url1}],
-        {data: {'mockResult': 0}, resolveToConfig: resolve_to_config});
+        {data: {'mockResult': 0}, resolveToConfig: resolve_to_config,
+         keepAlive: true});
     assert_true(validateSelectURLResult(select_url_result0, resolve_to_config));
     attachFencedFrame(select_url_result0, 'opaque-ads');
     const result0 = await nextValueFromServer(ancestor_key);
@@ -27,7 +28,8 @@ for (const resolve_to_config of [true, false]) {
 
     let select_url_result1 = await sharedStorage.selectURL(
         "test-url-selection-operation", [{url: url0}, {url: url1}],
-        {data: {'mockResult': 1}, resolveToConfig: resolve_to_config});
+        {data: {'mockResult': 1}, resolveToConfig: resolve_to_config,
+         keepAlive: true});
     assert_true(validateSelectURLResult(select_url_result1, resolve_to_config));
     attachFencedFrame(select_url_result1, 'opaque-ads');
     const result1 = await nextValueFromServer(ancestor_key);
@@ -35,7 +37,8 @@ for (const resolve_to_config of [true, false]) {
 
     let select_url_result2 = await sharedStorage.selectURL(
         "test-url-selection-operation", [{url: url0}, {url: url1}],
-        {data: {'mockResult': -1}, resolveToConfig: resolve_to_config});
+        {data: {'mockResult': -1}, resolveToConfig: resolve_to_config,
+         keepAlive: true});
     assert_true(validateSelectURLResult(select_url_result2, resolve_to_config));
     attachFencedFrame(select_url_result2, 'opaque-ads');
     const result2 = await nextValueFromServer(ancestor_key);

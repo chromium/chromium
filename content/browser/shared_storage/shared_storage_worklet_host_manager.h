@@ -66,6 +66,9 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
   void OnDocumentServiceDestroyed(
       SharedStorageDocumentServiceImpl* document_service);
 
+  void ExpireWorkletHostForDocumentService(
+      SharedStorageDocumentServiceImpl* document_service);
+
   SharedStorageWorkletHost* GetOrCreateSharedStorageWorkletHost(
       SharedStorageDocumentServiceImpl* document_service);
 

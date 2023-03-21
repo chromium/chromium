@@ -357,7 +357,8 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
 
   double RemainingBudget(const content::ToRenderFrameHost& execution_target,
-                         bool should_add_module = false) {
+                         bool should_add_module = false,
+                         bool keep_alive_after_operation = true) {
     if (should_add_module)
       AddSimpleModule(execution_target);
 
@@ -367,8 +368,12 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
     budget_console_observer.SetPattern(
         base::StrCat({kRemainingBudgetPrefixStr, "*"}));
 
+    EXPECT_TRUE(ExecJs(execution_target,
+                       content::JsReplace("window.keepWorklet = $1;",
+                                          keep_alive_after_operation)));
+
     EXPECT_TRUE(ExecJs(execution_target, R"(
-      sharedStorage.run('remaining-budget-operation', {data: {}});
+      sharedStorage.run('remaining-budget-operation', {keepAlive: keepWorklet});
     )"));
 
     bool observed = budget_console_observer.Wait();
@@ -2321,7 +2326,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
 
       sharedStorage.delete('key0');
       sharedStorage.delete('key2');
-      sharedStorage.clear();
+
+      // It's necessary to `await` this finally promise, since we are not
+      // using the option `keepAlive: true` in the `run()` call. The worklet
+      // will be closed by the browser once the worklet signals to the browser
+      // that the `run()` call has finished.
+      await sharedStorage.clear();
 
       console.log('Finished script');
     )",
@@ -2467,7 +2477,8 @@ class SharedStorageFencedFrameChromeBrowserTest
 
   content::RenderFrameHost* SelectURLAndCreateFencedFrame(
       content::RenderFrameHost* render_frame_host,
-      bool should_add_module = true) {
+      bool should_add_module = true,
+      bool keep_alive_after_operation = true) {
     if (should_add_module)
       AddSimpleModule(render_frame_host);
 
@@ -2480,6 +2491,10 @@ class SharedStorageFencedFrameChromeBrowserTest
         ExecJs(render_frame_host,
                content::JsReplace("window.resolveSelectURLToConfig = $1;",
                                   ResolveSelectURLToConfig())));
+
+    EXPECT_TRUE(ExecJs(render_frame_host,
+                       content::JsReplace("window.keepWorklet = $1;",
+                                          keep_alive_after_operation)));
 
     // Construct and add the `TestSelectURLFencedFrameConfigObserver` to shared
     // storage worklet host manager.
@@ -2510,7 +2525,8 @@ class SharedStorageFencedFrameChromeBrowserTest
             ],
             {
               data: {'mockResult': 1},
-              resolveToConfig: resolveSelectURLToConfig
+              resolveToConfig: resolveSelectURLToConfig,
+              keepAlive: keepWorklet
             }
           );
           if (resolveSelectURLToConfig &&

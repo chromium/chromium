@@ -20,7 +20,7 @@ promise_test(async () => {
   for (let i = 0; i < 8; ++i) {
     let uuid = await sharedStorage.selectURL(
         "test-url-selection-operation", urls,
-        {data: {'mockResult': 1}});
+        {data: {'mockResult': 1}, keepAlive: true});
     assert_true(uuid.startsWith('urn:uuid:'));
     attachFencedFrame(uuid, 'opaque-ads');
     const result = await nextValueFromServer(ancestorKey);

@@ -49,6 +49,10 @@ const char kSharedStorageAddModuleDisabledMessage[] =
 const char kSharedStorageSelectURLLimitReachedMessage[] =
     "sharedStorage.selectURL limit has been reached";
 
+const char kSharedStorageWorkletExpiredMessage[] =
+    "The sharedStorage worklet cannot execute further operations because the "
+    "previous operation did not include the option \'keepAlive: true\'.";
+
 // static
 bool& SharedStorageDocumentServiceImpl::
     GetBypassIsSharedStorageAllowedForTesting() {
@@ -88,6 +92,13 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
     return;
   }
 
+  if (!keep_alive_worklet_after_operation_) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageWorkletExpiredMessage);
+    return;
+  }
+
   GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
       AccessType::kDocumentAddModule, main_frame_id(),
       SerializeLastCommittedOrigin(),
@@ -109,6 +120,7 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
 void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
+    bool keep_alive_after_operation,
     RunOperationOnWorkletCallback callback) {
   if (!IsSharedStorageAllowed()) {
     std::move(callback).Run(/*success=*/false,
@@ -116,11 +128,21 @@ void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
     return;
   }
 
+  if (!keep_alive_worklet_after_operation_) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageWorkletExpiredMessage);
+    return;
+  }
+
+  keep_alive_worklet_after_operation_ = keep_alive_after_operation;
+
   GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
       AccessType::kDocumentRun, main_frame_id(), SerializeLastCommittedOrigin(),
       SharedStorageEventParams::CreateForRun(name, serialized_data));
 
-  GetSharedStorageWorkletHost()->RunOperationOnWorklet(name, serialized_data);
+  GetSharedStorageWorkletHost()->RunOperationOnWorklet(
+      name, serialized_data, keep_alive_after_operation);
   std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
@@ -129,6 +151,7 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
     const std::vector<uint8_t>& serialized_data,
+    bool keep_alive_after_operation,
     RunURLSelectionOperationOnWorkletCallback callback) {
   if (!blink::IsValidSharedStorageURLsArrayLength(urls_with_metadata.size())) {
     // This could indicate a compromised renderer, so let's terminate it.
@@ -184,6 +207,16 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     return;
   }
 
+  if (!keep_alive_worklet_after_operation_) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/kSharedStorageWorkletExpiredMessage,
+        /*result_config=*/absl::nullopt);
+    return;
+  }
+
+  keep_alive_worklet_after_operation_ = keep_alive_after_operation;
+
   size_t shared_storage_fenced_frame_root_count = 0u;
   size_t fenced_frame_depth =
       static_cast<RenderFrameHostImpl&>(render_frame_host())
@@ -229,7 +262,7 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
 
   GetSharedStorageWorkletHost()->RunURLSelectionOperationOnWorklet(
       name, std::move(urls_with_metadata), serialized_data,
-      std::move(callback));
+      keep_alive_after_operation, std::move(callback));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageSet(

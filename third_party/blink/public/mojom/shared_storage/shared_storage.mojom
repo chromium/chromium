@@ -52,9 +52,14 @@ interface SharedStorageDocumentService {
   // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
   // There's no need to sanitize `serialized_data` at the browser process as the
   // data will be only consumed in an environment (i.e. the worklet) in control
-  // by the same origin. The only error reported is if the API is disabled;
-  // other errors are suppressed and reported as success.
-  RunOperationOnWorklet(string name, array<uint8> serialized_data)
+  // by the same origin. `keep_alive_after_operation` indicates whether or not
+  // the worklet should be kept alive after this operation finishes. The only
+  // errors reported are if the API is disabled or if the worklet has expired
+  // because the context previously initiated either a `run()` or `selectURL()`
+  // call without including the option `keepAlive: true`; other errors are
+  // suppressed and reported as success.
+  RunOperationOnWorklet(string name, array<uint8> serialized_data,
+                        bool keep_alive_after_operation)
       => (bool success,
           string error_message);
 
@@ -67,11 +72,13 @@ interface SharedStorageDocumentService {
   // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
   // There's no need to sanitize `serialized_data` at the browser process as the
   // data will be only consumed in an environment (i.e. the worklet) in control
-  // by the same origin.
+  // by the same origin. `keep_alive_after_operation` indicates whether or not
+  // the worklet should be kept alive after this operation finishes.
   RunURLSelectionOperationOnWorklet(string name,
                                     array<SharedStorageUrlWithMetadata>
                                       urls_with_metadata,
-                                    array<uint8> serialized_data)
+                                    array<uint8> serialized_data,
+                                    bool keep_alive_after_operation)
     => (bool success, string error_message, FencedFrameConfig? config);
 
   // Handle sharedStorage.set(): set `key`’s entry to `value`. If
