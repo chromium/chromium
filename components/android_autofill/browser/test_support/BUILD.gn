@@ -7,11 +7,12 @@ import("//build/config/android/rules.gni")
 
 testonly = true
 
-android_library("component_autofill_provider_java_test_support") {
+android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/autofill/AutofillHintsServiceTestHelper.java",
     "java/src/org/chromium/components/autofill/AutofillProviderTestHelper.java",
+    "java/src/org/chromium/components/autofill/TestViewStructure.java",
   ]
   deps = [
     "//base:base_java_test_support",
@@ -29,7 +30,7 @@ generate_jni("jni_headers") {
   ]
 }
 
-source_set("component_autofill_provider_native_test_support") {
+source_set("native") {
   sources = [ "autofill_provider_test_helper.cc" ]
   deps = [
     ":jni_headers",

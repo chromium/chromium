@@ -364,7 +364,7 @@ android_library("test_java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//components/android_autofill/browser:java",
-    "//components/android_autofill/browser/test_support:component_autofill_provider_java_test_support",
+    "//components/android_autofill/browser/test_support:java",
     "//components/browser_ui/accessibility/android:java",
     "//components/content_capture/android:java",
     "//components/infobars/android:java",
