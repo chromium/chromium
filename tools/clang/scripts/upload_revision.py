@@ -52,6 +52,7 @@ BOTS = [
 ]
 
 # Keep lines in here at <= 72 columns, else they wrap in gerrit.
+# There can be no whitespace line between or below these gerrit footers.
 COMMIT_FOOTER = \
 '''
 Bug: TODO. Remove the Tricium: line below when filling this in.
@@ -72,21 +73,19 @@ Cq-Include-Trybots: chromium/try:linux-swangle-try-x64,win-swangle-try-x86
 Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome
-Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
-'''
+Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo'''
 
 RUST_BOTS = \
-'''
-Cq-Include-Trybots: luci.chromium.try:android-rust-arm32-rel
-Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-dbg
-Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-rel
-'''
-# TODO: Add more Rust bots as they are ready:
-# Cq-Include-Trybots: luci.chromium.try:android-rust-arm64-dbg
-# Cq-Include-Trybots: luci.chromium.try:android-rust-arm64-rel
-# Cq-Include-Trybots: luci.chromium.try:win-rust-x64-dbg
-# Cq-Include-Trybots: luci.chromium.try:win-rust-x64-rel
-# Cq-Include-Trybots: luci.chromium.try:mac-rust-x64-rel
+'''Cq-Include-Trybots: chromium/try:android-rust-arm32-rel
+Cq-Include-Trybots: chromium/try:android-rust-arm64-dbg
+Cq-Include-Trybots: chromium/try:android-rust-arm64-rel
+Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
+Cq-Include-Trybots: chromium/try:linux-rust-x64-rel'''
+
+# These do not pass yet:
+#Cq-Include-Trybots: chromium/try:mac-rust-x64-rel
+#Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
+#Cq-Include-Trybots: chromium/try:win-rust-x64-rel
 
 is_win = sys.platform.startswith('win32')
 
@@ -356,7 +355,7 @@ def main():
 
   commit_message = f'{title}\n\n{body}\n{COMMIT_FOOTER}'
   if args.roll_rust:
-    commit_message += f'{RUST_BOTS}'
+    commit_message += f'\n{RUST_BOTS}'
 
   Git('add',
       CLANG_UPDATE_PY_PATH,
