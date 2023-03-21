@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_state.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -24,8 +25,8 @@ AccountErrorUIInfo* GetAccountErrorUIInfoForPassphraseError() {
        initWithErrorType:syncer::SyncService::UserActionableError::
                              kNeedsPassphrase
       userActionableType:AccountErrorUserActionableType::kEnterPassphrase
-               messageID:IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE
-           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_BUTTON];
+               messageID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE
+           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON];
 
   return error_info;
 }

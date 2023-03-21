@@ -611,6 +611,15 @@ Things to consider:
       <message name="IDS_IOS_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user that the Overflow Menu has new items">
         Get to know the new Chromium menu
       </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
+        To use and save Chromium data in your Google Account, enter your passphrase.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault key for everything. [iOS only]">
+        To use and save Chromium data in your Google Account, verify it's you.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_HAS_TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault recoverability degraded for everything. [iOS only]">
+        To use and save Chromium data in your Google Account, verify it's you.
+      </message>
     </messages>
   </release>
 </grit>

@@ -14,6 +14,10 @@ enum class AccountErrorUserActionableType {
   kNoAction,
   // User needs to enter their passphrase.
   kEnterPassphrase,
+  // User needs to reauthenticate for the fetch keys.
+  kReauthForFetchKeys,
+  // User needs to reauthenticate for degraded recoverability.
+  kReauthForDegradedRecoverability,
 };
 
 // Contains the information of the account error UI item.

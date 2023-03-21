@@ -13,6 +13,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -931,9 +932,36 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       [self openPassphraseDialog];
       break;
     }
+    case AccountErrorUserActionableType::kReauthForFetchKeys: {
+      [self openTrustedVaultReauthForFetchKeys];
+      break;
+    }
+    case AccountErrorUserActionableType::kReauthForDegradedRecoverability: {
+      [self openTrustedVaultReauthForDegradedRecoverability];
+      break;
+    }
     case AccountErrorUserActionableType::kNoAction:
       break;
   }
+}
+
+// Opens the trusted vault reauth dialog for fetch keys.
+- (void)openTrustedVaultReauthForFetchKeys {
+  syncer::TrustedVaultUserActionTriggerForUMA trigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  [self.applicationCommandsHandler
+      showTrustedVaultReauthForFetchKeysFromViewController:self
+                                                   trigger:trigger];
+}
+
+// Opens the trusted vault reauth dialog for degraded recoverability.
+- (void)openTrustedVaultReauthForDegradedRecoverability {
+  syncer::TrustedVaultUserActionTriggerForUMA trigger =
+      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+  [self.applicationCommandsHandler
+      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:self
+                                                                trigger:
+                                                                    trigger];
 }
 
 // Opens the passphrase dialog.

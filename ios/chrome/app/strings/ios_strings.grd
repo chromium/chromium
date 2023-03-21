@@ -4221,7 +4221,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
            =1 {{count} saved profile available above your keyboard.}
            other {{count} saved profiles available above your keyboard.}}
       </message>
-      <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_BUTTON" desc="Label for the button to open the passphrase dialog from the accounts table. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON" desc="Label for the button to open the passphrase dialog from the accounts table. [iOS only]">
         Enter Passphrase…
       </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
@@ -4275,6 +4275,15 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       </message>
       <message name="IDS_IOS_ITEM_ACCOUNT_ERROR_BADGE_ACCESSIBILITY_HINT" desc="Accessibility hint to let the user know that there is an error badge associated with the listed item. The hint is appended to the a11y message that describes the item. For example, the 'settings' message will become 'settings, account error' when there is an account error badge on the item. [iOS only]">
         Account error
+      </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON" desc="Label for the button to show the trusted vault reauthentication dialog. [iOS only]">
+        Verify It's You…
+      </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault key for passwords. [iOS only]">
+        To use and save passwords in your Google Account, verify it’s you.
+      </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_HAS_TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault recoverability degraded for passwords. [iOS only]">
+        To make sure you can always use your saved passwords, verify it's you.
       </message>
     </messages>
   </release>
