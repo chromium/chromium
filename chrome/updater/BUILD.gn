@@ -484,6 +484,10 @@ if (is_win || is_mac || is_linux) {
       "-e",
       "UPDATE_CHECK_URL=\"$update_check_url\"",
       "-e",
+      "UPDATER_APPID=\"$updater_appid\"",
+      "-e",
+      "QUALIFICATION_APPID=\"$qualification_appid\"",
+      "-e",
       "LEGACY_GOOGLE_UPDATE_APPID=\"$legacy_google_update_appid\"",
       "-e",
       "LEGACY_SERVICE_NAME_PREFIX=\"$legacy_service_name_prefix\"",
@@ -914,8 +918,8 @@ if (is_win || is_mac || is_linux) {
 
       data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
       data_deps = [
-        "//chrome/updater/linux:updater_test",
         ":updater_selfupdate_test_crx",
+        "//chrome/updater/linux:updater_test",
       ]
       public_configs = [ "linux:libsystemd" ]
     }
@@ -985,7 +989,7 @@ if (is_win || is_mac || is_linux) {
     if (is_linux) {
       data_deps = [ "//chrome/updater/linux:updater_test" ]
       if (is_chrome_branded) {
-          data_deps += [ "//third_party/updater:old_updater" ]
+        data_deps += [ "//third_party/updater:old_updater" ]
       }
     }
   }
