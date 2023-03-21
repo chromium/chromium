@@ -93,14 +93,20 @@ class IndexedDBTest : public testing::Test,
   storage::BucketLocator kNormalFirstPartyBucketLocator;
   blink::StorageKey kSessionOnlyFirstPartyStorageKey;
   storage::BucketLocator kSessionOnlyFirstPartyBucketLocator;
+  blink::StorageKey kSessionOnlySubdomainFirstPartyStorageKey;
+  storage::BucketLocator kSessionOnlySubdomainFirstPartyBucketLocator;
   blink::StorageKey kNormalThirdPartyStorageKey;
   storage::BucketLocator kNormalThirdPartyBucketLocator;
   blink::StorageKey kSessionOnlyThirdPartyStorageKey;
   storage::BucketLocator kSessionOnlyThirdPartyBucketLocator;
+  blink::StorageKey kSessionOnlySubdomainThirdPartyStorageKey;
+  storage::BucketLocator kSessionOnlySubdomainThirdPartyBucketLocator;
   blink::StorageKey kInvertedNormalThirdPartyStorageKey;
   storage::BucketLocator kInvertedNormalThirdPartyBucketLocator;
   blink::StorageKey kInvertedSessionOnlyThirdPartyStorageKey;
   storage::BucketLocator kInvertedSessionOnlyThirdPartyBucketLocator;
+  blink::StorageKey kInvertedSessionOnlySubdomainThirdPartyStorageKey;
+  storage::BucketLocator kInvertedSessionOnlySubdomainThirdPartyBucketLocator;
 
   IndexedDBTest()
       : special_storage_policy_(
@@ -136,6 +142,13 @@ class IndexedDBTest : public testing::Test,
     bucket_info = InitBucket(kSessionOnlyFirstPartyStorageKey);
     kSessionOnlyFirstPartyBucketLocator = bucket_info.ToBucketLocator();
 
+    kSessionOnlySubdomainFirstPartyStorageKey =
+        blink::StorageKey::CreateFromStringForTesting(
+            "http://subdomain.session-only/");
+    bucket_info = InitBucket(kSessionOnlySubdomainFirstPartyStorageKey);
+    kSessionOnlySubdomainFirstPartyBucketLocator =
+        bucket_info.ToBucketLocator();
+
     kNormalThirdPartyStorageKey =
         blink::StorageKey::Create(url::Origin::Create(GURL("http://normal/")),
                                   net::SchemefulSite(GURL("http://rando/")),
@@ -149,6 +162,14 @@ class IndexedDBTest : public testing::Test,
         blink::mojom::AncestorChainBit::kCrossSite);
     bucket_info = InitBucket(kSessionOnlyThirdPartyStorageKey);
     kSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
+
+    kSessionOnlySubdomainThirdPartyStorageKey = blink::StorageKey::Create(
+        url::Origin::Create(GURL("http://subdomain.session-only/")),
+        net::SchemefulSite(GURL("http://rando/")),
+        blink::mojom::AncestorChainBit::kCrossSite);
+    bucket_info = InitBucket(kSessionOnlySubdomainThirdPartyStorageKey);
+    kSessionOnlySubdomainThirdPartyBucketLocator =
+        bucket_info.ToBucketLocator();
 
     kInvertedNormalThirdPartyStorageKey =
         blink::StorageKey::Create(url::Origin::Create(GURL("http://rando/")),
@@ -164,9 +185,18 @@ class IndexedDBTest : public testing::Test,
     bucket_info = InitBucket(kInvertedSessionOnlyThirdPartyStorageKey);
     kInvertedSessionOnlyThirdPartyBucketLocator = bucket_info.ToBucketLocator();
 
+    kInvertedSessionOnlySubdomainThirdPartyStorageKey =
+        blink::StorageKey::Create(
+            url::Origin::Create(GURL("http://rando/")),
+            net::SchemefulSite(GURL("http://subdomain.session-only/")),
+            blink::mojom::AncestorChainBit::kCrossSite);
+    bucket_info = InitBucket(kInvertedSessionOnlySubdomainThirdPartyStorageKey);
+    kInvertedSessionOnlySubdomainThirdPartyBucketLocator =
+        bucket_info.ToBucketLocator();
+
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates;
     policy_updates.emplace_back(storage::mojom::StoragePolicyUpdate::New(
-        kSessionOnlyFirstPartyStorageKey.origin(),
+        url::Origin::Create(GURL("http://subdomain.session-only")),
         /*should_purge_on_shutdown=*/true));
     context_->ApplyPolicyUpdates(std::move(policy_updates));
   }
@@ -265,41 +295,62 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   base::FilePath normal_path_first_party;
   base::FilePath session_only_path_first_party;
+  base::FilePath session_only_subdomain_path_first_party;
   base::FilePath normal_path_third_party;
   base::FilePath session_only_path_third_party;
+  base::FilePath session_only_subdomain_path_third_party;
   base::FilePath inverted_normal_path_third_party;
   base::FilePath inverted_session_only_path_third_party;
+  base::FilePath inverted_session_only_subdomain_path_third_party;
 
   normal_path_first_party =
       GetFilePathForTesting(kNormalFirstPartyBucketLocator);
   session_only_path_first_party =
       GetFilePathForTesting(kSessionOnlyFirstPartyBucketLocator);
+  session_only_subdomain_path_first_party =
+      GetFilePathForTesting(kSessionOnlySubdomainFirstPartyBucketLocator);
   normal_path_third_party =
       GetFilePathForTesting(kNormalThirdPartyBucketLocator);
   session_only_path_third_party =
       GetFilePathForTesting(kSessionOnlyThirdPartyBucketLocator);
+  session_only_subdomain_path_third_party =
+      GetFilePathForTesting(kSessionOnlySubdomainThirdPartyBucketLocator);
   inverted_normal_path_third_party =
       GetFilePathForTesting(kInvertedNormalThirdPartyBucketLocator);
   inverted_session_only_path_third_party =
       GetFilePathForTesting(kInvertedSessionOnlyThirdPartyBucketLocator);
+  inverted_session_only_subdomain_path_third_party = GetFilePathForTesting(
+      kInvertedSessionOnlySubdomainThirdPartyBucketLocator);
   if (IsThirdPartyStoragePartitioningEnabled()) {
     EXPECT_NE(normal_path_first_party, normal_path_third_party);
     EXPECT_NE(session_only_path_first_party, session_only_path_third_party);
+    EXPECT_NE(session_only_subdomain_path_first_party,
+              session_only_subdomain_path_third_party);
     EXPECT_NE(inverted_normal_path_third_party,
               inverted_session_only_path_third_party);
+    EXPECT_NE(inverted_normal_path_third_party,
+              inverted_session_only_subdomain_path_third_party);
   } else {
     EXPECT_EQ(normal_path_first_party, normal_path_third_party);
     EXPECT_EQ(session_only_path_first_party, session_only_path_third_party);
+    EXPECT_EQ(session_only_subdomain_path_first_party,
+              session_only_subdomain_path_third_party);
     EXPECT_EQ(inverted_normal_path_third_party,
               inverted_session_only_path_third_party);
+    EXPECT_EQ(inverted_normal_path_third_party,
+              inverted_session_only_subdomain_path_third_party);
   }
 
   ASSERT_TRUE(base::CreateDirectory(normal_path_first_party));
   ASSERT_TRUE(base::CreateDirectory(session_only_path_first_party));
+  ASSERT_TRUE(base::CreateDirectory(session_only_subdomain_path_first_party));
   ASSERT_TRUE(base::CreateDirectory(normal_path_third_party));
   ASSERT_TRUE(base::CreateDirectory(session_only_path_third_party));
+  ASSERT_TRUE(base::CreateDirectory(session_only_subdomain_path_third_party));
   ASSERT_TRUE(base::CreateDirectory(inverted_normal_path_third_party));
   ASSERT_TRUE(base::CreateDirectory(inverted_session_only_path_third_party));
+  ASSERT_TRUE(
+      base::CreateDirectory(inverted_session_only_subdomain_path_third_party));
 
   base::RunLoop run_loop;
   context()->ForceInitializeFromFilesForTesting(run_loop.QuitClosure());
@@ -309,14 +360,19 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
-  EXPECT_FALSE(base::DirectoryExists(session_only_path_first_party));
+  EXPECT_TRUE(base::DirectoryExists(session_only_path_first_party));
+  EXPECT_FALSE(base::DirectoryExists(session_only_subdomain_path_first_party));
   EXPECT_TRUE(base::DirectoryExists(normal_path_third_party));
-  EXPECT_FALSE(base::DirectoryExists(session_only_path_third_party));
+  EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
+  EXPECT_FALSE(base::DirectoryExists(session_only_subdomain_path_third_party));
   EXPECT_TRUE(base::DirectoryExists(inverted_normal_path_third_party));
+  EXPECT_TRUE(base::DirectoryExists(inverted_session_only_path_third_party));
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_FALSE(base::DirectoryExists(inverted_session_only_path_third_party));
+    EXPECT_FALSE(base::DirectoryExists(
+        inverted_session_only_subdomain_path_third_party));
   } else {
-    EXPECT_TRUE(base::DirectoryExists(inverted_session_only_path_third_party));
+    EXPECT_TRUE(base::DirectoryExists(
+        inverted_session_only_subdomain_path_third_party));
   }
 }
 

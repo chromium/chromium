@@ -320,7 +320,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::map<storage::BucketLocator, int64_t> bucket_size_map_;
   // The set of sites whose storage should be cleared on shutdown. These are
   // matched against the origin and top level site in each bucket's StorageKey.
-  std::set<net::SchemefulSite> sites_to_purge_on_shutdown_;
+  std::set<url::Origin> origins_to_purge_on_shutdown_;
   const raw_ptr<base::Clock> clock_;
 
   const std::unique_ptr<IndexedDBQuotaClient> quota_client_;

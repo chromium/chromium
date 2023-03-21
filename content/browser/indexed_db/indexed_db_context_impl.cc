@@ -613,9 +613,9 @@ void IndexedDBContextImpl::ApplyPolicyUpdates(
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   for (const auto& update : policy_updates) {
     if (!update->purge_on_shutdown) {
-      sites_to_purge_on_shutdown_.erase(net::SchemefulSite(update->origin));
+      origins_to_purge_on_shutdown_.erase(update->origin);
     } else {
-      sites_to_purge_on_shutdown_.insert(net::SchemefulSite(update->origin));
+      origins_to_purge_on_shutdown_.insert(update->origin);
     }
   }
 }
@@ -1003,22 +1003,33 @@ void IndexedDBContextImpl::ShutdownOnIDBSequence() {
     return;
 
   // Clear session-only databases.
-  if (sites_to_purge_on_shutdown_.empty())
+  if (origins_to_purge_on_shutdown_.empty()) {
     return;
+  }
 
   IndexedDBFactory* factory = GetIDBFactory();
   const auto& storage_key_to_file_path = FindLegacyIndexedDBFiles();
   const auto& bucket_id_to_file_path = FindIndexedDBFiles();
   for (const auto& bucket_locator : bucket_set_) {
-    const auto& origin_it = sites_to_purge_on_shutdown_.find(
-        net::SchemefulSite(bucket_locator.storage_key.origin()));
-    const auto& top_site_it = sites_to_purge_on_shutdown_.find(
-        bucket_locator.storage_key.top_level_site());
-    if (origin_it == sites_to_purge_on_shutdown_.end() &&
-        top_site_it == sites_to_purge_on_shutdown_.end()) {
-      // No match for a site we want to clear in this bucket locator.
+    // Delete the storage if its origin matches one of the origins to purge, or
+    // if it is third-party and the top-level site is same-site with one of
+    // those origins.
+    auto delete_bucket = origins_to_purge_on_shutdown_.find(
+                             bucket_locator.storage_key.origin()) !=
+                         origins_to_purge_on_shutdown_.end();
+    if (!delete_bucket) {
+      auto& bucket_site = bucket_locator.storage_key.top_level_site();
+      for (const auto& origin_to_purge : origins_to_purge_on_shutdown_) {
+        if (net::SchemefulSite(origin_to_purge) == bucket_site) {
+          delete_bucket = true;
+          break;
+        }
+      }
+    }
+    if (!delete_bucket) {
       continue;
     }
+
     base::FilePath path;
     const auto& legacy_it =
         storage_key_to_file_path.find(bucket_locator.storage_key);
