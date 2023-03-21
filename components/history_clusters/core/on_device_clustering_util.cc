@@ -114,4 +114,8 @@ void RemoveEmptyClusters(std::vector<history::Cluster>* clusters) {
   }
 }
 
+bool IsShownVisitCandidate(const history::ClusterVisit& visit) {
+  return visit.score > 0.0f && !visit.annotated_visit.url_row.title().empty();
+}
+
 }  // namespace history_clusters

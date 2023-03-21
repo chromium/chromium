@@ -95,6 +95,13 @@ std::vector<history::Cluster> GetTestClusters() {
         cluster_visit.annotated_visit.visit_row.is_known_to_sync = false;
       });
 
+  history::Cluster meets_all_criteria_but_not_after_skipped_visits =
+      meets_all_criteria;
+  meets_all_criteria_but_not_after_skipped_visits.cluster_id = 12;
+  base::ranges::for_each(
+      meets_all_criteria_but_not_after_skipped_visits.visits,
+      [&](auto& cluster_visit) { cluster_visit.score = 0.0; });
+
   return {meets_no_criteria,
           meets_all_criteria,
           not_enough_images,
@@ -105,7 +112,8 @@ std::vector<history::Cluster> GetTestClusters() {
           single_visit_cluster,
           non_visible_cluster,
           has_blocked_category,
-          has_image_not_known_to_sync};
+          has_image_not_known_to_sync,
+          meets_all_criteria_but_not_after_skipped_visits};
 }
 
 class FilterClusterProcessorTest : public ::testing::Test {
@@ -163,7 +171,7 @@ TEST_F(FilterClusterProcessorTest, NoFunctionalFilter) {
   QueryClustersFilterParams params;
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11));
+              ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
 
   // Filter should not have been run, so expect these counts to be 0.
   histogram_tester.ExpectTotalCount(
@@ -192,7 +200,7 @@ TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
@@ -204,7 +212,7 @@ TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNotEnoughImages, 4);
+      ClusterFilterReason::kNotEnoughImages, 5);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
@@ -219,7 +227,7 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
@@ -231,7 +239,7 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNoCategoryMatch, 2);
+      ClusterFilterReason::kNoCategoryMatch, 3);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyCategoryBlocklistConstraint) {
@@ -241,20 +249,20 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryBlocklistConstraint) {
   params.categories_blocklist = {"blocked"};
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 11));
+              ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
-      10, 1);
+      11, 1);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNotFiltered, 10);
+      ClusterFilterReason::kNotFiltered, 11);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
@@ -273,7 +281,7 @@ TEST_F(FilterClusterProcessorTest, OnlySearchInitiated) {
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
@@ -285,7 +293,7 @@ TEST_F(FilterClusterProcessorTest, OnlySearchInitiated) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNotSearchInitiated, 4);
+      ClusterFilterReason::kNotSearchInitiated, 5);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
@@ -300,7 +308,7 @@ TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
@@ -312,7 +320,7 @@ TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNoRelatedSearches, 3);
+      ClusterFilterReason::kNoRelatedSearches, 4);
 }
 
 TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
@@ -328,7 +336,7 @@ TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
@@ -344,7 +352,7 @@ TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kSingleVisit, 2);
+      ClusterFilterReason::kSingleVisit, 3);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
@@ -365,7 +373,7 @@ TEST_F(FilterClusterProcessorTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
@@ -377,11 +385,11 @@ TEST_F(FilterClusterProcessorTest,
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNotEnoughInterestingVisits, 2);
+      ClusterFilterReason::kNotEnoughInterestingVisits, 3);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kSingleVisit, 2);
+      ClusterFilterReason::kSingleVisit, 3);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
@@ -404,7 +412,7 @@ TEST_F(FilterClusterProcessorTest, FullFilter) {
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
       "NewTabPage",
-      11, 1);
+      12, 1);
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
       "NewTabPage",
@@ -416,27 +424,27 @@ TEST_F(FilterClusterProcessorTest, FullFilter) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNotEnoughImages, 4);
+      ClusterFilterReason::kNotEnoughImages, 5);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNoCategoryMatch, 2);
+      ClusterFilterReason::kNoCategoryMatch, 3);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNotSearchInitiated, 4);
+      ClusterFilterReason::kNotSearchInitiated, 5);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNoRelatedSearches, 3);
+      ClusterFilterReason::kNoRelatedSearches, 4);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kNotEnoughInterestingVisits, 2);
+      ClusterFilterReason::kNotEnoughInterestingVisits, 3);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
-      ClusterFilterReason::kSingleVisit, 2);
+      ClusterFilterReason::kSingleVisit, 3);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",

@@ -92,9 +92,16 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
   bool is_search_initiated = false;
   bool has_related_searches = false;
   size_t num_interesting_visits = 0;
+  size_t num_visits = 0;
   bool is_content_visible = true;
 
   for (const auto& visit : cluster.visits) {
+    if (!IsShownVisitCandidate(visit)) {
+      continue;
+    }
+
+    num_visits++;
+
     if (visit.annotated_visit.content_annotations.has_url_keyed_image &&
         visit.annotated_visit.visit_row.is_known_to_sync) {
       num_visits_with_images++;
@@ -168,7 +175,7 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
           ClusterFilterReason::kNotEnoughInterestingVisits);
       matches_filter = false;
     }
-    if (cluster.visits.size() <= 1) {
+    if (num_visits <= 1) {
       RecordClusterFilterReasonHistogram(clustering_request_source_,
                                          ClusterFilterReason::kSingleVisit);
       matches_filter = false;
