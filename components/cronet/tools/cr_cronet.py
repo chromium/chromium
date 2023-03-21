@@ -126,6 +126,7 @@ def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
   print(is_release, bundle_id_prefix, target_cpu)
   return get_mobile_gn_args('ios', is_release) + \
       ('is_cronet_build=true  '
+      'enable_remoting=false '
       'ios_app_bundle_id_prefix="%s" '
       'ios_deployment_target="10.0" '
       'enable_dsyms=true '

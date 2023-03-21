@@ -15,13 +15,7 @@ namespace remoting {
 
 // A simple test that starts and stop the runtime. This tests the runtime
 // operates properly and all threads and message loops are valid.
-// TODO(https://crbug.com/1422163): Failing on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_StartAndStop DISABLED_StartAndStop
-#else
-#define MAYBE_StartAndStop StartAndStop
-#endif
-TEST(ChromotingClientRuntimeTest, MAYBE_StartAndStop) {
+TEST(ChromotingClientRuntimeTest, StartAndStop) {
   ChromotingClientRuntime* runtime = ChromotingClientRuntime::GetInstance();
 
   ASSERT_TRUE(runtime);
