@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/language/url_language_histogram_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_remover_helper.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -424,15 +425,26 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_PASSWORDS)) {
     base::RecordAction(base::UserMetricsAction("ClearBrowsingData_Passwords"));
-    password_manager::PasswordStoreInterface* password_store =
+    password_manager::PasswordStoreInterface* profile_password_store =
         IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
 
-    if (password_store) {
+    if (profile_password_store) {
       // It doesn't matter whether any logins were removed so bool argument can
       // be omitted.
-      password_store->RemoveLoginsCreatedBetween(
+      profile_password_store->RemoveLoginsCreatedBetween(
+          delete_begin, delete_end,
+          IgnoreArgument<bool>(CreatePendingTaskCompletionClosure()));
+    }
+
+    password_manager::PasswordStoreInterface* account_password_store =
+        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+            browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
+            .get();
+
+    if (account_password_store) {
+      account_password_store->RemoveLoginsCreatedBetween(
           delete_begin, delete_end,
           IgnoreArgument<bool>(CreatePendingTaskCompletionClosure()));
     }
