@@ -7,8 +7,10 @@
 
 #include <fidl/fuchsia.logger/cpp/fidl.h>
 
+#include <lib/async/default.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/zx/time.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -86,6 +88,9 @@ class SimpleTestLogListener {
   base::circular_deque<fuchsia_logger::LogMessage> logged_messages_;
   TestLogListenerSafe::OnLogMessageCallback on_log_message_;
 };
+
+// Configures `listener` to listen for messages from the current process.
+void ListenFilteredByCurrentProcessId(SimpleTestLogListener& listener);
 
 }  // namespace base
 
