@@ -33051,6 +33051,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1092" label="ScreenCaptureWithoutGestureAllowedForOrigins"/>
   <int value="1093"
       label="FileOrDirectoryPickerWithoutGestureAllowedForOrigins"/>
+  <int value="1094" label="AppLaunchAutomation"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

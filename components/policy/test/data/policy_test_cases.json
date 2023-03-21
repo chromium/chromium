@@ -8031,6 +8031,9 @@
       }
     ]
   },
+  "AppLaunchAutomation": {
+    "reason_for_missing_test": "TODO(b/268538092): Feature not yet implemented"
+  },
   "AllowedDomainsForApps": {
     "os": [
       "win",
