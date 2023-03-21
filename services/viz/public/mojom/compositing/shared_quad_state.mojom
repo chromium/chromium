@@ -24,7 +24,7 @@ struct SharedQuadState {
   // This rect lives in the target content space. It defines the mask filter
   // info applied to the quad, and also defines rounded corner rects to clip the
   // quads with.
-  gfx.mojom.MaskFilterInfo mask_filter_info;
+  gfx.mojom.MaskFilterInfo? mask_filter_info;
 
   // This rect lives in the target content space.
   gfx.mojom.Rect? clip_rect;

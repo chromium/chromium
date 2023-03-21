@@ -9,6 +9,7 @@
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "services/viz/public/mojom/compositing/shared_quad_state.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/mojom/mask_filter_info_mojom_traits.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 
@@ -38,9 +39,12 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, OptSharedQuadState> {
     return input.sqs->visible_quad_layer_rect;
   }
 
-  static const gfx::MaskFilterInfo& mask_filter_info(
+  static const absl::optional<gfx::MaskFilterInfo> mask_filter_info(
       const OptSharedQuadState& input) {
-    return input.sqs->mask_filter_info;
+    return input.sqs->mask_filter_info.IsEmpty()
+               ? absl::nullopt
+               : absl::optional<gfx::MaskFilterInfo>(
+                     input.sqs->mask_filter_info);
   }
 
   static const absl::optional<gfx::Rect>& clip_rect(
@@ -118,10 +122,16 @@ struct StructTraits<viz::mojom::SharedQuadStateDataView, viz::SharedQuadState> {
     if (!data.ReadQuadToTargetTransform(&out->quad_to_target_transform) ||
         !data.ReadQuadLayerRect(&out->quad_layer_rect) ||
         !data.ReadVisibleQuadLayerRect(&out->visible_quad_layer_rect) ||
-        !data.ReadMaskFilterInfo(&out->mask_filter_info) ||
         !data.ReadClipRect(&out->clip_rect)) {
       return false;
     }
+
+    absl::optional<gfx::MaskFilterInfo> mask_filter;
+    if (!data.ReadMaskFilterInfo(&mask_filter)) {
+      return false;
+    }
+
+    out->mask_filter_info = mask_filter.value_or(gfx::MaskFilterInfo());
 
     out->are_contents_opaque = data.are_contents_opaque();
     out->opacity = data.opacity();
