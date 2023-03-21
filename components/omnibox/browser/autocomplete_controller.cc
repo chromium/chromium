@@ -1473,7 +1473,7 @@ bool AutocompleteController::ShouldRunProvider(
 void AutocompleteController::OnUrlScoringModelDone(
     base::OnceCallback<void(AutocompleteMatch)> callback,
     AutocompleteMatch match,
-    const absl::optional<std::vector<float>>& output) {
+    absl::optional<float> relevance) {
   // TODO(crbug/1405555): Populate this callback.  This callback should process
   //  `output` from the scoring model, updates the relevance score in the copy
   //  of the AutocompleteMatch, and passes that the final callback.

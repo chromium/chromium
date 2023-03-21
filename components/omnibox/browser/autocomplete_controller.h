@@ -355,19 +355,19 @@ class AutocompleteController : public AutocompleteProviderListener,
   // only runs on Lacros and the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
-  // This is called each time the model returns for a match.  This processes the
-  // output and passes a copy of the match with the updated relevance score
-  // to the final callback.  `OnUrlScoringModelDoneForAllMatches()` runs only
-  // after it has been called for all matches and receives a vector of matches
-  // with the updated relevance scores.
+  // Called each time the model returns for a match. Passes a copy of the match
+  // with the updated relevance score from the model to the final
+  // `OnUrlScoringModelDoneForAllMatches()` callback which receives a vector of
+  // matches with the updated relevance scores after this function has been
+  // called for all matches.
   void OnUrlScoringModelDone(
       base::OnceCallback<void(AutocompleteMatch)> callback,
       AutocompleteMatch match,
-      const absl::optional<std::vector<float>>& output);
+      absl::optional<float> relevance);
 
-  // This callback is called when the model finishes running for all matches in
-  // `results_.matches_`. This re-processes the result given the new relevance
-  // scores, then updates the final set of matches in `results_`.
+  // Called when the model finishes running for all matches in
+  // `results_.matches_`. Re-processes the result with the updated relevance
+  // scores from the model, and updates the final set of matches in `results_`.
   void OnUrlScoringModelDoneForAllMatches(
       const std::vector<AutocompleteMatch>& matches);
 
