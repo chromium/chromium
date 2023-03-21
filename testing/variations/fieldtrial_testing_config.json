@@ -6944,6 +6944,27 @@
             ]
         }
     ],
+    "InstallAmbientBadgeEngagement": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Message_Engagement_5",
+                    "params": {
+                        "minimal_engagement": "5"
+                    },
+                    "enable_features": [
+                        "AmbientBadgeSiteEngagement"
+                    ],
+                    "disable_features": [
+                        "AmbientBadgeSuppressFirstVisit"
+                    ]
+                }
+            ]
+        }
+    ],
     "InstallAndroidUnwindDfm": [
         {
             "platforms": [
