@@ -736,11 +736,6 @@ const char kContextMenuGoogleLensSearchOptimizationsName[] =
 const char kContextMenuGoogleLensSearchOptimizationsDescription[] =
     "Replaces Google Lens string variations when Google Lens is supported.";
 
-const char kClientStorageAccessContextAuditingName[] =
-    "Access contexts for client-side storage";
-const char kClientStorageAccessContextAuditingDescription[] =
-    "Record the first-party contexts in which client-side storage was accessed";
-
 const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[] =
     "Clear window name in top-level cross-site cross-browsing-context-group "
     "navigation";

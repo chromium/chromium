@@ -1097,15 +1097,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "client-storage-access-context-auditing",
-    "owners": [
-      "sauski",
-      "msramek",
-      "chrome-friendly-settings@google.com"
-    ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "clipboard-history-reorder",
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
     "expiry_milestone": 110

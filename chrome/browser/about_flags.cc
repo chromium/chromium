@@ -7611,11 +7611,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivateAggregationDeveloperModeDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kPrivateAggregationDeveloperMode)},
 
-    {"client-storage-access-context-auditing",
-     flag_descriptions::kClientStorageAccessContextAuditingName,
-     flag_descriptions::kClientStorageAccessContextAuditingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kClientStorageAccessContextAuditing)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"productivity-launcher", flag_descriptions::kProductivityLauncherName,
      flag_descriptions::kProductivityLauncherDescription, kOsCrOS,
