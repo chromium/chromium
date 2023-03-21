@@ -546,7 +546,8 @@ void HTMLFencedFrameElement::Navigate(
     // should freeze to that size rather than check the current size.
     // It is nonsensical to ask for the old size freezing behavior (freeze the
     // initial size) while also specifying a content size.
-    CHECK(!deprecated_should_freeze_initial_size);
+    CHECK(deprecated_should_freeze_initial_size.has_value() &&
+          !deprecated_should_freeze_initial_size.value());
     PhysicalSize converted_size(LayoutUnit(content_size->width()),
                                 LayoutUnit(content_size->height()));
     FreezeFrameSize(converted_size, /*should_coerce_size=*/false);
