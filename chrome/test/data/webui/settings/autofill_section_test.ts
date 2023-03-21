@@ -262,7 +262,7 @@ suite('AutofillSectionAddressTests', function() {
     const addressList = section.$.addressList;
     const row = addressList.children[0];
     assertTrue(!!row);
-    const menuButton = row!.querySelector<HTMLElement>('#addressMenu');
+    const menuButton = row!.querySelector<HTMLElement>('.address-menu');
     assertTrue(!!menuButton);
     menuButton!.click();
     flush();

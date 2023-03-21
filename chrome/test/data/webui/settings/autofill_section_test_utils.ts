@@ -101,7 +101,7 @@ export async function initiateEditing(
       'index is too high, not enough addresses in the list');
 
   const menu =
-      addressElements[index]!.querySelector<HTMLElement>('#addressMenu');
+      addressElements[index]!.querySelector<HTMLElement>('.address-menu');
 
   assertTrue(!!menu, 'the row element should contain the menu element');
 
@@ -140,7 +140,7 @@ export function initiateRemoving(
       'index is too high, not enough addresses in the list');
 
   const menu =
-      addressElements[index]!.querySelector<HTMLElement>('#addressMenu');
+      addressElements[index]!.querySelector<HTMLElement>('.address-menu');
 
   assertTrue(!!menu, 'the row element should contain the menu element');
 
