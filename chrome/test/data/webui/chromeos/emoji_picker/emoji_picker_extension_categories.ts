@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiGroupComponent} from 'chrome://emoji-picker/emoji_group.js';
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
-import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {EMOJI_PICKER_READY, EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {deepQuerySelector, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
+import {initialiseEmojiPickerForTest, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
@@ -33,52 +30,14 @@ const CATEGORY_LIST = ['emoji', 'symbol', 'emoticon'];
 
 export function categoryTestSuite(category: string) {
   suite(`emoji-picker-extension-${category}`, () => {
-    let emojiPicker: EmojiPicker;
-    let findInEmojiPicker: (...selectors: string[]) => HTMLElement | null;
-    let findEmojiFirstButton: (...selectors: string[]) =>
-        HTMLElement | null | undefined;
     let categoryIndex: number;
+    const {emojiPicker, findInEmojiPicker, findEmojiFirstButton, readyPromise} =
+        initialiseEmojiPickerForTest();
 
-    setup(() => {
-      // Reset DOM state.
-      document.body.innerHTML = '';
-      window.localStorage.clear();
-
-      // Set default incognito state to False.
-      EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-          new Promise((resolve) => resolve({incognito: false}));
-      EmojiPicker.configs = () => ({
-        dataUrls: {
-          emoji: [
-            '/emoji_test_ordering_start.json',
-            '/emoji_test_ordering_remaining.json',
-          ],
-          emoticon: ['/emoticon_test_ordering.json'],
-          symbol: ['/symbol_test_ordering.json'],
-          gif: [],
-        },
-      });
-
-      emojiPicker = document.createElement('emoji-picker');
-
-      findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
-
-      findEmojiFirstButton = (...path) => {
-        return (deepQuerySelector(emojiPicker, path) as EmojiGroupComponent |
-                null)
-            ?.firstEmojiButton();
-      };
+    setup(async () => {
+      await readyPromise;
 
       categoryIndex = CATEGORY_LIST.indexOf(category);
-
-      // Wait until emoji data is loaded before executing tests.
-      return new Promise<void>((resolve) => {
-        emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
-          flush();
-          resolve();
-        });
-        document.body.appendChild(emojiPicker);
-      });
     });
 
     test(category + ' category button is initialized correctly', () => {

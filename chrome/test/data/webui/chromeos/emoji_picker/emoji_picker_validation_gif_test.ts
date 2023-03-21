@@ -6,13 +6,12 @@ import 'chrome://emoji-picker/emoji_picker.js';
 import {GIF_VALIDATION_DATE, TRENDING} from 'chrome://emoji-picker/constants.js';
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
-import {EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {EmojiGroupElement} from 'chrome://emoji-picker/types.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {deepQuerySelector, waitForCondition} from './emoji_picker_test_util.js';
+import {initialiseEmojiPickerForTest, waitForCondition} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 function historyGroupSelector(category: string) {
@@ -26,170 +25,130 @@ function subcategoryGroupSelector(category: string, subcategory: string) {
 }
 
 suite(`emoji-picker-validation-gif`, () => {
+  const oneByOneGif =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+  const oneByTwoGif =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAQAAAAziH6sAAAADklEQVR42mNk+M/I8B8ABQoCAV5AcKEAAAAASUVORK5CYII=';
+
+  // The name left of - is the position of the GIF initially.
+  // The name right of - is the position of the GIF after history GIFs have
+  // been validated.
+  const historyGifs = {
+    history: [
+      {
+        base: {
+          visualContent: {
+            id: '0',
+            url: {
+              full: {
+                url: oneByTwoGif,
+              },
+              preview: {
+                url: oneByTwoGif,
+              },
+            },
+            previewSize: {width: 1, height: 2},
+          },
+          name: 'Left 1 - Invalid',
+        },
+        alternates: [],
+      },
+      {
+        base: {
+          visualContent: {
+            id: '1',
+            url: {
+              full: {
+                url: oneByOneGif,
+              },
+              preview: {
+                url: oneByOneGif,
+              },
+            },
+            previewSize: {width: 1, height: 1},
+          },
+          name: 'Right 1 - Left 1',
+        },
+        alternates: [],
+      },
+      {
+        base: {
+          visualContent: {
+            id: '2',
+            url: {
+              full: {
+                url: oneByTwoGif,
+              },
+              preview: {
+                url: oneByTwoGif,
+              },
+            },
+            previewSize: {width: 1, height: 2},
+          },
+          name: 'Right 2 - Right 1',
+        },
+        alternates: [],
+      },
+      {
+        base: {
+          visualContent: {
+            id: 3,
+            url: {
+              full: {
+                url: oneByTwoGif,
+              },
+              preview: {
+                url: oneByTwoGif,
+              },
+            },
+            previewSize: {width: 1, height: 2},
+          },
+          name: 'Left 2 - Invalid',
+        },
+        alternates: [],
+      },
+      {
+        base: {
+          visualContent: {
+            id: '4',
+            url: {
+              full: {
+                url: oneByTwoGif,
+              },
+              preview: {
+                url: oneByTwoGif,
+              },
+            },
+            previewSize: {width: 1, height: 2},
+          },
+          name: 'Right 3 - Left 2',
+        },
+        alternates: [],
+      },
+    ],
+    preference: {},
+  };
+
+  EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyImpl());
+
   let emojiPicker: EmojiPicker;
-  let findInEmojiPicker: (...selectors: string[]) => HTMLElement | null;
+  let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
   let scrollToBottom: () => void;
   const categoryList = ['emoji', 'symbol', 'emoticon', 'gif'];
   let categoryIndex: number;
 
-  setup(() => {
-    // Reset DOM state.
-    document.body.innerHTML = '';
-    window.localStorage.clear();
-    window.localStorage.setItem(GIF_VALIDATION_DATE, new Date(0).toJSON());
-    const oneByOneGif =
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
-    const oneByTwoGif =
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAQAAAAziH6sAAAADklEQVR42mNk+M/I8B8ABQoCAV5AcKEAAAAASUVORK5CYII=';
-
-    // The name left of - is the position of the GIF initially.
-    // The name right of - is the position of the GIF after history GIFs have
-    // been validated.
-    const historyGifs = {
-      history: [
-        {
-          base: {
-            visualContent: {
-              id: '0',
-              url: {
-                full: {
-                  url: oneByTwoGif,
-                },
-                preview: {
-                  url: oneByTwoGif,
-                },
-              },
-              previewSize: {width: 1, height: 2},
-            },
-            name: 'Left 1 - Invalid',
-          },
-          alternates: [],
-        },
-        {
-          base: {
-            visualContent: {
-              id: '1',
-              url: {
-                full: {
-                  url: oneByOneGif,
-                },
-                preview: {
-                  url: oneByOneGif,
-                },
-              },
-              previewSize: {width: 1, height: 1},
-            },
-            name: 'Right 1 - Left 1',
-          },
-          alternates: [],
-        },
-        {
-          base: {
-            visualContent: {
-              id: '2',
-              url: {
-                full: {
-                  url: oneByTwoGif,
-                },
-                preview: {
-                  url: oneByTwoGif,
-                },
-              },
-              previewSize: {width: 1, height: 2},
-            },
-            name: 'Right 2 - Right 1',
-          },
-          alternates: [],
-        },
-        {
-          base: {
-            visualContent: {
-              id: 3,
-              url: {
-                full: {
-                  url: oneByTwoGif,
-                },
-                preview: {
-                  url: oneByTwoGif,
-                },
-              },
-              previewSize: {width: 1, height: 2},
-            },
-            name: 'Left 2 - Invalid',
-          },
-          alternates: [],
-        },
-        {
-          base: {
-            visualContent: {
-              id: '4',
-              url: {
-                full: {
-                  url: oneByTwoGif,
-                },
-                preview: {
-                  url: oneByTwoGif,
-                },
-              },
-              previewSize: {width: 1, height: 2},
-            },
-            name: 'Right 3 - Left 2',
-          },
-          alternates: [],
-        },
-      ],
-      preference: {},
-    };
-
-    // Set GIF history.
-    window.localStorage.setItem(
-        'gif-recently-used', JSON.stringify(historyGifs));
-
-    EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyImpl());
-
-    // Set default incognito state to False.
-    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-        new Promise((resolve) => resolve({incognito: false}));
-    EmojiPicker.configs = () => ({
-      'dataUrls': {
-        'emoji': [
-          '/emoji_test_ordering_start.json',
-          '/emoji_test_ordering_remaining.json',
-        ],
-        'emoticon': ['/emoticon_test_ordering.json'],
-        'symbol': ['/symbol_test_ordering.json'],
-        'gif': [],
-      },
-    });
-
-    // TODO(b/270220102): Why do we need this cast?
-    emojiPicker = document.createElement('emoji-picker');
-
-    findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
-
-    scrollToBottom = () => {
-      const thisRect = emojiPicker.$['groups'];
-      if (!thisRect) {
-        return;
-      }
-      const searchResultRect =
-          emojiPicker.getActiveGroupAndId(thisRect.getBoundingClientRect())
-              .group;
-      if (searchResultRect) {
-        thisRect.scrollTop += searchResultRect.getBoundingClientRect().bottom;
-      }
-    };
+  setup(async () => {
+    const newPicker = initialiseEmojiPickerForTest(false, [
+      {key: GIF_VALIDATION_DATE, value: new Date(0).toJSON()},
+      {key: 'gif-recently-used', value: JSON.stringify(historyGifs)},
+    ]);
+    emojiPicker = newPicker.emojiPicker;
+    findInEmojiPicker = newPicker.findInEmojiPicker;
+    const readyPromise = newPicker.readyPromise;
+    scrollToBottom = newPicker.scrollToBottom;
+    await readyPromise;
 
     categoryIndex = categoryList.indexOf('gif');
-
-    // Wait until emoji data is loaded before executing tests.
-    return new Promise<void>((resolve) => {
-      emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
-        flush();
-        resolve();
-      });
-      document.body.appendChild(emojiPicker);
-    });
   });
 
 

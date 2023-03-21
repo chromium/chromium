@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EmojiGroupComponent} from 'chrome://emoji-picker/emoji_group.js';
+import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
+import {EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 export function assertCloseTo(actual: number, expected: number) {
@@ -124,4 +129,82 @@ export function isGroupButtonActive(element: Element|null): boolean {
   assert(element, 'group button element should not be null');
   return element!.classList.contains(ACTIVE_EMOJI_GROUP_CLASS) ||
       element!.classList.contains(ACTIVE_TEXT_GROUP_CLASS);
+}
+
+/**
+ * Set up emoji picker and some helper functions for tests.
+ * Ideally this is called at the top level (outside setup()), but a bunch of
+ * tests rely on using this to reset state - in that case this must go inisde
+ * setup() which is more like jasmine beforeEach()
+ */
+export function initialiseEmojiPickerForTest(
+    incognito = false, localStorage: Array<{key: string, value: string}> = []) {
+  // Set default incognito state to False.
+  EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = async () =>
+      ({incognito: incognito});
+  EmojiPicker.configs = () => ({
+    dataUrls: {
+      emoji: [
+        '/emoji_test_ordering_start.json',
+        '/emoji_test_ordering_remaining.json',
+      ],
+      emoticon: ['/emoticon_test_ordering.json'],
+      symbol: ['/symbol_test_ordering.json'],
+      gif: [],
+    },
+  });
+
+  // Reset DOM state.
+  document.body.innerHTML = '';
+  window.localStorage.clear();
+
+  for (const {key, value} of localStorage) {
+    window.localStorage.setItem(key, value);
+  }
+
+  const emojiPicker = document.createElement('emoji-picker');
+
+  const findInEmojiPicker = (...path: string[]) =>
+      deepQuerySelector(emojiPicker, path);
+
+  const findEmojiFirstButton = (...path: string[]) => {
+    const emojiElement = findInEmojiPicker(...path);
+    return (emojiElement as EmojiGroupComponent | null)?.firstEmojiButton();
+  };
+
+  const scrollDown = (height: number) => {
+    const thisRect = emojiPicker.$.groups;
+    if (thisRect) {
+      thisRect.scrollTop += height;
+    }
+  };
+
+  const scrollToBottom = () => {
+    const thisRect = emojiPicker.$.groups;
+    if (!thisRect) {
+      return;
+    }
+    const searchResultRect =
+        emojiPicker.getActiveGroupAndId(thisRect.getBoundingClientRect()).group;
+    if (searchResultRect) {
+      thisRect.scrollTop += searchResultRect.getBoundingClientRect().bottom;
+    }
+  };
+
+  // Wait until emoji data is loaded before executing tests.
+  const readyPromise = new Promise<void>((resolve) => {
+    emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
+      flush();
+      resolve();
+    });
+    document.body.appendChild(emojiPicker);
+  });
+  return {
+    emojiPicker,
+    findInEmojiPicker,
+    findEmojiFirstButton,
+    readyPromise,
+    scrollDown,
+    scrollToBottom,
+  };
 }

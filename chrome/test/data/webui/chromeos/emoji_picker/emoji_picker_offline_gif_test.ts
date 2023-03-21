@@ -3,15 +3,13 @@
 // found in the LICENSE file.
 
 import {TRENDING_GROUP_ID} from 'chrome://emoji-picker/constants.js';
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
-import {EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {deepQuerySelector, waitForCondition} from './emoji_picker_test_util.js';
+import {initialiseEmojiPickerForTest, waitForCondition} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyErrorImpl} from './test_emoji_picker_offline_api_proxy.js';
 
 function subcategoryGroupSelector(category: string, subcategory: string) {
@@ -20,53 +18,20 @@ function subcategoryGroupSelector(category: string, subcategory: string) {
 }
 
 suite('emoji-picker-offline-gif', () => {
-  let emojiPicker: EmojiPicker;
-  let findInEmojiPicker: (...selectors: string[]) => HTMLElement | null;
+  EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyErrorImpl());
+  (EmojiPickerApiProxyImpl.getInstance() as TestEmojiPickerApiProxyErrorImpl)
+      .setNetError();
+  const {emojiPicker, findInEmojiPicker, readyPromise} =
+      initialiseEmojiPickerForTest();
   let emojiSearch: EmojiSearch;
   const categoryList = ['emoji', 'symbol', 'emoticon', 'gif'];
   let categoryIndex: number;
 
-  setup(() => {
-    // Reset DOM state.
-    document.body.innerHTML = '';
-    window.localStorage.clear();
-
-    EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyErrorImpl());
-
-    // Set default incognito state to False.
-    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-        new Promise((resolve) => resolve({incognito: false}));
-
-    (EmojiPickerApiProxyImpl.getInstance() as TestEmojiPickerApiProxyErrorImpl)
-        .setNetError();
-
-    EmojiPicker.configs = () => ({
-      dataUrls: {
-        emoji: [
-          '/emoji_test_ordering_start.json',
-          '/emoji_test_ordering_remaining.json',
-        ],
-        emoticon: ['/emoticon_test_ordering.json'],
-        symbol: ['/symbol_test_ordering.json'],
-        gif: [],
-      },
-    });
-
-    emojiPicker = document.createElement('emoji-picker');
-
-    findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
-
+  setup(async () => {
     categoryIndex = categoryList.indexOf('gif');
 
-    // Wait until emoji data is loaded before executing tests.
-    return new Promise<void>((resolve) => {
-      emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
-        flush();
-        resolve();
-      });
-      document.body.appendChild(emojiPicker);
-      emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
-    });
+    await readyPromise;
+    emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
   });
 
   test('There is no trending GIFs.', async () => {

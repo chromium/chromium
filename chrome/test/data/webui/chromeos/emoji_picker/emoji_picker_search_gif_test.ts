@@ -2,60 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_proxy.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
-import {EMOJI_PICKER_READY} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 
-import {deepQuerySelector, timeout, waitForCondition} from './emoji_picker_test_util.js';
+import {initialiseEmojiPickerForTest, timeout, waitForCondition} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 
 suite('emoji-search-gif', () => {
-  let emojiPicker: EmojiPicker;
-  let findInEmojiPicker: (...selectors: string[]) => HTMLElement | null;
+  EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyImpl());
   let emojiSearch: EmojiSearch;
-  let scrollDown: (height: number) => void;
+  let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
+  let scrollDown: ((height: number) => void);
   let scrollToBottom: () => void;
-  setup(() => {
-    // Reset DOM state.
-    document.body.innerHTML = '';
-    window.localStorage.clear();
-
-    EmojiPickerApiProxyImpl.setInstance(new TestEmojiPickerApiProxyImpl());
-
-    // Set default incognito state to False.
-    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
-        new Promise((resolve) => resolve({incognito: false}));
-
-    EmojiPicker.configs = () => ({
-      'dataUrls': {
-        'emoji': [
-          '/emoji_test_ordering_start.json',
-          '/emoji_test_ordering_remaining.json',
-        ],
-        'emoticon': ['/emoticon_test_ordering.json'],
-        'symbol': ['/symbol_test_ordering.json'],
-        'gif': [],
-      },
-    });
-
-    emojiPicker = document.createElement('emoji-picker');
-
-    findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
-
-    scrollDown = (height: number) => {
-      const thisRect =
-          findInEmojiPicker('emoji-search')!.shadowRoot!.getElementById(
-              'results');
-      if (thisRect) {
-        thisRect.scrollTop += height;
-      }
-    };
-
+  setup(async () => {
+    const newPicker = initialiseEmojiPickerForTest();
+    findInEmojiPicker = newPicker.findInEmojiPicker;
+    scrollDown = newPicker.scrollDown;
     scrollToBottom = () => {
       const thisRect =
           findInEmojiPicker('emoji-search')!.shadowRoot!.getElementById(
@@ -68,15 +33,9 @@ suite('emoji-search-gif', () => {
       }
     };
 
-    // Wait until emoji data is loaded before executing tests.
-    return new Promise<void>((resolve) => {
-      emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
-        flush();
-        resolve();
-      });
-      document.body.appendChild(emojiPicker);
-      emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
-    });
+    await newPicker.readyPromise;
+
+    emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
   });
 
   test('By default, there is no search result.', () => {

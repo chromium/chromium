@@ -4,47 +4,22 @@
 
 import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
-import {EMOJI_PICKER_READY, EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
+import {EMOJI_TEXT_BUTTON_CLICK} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 
-import {deepQuerySelector, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
+import {initialiseEmojiPickerForTest, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 
 suite('emoji-search', () => {
   let emojiPicker: EmojiPicker;
-  let findInEmojiPicker: (...selectors: string[]) => HTMLElement | null;
   let emojiSearch: EmojiSearch;
-  setup(() => {
-    // Reset DOM state.
-    document.body.innerHTML = '';
-    window.localStorage.clear();
-
-    EmojiPicker.configs = () => ({
-      dataUrls: {
-        emoji: [
-          '/emoji_test_ordering_start.json',
-          '/emoji_test_ordering_remaining.json',
-        ],
-        emoticon: ['/emoticon_test_ordering.json'],
-        symbol: ['/symbol_test_ordering.json'],
-        gif: [],
-      },
-    });
-
-    emojiPicker = document.createElement('emoji-picker');
-
-    findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
-
-    // Wait until emoji data is loaded before executing tests.
-    return new Promise<void>((resolve) => {
-      emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
-        flush();
-        resolve();
-      });
-      document.body.appendChild(emojiPicker);
-      emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
-    });
+  let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
+  setup(async () => {
+    const newPicker = initialiseEmojiPickerForTest();
+    emojiPicker = newPicker.emojiPicker;
+    findInEmojiPicker = newPicker.findInEmojiPicker;
+    await newPicker.readyPromise;
+    emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
   });
 
 
