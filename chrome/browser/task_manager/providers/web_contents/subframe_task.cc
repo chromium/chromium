@@ -7,18 +7,27 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_set.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace task_manager {
+
+namespace {
+
+// Expected URL types for `UrlIdentity::CreateFromUrl(`.
+constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptions = {
+    .default_options = {UrlIdentity::DefaultFormatOptions::kRawSpec}};
+
+}  // namespace
 
 SubframeTask::SubframeTask(content::RenderFrameHost* render_frame_host,
                            RendererTask* main_task)
@@ -55,26 +64,18 @@ void SubframeTask::Activate() {
 std::u16string SubframeTask::GetTitle() {
   DCHECK(site_instance_);
 
-  // By default, subframe rows display the site, like this:
-  //     "Subframe: http://example.com/"
   const GURL& site_url = site_instance_->GetSiteURL();
-  std::string name = site_url.spec();
+  Profile* profile =
+      Profile::FromBrowserContext(site_instance_->GetBrowserContext());
 
-  // If |site_url| wraps a chrome extension id, we can display the extension
-  // name instead, which is more human-readable.
-  if (site_url.SchemeIs(extensions::kExtensionScheme)) {
-    const extensions::Extension* extension =
-        extensions::ExtensionRegistry::Get(site_instance_->GetBrowserContext())
-            ->enabled_extensions()
-            .GetExtensionOrAppByURL(site_url);
-    if (extension)
-      name = extension->name();
-  }
-
-  int message_id = site_instance_->GetBrowserContext()->IsOffTheRecord()
+  int message_id = profile->IsOffTheRecord()
                        ? IDS_TASK_MANAGER_SUBFRAME_INCOGNITO_PREFIX
                        : IDS_TASK_MANAGER_SUBFRAME_PREFIX;
-  return l10n_util::GetStringFUTF16(message_id, base::UTF8ToUTF16(name));
+  return l10n_util::GetStringFUTF16(
+      message_id,
+      UrlIdentity::CreateFromUrl(profile, site_url, kUrlIdentityAllowedTypes,
+                                 kUrlIdentityOptions)
+          .name);
 }
 
 }  // namespace task_manager

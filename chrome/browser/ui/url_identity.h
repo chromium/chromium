@@ -35,8 +35,10 @@ struct UrlIdentity {
   // Formatting options for default type.
   enum class DefaultFormatOptions {
     kMinValue,
+    // Returns the `GURL::spec()`.
+    kRawSpec = kMinValue,
     // Omit cryptographic scheme. (i.e. https and wss)
-    kOmitCryptographicScheme = kMinValue,
+    kOmitCryptographicScheme,
     // Returns the hostname in unicode. Returns ASCII hostname if not IDN or
     // invalid.
     kHostname,

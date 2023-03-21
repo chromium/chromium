@@ -35,6 +35,11 @@ UrlIdentity CreateDefaultUrlIdentityFromUrl(const GURL& url,
                                             const FormatOptions& options) {
   std::u16string name;
 
+  if (options.default_options.Has(DefaultFormatOptions::kRawSpec)) {
+    return UrlIdentity{
+        .type = Type::kDefault,
+        .name = base::CollapseWhitespace(base::UTF8ToUTF16(url.spec()), false)};
+  }
   if (options.default_options.Has(
           DefaultFormatOptions::kOmitCryptographicScheme)) {
     name = url_formatter::FormatUrlForSecurityDisplay(
