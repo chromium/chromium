@@ -474,19 +474,8 @@ void BrowserTestBase::SetUp() {
   }
 #endif
 
-  // There is only one place where
-  // "HeadlessModeProtocolBrowserTest.ScreencastBasicssets" specifies
-  // --use-angle=swiftshader-webgl through
-  // chrome/browser/headless/headless_mode_util.cc, and by resetting it to
-  // --use-angle=swiftshader, the test crashes.
-  // If not for this test, we should assert kUseANGLE isn't specified below.
-  if (use_software_gl && !use_software_compositing_ &&
-      !command_line->HasSwitch(switches::kUseANGLE)) {
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    gl::kGLImplementationANGLEName);
-    command_line->AppendSwitchASCII(switches::kUseANGLE,
-                                    gl::kANGLEImplementationSwiftShaderName);
-  }
+  if (use_software_gl && !use_software_compositing_)
+    command_line->AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
 
   // Use an sRGB color profile to ensure that the machine's color profile does
   // not affect the results.

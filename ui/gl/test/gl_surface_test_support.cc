@@ -63,6 +63,9 @@ GLDisplay* InitializeOneOffHelper(bool init_extensions) {
     impl = gl::GetSoftwareGLImplementation();
   }
 
+  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
+      << "kUseGL has not effect in tests";
+
   bool fallback_to_software_gl = false;
   bool disable_gl_drawing = true;
 

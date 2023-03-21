@@ -269,6 +269,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kForceUIDirection,
       switches::kIgnoreCertificateErrors,
       switches::kLoggingLevel,
+      switches::kOverrideUseSoftwareGLForTests,
       switches::kOverrideEnabledCdmInterfaceVersion,
       switches::kProxyServer,
       switches::kDisableAcceleratedMjpegDecode,

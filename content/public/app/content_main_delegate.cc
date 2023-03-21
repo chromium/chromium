@@ -60,8 +60,8 @@ absl::optional<int> ContentMainDelegate::PreBrowserMain() {
 
   // TODO(crbug.com/1351777): remove this workaround once SwANGLE can work with
   // the GPU process sandbox.
-  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kUseANGLE) == gl::kANGLEImplementationSwiftShaderName) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kOverrideUseSoftwareGLForTests)) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         sandbox::policy::switches::kDisableGpuSandbox);
   }
