@@ -19,40 +19,30 @@ HTMLPictureElement::HTMLPictureElement(Document& document)
     : HTMLElement(html_names::kPictureTag, document) {}
 
 void HTMLPictureElement::SourceOrMediaChanged() {
-  for (HTMLImageElement* image_element =
-           Traversal<HTMLImageElement>::FirstChild(*this);
-       image_element; image_element = Traversal<HTMLImageElement>::NextSibling(
-                          *image_element)) {
-    image_element->SelectSourceURL(ImageLoader::kUpdateNormal);
+  for (HTMLImageElement& image_element :
+       Traversal<HTMLImageElement>::ChildrenOf(*this)) {
+    image_element.SelectSourceURL(ImageLoader::kUpdateNormal);
   }
 }
 
-void HTMLPictureElement::SourceAttributeChanged() {
-  for (HTMLImageElement* image_element =
-           Traversal<HTMLImageElement>::FirstChild(*this);
-       image_element; image_element = Traversal<HTMLImageElement>::NextSibling(
-                          *image_element)) {
-    image_element->InvalidateAttributeMapping();
+void HTMLPictureElement::SourceDimensionChanged() {
+  for (HTMLImageElement& image_element :
+       Traversal<HTMLImageElement>::ChildrenOf(*this)) {
+    image_element.InvalidateAttributeMapping();
   }
 }
 
 void HTMLPictureElement::RemoveListenerFromSourceChildren() {
-  for (HTMLSourceElement* source_element =
-           Traversal<HTMLSourceElement>::FirstChild(*this);
-       source_element;
-       source_element =
-           Traversal<HTMLSourceElement>::NextSibling(*source_element)) {
-    source_element->RemoveMediaQueryListListener();
+  for (HTMLSourceElement& source_element :
+       Traversal<HTMLSourceElement>::ChildrenOf(*this)) {
+    source_element.RemoveMediaQueryListListener();
   }
 }
 
 void HTMLPictureElement::AddListenerToSourceChildren() {
-  for (HTMLSourceElement* source_element =
-           Traversal<HTMLSourceElement>::FirstChild(*this);
-       source_element;
-       source_element =
-           Traversal<HTMLSourceElement>::NextSibling(*source_element)) {
-    source_element->AddMediaQueryListListener();
+  for (HTMLSourceElement& source_element :
+       Traversal<HTMLSourceElement>::ChildrenOf(*this)) {
+    source_element.AddMediaQueryListListener();
   }
 }
 

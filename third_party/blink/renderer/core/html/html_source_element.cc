@@ -165,7 +165,7 @@ void HTMLSourceElement::AttributeChanged(
   const QualifiedName& name = params.name;
   if (name == html_names::kWidthAttr || name == html_names::kHeightAttr) {
     if (auto* picture = DynamicTo<HTMLPictureElement>(parentElement()))
-      picture->SourceAttributeChanged();
+      picture->SourceDimensionChanged();
   }
 
   HTMLElement::AttributeChanged(params);
