@@ -219,7 +219,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) {
-    return controller_->IsNodeIgnoredForReadAnything(ax_node_id);
+    return controller_->model_.IsNodeIgnoredForReadAnything(ax_node_id);
   }
 
   size_t GetNumTrees() { return controller_->model_.NumTreesForTesting(); }

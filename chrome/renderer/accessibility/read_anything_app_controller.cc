@@ -552,7 +552,7 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
         break;
       }
       ancestors.pop();
-      if (!IsNodeIgnoredForReadAnything(ancestor_id)) {
+      if (!model_.IsNodeIgnoredForReadAnything(ancestor_id)) {
         model_.InsertDisplayNode(ancestor_id);
       }
     }
@@ -566,7 +566,7 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
     }
     while (next_node != deepest_last_child) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
-      if (!IsNodeIgnoredForReadAnything(next_node->id())) {
+      if (!model_.IsNodeIgnoredForReadAnything(next_node->id())) {
         model_.InsertDisplayNode(next_node->id());
       }
     }
@@ -699,7 +699,7 @@ std::string ReadAnythingAppController::GetLanguage(
     ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
-  if (NodeIsContentNode(ax_node_id)) {
+  if (model_.NodeIsContentNode(ax_node_id)) {
     return ax_node->GetLanguage();
   }
   return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
@@ -756,15 +756,6 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
   return ax_node->HasTextStyle(ax::mojom::TextStyle::kOverline);
-}
-
-bool ReadAnythingAppController::IsNodeIgnoredForReadAnything(
-    ui::AXNodeID ax_node_id) const {
-  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  DCHECK(ax_node);
-  // Ignore interactive elements.
-  ax::mojom::Role role = ax_node->GetRole();
-  return ui::IsControl(role) || ui::IsSelect(role);
 }
 
 void ReadAnythingAppController::OnConnected() {
@@ -856,9 +847,4 @@ void ReadAnythingAppController::SetPageHandlerForTesting(
     mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler) {
   page_handler_.reset();
   page_handler_.Bind(std::move(page_handler));
-}
-
-bool ReadAnythingAppController::NodeIsContentNode(
-    ui::AXNodeID ax_node_id) const {
-  return base::Contains(model_.content_node_ids(), ax_node_id);
 }

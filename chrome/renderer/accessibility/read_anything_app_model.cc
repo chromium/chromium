@@ -5,7 +5,8 @@
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
 #include "base/containers/contains.h"
-
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 
@@ -175,6 +176,19 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
 ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
   ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_).get();
   return tree->GetFromId(ax_node_id);
+}
+
+bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
+    ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  // Ignore interactive elements.
+  ax::mojom::Role role = ax_node->GetRole();
+  return ui::IsControl(role) || ui::IsSelect(role);
+}
+
+bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
+  return base::Contains(content_node_ids_, ax_node_id);
 }
 
 double ReadAnythingAppModel::GetLetterSpacingValue(

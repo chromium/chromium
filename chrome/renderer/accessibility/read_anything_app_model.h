@@ -79,6 +79,8 @@ class ReadAnythingAppModel {
   }
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
+  bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
+  bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
   void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
 
   void ResetSelection();
