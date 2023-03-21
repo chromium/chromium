@@ -21,6 +21,7 @@ message Crash {
     DOUBLE_FREE = 3;
     UNKNOWN = 4;
     FREE_INVALID_ADDRESS = 5;
+    LIGHTWEIGHT_USE_AFTER_FREE = 6;
   }
 
   enum Allocator {
