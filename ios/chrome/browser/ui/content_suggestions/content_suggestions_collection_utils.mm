@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -191,10 +192,8 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [search_tab_target addSubview:voice_search_button];
 
   // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  [voice_search_button setAdjustsImageWhenHighlighted:NO];
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  // iOS 15 and refactor with UIButtonConfiguration.
+  SetAdjustsImageWhenHighlighted(voice_search_button, NO);
 
   UIImage* mic_image = DefaultSymbolWithPointSize(
       kMicrophoneSymbol, kSymbolContentSuggestionsPointSize);
@@ -216,11 +215,8 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   [search_tap_target addSubview:lens_button];
 
   // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-  // Set adjustsImageWhenHighlighted on ios 14 and lower.
-  lens_button.adjustsImageWhenHighlighted = NO;
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+  // iOS 15 and refactor with UIButtonConfiguration.
+  SetAdjustsImageWhenHighlighted(lens_button, NO);
 
   UIImage* camera_image = CustomSymbolWithPointSize(
       kCameraLensSymbol, kSymbolContentSuggestionsPointSize);

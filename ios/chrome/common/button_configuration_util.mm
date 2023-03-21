@@ -34,3 +34,12 @@ void SetTitleEdgeInsets(UIButton* button, UIEdgeInsets insets) {
   button.titleEdgeInsets = insets;
 #pragma clang diagnostic pop
 }
+
+// TODO(crbug.com/1423432): Reenable warning by removing method when it's no
+// longer needed.
+void SetAdjustsImageWhenHighlighted(UIButton* button, bool isHighlighted) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  button.adjustsImageWhenHighlighted = isHighlighted;
+#pragma clang diagnostic pop
+}

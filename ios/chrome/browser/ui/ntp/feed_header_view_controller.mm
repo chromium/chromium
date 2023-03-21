@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -371,9 +372,10 @@ NSInteger kFeedSymbolPointSize = 17;
         kSettingsFilledSymbol, kFeedSymbolPointSize);
     [menuButton setImage:menuIcon forState:UIControlStateNormal];
     menuButton.tintColor = [UIColor colorNamed:kGrey600Color];
-    menuButton.imageEdgeInsets = UIEdgeInsetsMake(
+    UIEdgeInsets imageInsets = UIEdgeInsetsMake(
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides,
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
+    SetImageEdgeInsets(menuButton, imageInsets);
   }
 }
 

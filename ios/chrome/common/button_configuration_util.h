@@ -16,4 +16,7 @@ void SetImageEdgeInsets(UIButton* button, UIEdgeInsets insets);
 // Sets TitleEdgeInsets for the button.
 void SetTitleEdgeInsets(UIButton* button, UIEdgeInsets insets);
 
+// Sets AdjustsImageWhenHighlighted for the button.
+void SetAdjustsImageWhenHighlighted(UIButton* button, bool isHighlighted);
+
 #endif  // IOS_CHROME_COMMON_BUTTON_CONFIGURATION_UTIL_H_
