@@ -140,7 +140,7 @@ TEST_F(FontCacheTest, firstAvailableOrFirst) {
 }
 
 // https://crbug.com/969402
-TEST_F(FontCacheTest, getLargerThanMaxUnsignedFont) {
+TEST_F(FontCacheTest, GetLargerThanMaxUnsignedFont) {
   FontCache& font_cache = FontCache::Get();
 
   FontDescription font_description;
