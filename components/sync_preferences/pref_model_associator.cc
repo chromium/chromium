@@ -476,9 +476,17 @@ void PrefModelAssociator::RegisterPref(const std::string& name) {
   DCHECK(
       !base::FeatureList::IsEnabled(syncer::kSyncEnforcePreferencesAllowlist) ||
       !client_ ||
-      client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name))
+      (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name) &&
+       // TODO(crbug.com/1424774): Remove support for syncer::UNSPECIFIED.
+       (client_->GetSyncablePrefsDatabase()
+                .GetSyncablePrefMetadata(name)
+                ->model_type() == type_ ||
+        client_->GetSyncablePrefsDatabase()
+                .GetSyncablePrefMetadata(name)
+                ->model_type() == syncer::UNSPECIFIED)))
       << "Preference " << name
-      << " has not been added to syncable prefs allowlist";
+      << " has not been added to syncable prefs allowlist, or has incorrect "
+         "data.";
   registered_preferences_.insert(name);
 }
 
@@ -486,12 +494,6 @@ void PrefModelAssociator::RegisterPrefWithLegacyModelType(
     const std::string& name) {
   DCHECK(!base::Contains(legacy_model_type_preferences_, name));
   DCHECK(!base::Contains(registered_preferences_, name));
-  DCHECK(
-      !base::FeatureList::IsEnabled(syncer::kSyncEnforcePreferencesAllowlist) ||
-      !client_ ||
-      client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name))
-      << "Preference " << name
-      << " has not been added to syncable prefs allowlist";
   legacy_model_type_preferences_.insert(name);
 }
 

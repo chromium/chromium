@@ -26,6 +26,7 @@
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
+#include "components/sync_preferences/common_syncable_prefs_database.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -39,6 +40,31 @@ using testing::Ne;
 using testing::NotNull;
 using user_prefs::PrefRegistrySyncable;
 
+std::string ConvertToSyncedPrefValue(const base::Value& value) {
+  std::string result;
+  bool success = base::JSONWriter::Write(value, &result);
+  DCHECK(success);
+  return result;
+}
+
+sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
+    syncer::ModelType model_type,
+    sync_pb::EntitySpecifics& specifics) {
+  switch (model_type) {
+    case syncer::ModelType::PREFERENCES:
+      return specifics.mutable_preference();
+    case syncer::ModelType::PRIORITY_PREFERENCES:
+      return specifics.mutable_priority_preference()->mutable_preference();
+    case syncer::ModelType::OS_PREFERENCES:
+      return specifics.mutable_os_preference()->mutable_preference();
+    case syncer::ModelType::OS_PRIORITY_PREFERENCES:
+      return specifics.mutable_os_priority_preference()->mutable_preference();
+    default:
+      NOTREACHED();
+      return specifics.mutable_preference();
+  }
+}
+
 class SingleClientPreferencesSyncTest : public SyncTest {
  public:
   SingleClientPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -49,6 +75,23 @@ class SingleClientPreferencesSyncTest : public SyncTest {
       const SingleClientPreferencesSyncTest&) = delete;
 
   ~SingleClientPreferencesSyncTest() override = default;
+
+ protected:
+  void InjectPreferenceToFakeServer(syncer::ModelType model_type,
+                                    const char* name,
+                                    const base::Value& value) {
+    sync_pb::EntitySpecifics specifics;
+    sync_pb::PreferenceSpecifics* preference_specifics =
+        GetPreferenceSpecifics(model_type, specifics);
+    preference_specifics->set_name(name);
+    preference_specifics->set_value(ConvertToSyncedPrefValue(value));
+
+    GetFakeServer()->InjectEntity(
+        syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+            /*non_unique_name=*/name,
+            /*client_tag=*/name, specifics,
+            /*creation_time=*/0, /*last_modified_time=*/0));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
@@ -130,6 +173,31 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
                    "Sync.ModelTypeEntityChange3.PREFERENCE",
                    syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+}
+
+// Verifies that priority synced preferences and regular synced preferences are
+// kept separate. Tests that incoming priority preference change does not have
+// any effect if the corresponding pref is registered as a regular preference.
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
+                       ShouldIsolatePreferencesOfDifferentTypes) {
+  // Register a pref as regular synced with client.
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "non-priority value");
+
+  // Create similar entity on the server but as a priority preference.
+  InjectPreferenceToFakeServer(syncer::PRIORITY_PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("priority value"));
+
+  ASSERT_TRUE(SetupSync());
+
+  // Value remains unchanged.
+  EXPECT_THAT(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+              Eq("non-priority value"));
 }
 
 }  // namespace
