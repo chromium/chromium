@@ -7,16 +7,27 @@
 #include "base/strings/string_piece.h"
 #include "components/attribution_reporting/os_support.mojom.h"
 #include "net/http/structured_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace attribution_reporting {
 
 GURL ParseOsSourceOrTriggerHeader(base::StringPiece header) {
   const auto item = net::structured_headers::ParseItem(header);
-  if (!item || !item->item.is_string())
+  if (!item) {
     return GURL();
+  }
 
-  return GURL(item->item.GetString());
+  return ParseOsSourceOrTriggerHeader(*item);
+}
+
+GURL ParseOsSourceOrTriggerHeader(
+    const net::structured_headers::ParameterizedItem& item) {
+  if (!item.item.is_string()) {
+    return GURL();
+  }
+
+  return GURL(item.item.GetString());
 }
 
 base::StringPiece GetSupportHeader(mojom::OsSupport os_support) {

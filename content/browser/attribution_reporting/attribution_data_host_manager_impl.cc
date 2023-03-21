@@ -15,17 +15,20 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/os_support.mojom.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -56,7 +59,9 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#include "net/http/structured_headers.h"
 #include "url/gurl.h"
 #endif
 
@@ -100,6 +105,11 @@ enum class NavigationDataHostStatus {
 void RecordNavigationDataHostStatus(NavigationDataHostStatus event) {
   base::UmaHistogramEnumeration("Conversions.NavigationDataHostStatus2", event);
 }
+
+enum class Registrar {
+  kWeb,
+  kOs,
+};
 
 const base::FeatureParam<base::TimeDelta> kTriggerDelay{
     &blink::features::kConversionMeasurement, "trigger_delay",
@@ -262,6 +272,8 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
 
   bool is_within_fenced_frame() const { return is_within_fenced_frame_; }
 
+  const AttributionInputEvent& input_event() const { return input_event_; }
+
   GlobalRenderFrameHostId render_frame_id() const { return render_frame_id_; }
 
   const Data& data() const { return data_; }
@@ -297,7 +309,6 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
     return a < b.Id();
   }
 
- private:
   SourceRegistrationsId Id() const {
     return absl::visit(
         base::Overloaded{
@@ -311,6 +322,7 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
         data_);
   }
 
+ private:
   // Source origin to use for all registrations on a navigation redirect or
   // beacon chain. Will not change over the course of the chain.
   SuitableOrigin source_origin_;
@@ -335,6 +347,43 @@ class AttributionDataHostManagerImpl::SourceRegistrations {
   GlobalRenderFrameHostId render_frame_id_;
 
   Data data_;
+};
+
+struct AttributionDataHostManagerImpl::RegistrarAndHeader {
+  Registrar registrar;
+  std::string header;
+
+  [[nodiscard]] static absl::optional<RegistrarAndHeader> Get(
+      const net::HttpResponseHeaders* headers) {
+    if (!headers) {
+      return absl::nullopt;
+    }
+
+    std::string web_source;
+    const bool has_web = headers->GetNormalizedHeader(
+        kAttributionReportingRegisterSourceHeader, &web_source);
+
+    std::string os_source;
+    const bool has_os =
+        base::FeatureList::IsEnabled(
+            blink::features::kAttributionReportingCrossAppWeb) &&
+        headers->GetNormalizedHeader(
+            kAttributionReportingRegisterOsSourceHeader, &os_source);
+
+    if (has_web == has_os) {
+      // TODO: Report a DevTools issue if both headers are present.
+      return absl::nullopt;
+    }
+
+    if (has_web) {
+      return RegistrarAndHeader{.registrar = Registrar::kWeb,
+                                .header = std::move(web_source)};
+    }
+
+    DCHECK(has_os);
+    return RegistrarAndHeader{.registrar = Registrar::kOs,
+                              .header = std::move(os_source)};
+  }
 };
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
@@ -401,19 +450,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     AttributionNavigationType nav_type,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id) {
-  std::string header_value;
-  if (!headers ||
-      !headers->GetNormalizedHeader(kAttributionReportingRegisterSourceHeader,
-                                    &header_value)) {
-    return;
-  }
-
-  // Avoid costly isolated JSON parsing below if the header is obviously
-  // invalid.
-  if (header_value.empty()) {
-    attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, source_origin, reporting_origin, SourceType::kNavigation,
-        SourceRegistrationError::kInvalidJson);
+  const auto attribution_header = RegistrarAndHeader::Get(headers);
+  if (!attribution_header) {
     return;
   }
 
@@ -433,15 +471,42 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     data_hosts_in_source_mode_++;
   }
 
-  it->IncrementPendingSourceData();
+  ParseSource(it, std::move(reporting_origin), *attribution_header);
+}
 
-  // Send the data to the decoder, but track that we are now waiting on a new
-  // registration.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      header_value,
-      base::BindOnce(&AttributionDataHostManagerImpl::OnSourceParsed,
-                     weak_factory_.GetWeakPtr(), attribution_src_token,
-                     std::move(reporting_origin), header_value));
+void AttributionDataHostManagerImpl::ParseSource(
+    base::flat_set<SourceRegistrations>::iterator it,
+    SuitableOrigin reporting_origin,
+    const RegistrarAndHeader& header) {
+  DCHECK(it != registrations_.end());
+
+  switch (header.registrar) {
+    case Registrar::kWeb:
+      it->IncrementPendingSourceData();
+      data_decoder::DataDecoder::ParseJsonIsolated(
+          header.header,
+          base::BindOnce(&AttributionDataHostManagerImpl::OnWebSourceParsed,
+                         weak_factory_.GetWeakPtr(), it->Id(),
+                         std::move(reporting_origin), header.header));
+      break;
+    case Registrar::kOs:
+      if (AttributionManager::GetOsSupport() ==
+          attribution_reporting::mojom::OsSupport::kDisabled) {
+        // TODO: Report a DevTools issue.
+        MaybeOnRegistrationsFinished(it);
+        break;
+      }
+#if BUILDFLAG(IS_ANDROID)
+      it->IncrementPendingSourceData();
+      data_decoder::DataDecoder::ParseStructuredHeaderItemIsolated(
+          header.header,
+          base::BindOnce(&AttributionDataHostManagerImpl::OnOsSourceParsed,
+                         weak_factory_.GetWeakPtr(), it->Id()));
+#else
+      NOTREACHED();
+#endif
+      break;
+  }
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
@@ -803,14 +868,8 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  if (!headers) {
-    MaybeOnRegistrationsFinished(it);
-    return;
-  }
-
-  std::string source_header;
-  if (!headers->GetNormalizedHeader(kAttributionReportingRegisterSourceHeader,
-                                    &source_header)) {
+  const auto attribution_header = RegistrarAndHeader::Get(headers);
+  if (!attribution_header) {
     MaybeOnRegistrationsFinished(it);
     return;
   }
@@ -820,20 +879,12 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
         rfh, blink::mojom::WebFeature::kAttributionFencedFrameReportingBeacon);
   }
 
-  it->IncrementPendingSourceData();
-
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      source_header,
-      base::BindOnce(&AttributionDataHostManagerImpl::OnSourceParsed,
-                     weak_factory_.GetWeakPtr(), beacon_id,
-                     std::move(*suitable_reporting_origin), source_header));
+  ParseSource(it, std::move(*suitable_reporting_origin), *attribution_header);
 }
 
 void AttributionDataHostManagerImpl::OnSourceParsed(
     SourceRegistrationsId id,
-    const SuitableOrigin& reporting_origin,
-    const std::string& header_value,
-    data_decoder::DataDecoder::ValueOrError result) {
+    base::FunctionRef<void(const SourceRegistrations&)> handle_result) {
   auto it = registrations_.find(id);
 
   // The registration may no longer be tracked in the event the navigation
@@ -842,54 +893,78 @@ void AttributionDataHostManagerImpl::OnSourceParsed(
     return;
   }
 
-  SourceRegistrations& registrations = *it;
-  registrations.DecrementPendingSourceData();
-
-  auto source_type = SourceType::kNavigation;
-  if (const auto* beacon_id = absl::get_if<BeaconId>(&registrations.data());
-      beacon_id && absl::holds_alternative<EventBeaconId>(*beacon_id)) {
-    source_type = SourceType::kEvent;
-  }
-
-  base::expected<StorableSource, SourceRegistrationError> source =
-      base::unexpected(SourceRegistrationError::kInvalidJson);
-  if (result.has_value()) {
-    if (result->is_dict()) {
-      auto registration = attribution_reporting::SourceRegistration::Parse(
-          std::move(*result).TakeDict());
-      if (registration.has_value()) {
-        source.emplace(reporting_origin, std::move(*registration),
-                       /*source_time=*/base::Time::Now(),
-                       registrations.source_origin(), source_type,
-                       registrations.is_within_fenced_frame());
-      } else {
-        source = base::unexpected(registration.error());
-      }
-    } else {
-      source = base::unexpected(SourceRegistrationError::kRootWrongType);
-    }
-  }
-
-  if (source.has_value()) {
-    attribution_manager_->HandleSource(std::move(*source),
-                                       registrations.render_frame_id());
-
-    if (const auto* redirect =
-            absl::get_if<SourceRegistrations::NavigationRedirect>(
-                &registrations.data())) {
-      base::UmaHistogramEnumeration(
-          "Conversions.SourceRegistration.NavigationType.Foreground",
-          redirect->nav_type);
-    }
-  } else {
-    attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, registrations.source_origin(), reporting_origin,
-        source_type, source.error());
-    attribution_reporting::RecordSourceRegistrationError(source.error());
-  }
-
+  it->DecrementPendingSourceData();
+  handle_result(*it);
   MaybeOnRegistrationsFinished(it);
 }
+
+void AttributionDataHostManagerImpl::OnWebSourceParsed(
+    SourceRegistrationsId id,
+    const SuitableOrigin& reporting_origin,
+    const std::string& header_value,
+    data_decoder::DataDecoder::ValueOrError result) {
+  OnSourceParsed(id, [&](const SourceRegistrations& registrations) {
+    auto source_type = SourceType::kNavigation;
+    if (const auto* beacon_id = absl::get_if<BeaconId>(&registrations.data());
+        beacon_id && absl::holds_alternative<EventBeaconId>(*beacon_id)) {
+      source_type = SourceType::kEvent;
+    }
+
+    base::expected<StorableSource, SourceRegistrationError> source =
+        base::unexpected(SourceRegistrationError::kInvalidJson);
+    if (result.has_value()) {
+      if (result->is_dict()) {
+        auto registration = attribution_reporting::SourceRegistration::Parse(
+            std::move(*result).TakeDict());
+        if (registration.has_value()) {
+          source.emplace(reporting_origin, std::move(*registration),
+                         /*source_time=*/base::Time::Now(),
+                         registrations.source_origin(), source_type,
+                         registrations.is_within_fenced_frame());
+        } else {
+          source = base::unexpected(registration.error());
+        }
+      } else {
+        source = base::unexpected(SourceRegistrationError::kRootWrongType);
+      }
+    }
+
+    if (source.has_value()) {
+      attribution_manager_->HandleSource(std::move(*source),
+                                         registrations.render_frame_id());
+
+      if (const auto* redirect =
+              absl::get_if<SourceRegistrations::NavigationRedirect>(
+                  &registrations.data())) {
+        base::UmaHistogramEnumeration(
+            "Conversions.SourceRegistration.NavigationType.Foreground",
+            redirect->nav_type);
+      }
+    } else {
+      attribution_manager_->NotifyFailedSourceRegistration(
+          header_value, registrations.source_origin(), reporting_origin,
+          source_type, source.error());
+      attribution_reporting::RecordSourceRegistrationError(source.error());
+    }
+  });
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void AttributionDataHostManagerImpl::OnOsSourceParsed(SourceRegistrationsId id,
+                                                      OsParseResult result) {
+  OnSourceParsed(id, [&](const SourceRegistrations& registrations) {
+    // TODO: Report parsing errors to DevTools.
+    if (result.has_value()) {
+      GURL registration_url =
+          attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
+
+      attribution_manager_->HandleOsSource(
+          registration_url, registrations.source_origin(),
+          registrations.input_event(), registrations.render_frame_id());
+    }
+  });
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void AttributionDataHostManagerImpl::MaybeOnRegistrationsFinished(
     base::flat_set<SourceRegistrations>::const_iterator it) {
