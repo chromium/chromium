@@ -325,8 +325,6 @@ GLShareGroup* GLContext::share_group() {
 
 bool GLContext::LosesAllContextsOnContextLost() {
   switch (GetGLImplementation()) {
-    case kGLImplementationDesktopGL:
-      return false;
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
       return true;

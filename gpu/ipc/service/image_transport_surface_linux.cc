@@ -34,8 +34,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
   scoped_refptr<gl::GLSurface> surface =
       gl::init::CreateViewGLSurface(display, surface_handle);
   bool override_vsync_for_multi_window_swap = false;
-  if (gl::GetGLImplementation() == gl::kGLImplementationDesktopGL ||
-      gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
     override_vsync_for_multi_window_swap = true;
   }
   if (!surface)

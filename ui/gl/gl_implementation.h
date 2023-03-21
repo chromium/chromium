@@ -32,9 +32,9 @@ class GLApi;
 // in /tool/metrics/histograms/enums.xml
 enum GLImplementation {
   kGLImplementationNone = 0,
-  kGLImplementationDesktopGL = 1,
-  kGLImplementationDesktopGLCoreProfile = 2,
-  // Note: 3 and 4 are skipped and should not be reused.
+  // Note: 1, 2, 3, 4 are skipped and should not be reused.
+  // 1 used to be desktop GL.
+  // 2 used to be desktop GL core profile.
   // 3 used to be legacy SwiftShader.
   // 4 used to be Apple's software GL.
   kGLImplementationEGLGLES2 = 5,  // Native EGL/GLES2
@@ -186,10 +186,6 @@ GetRequestedGLImplementationFromCommandLine(
 
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);
-
-// Does the underlying GL support all features from Desktop GL 2.0 that were
-// removed from the ES 2.0 spec without requiring specific extension strings.
-GL_EXPORT bool HasDesktopGLFeatures();
 
 // Get the GL implementation with a given name.
 GL_EXPORT GLImplementationParts

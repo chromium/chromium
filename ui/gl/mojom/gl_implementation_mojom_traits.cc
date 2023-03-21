@@ -14,10 +14,6 @@ EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::ToMojom(
   switch (impl) {
     case gl::kGLImplementationNone:
       return gl::mojom::GLImplementation::kGLImplementationNone;
-    case gl::kGLImplementationDesktopGL:
-      return gl::mojom::GLImplementation::kGLImplementationDesktopGL;
-    case gl::kGLImplementationDesktopGLCoreProfile:
-      return gl::mojom::GLImplementation::kGLImplementationDesktopGLCoreProfile;
     case gl::kGLImplementationEGLGLES2:
       return gl::mojom::GLImplementation::kGLImplementationEGLGLES2;
     case gl::kGLImplementationMockGL:
@@ -29,8 +25,7 @@ EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::ToMojom(
     case gl::kGLImplementationEGLANGLE:
       return gl::mojom::GLImplementation::kGLImplementationEGLANGLE;
   }
-  NOTREACHED();
-  return gl::mojom::GLImplementation::kGLImplementationNone;
+  NOTREACHED_NORETURN();
 }
 
 // static
@@ -40,12 +35,6 @@ bool EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::FromMojom(
   switch (input) {
     case gl::mojom::GLImplementation::kGLImplementationNone:
       *out = gl::kGLImplementationNone;
-      return true;
-    case gl::mojom::GLImplementation::kGLImplementationDesktopGL:
-      *out = gl::kGLImplementationDesktopGL;
-      return true;
-    case gl::mojom::GLImplementation::kGLImplementationDesktopGLCoreProfile:
-      *out = gl::kGLImplementationDesktopGLCoreProfile;
       return true;
     case gl::mojom::GLImplementation::kGLImplementationEGLGLES2:
       *out = gl::kGLImplementationEGLGLES2;
@@ -63,8 +52,7 @@ bool EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::FromMojom(
       *out = gl::kGLImplementationEGLANGLE;
       return true;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 // static
@@ -93,8 +81,7 @@ EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::ToMojom(
     case gl::ANGLEImplementation::kDefault:
       return gl::mojom::ANGLEImplementation::kDefault;
   }
-  NOTREACHED();
-  return gl::mojom::ANGLEImplementation::kNone;
+  NOTREACHED_NORETURN();
 }
 
 // static
@@ -133,8 +120,7 @@ bool EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::
       *out = gl::ANGLEImplementation::kDefault;
       return true;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 // static
