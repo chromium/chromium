@@ -282,10 +282,6 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   // the mouse cursor.
   void SynthesizeMouseMoveAfterChangeToWindow(Window* window);
 
-  // Determines whether to report event latency.
-  bool ShouldReportEventLatency(ui::EventTarget* target,
-                                const ui::EventDispatchDetails& details);
-
   ui::EventDispatchDetails PreDispatchLocatedEvent(Window* target,
                                                    ui::LocatedEvent* event);
   ui::EventDispatchDetails PreDispatchMouseEvent(Window* target,
