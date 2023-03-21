@@ -260,6 +260,7 @@
     "gn_args": {
       "disable_brotli_filter": false,
       "disable_file_support": true,
+      "enable_remoting": false,
       "enable_run_ios_unittests_with_xctest": true,
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
@@ -282,7 +283,6 @@
   "ios-simulator": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
-      "enable_remoting": true,
       "enable_run_ios_unittests_with_xctest": true,
       "is_component_build": false,
       "is_debug": true,
@@ -323,6 +323,7 @@
     "gn_args": {
       "disable_brotli_filter": false,
       "disable_file_support": true,
+      "enable_remoting": false,
       "enable_run_ios_unittests_with_xctest": true,
       "enable_websockets": false,
       "include_transport_security_state_preload_list": false,
@@ -345,7 +346,6 @@
   "ios-simulator-full-configs": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
-      "enable_remoting": true,
       "enable_run_ios_unittests_with_xctest": true,
       "is_component_build": false,
       "is_debug": true,
