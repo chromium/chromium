@@ -70,6 +70,11 @@ BASE_DECLARE_FEATURE(kWebAuthnMacPlatformAuthenticatorOptionalUv);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPhoneConfirmationSheet);
 
+// Use the new implementation of mechanism priorities in
+// AuthenticatorRequestDialogModel.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnNewPrioritiesImpl);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

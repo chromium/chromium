@@ -144,6 +144,20 @@ base::StringPiece TransportAvailabilityParamToString(
   }
 }
 
+base::StringPiece RecognizedCredentialToString(
+    device::FidoRequestHandlerBase::RecognizedCredential r) {
+  switch (r) {
+    case device::FidoRequestHandlerBase::RecognizedCredential::
+        kNoRecognizedCredential:
+      return "kNoRecognizedCredential";
+    case device::FidoRequestHandlerBase::RecognizedCredential::kUnknown:
+      return "kUnknown";
+    case device::FidoRequestHandlerBase::RecognizedCredential::
+        kHasRecognizedCredential:
+      return "kHasRecognizedCredential";
+  }
+}
+
 template <typename T, base::StringPiece (*F)(T)>
 std::string SetToString(base::flat_set<T> s) {
   std::vector<base::StringPiece> names;
@@ -200,9 +214,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto c_ui = TransportAvailabilityParam::kIsConditionalUI;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
-  const auto winapi =
-      AuthenticatorRequestDialogModel::Mechanism::WindowsAPI(true);
-  const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone(false);
+  const auto winapi = AuthenticatorRequestDialogModel::Mechanism::WindowsAPI();
+  const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone();
   const auto usb_ui = Step::kUsbInsertAndActivate;
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kNotStarted;
@@ -644,6 +657,199 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
     model.StartOver();
     EXPECT_EQ(Step::kMechanismSelection, model.current_step());
+  }
+}
+
+TEST_F(AuthenticatorRequestDialogModelTest, PriorityCodeABTest) {
+  // This test should be removed as soon as a change to the new priority code is
+  // made. It was written to try and show that, at the beginning, the two
+  // implementations were equivalent.
+
+  static constexpr int kNumBools = 12;
+  for (uint32_t i = 0; i < (1 << kNumBools); i++) {
+    uint32_t bits = i;
+    int num_bools_used = 0;
+
+#define DEFINE_BOOL(var)                                \
+  const bool var = bits & 1;                            \
+  bits >>= 1;                                           \
+  SCOPED_TRACE(testing::Message() << #var ": " << var); \
+  num_bools_used++;
+
+    DEFINE_BOOL(have_qr1st);
+    DEFINE_BOOL(have_p1st);
+    DEFINE_BOOL(is_make_credential);
+    DEFINE_BOOL(have_internal);
+    DEFINE_BOOL(have_usb);
+    DEFINE_BOOL(have_hybrid);
+    DEFINE_BOOL(have_empty_allow_list);
+    DEFINE_BOOL(is_only_hybrid_or_internal);
+    DEFINE_BOOL(have_win_native_api_authenticator);
+    DEFINE_BOOL(is_conditional_ui);
+    DEFINE_BOOL(have_v1_cable_extension);
+    DEFINE_BOOL(have_v2_cable_extension);
+
+    ASSERT_EQ(num_bools_used, kNumBools);
+#undef DEFINE_BOOL
+
+    const RequestType request_type = is_make_credential
+                                         ? RequestType::kMakeCredential
+                                         : RequestType::kGetAssertion;
+    std::vector<base::test::FeatureRef> disabled_features, enabled_features;
+    if (have_qr1st) {
+      enabled_features.emplace_back(device::kWebAuthPasskeysUI);
+    } else {
+      disabled_features.emplace_back(device::kWebAuthPasskeysUI);
+    }
+    if (have_p1st) {
+      enabled_features.emplace_back(device::kWebAuthnPhoneConfirmationSheet);
+    } else {
+      disabled_features.emplace_back(device::kWebAuthnPhoneConfirmationSheet);
+    }
+
+    for (const auto have_platform_credential :
+         {device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential,
+          device::FidoRequestHandlerBase::RecognizedCredential::kUnknown,
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kNoRecognizedCredential}) {
+      SCOPED_TRACE(testing::Message()
+                   << "have_platform_credential: "
+                   << RecognizedCredentialToString(have_platform_credential));
+      for (const auto resident_key_requirement :
+           {device::ResidentKeyRequirement::kDiscouraged,
+            device::ResidentKeyRequirement::kPreferred,
+            device::ResidentKeyRequirement::kRequired}) {
+        SCOPED_TRACE(testing::Message()
+                     << "resident_key: "
+                     << (resident_key_requirement !=
+                         device::ResidentKeyRequirement::kDiscouraged));
+
+        for (const int num_paired_phones : {0, 1, 2}) {
+          SCOPED_TRACE(testing::Message()
+                       << "num_paired_phones: " << num_paired_phones);
+
+          TransportAvailabilityInfo transports_info;
+          transports_info.is_ble_powered = true;
+          transports_info.request_type = request_type;
+          if (have_internal) {
+            transports_info.available_transports.insert(
+                AuthenticatorTransport::kInternal);
+          }
+          if (have_usb) {
+            transports_info.available_transports.insert(
+                AuthenticatorTransport::kUsbHumanInterfaceDevice);
+          }
+          if (have_hybrid) {
+            transports_info.available_transports.insert(
+                AuthenticatorTransport::kHybrid);
+          }
+          transports_info.has_platform_authenticator_credential =
+              have_platform_credential;
+          transports_info.has_empty_allow_list = have_empty_allow_list;
+          transports_info.is_only_hybrid_or_internal =
+              is_only_hybrid_or_internal;
+          if (have_win_native_api_authenticator) {
+            transports_info.has_win_native_api_authenticator = true;
+            transports_info.win_native_api_authenticator_id =
+                "some_authenticator_id";
+            transports_info.win_native_ui_shows_resident_credential_notice =
+                true;
+          }
+          transports_info.resident_key_requirement = resident_key_requirement;
+
+          absl::optional<bool> has_v2_cable_extension;
+
+          if (have_v2_cable_extension) {
+            has_v2_cable_extension = true;
+          }
+          if (have_v1_cable_extension) {
+            has_v2_cable_extension = false;
+          }
+
+          std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones;
+          for (int j = 0; j < num_paired_phones; j++) {
+            std::array<uint8_t, device::kP256X962Length> public_key = {0};
+            phones.emplace_back("phone" + std::string(1, '1' + j),
+                                /*contact_id=*/j, public_key);
+          }
+
+          if (
+              // There is no conditional mediation for
+              // makeCredential.
+              (request_type == RequestType::kMakeCredential &&
+               is_conditional_ui) ||
+              // We never have both.
+              (have_win_native_api_authenticator && have_internal) ||
+              // Impossible and will DCHECK the code if it
+              // happens.
+              (have_internal && !have_usb) ||
+              // Can't have a recognised credential without a
+              // platform authenticator.
+              ((have_platform_credential !=
+                device::FidoRequestHandlerBase::RecognizedCredential::
+                    kNoRecognizedCredential) &&
+               (!have_internal && !have_win_native_api_authenticator)) ||
+              // Can't have a recognised credential when creating
+              // one.
+              (request_type == RequestType::kMakeCredential &&
+               have_platform_credential !=
+                   device::FidoRequestHandlerBase::RecognizedCredential::
+                       kNoRecognizedCredential) ||
+              // Can't have two different versions of the caBLE extension at
+              // once.
+              (have_v1_cable_extension && have_v2_cable_extension) ||
+              // No caBLE extensions without hybrid support, or for
+              // makeCredential.
+              ((!have_hybrid || request_type == RequestType::kMakeCredential) &&
+               (have_v1_cable_extension || have_v2_cable_extension)) ||
+              // No caBLE extensions with conditional UI.
+              (is_conditional_ui &&
+               (have_v1_cable_extension || have_v2_cable_extension))) {
+            continue;
+          }
+
+          AuthenticatorRequestDialogModel::Step step_with_old_impl;
+          {
+            auto final_disabled_features = disabled_features;
+            final_disabled_features.emplace_back(
+                device::kWebAuthnNewPrioritiesImpl);
+            base::test::ScopedFeatureList feature_list;
+            feature_list.InitWithFeatures(enabled_features,
+                                          final_disabled_features);
+
+            AuthenticatorRequestDialogModel model(
+                /*render_frame_host=*/nullptr);
+            model.set_cable_transport_info(has_v2_cable_extension, phones,
+                                           base::DoNothing(), absl::nullopt);
+            model.StartFlow(transports_info, is_conditional_ui,
+                            /*prefer_native_api=*/false);
+            if (is_conditional_ui) {
+              EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+              model.TransitionToModalWebAuthnRequest();
+            }
+            step_with_old_impl = model.current_step();
+          }
+
+          {
+            base::test::ScopedFeatureList feature_list;
+            feature_list.InitWithFeatures(enabled_features, disabled_features);
+
+            AuthenticatorRequestDialogModel model(
+                /*render_frame_host=*/nullptr);
+            model.set_cable_transport_info(has_v2_cable_extension, phones,
+                                           base::DoNothing(), absl::nullopt);
+            model.StartFlow(transports_info, is_conditional_ui,
+                            /*prefer_native_api=*/false);
+            if (is_conditional_ui) {
+              EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+              model.TransitionToModalWebAuthnRequest();
+            }
+            ASSERT_EQ(step_with_old_impl, model.current_step());
+          }
+        }
+      }
+    }
   }
 }
 
