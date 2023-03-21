@@ -94,6 +94,14 @@ void BookmarkModelBridge::BookmarkNodeChildrenReordered(
   [observer_ bookmarkNodeChildrenChanged:node];
 }
 
+void BookmarkModelBridge::OnWillRemoveAllUserBookmarks(
+    bookmarks::BookmarkModel* model) {
+  SEL selector = @selector(bookmarkModelWillRemoveAllNodes:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ bookmarkModelWillRemoveAllNodes:model];
+  }
+}
+
 void BookmarkModelBridge::BookmarkAllUserNodesRemoved(
     bookmarks::BookmarkModel* model,
     const std::set<GURL>& removed_urls) {

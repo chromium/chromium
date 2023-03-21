@@ -31,6 +31,8 @@
 - (void)bookmarkModelRemovedAllNodes;
 
 @optional
+// Called before removing all non-permanent nodes.
+- (void)bookmarkModelWillRemoveAllNodes:(const bookmarks::BookmarkModel*)model;
 // The node favicon changed.
 - (void)bookmarkNodeFaviconChanged:(const bookmarks::BookmarkNode*)bookmarkNode;
 @end
@@ -68,6 +70,7 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   void BookmarkNodeChildrenReordered(
       bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* node) override;
+  void OnWillRemoveAllUserBookmarks(bookmarks::BookmarkModel* model) override;
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
                                    const std::set<GURL>& removed_urls) override;
 
