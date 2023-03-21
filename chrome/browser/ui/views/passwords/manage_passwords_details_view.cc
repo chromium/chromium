@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -266,9 +267,11 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
   (*textfield)->SetAccessibleName(u"Username");
   (*textfield)
       ->SetID(static_cast<int>(ManagePasswordsViewIDs::kUsernameTextField));
-  // TODO(crbug.com/1382017): use internationalized string.
-  *error_label = username_with_error_label_view->AddChildView(CreateErrorLabel(
-      u"You already saved a password with this username for this site"));
+  *error_label = username_with_error_label_view->AddChildView(
+      CreateErrorLabel(l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PASSWORD_USERNAME_ALREADY_USED,
+          base::UTF8ToUTF16(password_manager::GetShownOrigin(
+              url::Origin::Create(form.url))))));
   return row;
 }
 
