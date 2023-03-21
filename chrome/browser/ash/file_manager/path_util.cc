@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -425,6 +426,29 @@ std::string GetAndroidFilesMountPointName() {
   return kAndroidFilesMountPointName;
 }
 
+// Returns true if |name| is a known Bruschetta mount point name (e.g. as
+// produced by GetGuestOsMountPointName), and populates |guest_id|.
+bool IsBruschettaMountPointName(const std::string& name,
+                                Profile* profile,
+                                guest_os::GuestId* guest_id) {
+  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  if (!service) {
+    return false;
+  }
+  auto* registry = service->MountProviderRegistry();
+  for (const auto id : registry->List()) {
+    auto* provider = registry->Get(id);
+    if (provider->vm_type() != vm_tools::apps::VmType::BRUSCHETTA) {
+      continue;
+    }
+    if (name == util::GetGuestOsMountPointName(profile, provider->GuestId())) {
+      *guest_id = provider->GuestId();
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string GetCrostiniMountPointName(Profile* profile) {
   // crostini_<hash>_termina_penguin
   return base::JoinString(
@@ -499,6 +523,7 @@ bool ConvertFileSystemURLToPathInsideVM(
   // If |map_crostini_home| is set, paths in crostini mount map to:
   //   /<home-directory>/path/to/file
   base::FilePath base_to_exclude(id);
+  guest_os::GuestId guest_id("", "");
   if (id == GetDownloadsMountPointName(profile)) {
     // MyFiles.
     *inside = vm_mount.Append(kFolderNameMyFiles);
@@ -550,6 +575,16 @@ bool ConvertFileSystemURLToPathInsideVM(
     } else {
       *inside = vm_mount.Append(kCrostiniMapLinuxFiles);
     }
+  } else if (IsBruschettaMountPointName(id, profile, &guest_id)) {
+    // Bruschetta: use path to homedir, which is currently the empty string
+    // because sftp-server inside the VM runs in the homedir.
+    auto container_info =
+        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
+            guest_id);
+    if (!container_info) {
+      return false;
+    }
+    *inside = container_info->homedir;
   } else if (file_system_url.type() == storage::kFileSystemTypeSmbFs) {
     // SMB. Do not assume the share is currently accessible via SmbService
     // as this function is called during unmount when SmbFsShare is

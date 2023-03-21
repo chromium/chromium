@@ -7,26 +7,20 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
-#include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/services/app_service/public/cpp/intent_filter.h"
-#include "components/services/app_service/public/cpp/intent_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -38,10 +32,6 @@
 // or should we hard-code that in one particular subscriber (the App List UI)?
 
 namespace {
-
-const char kTextPlainMimeType[] = "text/plain";
-const char kTextTypeMimeType[] = "text/";
-const char kTextWildcardMimeType[] = "text/*";
 
 bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
                                       apps::MenuType menu_type,
@@ -58,52 +48,6 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
   }
 
   return d.device_scale_factor() != 1.0;
-}
-
-// Create a file intent filter with mime type conditions for App Service.
-apps::IntentFilters CreateIntentFilterForCrostini(
-    const guest_os::GuestOsMimeTypesService* mime_types_service,
-    const guest_os::GuestOsRegistryService::Registration& registration) {
-  const std::set<std::string> mime_types_set = registration.MimeTypes();
-  if (mime_types_set.empty()) {
-    return {};
-  }
-
-  // When a file has a mime type that Files App can't recognise but Crostini can
-  // (e.g. a proprietary file type), we should look at the file extensions that
-  // the app can support. We find these extension types by checking what
-  // extensions correspond to the app's supported mime types.
-  std::vector<std::string> extension_types;
-  if (ash::features::ShouldGuestOsFileTasksUseAppService()) {
-    extension_types = mime_types_service->GetExtensionTypesFromMimeTypes(
-        mime_types_set, registration.VmName(), registration.ContainerName());
-  }
-  std::vector<std::string> mime_types(mime_types_set.begin(),
-                                      mime_types_set.end());
-
-  // If we see that the app supports the text/plain mime-type, then the app
-  // supports all files with type text/*, as per xdg spec.
-  // https://specifications.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html.
-  // In this case, remove all mime types that begin with "text/" and replace
-  // them with a single "text/*" mime type.
-  if (base::Contains(mime_types, kTextPlainMimeType)) {
-    mime_types.erase(std::remove_if(mime_types.begin(), mime_types.end(),
-                                    [](const std::string& mime) {
-                                      return mime.find(kTextTypeMimeType) !=
-                                             std::string::npos;
-                                    }),
-                     mime_types.end());
-    mime_types.push_back(kTextWildcardMimeType);
-  }
-
-  apps::IntentFilters intent_filters;
-  intent_filters.push_back(apps_util::CreateFileFilter(
-      {apps_util::kIntentActionView}, mime_types, extension_types,
-      // TODO(crbug/1349974): Remove activity_name when default file handling
-      // preferences for Files App are migrated.
-      /*activity_name=*/apps_util::kGuestOsActivityName));
-
-  return intent_filters;
 }
 
 }  // namespace
@@ -257,12 +201,6 @@ void CrostiniApps::CreateAppOverrides(
 
   app->allow_uninstall =
       crostini::IsUninstallable(profile(), registration.app_id());
-
-  app->handles_intents = true;
-  const guest_os::GuestOsMimeTypesService* mime_types_service =
-      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile());
-  app->intent_filters =
-      CreateIntentFilterForCrostini(mime_types_service, registration);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
 }

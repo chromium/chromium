@@ -17,6 +17,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,6 +63,8 @@ class GuestOSAppsTest : public testing::Test {
   GuestOSAppsTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
+  TestingProfile* profile() { return profile_.get(); }
+
   AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
   guest_os::GuestOsRegistryService* registry() { return registry_.get(); }
@@ -72,48 +75,86 @@ class GuestOSAppsTest : public testing::Test {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
     registry_ =
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_.get());
+    publisher_ = std::make_unique<TestPublisher>(app_service_proxy());
+    publisher_->InitializeForTesting();
   }
 
-  void TearDown() override { profile_.reset(); }
+  void TearDown() override {
+    // TestPublisher must be torn down before TestingProfile because the latter
+    // destroys the GuestOsRegistryService.
+    publisher_.reset();
+    profile_.reset();
+  }
+
+  // Adds the app to the registry and returns its app_id.
+  std::string AddApp(const vm_tools::apps::App& app) {
+    // Update the ApplicationList, this calls through GuestOSApps::CreateApp.
+    vm_tools::apps::ApplicationList app_list;
+    app_list.set_vm_name(bruschetta::kBruschettaVmName);
+    app_list.set_container_name("test_container");
+    *app_list.add_apps() = app;
+    registry()->UpdateApplicationList(app_list);
+    return registry()->GenerateAppId(app.desktop_file_id(),
+                                     bruschetta::kBruschettaVmName,
+                                     app_list.container_name());
+  }
+
+  // Adds an app with the specified mime_types and returns its app_id.
+  std::string AddAppWithMimeTypes(const std::string& desktop_file_id,
+                                  const std::string& app_name,
+                                  const std::vector<std::string>& mime_types) {
+    vm_tools::apps::App app;
+    for (std::string mime_type : mime_types) {
+      app.add_mime_types(mime_type);
+    }
+    app.set_desktop_file_id(desktop_file_id);
+    vm_tools::apps::App::LocaleString::Entry* entry =
+        app.mutable_name()->add_values();
+    entry->set_locale(std::string());
+    entry->set_value(app_name);
+    return AddApp(app);
+  }
+
+  // Get the registered intent filters for the given app_id.
+  std::vector<std::unique_ptr<IntentFilter>> GetIntentFiltersForApp(
+      const std::string& app_id) {
+    std::vector<std::unique_ptr<IntentFilter>> intent_filters;
+    app_service_proxy()->AppRegistryCache().ForOneApp(
+        app_id, [&intent_filters](const AppUpdate& update) {
+          for (auto& intent_filter : update.IntentFilters()) {
+            intent_filters.push_back(std::move(intent_filter));
+          }
+        });
+    return intent_filters;
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   base::raw_ptr<AppServiceProxy> app_service_proxy_ = nullptr;
   base::raw_ptr<guest_os::GuestOsRegistryService> registry_ = nullptr;
+  std::unique_ptr<TestPublisher> publisher_;
 };
 
 TEST_F(GuestOSAppsTest, CreateApp) {
-  // Create the test publisher and register it.
-  auto pub = std::make_unique<TestPublisher>(app_service_proxy());
-  pub->InitializeForTesting();
-
   // Create a test app.
   vm_tools::apps::App app;
   app.add_mime_types("text/plain");
-  app.set_desktop_file_id("app_id");
+  app.set_desktop_file_id("desktop_file_id");
   vm_tools::apps::App::LocaleString::Entry* entry =
       app.mutable_name()->add_values();
   entry->set_value("app_name");
-
-  // Update the ApplicationList, this calls through GuestOSApps::CreateApp.
-  vm_tools::apps::ApplicationList app_list;
-  app_list.set_vm_name(bruschetta::kBruschettaVmName);
-  app_list.set_container_name("test_container");
-  *app_list.add_apps() = app;
-  registry()->UpdateApplicationList(app_list);
+  const std::string app_id = AddApp(app);
 
   // Get the AppUpdate from the registry and check its contents.
-  std::string id = registry()->GenerateAppId(
-      "app_id", bruschetta::kBruschettaVmName, "test_container");
   bool seen = false;
   app_service_proxy()->AppRegistryCache().ForOneApp(
-      id, [&seen](const AppUpdate& update) {
+      app_id, [&seen](const AppUpdate& update) {
         seen = true;
         EXPECT_EQ(update.AppType(), AppType::kBruschetta);
         EXPECT_EQ(update.Readiness(), Readiness::kReady);
         EXPECT_EQ(update.Name(), "override_name")
-            << "CreateAppOverrides should change the name.";
+            << "CreateAppOverrides should have changed the name.";
         EXPECT_EQ(update.InstallReason(), InstallReason::kUser);
         EXPECT_EQ(update.InstallSource(), InstallSource::kUnknown);
         EXPECT_TRUE(update.IconKey().has_value());
@@ -122,6 +163,125 @@ TEST_F(GuestOSAppsTest, CreateApp) {
         EXPECT_TRUE(update.ShowInShelf());
       });
   EXPECT_TRUE(seen) << "Couldn't find test app in registry.";
+}
+
+TEST_F(GuestOSAppsTest, AppServiceHasIntentFilters) {
+  const std::vector<std::string> mime_types = {"text/csv", "text/html"};
+  const std::string app_id =
+      AddAppWithMimeTypes("desktop_file_id", "app_name", mime_types);
+  const std::vector<std::unique_ptr<IntentFilter>> intent_filters =
+      GetIntentFiltersForApp(app_id);
+
+  ASSERT_EQ(intent_filters.size(), 1U);
+  EXPECT_EQ(intent_filters[0]->conditions.size(), 2U);
+
+  // Check that the filter has the correct action type.
+  {
+    const Condition* condition = intent_filters[0]->conditions[0].get();
+    ASSERT_EQ(condition->condition_type, ConditionType::kAction);
+    EXPECT_EQ(condition->condition_values.size(), 1U);
+    ASSERT_EQ(condition->condition_values[0]->match_type,
+              PatternMatchType::kLiteral);
+    ASSERT_EQ(condition->condition_values[0]->value,
+              apps_util::kIntentActionView);
+  }
+
+  // Check that the filter has all our mime types. Realistically, the filter
+  // would also have the extension equivalents of the mime types too if there
+  // were mime/ extension mappings in prefs.
+  {
+    const Condition* condition = intent_filters[0]->conditions[1].get();
+    ASSERT_EQ(condition->condition_type, ConditionType::kFile);
+    EXPECT_EQ(condition->condition_values.size(), 2U);
+    ASSERT_EQ(condition->condition_values[0]->value, mime_types[0]);
+    ASSERT_EQ(condition->condition_values[1]->value, mime_types[1]);
+  }
+}
+
+TEST_F(GuestOSAppsTest, IntentFilterWithTextPlainAddsTextWildcardMimeType) {
+  {
+    const std::string normal_app_id = AddAppWithMimeTypes(
+        "normal_desktop_file_id", "normal_app_name", {"text/csv"});
+    const std::vector<std::unique_ptr<IntentFilter>> intent_filters =
+        GetIntentFiltersForApp(normal_app_id);
+
+    EXPECT_EQ(intent_filters.size(), 1U);
+    EXPECT_EQ(intent_filters[0]->conditions.size(), 2U);
+
+    // Check that the filter is unchanged because there isn't a "text/plain"
+    // mime type condition.
+    const Condition* condition = intent_filters[0]->conditions[1].get();
+    ASSERT_EQ(condition->condition_type, ConditionType::kFile);
+    EXPECT_EQ(condition->condition_values.size(), 1U);
+    ASSERT_EQ(condition->condition_values[0]->value, "text/csv");
+  }
+
+  {
+    const std::string many_mimes_app_id = AddAppWithMimeTypes(
+        "many_mimes_desktop_file_id", "many_mimes_app_name",
+        {"text/plain", "text/csv", "text/javascript", "video/mp4"});
+    const std::vector<std::unique_ptr<IntentFilter>> intent_filters =
+        GetIntentFiltersForApp(many_mimes_app_id);
+
+    EXPECT_EQ(intent_filters.size(), 1U);
+    EXPECT_EQ(intent_filters[0]->conditions.size(), 2U);
+
+    // Check that the filter has "text/*" to replace all the text mime types.
+    const Condition* condition = intent_filters[0]->conditions[1].get();
+    ASSERT_EQ(condition->condition_type, ConditionType::kFile);
+    EXPECT_EQ(condition->condition_values.size(), 2U);
+    ASSERT_EQ(condition->condition_values[0]->value, "video/mp4");
+    ASSERT_EQ(condition->condition_values[1]->value, "text/*");
+  }
+}
+
+TEST_F(GuestOSAppsTest, IntentFilterHasExtensionsFromPrefs) {
+  const std::string mime_type = "test/mime1";
+  const std::string extension = "test_extension";
+
+  // Update the mime_types_service to map the extension to the mime type.
+  vm_tools::apps::MimeTypes mime_types_list;
+  mime_types_list.set_vm_name(bruschetta::kBruschettaVmName);
+  mime_types_list.set_container_name("test_container");
+  (*mime_types_list.mutable_mime_type_mappings())[extension] = mime_type;
+  auto* mime_types_service =
+      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile());
+  mime_types_service->UpdateMimeTypes(mime_types_list);
+
+  // Create app and get its registered intent filters.
+  const std::string app_id =
+      AddAppWithMimeTypes("desktop_file_id", "app_name", {mime_type});
+  std::vector<std::unique_ptr<IntentFilter>> intent_filters =
+      GetIntentFiltersForApp(app_id);
+
+  ASSERT_EQ(intent_filters.size(), 1U);
+  std::unique_ptr<IntentFilter> intent_filter = std::move(intent_filters[0]);
+  ASSERT_EQ(intent_filter->conditions.size(), 2U);
+
+  // Check that the filter has the correct action type.
+  {
+    const Condition* condition = intent_filter->conditions[0].get();
+    EXPECT_EQ(condition->condition_type, ConditionType::kAction);
+    ASSERT_EQ(condition->condition_values.size(), 1U);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              PatternMatchType::kLiteral);
+    EXPECT_EQ(condition->condition_values[0]->value,
+              apps_util::kIntentActionView);
+  }
+
+  // Check that the filter has both mime type and its extension equivalent based
+  // on what is recorded in prefs for GuestOS mime types.
+  {
+    const Condition* condition = intent_filter->conditions[1].get();
+    EXPECT_EQ(condition->condition_type, ConditionType::kFile);
+    ASSERT_EQ(condition->condition_values.size(), 2U);
+    EXPECT_EQ(condition->condition_values[0]->value, mime_type);
+    EXPECT_EQ(condition->condition_values[0]->match_type,
+              PatternMatchType::kMimeType);
+    EXPECT_EQ(condition->condition_values[1]->value, extension);
+    EXPECT_EQ(condition->condition_values[1]->match_type,
+              PatternMatchType::kFileExtension);
+  }
 }
 
 }  // namespace apps
