@@ -4,13 +4,20 @@
     width: 288px;
   }
 
+  h3,
+  p {
+    margin: 0;
+  }
+
   cr-button + cr-button {
     margin-inline-start: 8px;
   }
 </style>
 <cr-dialog id="dialog" show-on-attach>
-  <div slot="title">$i18n{googlePhotosSharedAlbumDialogTitle}</div>
-  <div slot="body">$i18n{googlePhotosSharedAlbumDialogContent}</div>
+  <h3 slot="title">$i18n{googlePhotosSharedAlbumDialogTitle}</h3>
+  <div slot="body">
+    <p>$i18n{googlePhotosSharedAlbumDialogContent}</p>
+  </div>
   <div slot="button-container">
     <cr-button id="close" on-click="onClickClose_" class="secondary">
       <span>$i18n{googlePhotosSharedAlbumDialogCloseButton}</span>
