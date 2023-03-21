@@ -45,6 +45,12 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     base::StringPiece autocomplete_attribute,
     uint64_t field_max_length);
 
+// Checks if `autocomplete_attribute` could not be recognized but was
+// nonetheless found as well intended. This will therefore return true for
+// values such as "first-name", "last-name" and "password".
+bool IsAutocompleteTypeWrongButWellIntended(
+    base::StringPiece autocomplete_attribute);
+
 // Checks if `autocomplete` is one of "on", "off" or "false". These values are
 // currently ignored by Autofill.
 bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete);

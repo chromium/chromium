@@ -106,4 +106,28 @@ TEST_P(AutocompleteAttributeProcessingUtilTest, ParseAutocompleteAttribute) {
   EXPECT_EQ(result, test.expected_result);
 }
 
+TEST_F(AutocompleteAttributeProcessingUtilTest,
+       IsAutocompleteTypeWrongButWellIntended_FalseOnIgnoredValues) {
+  EXPECT_FALSE(IsAutocompleteTypeWrongButWellIntended("on"));
+  EXPECT_FALSE(IsAutocompleteTypeWrongButWellIntended("off"));
+  EXPECT_FALSE(IsAutocompleteTypeWrongButWellIntended("false"));
+}
+
+TEST_F(
+    AutocompleteAttributeProcessingUtilTest,
+    IsAutocompleteTypeWrongButWellIntended_FalseOnSubstringMatchWithKnownValue) {
+  EXPECT_FALSE(IsAutocompleteTypeWrongButWellIntended("new-password"));
+  EXPECT_FALSE(IsAutocompleteTypeWrongButWellIntended("one-time-code"));
+}
+
+TEST_F(AutocompleteAttributeProcessingUtilTest,
+       IsAutocompleteTypeWrongButWellIntended_TrueOnPossibleTypo) {
+  EXPECT_TRUE(IsAutocompleteTypeWrongButWellIntended("familyname"));
+}
+
+TEST_F(AutocompleteAttributeProcessingUtilTest,
+       IsAutocompleteTypeWrongButWellIntended_FalseOnDisableKeywordFound) {
+  EXPECT_FALSE(IsAutocompleteTypeWrongButWellIntended("off-familyname"));
+}
+
 }  // namespace autofill

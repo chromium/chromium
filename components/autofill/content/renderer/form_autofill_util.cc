@@ -1862,6 +1862,15 @@ void ValidateAutocompleteAttributeForElement(const WebElement& element) {
             kFormAutocompleteAttributeEmptyError,
         element.GetDevToolsNodeId());
   }
+
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+
+  if (IsAutocompleteTypeWrongButWellIntended(autocomplete_attribute)) {
+    element.GetDocument().GetFrame()->AddGenericIssue(
+        blink::mojom::GenericIssueErrorType::
+            kFormInputHasWrongButWellIntendedAutocompleteValueError,
+        element.GetDevToolsNodeId());
+  }
 }
 
 void FindFormElementUpShadowRoots(const WebElement& element,
@@ -2201,13 +2210,13 @@ void WebFormControlElementToFormField(
   field->max_length =
       IsTextInput(input_element) ? input_element.MaxLength() : 0;
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
+  field->parsed_autocomplete = ParseAutocompleteAttribute(
+      field->autocomplete_attribute, field->max_length);
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
     ValidateAutocompleteAttributeForElement(element);
   }
 
-  field->parsed_autocomplete = ParseAutocompleteAttribute(
-      field->autocomplete_attribute, field->max_length);
   if (base::EqualsCaseInsensitiveASCII(element.GetAttribute(*kRole).Utf16(),
                                        "presentation")) {
     field->role = FormFieldData::RoleAttribute::kPresentation;

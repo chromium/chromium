@@ -1775,6 +1775,10 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
         kFormLabelForMatchesNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormLabelForMatchesNonExistingIdError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormInputHasWrongButWellIntendedAutocompleteValueError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormInputHasWrongButWellIntendedAutocompleteValueError;
   }
 }
 

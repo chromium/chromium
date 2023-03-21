@@ -14,8 +14,60 @@
 #include "components/autofill/core/common/html_field_types.h"
 
 namespace autofill {
-
 namespace {
+
+static constexpr auto kStandardizedAttributes =
+    base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
+        {"additional-name", HtmlFieldType::kAdditionalName},
+        {"address-level1", HtmlFieldType::kAddressLevel1},
+        {"address-level2", HtmlFieldType::kAddressLevel2},
+        {"address-level3", HtmlFieldType::kAddressLevel3},
+        {"address-line1", HtmlFieldType::kAddressLine1},
+        {"address-line2", HtmlFieldType::kAddressLine2},
+        {"address-line3", HtmlFieldType::kAddressLine3},
+        {"bday-day", HtmlFieldType::kBirthdateDay},
+        {"bday-month", HtmlFieldType::kBirthdateMonth},
+        {"bday-year", HtmlFieldType::kBirthdateYear},
+        {"cc-csc", HtmlFieldType::kCreditCardVerificationCode},
+        {"cc-exp", HtmlFieldType::kCreditCardExp},
+        {"cc-exp-month", HtmlFieldType::kCreditCardExpMonth},
+        {"cc-exp-year", HtmlFieldType::kCreditCardExpYear},
+        {"cc-family-name", HtmlFieldType::kCreditCardNameLast},
+        {"cc-given-name", HtmlFieldType::kCreditCardNameFirst},
+        {"cc-name", HtmlFieldType::kCreditCardNameFull},
+        {"cc-number", HtmlFieldType::kCreditCardNumber},
+        {"cc-type", HtmlFieldType::kCreditCardType},
+        {"country", HtmlFieldType::kCountryCode},
+        {"country-name", HtmlFieldType::kCountryName},
+        {"email", HtmlFieldType::kEmail},
+        {"family-name", HtmlFieldType::kFamilyName},
+        {"given-name", HtmlFieldType::kGivenName},
+        {"honorific-prefix", HtmlFieldType::kHonorificPrefix},
+        {"name", HtmlFieldType::kName},
+        {"one-time-code", HtmlFieldType::kOneTimeCode},
+        {"organization", HtmlFieldType::kOrganization},
+        {"postal-code", HtmlFieldType::kPostalCode},
+        {"street-address", HtmlFieldType::kStreetAddress},
+        {"tel-area-code", HtmlFieldType::kTelAreaCode},
+        {"tel-country-code", HtmlFieldType::kTelCountryCode},
+        {"tel-extension", HtmlFieldType::kTelExtension},
+        {"tel", HtmlFieldType::kTel},
+        {"tel-local", HtmlFieldType::kTelLocal},
+        {"tel-local-prefix", HtmlFieldType::kTelLocalPrefix},
+        {"tel-local-suffix", HtmlFieldType::kTelLocalSuffix},
+        {"tel-national", HtmlFieldType::kTelNational},
+        {"transaction-amount", HtmlFieldType::kTransactionAmount},
+        {"transaction-currency", HtmlFieldType::kTransactionCurrency},
+    });
+
+static constexpr base::StringPiece kWellIntendedAutocompleteValuesKeywords[] = {
+    "street", "password", "address", "bday",     "cc-",         "family",
+    "name",   "country",  "tel",     "phone",    "transaction", "code",
+    "zip",    "state",    "city",    "shipping", "billing"};
+
+static constexpr base::StringPiece
+    kNegativeMatchWellIntendedAutocompleteValuesKeywords[] = {
+        "off", "disabled", "nope", "noop", "fake", "false", "new"};
 
 // Returns true iff the `token` is a type hint for a contact field, as
 // specified in the implementation section of http://is.gd/whatwg_autocomplete
@@ -80,52 +132,8 @@ HtmlFieldType RationalizeAutocompleteType(HtmlFieldType type,
 // `value` matches any of them.
 absl::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
     base::StringPiece value) {
-  static constexpr auto standardized_attributes =
-      base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
-          {"additional-name", HtmlFieldType::kAdditionalName},
-          {"address-level1", HtmlFieldType::kAddressLevel1},
-          {"address-level2", HtmlFieldType::kAddressLevel2},
-          {"address-level3", HtmlFieldType::kAddressLevel3},
-          {"address-line1", HtmlFieldType::kAddressLine1},
-          {"address-line2", HtmlFieldType::kAddressLine2},
-          {"address-line3", HtmlFieldType::kAddressLine3},
-          {"bday-day", HtmlFieldType::kBirthdateDay},
-          {"bday-month", HtmlFieldType::kBirthdateMonth},
-          {"bday-year", HtmlFieldType::kBirthdateYear},
-          {"cc-csc", HtmlFieldType::kCreditCardVerificationCode},
-          {"cc-exp", HtmlFieldType::kCreditCardExp},
-          {"cc-exp-month", HtmlFieldType::kCreditCardExpMonth},
-          {"cc-exp-year", HtmlFieldType::kCreditCardExpYear},
-          {"cc-family-name", HtmlFieldType::kCreditCardNameLast},
-          {"cc-given-name", HtmlFieldType::kCreditCardNameFirst},
-          {"cc-name", HtmlFieldType::kCreditCardNameFull},
-          {"cc-number", HtmlFieldType::kCreditCardNumber},
-          {"cc-type", HtmlFieldType::kCreditCardType},
-          {"country", HtmlFieldType::kCountryCode},
-          {"country-name", HtmlFieldType::kCountryName},
-          {"email", HtmlFieldType::kEmail},
-          {"family-name", HtmlFieldType::kFamilyName},
-          {"given-name", HtmlFieldType::kGivenName},
-          {"honorific-prefix", HtmlFieldType::kHonorificPrefix},
-          {"name", HtmlFieldType::kName},
-          {"one-time-code", HtmlFieldType::kOneTimeCode},
-          {"organization", HtmlFieldType::kOrganization},
-          {"postal-code", HtmlFieldType::kPostalCode},
-          {"street-address", HtmlFieldType::kStreetAddress},
-          {"tel-area-code", HtmlFieldType::kTelAreaCode},
-          {"tel-country-code", HtmlFieldType::kTelCountryCode},
-          {"tel-extension", HtmlFieldType::kTelExtension},
-          {"tel", HtmlFieldType::kTel},
-          {"tel-local", HtmlFieldType::kTelLocal},
-          {"tel-local-prefix", HtmlFieldType::kTelLocalPrefix},
-          {"tel-local-suffix", HtmlFieldType::kTelLocalSuffix},
-          {"tel-national", HtmlFieldType::kTelNational},
-          {"transaction-amount", HtmlFieldType::kTransactionAmount},
-          {"transaction-currency", HtmlFieldType::kTransactionCurrency},
-      });
-
-  auto* it = standardized_attributes.find(value);
-  return it != standardized_attributes.end()
+  auto* it = kStandardizedAttributes.find(value);
+  return it != kStandardizedAttributes.end()
              ? absl::optional<HtmlFieldType>(it->second)
              : absl::nullopt;
 }
@@ -307,6 +315,52 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
     return absl::nullopt;
 
   return result;
+}
+
+bool IsAutocompleteTypeWrongButWellIntended(
+    base::StringPiece autocomplete_attribute) {
+  std::vector<std::string> tokens =
+      LowercaseAndTokenizeAttributeString(autocomplete_attribute);
+
+  // The autocomplete attribute is overloaded: it can specify either a field
+  // type hint or whether autocomplete should be enabled at all. Ignore the
+  // latter type of attribute value.
+  if (tokens.empty() ||
+      (tokens.size() == 1 && ShouldIgnoreAutocompleteAttribute(tokens[0]))) {
+    return false;
+  }
+
+  // Parse the "webauthn" token.
+  if (tokens.back() == "webauthn") {
+    tokens.pop_back();
+    if (tokens.empty()) {
+      return false;
+    }
+  }
+
+  std::string field_type_token = tokens.back();
+
+  // Autofill does not recognize password inputs, so we have to manually check
+  // for them.
+  bool is_field_type_password = field_type_token == "new-password" ||
+                                field_type_token == "current-password";
+  if (is_field_type_password || FieldTypeFromAutocompleteAttributeValue(
+                                    field_type_token, /*field_max_length=*/0) !=
+                                    HtmlFieldType::kUnrecognized) {
+    return false;
+  }
+
+  auto contains_field_type_token = [&](base::StringPiece s) {
+    return base::StringPiece(field_type_token).find(s) != std::string::npos;
+  };
+  bool token_is_wrong_but_has_well_intended_usage_keyword =
+      base::ranges::any_of(kWellIntendedAutocompleteValuesKeywords,
+                           contains_field_type_token);
+  bool developer_likely_tried_to_disable_autofill =
+      base::ranges::any_of(kNegativeMatchWellIntendedAutocompleteValuesKeywords,
+                           contains_field_type_token);
+  return token_is_wrong_but_has_well_intended_usage_keyword &&
+         !developer_likely_tried_to_disable_autofill;
 }
 
 bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete) {
