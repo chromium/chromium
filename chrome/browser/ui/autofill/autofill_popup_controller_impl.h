@@ -196,10 +196,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
     base::WeakPtr<AutofillPopupView> ptr_;
   };
 
-  // The user has accepted the currently selected line. Returns whether there
-  // was a selection to accept.
-  bool AcceptSelectedLine();
-
   // Clear the internal state of the controller. This is needed to ensure that
   // when the popup is reused it doesn't leak values between uses.
   void ClearState();
@@ -244,10 +240,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // If set to true, the popup will stay open regardless of external changes on
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
-
-  // The line that is currently selected by the user, null indicates that no
-  // line is currently selected.
-  absl::optional<int> selected_line_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.
