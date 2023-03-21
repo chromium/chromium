@@ -16,6 +16,7 @@ class HelpBubbleDelegate;
 
 extern const char kTabGroupTutorialId[];
 extern const char kTabGroupWithExistingGroupTutorialId[];
+extern const char kSidePanelCustomizeChromeTutorialId[];
 
 extern user_education::HelpBubbleDelegate* GetHelpBubbleDelegate();
 extern void RegisterChromeHelpBubbleFactories(

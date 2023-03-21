@@ -25,6 +25,7 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/search/ntp_features.h"
 #include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -104,6 +105,10 @@ void BrowserCommandHandler::CanExecuteCommand(
           base::FeatureList::IsEnabled(
               performance_manager::features::kHighEfficiencyModeAvailable);
       break;
+    case Command::kOpenNTPAndStartCustomizeChromeTutorial:
+      can_execute =
+          !!GetTutorialService() && BrowserSupportsCustomizeChromeSidePanel();
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -172,6 +177,9 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)),
                     disposition);
       break;
+    case Command::kOpenNTPAndStartCustomizeChromeTutorial:
+      OpenNTPAndStartCustomizeChromeTutorial(disposition);
+      break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
       break;
@@ -222,6 +230,39 @@ void BrowserCommandHandler::StartTabGroupTutorial() {
   tutorial_service->StartTutorial(tutorial_id, context);
   tutorial_service->LogStartedFromWhatsNewPage(
       tutorial_id, tutorial_service->IsRunningTutorial());
+}
+
+bool BrowserCommandHandler::BrowserSupportsCustomizeChromeSidePanel() {
+  return base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel);
+}
+
+void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial(
+    WindowOpenDisposition disposition) {
+  user_education::TutorialService* tutorial_service = GetTutorialService();
+
+  // Should never happen since we return false in CanExecuteCommand(), but
+  // avoid a browser crash anyway.
+  if (!tutorial_service) {
+    return;
+  }
+
+  const ui::ElementContext context = GetUiElementContext();
+  if (!context) {
+    return;
+  }
+
+  if (!BrowserSupportsCustomizeChromeSidePanel()) {
+    return;
+  }
+
+  user_education::TutorialIdentifier tutorial_id =
+      kSidePanelCustomizeChromeTutorialId;
+
+  tutorial_service->StartTutorial(tutorial_id, context);
+  tutorial_service->LogStartedFromWhatsNewPage(
+      tutorial_id, tutorial_service->IsRunningTutorial());
+
+  NavigateToURL(GURL(chrome::kChromeUINewTabPageURL), disposition);
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

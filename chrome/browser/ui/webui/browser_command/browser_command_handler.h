@@ -72,6 +72,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual CommandUpdater* GetCommandUpdater();
 
   virtual bool BrowserSupportsTabGroups();
+  virtual bool BrowserSupportsCustomizeChromeSidePanel();
 
   virtual bool BrowserHasTabGroups();
 
@@ -82,6 +83,8 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual user_education::TutorialService* GetTutorialService();
   virtual ui::ElementContext GetUiElementContext();
   void StartTabGroupTutorial();
+  void OpenNTPAndStartCustomizeChromeTutorial(
+      WindowOpenDisposition disposition);
 
   FeedbackCommandSettings feedback_settings_;
   raw_ptr<Profile> profile_;

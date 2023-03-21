@@ -51,6 +51,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenPasswordManager,
     Command::kNoOpCommand,
     Command::kOpenPerformanceSettings,
+    Command::kOpenNTPAndStartCustomizeChromeTutorial,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -103,6 +104,10 @@ class TestCommandHandler : public BrowserCommandHandler {
     has_tab_groups_ = has_tab_groups;
   }
 
+  void SetBrowserSupportsCustomizeChromeSidePanel(bool is_supported) {
+    customize_chrome_side_panel_feature_supported_ = is_supported;
+  }
+
  protected:
   bool BrowserSupportsTabGroups() override {
     return tab_groups_feature_supported_;
@@ -110,12 +115,17 @@ class TestCommandHandler : public BrowserCommandHandler {
 
   bool BrowserHasTabGroups() override { return has_tab_groups_; }
 
+  bool BrowserSupportsCustomizeChromeSidePanel() override {
+    return customize_chrome_side_panel_feature_supported_;
+  }
+
  private:
   raw_ptr<user_education::TutorialService> tutorial_service_;
   std::unique_ptr<CommandUpdater> command_updater_;
 
   bool tab_groups_feature_supported_ = true;
   bool has_tab_groups_ = false;
+  bool customize_chrome_side_panel_feature_supported_ = true;
 };
 
 class TestTutorialService : public user_education::TutorialService {
@@ -565,5 +575,44 @@ TEST_F(BrowserCommandHandlerTest, OpenPerformanceSettings) {
                       DispositionFromClick(*info)));
     EXPECT_TRUE(
         ExecuteCommand(Command::kOpenPerformanceSettings, std::move(info)));
+  }
+}
+
+TEST_F(BrowserCommandHandlerTest,
+       OpenNTPAndStartCustomizeChromeTutorialCommand) {
+  // Command cannot be executed if the tutorial service doesn't exist.
+  command_handler_->SetTutorialService(nullptr);
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
+
+  // Create mock service so the command can be executed.
+  auto bubble_factory_registry =
+      std::make_unique<user_education::HelpBubbleFactoryRegistry>();
+  user_education::TutorialRegistry registry;
+  MockTutorialService service(&registry, bubble_factory_registry.get());
+  command_handler_->SetTutorialService(&service);
+
+  // If the customize chrome side panel is not enabled, dont run the command.
+  command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(false);
+  EXPECT_FALSE(
+      CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
+
+  // If the browser has feature enabled, allow running command
+  command_handler_->SetBrowserSupportsCustomizeChromeSidePanel(true);
+  EXPECT_TRUE(
+      CanExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial));
+
+  // The OpenNTPAndStartCustomizeChromeTutorialCommand command should
+  // start the customize chrome tutorial.
+  {
+    ClickInfoPtr info = ClickInfo::New();
+    EXPECT_CALL(service, StartTutorial(kSidePanelCustomizeChromeTutorialId,
+                                       kTestContext1, testing::_, testing::_))
+        .Times(1);
+    EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
+    EXPECT_CALL(service, LogStartedFromWhatsNewPage(
+                             kSidePanelCustomizeChromeTutorialId, true));
+    EXPECT_TRUE(ExecuteCommand(Command::kOpenNTPAndStartCustomizeChromeTutorial,
+                               std::move(info)));
   }
 }
