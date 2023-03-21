@@ -5,7 +5,6 @@
 package org.chromium.content_public.browser;
 
 import org.chromium.base.task.TaskTraits;
-import org.chromium.content.browser.UiThreadTaskTraitsImpl;
 
 /**
  * Traits for tasks that need to run on the Browser UI thread. Keep in sync with
@@ -18,8 +17,8 @@ public class UiThreadTaskTraits {
     private UiThreadTaskTraits() {}
 
     // These are convenience constants for UI thread tasks at different priority levels.
-    public static final TaskTraits DEFAULT = UiThreadTaskTraitsImpl.DEFAULT;
-    public static final TaskTraits BEST_EFFORT = UiThreadTaskTraitsImpl.BEST_EFFORT;
-    public static final TaskTraits USER_VISIBLE = UiThreadTaskTraitsImpl.USER_VISIBLE;
-    public static final TaskTraits USER_BLOCKING = UiThreadTaskTraitsImpl.USER_BLOCKING;
+    public static final @TaskTraits int DEFAULT = TaskTraits.UI_DEFAULT;
+    public static final @TaskTraits int BEST_EFFORT = TaskTraits.UI_BEST_EFFORT;
+    public static final @TaskTraits int USER_VISIBLE = TaskTraits.UI_USER_VISIBLE;
+    public static final @TaskTraits int USER_BLOCKING = TaskTraits.UI_USER_BLOCKING;
 }

@@ -80,7 +80,8 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
 
     @Override
     public void postTask(int taskType, Runnable task, long delayMs) {
-        TaskTraits traits;
+        @TaskTraits
+        int traits;
         switch (taskType) {
             case ProcessScopeDependencyProvider.TASK_TYPE_UI_THREAD:
                 traits = UiThreadTaskTraits.DEFAULT;

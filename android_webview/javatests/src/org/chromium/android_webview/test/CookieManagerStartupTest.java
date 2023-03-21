@@ -10,7 +10,6 @@ import android.support.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -53,17 +52,9 @@ public class CookieManagerStartupTest {
 
     @Before
     public void setUp() {
-        ThreadUtils.setUiThread(null);
-        ThreadUtils.setWillOverrideUiThread(true);
-
         // CookieManager assumes that native is loaded, but webview browser should not be loaded for
         // these tests as webview is not necessarily loaded when CookieManager is called.
         AwBrowserProcess.loadLibrary(null);
-    }
-
-    @After
-    public void tearDown() {
-        ThreadUtils.setWillOverrideUiThread(false);
     }
 
     /**
@@ -95,6 +86,7 @@ public class CookieManagerStartupTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testStartup() throws Throwable {
+        ThreadUtils.setWillOverrideUiThread(true);
         TestWebServer webServer = TestWebServer.start();
         try {
             String path = "/cookie_test.html";
@@ -157,6 +149,7 @@ public class CookieManagerStartupTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testShouldInterceptRequestDeadlock() throws Throwable {
+        ThreadUtils.setWillOverrideUiThread(true);
         ThreadUtils.setUiThread(Looper.getMainLooper());
         String url = "http://www.example.com";
         TestAwContentsClient contentsClient = new TestAwContentsClient() {

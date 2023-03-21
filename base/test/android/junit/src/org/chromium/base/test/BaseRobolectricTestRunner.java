@@ -70,6 +70,7 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
                     ContextUtils.clearApplicationContextForTests();
                     PathUtils.resetForTesting();
                     ThreadUtils.setThreadAssertsDisabledForTesting(false);
+                    ThreadUtils.clearUiThreadForTesting();
                     super.afterTest(method);
                 }
             }

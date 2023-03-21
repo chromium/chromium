@@ -81,7 +81,6 @@ class CONTENT_EXPORT BrowserTaskTraitsExtension {
             base::trait_helpers::GetEnum<BrowserTaskType,
                                          BrowserTaskType::kDefault>(args...)) {}
 
-  // Keep in sync with UiThreadTaskTraits.java
   constexpr base::TaskTraitsExtensionStorage Serialize() const {
     static_assert(8 == sizeof(BrowserTaskTraitsExtension),
                   "Update Serialize() and Parse() when changing "

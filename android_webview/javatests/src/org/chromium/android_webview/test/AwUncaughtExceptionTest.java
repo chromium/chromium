@@ -127,7 +127,7 @@ public class AwUncaughtExceptionTest {
             backgroundThreadLooper.quitSafely();
         }
         mBackgroundThread.join();
-        ThreadUtils.setUiThread(null);
+        ThreadUtils.clearUiThreadForTesting();
         Thread.setDefaultUncaughtExceptionHandler(mDefaultUncaughtExceptionHandler);
     }
 

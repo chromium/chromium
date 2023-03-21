@@ -25,7 +25,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.task.SchedulerTestHelpers;
 import org.chromium.content.app.ContentMain;
-import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.UiThreadSchedulerTestUtils;
@@ -41,16 +40,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class UiThreadSchedulerTest {
     @Before
     public void setUp() {
-        // We don't load the browser process since we want tests to control when content
-        // is started and hence the native secheduler is ready.
-        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        ThreadUtils.setUiThread(null);
         ThreadUtils.setWillOverrideUiThread(true);
         mUiThread = new HandlerThread("UiThreadForTest");
         mUiThread.start();
         ThreadUtils.setUiThread(mUiThread.getLooper());
-        BrowserTaskExecutor.register();
         mHandler = new Handler(mUiThread.getLooper());
+        // We don't load the browser process since we want tests to control when content
+        // is started and hence the native secheduler is ready.
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         UiThreadSchedulerTestUtils.postBrowserMainLoopStartupTasks(false);
     }
 
@@ -58,8 +55,6 @@ public class UiThreadSchedulerTest {
     public void tearDown() {
         UiThreadSchedulerTestUtils.postBrowserMainLoopStartupTasks(true);
         mUiThread.quitSafely();
-        ThreadUtils.setUiThread(null);
-        ThreadUtils.setWillOverrideUiThread(false);
     }
 
     @Test

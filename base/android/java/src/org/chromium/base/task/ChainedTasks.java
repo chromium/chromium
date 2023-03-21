@@ -27,7 +27,7 @@ import javax.annotation.concurrent.GuardedBy;
  *   must run on the same thread.
  */
 public class ChainedTasks {
-    private final LinkedList<Pair<TaskTraits, Runnable>> mTasks = new LinkedList<>();
+    private final LinkedList<Pair<Integer, Runnable>> mTasks = new LinkedList<>();
     @GuardedBy("mTasks")
     private boolean mFinalized;
     private volatile boolean mCanceled;
@@ -42,7 +42,7 @@ public class ChainedTasks {
             }
             if (mCanceled) return;
 
-            Pair<TaskTraits, Runnable> pair = mTasks.pop();
+            Pair<Integer, Runnable> pair = mTasks.pop();
             try (TraceEvent e = TraceEvent.scoped(
                          "ChainedTask.run: " + pair.second.getClass().getName())) {
                 pair.second.run();
@@ -55,7 +55,7 @@ public class ChainedTasks {
      * Adds a task to the list of tasks to run. Cannot be called once {@link start()} has been
      * called.
      */
-    public void add(TaskTraits traits, Runnable task) {
+    public void add(@TaskTraits int traits, Runnable task) {
         assert mIterationIdForTesting == PostTask.sTestIterationForTesting;
 
         synchronized (mTasks) {
@@ -87,9 +87,10 @@ public class ChainedTasks {
         }
         if (mTasks.isEmpty()) return;
         if (coalesceTasks) {
-            TaskTraits traits = mTasks.peek().first;
+            @TaskTraits
+            int traits = mTasks.peek().first;
             PostTask.runOrPostTask(traits, () -> {
-                for (Pair<TaskTraits, Runnable> pair : mTasks) {
+                for (Pair<Integer, Runnable> pair : mTasks) {
                     assert PostTask.canRunTaskImmediately(pair.first);
                     pair.second.run();
                     if (mCanceled) return;

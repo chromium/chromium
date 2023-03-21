@@ -15,29 +15,29 @@ public interface TaskExecutor {
      * @param task The task to be run with the specified traits.
      * @param delay The delay in milliseconds before the task can be run.
      */
-    public void postDelayedTask(TaskTraits traits, Runnable task, long delay);
+    public void postDelayedTask(@TaskTraits int traits, Runnable task, long delay);
 
     /**
      * @param traits The TaskTraits that describe the desired TaskRunner.
      * @return The TaskRunner for the specified TaskTraits.
      */
-    public TaskRunner createTaskRunner(TaskTraits traits);
+    public TaskRunner createTaskRunner(@TaskTraits int traits);
 
     /**
      * @param traits The TaskTraits that describe the desired TaskRunner.
      * @return The TaskRunner for the specified TaskTraits.
      */
-    public SequencedTaskRunner createSequencedTaskRunner(TaskTraits traits);
+    public SequencedTaskRunner createSequencedTaskRunner(@TaskTraits int traits);
 
     /**
      * @param traits The TaskTraits that describe the desired TaskRunner.
      * @return The TaskRunner for the specified TaskTraits.
      */
-    public SingleThreadTaskRunner createSingleThreadTaskRunner(TaskTraits traits);
+    public SingleThreadTaskRunner createSingleThreadTaskRunner(@TaskTraits int traits);
 
     /**
      * @return true iff the executor for these traits is backed by a SingleThreadTaskRunner
      * associated with the current thread.
      */
-    public boolean canRunTaskImmediately(TaskTraits traits);
+    public boolean canRunTaskImmediately(@TaskTraits int traits);
 }

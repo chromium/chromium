@@ -4,24 +4,22 @@
 
 package org.chromium.base.task;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * The default {@link TaskExecutor}.
+ * The {@link TaskExecutor} for ThreadPool tasks.
  * TODO(crbug.com/1026641): Provide direct Java APIs for ThreadPool vs UI thread
  * task posting instead of sharding based on {@link TaskTraits}.
  */
-class DefaultTaskExecutor implements TaskExecutor {
-    private final Map<TaskTraits, TaskRunner> mTraitsToRunnerMap = new HashMap<>();
+class ThreadPoolTaskExecutor implements TaskExecutor {
+    private final TaskRunner mTraitsToRunnerMap[] = new TaskRunner[TaskTraits.THREAD_POOL_TRAITS_END
+            - TaskTraits.THREAD_POOL_TRAITS_START + 1];
 
     @Override
-    public TaskRunner createTaskRunner(TaskTraits taskTraits) {
+    public TaskRunner createTaskRunner(@TaskTraits int taskTraits) {
         return new TaskRunnerImpl(taskTraits);
     }
 
     @Override
-    public SequencedTaskRunner createSequencedTaskRunner(TaskTraits taskTraits) {
+    public SequencedTaskRunner createSequencedTaskRunner(@TaskTraits int taskTraits) {
         return new SequencedTaskRunnerImpl(taskTraits);
     }
 
@@ -31,28 +29,26 @@ class DefaultTaskExecutor implements TaskExecutor {
      * posted on it until native has started.
      */
     @Override
-    public SingleThreadTaskRunner createSingleThreadTaskRunner(TaskTraits taskTraits) {
+    public SingleThreadTaskRunner createSingleThreadTaskRunner(@TaskTraits int taskTraits) {
         // Tasks posted via this API will not execute until after native has started.
         return new SingleThreadTaskRunnerImpl(null, taskTraits);
     }
 
     @Override
-    public synchronized void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
-        if (taskTraits.hasExtension()) {
-            createTaskRunner(taskTraits).postDelayedTask(task, delay);
-        } else {
-            // Caching TaskRunners only for common TaskTraits.
-            TaskRunner runner = mTraitsToRunnerMap.get(taskTraits);
-            if (runner == null) {
-                runner = createTaskRunner(taskTraits);
-                mTraitsToRunnerMap.put(taskTraits, runner);
-            }
-            runner.postDelayedTask(task, delay);
+    public synchronized void postDelayedTask(
+            @TaskTraits int taskTraits, Runnable task, long delay) {
+        // Caching TaskRunners only for common TaskTraits.
+        int index = taskTraits - TaskTraits.THREAD_POOL_TRAITS_START;
+        TaskRunner runner = mTraitsToRunnerMap[index];
+        if (runner == null) {
+            runner = createTaskRunner(taskTraits);
+            mTraitsToRunnerMap[index] = runner;
         }
+        runner.postDelayedTask(task, delay);
     }
 
     @Override
-    public boolean canRunTaskImmediately(TaskTraits traits) {
+    public boolean canRunTaskImmediately(@TaskTraits int traits) {
         return false;
     }
 

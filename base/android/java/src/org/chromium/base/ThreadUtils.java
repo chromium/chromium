@@ -8,7 +8,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.task.PostTask;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -78,13 +81,18 @@ public class ThreadUtils {
         }
     }
 
+    @VisibleForTesting
+    public static void clearUiThreadForTesting() {
+        synchronized (sLock) {
+            sUiThreadHandler = null;
+            sWillOverride = false;
+            PostTask.resetUiThreadForTesting(); // IN-TEST
+        }
+    }
+
     public static void setUiThread(Looper looper) {
         synchronized (sLock) {
-            if (looper == null) {
-                // Used to reset the looper after tests.
-                sUiThreadHandler = null;
-                return;
-            }
+            assert looper != null;
             if (sUiThreadHandler != null && sUiThreadHandler.getLooper() != looper) {
                 throw new RuntimeException("UI thread looper is already set to "
                         + sUiThreadHandler.getLooper() + " (Main thread looper is "
@@ -92,6 +100,7 @@ public class ThreadUtils {
             } else {
                 sUiThreadHandler = new Handler(looper);
             }
+            PostTask.onUiThreadReady();
         }
         TraceEvent.onUiThreadReady();
     }
@@ -104,6 +113,7 @@ public class ThreadUtils {
                     throw new RuntimeException("Did not yet override the UI thread");
                 }
                 sUiThreadHandler = new Handler(Looper.getMainLooper());
+                PostTask.onUiThreadReady();
                 createdHandler = true;
             }
         }

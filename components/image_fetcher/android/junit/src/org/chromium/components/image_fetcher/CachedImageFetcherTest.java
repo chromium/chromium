@@ -66,7 +66,7 @@ public class CachedImageFetcherTest {
     public void setUp() {
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             @Override
-            public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
                 task.run();
             }
         });

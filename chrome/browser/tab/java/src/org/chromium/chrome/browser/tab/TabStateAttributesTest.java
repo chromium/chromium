@@ -65,7 +65,7 @@ public class TabStateAttributesTest {
         MockitoAnnotations.initMocks(this);
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             @Override
-            public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
                 new Handler(Looper.getMainLooper()).postDelayed(task, delay);
             }
         });

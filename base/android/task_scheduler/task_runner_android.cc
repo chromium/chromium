@@ -9,12 +9,14 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "base/android/task_scheduler/task_traits_android.h"
 #include "base/android_runtime_jni_headers/Runnable_jni.h"
 #include "base/base_jni_headers/TaskRunnerImpl_jni.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_executor.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/time.h"
@@ -22,44 +24,9 @@
 
 namespace base {
 
-// As a class so it can be friend'ed.
-class AndroidTaskTraits {
- public:
-  AndroidTaskTraits() = delete;
-
-  static TaskTraits Create(
-      JNIEnv* env,
-      jint priority,
-      jboolean may_block,
-      jbyte extension_id,
-      const base::android::JavaParamRef<jbyteArray>& extension_data) {
-    return TaskTraits(
-        static_cast<TaskPriority>(priority), may_block,
-        TaskTraitsExtensionStorage(static_cast<uint8_t>(extension_id),
-                                   GetExtensionData(env, extension_data)));
-  }
-
- private:
-  static std::array<uint8_t, TaskTraitsExtensionStorage::kStorageSize>
-  GetExtensionData(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jbyteArray>& array_object) {
-    if (env->IsSameObject(array_object, nullptr))
-      return std::array<uint8_t, TaskTraitsExtensionStorage::kStorageSize>();
-
-    jbyteArray array = static_cast<jbyteArray>(array_object);
-    DCHECK_EQ(env->GetArrayLength(array),
-              static_cast<jsize>(TaskTraitsExtensionStorage::kStorageSize));
-
-    std::array<uint8_t, TaskTraitsExtensionStorage::kStorageSize> result;
-    jbyte* src_bytes = env->GetByteArrayElements(array, nullptr);
-    memcpy(&result[0], src_bytes, TaskTraitsExtensionStorage::kStorageSize);
-    env->ReleaseByteArrayElements(array, src_bytes, JNI_ABORT);
-    return result;
-  }
-};
-
 namespace {
+
+static TaskTraitsExtensionStorage g_ui_thread_extension;
 
 // TODO(1026641): Make destination explicit (separate APIs) on Java side too and
 // get rid of the need for TaskTraitsExtension/etc to reach the UI thread.
@@ -100,18 +67,21 @@ void RunJavaTask(base::android::ScopedJavaGlobalRef<jobject> task,
 
 }  // namespace
 
-jlong JNI_TaskRunnerImpl_Init(
-    JNIEnv* env,
-    jint task_runner_type,
-    jint priority,
-    jboolean may_block,
-    jboolean use_thread_pool,
-    jbyte extension_id,
-    const base::android::JavaParamRef<jbyteArray>& extension_data) {
+// As a class so it can be friend'ed.
+class AndroidTaskTraits {
+ public:
+  AndroidTaskTraits() = delete;
+
+  static TaskTraits CreateForUi(base::TaskPriority priority) {
+    return TaskTraits(priority, false, g_ui_thread_extension);
+  }
+};
+
+jlong JNI_TaskRunnerImpl_Init(JNIEnv* env,
+                              jint task_runner_type,
+                              jint task_traits) {
   TaskRunnerAndroid* task_runner =
-      TaskRunnerAndroid::Create(env, task_runner_type, priority, may_block,
-                                use_thread_pool, extension_id, extension_data)
-          .release();
+      TaskRunnerAndroid::Create(task_runner_type, task_traits).release();
   return reinterpret_cast<intptr_t>(task_runner);
 }
 
@@ -152,15 +122,42 @@ bool TaskRunnerAndroid::BelongsToCurrentThread(JNIEnv* env) {
 
 // static
 std::unique_ptr<TaskRunnerAndroid> TaskRunnerAndroid::Create(
-    JNIEnv* env,
     jint task_runner_type,
-    jint priority,
-    jboolean may_block,
-    jboolean use_thread_pool,
-    jbyte extension_id,
-    const base::android::JavaParamRef<jbyteArray>& extension_data) {
-  const TaskTraits task_traits = AndroidTaskTraits::Create(
-      env, priority, may_block, extension_id, extension_data);
+    jint j_task_traits) {
+  TaskTraits task_traits;
+  bool use_thread_pool = true;
+  switch (j_task_traits) {
+    case ::TaskTraits::BEST_EFFORT:
+      task_traits = {TaskPriority::BEST_EFFORT};
+      break;
+    case ::TaskTraits::BEST_EFFORT_MAY_BLOCK:
+      task_traits = {base::MayBlock(), TaskPriority::BEST_EFFORT};
+      break;
+    case ::TaskTraits::USER_VISIBLE:
+      task_traits = {TaskPriority::USER_VISIBLE};
+      break;
+    case ::TaskTraits::USER_VISIBLE_MAY_BLOCK:
+      task_traits = {base::MayBlock(), TaskPriority::USER_VISIBLE};
+      break;
+    case ::TaskTraits::USER_BLOCKING:
+      task_traits = {TaskPriority::USER_BLOCKING};
+      break;
+    case ::TaskTraits::USER_BLOCKING_MAY_BLOCK:
+      task_traits = {base::MayBlock(), TaskPriority::USER_BLOCKING};
+      break;
+    case ::TaskTraits::UI_BEST_EFFORT:
+      use_thread_pool = false;
+      task_traits = AndroidTaskTraits::CreateForUi(TaskPriority::BEST_EFFORT);
+      break;
+    case ::TaskTraits::UI_USER_VISIBLE:
+      use_thread_pool = false;
+      task_traits = AndroidTaskTraits::CreateForUi(TaskPriority::USER_VISIBLE);
+      break;
+    case ::TaskTraits::UI_USER_BLOCKING:
+      use_thread_pool = false;
+      task_traits = AndroidTaskTraits::CreateForUi(TaskPriority::USER_BLOCKING);
+      break;
+  }
   TaskExecutor* const task_executor =
       GetTaskExecutor(use_thread_pool, task_traits);
   scoped_refptr<TaskRunner> task_runner;
@@ -178,6 +175,12 @@ std::unique_ptr<TaskRunnerAndroid> TaskRunnerAndroid::Create(
   }
   return std::make_unique<TaskRunnerAndroid>(
       task_runner, static_cast<TaskRunnerType>(task_runner_type));
+}
+
+// static
+void TaskRunnerAndroid::SetUiThreadExtension(
+    TaskTraitsExtensionStorage extension) {
+  g_ui_thread_extension = extension;
 }
 
 }  // namespace base

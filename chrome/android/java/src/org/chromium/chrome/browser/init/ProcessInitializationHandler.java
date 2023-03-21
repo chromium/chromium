@@ -105,7 +105,6 @@ import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.components.webapps.AppBannerManager;
-import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
@@ -176,8 +175,6 @@ public class ProcessInitializationHandler {
      * Performs the shared class initialization.
      */
     protected void handlePreNativeInitialization() {
-        BrowserTaskExecutor.register();
-
         Context application = ContextUtils.getApplicationContext();
 
         // Initialize the AccountManagerFacade with the correct AccountManagerDelegate. Must be done

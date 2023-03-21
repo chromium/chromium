@@ -71,7 +71,7 @@ public class TileRendererTest {
         private final List<Runnable> mRunnables = new ArrayList<>();
 
         @Override
-        public void postDelayedTask(TaskTraits traits, Runnable task, long delay) {
+        public void postDelayedTask(@TaskTraits int traits, Runnable task, long delay) {
             mRunnables.add(task);
         }
 

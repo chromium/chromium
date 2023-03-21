@@ -442,7 +442,7 @@ public abstract class AsyncTask<Result> {
      * @return This instance of AsyncTask.
      */
     @MainThread
-    public final AsyncTask<Result> executeWithTaskTraits(TaskTraits taskTraits) {
+    public final AsyncTask<Result> executeWithTaskTraits(@TaskTraits int taskTraits) {
         executionPreamble();
         PostTask.postTask(taskTraits, mFuture);
         return this;

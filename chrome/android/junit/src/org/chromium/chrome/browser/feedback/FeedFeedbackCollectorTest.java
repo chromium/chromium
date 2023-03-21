@@ -125,7 +125,6 @@ public class FeedFeedbackCollectorTest {
 
     @After
     public void tearDown() {
-        ThreadUtils.setUiThread(null);
         IdentityServicesProvider.setInstanceForTests(null);
     }
 

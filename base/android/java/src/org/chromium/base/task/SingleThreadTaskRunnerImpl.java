@@ -27,7 +27,7 @@ public class SingleThreadTaskRunnerImpl extends TaskRunnerImpl implements Single
      *                               initialized.
      * @param traits                 The TaskTraits associated with this SingleThreadTaskRunnerImpl.
      */
-    public SingleThreadTaskRunnerImpl(Handler handler, TaskTraits traits) {
+    public SingleThreadTaskRunnerImpl(Handler handler, @TaskTraits int traits) {
         super(traits, "SingleThreadTaskRunnerImpl", TaskRunnerType.SINGLE_THREAD);
         mHandler = handler;
     }

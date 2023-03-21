@@ -174,8 +174,7 @@ public class SequencedTaskRunnerTaskMigrationTest {
         }
 
         @Override
-        public long init(int taskRunnerType, int priority, boolean mayBlock, boolean useThreadPool,
-                byte extensionId, byte[] extensionData) {
+        public long init(int taskRunnerType, int taskTraits) {
             return 1;
         }
 

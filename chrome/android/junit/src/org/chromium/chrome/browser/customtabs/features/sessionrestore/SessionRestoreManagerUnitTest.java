@@ -79,7 +79,7 @@ public class SessionRestoreManagerUnitTest {
             final Handler mHandler = new Handler(Looper.getMainLooper());
 
             @Override
-            public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
                 mHandler.postDelayed(task, delay);
             }
         });

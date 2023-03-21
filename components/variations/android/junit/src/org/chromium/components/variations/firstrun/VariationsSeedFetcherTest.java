@@ -20,11 +20,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.SharedPreferences;
-import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +58,6 @@ public class VariationsSeedFetcherTest {
     private HttpURLConnection mConnection;
     private VariationsSeedFetcher mFetcher;
     private SharedPreferences mPrefs;
-    private Looper mOrigLooper;
 
     private static final String sRestrict = "restricted";
     private static final String sMilestone = "64";
@@ -70,9 +67,6 @@ public class VariationsSeedFetcherTest {
     public void setUp() throws IOException {
         // Pretend we are not on the UI thread, since the class we are testing is supposed to run
         // only on a background thread.
-        Handler handler = ThreadUtils.getUiThreadHandler();
-        if (handler != null) mOrigLooper = handler.getLooper();
-        ThreadUtils.setUiThread(null);
         ThreadUtils.setWillOverrideUiThread(true);
         ThreadUtils.setUiThread(mock(Looper.class));
         mFetcher = spy(VariationsSeedFetcher.get());
@@ -83,16 +77,6 @@ public class VariationsSeedFetcherTest {
                         sMilestone, sChannel);
         mPrefs = ContextUtils.getAppSharedPreferences();
         UmaRecorderHolder.resetForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        ThreadUtils.setUiThread(null);
-        if (mOrigLooper != null) {
-            ThreadUtils.setUiThread(mOrigLooper);
-            mOrigLooper = null;
-        }
-        ThreadUtils.setWillOverrideUiThread(false);
     }
 
     /**

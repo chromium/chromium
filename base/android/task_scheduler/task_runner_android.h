@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/base_export.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits_extension.h"
 
 namespace base {
 
@@ -17,7 +19,7 @@ enum class TaskRunnerType { BASE, SEQUENCED, SINGLE_THREAD };
 
 // Native implementation backing TaskRunnerImpl.java which posts java tasks onto
 // a C++ TaskRunner.
-class TaskRunnerAndroid {
+class BASE_EXPORT TaskRunnerAndroid {
  public:
   explicit TaskRunnerAndroid(scoped_refptr<TaskRunner> task_runner,
                              TaskRunnerType type);
@@ -36,14 +38,10 @@ class TaskRunnerAndroid {
 
   bool BelongsToCurrentThread(JNIEnv* env);
 
-  static std::unique_ptr<TaskRunnerAndroid> Create(
-      JNIEnv* env,
-      jint task_runner_type,
-      jint priority,
-      jboolean may_block,
-      jboolean use_thread_pool,
-      jbyte extension_id,
-      const base::android::JavaParamRef<jbyteArray>& extension_data);
+  static std::unique_ptr<TaskRunnerAndroid> Create(jint task_runner_type,
+                                                   jint j_task_traits);
+
+  static void SetUiThreadExtension(TaskTraitsExtensionStorage extension);
 
  private:
   const scoped_refptr<TaskRunner> task_runner_;

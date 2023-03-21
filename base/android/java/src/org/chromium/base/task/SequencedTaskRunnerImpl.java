@@ -18,7 +18,7 @@ public class SequencedTaskRunnerImpl extends TaskRunnerImpl implements Sequenced
     /**
      * @param traits The TaskTraits associated with this SequencedTaskRunnerImpl.
      */
-    SequencedTaskRunnerImpl(TaskTraits traits) {
+    SequencedTaskRunnerImpl(@TaskTraits int traits) {
         super(traits, "SequencedTaskRunnerImpl", TaskRunnerType.SEQUENCED);
     }
 

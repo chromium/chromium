@@ -30,13 +30,13 @@ public class ShadowPostTask {
     }
 
     @Implementation
-    public static void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+    public static void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
         sTestImpl.postDelayedTask(taskTraits, task, delay);
     }
 
     /** Default implementation for tests. Override methods or add new ones as necessary. */
     public static class TestImpl {
-        public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+        public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
             Robolectric.getForegroundThreadScheduler().postDelayed(task, delay);
         }
     }

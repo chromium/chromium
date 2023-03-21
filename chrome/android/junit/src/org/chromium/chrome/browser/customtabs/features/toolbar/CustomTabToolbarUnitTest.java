@@ -129,7 +129,7 @@ public class CustomTabToolbarUnitTest {
     public void setup() {
         ShadowPostTask.setTestImpl(new TestImpl() {
             @Override
-            public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
+            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
                 new Handler(Looper.getMainLooper()).postDelayed(task, delay);
             }
         });

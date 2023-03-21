@@ -330,7 +330,8 @@ public class TabPersistentStore {
         mTabsToRestore = new ArrayDeque<>();
         mTabIdsToRestore = new HashSet<>();
         mObservers = new ObserverList<>();
-        TaskTraits taskTraits = TaskTraits.USER_BLOCKING_MAY_BLOCK;
+        @TaskTraits
+        int taskTraits = TaskTraits.USER_BLOCKING_MAY_BLOCK;
         mSequencedTaskRunner = PostTask.createSequencedTaskRunner(taskTraits);
         mPrefetchTabListToMergeTasks = new ArrayList<>();
         mMergedFileNames = new HashSet<>();
