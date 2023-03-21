@@ -105,6 +105,10 @@
     margin: 0 14px;
   }
 
+  .label-row[active-labels] {
+    margin-bottom: 14px;
+  }
+
   :host-context([chrome-refresh-2023]) .label-row {
     margin: var(--sp-card-gap) var(--sp-body-padding);
   }
@@ -137,7 +141,8 @@
       clear-label="$i18n{clearSearch}" on-search-changed="onSearchChanged_"
       disabled="[[editing_]]" hidden="[[guestMode_]]">
   </cr-toolbar-search-field>
-  <div class="label-row" hidden="[[guestMode_]]">
+  <div class="label-row" hidden="[[guestMode_]]"
+      active-labels$="[[hasActiveLabels_(labels_.*)]]">
     <template is="dom-repeat" items="[[labels_]]">
       <sp-filter-chip
           selected="[[item.active]]"
@@ -150,7 +155,7 @@
   </div>
 
   <div class="sp-card">
-    <sp-heading hidden$="[[guestMode_]]"
+    <sp-heading hidden$="[[shouldHideHeader_(labels_.*, shownBookmarks_)]]"
         back-button-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
         hide-back-button="[[!activeFolderPath_.length]]"
@@ -180,7 +185,8 @@
     </sp-heading>
 
     <div id="bookmarks" class="bookmarks sp-scroller"
-        hidden="[[!shownBookmarks_.length]]"
+        hidden="[[hasNoBookmarksInActiveFolder_(shownBookmarks_,
+                                                activeFolderPath_.*)]]"
         role="[[getBookmarksListRole_(editing_)]]"
         aria-multiselectable="[[editing_]]" scrollable>
       <iron-list id="shownBookmarksIronList"
@@ -228,7 +234,8 @@
   </div>
 
   <sp-empty-state
-      hidden="[[shownBookmarks_.length]]"
+      hidden="[[!hasNoBookmarksInActiveFolder_(shownBookmarks_,
+                                               activeFolderPath_.*)]]"
       guest$="[[guestMode_]]"
       image-path="./images/bookmarks_empty.svg"
       dark-image-path="./images/bookmarks_empty_dark.svg"
@@ -236,7 +243,8 @@
       body="[[getEmptyBody_()]]">
   </sp-empty-state>
   <sp-footer
-      pinned="[[shouldPinFooter_(shownBookmarks_.length)]]">
+      pinned="[[!hasNoBookmarksInActiveFolder_(shownBookmarks_,
+                                               activeFolderPath_.*)]]">
     <cr-button class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"

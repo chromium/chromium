@@ -600,6 +600,33 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.renamingId_ = '';
   }
 
+  private hasActiveLabels_(): boolean {
+    for (const label of this.labels_) {
+      if (label.active) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private shouldHideHeader_(): boolean {
+    return this.hasActiveLabels_() || this.hasNoBookmarks_();
+  }
+
+  private hasNoBookmarks_(): boolean {
+    return this.hasNoBookmarksInActiveFolder_() && !this.getActiveFolder_();
+  }
+
+  private hasNoBookmarksInActiveFolder_(): boolean {
+    for (const bookmark of this.shownBookmarks_) {
+      if (bookmark.url || bookmark.parentId !== '0' ||
+          bookmark.children!.length) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private getSelectedDescription_() {
     return loadTimeData.getStringF(
         'selectedBookmarkCount', this.selectedBookmarks_.length);
@@ -864,10 +891,6 @@ export class PowerBookmarksListElement extends PolymerElement {
     } else {
       return '';
     }
-  }
-
-  private shouldPinFooter_(): boolean {
-    return this.shownBookmarks_.length > 0;
   }
 
   private resizeShownBookmarks_() {
