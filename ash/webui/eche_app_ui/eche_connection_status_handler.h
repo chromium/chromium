@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_OBSERVER_H_
-#define ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_OBSERVER_H_
+#ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_HANDLER_H_
+#define ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_HANDLER_H_
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/observer_list.h"
@@ -15,7 +15,7 @@ namespace ash::eche_app {
 
 // Implements the ConnectionStatusObserver interface to receive the connection
 // status when attempting to bootstrap the connection to the phone.
-class EcheConnectionStatusObserver : public mojom::ConnectionStatusObserver {
+class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -25,11 +25,11 @@ class EcheConnectionStatusObserver : public mojom::ConnectionStatusObserver {
         mojom::ConnectionStatus connection_status) = 0;
   };
 
-  EcheConnectionStatusObserver();
-  ~EcheConnectionStatusObserver() override;
+  EcheConnectionStatusHandler();
+  ~EcheConnectionStatusHandler() override;
 
-  EcheConnectionStatusObserver(const EcheConnectionStatusObserver&) = delete;
-  EcheConnectionStatusObserver& operator=(const EcheConnectionStatusObserver&) =
+  EcheConnectionStatusHandler(const EcheConnectionStatusHandler&) = delete;
+  EcheConnectionStatusHandler& operator=(const EcheConnectionStatusHandler&) =
       delete;
 
   // mojom::ConnectionStatusObserver:
@@ -52,4 +52,4 @@ class EcheConnectionStatusObserver : public mojom::ConnectionStatusObserver {
 
 }  // namespace ash::eche_app
 
-#endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_OBSERVER_H_
+#endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_HANDLER_H_

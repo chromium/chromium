@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,7 +13,7 @@ namespace ash::eche_app {
 
 namespace {
 
-class FakeObserver : public EcheConnectionStatusObserver::Observer {
+class FakeObserver : public EcheConnectionStatusHandler::Observer {
  public:
   FakeObserver() = default;
   ~FakeObserver() override = default;
@@ -26,7 +26,7 @@ class FakeObserver : public EcheConnectionStatusObserver::Observer {
     return last_connection_changed_status_;
   }
 
-  // EcheConnectionStatusObserver::Observer:
+  // EcheConnectionStatusHandler::Observer:
   void OnConnectionStatusChanged(
       mojom::ConnectionStatus connection_status) override {
     ++num_connection_status_changed_calls_;
@@ -41,14 +41,14 @@ class FakeObserver : public EcheConnectionStatusObserver::Observer {
 
 }  // namespace
 
-class EcheConnectionStatusObserverTest : public testing::Test {
+class EcheConnectionStatusHandlerTest : public testing::Test {
  public:
-  EcheConnectionStatusObserverTest() = default;
-  EcheConnectionStatusObserverTest(const EcheConnectionStatusObserverTest&) =
+  EcheConnectionStatusHandlerTest() = default;
+  EcheConnectionStatusHandlerTest(const EcheConnectionStatusHandlerTest&) =
       delete;
-  EcheConnectionStatusObserverTest& operator=(
-      const EcheConnectionStatusObserverTest&) = delete;
-  ~EcheConnectionStatusObserverTest() override = default;
+  EcheConnectionStatusHandlerTest& operator=(
+      const EcheConnectionStatusHandlerTest&) = delete;
+  ~EcheConnectionStatusHandlerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -57,7 +57,7 @@ class EcheConnectionStatusObserverTest : public testing::Test {
                               features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
 
-    observer_ = std::make_unique<EcheConnectionStatusObserver>();
+    observer_ = std::make_unique<EcheConnectionStatusHandler>();
     observer_->AddObserver(&fake_observer_);
   }
 
@@ -83,10 +83,10 @@ class EcheConnectionStatusObserverTest : public testing::Test {
 
  private:
   FakeObserver fake_observer_;
-  std::unique_ptr<EcheConnectionStatusObserver> observer_;
+  std::unique_ptr<EcheConnectionStatusHandler> observer_;
 };
 
-TEST_F(EcheConnectionStatusObserverTest, OnConnectionStatusChanged) {
+TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
@@ -120,8 +120,7 @@ TEST_F(EcheConnectionStatusObserverTest, OnConnectionStatusChanged) {
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 4u);
 }
 
-TEST_F(EcheConnectionStatusObserverTest,
-       OnConnectionStatusChangedFlagDisabled) {
+TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kEcheSWA},

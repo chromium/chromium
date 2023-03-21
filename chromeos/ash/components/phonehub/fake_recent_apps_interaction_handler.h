@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/recent_apps_interaction_handler.h"
@@ -35,8 +35,8 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
     return recent_app_click_observer_count_;
   }
 
-  size_t eche_connection_status_observer_count() const {
-    return eche_connection_status_observer_count_;
+  size_t eche_connection_status_handler_count() const {
+    return eche_connection_status_handler_count_;
   }
 
   void NotifyRecentAppClicked(
@@ -44,9 +44,8 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
       eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) override;
   void AddRecentAppClickObserver(RecentAppClickObserver* observer) override;
   void RemoveRecentAppClickObserver(RecentAppClickObserver* observer) override;
-  void SetConnectionStatusObserver(
-      eche_app::EcheConnectionStatusObserver* eche_connection_status_observer)
-      override;
+  void SetConnectionStatusHandler(eche_app::EcheConnectionStatusHandler*
+                                      eche_connection_status_handler) override;
   void NotifyRecentAppAddedOrUpdated(
       const Notification::AppMetadata& app_metadata,
       base::Time last_accessed_timestamp) override;
@@ -59,7 +58,7 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
   void ComputeAndUpdateUiState();
 
   size_t recent_app_click_observer_count_ = 0;
-  size_t eche_connection_status_observer_count_ = 0;
+  size_t eche_connection_status_handler_count_ = 0;
   multidevice_setup::mojom::FeatureState feature_state_ =
       multidevice_setup::mojom::FeatureState::kDisabledByUser;
 

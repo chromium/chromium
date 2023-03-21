@@ -12,7 +12,7 @@
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
 #include "ash/webui/eche_app_ui/eche_connection_metrics_recorder.h"
 #include "ash/webui/eche_app_ui/eche_connection_scheduler_impl.h"
-#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
@@ -112,8 +112,8 @@ EcheAppManager::EcheAppManager(
               feature_status_provider_.get())),
       eche_stream_orientation_observer_(
           std::make_unique<EcheStreamOrientationObserver>()),
-      eche_connection_status_observer_(
-          std::make_unique<EcheConnectionStatusObserver>()) {
+      eche_connection_status_handler_(
+          std::make_unique<EcheConnectionStatusHandler>()) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
@@ -123,7 +123,7 @@ EcheAppManager::EcheAppManager(
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     phone_hub_manager->GetRecentAppsInteractionHandler()
-        ->SetConnectionStatusObserver(eche_connection_status_observer_.get());
+        ->SetConnectionStatusHandler(eche_connection_status_handler_.get());
   }
 }
 
@@ -161,7 +161,7 @@ void EcheAppManager::BindStreamOrientationObserverInterface(
 
 void EcheAppManager::BindConnectionStatusObserverInterface(
     mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver) {
-  eche_connection_status_observer_->Bind(std::move(receiver));
+  eche_connection_status_handler_->Bind(std::move(receiver));
 }
 
 AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
@@ -179,7 +179,7 @@ void EcheAppManager::StreamGoBack() {
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
-  eche_connection_status_observer_.reset();
+  eche_connection_status_handler_.reset();
   eche_stream_orientation_observer_.reset();
   system_info_provider_.reset();
   eche_tray_stream_status_observer_.reset();

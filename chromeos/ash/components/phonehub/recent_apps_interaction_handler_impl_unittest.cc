@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/notification.h"
@@ -77,11 +77,11 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
         &fake_multidevice_feature_access_manager_);
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
 
-    eche_connection_status_observer_ =
-        std::make_unique<eche_app::EcheConnectionStatusObserver>();
+    eche_connection_status_handler_ =
+        std::make_unique<eche_app::EcheConnectionStatusHandler>();
 
-    interaction_handler_->SetConnectionStatusObserver(
-        eche_connection_status_observer_.get());
+    interaction_handler_->SetConnectionStatusHandler(
+        eche_connection_status_handler_.get());
   }
 
   void TearDown() override {
@@ -243,7 +243,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   }
 
   void NotifyConnectionStatusChanged(ConnectionStatus connection_status) {
-    eche_connection_status_observer_->OnConnectionStatusChanged(
+    eche_connection_status_handler_->OnConnectionStatusChanged(
         connection_status);
   }
 
@@ -262,8 +262,8 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
 
  private:
   FakeClickHandler fake_click_handler_;
-  std::unique_ptr<eche_app::EcheConnectionStatusObserver>
-      eche_connection_status_observer_;
+  std::unique_ptr<eche_app::EcheConnectionStatusHandler>
+      eche_connection_status_handler_;
   std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
   TestingPrefServiceSimple pref_service_;
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;

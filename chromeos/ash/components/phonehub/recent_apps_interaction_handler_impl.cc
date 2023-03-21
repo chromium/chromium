@@ -54,8 +54,8 @@ RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
 
 RecentAppsInteractionHandlerImpl::~RecentAppsInteractionHandlerImpl() {
   if (features::IsEcheNetworkConnectionStateEnabled() &&
-      eche_connection_status_observer_) {
-    eche_connection_status_observer_->RemoveObserver(this);
+      eche_connection_status_handler_) {
+    eche_connection_status_handler_->RemoveObserver(this);
   }
 
   multidevice_setup_client_->RemoveObserver(this);
@@ -106,13 +106,13 @@ void RecentAppsInteractionHandlerImpl::NotifyRecentAppAddedOrUpdated(
   ComputeAndUpdateUiState();
 }
 
-void RecentAppsInteractionHandlerImpl::SetConnectionStatusObserver(
-    eche_app::EcheConnectionStatusObserver* eche_connection_status_observer) {
-  eche_connection_status_observer_ = eche_connection_status_observer;
+void RecentAppsInteractionHandlerImpl::SetConnectionStatusHandler(
+    eche_app::EcheConnectionStatusHandler* eche_connection_status_handler) {
+  eche_connection_status_handler_ = eche_connection_status_handler;
 
   if (features::IsEcheNetworkConnectionStateEnabled() &&
-      eche_connection_status_observer_) {
-    eche_connection_status_observer_->AddObserver(this);
+      eche_connection_status_handler_) {
+    eche_connection_status_handler_->AddObserver(this);
   }
 }
 

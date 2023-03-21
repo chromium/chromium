@@ -29,7 +29,7 @@ class RecentAppsInteractionHandlerImpl
     : public RecentAppsInteractionHandler,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
       public MultideviceFeatureAccessManager::Observer,
-      public eche_app::EcheConnectionStatusObserver::Observer {
+      public eche_app::EcheConnectionStatusHandler::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -49,9 +49,8 @@ class RecentAppsInteractionHandlerImpl
       const Notification::AppMetadata& app_metadata,
       base::Time last_accessed_timestamp) override;
   std::vector<Notification::AppMetadata> FetchRecentAppMetadataList() override;
-  void SetConnectionStatusObserver(
-      eche_app::EcheConnectionStatusObserver* eche_connection_status_observer)
-      override;
+  void SetConnectionStatusHandler(eche_app::EcheConnectionStatusHandler*
+                                      eche_connection_status_handler) override;
 
   // MultiDeviceSetupClient::Observer:
   void OnFeatureStatesChanged(
@@ -65,7 +64,7 @@ class RecentAppsInteractionHandlerImpl
   void OnNotificationAccessChanged() override;
   void OnAppsAccessChanged() override;
 
-  // eche_app::EcheConnectionStatusObserver::Observer:
+  // eche_app::EcheConnectionStatusHandler::Observer:
   void OnConnectionStatusChanged(
       eche_app::mojom::ConnectionStatus connection_status) override;
 
@@ -110,7 +109,7 @@ class RecentAppsInteractionHandlerImpl
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
-  eche_app::EcheConnectionStatusObserver* eche_connection_status_observer_ =
+  eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
       nullptr;
 
   base::WeakPtrFactory<RecentAppsInteractionHandlerImpl> weak_ptr_factory_{

@@ -580,7 +580,7 @@ void BindEcheStreamOrientationObserver(
   }
 }
 
-void BindEcheConnectionStatusObserver(
+void BindEcheConnectionStatusHandler(
     ash::eche_app::EcheAppManager* manager,
     mojo::PendingReceiver<ash::eche_app::mojom::ConnectionStatusObserver>
         receiver) {
@@ -602,7 +602,7 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
       base::BindRepeating(&BindEcheNotificationGenerator, manager),
       base::BindRepeating(&BindEcheDisplayStreamHandler, manager),
       base::BindRepeating(&BindEcheStreamOrientationObserver, manager),
-      base::BindRepeating(&BindEcheConnectionStatusObserver, manager));
+      base::BindRepeating(&BindEcheConnectionStatusHandler, manager));
 }
 
 template <>

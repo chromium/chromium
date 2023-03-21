@@ -37,9 +37,9 @@ void FakeRecentAppsInteractionHandler::RemoveRecentAppClickObserver(
   recent_app_click_observer_count_--;
 }
 
-void FakeRecentAppsInteractionHandler::SetConnectionStatusObserver(
-    eche_app::EcheConnectionStatusObserver* eche_connection_status_observer) {
-  eche_connection_status_observer_count_++;
+void FakeRecentAppsInteractionHandler::SetConnectionStatusHandler(
+    eche_app::EcheConnectionStatusHandler* eche_connection_status_handler) {
+  eche_connection_status_handler_count_++;
 }
 
 void FakeRecentAppsInteractionHandler::OnFeatureStateChanged(

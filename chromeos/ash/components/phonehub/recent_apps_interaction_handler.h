@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ash/webui/eche_app_ui/eche_connection_status_observer.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -67,9 +67,9 @@ class RecentAppsInteractionHandler {
   virtual void AddRecentAppClickObserver(RecentAppClickObserver* observer);
   virtual void RemoveRecentAppClickObserver(RecentAppClickObserver* observer);
 
-  virtual void SetConnectionStatusObserver(
-      eche_app::EcheConnectionStatusObserver*
-          eche_connection_status_observer) = 0;
+  virtual void SetConnectionStatusHandler(
+      eche_app::EcheConnectionStatusHandler*
+          eche_connection_status_handler) = 0;
 
   virtual void NotifyRecentAppClicked(
       const Notification::AppMetadata& app_metadata,
