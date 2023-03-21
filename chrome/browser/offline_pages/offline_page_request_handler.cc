@@ -92,159 +92,6 @@ void UpdateDigest(
   validator->Update(buffer->data(), len);
 }
 
-OfflinePageRequestHandler::AggregatedRequestResult
-RequestResultToAggregatedRequestResult(
-    RequestResult request_result,
-    OfflinePageRequestHandler::NetworkState network_state) {
-  if (request_result == RequestResult::NO_TAB_ID)
-    return OfflinePageRequestHandler::AggregatedRequestResult::NO_TAB_ID;
-
-  if (request_result == RequestResult::NO_WEB_CONTENTS)
-    return OfflinePageRequestHandler::AggregatedRequestResult::NO_WEB_CONTENTS;
-
-  if (request_result == RequestResult::FILE_NOT_FOUND)
-    return OfflinePageRequestHandler::AggregatedRequestResult::FILE_NOT_FOUND;
-
-  if (request_result == RequestResult::PAGE_NOT_FRESH) {
-    DCHECK_EQ(
-        OfflinePageRequestHandler::NetworkState::PROHIBITIVELY_SLOW_NETWORK,
-        network_state);
-    return OfflinePageRequestHandler::AggregatedRequestResult::
-        PAGE_NOT_FRESH_ON_PROHIBITIVELY_SLOW_NETWORK;
-  }
-
-  if (request_result == RequestResult::OFFLINE_PAGE_NOT_FOUND) {
-    switch (network_state) {
-      case OfflinePageRequestHandler::NetworkState::DISCONNECTED_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            PAGE_NOT_FOUND_ON_DISCONNECTED_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::PROHIBITIVELY_SLOW_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            PAGE_NOT_FOUND_ON_PROHIBITIVELY_SLOW_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::FLAKY_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            PAGE_NOT_FOUND_ON_FLAKY_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::
-          FORCE_OFFLINE_ON_CONNECTED_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            PAGE_NOT_FOUND_ON_CONNECTED_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::CONNECTED_NETWORK:
-        break;
-    }
-    NOTREACHED();
-  }
-
-  if (request_result == RequestResult::REDIRECTED) {
-    switch (network_state) {
-      case OfflinePageRequestHandler::NetworkState::DISCONNECTED_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            REDIRECTED_ON_DISCONNECTED_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::PROHIBITIVELY_SLOW_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            REDIRECTED_ON_PROHIBITIVELY_SLOW_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::FLAKY_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            REDIRECTED_ON_FLAKY_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::
-          FORCE_OFFLINE_ON_CONNECTED_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            REDIRECTED_ON_CONNECTED_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::CONNECTED_NETWORK:
-        break;
-    }
-    NOTREACHED();
-  }
-
-  if (request_result == RequestResult::DIGEST_MISMATCH) {
-    switch (network_state) {
-      case OfflinePageRequestHandler::NetworkState::DISCONNECTED_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            DIGEST_MISMATCH_ON_DISCONNECTED_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::PROHIBITIVELY_SLOW_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            DIGEST_MISMATCH_ON_PROHIBITIVELY_SLOW_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::FLAKY_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            DIGEST_MISMATCH_ON_FLAKY_NETWORK;
-      case OfflinePageRequestHandler::NetworkState::
-          FORCE_OFFLINE_ON_CONNECTED_NETWORK:
-      case OfflinePageRequestHandler::NetworkState::CONNECTED_NETWORK:
-        return OfflinePageRequestHandler::AggregatedRequestResult::
-            DIGEST_MISMATCH_ON_CONNECTED_NETWORK;
-    }
-    NOTREACHED();
-  }
-
-  DCHECK_EQ(RequestResult::OFFLINE_PAGE_SERVED, request_result);
-  DCHECK_NE(OfflinePageRequestHandler::NetworkState::CONNECTED_NETWORK,
-            network_state);
-  switch (network_state) {
-    case OfflinePageRequestHandler::NetworkState::DISCONNECTED_NETWORK:
-      return OfflinePageRequestHandler::AggregatedRequestResult::
-          SHOW_OFFLINE_ON_DISCONNECTED_NETWORK;
-    case OfflinePageRequestHandler::NetworkState::PROHIBITIVELY_SLOW_NETWORK:
-      return OfflinePageRequestHandler::AggregatedRequestResult::
-          SHOW_OFFLINE_ON_PROHIBITIVELY_SLOW_NETWORK;
-    case OfflinePageRequestHandler::NetworkState::FLAKY_NETWORK:
-      return OfflinePageRequestHandler::AggregatedRequestResult::
-          SHOW_OFFLINE_ON_FLAKY_NETWORK;
-    case OfflinePageRequestHandler::NetworkState::
-        FORCE_OFFLINE_ON_CONNECTED_NETWORK:
-      return OfflinePageRequestHandler::AggregatedRequestResult::
-          SHOW_OFFLINE_ON_CONNECTED_NETWORK;
-    case OfflinePageRequestHandler::NetworkState::CONNECTED_NETWORK:
-      break;
-  }
-  NOTREACHED();
-
-  return OfflinePageRequestHandler::AggregatedRequestResult::
-      AGGREGATED_REQUEST_RESULT_MAX;
-}
-
-void ReportRequestResult(
-    RequestResult request_result,
-    OfflinePageRequestHandler::NetworkState network_state) {
-  OfflinePageRequestHandler::ReportAggregatedRequestResult(
-      RequestResultToAggregatedRequestResult(request_result, network_state));
-}
-
-void ReportOfflinePageSize(
-    OfflinePageRequestHandler::NetworkState network_state,
-    const OfflinePageItem& offline_page) {
-  if (offline_page.client_id.name_space.empty())
-    return;
-
-  // The two histograms report values between 1KiB and 100MiB.
-  switch (network_state) {
-    case OfflinePageRequestHandler::NetworkState::
-        DISCONNECTED_NETWORK:  // Fall-through
-    case OfflinePageRequestHandler::NetworkState::
-        PROHIBITIVELY_SLOW_NETWORK:  // Fall-through
-    case OfflinePageRequestHandler::NetworkState::FLAKY_NETWORK:
-      base::UmaHistogramCounts100000("OfflinePages.PageSizeOnAccess.Offline." +
-                                         offline_page.client_id.name_space,
-                                     offline_page.file_size / 1024);
-      return;
-    case OfflinePageRequestHandler::NetworkState::
-        FORCE_OFFLINE_ON_CONNECTED_NETWORK:
-      base::UmaHistogramCounts100000("OfflinePages.PageSizeOnAccess.Online." +
-                                         offline_page.client_id.name_space,
-                                     offline_page.file_size / 1024);
-      return;
-    case OfflinePageRequestHandler::NetworkState::CONNECTED_NETWORK:
-      break;
-  }
-  NOTREACHED();
-}
-
-void ReportAccessEntryPoint(
-    const std::string& name_space,
-    OfflinePageRequestHandler::AccessEntryPoint entry_point) {
-  base::UmaHistogramEnumeration(
-      "OfflinePages.AccessEntryPoint." + name_space, entry_point,
-      OfflinePageRequestHandler::AccessEntryPoint::COUNT);
-}
-
 OfflinePageModel* GetOfflinePageModel(
     content::WebContents::Getter web_contents_getter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -273,7 +120,6 @@ void FailedToFindOfflinePage(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_NE(RequestResult::OFFLINE_PAGE_SERVED, request_error_result);
 
-  ReportRequestResult(request_error_result, network_state);
   NotifyAvailableOfflinePagesOnUI(
       job, std::vector<OfflinePageRequestHandler::Candidate>());
 }
@@ -447,14 +293,6 @@ void ClearOfflinePageData(content::WebContents::Getter web_contents_getter) {
 
 }  // namespace
 
-// static
-void OfflinePageRequestHandler::ReportAggregatedRequestResult(
-    AggregatedRequestResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "OfflinePages.AggregatedRequestResult2", static_cast<int>(result),
-      static_cast<int>(AggregatedRequestResult::AGGREGATED_REQUEST_RESULT_MAX));
-}
-
 OfflinePageRequestHandler::OfflinePageRequestHandler(
     const GURL& url,
     const net::HttpRequestHeaders& extra_request_headers,
@@ -583,7 +421,6 @@ void OfflinePageRequestHandler::OnTrustedOfflinePageFound() {
   // the problem, we still need to support those pages already saved with this
   if (url_ == GetCurrentOfflinePage().original_url_if_different &&
       url_ != GetCurrentOfflinePage().url) {
-    ReportRequestResult(RequestResult::REDIRECTED, network_state_);
     Redirect(GetCurrentOfflinePage().url);
     return;
   }
@@ -615,11 +452,6 @@ void OfflinePageRequestHandler::OnTrustedOfflinePageFound() {
 }
 
 void OfflinePageRequestHandler::VisitTrustedOfflinePage() {
-  ReportRequestResult(RequestResult::OFFLINE_PAGE_SERVED, network_state_);
-  ReportAccessEntryPoint(GetCurrentOfflinePage().client_id.name_space,
-                         GetAccessEntryPoint());
-  ReportOfflinePageSize(network_state_, GetCurrentOfflinePage());
-
   delegate_->SetOfflinePageNavigationUIData(true /*is_offline_page*/);
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -647,55 +479,6 @@ void OfflinePageRequestHandler::Redirect(const GURL& redirected_url) {
   DCHECK(fake_headers_for_redirect_->IsRedirect(nullptr));
 
   delegate_->NotifyHeadersComplete(0);
-}
-
-OfflinePageRequestHandler::AccessEntryPoint
-OfflinePageRequestHandler::GetAccessEntryPoint() const {
-  switch (offline_header_.reason) {
-    case OfflinePageHeader::Reason::DOWNLOAD:
-      return AccessEntryPoint::DOWNLOADS;
-    case OfflinePageHeader::Reason::NOTIFICATION:
-      return AccessEntryPoint::NOTIFICATION;
-    case OfflinePageHeader::Reason::FILE_URL_INTENT:
-      return AccessEntryPoint::FILE_URL_INTENT;
-    case OfflinePageHeader::Reason::CONTENT_URL_INTENT:
-      return AccessEntryPoint::CONTENT_URL_INTENT;
-    case OfflinePageHeader::Reason::PROGRESS_BAR:
-      return AccessEntryPoint::PROGRESS_BAR;
-    case OfflinePageHeader::Reason::SUGGESTION:
-      return AccessEntryPoint::NTP_SUGGESTIONS_OR_BOOKMARKS;
-    case OfflinePageHeader::Reason::NET_ERROR_SUGGESTION:
-      return AccessEntryPoint::NET_ERROR_PAGE;
-    case OfflinePageHeader::Reason::NONE:
-    case OfflinePageHeader::Reason::NET_ERROR:
-    case OfflinePageHeader::Reason::RELOAD:
-      break;
-  }
-
-  ui::PageTransition transition =
-      static_cast<ui::PageTransition>(delegate_->GetPageTransition());
-  if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK)) {
-    return ui::PageTransitionTypeIncludingQualifiersIs(
-               PageTransitionGetQualifier(transition),
-               ui::PAGE_TRANSITION_FROM_API)
-               ? AccessEntryPoint::CCT
-               : AccessEntryPoint::LINK;
-  } else if (ui::PageTransitionCoreTypeIs(transition,
-                                          ui::PAGE_TRANSITION_TYPED) ||
-             ui::PageTransitionCoreTypeIs(transition,
-                                          ui::PAGE_TRANSITION_GENERATED)) {
-    return AccessEntryPoint::OMNIBOX;
-  } else if (ui::PageTransitionCoreTypeIs(transition,
-                                          ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
-    // Note that this also includes launching from bookmark which tends to be
-    // less likely. For now we don't separate these two.
-    return AccessEntryPoint::NTP_SUGGESTIONS_OR_BOOKMARKS;
-  } else if (ui::PageTransitionCoreTypeIs(transition,
-                                          ui::PAGE_TRANSITION_RELOAD)) {
-    return AccessEntryPoint::RELOAD;
-  }
-
-  return AccessEntryPoint::UNKNOWN;
 }
 
 const OfflinePageItem& OfflinePageRequestHandler::GetCurrentOfflinePage()
@@ -888,18 +671,12 @@ void OfflinePageRequestHandler::OnFileValidationDone(
 
   // Otherwise, no trusted offline page can be found so we fall back to the
   // default handling.
-  ReportRequestResult(result == FileValidationResult::FILE_NOT_FOUND
-                          ? RequestResult::FILE_NOT_FOUND
-                          : RequestResult::DIGEST_MISMATCH,
-                      network_state_);
   delegate_->FallbackToDefault();
 }
 
 void OfflinePageRequestHandler::DidOpenForServing(int result) {
   // Handle the file opening failure.
   if (result != net::OK) {
-    ReportRequestResult(RequestResult::FILE_NOT_FOUND, network_state_);
-
     // If the file:// or content:// intent is being processed, don't fall
     // back to the default handling. Instead, we should fail the request.
     if (IsProcessingFileOrContentUrlIntent())

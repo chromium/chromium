@@ -3221,7 +3221,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="last_n" label="Offline recent pages"/>
   <suffix name="ntp_suggestions" label="NTP suggestions offlined by the user"/>
   <suffix name="suggested_articles" label="Prefetched NTP suggestions"/>
-  <affected-histogram name="OfflinePages.AccessEntryPoint"/>
   <affected-histogram
       name="OfflinePages.Background.EffectiveConnectionType.OffliningStartType"/>
   <affected-histogram
@@ -3239,8 +3238,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.PageAccessInterval"/>
   <affected-histogram name="OfflinePages.PageLifetime"/>
   <affected-histogram name="OfflinePages.PageSize"/>
-  <affected-histogram name="OfflinePages.PageSizeOnAccess.Offline"/>
-  <affected-histogram name="OfflinePages.PageSizeOnAccess.Online"/>
   <affected-histogram name="OfflinePages.SavePage.AddPageTime"/>
   <affected-histogram name="OfflinePages.SavePage.ComputeDigestTime"/>
   <affected-histogram name="OfflinePages.SavePage.CreateArchiveTime"/>

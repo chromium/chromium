@@ -325,13 +325,6 @@ void OfflinePageTabHelper::TryLoadingOfflinePageOnNetError(
       error_code != net::ERR_NAME_NOT_RESOLVED &&
       error_code != net::ERR_ADDRESS_UNREACHABLE &&
       error_code != net::ERR_PROXY_CONNECTION_FAILED) {
-    // Do not report aborted error since the error page is not shown on this
-    // error.
-    if (error_code != net::ERR_ABORTED) {
-      OfflinePageRequestHandler::ReportAggregatedRequestResult(
-          OfflinePageRequestHandler::AggregatedRequestResult::
-              SHOW_NET_ERROR_PAGE);
-    }
     return;
   }
 
@@ -360,9 +353,6 @@ void OfflinePageTabHelper::SelectPagesForURLDone(
     const std::vector<OfflinePageItem>& offline_pages) {
   // Bails out if no offline page is found.
   if (offline_pages.empty()) {
-    OfflinePageRequestHandler::ReportAggregatedRequestResult(
-        OfflinePageRequestHandler::AggregatedRequestResult::
-            PAGE_NOT_FOUND_ON_FLAKY_NETWORK);
     return;
   }
 

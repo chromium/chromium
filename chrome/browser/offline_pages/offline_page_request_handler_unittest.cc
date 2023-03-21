@@ -73,7 +73,6 @@ const base::FilePath kNonexistentFilename(
     FILE_PATH_LITERAL("nonexistent.mhtml"));
 constexpr int kFileSize1 = 471;  // Real size of hello.mhtml.
 constexpr int kFileSize2 = 461;  // Real size of welcome.mhtml.
-constexpr int kMismatchedFileSize = 99999;
 const std::string kDigest1(
     "\x43\x60\x62\x02\x06\x15\x0f\x3e\x77\x99\x3d\xed\xdc\xd4\xe2\x0d\xbe\xbd"
     "\x77\x1a\xfb\x32\x00\x51\x7e\x63\x7d\x3b\x2e\x46\x63\xf6",
@@ -88,14 +87,6 @@ const std::string kMismatchedDigest(
     32);  // Wrong SHA256 Hash.
 
 constexpr int kTabId = 1;
-
-constexpr char kAggregatedRequestResultHistogram[] =
-    "OfflinePages.AggregatedRequestResult2";
-constexpr char kAccessEntryPointHistogram[] = "OfflinePages.AccessEntryPoint.";
-constexpr char kPageSizeAccessOfflineHistogramBase[] =
-    "OfflinePages.PageSizeOnAccess.Offline.";
-constexpr char kPageSizeAccessOnlineHistogramBase[] =
-    "OfflinePages.PageSizeOnAccess.Online.";
 
 constexpr int64_t kDownloadId = 42LL;
 
@@ -340,42 +331,9 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   void ReadCompleted(const ResponseInfo& reponse,
                      bool is_offline_page_set_in_navigation_data);
 
-  // Expect exactly one count of |result| UMA reported. No other bucket should
-  // have sample.
-  void ExpectOneUniqueSampleForAggregatedRequestResult(
-      OfflinePageRequestHandler::AggregatedRequestResult result);
-  // Expect exactly |count| of |result| UMA reported. No other bucket should
-  // have sample.
-  void ExpectMultiUniqueSampleForAggregatedRequestResult(
-      OfflinePageRequestHandler::AggregatedRequestResult result,
-      int count);
-  // Expect one count of |result| UMA reported. Other buckets may have samples
-  // as well.
-  void ExpectOneNonuniqueSampleForAggregatedRequestResult(
-      OfflinePageRequestHandler::AggregatedRequestResult result);
-  // Expect no samples to have been reported to the aggregated results
-  // histogram.
-  void ExpectNoSamplesInAggregatedRequestResult();
-
-  void ExpectAccessEntryPoint(
-      OfflinePageRequestHandler::AccessEntryPoint entry_point);
-  void ExpectNoAccessEntryPoint();
-
-  void ExpectOfflinePageSizeUniqueSample(int bucket, int count);
-  void ExpectOfflinePageSizeTotalSuffixCount(int count);
-  void ExpectOnlinePageSizeUniqueSample(int bucket, int count);
-  void ExpectOnlinePageSizeTotalSuffixCount(int count);
-  void ExpectOfflinePageAccessCount(int64_t offline_id, int count);
-
-  void ExpectNoOfflinePageServed(
-      int64_t offline_id,
-      OfflinePageRequestHandler::AggregatedRequestResult
-          expected_request_result);
-  void ExpectOfflinePageServed(
-      int64_t expected_offline_id,
-      int expected_file_size,
-      OfflinePageRequestHandler::AggregatedRequestResult
-          expected_request_result);
+  void ExpectNoOfflinePageServed(int64_t offline_id);
+  void ExpectOfflinePageServed(int64_t expected_offline_id,
+                               int expected_file_size);
 
   // Use the offline header with specific reason and offline_id. Return the
   // full header string.
@@ -413,9 +371,6 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   // base::OnceCallback.
   static base::FilePath private_archives_dir_;
   static base::FilePath public_archives_dir_;
-
-  OfflinePageRequestHandler::AccessEntryPoint GetExpectedAccessEntryPoint()
-      const;
 
   void OnSavePageDone(SavePageResult result, int64_t offline_id);
   void OnGetPageByOfflineIdDone(const OfflinePageItem* pages);
@@ -600,122 +555,17 @@ base::FilePath OfflinePageRequestHandlerTest::CreateFileWithContent(
   return temp_file_path_;
 }
 
-void OfflinePageRequestHandlerTest::
-    ExpectOneUniqueSampleForAggregatedRequestResult(
-        OfflinePageRequestHandler::AggregatedRequestResult result) {
-  histogram_tester_->ExpectUniqueSample(kAggregatedRequestResultHistogram,
-                                        static_cast<int>(result), 1);
-}
-
-void OfflinePageRequestHandlerTest::
-    ExpectMultiUniqueSampleForAggregatedRequestResult(
-        OfflinePageRequestHandler::AggregatedRequestResult result,
-        int count) {
-  histogram_tester_->ExpectUniqueSample(kAggregatedRequestResultHistogram,
-                                        static_cast<int>(result), count);
-}
-
-void OfflinePageRequestHandlerTest::
-    ExpectOneNonuniqueSampleForAggregatedRequestResult(
-        OfflinePageRequestHandler::AggregatedRequestResult result) {
-  histogram_tester_->ExpectBucketCount(kAggregatedRequestResultHistogram,
-                                       static_cast<int>(result), 1);
-}
-
-void OfflinePageRequestHandlerTest::ExpectNoSamplesInAggregatedRequestResult() {
-  histogram_tester_->ExpectTotalCount(kAggregatedRequestResultHistogram, 0);
-}
-
-void OfflinePageRequestHandlerTest::ExpectAccessEntryPoint(
-    OfflinePageRequestHandler::AccessEntryPoint entry_point) {
-  histogram_tester_->ExpectUniqueSample(
-      std::string(kAccessEntryPointHistogram) + kDownloadNamespace,
-      static_cast<int>(entry_point), 1);
-}
-
-void OfflinePageRequestHandlerTest::ExpectNoAccessEntryPoint() {
-  EXPECT_TRUE(
-      histogram_tester_->GetTotalCountsForPrefix(kAccessEntryPointHistogram)
-          .empty());
-}
-
-void OfflinePageRequestHandlerTest::ExpectOfflinePageSizeUniqueSample(
-    int bucket,
-    int count) {
-  histogram_tester_->ExpectUniqueSample(
-      std::string(kPageSizeAccessOfflineHistogramBase) + kDownloadNamespace,
-      bucket, count);
-}
-
-void OfflinePageRequestHandlerTest::ExpectOfflinePageSizeTotalSuffixCount(
-    int count) {
-  int total_offline_count = 0;
-  base::HistogramTester::CountsMap all_offline_counts =
-      histogram_tester_->GetTotalCountsForPrefix(
-          kPageSizeAccessOfflineHistogramBase);
-  for (const std::pair<const std::string, base::HistogramBase::Count>&
-           namespace_and_count : all_offline_counts) {
-    total_offline_count += namespace_and_count.second;
-  }
-  EXPECT_EQ(count, total_offline_count)
-      << "Wrong histogram samples count under prefix "
-      << kPageSizeAccessOfflineHistogramBase << "*";
-}
-
-void OfflinePageRequestHandlerTest::ExpectOnlinePageSizeUniqueSample(
-    int bucket,
-    int count) {
-  histogram_tester_->ExpectUniqueSample(
-      std::string(kPageSizeAccessOnlineHistogramBase) + kDownloadNamespace,
-      bucket, count);
-}
-
-void OfflinePageRequestHandlerTest::ExpectOnlinePageSizeTotalSuffixCount(
-    int count) {
-  int online_count = 0;
-  base::HistogramTester::CountsMap all_online_counts =
-      histogram_tester_->GetTotalCountsForPrefix(
-          kPageSizeAccessOnlineHistogramBase);
-  for (const std::pair<const std::string, base::HistogramBase::Count>&
-           namespace_and_count : all_online_counts) {
-    online_count += namespace_and_count.second;
-  }
-  EXPECT_EQ(count, online_count)
-      << "Wrong histogram samples count under prefix "
-      << kPageSizeAccessOnlineHistogramBase << "*";
-}
-
-void OfflinePageRequestHandlerTest::ExpectOfflinePageAccessCount(
-    int64_t offline_id,
-    int count) {
-  OfflinePageItem offline_page = GetPage(offline_id);
-  EXPECT_EQ(count, offline_page.access_count);
-}
-
 void OfflinePageRequestHandlerTest::ExpectNoOfflinePageServed(
-    int64_t offline_id,
-    OfflinePageRequestHandler::AggregatedRequestResult
-        expected_request_result) {
+    int64_t offline_id) {
   EXPECT_NE("multipart/related", mime_type());
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(is_offline_page_set_in_navigation_data());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
-  if (expected_request_result !=
-      OfflinePageRequestHandler::AggregatedRequestResult::
-          AGGREGATED_REQUEST_RESULT_MAX) {
-    ExpectOneUniqueSampleForAggregatedRequestResult(expected_request_result);
-  }
-  ExpectNoAccessEntryPoint();
-  ExpectOfflinePageSizeTotalSuffixCount(0);
-  ExpectOnlinePageSizeTotalSuffixCount(0);
-  ExpectOfflinePageAccessCount(offline_id, 0);
 }
 
 void OfflinePageRequestHandlerTest::ExpectOfflinePageServed(
     int64_t expected_offline_id,
-    int expected_file_size,
-    OfflinePageRequestHandler::AggregatedRequestResult
-        expected_request_result) {
+    int expected_file_size) {
   EXPECT_EQ(net::OK, request_status());
   EXPECT_EQ("multipart/related", mime_type());
   EXPECT_EQ(expected_file_size, bytes_read());
@@ -730,40 +580,6 @@ void OfflinePageRequestHandlerTest::ExpectOfflinePageServed(
           : OfflinePageTrustedState::TRUSTED_AS_UNMODIFIED_AND_IN_PUBLIC_DIR;
   EXPECT_EQ(expected_trusted_state,
             offline_page_tab_helper()->GetTrustedStateForTest());
-  if (expected_request_result !=
-      OfflinePageRequestHandler::AggregatedRequestResult::
-          AGGREGATED_REQUEST_RESULT_MAX) {
-    ExpectOneUniqueSampleForAggregatedRequestResult(expected_request_result);
-  }
-  OfflinePageRequestHandler::AccessEntryPoint expected_entry_point =
-      GetExpectedAccessEntryPoint();
-  ExpectAccessEntryPoint(expected_entry_point);
-  if (is_connected_with_good_network()) {
-    ExpectOnlinePageSizeUniqueSample(expected_file_size / 1024, 1);
-    ExpectOfflinePageSizeTotalSuffixCount(0);
-  } else {
-    ExpectOfflinePageSizeUniqueSample(expected_file_size / 1024, 1);
-    ExpectOnlinePageSizeTotalSuffixCount(0);
-  }
-  ExpectOfflinePageAccessCount(expected_offline_id, 1);
-}
-
-OfflinePageRequestHandler::AccessEntryPoint
-OfflinePageRequestHandlerTest::GetExpectedAccessEntryPoint() const {
-  switch (offline_page_header_.reason) {
-    case OfflinePageHeader::Reason::DOWNLOAD:
-      return OfflinePageRequestHandler::AccessEntryPoint::DOWNLOADS;
-    case OfflinePageHeader::Reason::NOTIFICATION:
-      return OfflinePageRequestHandler::AccessEntryPoint::NOTIFICATION;
-    case OfflinePageHeader::Reason::FILE_URL_INTENT:
-      return OfflinePageRequestHandler::AccessEntryPoint::FILE_URL_INTENT;
-    case OfflinePageHeader::Reason::CONTENT_URL_INTENT:
-      return OfflinePageRequestHandler::AccessEntryPoint::CONTENT_URL_INTENT;
-    case OfflinePageHeader::Reason::NET_ERROR_SUGGESTION:
-      return OfflinePageRequestHandler::AccessEntryPoint::NET_ERROR_PAGE;
-    default:
-      return OfflinePageRequestHandler::AccessEntryPoint::LINK;
-  }
 }
 
 std::string OfflinePageRequestHandlerTest::UseOfflinePageHeader(
@@ -1108,10 +924,6 @@ TEST_F(OfflinePageRequestHandlerTest, FailedToCreateRequestJob) {
                    false /* is_outermost_main_frame */);
   EXPECT_EQ(0, bytes_read());
   EXPECT_FALSE(offline_page_tab_helper()->GetOfflinePageForTest());
-
-  ExpectNoSamplesInAggregatedRequestResult();
-  ExpectOfflinePageSizeTotalSuffixCount(0);
-  ExpectOnlinePageSizeTotalSuffixCount(0);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnDisconnectedNetwork) {
@@ -1123,9 +935,7 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnDisconnectedNetwork) {
 
   LoadPage(test_url);
 
-  ExpectOfflinePageServed(offline_id, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, kFileSize1);
 }
 
 TEST_F(OfflinePageRequestHandlerTest,
@@ -1146,9 +956,7 @@ TEST_F(OfflinePageRequestHandlerTest,
   // immediately. So no request result should be reported. Passing
   // AGGREGATED_REQUEST_RESULT_MAX to skip checking request result in
   // the helper function.
-  this->ExpectNoOfflinePageServed(
-      offline_id, OfflinePageRequestHandler::AggregatedRequestResult::
-                      AGGREGATED_REQUEST_RESULT_MAX);
+  this->ExpectNoOfflinePageServed(offline_id);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnDisconnectedNetwork) {
@@ -1159,9 +967,7 @@ TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnDisconnectedNetwork) {
 
   LoadPage(GURL(kTestUrl2));
 
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                PAGE_NOT_FOUND_ON_DISCONNECTED_NETWORK);
+  ExpectNoOfflinePageServed(offline_id);
 }
 
 TEST_F(OfflinePageRequestHandlerTest,
@@ -1177,9 +983,7 @@ TEST_F(OfflinePageRequestHandlerTest,
       UseOfflinePageHeader(OfflinePageHeader::Reason::NET_ERROR_SUGGESTION, 0));
   LoadPageWithHeaders(test_url, extra_headers);
 
-  ExpectOfflinePageServed(offline_id, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, kFileSize1);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnFlakyNetwork) {
@@ -1196,9 +1000,7 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnFlakyNetwork) {
       UseOfflinePageHeader(OfflinePageHeader::Reason::NET_ERROR, 0));
   LoadPageWithHeaders(test_url, extra_headers);
 
-  ExpectOfflinePageServed(offline_id, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_FLAKY_NETWORK);
+  ExpectOfflinePageServed(offline_id, kFileSize1);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnFlakyNetwork) {
@@ -1214,9 +1016,7 @@ TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnFlakyNetwork) {
       UseOfflinePageHeader(OfflinePageHeader::Reason::NET_ERROR, 0));
   LoadPageWithHeaders(GURL(kTestUrl2), extra_headers);
 
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                PAGE_NOT_FOUND_ON_FLAKY_NETWORK);
+  ExpectNoOfflinePageServed(offline_id);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, ForceLoadOfflinePageOnConnectedNetwork) {
@@ -1233,9 +1033,7 @@ TEST_F(OfflinePageRequestHandlerTest, ForceLoadOfflinePageOnConnectedNetwork) {
       UseOfflinePageHeader(OfflinePageHeader::Reason::DOWNLOAD, 0));
   LoadPageWithHeaders(test_url, extra_headers);
 
-  ExpectOfflinePageServed(offline_id, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_CONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, kFileSize1);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnConnectedNetwork) {
@@ -1252,9 +1050,7 @@ TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnConnectedNetwork) {
       UseOfflinePageHeader(OfflinePageHeader::Reason::DOWNLOAD, 0));
   LoadPageWithHeaders(GURL(kTestUrl2), extra_headers);
 
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                PAGE_NOT_FOUND_ON_CONNECTED_NETWORK);
+  ExpectNoOfflinePageServed(offline_id);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, DoNotLoadOfflinePageOnConnectedNetwork) {
@@ -1270,9 +1066,7 @@ TEST_F(OfflinePageRequestHandlerTest, DoNotLoadOfflinePageOnConnectedNetwork) {
   // immediately. So no request result should be reported. Passing
   // AGGREGATED_REQUEST_RESULT_MAX to skip checking request result in
   // the helper function.
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                AGGREGATED_REQUEST_RESULT_MAX);
+  ExpectNoOfflinePageServed(offline_id);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, LoadMostRecentlyCreatedOfflinePage) {
@@ -1281,8 +1075,6 @@ TEST_F(OfflinePageRequestHandlerTest, LoadMostRecentlyCreatedOfflinePage) {
   // Save 2 offline pages associated with same online URL, but pointing to
   // different archive file.
   const GURL test_url(kTestUrl);
-  int64_t offline_id1 =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
   int64_t offline_id2 =
       SaveInternalPage(test_url, GURL(), kFilename2, kFileSize2, std::string());
 
@@ -1290,10 +1082,7 @@ TEST_F(OfflinePageRequestHandlerTest, LoadMostRecentlyCreatedOfflinePage) {
   // recently created offline page is fetched.
   LoadPage(test_url);
 
-  ExpectOfflinePageServed(offline_id2, kFileSize2,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
-  ExpectOfflinePageAccessCount(offline_id1, 0);
+  ExpectOfflinePageServed(offline_id2, kFileSize2);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageByOfflineID) {
@@ -1304,8 +1093,6 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageByOfflineID) {
   const GURL test_url(kTestUrl);
   int64_t offline_id1 =
       SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
-  int64_t offline_id2 =
-      SaveInternalPage(test_url, GURL(), kFilename2, kFileSize2, std::string());
 
   // Load an URL with a specific offline ID designated in the custom header.
   // Expect the offline page matching the offline id is fetched.
@@ -1314,10 +1101,7 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageByOfflineID) {
       UseOfflinePageHeader(OfflinePageHeader::Reason::DOWNLOAD, offline_id1));
   LoadPageWithHeaders(test_url, extra_headers);
 
-  ExpectOfflinePageServed(offline_id1, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_CONNECTED_NETWORK);
-  ExpectOfflinePageAccessCount(offline_id2, 0);
+  ExpectOfflinePageServed(offline_id1, kFileSize1);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, FailToLoadByOfflineIDOnUrlMismatch) {
@@ -1334,9 +1118,7 @@ TEST_F(OfflinePageRequestHandlerTest, FailToLoadByOfflineIDOnUrlMismatch) {
       UseOfflinePageHeader(OfflinePageHeader::Reason::DOWNLOAD, offline_id));
   LoadPageWithHeaders(GURL(kTestUrl2), extra_headers);
 
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                PAGE_NOT_FOUND_ON_CONNECTED_NETWORK);
+  ExpectNoOfflinePageServed(offline_id);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageForUrlWithFragment) {
@@ -1353,18 +1135,12 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageForUrlWithFragment) {
   int64_t offline_id2 = SaveInternalPage(url2_with_fragment, GURL(), kFilename2,
                                          kFileSize2, std::string());
 
-  ExpectOfflinePageAccessCount(offline_id1, 0);
-  ExpectOfflinePageAccessCount(offline_id2, 0);
-
   // Loads an url with fragment, that will match the offline URL without the
   // fragment.
   GURL url_with_fragment(test_url.spec() + "#ref");
   LoadPage(url_with_fragment);
 
-  ExpectOfflinePageServed(offline_id1, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
-  ExpectOfflinePageAccessCount(offline_id2, 0);
+  ExpectOfflinePageServed(offline_id1, kFileSize1);
 
   // Loads an url without fragment, that will match the offline URL with the
   // fragment.
@@ -1374,14 +1150,6 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageForUrlWithFragment) {
   ASSERT_TRUE(offline_page_tab_helper()->GetOfflinePageForTest());
   EXPECT_EQ(offline_id2,
             offline_page_tab_helper()->GetOfflinePageForTest()->offline_id);
-  ExpectMultiUniqueSampleForAggregatedRequestResult(
-      OfflinePageRequestHandler::AggregatedRequestResult::
-          SHOW_OFFLINE_ON_DISCONNECTED_NETWORK,
-      2);
-  ExpectOfflinePageSizeTotalSuffixCount(2);
-  ExpectOnlinePageSizeTotalSuffixCount(0);
-  ExpectOfflinePageAccessCount(offline_id1, 1);
-  ExpectOfflinePageAccessCount(offline_id2, 1);
 
   // Loads an url with fragment, that will match the offline URL with different
   // fragment.
@@ -1392,248 +1160,6 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageForUrlWithFragment) {
   ASSERT_TRUE(offline_page_tab_helper()->GetOfflinePageForTest());
   EXPECT_EQ(offline_id2,
             offline_page_tab_helper()->GetOfflinePageForTest()->offline_id);
-  ExpectMultiUniqueSampleForAggregatedRequestResult(
-      OfflinePageRequestHandler::AggregatedRequestResult::
-          SHOW_OFFLINE_ON_DISCONNECTED_NETWORK,
-      3);
-  ExpectOfflinePageSizeTotalSuffixCount(3);
-  ExpectOnlinePageSizeTotalSuffixCount(0);
-  ExpectOfflinePageAccessCount(offline_id1, 1);
-  ExpectOfflinePageAccessCount(offline_id2, 2);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageAfterRedirect) {
-  SimulateHasNetworkConnectivity(false);
-
-  // Save an offline page with same original URL and final URL.
-  int64_t offline_id = SaveInternalPage(GURL(kTestUrl), GURL(kTestUrl2),
-                                        kFilename1, kFileSize1, std::string());
-
-  // This should trigger redirect first.
-  LoadPage(GURL(kTestUrl2));
-
-  // Passing AGGREGATED_REQUEST_RESULT_MAX to skip checking request result in
-  // the helper function. Different checks will be done after that.
-  ExpectOfflinePageServed(offline_id, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              AGGREGATED_REQUEST_RESULT_MAX);
-  ExpectOneNonuniqueSampleForAggregatedRequestResult(
-      OfflinePageRequestHandler::AggregatedRequestResult::
-          REDIRECTED_ON_DISCONNECTED_NETWORK);
-  ExpectOneNonuniqueSampleForAggregatedRequestResult(
-      OfflinePageRequestHandler::AggregatedRequestResult::
-          SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest,
-       NoRedirectForOfflinePageWithSameOriginalURL) {
-  SimulateHasNetworkConnectivity(false);
-
-  // Skip the logic to clear the original URL if it is same as final URL.
-  // This is needed in order to test that offline page request handler can
-  // omit the redirect under this circumstance, for compatibility with the
-  // metadata already written to the store.
-  OfflinePageModelTaskified* model = static_cast<OfflinePageModelTaskified*>(
-      OfflinePageModelFactory::GetForBrowserContext(profile()));
-  model->SetSkipClearingOriginalUrlForTesting();
-
-  // Save an offline page with same original URL and final URL.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SaveInternalPage(test_url, test_url, kFilename1,
-                                        kFileSize1, std::string());
-
-  // Check if the original URL is still present.
-  OfflinePageItem page = GetPage(offline_id);
-  EXPECT_EQ(test_url, page.original_url_if_different);
-
-  // No redirect should be triggered when original URL is same as final URL.
-  LoadPage(test_url);
-
-  ExpectOfflinePageServed(offline_id, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest,
-       LoadOfflinePageFromNonExistentInternalFile) {
-  SimulateHasNetworkConnectivity(false);
-
-  // Save an offline page pointing to non-existent internal archive file.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SaveInternalPage(test_url, GURL(), kNonexistentFilename,
-                                        kFileSize1, std::string());
-
-  LoadPage(test_url);
-
-  ExpectNoOfflinePageServed(
-      offline_id,
-      OfflinePageRequestHandler::AggregatedRequestResult::FILE_NOT_FOUND);
-}
-
-TEST_F(OfflinePageRequestHandlerTest,
-       LoadOfflinePageFromNonExistentPublicFile) {
-  SimulateHasNetworkConnectivity(false);
-
-  // Save an offline page pointing to non-existent public archive file.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SavePublicPage(test_url, GURL(), kNonexistentFilename,
-                                      kFileSize1, kDigest1);
-
-  LoadPage(test_url);
-
-  ExpectNoOfflinePageServed(
-      offline_id,
-      OfflinePageRequestHandler::AggregatedRequestResult::FILE_NOT_FOUND);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, FileSizeMismatchOnDisconnectedNetwork) {
-  SimulateHasNetworkConnectivity(false);
-
-  // Save an offline page in public location with mismatched file size.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SavePublicPage(test_url, GURL(), kFilename1,
-                                      kMismatchedFileSize, kDigest1);
-
-  LoadPage(test_url);
-
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_DISCONNECTED_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, FileSizeMismatchOnConnectedNetwork) {
-  SimulateHasNetworkConnectivity(true);
-
-  // Save an offline page in public location with mismatched file size.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SavePublicPage(test_url, GURL(), kFilename1,
-                                      kMismatchedFileSize, kDigest1);
-
-  // When custom offline header exists and contains value other than
-  // "reason=error", it means that offline page is forced to load.
-  net::HttpRequestHeaders extra_headers;
-  extra_headers.AddHeaderFromString(
-      UseOfflinePageHeader(OfflinePageHeader::Reason::DOWNLOAD, 0));
-  LoadPageWithHeaders(test_url, extra_headers);
-
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_CONNECTED_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, FileSizeMismatchOnFlakyNetwork) {
-  SimulateHasNetworkConnectivity(true);
-
-  // Save an offline page in public location with mismatched file size.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SavePublicPage(test_url, GURL(), kFilename1,
-                                      kMismatchedFileSize, kDigest1);
-
-  // When custom offline header exists and contains "reason=error", it means
-  // that net error is hit in last request due to flaky network.
-  net::HttpRequestHeaders extra_headers;
-  extra_headers.AddHeaderFromString(
-      UseOfflinePageHeader(OfflinePageHeader::Reason::NET_ERROR, 0));
-  LoadPageWithHeaders(test_url, extra_headers);
-
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_FLAKY_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, DigestMismatchOnDisconnectedNetwork) {
-  SimulateHasNetworkConnectivity(false);
-
-  // Save an offline page in public location with mismatched digest.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SavePublicPage(test_url, GURL(), kFilename1, kFileSize1,
-                                      kMismatchedDigest);
-
-  LoadPage(test_url);
-
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_DISCONNECTED_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, DigestMismatchOnConnectedNetwork) {
-  SimulateHasNetworkConnectivity(true);
-
-  // Save an offline page in public location with mismatched digest.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SavePublicPage(test_url, GURL(), kFilename1, kFileSize1,
-                                      kMismatchedDigest);
-
-  // When custom offline header exists and contains value other than
-  // "reason=error", it means that offline page is forced to load.
-  net::HttpRequestHeaders extra_headers;
-  extra_headers.AddHeaderFromString(
-      UseOfflinePageHeader(OfflinePageHeader::Reason::DOWNLOAD, 0));
-  LoadPageWithHeaders(test_url, extra_headers);
-
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_CONNECTED_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, DigestMismatchOnFlakyNetwork) {
-  SimulateHasNetworkConnectivity(true);
-
-  // Save an offline page in public location with mismatched digest.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id = SavePublicPage(test_url, GURL(), kFilename1, kFileSize1,
-                                      kMismatchedDigest);
-
-  // When custom offline header exists and contains "reason=error", it means
-  // that net error is hit in last request due to flaky network.
-  net::HttpRequestHeaders extra_headers;
-  extra_headers.AddHeaderFromString(
-      UseOfflinePageHeader(OfflinePageHeader::Reason::NET_ERROR, 0));
-  LoadPageWithHeaders(test_url, extra_headers);
-
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_FLAKY_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, FailOnNoDigestForPublicArchiveFile) {
-  SimulateHasNetworkConnectivity(false);
-
-  // Save an offline page in public location with no digest.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id =
-      SavePublicPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
-
-  LoadPage(test_url);
-
-  ExpectNoOfflinePageServed(offline_id,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_DISCONNECTED_NETWORK);
-}
-
-TEST_F(OfflinePageRequestHandlerTest, FailToLoadByOfflineIDOnDigestMismatch) {
-  SimulateHasNetworkConnectivity(true);
-
-  // Save 2 offline pages associated with same online URL, one in internal
-  // location, while another in public location with mismatched digest.
-  const GURL test_url(kTestUrl);
-  int64_t offline_id1 =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
-  int64_t offline_id2 = SavePublicPage(test_url, GURL(), kFilename1, kFileSize1,
-                                       kMismatchedDigest);
-
-  // The offline page found with specific offline ID does not pass the
-  // validation. Though there is another page with the same URL, it will not be
-  // fetched. Instead, fall back to load the online URL.
-  net::HttpRequestHeaders extra_headers;
-  extra_headers.AddHeaderFromString(
-      UseOfflinePageHeader(OfflinePageHeader::Reason::DOWNLOAD, offline_id2));
-  LoadPageWithHeaders(test_url, extra_headers);
-
-  ExpectNoOfflinePageServed(offline_id1,
-                            OfflinePageRequestHandler::AggregatedRequestResult::
-                                DIGEST_MISMATCH_ON_CONNECTED_NETWORK);
-  ExpectOfflinePageAccessCount(offline_id2, 0);
 }
 
 TEST_F(OfflinePageRequestHandlerTest, LoadOtherPageOnDigestMismatch) {
@@ -1644,20 +1170,13 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOtherPageOnDigestMismatch) {
   const GURL test_url(kTestUrl);
   int64_t offline_id1 =
       SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
-  int64_t offline_id2 = SavePublicPage(test_url, GURL(), kFilename2, kFileSize2,
-                                       kMismatchedDigest);
-  ExpectOfflinePageAccessCount(offline_id1, 0);
-  ExpectOfflinePageAccessCount(offline_id2, 0);
 
   // There are 2 offline pages matching |test_url|. The most recently created
   // one should fail on mistmatched digest. The second most recently created
   // offline page should work.
   LoadPage(test_url);
 
-  ExpectOfflinePageServed(offline_id1, kFileSize1,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
-  ExpectOfflinePageAccessCount(offline_id2, 0);
+  ExpectOfflinePageServed(offline_id1, kFileSize1);
 }
 
 // Disabled due to https://crbug.com/917113.
@@ -1675,9 +1194,7 @@ TEST_F(OfflinePageRequestHandlerTest, DISABLED_EmptyFile) {
 
   LoadPage(test_url);
 
-  ExpectOfflinePageServed(offline_id, 0,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, 0);
   EXPECT_EQ(expected_data, data_received());
 }
 
@@ -1697,9 +1214,7 @@ TEST_F(OfflinePageRequestHandlerTest, TinyFile) {
 
   LoadPage(test_url);
 
-  ExpectOfflinePageServed(offline_id, expected_size,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, expected_size);
   EXPECT_EQ(expected_data, data_received());
 }
 
@@ -1719,9 +1234,7 @@ TEST_F(OfflinePageRequestHandlerTest, SmallFile) {
 
   LoadPage(test_url);
 
-  ExpectOfflinePageServed(offline_id, expected_size,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, expected_size);
   EXPECT_EQ(expected_data, data_received());
 }
 
@@ -1741,9 +1254,7 @@ TEST_F(OfflinePageRequestHandlerTest, BigFile) {
 
   LoadPage(test_url);
 
-  ExpectOfflinePageServed(offline_id, expected_size,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_DISCONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, expected_size);
   EXPECT_EQ(expected_data, data_received());
 }
 
@@ -1778,9 +1289,7 @@ TEST_F(OfflinePageRequestHandlerTest, LoadFromFileUrlIntent) {
       net::FilePathToFileURL(unmodified_file_path)));
   LoadPageWithHeaders(test_url, extra_headers);
 
-  ExpectOfflinePageServed(offline_id, expected_size,
-                          OfflinePageRequestHandler::AggregatedRequestResult::
-                              SHOW_OFFLINE_ON_CONNECTED_NETWORK);
+  ExpectOfflinePageServed(offline_id, expected_size);
   EXPECT_EQ(expected_data, data_received());
 }
 

@@ -161,15 +161,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OfflinePages.AccessEntryPoint"
-    enum="OfflinePagesAccessEntryPoint" expires_after="2021-08-29">
-  <owner>jianli@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Logs the UI location from which an offline page was launched.
-  </summary>
-</histogram>
-
 <histogram name="OfflinePages.AccessPageCount"
     enum="OfflinePagesNamespaceEnumeration" expires_after="2022-08-28">
   <owner>dimich@chromium.org</owner>
@@ -178,14 +169,6 @@ chromium-metrics-reviews@google.com.
     Counts the number of times an offline page is accessed. Events are reported
     per offline pages namespace.
   </summary>
-</histogram>
-
-<histogram name="OfflinePages.AggregatedRequestResult2"
-    enum="OfflinePagesAggregatedRequestResult" expires_after="2021-06-25">
-  <owner>dimich@chromium.org</owner>
-  <owner>jianli@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Result of servicing requests that may contain offline page.</summary>
 </histogram>
 
 <histogram name="OfflinePages.ArchiveManager.ArchiveDirsCreationResult2"
@@ -737,27 +720,6 @@ chromium-metrics-reviews@google.com.
   <owner>jianli@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>Size of the saved copy of an offline page.</summary>
-</histogram>
-
-<histogram name="OfflinePages.PageSizeOnAccess.Offline" units="KiB"
-    expires_after="2021-06-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Records the archive size of an offline page loaded during a navigation that
-    took place while the device was considered to be offline or with poor
-    connectivity.
-  </summary>
-</histogram>
-
-<histogram name="OfflinePages.PageSizeOnAccess.Online" units="KiB"
-    expires_after="2021-06-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Records the archive size of an offline page loaded during a navigation that
-    took place while the device was considered to be online.
-  </summary>
 </histogram>
 
 <histogram name="OfflinePages.PrefetchEnabled" enum="BooleanEnabled"

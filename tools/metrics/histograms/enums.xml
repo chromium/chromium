@@ -75364,45 +75364,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="User clicked notification settings (disabled on O+)"/>
 </enum>
 
-<enum name="OfflinePagesAccessEntryPoint">
-  <int value="0" label="Other"/>
-  <int value="1" label="NTP suggestions or bookmarks"/>
-  <int value="2" label="Downloads home"/>
-  <int value="3" label="Omnibox"/>
-  <int value="4" label="CCT"/>
-  <int value="5" label="Clicking link"/>
-  <int value="6" label="Reloading page"/>
-  <int value="7" label="Clicking notification"/>
-  <int value="8" label="File URL intent"/>
-  <int value="9" label="Content URL intent"/>
-  <int value="10" label="Progress bar"/>
-  <int value="11" label="Net error page"/>
-</enum>
-
-<enum name="OfflinePagesAggregatedRequestResult">
-  <int value="0" label="Show offline page on disconnected network"/>
-  <int value="1" label="Page not found on disconnected network"/>
-  <int value="2" label="Show offline page on flaky network"/>
-  <int value="3" label="Page not found on flaky network"/>
-  <int value="4" label="Show offline page on prohibitively slow network"/>
-  <int value="5" label="Page not found on prohibitively slow network"/>
-  <int value="6" label="Page not fresh on prohibitively slow network"/>
-  <int value="7" label="Show offline page on connected network"/>
-  <int value="8" label="Page not found on connected network"/>
-  <int value="9" label="Android Tab does not have persistent ID"/>
-  <int value="10" label="No web contents"/>
-  <int value="11" label="Unknown net error, showing error page"/>
-  <int value="12" label="Redirected on disconnected network"/>
-  <int value="13" label="Redirected on flaky network"/>
-  <int value="14" label="Redirected on prohibitively slow network"/>
-  <int value="15" label="Redirected on connected network"/>
-  <int value="16" label="Digest mismatch on disconnected network"/>
-  <int value="17" label="Digest mismatch on flaky network"/>
-  <int value="18" label="Digest mismatch on prohibitively slow network"/>
-  <int value="19" label="Digest mismatch on connected network"/>
-  <int value="20" label="File not found"/>
-</enum>
-
 <enum name="OfflinePagesAutoFetchNotificationAction">
   <int value="0" label="shown">
     The notification was shown to the user (though it may have been blocked)
