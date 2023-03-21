@@ -1369,8 +1369,9 @@ void AppShimManager::UpdateApplicationDockMenu(Profile* profile,
 AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(
     Profile* profile,
     const web_app::AppId& app_id) {
-  if (web_app::AppShimLaunchDisabled())
+  if (web_app::AppShimCreationAndLaunchDisabledForTest()) {
     return nullptr;
+  }
 
   const bool is_multi_profile = delegate_->AppIsMultiProfile(profile, app_id);
   const base::FilePath profile_path =

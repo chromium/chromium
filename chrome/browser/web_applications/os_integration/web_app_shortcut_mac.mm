@@ -168,8 +168,6 @@ void RunAppLaunchCallbacks(
                         callback:std::move(termination_callback)];
 }
 
-bool g_app_shims_allow_update_and_launch_in_tests = false;
-
 namespace web_app {
 
 namespace {
@@ -221,14 +219,6 @@ std::set<std::string> GetFileHandlerExtensionsWithoutDot(
     result.insert(file_extension.substr(1));
   }
   return result;
-}
-
-bool AppShimCreationDisabledForTest() {
-  // Disable app shims in tests if the shortcut folder is not set.
-  // Because shims created in ~/Applications will not be cleaned up.
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kTestType) &&
-         !GetOsIntegrationTestOverride();
 }
 
 bool AppShimRevealDisabledForTest() {
@@ -783,8 +773,9 @@ std::list<BundleInfoPlist> SearchForBundlesById(const std::string& bundle_id) {
       continue;
     infos.push_back(info);
   }
-  if (!infos.empty())
+  if (!infos.empty()) {
     return infos;
+  }
 
   // LaunchServices can fail to locate a recently-created bundle. Search
   // for an app in the applications folder to handle this case.
@@ -900,9 +891,12 @@ bool AddPathToRPath(const base::FilePath& executable_path,
 
 }  // namespace
 
-bool AppShimLaunchDisabled() {
-  return AppShimCreationDisabledForTest() &&
-         !g_app_shims_allow_update_and_launch_in_tests;
+bool AppShimCreationAndLaunchDisabledForTest() {
+  // Note: The kTestType switch is only added on browser tests, but not unit
+  // tests. Unit tests need to set the test override.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kTestType) &&
+         !GetOsIntegrationTestOverride();
 }
 
 base::FilePath GetChromeAppsFolder() {
@@ -968,35 +962,23 @@ WebAppShortcutCreator::~WebAppShortcutCreator() = default;
 
 base::FilePath WebAppShortcutCreator::GetApplicationsShortcutPath(
     bool avoid_conflicts) const {
-  // If app shims updates are allowed in tests and the OS integration
-  // test override exists, apps should be updated inside the
-  // test override location instead of the web_applications profile
-  // directory.
-  if (g_app_shims_allow_update_and_launch_in_tests) {
-    if (GetOsIntegrationTestOverride()) {
-      base::FilePath applications_dir = GetChromeAppsFolder();
-      if (applications_dir.empty()) {
-        return base::FilePath();
-      }
-      return applications_dir.Append(GetShortcutBasename());
-    }
-    return app_data_dir_.Append(GetShortcutBasename());
+  base::FilePath applications_dir = GetChromeAppsFolder();
+  if (applications_dir.empty()) {
+    return base::FilePath();
   }
 
-  base::FilePath applications_dir = GetChromeAppsFolder();
-  if (applications_dir.empty())
-    return base::FilePath();
-
-  if (!avoid_conflicts)
+  if (!avoid_conflicts) {
     return applications_dir.Append(GetShortcutBasename());
+  }
 
   // Attempt to use the application's title for the file name. Resolve conflicts
   // by appending 1 through kMaxConflictNumber, before giving up and using the
   // concatenated profile and extension for a name name.
   for (int i = 1; i <= kMaxConflictNumber; ++i) {
     base::FilePath path = applications_dir.Append(GetShortcutBasename(i));
-    if (base::DirectoryExists(path))
+    if (base::DirectoryExists(path)) {
       continue;
+    }
     return path;
   }
 
@@ -1008,8 +990,9 @@ base::FilePath WebAppShortcutCreator::GetApplicationsShortcutPath(
 base::FilePath WebAppShortcutCreator::GetShortcutBasename(
     int copy_number) const {
   // For profile-less shortcuts, use the fallback naming scheme to avoid change.
-  if (info_->profile_name.empty())
+  if (info_->profile_name.empty()) {
     return GetFallbackBasename();
+  }
 
   // Strip all preceding '.'s from the path.
   std::u16string title = info_->title;
@@ -1017,8 +1000,9 @@ base::FilePath WebAppShortcutCreator::GetShortcutBasename(
   while (first_non_dot < title.size() && title[first_non_dot] == '.')
     first_non_dot += 1;
   title = title.substr(first_non_dot);
-  if (title.empty())
+  if (title.empty()) {
     return GetFallbackBasename();
+  }
 
   // Finder will display ':' as '/', so replace all '/' instances with ':'.
   std::replace(title.begin(), title.end(), '/', ':');
@@ -1235,8 +1219,9 @@ bool WebAppShortcutCreator::CreateShortcuts(
   DCHECK_NE(creation_locations.applications_menu_location,
             APP_MENU_LOCATION_HIDDEN);
   std::vector<base::FilePath> updated_app_paths;
-  if (!UpdateShortcuts(true /* create_if_needed */, &updated_app_paths))
+  if (!UpdateShortcuts(true /* create_if_needed */, &updated_app_paths)) {
     return false;
+  }
   if (creation_locations.in_startup) {
     // Only add the first app to run at OS login.
     WebAppAutoLoginUtil::GetInstance()->AddToLoginItems(updated_app_paths[0],
@@ -1546,29 +1531,25 @@ std::vector<base::FilePath> WebAppShortcutCreator::GetAppBundlesById() const {
   base::FilePath default_path =
       GetApplicationsShortcutPath(false /* avoid_conflicts */);
 
-  // When testing, use only the default path.
-  if (g_app_shims_allow_update_and_launch_in_tests) {
-    paths.clear();
-    if (base::PathExists(default_path))
-      paths.push_back(default_path);
-    return paths;
-  }
-
   base::FilePath apps_dir = GetChromeAppsFolder();
   auto compare = [default_path, apps_dir](const base::FilePath& a,
                                           const base::FilePath& b) {
-    if (a == b)
+    if (a == b) {
       return false;
+    }
     // The default install path is preferred above all others.
-    if (a == default_path)
+    if (a == default_path) {
       return true;
-    if (b == default_path)
+    }
+    if (b == default_path) {
       return false;
+    }
     // Paths in ~/Applications are preferred to paths not in ~/Applications.
     bool a_in_apps_dir = apps_dir.IsParent(a);
     bool b_in_apps_dir = apps_dir.IsParent(b);
-    if (a_in_apps_dir != b_in_apps_dir)
+    if (a_in_apps_dir != b_in_apps_dir) {
       return a_in_apps_dir > b_in_apps_dir;
+    }
     return a < b;
   };
   std::sort(paths.begin(), paths.end(), compare);
@@ -1604,7 +1585,7 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
                 ShimLaunchedCallback launched_callback,
                 ShimTerminatedCallback terminated_callback,
                 std::unique_ptr<ShortcutInfo> shortcut_info) {
-  if (AppShimLaunchDisabled() || !shortcut_info) {
+  if (AppShimCreationAndLaunchDisabledForTest() || !shortcut_info) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(launched_callback), base::Process()));
@@ -1707,8 +1688,9 @@ bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::GetOsIntegrationTestOverride();
-  if (AppShimCreationDisabledForTest())
+  if (AppShimCreationAndLaunchDisabledForTest()) {
     return true;
+  }
 
   WebAppShortcutCreator shortcut_creator(app_data_path, &shortcut_info);
   return shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
@@ -1750,8 +1732,9 @@ void DeletePlatformShortcuts(const base::FilePath& app_data_path,
   for (const auto& bundle_info : bundle_infos) {
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
         bundle_info.bundle_path());
-    if (!base::DeletePathRecursively(bundle_info.bundle_path()))
+    if (!base::DeletePathRecursively(bundle_info.bundle_path())) {
       result = false;
+    }
   }
   result_runner->PostTask(FROM_HERE,
                           base::BindOnce(std::move(callback), result));
@@ -1784,20 +1767,16 @@ Result UpdatePlatformShortcuts(const base::FilePath& app_data_path,
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::GetOsIntegrationTestOverride();
-  if (AppShimLaunchDisabled())
+  if (AppShimCreationAndLaunchDisabledForTest()) {
     return Result::kOk;
+  }
 
   WebAppShortcutCreator shortcut_creator(app_data_path, &shortcut_info);
   std::vector<base::FilePath> updated_shim_paths;
-  bool create_if_needed = false;
-  // Tests use UpdateAllShortcuts to force shim creation (rather than
-  // relying on asynchronous creation at installation.
-  if (g_app_shims_allow_update_and_launch_in_tests)
-    create_if_needed = true;
-  return (
-      shortcut_creator.UpdateShortcuts(create_if_needed, &updated_shim_paths)
-          ? Result::kOk
-          : Result::kError);
+  return (shortcut_creator.UpdateShortcuts(/*create_if_needed=*/false,
+                                           &updated_shim_paths)
+              ? Result::kOk
+              : Result::kError);
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
@@ -1811,10 +1790,12 @@ void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   std::list<BundleInfoPlist> bundles_info = BundleInfoPlist::GetAllInPath(
       GetChromeAppsFolder(), true /* recursive */);
   for (const auto& info : bundles_info) {
-    if (!info.IsForCurrentUserDataDir())
+    if (!info.IsForCurrentUserDataDir()) {
       continue;
-    if (!info.IsForProfile(profile_path))
+    }
+    if (!info.IsForProfile(profile_path)) {
       continue;
+    }
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
         info.bundle_path());
     base::DeletePathRecursively(info.bundle_path());

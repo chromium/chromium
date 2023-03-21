@@ -100,11 +100,6 @@
 
 // -----------------------------------------------------------------------------
 
-// Whether to enable update and launch of app shims in tests. (Normally shims
-// are never created or launched in tests). Note that update only creates
-// internal shim bundles, i.e. it does not create new shims in ~/Applications.
-extern bool g_app_shims_allow_update_and_launch_in_tests;
-
 namespace web_app {
 
 enum class LaunchShimUpdateBehavior {
@@ -148,9 +143,9 @@ void LaunchShimForTesting(const base::FilePath& shim_path,
 void WaitForShimToQuitForTesting(const base::FilePath& shim_path,
                                  const std::string& app_id);
 
-// Return true if launching and updating app shims will fail because of the
-// testing environment.
-bool AppShimLaunchDisabled();
+// Disable app shims in tests if the shortcut folder is not set.
+// Because shims created in ~/Applications will not be cleaned up.
+bool AppShimCreationAndLaunchDisabledForTest();
 
 // Returns a path to the Chrome Apps folder in ~/Applications.
 base::FilePath GetChromeAppsFolder();

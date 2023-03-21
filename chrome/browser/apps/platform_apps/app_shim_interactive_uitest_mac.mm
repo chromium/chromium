@@ -10,7 +10,6 @@
 
 #include "apps/app_lifetime_monitor_factory.h"
 #include "apps/switches.h"
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
 #import "base/mac/launch_application.h"
@@ -67,8 +66,7 @@ class AppShimInteractiveTest : public extensions::PlatformAppBrowserTest {
   // Type of app to install, when invoking InstallAppWithShim().
   enum AppType { APP_TYPE_PACKAGED, APP_TYPE_HOSTED };
 
-  AppShimInteractiveTest()
-      : auto_reset_(&g_app_shims_allow_update_and_launch_in_tests, true) {}
+  AppShimInteractiveTest() = default;
 
   // Install a test app of |type| and reliably wait for its app shim to be
   // created on disk. Sets |shim_path_|.
@@ -77,10 +75,6 @@ class AppShimInteractiveTest : public extensions::PlatformAppBrowserTest {
 
  protected:
   base::FilePath shim_path_;
-
- private:
-  // Temporarily enable app shims.
-  base::AutoReset<bool> auto_reset_;
 };
 
 // Watches for an app shim to connect.
@@ -292,8 +286,7 @@ const extensions::Extension* AppShimInteractiveTest::InstallAppWithShim(
   shim_path_ = GetAppShimPath(profile(), app);
   EXPECT_FALSE(base::PathExists(shim_path_));
 
-  // To create a shim in a test, instead call UpdateAllShortcuts, which has been
-  // blessed by g_app_shims_allow_update_and_launch_in_tests.
+  // To create a shim in a test, instead call UpdateAllShortcuts.
   base::RunLoop run_loop;
   web_app::UpdateAllShortcuts(std::u16string(), profile(), app,
                               run_loop.QuitClosure());

@@ -31,10 +31,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
-#endif
-
 namespace web_app {
 
 using ::testing::Eq;
@@ -320,13 +316,6 @@ TEST_P(ShortcutSubManagerExecuteTest, InstallAppVerifyCorrectShortcuts) {
 }
 
 TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
-#if BUILDFLAG(IS_MAC)
-  // This is required so that app shims with name changes can be updated during
-  // testing.
-  base::AutoReset<bool> scope_shortcut_app_update(
-      &g_app_shims_allow_update_and_launch_in_tests, true);
-#endif
-
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
@@ -370,6 +359,9 @@ TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
     }
 
     // Verify shortcut changes for both name and color.
+// TODO(crbug.com/1425967): Enable once PList parsing code is added to
+// OsIntegrationTestOverride for Mac shortcut checking.
+#if !BUILDFLAG(IS_MAC)
     ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
@@ -377,6 +369,7 @@ TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
         GetShortcutColor(app_id,
                          provider().registrar_unsafe().GetAppShortName(app_id)),
         testing::Eq(SK_ColorBLUE));
+#endif  // !BUILDFLAG(IS_MAC)
   }
 }
 
