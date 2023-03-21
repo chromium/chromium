@@ -94,6 +94,10 @@ BASE_FEATURE(kSplitCacheByNetworkIsolationKey,
              "SplitCacheByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSplitCodeCacheByNetworkIsolationKey,
+             "SplitCodeCacheByNetworkIsolationKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSplitHostCacheByNetworkIsolationKey,
              "SplitHostCacheByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);

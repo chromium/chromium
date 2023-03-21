@@ -116,6 +116,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByIncludeCredentials);
 // available.
 NET_EXPORT BASE_DECLARE_FEATURE(kSplitCacheByNetworkIsolationKey);
 
+// Splits the generated code cache by the request's NetworkIsolationKey if one
+// is available. Note that this feature is also gated behind
+// `net::HttpCache::IsSplitCacheEnabled()`.
+NET_EXPORT BASE_DECLARE_FEATURE(kSplitCodeCacheByNetworkIsolationKey);
+
 // Splits host cache entries by the DNS request's NetworkIsolationKey if one is
 // available. Also prevents merging live DNS lookups when there is a NIK
 // mismatch.

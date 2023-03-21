@@ -22,6 +22,7 @@
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
+#include "net/http/http_cache.h"
 #include "url/gurl.h"
 
 using storage::BigIOBuffer;
@@ -106,8 +107,9 @@ std::string GetCacheKey(const GURL& resource_url,
   if (origin_lock.is_valid())
     key.append(net::SimplifyUrlForRequest(origin_lock).spec());
 
-  if (base::FeatureList::IsEnabled(
-          net::features::kSplitCacheByNetworkIsolationKey)) {
+  if (net::HttpCache::IsSplitCacheEnabled() &&
+      base::FeatureList::IsEnabled(
+          net::features::kSplitCodeCacheByNetworkIsolationKey)) {
     // TODO(https://crbug.com/1346188):  Transient NIKs return nullopt when
     // their ToCacheKeyString() method is invoked, as they generally shouldn't
     // be written to disk. This code is currently reached for transient NIKs,
