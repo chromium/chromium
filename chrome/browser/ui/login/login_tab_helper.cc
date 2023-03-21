@@ -52,11 +52,7 @@ void LoginTabHelper::DidStartNavigation(
       navigation_handle->IsSameDocument())
     return;
 
-  if (!login_handler_)
-    return;
-
   login_handler_.reset();
-  url_for_login_handler_ = GURL();
 }
 
 void LoginTabHelper::DidFinishNavigation(
@@ -111,7 +107,6 @@ void LoginTabHelper::DidFinishNavigation(
   network_anonymization_key_ =
       navigation_handle->GetIsolationInfo().network_anonymization_key();
 
-  url_for_login_handler_ = navigation_handle->GetURL();
   login_handler_ = LoginHandler::Create(
       navigation_handle->GetAuthChallengeInfo().value(),
       navigation_handle->GetWebContents(),
@@ -217,7 +212,6 @@ LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
 void LoginTabHelper::HandleCredentials(
     const absl::optional<net::AuthCredentials>& credentials) {
   login_handler_.reset();
-  url_for_login_handler_ = GURL();
 
   if (credentials.has_value()) {
     content::StoragePartition* storage_partition =

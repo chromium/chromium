@@ -88,7 +88,6 @@ class LoginTabHelper : public content::WebContentsObserver,
   void Reload();
 
   std::unique_ptr<LoginHandler> login_handler_;
-  GURL url_for_login_handler_;
 
   net::AuthChallengeInfo challenge_;
   net::NetworkAnonymizationKey network_anonymization_key_;
