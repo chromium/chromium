@@ -181,11 +181,9 @@ class AuthenticatorRequestDialogModel {
     // These types describe the type of Mechanism.
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
-    using WindowsAPI = base::StrongAlias<class WindowsAPITag,
-                                         bool /* unused, but cannot be void */>;
+    using WindowsAPI = base::StrongAlias<class WindowsAPITag, std::monostate>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
-    using AddPhone = base::StrongAlias<class AddPhoneTag,
-                                       bool /* unused, but cannot be void */>;
+    using AddPhone = base::StrongAlias<class AddPhoneTag, std::monostate>;
     using Type = absl::variant<Transport, WindowsAPI, Phone, AddPhone>;
 
     Mechanism(Type type,
