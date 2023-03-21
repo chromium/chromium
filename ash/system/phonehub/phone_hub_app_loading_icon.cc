@@ -8,6 +8,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
+#include "ui/views/animation/animation_builder.h"
 
 namespace ash {
 

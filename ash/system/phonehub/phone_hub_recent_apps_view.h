@@ -128,6 +128,10 @@ class ASH_EXPORT PhoneHubRecentAppsView
 
   void ShowConnectionErrorDialog();
 
+  // Apply an opacity animation when swapping out the loading view for the
+  // RecentAppButtonsView.
+  void FadeOutLoadingView();
+
   // Generate more apps button.
   std::unique_ptr<views::View> GenerateMoreAppsButton();
 

@@ -26,14 +26,17 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
@@ -71,6 +74,10 @@ constexpr int kRecentAppsHeaderSpacing = 220;
 // The app icons in the LoadingView stagger the start of the loading animation
 // to make the appearance of a ripple.
 constexpr int kAnimationLoadingIconStaggerDelayInMs = 100;
+
+// When the recent apps view is swapped in for the loading view, the opacities
+// of the two views are animated to give the appearance of a fade-in.
+constexpr int kLoadingViewFadeOutDurationInMs = 200;
 
 void LayoutAppButtonsView(views::View* buttons_view) {
   const gfx::Rect child_area = buttons_view->GetContentsBounds();
@@ -195,12 +202,21 @@ PhoneHubRecentAppsView::PhoneHubRecentAppsView(
   header_view_ = AddChildView(std::make_unique<HeaderView>(
       base::BindRepeating(&PhoneHubRecentAppsView::ShowConnectionErrorDialog,
                           base::Unretained(this))));
-  recent_app_buttons_view_ =
-      AddChildView(std::make_unique<RecentAppButtonsView>());
-  placeholder_view_ = AddChildView(std::make_unique<PlaceholderView>());
+
+  // Group the non-header views under a view with FillLayout so that they stack
+  // on top of each other when multiple are visible. This is important for
+  // animating the transitions between views.
+  auto* recent_apps_content = AddChildView(std::make_unique<views::View>());
+  recent_apps_content->SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  recent_app_buttons_view_ = recent_apps_content->AddChildView(
+      std::make_unique<RecentAppButtonsView>());
+  placeholder_view_ =
+      recent_apps_content->AddChildView(std::make_unique<PlaceholderView>());
 
   if (features::IsEcheNetworkConnectionStateEnabled()) {
-    loading_view_ = AddChildView(std::make_unique<LoadingView>());
+    loading_view_ =
+        recent_apps_content->AddChildView(std::make_unique<LoadingView>());
   }
 
   Update();
@@ -216,6 +232,9 @@ const char* PhoneHubRecentAppsView::GetClassName() const {
 }
 
 PhoneHubRecentAppsView::RecentAppButtonsView::RecentAppButtonsView() {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetFillsBoundsCompletely(false);
   if (features::IsEcheLauncherIconsInMoreAppsButtonEnabled()) {
     views::BoxLayout* box_layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -271,6 +290,9 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
 }
 
 PhoneHubRecentAppsView::LoadingView::LoadingView() {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetFillsBoundsCompletely(false);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetDefaultFlex(1);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
@@ -367,12 +389,6 @@ void PhoneHubRecentAppsView::Update() {
       SetVisible(true);
       break;
     case RecentAppsUiState::ITEMS_VISIBLE:
-      if (features::IsEcheNetworkConnectionStateEnabled()) {
-        // TODO(b/271478560): Include 200ms fade-in animation for the app icons.
-        loading_view_->SetVisible(false);
-        header_view_->SetErrorButtonVisible(false);
-      }
-
       std::vector<phonehub::Notification::AppMetadata> recent_apps_list =
           recent_apps_interaction_handler_->FetchRecentAppMetadataList();
 
@@ -397,13 +413,33 @@ void PhoneHubRecentAppsView::Update() {
 
       recent_app_buttons_view_->SetVisible(true);
       placeholder_view_->SetVisible(false);
-      if (loading_view_) {
-        loading_view_->SetVisible(false);
+      if (features::IsEcheNetworkConnectionStateEnabled()) {
+        header_view_->SetErrorButtonVisible(false);
+        FadeOutLoadingView();
       }
       SetVisible(true);
       break;
   }
   PreferredSizeChanged();
+}
+
+void PhoneHubRecentAppsView::FadeOutLoadingView() {
+  if (features::IsEcheNetworkConnectionStateEnabled() &&
+      loading_view_->GetVisible()) {
+    loading_view_->StopLoadingAnimation();
+    recent_app_buttons_view_->SetVisible(true);
+
+    views::AnimationBuilder()
+        .OnEnded(base::BindOnce(&LoadingView::SetVisible,
+                                base::Unretained(loading_view_), false))
+        .Once()
+        .SetOpacity(loading_view_, 1.0f)
+        .SetOpacity(recent_app_buttons_view_, 0.0f)
+        .Then()
+        .SetDuration(base::Milliseconds(kLoadingViewFadeOutDurationInMs))
+        .SetOpacity(loading_view_, 0.0f, gfx::Tween::LINEAR)
+        .SetOpacity(recent_app_buttons_view_, 1.0f, gfx::Tween::LINEAR);
+  }
 }
 
 void PhoneHubRecentAppsView::SwitchToFullAppsList() {
