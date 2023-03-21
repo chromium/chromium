@@ -39,9 +39,6 @@ class BrowserReportGeneratorIOS : public BrowserReportGenerator::Delegate {
   bool IsExtendedStableChannel() override;
   void GenerateBuildStateInfo(
       enterprise_management::BrowserReport* report) override;
-  void GeneratePluginsIfNeeded(
-      ReportCallback callback,
-      std::unique_ptr<enterprise_management::BrowserReport> report) override;
 };
 
 }  // namespace enterprise_reporting

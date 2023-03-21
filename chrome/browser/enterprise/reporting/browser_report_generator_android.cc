@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/reporting/browser_report_generator_android.h"
 
-#include <utility>
-
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,13 +53,6 @@ bool BrowserReportGeneratorAndroid::IsExtendedStableChannel() {
 void BrowserReportGeneratorAndroid::GenerateBuildStateInfo(
     em::BrowserReport* report) {
   // Not used on Android because there is no in-app auto-update.
-}
-
-void BrowserReportGeneratorAndroid::GeneratePluginsIfNeeded(
-    ReportCallback callback,
-    std::unique_ptr<em::BrowserReport> report) {
-  // There are no plugins on Android
-  std::move(callback).Run(std::move(report));
 }
 
 }  // namespace enterprise_reporting

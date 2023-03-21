@@ -32,12 +32,8 @@ void BrowserReportGenerator::Generate(ReportType report_type,
 
   if (report_type != ReportType::kProfileReport) {
     GenerateProfileInfo(report.get());
-    // std::move is required here because the function completes the report
-    // asynchronously.
-    delegate_->GeneratePluginsIfNeeded(std::move(callback), std::move(report));
-  } else {
-    std::move(callback).Run(std::move(report));
   }
+  std::move(callback).Run(std::move(report));
 }
 
 void BrowserReportGenerator::GenerateProfileInfo(em::BrowserReport* report) {

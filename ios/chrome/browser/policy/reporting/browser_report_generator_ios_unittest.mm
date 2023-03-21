@@ -66,8 +66,6 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
 
               EXPECT_FALSE(profile.is_detail_available());
 
-              EXPECT_EQ(0, report->plugins_size());
-
               run_loop.Quit();
             }));
     run_loop.Run();

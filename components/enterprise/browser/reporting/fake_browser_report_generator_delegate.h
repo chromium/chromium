@@ -68,10 +68,6 @@ class FakeBrowserReportGeneratorDelegate
   void GenerateBuildStateInfo(
       enterprise_management::BrowserReport* report) override;
 
-  void GeneratePluginsIfNeeded(
-      BrowserReportGenerator::ReportCallback callback,
-      std::unique_ptr<enterprise_management::BrowserReport> report) override;
-
  private:
   const std::string executable_path_;
 };

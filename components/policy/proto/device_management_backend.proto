@@ -2063,6 +2063,8 @@ message ChromeUserProfileInfo {
 
 // Report browser level status.
 message BrowserReport {
+  reserved 7;
+
   // The Chrome browser version, as seen from within Chrome code as opposed to
   // user agent.
   optional string browser_version = 1;
@@ -2084,9 +2086,6 @@ message BrowserReport {
   // upload full details due to the limitation of the report size.
   // These details will be uploaded in the following reports.
   repeated ChromeUserProfileInfo chrome_user_profile_infos = 6;
-
-  // A list of plugins installed in the browser.
-  repeated Plugin plugins = 7;
 
   // The installed version of the browser if it differs from |browser_version|,
   // or absent otherwise. When present, it indicates that an update (of a higher

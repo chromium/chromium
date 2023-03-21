@@ -48,9 +48,6 @@ class BrowserReportGenerator {
     virtual bool IsExtendedStableChannel() = 0;
     virtual void GenerateBuildStateInfo(
         enterprise_management::BrowserReport* report) = 0;
-    virtual void GeneratePluginsIfNeeded(
-        ReportCallback callback,
-        std::unique_ptr<enterprise_management::BrowserReport> report) = 0;
   };
 
   explicit BrowserReportGenerator(ReportingDelegateFactory* delegate_factory);

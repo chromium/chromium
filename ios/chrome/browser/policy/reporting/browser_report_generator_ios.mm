@@ -62,11 +62,4 @@ void BrowserReportGeneratorIOS::GenerateBuildStateInfo(
   // Not used on iOS because there is no in-app auto-update.
 }
 
-void BrowserReportGeneratorIOS::GeneratePluginsIfNeeded(
-    ReportCallback callback,
-    std::unique_ptr<em::BrowserReport> report) {
-  // There are no plugins on iOS.
-  std::move(callback).Run(std::move(report));
-}
-
 }  // namespace enterprise_reporting

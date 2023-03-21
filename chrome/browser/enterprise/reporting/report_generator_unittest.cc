@@ -23,9 +23,7 @@
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -43,23 +41,12 @@
 #include "extensions/common/extension_builder.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/public/browser/plugin_service.h"
-#endif
-
 namespace em = enterprise_management;
 
 namespace enterprise_reporting {
 namespace {
 
 constexpr char kProfile[] = "Profile";
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-const char16_t kPluginName16[] = u"plugin";
-const char16_t kPluginVersion16[] = u"1.0";
-const char16_t kPluginDescription16[] = u"This is a plugin.";
-const char kPluginFileName[] = "file_name";
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kArcAppName1[] = "app_name1";
@@ -68,11 +55,7 @@ const char kArcActivityName1[] = "activity_name1";
 const char kArcAppName2[] = "app_name2";
 const char kArcPackageName2[] = "package_name2";
 const char kArcActivityName2[] = "activity_name2";
-#elif BUILDFLAG(ENABLE_PLUGINS)
-const char kPluginName[] = "plugin";
-const char kPluginVersion[] = "1.0";
-const char kPluginDescription[] = "This is a plugin.";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // We only upload serial number on Windows.
@@ -81,9 +64,9 @@ void VerifySerialNumber(const std::string& serial_number) {
   EXPECT_NE(std::string(), serial_number);
 #else
   EXPECT_EQ(std::string(), serial_number);
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls the way of Profile creation which affects report.
 enum ProfileStatus {
@@ -174,10 +157,6 @@ class ReportGeneratorTest : public ::testing::Test {
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
     profile_manager_.CreateSystemProfile();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-    content::PluginService::GetInstance()->Init();
-#endif
   }
 
   // Creates |number| of Profiles. Returns the set of their names. The profile
@@ -214,21 +193,6 @@ class ReportGeneratorTest : public ::testing::Test {
       profile_names.insert(profile_name);
     }
     return profile_names;
-  }
-
-  void CreatePlugin() {
-#if BUILDFLAG(ENABLE_PLUGINS)
-    content::WebPluginInfo info;
-    info.name = kPluginName16;
-    info.version = kPluginVersion16;
-    info.desc = kPluginDescription16;
-    info.path =
-        base::FilePath().AppendASCII("path").AppendASCII(kPluginFileName);
-    content::PluginService* plugin_service =
-        content::PluginService::GetInstance();
-    plugin_service->RegisterInternalPlugin(info, true);
-    plugin_service->RefreshPlugins();
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
   }
 
   std::vector<std::unique_ptr<ReportRequest>> GenerateRequests(
@@ -368,8 +332,6 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
 
 TEST_F(ReportGeneratorTest, GenerateBasicReport) {
   auto profile_names = CreateProfiles(/*number*/ 2, kIdle);
-  CreatePlugin();
-
   auto requests = GenerateRequests(ReportType::kFull);
   EXPECT_EQ(1u, requests.size());
 
@@ -414,26 +376,12 @@ TEST_F(ReportGeneratorTest, GenerateBasicReport) {
 #endif
   EXPECT_NE(std::string(), browser_report.executable_path());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(0, browser_report.plugins_size());
-#elif BUILDFLAG(ENABLE_PLUGINS)
-  // There might be other plugins like PDF plugin, however, our fake plugin
-  // should be the first one in the report.
-  EXPECT_LE(1, browser_report.plugins_size());
-  EXPECT_EQ(kPluginName, browser_report.plugins(0).name());
-  EXPECT_EQ(kPluginVersion, browser_report.plugins(0).version());
-  EXPECT_EQ(kPluginDescription, browser_report.plugins(0).description());
-  EXPECT_EQ(kPluginFileName, browser_report.plugins(0).filename());
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
   VerifyProfileReport(/*active_profile_names*/ std::set<std::string>(),
                       profile_names, browser_report);
 }
 
 TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
   auto profile_names = CreateProfiles(/*number*/ 2, kActive);
-  CreatePlugin();
-
   auto requests = GenerateRequests(ReportType::kBrowserVersion);
   EXPECT_EQ(1u, requests.size());
 
@@ -470,18 +418,6 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
   EXPECT_TRUE(browser_report.has_channel());
 #endif
   EXPECT_NE(std::string(), browser_report.executable_path());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(0, browser_report.plugins_size());
-#elif BUILDFLAG(ENABLE_PLUGINS)
-  // There might be other plugins like PDF plugin, however, our fake plugin
-  // should be the first one in the report.
-  EXPECT_LE(1, browser_report.plugins_size());
-  EXPECT_EQ(kPluginName, browser_report.plugins(0).name());
-  EXPECT_EQ(kPluginVersion, browser_report.plugins(0).version());
-  EXPECT_EQ(kPluginDescription, browser_report.plugins(0).description());
-  EXPECT_EQ(kPluginFileName, browser_report.plugins(0).filename());
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   VerifyProfileReport(/*active_profile_names*/ std::set<std::string>(),
                       profile_names, browser_report);

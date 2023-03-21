@@ -5,13 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_BROWSER_REPORT_GENERATOR_DESKTOP_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_BROWSER_REPORT_GENERATOR_DESKTOP_H_
 
-#include <memory>
-
-#include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/version_info/channel.h"
-#include "content/public/common/webplugininfo.h"
 
 namespace enterprise_management {
 class BrowserReport;
@@ -24,9 +19,6 @@ namespace enterprise_reporting {
 // TODO(crbug.com/1102047): Move Chrome OS code to its own delegate
 class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
  public:
-  using ReportCallback = base::OnceCallback<void(
-      std::unique_ptr<enterprise_management::BrowserReport>)>;
-
   BrowserReportGeneratorDesktop();
   BrowserReportGeneratorDesktop(const BrowserReportGeneratorDesktop&) = delete;
   BrowserReportGeneratorDesktop& operator=(
@@ -41,17 +33,6 @@ class BrowserReportGeneratorDesktop : public BrowserReportGenerator::Delegate {
   // Adds the auto-updated version to the given report instance.
   void GenerateBuildStateInfo(
       enterprise_management::BrowserReport* report) override;
-  void GeneratePluginsIfNeeded(
-      ReportCallback callback,
-      std::unique_ptr<enterprise_management::BrowserReport> report) override;
-
-  void OnPluginsReady(
-      ReportCallback callback,
-      std::unique_ptr<enterprise_management::BrowserReport> report,
-      const std::vector<content::WebPluginInfo>& plugins);
-
- private:
-  base::WeakPtrFactory<BrowserReportGeneratorDesktop> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_reporting

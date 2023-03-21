@@ -81,12 +81,6 @@ void FakeBrowserReportGeneratorDelegate::GenerateBuildStateInfo(
   return;
 }
 
-void FakeBrowserReportGeneratorDelegate::GeneratePluginsIfNeeded(
-    BrowserReportGenerator::ReportCallback callback,
-    std::unique_ptr<enterprise_management::BrowserReport> report) {
-  std::move(callback).Run(std::move(report));
-}
-
 FakeReportingDelegateFactory::FakeReportingDelegateFactory(
     base::StringPiece executable_path)
     : executable_path_(executable_path) {}
