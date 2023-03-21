@@ -135,7 +135,7 @@ class CAPTURE_EXPORT UvcControl {
   void SetControlCurrent(int control_selector,
                          ValueType value,
                          base::StringPiece control_name) const {
-    DCHECK(interface_);
+    CHECK(interface_);
     IOUSBDevRequest command =
         CreateEmptyCommand(uvc::kVcRequestCodeSetCur, kUSBOut, control_selector,
                            sizeof(ValueType));
@@ -154,7 +154,7 @@ class CAPTURE_EXPORT UvcControl {
                           int control_selector,
                           ValueType* result,
                           base::StringPiece control_name) const {
-    DCHECK(interface_);
+    CHECK(interface_);
     IOUSBDevRequest command = CreateEmptyCommand(
         request_code, kUSBIn, control_selector, sizeof(ValueType));
     ValueType data;
