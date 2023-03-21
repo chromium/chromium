@@ -270,7 +270,7 @@ class AutofillClient : public RiskDataLoader {
     bool show_prompt = true;
 
     // Whether the prompt suggests migration into the user's account.
-    bool is_migration = false;
+    bool is_migration_to_account = false;
   };
 
   // Required arguments to create a dropdown showing autofill suggestions.

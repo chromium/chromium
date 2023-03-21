@@ -92,7 +92,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   bool shown_by_user_gesture_ = false;
 
   // Whether the bubble prompts to save (migrate) the profile into account.
-  bool is_migration_ = false;
+  bool is_migration_to_account_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

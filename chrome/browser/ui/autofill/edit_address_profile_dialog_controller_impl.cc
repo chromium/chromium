@@ -35,7 +35,7 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback,
-    bool is_migration) {
+    bool is_migration_to_account) {
   // Don't show the bubble if it's already visible, and inform the backend.
   if (dialog_view_) {
     std::move(address_profile_save_prompt_callback)
@@ -47,7 +47,7 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
   original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
-  is_migration_ = is_migration;
+  is_migration_to_account_ = is_migration_to_account;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   dialog_view_ = browser->window()
                      ->GetAutofillBubbleHandler()
@@ -76,7 +76,7 @@ bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
   // in account (the source property) and those that are currently migrating.
   return address_profile_to_edit_.source() ==
              AutofillProfile::Source::kAccount ||
-         is_migration_;
+         is_migration_to_account_;
 }
 
 void EditAddressProfileDialogControllerImpl::OnUserDecision(
@@ -95,11 +95,12 @@ void EditAddressProfileDialogControllerImpl::OnUserDecision(
   SaveUpdateAddressProfileBubbleControllerImpl* controller =
       SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
           web_contents());
-  controller->OfferSave(address_profile_to_edit_,
-                        base::OptionalToPtr(original_profile_),
-                        AutofillClient::SaveAddressProfilePromptOptions{
-                            .show_prompt = true, .is_migration = is_migration_},
-                        std::move(address_profile_save_prompt_callback_));
+  controller->OfferSave(
+      address_profile_to_edit_, base::OptionalToPtr(original_profile_),
+      AutofillClient::SaveAddressProfilePromptOptions{
+          .show_prompt = true,
+          .is_migration_to_account = is_migration_to_account_},
+      std::move(address_profile_save_prompt_callback_));
 }
 
 void EditAddressProfileDialogControllerImpl::OnDialogClosed() {

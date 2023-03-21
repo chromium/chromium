@@ -66,7 +66,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
-  is_migration_ = options.is_migration;
+  is_migration_to_account_ = options.is_migration_to_account;
   if (options.show_prompt)
     Show();
 }
@@ -75,8 +75,9 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
     const {
   if (IsSaveBubble()) {
     return l10n_util::GetStringUTF16(
-        is_migration_ ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
-                      : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+        is_migration_to_account_
+            ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
+            : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   }
 
   return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
@@ -85,20 +86,19 @@ std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetWindowTitle()
 std::u16string SaveUpdateAddressProfileBubbleControllerImpl::GetOkButtonLabel()
     const {
   return l10n_util::GetStringUTF16(
-      is_migration_ ? IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE
-                    : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
+      is_migration_to_account_
+          ? IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE
+          : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
 }
 
 absl::optional<std::u16string>
 SaveUpdateAddressProfileBubbleControllerImpl::GetFooterMessage() const {
-  DCHECK(web_contents());
-
   Profile* browser_profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
   if (browser_profile &&
       (address_profile_.source() == AutofillProfile::Source::kAccount ||
-       is_migration_)) {
+       is_migration_to_account_)) {
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_EDIT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
         base::UTF8ToUTF16(browser_profile->GetProfileUserName()));
@@ -131,7 +131,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(address_profile_, GetOriginalProfile(),
                         std::move(address_profile_save_prompt_callback_),
-                        is_migration_);
+                        is_migration_to_account_);
   HideBubble();
 }
 
