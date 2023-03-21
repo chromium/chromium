@@ -61668,6 +61668,8 @@ from previous Chrome versions.
   <int value="-283220112" label="RevampedPasswordManagementBubble:enabled"/>
   <int value="-283079109" label="TouchToFillPasswordSubmission:enabled"/>
   <int value="-283024110" label="WebXRPlaneDetection:disabled"/>
+  <int value="-282770689"
+      label="ExperimentalWebAppStoragePartitionIsolation:disabled"/>
   <int value="-281844827" label="AutofillCreditCardAblationExperiment:enabled"/>
   <int value="-279920685" label="affiliation-based-matching:enabled"/>
   <int value="-279493876" label="WebVRExperimentalRendering:enabled"/>
@@ -64608,6 +64610,8 @@ from previous Chrome versions.
   <int value="1360969228" label="RevampedContextMenu:enabled"/>
   <int value="1361047396" label="disable-click-delay"/>
   <int value="1361073386" label="ContentSuggestionsNotifications:enabled"/>
+  <int value="1361736708"
+      label="ExperimentalWebAppStoragePartitionIsolation:enabled"/>
   <int value="1363136936" label="VrCustomTabBrowsing:enabled"/>
   <int value="1363151585" label="SyncPseudoUSSAppList:enabled"/>
   <int value="1363283577" label="CrOSLateBootAudioFlexibleLoopback:enabled"/>

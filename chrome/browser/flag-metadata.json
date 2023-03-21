@@ -3658,6 +3658,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "experimental-web-app-storage-partition-isolation",
+    "owners": [ "lxj@google.com", "glenrob@google.com", "chromeos-web-apps-platform-syd@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "explore-sites",
     "owners": [ "chili", "dewittj" ],
     "expiry_milestone": 102

@@ -9762,6 +9762,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kAppLaunchAutomation)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    {"experimental-web-app-storage-partition-isolation",
+     flag_descriptions::kExperimentalWebAppStoragePartitionIsolationName,
+     flag_descriptions::kExperimentalWebAppStoragePartitionIsolationDescription,
+     kOsLacros,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kExperimentalWebAppStoragePartitionIsolation)},
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
