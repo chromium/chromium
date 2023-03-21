@@ -73,6 +73,8 @@ source_set("ui") {
     "main_stage/assistant_ui_element_view_factory.h",
     "main_stage/assistant_zero_state_view.cc",
     "main_stage/assistant_zero_state_view.h",
+    "main_stage/chip_view.cc",
+    "main_stage/chip_view.h",
     "main_stage/element_animator.cc",
     "main_stage/element_animator.h",
     "main_stage/suggestion_chip_view.cc",

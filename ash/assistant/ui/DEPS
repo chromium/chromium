@@ -22,6 +22,7 @@ include_rules = [
   "+net/base",
   "+third_party/skia/include/core",
   "+ui",
+  "+url/gurl.h",
 
   # Abseil is allowed by default, but some features are banned. See
   # //styleguide/c++/c++-features.md.
