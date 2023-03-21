@@ -319,10 +319,7 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
     bool notify_download,
     bool force_update) {
   DCHECK(!notify_download || exclusive_access_bubble_);
-  DVLOG(1) << "url: \"" << url.spec() << "\", bubble_type: " << bubble_type
-           << ", notify_download: " << notify_download
-           << ", force_update: " << force_update;
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, we will not show the toast for the normal browser fullscreen
   // mode.  The 'F11' text is confusing since how to access F11 on a Chromebook
   // is not common knowledge and there is also a dedicated fullscreen toggle
