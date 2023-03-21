@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/keyword_search_term.h"
 
 namespace history {
@@ -107,6 +108,7 @@ class SearchTermHelper {
     while (auto next_visit = enumerator.GetNextVisit()) {
       if (last_search_term_ &&
           IsSameSearchTerm(*next_visit, *last_search_term_)) {
+        // Ignore duplicative visits, if applicable.
         if (ignore_duplicate_visits &&
             IsDuplicateVisit(*next_visit, *last_search_term_)) {
           continue;
@@ -187,6 +189,8 @@ class MostRepeatedSearchTermHelper {
   std::unique_ptr<KeywordSearchTermVisit> GetNextSearchTermFromEnumerator(
       KeywordSearchTermVisitEnumerator& enumerator,
       base::Time now) {
+    const bool ignore_duplicate_visits =
+        kRepeatableQueriesIgnoreDuplicateVisits.Get();
     // |next_visit| acts as the fast pointer and |last_search_term_| acts as the
     // slow pointer accumulating the search term score across visits.
     while (auto next_visit = enumerator.GetNextVisit()) {
@@ -195,6 +199,11 @@ class MostRepeatedSearchTermHelper {
           IsSameSearchTerm(*next_visit, *last_search_term_);
       if (is_same_search_term &&
           IsSameTimeslot(*next_visit, *last_search_term_)) {
+        // Ignore duplicative visits, if applicable.
+        if (ignore_duplicate_visits &&
+            IsDuplicateVisit(*next_visit, *last_search_term_)) {
+          continue;
+        }
         // The same timeslot for the same search term:
         // 1. Move |last_search_term_| forward.
         // 2. Add up the search term visit count in the timeslot.
@@ -207,6 +216,11 @@ class MostRepeatedSearchTermHelper {
             last_search_term_->score.value_or(0.0) + score;
 
       } else if (is_same_search_term) {
+        // Ignore duplicative visits, if applicable.
+        if (ignore_duplicate_visits &&
+            IsDuplicateVisit(*next_visit, *last_search_term_)) {
+          continue;
+        }
         // A new timeslot for the same search term:
         // 1. Update the search term score by adding the last timeslot's score.
         // 2. Move |last_search_term_| forward.
@@ -267,6 +281,17 @@ void GetMostRepeatedSearchTermsFromEnumerator(
   const base::Time now = base::Time::Now();
   while (auto search_term =
              helper.GetNextSearchTermFromEnumerator(enumerator, now)) {
+    // Exclude searches that have not been repeated in some time.
+    if (now - search_term->last_visit_time >
+        base::Days(kRepeatableQueriesMaxAgeDays.Get())) {
+      continue;
+    }
+
+    // Exclude searches that have not been repeated enough times.
+    if (search_term->visit_count < kRepeatableQueriesMinVisitCount.Get()) {
+      continue;
+    }
+
     search_terms->push_back(std::move(search_term));
   }
   // Populate `search_terms` with the top `count` search terms in descending

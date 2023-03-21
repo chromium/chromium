@@ -27,11 +27,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_backend.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -3622,7 +3624,8 @@ TEST_F(HistoryBackendTest, QueryMostVisitedURLs) {
 TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
   ASSERT_TRUE(backend_.get());
 
-  // Choose the local midnight of today last week as the baseline for the time.
+  // Choose the local midnight of today last week as the baseline for the last
+  // visit time. All searches are less than 7 days old and are done only once.
   base::Time base_time = base::Time::Now().LocalMidnight() - base::Days(7);
   const size_t result_count = 3;
 
@@ -3649,14 +3652,74 @@ TEST_F(HistoryBackendTest, QueryMostRepeatedQueriesForKeyword) {
   }
 
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        history::kOrganicRepeatableQueries,
+        {{history::kRepeatableQueriesMaxAgeDays.name, "7"},
+         {history::kRepeatableQueriesMinVisitCount.name, "1"}});
+
     base::HistogramTester histogram_tester;
     KeywordSearchTermVisitList queries =
         backend_->QueryMostRepeatedQueriesForKeyword(first_keyword_id,
                                                      result_count);
+
     ASSERT_EQ(result_count, queries.size());
     EXPECT_EQ(u"first6", queries[0]->normalized_term);
     EXPECT_EQ(u"first5", queries[1]->normalized_term);
     EXPECT_EQ(u"first4", queries[2]->normalized_term);
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
+                                      1);
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        history::kOrganicRepeatableQueries,
+        {{history::kRepeatableQueriesMaxAgeDays.name, "2"},
+         {history::kRepeatableQueriesMinVisitCount.name, "1"}});
+
+    base::HistogramTester histogram_tester;
+    KeywordSearchTermVisitList queries =
+        backend_->QueryMostRepeatedQueriesForKeyword(first_keyword_id,
+                                                     result_count);
+    // Only one search is less than 2 days old.
+    ASSERT_EQ(1U, queries.size());
+    EXPECT_EQ(u"first6", queries[0]->normalized_term);
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
+                                      1);
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        history::kOrganicRepeatableQueries,
+        {{history::kRepeatableQueriesMaxAgeDays.name, "7"},
+         {history::kRepeatableQueriesMinVisitCount.name, "1"}});
+
+    base::HistogramTester histogram_tester;
+    KeywordSearchTermVisitList queries =
+        backend_->QueryMostRepeatedQueriesForKeyword(second_keyword_id,
+                                                     result_count);
+
+    ASSERT_EQ(result_count, queries.size());
+    EXPECT_EQ(u"second6", queries[0]->normalized_term);
+    EXPECT_EQ(u"second5", queries[1]->normalized_term);
+    EXPECT_EQ(u"second4", queries[2]->normalized_term);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
+                                      1);
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        history::kOrganicRepeatableQueries,
+        {{history::kRepeatableQueriesMaxAgeDays.name, "7"},
+         {history::kRepeatableQueriesMinVisitCount.name, "2"}});
+
+    base::HistogramTester histogram_tester;
+    KeywordSearchTermVisitList queries =
+        backend_->QueryMostRepeatedQueriesForKeyword(second_keyword_id,
+                                                     result_count);
+    // No search is done more than once.
+    ASSERT_EQ(0U, queries.size());
 
     histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTimeV2",
                                       1);
