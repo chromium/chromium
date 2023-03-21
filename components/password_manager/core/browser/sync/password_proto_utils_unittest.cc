@@ -88,6 +88,17 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   return password_specifics;
 }
 
+sync_pb::PasswordSpecificsMetadata CreateSpecificsMetadata(
+    const sync_pb::PasswordSpecificsData& password_specifics_data) {
+  sync_pb::PasswordSpecificsMetadata password_specifics_metadata;
+  password_specifics_metadata.set_url(password_specifics_data.signon_realm());
+  password_specifics_metadata.set_blacklisted(
+      password_specifics_data.blacklisted());
+  password_specifics_metadata.set_date_last_used_windows_epoch_micros(
+      password_specifics_data.date_last_used());
+  return password_specifics_metadata;
+}
+
 }  // namespace
 
 TEST(PasswordProtoUtilsTest, ConvertIssueProtoToMapAndBack) {
@@ -196,6 +207,8 @@ TEST(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
         "http://www.origin.com/", "username_element", "username_value",
         "password_element", "signon_realm",
         /*issue_types=*/{});
+    *specifics.mutable_unencrypted_metadata() =
+        CreateSpecificsMetadata(specifics.client_only_encrypted_data());
 
     EXPECT_THAT(
         SpecificsFromPassword(

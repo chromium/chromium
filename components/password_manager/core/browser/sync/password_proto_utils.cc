@@ -220,6 +220,8 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
   sync_pb::PasswordSpecifics specifics;
   *specifics.mutable_client_only_encrypted_data() =
       SpecificsDataFromPassword(password_form, base_password_data);
+  *specifics.mutable_unencrypted_metadata() =
+      SpecificsMetadataFromPassword(password_form);
   return specifics;
 }
 
@@ -264,6 +266,16 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
         PasswordNotesToProto(password_form.notes, base_password_data.notes());
   }
   return password_data;
+}
+
+sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
+    const PasswordForm& password_form) {
+  sync_pb::PasswordSpecificsMetadata password_metadata;
+  password_metadata.set_url(password_form.signon_realm);
+  password_metadata.set_blacklisted(password_form.blocked_by_user);
+  password_metadata.set_date_last_used_windows_epoch_micros(
+      password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  return password_metadata;
 }
 
 PasswordForm PasswordFromSpecifics(

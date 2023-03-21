@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -102,6 +103,11 @@ void CommitContributionImpl::AddToCommitMessage(
     // sending password in plain text.
     CHECK(
         !sync_entity->specifics().password().has_client_only_encrypted_data());
+
+    // Purposefully crash since no metadata should be uploaded if a custom
+    // passphrase is set.
+    CHECK(!IsExplicitPassphrase(passphrase_type_) ||
+          !sync_entity->specifics().password().has_unencrypted_metadata());
 
     // Record the size of the sync entity being committed.
     syncer::SyncRecordModelTypeEntitySizeHistogram(
@@ -281,17 +287,11 @@ void CommitContributionImpl::AdjustCommitProto(
     const sync_pb::PasswordSpecificsData& password_data =
         password_specifics.client_only_encrypted_data();
     sync_pb::EntitySpecifics encrypted_password;
+
+    // Keep the unencrypted metadata for non-custom passphrase users.
     if (!IsExplicitPassphrase(passphrase_type_)) {
-      encrypted_password.mutable_password()
-          ->mutable_unencrypted_metadata()
-          ->set_url(password_data.signon_realm());
-      encrypted_password.mutable_password()
-          ->mutable_unencrypted_metadata()
-          ->set_blacklisted(password_data.blacklisted());
-      encrypted_password.mutable_password()
-          ->mutable_unencrypted_metadata()
-          ->set_date_last_used_windows_epoch_micros(
-              password_data.date_last_used());
+      *encrypted_password.mutable_password()->mutable_unencrypted_metadata() =
+          commit_proto->specifics().password().unencrypted_metadata();
     }
 
     bool result = cryptographer_->Encrypt(

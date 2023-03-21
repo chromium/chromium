@@ -15,6 +15,7 @@ class PasswordSpecifics;
 class PasswordSpecificsData;
 class PasswordSpecificsData_PasswordIssues;
 class PasswordSpecificsData_Notes;
+class PasswordSpecificsMetadata;
 }  // namespace sync_pb
 
 namespace password_manager {
@@ -58,6 +59,11 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
 sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
     const PasswordForm& password_form,
     const sync_pb::PasswordSpecificsData& base_password_data);
+
+// Returns sync_pb::PasswordSpecificsMetadata based on the given
+// `password_form`.
+sync_pb::PasswordSpecificsMetadata SpecificsMetadataFromPassword(
+    const PasswordForm& password_form);
 
 // Returns a partial PasswordForm for a given set of `password_data`. In
 // contrast to `PasswordFromProtoWithLocalData`, this method resets local data.
