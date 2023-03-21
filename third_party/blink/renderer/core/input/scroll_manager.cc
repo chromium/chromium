@@ -399,9 +399,13 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
     }
 
     ScrollableArea::ScrollCallback callback(WTF::BindOnce(
-        [](WeakPersistent<ScrollableArea> area) {
-          if (area)
-            area->OnScrollFinished();
+        [](WeakPersistent<ScrollableArea> area,
+           ScrollableArea::ScrollCompletionMode completion_mode) {
+          if (area) {
+            area->OnScrollFinished(
+                /*enqueue_scrollend=*/completion_mode ==
+                ScrollableArea::ScrollCompletionMode::kFinished);
+          }
         },
         WrapWeakPersistent(scrollable_area)));
     ScrollResult result = scrollable_area->UserScroll(
@@ -738,7 +742,8 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
 // this call to HandleGestureScrollEnd is async, we can just ignore the return
 // value.
 void ScrollManager::HandleDeferredGestureScrollEnd(
-    const WebGestureEvent& gesture_event) {
+    const WebGestureEvent& gesture_event,
+    ScrollableArea::ScrollCompletionMode mode) {
   HandleGestureScrollEnd(gesture_event);
 }
 

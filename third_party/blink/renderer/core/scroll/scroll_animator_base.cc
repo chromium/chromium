@@ -53,16 +53,22 @@ ScrollResult ScrollAnimatorBase::UserScroll(
     const ScrollOffset& delta,
     ScrollableArea::ScrollCallback on_finish) {
   // Run the callback for non-animation user scroll.
-  base::ScopedClosureRunner run_on_return(std::move(on_finish));
 
   ScrollOffset consumed_delta = ComputeDeltaToConsume(delta);
   ScrollOffset new_pos = current_offset_ + consumed_delta;
-  if (current_offset_ == new_pos)
+  if (current_offset_ == new_pos) {
+    if (on_finish) {
+      std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+    }
     return ScrollResult(false, false, delta.x(), delta.y());
+  }
 
   SetCurrentOffset(new_pos);
   ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
 
+  if (on_finish) {
+    std::move(on_finish).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+  }
   return ScrollResult(consumed_delta.x(), consumed_delta.y(),
                       delta.x() - consumed_delta.x(),
                       delta.y() - consumed_delta.y());

@@ -515,7 +515,8 @@ TEST_F(RootFrameViewportTest, ViewportScrollOrder) {
       ScrollOffset(40, 40), mojom::blink::ScrollType::kUser,
       mojom::blink::ScrollBehavior::kInstant,
       ScrollableArea::ScrollCallback(WTF::BindOnce(
-          [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport) {
+          [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport,
+             ScrollableArea::ScrollCompletionMode) {
             EXPECT_EQ(ScrollOffset(40, 40), visual_viewport->GetScrollOffset());
             EXPECT_EQ(ScrollOffset(0, 0), layout_viewport->GetScrollOffset());
           },
@@ -528,7 +529,8 @@ TEST_F(RootFrameViewportTest, ViewportScrollOrder) {
       ScrollOffset(60, 60), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant,
       ScrollableArea::ScrollCallback(WTF::BindOnce(
-          [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport) {
+          [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport,
+             ScrollableArea::ScrollCompletionMode) {
             EXPECT_EQ(ScrollOffset(50, 50), visual_viewport->GetScrollOffset());
             EXPECT_EQ(ScrollOffset(10, 10), layout_viewport->GetScrollOffset());
           },
@@ -597,7 +599,8 @@ TEST_F(RootFrameViewportTest, DistributeScrollOrder) {
       ScrollOffset(60, 60), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kSmooth, RootFrameViewport::kVisualViewport,
       ScrollableArea::ScrollCallback(WTF::BindOnce(
-          [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport) {
+          [](ScrollableArea* visual_viewport, ScrollableArea* layout_viewport,
+             ScrollableArea::ScrollCompletionMode) {
             EXPECT_EQ(ScrollOffset(50, 50), visual_viewport->GetScrollOffset());
             EXPECT_EQ(ScrollOffset(10, 10), layout_viewport->GetScrollOffset());
           },

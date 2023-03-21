@@ -235,8 +235,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
-      ScrollableArea::ScrollCallback(
-          base::BindLambdaForTesting([&]() { finished = true; })));
+      ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
+          [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
   Compositor().ResetLastFrameTime();
 
@@ -279,8 +279,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
-      ScrollableArea::ScrollCallback(
-          base::BindLambdaForTesting([&]() { finished = true; })));
+      ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
+          [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
   Compositor().ResetLastFrameTime();
 
@@ -323,8 +323,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 1000),
-      ScrollableArea::ScrollCallback(
-          base::BindLambdaForTesting([&]() { finished = true; })));
+      ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
+          [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
   Compositor().ResetLastFrameTime();
 
@@ -374,8 +374,8 @@ TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
       To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
   scrollable_area->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 100),
-      ScrollableArea::ScrollCallback(
-          base::BindLambdaForTesting([&]() { finished = true; })));
+      ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
+          [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
   Compositor().ResetLastFrameTime();
 
@@ -414,8 +414,8 @@ TEST_P(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(0, 300),
-      ScrollableArea::ScrollCallback(
-          base::BindLambdaForTesting([&]() { finished = true; })));
+      ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
+          [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
   Compositor().ResetLastFrameTime();
 
@@ -451,8 +451,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   bool finished = false;
   GetDocument().View()->GetScrollableArea()->UserScroll(
       ui::ScrollGranularity::kScrollByLine, ScrollOffset(100, 300),
-      ScrollableArea::ScrollCallback(
-          base::BindLambdaForTesting([&]() { finished = true; })));
+      ScrollableArea::ScrollCallback(base::BindLambdaForTesting(
+          [&](ScrollableArea::ScrollCompletionMode) { finished = true; })));
   // Sync time with ScrollAnimator.
   Compositor().ResetLastFrameTime();
 

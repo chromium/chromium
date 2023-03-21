@@ -22,7 +22,7 @@ ProgrammaticScrollAnimator::ProgrammaticScrollAnimator(
 
 ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() {
   if (on_finish_)
-    std::move(on_finish_).Run();
+    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
 }
 
 void ProgrammaticScrollAnimator::ResetAnimationState() {
@@ -30,7 +30,7 @@ void ProgrammaticScrollAnimator::ResetAnimationState() {
   animation_curve_.reset();
   start_time_ = base::TimeTicks();
   if (on_finish_)
-    std::move(on_finish_).Run();
+    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
 }
 
 mojom::blink::ScrollType ProgrammaticScrollAnimator::GetScrollType() const {
@@ -60,8 +60,10 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   start_time_ = base::TimeTicks();
   target_offset_ = offset;
   is_sequenced_scroll_ = is_sequenced_scroll;
-  if (on_finish_)
-    std::move(on_finish_).Run();
+  if (on_finish_) {
+    std::move(on_finish_)
+        .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
+  }
   on_finish_ = std::move(on_finish);
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_),
@@ -79,7 +81,7 @@ void ProgrammaticScrollAnimator::CancelAnimation() {
   DCHECK_NE(run_state_, RunState::kRunningOnCompositorButNeedsUpdate);
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
   if (on_finish_)
-    std::move(on_finish_).Run();
+    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
 }
 
 void ProgrammaticScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
@@ -195,7 +197,7 @@ void ProgrammaticScrollAnimator::NotifyCompositorAnimationFinished(
 
 void ProgrammaticScrollAnimator::AnimationFinished() {
   if (on_finish_)
-    std::move(on_finish_).Run();
+    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
   if (is_sequenced_scroll_) {
     is_sequenced_scroll_ = false;
     if (SmoothScrollSequencer* sequencer =
