@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/printing/print_browsertest.h"
+
 #include <memory>
 #include <utility>
 #include <vector>
@@ -161,82 +163,6 @@ const PrinterSemanticCapsAndDefaults::Paper kTestPaper{
 constexpr char kFakeDmToken[] = "fake-dm-token";
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
-class TestPrintRenderFrame
-    : public mojom::PrintRenderFrameInterceptorForTesting {
- public:
-  TestPrintRenderFrame(content::RenderFrameHost* frame_host,
-                       content::WebContents* web_contents,
-                       int document_cookie,
-                       base::RepeatingClosure msg_callback)
-      : frame_host_(frame_host),
-        web_contents_(web_contents),
-        document_cookie_(document_cookie),
-        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-        msg_callback_(msg_callback) {}
-  ~TestPrintRenderFrame() override = default;
-
-  void OnDidPrintFrameContent(int document_cookie,
-                              mojom::DidPrintContentParamsPtr param,
-                              PrintFrameContentCallback callback) const {
-    EXPECT_EQ(document_cookie, document_cookie_);
-    ASSERT_TRUE(param->metafile_data_region.IsValid());
-    EXPECT_GT(param->metafile_data_region.GetSize(), 0U);
-    std::move(callback).Run(document_cookie, std::move(param));
-    task_runner_->PostTask(FROM_HERE, msg_callback_);
-  }
-
-  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
-        std::move(handle)));
-  }
-
-  static mojom::DidPrintContentParamsPtr GetDefaultDidPrintContentParams() {
-    auto printed_frame_params = mojom::DidPrintContentParams::New();
-    // Creates a small amount of region to avoid passing empty data to mojo.
-    constexpr size_t kSize = 10;
-    base::MappedReadOnlyRegion region_mapping =
-        base::ReadOnlySharedMemoryRegion::Create(kSize);
-    printed_frame_params->metafile_data_region =
-        std::move(region_mapping.region);
-    return printed_frame_params;
-  }
-
-  // mojom::PrintRenderFrameInterceptorForTesting
-  mojom::PrintRenderFrame* GetForwardingInterface() override {
-    NOTREACHED();
-    return nullptr;
-  }
-  void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
-                         PrintFrameContentCallback callback) override {
-    // Sends the printed result back.
-    OnDidPrintFrameContent(params->document_cookie,
-                           GetDefaultDidPrintContentParams(),
-                           std::move(callback));
-
-    auto* client = PrintCompositeClient::FromWebContents(web_contents_);
-    if (!client)
-      return;
-
-    // Prints its children.
-    content::RenderFrameHost* child = ChildFrameAt(frame_host_.get(), 0);
-    for (size_t i = 1; child; i++) {
-      if (child->GetSiteInstance() != frame_host_->GetSiteInstance()) {
-        client->PrintCrossProcessSubframe(gfx::Rect(), params->document_cookie,
-                                          child);
-      }
-      child = ChildFrameAt(frame_host_.get(), i);
-    }
-  }
-
- private:
-  raw_ptr<content::RenderFrameHost> frame_host_;
-  raw_ptr<content::WebContents> web_contents_;
-  const int document_cookie_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::RepeatingClosure msg_callback_;
-  mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
-};
-
 class KillPrintRenderFrame
     : public mojom::PrintRenderFrameInterceptorForTesting {
  public:
@@ -344,6 +270,83 @@ class PrintPreviewDoneObserver
 };
 
 }  // namespace
+
+class TestPrintRenderFrame
+    : public mojom::PrintRenderFrameInterceptorForTesting {
+ public:
+  TestPrintRenderFrame(content::RenderFrameHost* frame_host,
+                       content::WebContents* web_contents,
+                       int document_cookie,
+                       base::RepeatingClosure msg_callback)
+      : frame_host_(frame_host),
+        web_contents_(web_contents),
+        document_cookie_(document_cookie),
+        task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+        msg_callback_(msg_callback) {}
+  ~TestPrintRenderFrame() override = default;
+
+  void OnDidPrintFrameContent(int document_cookie,
+                              mojom::DidPrintContentParamsPtr param,
+                              PrintFrameContentCallback callback) const {
+    EXPECT_EQ(document_cookie, document_cookie_);
+    ASSERT_TRUE(param->metafile_data_region.IsValid());
+    EXPECT_GT(param->metafile_data_region.GetSize(), 0U);
+    std::move(callback).Run(document_cookie, std::move(param));
+    task_runner_->PostTask(FROM_HERE, msg_callback_);
+  }
+
+  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
+    receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PrintRenderFrame>(
+        std::move(handle)));
+  }
+
+  static mojom::DidPrintContentParamsPtr GetDefaultDidPrintContentParams() {
+    auto printed_frame_params = mojom::DidPrintContentParams::New();
+    // Creates a small amount of region to avoid passing empty data to mojo.
+    constexpr size_t kSize = 10;
+    base::MappedReadOnlyRegion region_mapping =
+        base::ReadOnlySharedMemoryRegion::Create(kSize);
+    printed_frame_params->metafile_data_region =
+        std::move(region_mapping.region);
+    return printed_frame_params;
+  }
+
+  // mojom::PrintRenderFrameInterceptorForTesting
+  mojom::PrintRenderFrame* GetForwardingInterface() override {
+    NOTREACHED();
+    return nullptr;
+  }
+  void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
+                         PrintFrameContentCallback callback) override {
+    // Sends the printed result back.
+    OnDidPrintFrameContent(params->document_cookie,
+                           GetDefaultDidPrintContentParams(),
+                           std::move(callback));
+
+    auto* client = PrintCompositeClient::FromWebContents(web_contents_);
+    if (!client) {
+      return;
+    }
+
+    // Prints its children.
+    content::RenderFrameHost* child = ChildFrameAt(frame_host_.get(), 0);
+    for (size_t i = 1; child; i++) {
+      if (child->GetSiteInstance() != frame_host_->GetSiteInstance()) {
+        client->PrintCrossProcessSubframe(gfx::Rect(), params->document_cookie,
+                                          child);
+      }
+      child = ChildFrameAt(frame_host_.get(), i);
+    }
+  }
+
+ private:
+  raw_ptr<content::RenderFrameHost> frame_host_;
+  raw_ptr<content::WebContents> web_contents_;
+  const int document_cookie_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::RepeatingClosure msg_callback_;
+  mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
+};
 
 class TestPrintViewManagerForDLP : public TestPrintViewManager {
  public:
@@ -580,207 +583,176 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
 };
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
-class PrintBrowserTest : public InProcessBrowserTest {
- public:
-  struct PrintParams {
-    bool print_only_selection = false;
-    int pages_per_sheet = 1;
-  };
+PrintBrowserTest::PrintBrowserTest() = default;
+PrintBrowserTest::~PrintBrowserTest() = default;
 
-  PrintBrowserTest() = default;
-  ~PrintBrowserTest() override = default;
+void PrintBrowserTest::SetUp() {
+  test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
+  PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
+  PrintingContext::SetPrintingContextFactoryForTest(
+      &test_printing_context_factory_);
 
-  void SetUp() override {
-    test_print_backend_ = base::MakeRefCounted<TestPrintBackend>();
-    PrintBackend::SetPrintBackendForTesting(test_print_backend_.get());
-    PrintingContext::SetPrintingContextFactoryForTest(
-        &test_printing_context_factory_);
+  num_expected_messages_ = 1;  // By default, only wait on one message.
+  num_received_messages_ = 0;
+  InProcessBrowserTest::SetUp();
+}
 
-    num_expected_messages_ = 1;  // By default, only wait on one message.
-    num_received_messages_ = 0;
-    InProcessBrowserTest::SetUp();
-  }
+void PrintBrowserTest::SetUpOnMainThread() {
+  // Safe to use `base::Unretained(this)` since this testing class
+  // necessarily must outlive all interactions from the tests which will
+  // run through the printing stack using derivatives of
+  // `PrintViewManagerBase` and `PrintPreviewHandler`, which can trigger
+  // this callback.
+  SetShowPrintErrorDialogForTest(base::BindRepeating(
+      &PrintBrowserTest::ShowPrintErrorDialog, base::Unretained(this)));
 
-  void SetUpOnMainThread() override {
-    // Safe to use `base::Unretained(this)` since this testing class
-    // necessarily must outlive all interactions from the tests which will
-    // run through the printing stack using derivatives of
-    // `PrintViewManagerBase` and `PrintPreviewHandler`, which can trigger
-    // this callback.
-    SetShowPrintErrorDialogForTest(base::BindRepeating(
-        &PrintBrowserTest::ShowPrintErrorDialog, base::Unretained(this)));
+  host_resolver()->AddRule("*", "127.0.0.1");
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
 
-    host_resolver()->AddRule("*", "127.0.0.1");
-    content::SetupCrossSiteRedirector(embedded_test_server());
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
+void PrintBrowserTest::TearDownOnMainThread() {
+  // Remove map of objects pointing to //content objects before they go away.
+  frame_content_.clear();
 
-  void TearDownOnMainThread() override {
-    // Remove map of objects pointing to //content objects before they go away.
-    frame_content_.clear();
+  SetShowPrintErrorDialogForTest(base::NullCallback());
+  InProcessBrowserTest::TearDownOnMainThread();
+}
 
-    SetShowPrintErrorDialogForTest(base::NullCallback());
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
+void PrintBrowserTest::TearDown() {
+  InProcessBrowserTest::TearDown();
+  PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
+  PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
+}
 
-  void TearDown() override {
-    InProcessBrowserTest::TearDown();
-    PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
-    PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
-  }
+void PrintBrowserTest::AddPrinter(const std::string& printer_name) {
+  PrinterBasicInfo printer_info(
+      printer_name,
+      /*display_name=*/"test printer",
+      /*printer_description=*/"A printer for testing.",
+      /*printer_status=*/0,
+      /*is_default=*/true, kTestDummyPrintInfoOptions);
 
-  void AddPrinter(const std::string& printer_name) {
-    PrinterBasicInfo printer_info(
-        printer_name,
-        /*display_name=*/"test printer",
-        /*printer_description=*/"A printer for testing.",
-        /*printer_status=*/0,
-        /*is_default=*/true, kTestDummyPrintInfoOptions);
+  auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
+  default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
+  default_caps->dpis = kTestPrinterCapabilitiesDefaultDpis;
+  default_caps->default_dpi = kTestPrinterCapabilitiesDpi;
+  default_caps->papers.push_back(kTestPaper);
+  test_print_backend_->AddValidPrinter(
+      printer_name, std::move(default_caps),
+      std::make_unique<PrinterBasicInfo>(printer_info));
+}
 
-    auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
-    default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
-    default_caps->dpis = kTestPrinterCapabilitiesDefaultDpis;
-    default_caps->default_dpi = kTestPrinterCapabilitiesDpi;
-    default_caps->papers.push_back(kTestPaper);
-    test_print_backend_->AddValidPrinter(
-        printer_name, std::move(default_caps),
-        std::make_unique<PrinterBasicInfo>(printer_info));
-  }
+void PrintBrowserTest::SetPrinterNameForSubsequentContexts(
+    const std::string& printer_name) {
+  test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
+      printer_name);
+}
 
-  void SetPrinterNameForSubsequentContexts(const std::string& printer_name) {
-    test_printing_context_factory_.SetPrinterNameForSubsequentContexts(
-        printer_name);
-  }
+void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady() {
+  const PrintParams kParams;
+  PrintAndWaitUntilPreviewIsReady(kParams);
+}
 
-  void PrintAndWaitUntilPreviewIsReady() {
-    const PrintParams kParams;
-    PrintAndWaitUntilPreviewIsReady(kParams);
-  }
+void PrintBrowserTest::PrintAndWaitUntilPreviewIsReady(
+    const PrintParams& params) {
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false,
+                                                  params.pages_per_sheet);
 
-  void PrintAndWaitUntilPreviewIsReady(const PrintParams& params) {
-    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/false,
-                                                    params.pages_per_sheet);
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/false, params.print_only_selection);
 
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false, params.print_only_selection);
+  print_preview_observer.WaitUntilPreviewIsReady();
 
-    print_preview_observer.WaitUntilPreviewIsReady();
+  set_rendered_page_count(print_preview_observer.rendered_page_count());
+}
 
-    set_rendered_page_count(print_preview_observer.rendered_page_count());
-  }
+void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded() {
+  const PrintParams kParams;
+  PrintAndWaitUntilPreviewIsReadyAndLoaded(kParams);
+}
 
-  void PrintAndWaitUntilPreviewIsReadyAndLoaded() {
-    const PrintParams kParams;
-    PrintAndWaitUntilPreviewIsReadyAndLoaded(kParams);
-  }
+void PrintBrowserTest::PrintAndWaitUntilPreviewIsReadyAndLoaded(
+    const PrintParams& params) {
+  TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true,
+                                                  params.pages_per_sheet);
 
-  void PrintAndWaitUntilPreviewIsReadyAndLoaded(const PrintParams& params) {
-    TestPrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true,
-                                                    params.pages_per_sheet);
+  StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
+             /*print_renderer=*/mojo::NullAssociatedRemote(),
+             /*print_preview_disabled=*/false, params.print_only_selection);
 
-    StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
-               /*print_renderer=*/mojo::NullAssociatedRemote(),
-               /*print_preview_disabled=*/false, params.print_only_selection);
+  print_preview_observer.WaitUntilPreviewIsReady();
 
-    print_preview_observer.WaitUntilPreviewIsReady();
-
-    set_rendered_page_count(print_preview_observer.rendered_page_count());
-  }
+  set_rendered_page_count(print_preview_observer.rendered_page_count());
+}
 
   // The following are helper functions for having a wait loop in the test and
   // exit when all expected messages are received.
-  void SetNumExpectedMessages(unsigned int num) {
-    num_expected_messages_ = num;
+void PrintBrowserTest::SetNumExpectedMessages(unsigned int num) {
+  num_expected_messages_ = num;
+}
+
+void PrintBrowserTest::WaitUntilCallbackReceived() {
+  base::RunLoop run_loop;
+  quit_callback_ = run_loop.QuitClosure();
+  run_loop.Run();
+}
+
+void PrintBrowserTest::CheckForQuit() {
+  if (++num_received_messages_ != num_expected_messages_) {
+    return;
   }
-
-  void WaitUntilCallbackReceived() {
-    base::RunLoop run_loop;
-    quit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
+  if (quit_callback_) {
+    std::move(quit_callback_).Run();
   }
+}
 
-  void CheckForQuit() {
-    if (++num_received_messages_ != num_expected_messages_)
-      return;
-    if (quit_callback_)
-      std::move(quit_callback_).Run();
+void PrintBrowserTest::CreateTestPrintRenderFrame(
+    content::RenderFrameHost* frame_host,
+    content::WebContents* web_contents) {
+  frame_content_.emplace(
+      frame_host, std::make_unique<TestPrintRenderFrame>(
+                      frame_host, web_contents, kDefaultDocumentCookie,
+                      base::BindRepeating(&PrintBrowserTest::CheckForQuit,
+                                          base::Unretained(this))));
+  OverrideBinderForTesting(frame_host);
+}
+
+// static
+mojom::PrintFrameContentParamsPtr
+PrintBrowserTest::GetDefaultPrintFrameParams() {
+  return mojom::PrintFrameContentParams::New(gfx::Rect(800, 600),
+                                             kDefaultDocumentCookie);
+}
+
+const mojo::AssociatedRemote<mojom::PrintRenderFrame>&
+PrintBrowserTest::GetPrintRenderFrame(content::RenderFrameHost* rfh) {
+  if (!remote_) {
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
   }
+  return remote_;
+}
 
-  void CreateTestPrintRenderFrame(content::RenderFrameHost* frame_host,
-                                  content::WebContents* web_contents) {
-    frame_content_.emplace(
-        frame_host, std::make_unique<TestPrintRenderFrame>(
-                        frame_host, web_contents, kDefaultDocumentCookie,
-                        base::BindRepeating(&PrintBrowserTest::CheckForQuit,
-                                            base::Unretained(this))));
-    OverrideBinderForTesting(frame_host);
-  }
+TestPrintRenderFrame* PrintBrowserTest::GetFrameContent(
+    content::RenderFrameHost* host) const {
+  auto iter = frame_content_.find(host);
+  return iter != frame_content_.end() ? iter->second.get() : nullptr;
+}
 
-  static mojom::PrintFrameContentParamsPtr GetDefaultPrintFrameParams() {
-    return mojom::PrintFrameContentParams::New(gfx::Rect(800, 600),
-                                               kDefaultDocumentCookie);
-  }
+void PrintBrowserTest::OverrideBinderForTesting(
+    content::RenderFrameHost* render_frame_host) {
+  render_frame_host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::PrintRenderFrame::Name_,
+      base::BindRepeating(
+          &TestPrintRenderFrame::Bind,
+          base::Unretained(GetFrameContent(render_frame_host))));
+}
 
-  const mojo::AssociatedRemote<mojom::PrintRenderFrame>& GetPrintRenderFrame(
-      content::RenderFrameHost* rfh) {
-    if (!remote_)
-      rfh->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
-    return remote_;
-  }
-
-  uint32_t rendered_page_count() const { return rendered_page_count_; }
-
-  uint32_t error_dialog_shown_count() const {
-    return error_dialog_shown_count_;
-  }
-
- protected:
-  TestPrintBackend* test_print_backend() { return test_print_backend_.get(); }
-
-  BrowserPrintingContextFactoryForTest* test_printing_context_factory() {
-    return &test_printing_context_factory_;
-  }
-
-  void set_rendered_page_count(uint32_t page_count) {
-    rendered_page_count_ = page_count;
-  }
-
-  const absl::optional<PrintSettings>& document_print_settings() const {
-    return test_printing_context_factory_.document_print_settings();
-  }
-
- private:
-  TestPrintRenderFrame* GetFrameContent(content::RenderFrameHost* host) const {
-    auto iter = frame_content_.find(host);
-    return iter != frame_content_.end() ? iter->second.get() : nullptr;
-  }
-
-  void OverrideBinderForTesting(content::RenderFrameHost* render_frame_host) {
-    render_frame_host->GetRemoteAssociatedInterfaces()
-        ->OverrideBinderForTesting(
-            mojom::PrintRenderFrame::Name_,
-            base::BindRepeating(
-                &TestPrintRenderFrame::Bind,
-                base::Unretained(GetFrameContent(render_frame_host))));
-  }
-
-  void ShowPrintErrorDialog() {
-    ++error_dialog_shown_count_;
-    CheckForQuit();
-  }
-
-  uint32_t error_dialog_shown_count_ = 0;
-  uint32_t rendered_page_count_ = 0;
-  unsigned int num_expected_messages_;
-  unsigned int num_received_messages_;
-  base::OnceClosure quit_callback_;
-  mojo::AssociatedRemote<mojom::PrintRenderFrame> remote_;
-  std::map<content::RenderFrameHost*, std::unique_ptr<TestPrintRenderFrame>>
-      frame_content_;
-  scoped_refptr<TestPrintBackend> test_print_backend_;
-  BrowserPrintingContextFactoryForTest test_printing_context_factory_;
-};
+void PrintBrowserTest::ShowPrintErrorDialog() {
+  ++error_dialog_shown_count_;
+  CheckForQuit();
+}
 
 class SitePerProcessPrintBrowserTest : public PrintBrowserTest {
  public:
