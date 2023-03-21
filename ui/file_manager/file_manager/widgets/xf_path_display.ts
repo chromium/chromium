@@ -36,9 +36,9 @@ export class XfPathDisplayElement extends XfBase {
     const tail = parts[parts.length - 1];
     return html`
       ${repeat(head, (e) => html`
-              <div class="folder" tabindex="0">${e}</div>
+              <div class="folder mid-folder" tabindex="0">${e}</div>
               <div class="separator"></div>`)}
-      <div class="folder" tabindex="0">${tail}</div>
+      <div class="folder last-folder" tabindex="0">${tail}</div>
     `;
   }
 }
@@ -64,7 +64,6 @@ function getCSS(): CSSResultGroup {
       font-size: 13px;
       outline: none;
       user-select: none;
-      color: var(--cros-text-color-primary);
     }
     div.folder {
       white-space: nowrap;
@@ -75,6 +74,12 @@ function getCSS(): CSSResultGroup {
       min-width: 0;
       padding: 4px 8px;
       border-radius: 8px;
+    }
+    div.mid-folder {
+      color: var(--cros-text-color-secondary);
+    }
+    div.last-folder {
+      color: var(--cros-text-color-primary);
     }
     div.folder:hover {
       flex-shrink: 0;
