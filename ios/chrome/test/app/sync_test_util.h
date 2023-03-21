@@ -114,15 +114,18 @@ void AddTypedURLToClient(const GURL& url);
 // Injects a typed URL into the fake sync server.
 void AddTypedURLToFakeSyncServer(const std::string& url);
 
+// Injects a HISTORY visit into the fake sync server.
+void AddHistoryVisitToFakeSyncServer(const GURL& url);
+
 // Injects a device info into the fake sync server.
 void AddDeviceInfoToFakeSyncServer(const std::string& device_name,
                                    base::Time last_updated_timestamp);
 
 // Returns YES if the provided `url` is present (or not) if `expected_present`
 // is YES (or NO).
-BOOL IsTypedUrlPresentOnClient(const GURL& url,
-                               BOOL expect_present,
-                               NSError** error);
+BOOL IsUrlPresentOnClient(const GURL& url,
+                          BOOL expect_present,
+                          NSError** error);
 
 // Deletes typed URL from HistoryService.
 void DeleteTypedUrlFromClient(const GURL& url);

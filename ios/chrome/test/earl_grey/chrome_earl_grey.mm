@@ -43,8 +43,7 @@ namespace {
 NSString* const kWaitForPageToStartLoadingError = @"Page did not start to load";
 NSString* const kWaitForPageToFinishLoadingError =
     @"Page did not finish loading";
-NSString* const kTypedURLError =
-    @"Error occurred during typed URL verification.";
+NSString* const kHistoryError = @"Error occurred during history verification.";
 NSString* const kWaitForRestoreSessionToFinishError =
     @"Session restoration did not finish";
 
@@ -841,6 +840,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface addFakeSyncServerTypedURL:spec];
 }
 
+- (void)addFakeSyncServerHistoryVisit:(const GURL&)URL {
+  [ChromeEarlGreyAppInterface
+      addFakeSyncServerHistoryVisit:net::NSURLWithGURL(URL)];
+}
+
 - (void)addHistoryServiceTypedURL:(const GURL&)URL {
   NSString* spec = base::SysUTF8ToNSString(URL.spec());
   [ChromeEarlGreyAppInterface addHistoryServiceTypedURL:spec];
@@ -851,20 +855,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface deleteHistoryServiceTypedURL:spec];
 }
 
-- (void)waitForTypedURL:(const GURL&)URL
-          expectPresent:(BOOL)expectPresent
-                timeout:(base::TimeDelta)timeout {
+- (void)waitForHistoryURL:(const GURL&)URL
+            expectPresent:(BOOL)expectPresent
+                  timeout:(base::TimeDelta)timeout {
   NSString* spec = base::SysUTF8ToNSString(URL.spec());
-  GREYCondition* waitForTypedURL =
-      [GREYCondition conditionWithName:kTypedURLError
-                                 block:^{
-                                   return [ChromeEarlGreyAppInterface
-                                            isTypedURL:spec
-                                       presentOnClient:expectPresent];
-                                 }];
+  GREYCondition* waitForURL = [GREYCondition
+      conditionWithName:kHistoryError
+                  block:^{
+                    return [ChromeEarlGreyAppInterface isURL:spec
+                                             presentOnClient:expectPresent];
+                  }];
 
-  bool success = [waitForTypedURL waitWithTimeout:timeout.InSecondsF()];
-  EG_TEST_HELPER_ASSERT_TRUE(success, kTypedURLError);
+  bool success = [waitForURL waitWithTimeout:timeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(success, kHistoryError);
 }
 
 - (void)waitForSyncInvalidationFields {

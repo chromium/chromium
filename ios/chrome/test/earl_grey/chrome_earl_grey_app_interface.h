@@ -398,8 +398,11 @@
                      originator_client_item_id:
                          (NSString*)originator_client_item_id;
 
-// Injects typed URL to sync FakeServer.
+// Injects a typed URL to the sync FakeServer.
 + (void)addFakeSyncServerTypedURL:(NSString*)URL;
+
+// Injects a HISTORY visit to the sync FakeServer.
++ (void)addFakeSyncServerHistoryVisit:(NSURL*)URL;
 
 // Injects device info to sync FakeServer.
 + (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
@@ -414,7 +417,7 @@
 // If the provided URL `spec` is either present or not present in HistoryService
 // (depending on `expectPresent`), return YES. If the present status of `spec`
 // is not what is expected, or there is an error, return NO.
-+ (BOOL)isTypedURL:(NSString*)spec presentOnClient:(BOOL)expectPresent;
++ (BOOL)isURL:(NSString*)spec presentOnClient:(BOOL)expectPresent;
 
 // Triggers a sync cycle for a `type`.
 + (void)triggerSyncCycleForType:(syncer::ModelType)type;
