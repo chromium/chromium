@@ -1,0 +1,84 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  static_library("trusted_vault") {
+    sources = [
+      "download_keys_response_handler.cc",
+      "download_keys_response_handler.h",
+      "proto_string_bytes_conversion.cc",
+      "proto_string_bytes_conversion.h",
+      "securebox.cc",
+      "securebox.h",
+      "standalone_trusted_vault_backend.cc",
+      "standalone_trusted_vault_backend.h",
+      "standalone_trusted_vault_client.cc",
+      "standalone_trusted_vault_client.h",
+      "trusted_vault_access_token_fetcher.h",
+      "trusted_vault_access_token_fetcher_frontend.cc",
+      "trusted_vault_access_token_fetcher_frontend.h",
+      "trusted_vault_access_token_fetcher_impl.cc",
+      "trusted_vault_access_token_fetcher_impl.h",
+      "trusted_vault_connection.cc",
+      "trusted_vault_connection.h",
+      "trusted_vault_connection_impl.cc",
+      "trusted_vault_connection_impl.h",
+      "trusted_vault_crypto.cc",
+      "trusted_vault_crypto.h",
+      "trusted_vault_degraded_recoverability_handler.cc",
+      "trusted_vault_degraded_recoverability_handler.h",
+      "trusted_vault_registration_verifier.cc",
+      "trusted_vault_registration_verifier.h",
+      "trusted_vault_request.cc",
+      "trusted_vault_request.h",
+      "trusted_vault_server_constants.cc",
+      "trusted_vault_server_constants.h",
+    ]
+    public_deps = [
+      "//base",
+      "//components/sync/driver",
+    ]
+    deps = [
+      "//components/os_crypt/sync",
+      "//components/signin/public/identity_manager",
+      "//components/sync/base",
+      "//components/sync/protocol",
+      "//crypto",
+      "//google_apis",
+      "//net",
+      "//services/network/public/cpp:cpp",
+      "//third_party/boringssl",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "download_keys_response_handler_unittest.cc",
+      "proto_string_bytes_conversion_unittest.cc",
+      "securebox_unittest.cc",
+      "standalone_trusted_vault_backend_unittest.cc",
+      "trusted_vault_access_token_fetcher_frontend_unittest.cc",
+      "trusted_vault_connection_impl_unittest.cc",
+      "trusted_vault_crypto_unittest.cc",
+      "trusted_vault_degraded_recoverability_handler_unittest.cc",
+      "trusted_vault_registration_verifier_unittest.cc",
+      "trusted_vault_request_unittest.cc",
+      "trusted_vault_server_constants_unittest.cc",
+    ]
+
+    configs += [ "//build/config:precompiled_headers" ]
+
+    deps = [
+      ":trusted_vault",
+      "//components/os_crypt/sync",
+      "//components/os_crypt/sync:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//google_apis",
+      "//google_apis:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

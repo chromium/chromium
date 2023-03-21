@@ -6,6 +6,7 @@ include_rules = [
   "+components/prefs",
   "+components/signin/public",
   "+components/sync",
+  "+components/trusted_vault",
   "+mojo/public/cpp/bindings",
   "+net",
   "+services/network/public/cpp",

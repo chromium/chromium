@@ -7,10 +7,10 @@
 #include "base/base64url.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
-#include "components/sync/trusted_vault/proto_string_bytes_conversion.h"
-#include "components/sync/trusted_vault/securebox.h"
-#include "components/sync/trusted_vault/trusted_vault_crypto.h"
-#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
+#include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/trusted_vault_crypto.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 
 namespace syncer {
 

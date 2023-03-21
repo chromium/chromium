@@ -345,6 +345,7 @@ include_rules = [
   "+components/translate/core/common",
   "+components/translate/core/language_detection",
   "+components/translate/translate_internals",
+  "+components/trusted_vault",
   "+components/ui_devtools",
   "+components/ui_metrics",
   "+components/ukm",

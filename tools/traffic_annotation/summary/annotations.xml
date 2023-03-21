@@ -246,7 +246,7 @@ Refer to README.md for content description and update process.
  <item id="test_partial" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="tethering_handler_socket" added_in_milestone="65" content_hash_code="000f0cb8" os_list="linux,windows,chromeos,android" file_path="content/browser/devtools/protocol/tethering_handler.cc" />
  <item id="translate_url_fetcher" added_in_milestone="62" content_hash_code="06363ba2" os_list="linux,windows,chromeos,android" file_path="components/translate/core/browser/translate_url_fetcher.cc" />
- <item id="trusted_vault_request" added_in_milestone="88" content_hash_code="0738dfaf" os_list="linux,windows,chromeos" file_path="components/sync/trusted_vault/trusted_vault_request.cc" />
+ <item id="trusted_vault_request" added_in_milestone="88" content_hash_code="0738dfaf" os_list="linux,windows,chromeos" file_path="components/trusted_vault/trusted_vault_request.cc" />
  <item id="ui_devtools_server" added_in_milestone="66" content_hash_code="03bc45b7" os_list="linux,windows,chromeos,android" file_path="components/ui_devtools/devtools_server.cc" />
  <item id="undefined" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="unwanted_software_report" added_in_milestone="70" content_hash_code="0386a164" os_list="windows" file_path="chrome/chrome_cleaner/logging/reporter_logging_service.cc" />

@@ -14,7 +14,7 @@ group("sync") {
     "//components/sync/nigori",
   ]
   if (!is_android) {
-    public_deps += [ "//components/sync/trusted_vault" ]
+    public_deps += [ "//components/trusted_vault" ]
   }
   if (is_chromeos) {
     public_deps += [ "//components/sync/chromeos" ]
@@ -272,22 +272,6 @@ source_set("unit_tests") {
     "protocol/proto_enum_conversions_unittest.cc",
     "protocol/proto_value_conversions_unittest.cc",
   ]
-
-  if (!is_android) {
-    sources += [
-      "trusted_vault/download_keys_response_handler_unittest.cc",
-      "trusted_vault/proto_string_bytes_conversion_unittest.cc",
-      "trusted_vault/securebox_unittest.cc",
-      "trusted_vault/standalone_trusted_vault_backend_unittest.cc",
-      "trusted_vault/trusted_vault_access_token_fetcher_frontend_unittest.cc",
-      "trusted_vault/trusted_vault_connection_impl_unittest.cc",
-      "trusted_vault/trusted_vault_crypto_unittest.cc",
-      "trusted_vault/trusted_vault_degraded_recoverability_handler_unittest.cc",
-      "trusted_vault/trusted_vault_registration_verifier_unittest.cc",
-      "trusted_vault/trusted_vault_request_unittest.cc",
-      "trusted_vault/trusted_vault_server_constants_unittest.cc",
-    ]
-  }
 
   if (is_chromeos) {
     sources += [ "chromeos/explicit_passphrase_mojo_utils_unittest.cc" ]

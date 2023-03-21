@@ -529,7 +529,10 @@ test("components_unittests") {
       data_deps += [ "//clank/build/bot/filters:components_unittests_filters" ]
     }
   } else {  #!is_android
-    deps += [ "//components/keep_alive_registry:unit_tests" ]
+    deps += [
+      "//components/keep_alive_registry:unit_tests",
+      "//components/trusted_vault:unit_tests",
+    ]
   }
 
   # Desktop - only deps.

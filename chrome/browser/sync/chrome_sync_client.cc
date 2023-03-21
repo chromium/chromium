@@ -123,7 +123,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sync/trusted_vault_client_android.h"
 #else
-#include "components/sync/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
+#include "components/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

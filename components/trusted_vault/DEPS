@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/os_crypt/sync",
+  "+components/signin/public",
+  # TODO(crbug.com/1423343): Avoid dependencies to components/sync.
+  "+components/sync/base",
+  "+components/sync/driver",
+  "+components/sync/engine",
+  "+components/sync/protocol",
+  "+crypto",
+  "+google_apis",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/boringssl",
+]

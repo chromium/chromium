@@ -1,5 +1,6 @@
 include_rules = [
   "+components/consent_auditor",
+  "+components/trusted_vault",
 ]
 
 specific_include_rules = {

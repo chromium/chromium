@@ -9,7 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/trusted_vault_client.h"
-#include "components/sync/trusted_vault/trusted_vault_registration_verifier.h"
+#include "components/trusted_vault/trusted_vault_registration_verifier.h"
 
 namespace network {
 class SharedURLLoaderFactory;
