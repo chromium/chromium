@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 struct wp_content_type_v1;
+struct wp_fractional_scale_v1;
 struct zwp_linux_buffer_release_v1;
 struct zcr_blending_v1;
 
@@ -352,6 +353,7 @@ class WaylandSurface {
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<augmented_surface> augmented_surface_;
   wl::Object<wp_content_type_v1> content_type_;
+  wl::Object<wp_fractional_scale_v1> fractional_scale_;
   std::unique_ptr<WaylandZcrColorManagementSurface>
       zcr_color_management_surface_;
   base::flat_map<zwp_linux_buffer_release_v1*, ExplicitReleaseInfo>
@@ -383,6 +385,12 @@ class WaylandSurface {
   static void Leave(void* data,
                     struct wl_surface* wl_surface,
                     struct wl_output* output);
+
+  // wp_fractional_scale_v1_listener
+  static void PreferredScale(
+      void* data,
+      struct wp_fractional_scale_v1* wp_fractional_scale_v1,
+      uint32_t scale);
 
   // zwp_linux_buffer_release_v1_listener
   static void FencedRelease(

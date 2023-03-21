@@ -7,6 +7,7 @@
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
+#include <fractional-scale-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <surface-augmenter-client-protocol.h>
@@ -28,6 +29,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
+#include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -119,6 +121,18 @@ bool WaylandSurface::Initialize() {
       &WaylandSurface::Leave,
   };
   wl_surface_add_listener(surface_.get(), &surface_listener, this);
+
+  if (auto* fractional_scale_manager =
+          connection_->fractional_scale_manager_v1()) {
+    static struct wp_fractional_scale_v1_listener fractional_scale_listener {
+      &WaylandSurface::PreferredScale,
+    };
+    fractional_scale_ =
+        wl::Object(wp_fractional_scale_manager_v1_get_fractional_scale(
+            fractional_scale_manager, surface_.get()));
+    wp_fractional_scale_v1_add_listener(fractional_scale_.get(),
+                                        &fractional_scale_listener, this);
+  }
 
   if (connection_->viewporter()) {
     viewport_.reset(
@@ -810,6 +824,25 @@ void WaylandSurface::Leave(void* data,
   auto* wayland_output =
       static_cast<WaylandOutput*>(wl_output_get_user_data(output));
   surface->RemoveEnteredOutput(wayland_output->output_id());
+}
+
+// static
+void WaylandSurface::PreferredScale(
+    void* data,
+    struct wp_fractional_scale_v1* wp_fractional_scale_v1,
+    uint32_t scale) {
+  // Specified in fractional-scale-v1
+  constexpr float kFractionalScaleDenominator = 120.0f;
+
+  auto* surface = static_cast<WaylandSurface*>(data);
+  DCHECK(surface);
+
+  // If the compositor sends a scale of 0, reset it to 1.
+  if (scale == 0) {
+    surface->set_surface_buffer_scale(1.0f);
+  } else {
+    surface->set_surface_buffer_scale(scale / kFractionalScaleDenominator);
+  }
 }
 
 void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
