@@ -202,21 +202,37 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
   std::vector<FormStructure*> last_queried_forms_;
 };
 
-class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
+class MockTouchToFillDelegate : public TouchToFillDelegate {
  public:
-  explicit MockTouchToFillDelegateImpl(BrowserAutofillManager* manager)
-      : TouchToFillDelegateImpl(manager) {}
-  MockTouchToFillDelegateImpl(const MockTouchToFillDelegateImpl&) = delete;
-  MockTouchToFillDelegateImpl& operator=(const MockTouchToFillDelegateImpl&) =
-      delete;
-  ~MockTouchToFillDelegateImpl() override = default;
-
+  MockTouchToFillDelegate() = default;
+  MockTouchToFillDelegate(const MockTouchToFillDelegate&) = delete;
+  MockTouchToFillDelegate& operator=(const MockTouchToFillDelegate&) = delete;
+  ~MockTouchToFillDelegate() override = default;
+  MOCK_METHOD(AutofillManager*, GetManager, (), (override));
+  MOCK_METHOD(bool,
+              IntendsToShowTouchToFill,
+              (FormGlobalId, FieldGlobalId),
+              (override));
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
-              (const FormData& form, const FormFieldData& field),
+              (const FormData&, const FormFieldData&),
               (override));
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(void, HideTouchToFill, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
+  MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
+  MOCK_METHOD(void, ScanCreditCard, (), (override));
+  MOCK_METHOD(void, OnCreditCardScanned, (const CreditCard& card), (override));
+  MOCK_METHOD(void, ShowCreditCardSettings, (), (override));
+  MOCK_METHOD(void,
+              SuggestionSelected,
+              (std::string unique_id, bool is_virtual),
+              (override));
+  MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
+  MOCK_METHOD(void,
+              LogMetricsAfterSubmission,
+              (const FormStructure&),
+              (override));
 };
 
 void ExpectFilledField(const char* expected_label,
@@ -472,13 +488,12 @@ class BrowserAutofillManagerTest : public testing::Test {
     browser_autofill_manager_->SetExternalDelegateForTest(
         std::move(external_delegate));
 
-    auto touch_to_fill_delegate = std::make_unique<MockTouchToFillDelegateImpl>(
-        browser_autofill_manager_.get());
-    ON_CALL(*touch_to_fill_delegate, IsShowingTouchToFill())
+    browser_autofill_manager_->set_touch_to_fill_delegate(
+        std::make_unique<MockTouchToFillDelegate>());
+    ON_CALL(touch_to_fill_delegate(), GetManager())
+        .WillByDefault(Return(browser_autofill_manager_.get()));
+    ON_CALL(touch_to_fill_delegate(), IsShowingTouchToFill())
         .WillByDefault(Return(false));
-    touch_to_fill_delegate_ = touch_to_fill_delegate.get();
-    browser_autofill_manager_->SetTouchToFillDelegateImplForTest(
-        std::move(touch_to_fill_delegate));
 
     auto test_strike_database = std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
@@ -544,6 +559,11 @@ class BrowserAutofillManagerTest : public testing::Test {
 
     personal_data().SetPrefService(nullptr);
     personal_data().ClearCreditCards();
+  }
+
+  MockTouchToFillDelegate& touch_to_fill_delegate() {
+    return *static_cast<MockTouchToFillDelegate*>(
+        browser_autofill_manager_->touch_to_fill_delegate());
   }
 
   void GetAutofillSuggestions(const FormData& form,
@@ -955,7 +975,6 @@ class BrowserAutofillManagerTest : public testing::Test {
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TestAutofillExternalDelegate> external_delegate_;
-  raw_ptr<MockTouchToFillDelegateImpl> touch_to_fill_delegate_;
   scoped_refptr<AutofillWebDataService> database_;
   raw_ptr<MockAutofillDownloadManager> download_manager_;
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
@@ -5880,7 +5899,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   const FormFieldData& field = form.fields[0];
 
   // Touch the field of "Name on Card" and autofill suggestion is shown.
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _))
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
       .WillOnce(Return(false));
   TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
@@ -9994,7 +10013,7 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
 TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndOtherPopups) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kRendererEvent));
-  EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill);
+  EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill);
   EXPECT_CALL(autofill_client_, HideFastCheckout(/*allow_further_runs=*/false));
   browser_autofill_manager_->OnHidePopup();
 }
@@ -10003,7 +10022,7 @@ TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndOtherPopups) {
 TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kEndEditing));
-  EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill).Times(0);
+  EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill).Times(0);
   EXPECT_CALL(autofill_client_, HideFastCheckout(/*allow_further_runs=*/false))
       .Times(0);
   browser_autofill_manager_->OnDidEndTextFieldEditing();
@@ -10018,18 +10037,18 @@ TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
   const FormFieldData& field = form.fields[1];
 
   // Not a form element click, Autofill suggestions shown.
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _)).Times(0);
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _)).Times(0);
   TryToShowTouchToFill(form, field, FormElementWasClicked(false));
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // TTF not available, Autofill suggestions shown.
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _))
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
       .WillOnce(Return(false));
   TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // A form element click and TTF available, Autofill suggestions not shown.
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _))
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _))
       .WillOnce(Return(true));
   TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
@@ -10044,9 +10063,9 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
   FormsSeen({form});
   const FormFieldData& field = form.fields[1];
 
-  EXPECT_CALL(*touch_to_fill_delegate_, IsShowingTouchToFill)
+  EXPECT_CALL(touch_to_fill_delegate(), IsShowingTouchToFill)
       .WillOnce(Return(true));
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _)).Times(0);
+  EXPECT_CALL(touch_to_fill_delegate(), TryToShowTouchToFill(_, _)).Times(0);
   TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }

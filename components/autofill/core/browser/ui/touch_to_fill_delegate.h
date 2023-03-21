@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TOUCH_TO_FILL_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_TOUCH_TO_FILL_DELEGATE_H_
@@ -10,6 +13,7 @@
 namespace autofill {
 
 class AutofillManager;
+class FormStructure;
 
 // An interface for interaction with the bottom sheet UI controller, which is
 // `TouchToFillCreditCardController` on Android. The delegate will supply the
@@ -20,12 +24,32 @@ class TouchToFillDelegate {
 
   virtual AutofillManager* GetManager() = 0;
 
+  virtual bool IntendsToShowTouchToFill(FormGlobalId form_id,
+                                        FieldGlobalId field_id) = 0;
+
+  // Checks whether TTF is eligible for the given web form data and, if
+  // successful, triggers the corresponding surface and returns |true|.
+  virtual bool TryToShowTouchToFill(const FormData& form,
+                                    const FormFieldData& field) = 0;
+
+  // Returns whether the TTF surface is currently being shown.
+  virtual bool IsShowingTouchToFill() = 0;
+
+  // Hides the TTF surface if one is shown.
+  virtual void HideTouchToFill() = 0;
+
+  // Resets the delegate to its starting state (e.g. on navigation).
+  virtual void Reset() = 0;
+
   virtual bool ShouldShowScanCreditCard() = 0;
   virtual void ScanCreditCard() = 0;
   virtual void OnCreditCardScanned(const CreditCard& card) = 0;
   virtual void ShowCreditCardSettings() = 0;
   virtual void SuggestionSelected(std::string unique_id, bool is_virtual) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
+
+  virtual void LogMetricsAfterSubmission(
+      const FormStructure& submitted_form) = 0;
 };
 
 }  // namespace autofill

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
+#include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -175,8 +176,9 @@ AutofillManager* TouchToFillDelegateImpl::GetManager() {
 }
 
 bool TouchToFillDelegateImpl::ShouldShowScanCreditCard() {
-  if (!manager_->client()->HasCreditCardScanFeature())
+  if (!manager_->client()->HasCreditCardScanFeature()) {
     return false;
+  }
 
   return !IsFormOrClientNonSecure(manager_->client(), query_form_);
 }
@@ -221,7 +223,7 @@ void TouchToFillDelegateImpl::OnDismissed(bool dismissed_by_user) {
 }
 
 void TouchToFillDelegateImpl::LogMetricsAfterSubmission(
-    const FormStructure& submitted_form) const {
+    const FormStructure& submitted_form) {
   // Log whether autofill was used after dismissing the touch to fill (without
   // selecting any credit card for filling)
   if (ttf_credit_card_state_ == TouchToFillState::kWasShown &&

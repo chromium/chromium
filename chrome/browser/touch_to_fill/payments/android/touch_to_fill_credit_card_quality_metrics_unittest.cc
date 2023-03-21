@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/touch_to_fill/payments//android/touch_to_fill_delegate_android_impl.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
@@ -37,6 +38,8 @@ class TouchToFillForCreditCardsTest
         .WillByDefault(testing::Return(true));
     ON_CALL(*autofill_client_, IsTouchToFillCreditCardSupported)
         .WillByDefault(testing::Return(true));
+    autofill_manager().set_touch_to_fill_delegate(
+        std::make_unique<TouchToFillDelegateImpl>(&autofill_manager()));
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -87,6 +90,11 @@ class TouchToFillForCreditCardsTest
               : u"123";
     }
   }
+
+  TouchToFillDelegateImpl& touch_to_fill_delegate() {
+    return *static_cast<TouchToFillDelegateImpl*>(
+        autofill_manager().touch_to_fill_delegate());
+  }
 };
 
 // The test workflow:
@@ -116,9 +124,9 @@ TEST_P(TouchToFillForCreditCardsTest,
 
   base::HistogramTester histogram_tester;
   // Simulate user selection in the payments bottom sheet.
-  touch_to_fill_delegate_->SuggestionSelected(/*unique_id=*/kTestLocalCardId,
+  touch_to_fill_delegate().SuggestionSelected(/*unique_id=*/kTestLocalCardId,
                                               /*is_virtual=*/false);
-  touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/false);
+  touch_to_fill_delegate().OnDismissed(/*dismissed_by_user=*/false);
   // Simulate that fields were autofilled.
   SetFieldsAutofilledValues(form, test_case.fields_have_autofilled_values,
                             test_case.field_types);

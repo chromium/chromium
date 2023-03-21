@@ -524,7 +524,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
     : AutofillManager(driver, client),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
-      touch_to_fill_delegate_(std::make_unique<TouchToFillDelegateImpl>(this)),
       app_locale_(app_locale),
       personal_data_(client->GetPersonalDataManager()),
       field_filler_(app_locale, client->GetAddressNormalizer()),
@@ -888,7 +887,9 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   if (IsAutofillCreditCardEnabled()) {
     credit_card_form_event_logger_->OnFormSubmitted(sync_state_,
                                                     *submitted_form);
-    touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
+    if (touch_to_fill_delegate_) {
+      touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
+    }
   }
 }
 
@@ -1232,9 +1233,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     }
 
     single_field_form_fill_router_->CancelPendingQueries(this);
-    if (touch_to_fill_delegate_->IsShowingTouchToFill() ||
-        (form_element_was_clicked &&
-         touch_to_fill_delegate_->TryToShowTouchToFill(form, field))) {
+    if (touch_to_fill_delegate_ &&
+        (touch_to_fill_delegate_->IsShowingTouchToFill() ||
+         (form_element_was_clicked &&
+          touch_to_fill_delegate_->TryToShowTouchToFill(form, field)))) {
       // Touch To Fill surface is shown, so abort showing regular Autofill UI.
       // Now the flow is controlled by the |touch_to_fill_delegate_| instead
       // of |external_delegate_|.
@@ -1557,7 +1559,9 @@ void BrowserAutofillManager::OnHidePopupImpl() {
   single_field_form_fill_router_->CancelPendingQueries(this);
   client()->HideAutofillPopup(PopupHidingReason::kRendererEvent);
   client()->HideFastCheckout(/*allow_further_runs=*/false);
-  touch_to_fill_delegate_->HideTouchToFill();
+  if (touch_to_fill_delegate_) {
+    touch_to_fill_delegate_->HideTouchToFill();
+  }
 }
 
 bool BrowserAutofillManager::GetDeletionConfirmationText(
@@ -2072,7 +2076,9 @@ void BrowserAutofillManager::Reset() {
   credit_card_action_ = mojom::RendererFormDataAction::kPreview;
   initial_interaction_timestamp_ = TimeTicks();
   external_delegate_->Reset();
-  touch_to_fill_delegate_->Reset();
+  if (touch_to_fill_delegate_) {
+    touch_to_fill_delegate_->Reset();
+  }
   filling_context_.clear();
   form_submitted_timestamp_ = TimeTicks();
 }

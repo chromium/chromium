@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_keyboard_suppressor.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
 
 namespace autofill {
 
@@ -28,7 +29,8 @@ class CreditCard;
 // interactions. While the surface is shown, stores its Java counterpart in
 // `java_object_`.
 class TouchToFillCreditCardController
-    : public TouchToFillCreditCardViewController {
+    : public TouchToFillCreditCardViewController,
+      public ContentAutofillDriverFactory::Observer {
  public:
   explicit TouchToFillCreditCardController(
       ContentAutofillClient* autofill_client);
@@ -37,6 +39,12 @@ class TouchToFillCreditCardController
   TouchToFillCreditCardController& operator=(
       const TouchToFillCreditCardController&) = delete;
   ~TouchToFillCreditCardController() override;
+
+  // ContentAutofillDriverFactory::Observer:
+  void OnContentAutofillDriverFactoryDestroyed(
+      ContentAutofillDriverFactory& factory) override;
+  void OnContentAutofillDriverCreated(ContentAutofillDriverFactory& factory,
+                                      ContentAutofillDriver& driver) override;
 
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable credit
   // cards and be notified of the user's decision. Returns whether the surface
@@ -64,6 +72,11 @@ class TouchToFillCreditCardController
   // Gets or creates the Java counterpart.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 
+  // Observes creation of ContentAutofillDrivers to inject a
+  // TouchToFillDelegateImpl into the BrowserAutofillManager.
+  base::ScopedObservation<ContentAutofillDriverFactory,
+                          ContentAutofillDriverFactory::Observer>
+      driver_factory_observation_{this};
   // Delegate for the surface being shown.
   base::WeakPtr<TouchToFillDelegate> delegate_;
   // View that displays the surface, owned by `this`.

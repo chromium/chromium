@@ -6674,6 +6674,8 @@ test("unit_tests") {
       "../browser/sharing/sms/sms_fetch_request_handler_unittest.cc",
       "../browser/supervised_user/android/favicon_fetcher_unittest.cc",
       "../browser/touch_to_fill/payments/android/touch_to_fill_credit_card_controller_unittest.cc",
+      "../browser/touch_to_fill/payments/android/touch_to_fill_credit_card_quality_metrics_unittest.cc",
+      "../browser/touch_to_fill/payments/android/touch_to_fill_delegate_android_impl_unittest.cc",
       "../browser/touch_to_fill/touch_to_fill_controller_autofill_delegate_unittest.cc",
       "../browser/touch_to_fill/touch_to_fill_controller_webauthn_delegate_unittest.cc",
       "../browser/touch_to_fill/touch_to_fill_keyboard_suppressor_unittest.cc",

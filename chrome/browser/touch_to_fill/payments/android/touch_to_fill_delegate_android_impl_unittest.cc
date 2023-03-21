@@ -1,8 +1,8 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.h"
 
-#include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -145,7 +145,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     touch_to_fill_delegate_ = touch_to_fill_delegate.get();
     base::WeakPtr<TouchToFillDelegateImpl> touch_to_fill_delegate_weak =
         touch_to_fill_delegate->GetWeakPtr();
-    browser_autofill_manager_->SetTouchToFillDelegateImplForTest(
+    browser_autofill_manager_->set_touch_to_fill_delegate(
         std::move(touch_to_fill_delegate));
 
     // Default setup for successful `TryToShowTouchToFill`.
@@ -184,14 +184,8 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     if (!browser_autofill_manager_->FindCachedFormById(form_.global_id())) {
       browser_autofill_manager_->OnFormsSeen({form_}, {});
     }
-    touch_to_fill_delegate_->OnBeforeAskForValuesToFill(
-        *browser_autofill_manager_, form_.global_id(),
-        form_.fields[0].global_id());
     EXPECT_EQ(expected_success, touch_to_fill_delegate_->TryToShowTouchToFill(
                                     form_, form_.fields[0]));
-    touch_to_fill_delegate_->OnAfterAskForValuesToFill(
-        *browser_autofill_manager_, form_.global_id(),
-        form_.fields[0].global_id());
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IsShowingTouchToFill());
   }
@@ -304,14 +298,8 @@ TEST_F(TouchToFillDelegateImplUnitTest,
       autofill_client_,
       HideAutofillPopup(PopupHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
-  touch_to_fill_delegate_->OnBeforeAskForValuesToFill(
-      *browser_autofill_manager_, form_.global_id(),
-      form_.fields[0].global_id());
   EXPECT_FALSE(
       touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields[0]));
-  touch_to_fill_delegate_->OnAfterAskForValuesToFill(
-      *browser_autofill_manager_, form_.global_id(),
-      form_.fields[0].global_id());
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillFailsIfWasShown) {

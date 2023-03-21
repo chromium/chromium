@@ -7,7 +7,6 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
-#include "components/autofill/core/browser/touch_to_fill_delegate_impl.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -77,12 +76,6 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       &autofill_manager(), autofill_driver_.get());
   external_delegate_ = external_delegate.get();
   autofill_manager().SetExternalDelegateForTest(std::move(external_delegate));
-
-  auto touch_to_fill_delegate_uptr =
-      std::make_unique<TouchToFillDelegateImpl>(&autofill_manager());
-  touch_to_fill_delegate_ = touch_to_fill_delegate_uptr.get();
-  autofill_manager().SetTouchToFillDelegateImplForTest(
-      std::move(touch_to_fill_delegate_uptr));
 
 #if !BUILDFLAG(IS_IOS)
   autofill_manager()

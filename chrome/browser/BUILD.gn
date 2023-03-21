@@ -3208,8 +3208,12 @@ static_library("browser") {
       "sync/trusted_vault_client_android.h",
       "tab/web_contents_state.cc",
       "tab/web_contents_state.h",
+
+      # TODO(crbug.com/1426388): Move to its own target in touch_to_fill/.
       "touch_to_fill/payments/android/touch_to_fill_credit_card_controller.cc",
       "touch_to_fill/payments/android/touch_to_fill_credit_card_controller.h",
+      "touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.cc",
+      "touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.h",
       "touch_to_fill/touch_to_fill_controller.cc",
       "touch_to_fill/touch_to_fill_controller.h",
       "touch_to_fill/touch_to_fill_controller_autofill_delegate.cc",

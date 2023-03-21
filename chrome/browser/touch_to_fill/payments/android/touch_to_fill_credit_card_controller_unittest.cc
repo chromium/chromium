@@ -9,6 +9,7 @@
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_controller.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_controller.h"
+#include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -100,7 +101,7 @@ class TouchToFillCreditCardControllerTest
     NavigateAndCommit(GURL("about:blank"));
     credit_card_controller_ =
         std::make_unique<TouchToFillCreditCardController>(&autofill_client());
-    autofill_manager().SetTouchToFillDelegateImplForTest(
+    autofill_manager().set_touch_to_fill_delegate(
         std::make_unique<MockTouchToFillDelegateImpl>(&autofill_manager()));
     mock_view_ = std::make_unique<MockTouchToFillCreditCardViewImpl>();
   }

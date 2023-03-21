@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_TOUCH_TO_FILL_DELEGATE_IMPL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_TOUCH_TO_FILL_DELEGATE_IMPL_H_
+#ifndef CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
+#define CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -64,8 +64,8 @@ enum class TouchToFillCreditCardTriggerOutcome {
 constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
     "Autofill.TouchToFill.CreditCard.TriggerOutcome";
 
-class AutofillManager;
 class BrowserAutofillManager;
+class FormStructure;
 
 // Delegate for in-browser Touch To Fill (TTF) surface display and selection.
 // Currently TTF surface is eligible only for credit card forms on click on
@@ -83,10 +83,8 @@ class BrowserAutofillManager;
 // It is supposed to be owned by the given |BrowserAutofillManager|, and
 // interact with it and its |AutofillClient| and |AutofillDriver|.
 //
-// Public methods are marked virtual for testing.
 // TODO(crbug.com/1324900): Consider using more descriptive name.
-class TouchToFillDelegateImpl : public TouchToFillDelegate,
-                                public AutofillManager::Observer {
+class TouchToFillDelegateImpl : public TouchToFillDelegate {
  public:
   explicit TouchToFillDelegateImpl(BrowserAutofillManager* manager);
   TouchToFillDelegateImpl(const TouchToFillDelegateImpl&) = delete;
@@ -95,22 +93,22 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate,
 
   // Checks whether TTF is eligible for the given web form data.
   // Only if this is true, the controller will show the view.
-  virtual bool IntendsToShowTouchToFill(FormGlobalId form_id,
-                                        FieldGlobalId field_id);
+  bool IntendsToShowTouchToFill(FormGlobalId form_id,
+                                FieldGlobalId field_id) override;
 
   // Checks whether TTF is eligible for the given web form data and, if
   // successful, triggers the corresponding surface and returns |true|.
-  virtual bool TryToShowTouchToFill(const FormData& form,
-                                    const FormFieldData& field);
+  bool TryToShowTouchToFill(const FormData& form,
+                            const FormFieldData& field) override;
 
   // Returns whether the TTF surface is currently being shown.
-  virtual bool IsShowingTouchToFill();
+  bool IsShowingTouchToFill() override;
 
   // Hides the TTF surface if one is shown.
-  virtual void HideTouchToFill();
+  void HideTouchToFill() override;
 
   // Resets the delegate to its starting state (e.g. on navigation).
-  virtual void Reset();
+  void Reset() override;
 
   // TouchToFillDelegate:
   AutofillManager* GetManager() override;
@@ -121,7 +119,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate,
   void SuggestionSelected(std::string unique_id, bool is_virtual) override;
   void OnDismissed(bool dismissed_by_user) override;
 
-  void LogMetricsAfterSubmission(const FormStructure& submitted_form) const;
+  void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
 
   base::WeakPtr<TouchToFillDelegateImpl> GetWeakPtr();
 
@@ -174,4 +172,4 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate,
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TOUCH_TO_FILL_DELEGATE_IMPL_H_
+#endif  // CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
