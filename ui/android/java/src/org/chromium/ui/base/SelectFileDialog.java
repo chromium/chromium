@@ -485,20 +485,28 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
         ArrayList<Intent> extraIntents = new ArrayList<Intent>();
         if (acceptsSingleType()) {
+            List<String> types = mFileTypes;
+            // Calls to ACTION_GET_CONTENT can result in the MediaPicker hijacking the call and
+            // showing itself instead of the Files app, when only images or videos are provided.
+            // This flow is not only confusing for the user (a MediaPicker on top of a MediaPicker?)
+            // but also breaks our cloud media integration, which is currently provided via the
+            // Files app. We therefore add a non-existant MIME-type to the mix, which the Files app
+            // will ignore, but ensures the MediaPicker wont hijack the call.
+            String noOpMimeType = "type/nonexistent";
+
             // If one and only one category of accept type was specified (image, video, etc..),
             // then update the intent to specifically target that request.
             if (shouldShowImageTypes()) {
                 if (camera != null) extraIntents.add(camera);
-                getContentIntent.putExtra(
-                        Intent.EXTRA_MIME_TYPES, mFileTypes.toArray(new String[0]));
+                types.add(noOpMimeType);
+                getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
             } else if (shouldShowVideoTypes()) {
                 if (camcorder != null) extraIntents.add(camcorder);
-                getContentIntent.putExtra(
-                        Intent.EXTRA_MIME_TYPES, mFileTypes.toArray(new String[0]));
+                types.add(noOpMimeType);
+                getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
             } else if (shouldShowAudioTypes()) {
                 if (soundRecorder != null) extraIntents.add(soundRecorder);
-                getContentIntent.putExtra(
-                        Intent.EXTRA_MIME_TYPES, mFileTypes.toArray(new String[0]));
+                getContentIntent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
             }
 
             // If any types are specified, then only accept openable files, as coercing
