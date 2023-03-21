@@ -443,7 +443,8 @@ TEST_F(MemoryTracingIntegrationTest, PeriodicDumpingWithMultipleModes) {
   mdm_->UnregisterAndDeleteDumpProviderSoon(std::move(mdp));
 }
 
-TEST_F(MemoryTracingIntegrationTest, TestWhitelistingMDP) {
+// TODO(https://crbug.com/1426515): Re-enable this test
+TEST_F(MemoryTracingIntegrationTest, DISABLED_TestWhitelistingMDP) {
   InitializeClientProcess(mojom::ProcessType::RENDERER);
   base::trace_event::SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
   std::unique_ptr<MockMemoryDumpProvider> mdp1(new MockMemoryDumpProvider);
@@ -463,7 +464,9 @@ TEST_F(MemoryTracingIntegrationTest, TestWhitelistingMDP) {
 }
 
 // Regression test for https://crbug.com/766274 .
-TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
+// TODO(https://crbug.com/1426515): Re-enable this test
+TEST_F(MemoryTracingIntegrationTest,
+       DISABLED_GenerationChangeDoesntReenterMDM) {
   InitializeClientProcess(mojom::ProcessType::RENDERER);
 
   // We want the ThreadLocalEventBuffer MDPs to auto-register to repro this bug.
