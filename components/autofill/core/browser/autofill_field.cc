@@ -307,7 +307,7 @@ void AutofillField::SetTypeTo(const AutofillType& type) {
 
 AutofillType AutofillField::ComputedType() const {
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
-  // we always user the server prediction as html types are not very reliable.
+  // we always use the server prediction as html types are not very reliable.
   if ((GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
            FieldTypeGroup::kPhoneBilling ||
        GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
@@ -354,7 +354,7 @@ AutofillType AutofillField::ComputedType() const {
                           !(server_type() == NAME_LAST &&
                             heuristic_type() == CREDIT_CARD_NAME_LAST);
 
-    // Either way, retain a preference for the the CVC heuristic over the
+    // Either way, retain a preference for the CVC heuristic over the
     // server's password predictions (http://crbug.com/469007)
     believe_server =
         believe_server && !(AutofillType(server_type()).group() ==
