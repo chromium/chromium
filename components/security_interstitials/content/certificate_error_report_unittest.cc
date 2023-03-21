@@ -457,6 +457,14 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_FALSE(trial_info.has_win_platform_debug_info());
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  // Can't really test anything more than that it is present, since the
+  // unittest could be running on any distro.
+  EXPECT_TRUE(trial_info.has_linux_distro());
+#else
+  EXPECT_FALSE(trial_info.has_linux_distro());
+#endif
+
 #if BUILDFLAG(USE_NSS_CERTS)
   ASSERT_TRUE(trial_info.has_nss_version());
   EXPECT_EQ("aoeu", trial_info.nss_version());

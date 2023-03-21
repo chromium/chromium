@@ -359,4 +359,7 @@ message TrialVerificationInfo {
   // Debug information pertaining to the TrustStoreNSS instance used by the
   // trial verifier (if NSS is used).
   optional TrustStoreNSSDebugInfo trial_nss_debug_info = 18;
+
+  // The Linux distribution name, if report is from Linux.
+  optional string linux_distro = 19;
 }

@@ -25,6 +25,10 @@
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/linux_util.h"
+#endif
+
 #include "net/cert/cert_verify_result.h"
 
 using network_time::NetworkTimeTracker;
@@ -292,6 +296,9 @@ CertificateErrorReport::CertificateErrorReport(
 #if BUILDFLAG(IS_WIN)
   AddWinPlatformDebugInfoToReport(debug_info->win_platform_debug_info,
                                   trial_report);
+#endif
+#if BUILDFLAG(IS_LINUX)
+  trial_report->set_linux_distro(base::GetLinuxDistro());
 #endif
 #if BUILDFLAG(USE_NSS_CERTS)
   trial_report->set_nss_version(debug_info->nss_version);
