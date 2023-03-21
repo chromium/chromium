@@ -15,11 +15,7 @@ namespace sync_preferences {
 // This class represents the metadata corresponding to a syncable preference.
 class SyncablePrefMetadata {
  public:
-  // TODO(crbug.com/1424774): Remove the default for `model_type` once the
-  // database has been populated.
-  // Note: Not marking explicit to allow construction from initializer-list.
-  SyncablePrefMetadata(int syncable_pref_id,
-                       syncer::ModelType model_type = syncer::UNSPECIFIED);
+  SyncablePrefMetadata(int syncable_pref_id, syncer::ModelType model_type);
   // Returns the unique ID corresponding to the syncable preference.
   int syncable_pref_id() const { return syncable_pref_id_; }
   // Returns the model type of the pref, i.e. PREFERENCES, PRIORITY_PREFERENCES,

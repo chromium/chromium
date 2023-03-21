@@ -477,13 +477,9 @@ void PrefModelAssociator::RegisterPref(const std::string& name) {
       !base::FeatureList::IsEnabled(syncer::kSyncEnforcePreferencesAllowlist) ||
       !client_ ||
       (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name) &&
-       // TODO(crbug.com/1424774): Remove support for syncer::UNSPECIFIED.
-       (client_->GetSyncablePrefsDatabase()
-                .GetSyncablePrefMetadata(name)
-                ->model_type() == type_ ||
-        client_->GetSyncablePrefsDatabase()
-                .GetSyncablePrefMetadata(name)
-                ->model_type() == syncer::UNSPECIFIED)))
+       client_->GetSyncablePrefsDatabase()
+               .GetSyncablePrefMetadata(name)
+               ->model_type() == type_))
       << "Preference " << name
       << " has not been added to syncable prefs allowlist, or has incorrect "
          "data.";
