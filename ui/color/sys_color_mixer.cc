@@ -17,8 +17,8 @@ namespace ui {
 namespace {
 
 // Sys token overrides for the non-baseline themed case.
-void AddThemedSysColors(ColorMixer& mixer,
-                        const ColorProviderManager::Key& key) {
+void AddThemedSysColorOverrides(ColorMixer& mixer,
+                                const ColorProviderManager::Key& key) {
   const bool dark_mode =
       key.color_mode == ColorProviderManager::ColorMode::kDark;
 
@@ -54,6 +54,10 @@ void AddThemedSysColors(ColorMixer& mixer,
                                                   : kColorRefPrimary20};
   mixer[kColorSysStateHeaderHover] = {dark_mode ? kColorRefPrimary30
                                                 : kColorRefPrimary80};
+
+  // Experimentation.
+  mixer[kColorSysOmniboxContainer] = {dark_mode ? kColorRefSecondary15
+                                                : kColorSysSurface4};
 }
 
 }  // namespace
@@ -228,6 +232,12 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysStateHoverInverseCutout] = {
       dark_mode ? SetAlpha({kColorRefNeutral10}, 0x29)
                 : SetAlpha({kColorRefNeutral10}, 0x0F)};
+  mixer[kColorSysStateHoverDimBlendProtection] = {
+      dark_mode ? SetAlpha({kColorRefNeutral99}, 0x1A)
+                : SetAlpha({kColorRefPrimary20}, 0x2E)};
+  mixer[kColorSysStateHoverBrightBlendProtection] = {
+      dark_mode ? SetAlpha({kColorRefNeutral99}, 0x29)
+                : SetAlpha({kColorRefNeutral10}, 0x0F)};
 
   mixer[kColorSysStateOnHeaderHover] = {dark_mode ? kColorRefSecondary90
                                                   : kColorRefPrimary20};
@@ -236,6 +246,10 @@ void AddSysColorMixer(ColorProvider* provider,
 
   // Effects.
   mixer[kColorSysShadow] = {kColorRefNeutral0};
+
+  // Experimentation.
+  mixer[kColorSysOmniboxContainer] = {dark_mode ? kColorRefNeutral15
+                                                : kColorSysSurface4};
 
   // Deprecated.
   mixer[kColorSysOnBase] = {dark_mode ? kColorRefNeutral90
@@ -254,7 +268,9 @@ void AddSysColorMixer(ColorProvider* provider,
   mixer[kColorSysStateDrag] = dark_mode ? SetAlpha({kColorRefNeutral90}, 0x29)
                                         : SetAlpha({kColorRefNeutral10}, 0x29);
 
-  AddThemedSysColors(mixer, key);
+  if (key.user_color.has_value()) {
+    AddThemedSysColorOverrides(mixer, key);
+  }
 }
 
 }  // namespace ui

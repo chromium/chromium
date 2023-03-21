@@ -185,8 +185,12 @@
   E_CPONLY(kColorSysStateHoverInverseCutout) \
   E_CPONLY(kColorSysStateOnHeaderHover) \
   E_CPONLY(kColorSysStateHeaderHover) \
+  E_CPONLY(kColorSysStateHoverDimBlendProtection) \
+  E_CPONLY(kColorSysStateHoverBrightBlendProtection) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
+  /* Experimentation. */ \
+  E_CPONLY(kColorSysOmniboxContainer) \
   /* Deprecated */ \
   E_CPONLY(kColorSysOnBase) \
   E_CPONLY(kColorSysOnBaseBorder) \
