@@ -109,7 +109,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormFieldData& field),
               (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
-  MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool suppress), (override));
 };
 
 }  // namespace
@@ -679,90 +678,6 @@ TEST_F(TouchToFillDelegateImplUnitTest, AutofillUsedAfterTouchToFillDismissal) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal",
       true, 1);
-}
-
-class TouchToFillDelegateImplUnitTest_KeyboardSuppression
-    : public TouchToFillDelegateImplUnitTest {
- public:
-  // Parses a form and triggers the On{Before,After}AskForValuesToFill() events
-  // and runs TryToShowTouchToFill() in between. Before TryToShowTouchToFill(),
-  // the simulated parse takes `parse_duration`.
-  void TriggerTouchToFill(
-      const FormData& form,
-      base::TimeDelta parsing_duration,
-      base::OnceCallback<void(FormStructure*)> mutate_form) {
-    browser_autofill_manager_->OnFormsSeen({form}, {});
-    FormStructure* form_structure =
-        browser_autofill_manager_->FindCachedFormById(form.global_id());
-    ASSERT_TRUE(form_structure);
-
-    touch_to_fill_delegate_->OnBeforeAskForValuesToFill(
-        *browser_autofill_manager_, form.global_id(),
-        form.fields[0].global_id());
-    task_environment_.FastForwardBy(parsing_duration);
-    std::move(mutate_form).Run(form_structure);
-    touch_to_fill_delegate_->TryToShowTouchToFill(form, form.fields[0]);
-    touch_to_fill_delegate_->OnAfterAskForValuesToFill(
-        *browser_autofill_manager_, form.global_id(),
-        form.fields[0].global_id());
-    task_environment_.RunUntilIdle();
-  }
-};
-
-TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
-       SuppressedIfAllGoesWell) {
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard);
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
-      .Times(0);
-  TriggerTouchToFill(form_, base::Milliseconds(30), base::DoNothing());
-}
-
-TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
-       UnsuppressedIfFormIsNonCreditCard) {
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true))
-      .Times(0);
-  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard).Times(0);
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
-      .Times(0);
-  FormData address_form;
-  test::CreateTestAddressFormData(&address_form);
-  TriggerTouchToFill(address_form, base::Milliseconds(30), base::DoNothing());
-}
-
-TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
-       UnsuppressedIfFormBecomesNonCreditCard) {
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true))
-      .Times(1);
-  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard).Times(0);
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
-      .Times(1);
-  TriggerTouchToFill(form_, base::Milliseconds(30),
-                     base::BindOnce([](FormStructure* form_structure) {
-                       for (auto& field : *form_structure) {
-                         field->SetTypeTo(AutofillType(NAME_FIRST));
-                       }
-                     }));
-}
-
-TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
-       UnsuppressedIfControllerFails) {
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true));
-  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard)
-      .Times(1)
-      .WillOnce(Return(false));
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false));
-  TriggerTouchToFill(form_, base::Milliseconds(30), base::DoNothing());
-}
-
-TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
-       UnsuppressedIfParseIsSlow) {
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true))
-      .Times(1);
-  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard).Times(0);
-  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
-      .Times(1);
-  TriggerTouchToFill(form_, base::Seconds(2), base::DoNothing());
 }
 
 }  // namespace autofill

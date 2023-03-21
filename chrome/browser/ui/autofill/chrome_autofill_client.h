@@ -314,7 +314,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       card_expiration_date_fix_flow_controller_;
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
-  TouchToFillCreditCardController touch_to_fill_credit_card_controller_;
+  TouchToFillCreditCardController touch_to_fill_credit_card_controller_{this};
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;

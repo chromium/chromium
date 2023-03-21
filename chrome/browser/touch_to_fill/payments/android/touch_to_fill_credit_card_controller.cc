@@ -11,7 +11,29 @@
 
 namespace autofill {
 
-TouchToFillCreditCardController::TouchToFillCreditCardController() = default;
+namespace {
+TouchToFillDelegateImpl* GetDelegate(AutofillManager& manager) {
+  auto& bam = static_cast<BrowserAutofillManager&>(manager);
+  return bam.touch_to_fill_delegate();
+}
+}  // namespace
+
+TouchToFillCreditCardController::TouchToFillCreditCardController(
+    ContentAutofillClient* autofill_client)
+    : keyboard_suppressor_(
+          autofill_client,
+          base::BindRepeating([](AutofillManager& manager) {
+            return GetDelegate(manager) &&
+                   GetDelegate(manager)->IsShowingTouchToFill();
+          }),
+          base::BindRepeating([](AutofillManager& manager,
+                                 FormGlobalId form,
+                                 FieldGlobalId field) {
+            return GetDelegate(manager) &&
+                   GetDelegate(manager)->IntendsToShowTouchToFill(form, field);
+          }),
+          base::Seconds(1)) {}
+
 TouchToFillCreditCardController::~TouchToFillCreditCardController() {
   if (java_object_) {
     Java_TouchToFillCreditCardControllerBridge_onNativeDestroyed(
@@ -22,7 +44,11 @@ TouchToFillCreditCardController::~TouchToFillCreditCardController() {
 bool TouchToFillCreditCardController::Show(
     std::unique_ptr<TouchToFillCreditCardView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest) {
+    base::span<const CreditCard> cards_to_suggest) {
+  if (!keyboard_suppressor_.is_suppressing()) {
+    return false;
+  }
+
   // Abort if TTF surface is already shown.
   if (view_)
     return false;
@@ -51,6 +77,7 @@ void TouchToFillCreditCardController::OnDismissed(JNIEnv* env,
   view_.reset();
   delegate_.reset();
   java_object_.Reset();
+  keyboard_suppressor_.Unsuppress();
 }
 
 void TouchToFillCreditCardController::ScanCreditCard(JNIEnv* env) {
