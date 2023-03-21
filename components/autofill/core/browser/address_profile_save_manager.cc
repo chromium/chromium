@@ -132,7 +132,8 @@ void AddressProfileSaveManager::OfferSavePrompt(
   client_->ConfirmSaveAddressProfile(
       process_ptr->import_candidate().value(),
       base::OptionalToPtr(process_ptr->merge_candidate()),
-      AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
+      AutofillClient::SaveAddressProfilePromptOptions{
+          .show_prompt = true, .is_migration_to_account = false},
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(import_process)));

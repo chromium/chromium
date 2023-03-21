@@ -220,6 +220,12 @@
   <message name="IDS_AUTOFILL_DELETE_LOCAL_ADDRESS_SOURCE_NOTICE" desc="The notice/warning for the user before a local (syncing is disabled) address deletion." formatter_data="android_java">
     This address will be deleted from this device
   </message>
+  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be stored in their account.">
+    In your Google Account <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be migrated in their account.">
+    Save address in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
+  </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
     A required field is empty. Fill it before saving.
   </message>
@@ -350,6 +356,9 @@
   <if expr="is_android">
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
       Save address?
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to migrate a new address in their Google Account.">
+      Save in account?
     </message>
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
       Update address?

@@ -17,7 +17,8 @@
 namespace autofill {
 
 class SaveUpdateAddressProfileFlowManagerBrowserTest
-    : public AndroidBrowserTest {
+    : public AndroidBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SaveUpdateAddressProfileFlowManagerBrowserTest() = default;
   ~SaveUpdateAddressProfileFlowManagerBrowserTest() override = default;
@@ -50,14 +51,17 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
     return !!flow_manager_->GetPromptControllerForTest();
   }
 
+  bool is_migration_to_account() const { return GetParam(); }
+
   AutofillProfile profile_;
   AutofillProfile original_profile_;
   std::unique_ptr<SaveUpdateAddressProfileFlowManager> flow_manager_;
 };
 
-IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfMessageIsDisplayed) {
   flow_manager_->OfferSave(GetWebContents(), profile_, &original_profile_,
+                           is_migration_to_account(),
                            /*callback=*/base::DoNothing());
   EXPECT_TRUE(IsMessageDisplayed());
   EXPECT_FALSE(IsPromptDisplayed());
@@ -71,12 +75,14 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
           another_profile));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr,
+                           is_migration_to_account(),
                            another_save_callback.Get());
 }
 
-IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SaveUpdateAddressProfileFlowManagerBrowserTest,
                        TriggerAutoDeclineDecisionIfPromptIsDisplayed) {
   flow_manager_->OfferSave(GetWebContents(), profile_, &original_profile_,
+                           is_migration_to_account(),
                            /*callback=*/base::DoNothing());
   // Proceed with message to prompt.
   flow_manager_->GetMessageControllerForTest()->OnPrimaryAction();
@@ -94,7 +100,17 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
           another_profile));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr,
+                           is_migration_to_account(),
                            another_save_callback.Get());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    SaveUpdateAddressProfileFlowManager,
+    SaveUpdateAddressProfileFlowManagerBrowserTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        SaveUpdateAddressProfileFlowManagerBrowserTest::ParamType>& info) {
+      return info.param ? "WithProfileMigration" : "WithoutProfileMigration";
+    });
 
 }  // namespace autofill

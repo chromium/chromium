@@ -33,10 +33,13 @@ class SaveUpdateAddressProfileFlowManager {
   // `web_contents`. If another flow is in progress, the incoming offer will
   // be auto-declined. The `original_profile` is nullptr for a new address or
   // points to the existing profile which will be updated if the user accepts.
-  // The `callback` is triggered once the user makes a decision.
+  // User will be offered to migrate their address profile to their Google
+  // Account when `is_migration_to_account` is true. The `callback` is triggered
+  // once the user makes a decision.
   void OfferSave(content::WebContents* web_contents,
                  const AutofillProfile& profile,
                  const AutofillProfile* original_profile,
+                 bool is_migration_to_account,
                  AutofillClient::AddressProfileSavePromptCallback callback);
 
   SaveUpdateAddressProfileMessageController* GetMessageControllerForTest();
@@ -47,6 +50,7 @@ class SaveUpdateAddressProfileFlowManager {
       content::WebContents* web_contents,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   void ShowPromptWithDetails(

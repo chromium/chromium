@@ -10,11 +10,15 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -32,6 +36,7 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
+    bool is_migration_to_account,
     AutofillClient::AddressProfileSavePromptCallback
         save_address_profile_callback,
     PrimaryActionCallback primary_action_callback) {
@@ -46,6 +51,7 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
   web_contents_ = web_contents;
   profile_ = profile;
   original_profile_ = original_profile;
+  is_migration_to_account_ = is_migration_to_account;
   save_address_profile_callback_ = std::move(save_address_profile_callback);
   primary_action_callback_ = std::move(primary_action_callback);
 
@@ -63,7 +69,7 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
 
   message_->SetTitle(GetTitle());
   message_->SetDescription(GetDescription());
-  message_->SetDescriptionMaxLines(1);
+  message_->SetDescriptionMaxLines(kDescriptionMaxLines);
   message_->SetPrimaryButtonText(GetPrimaryButtonText());
   message_->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS));
@@ -134,17 +140,62 @@ void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
   primary_action_callback_.Reset();
 }
 
+bool SaveUpdateAddressProfileMessageController::UserSignedIn() const {
+  return IdentityManagerFactory::GetForProfile(
+             Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
+      ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
 std::u16string SaveUpdateAddressProfileMessageController::GetTitle() {
-  return l10n_util::GetStringUTF16(
-      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
-                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  if (original_profile_) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+  }
+
+  if (is_migration_to_account_) {
+    CHECK(UserSignedIn()) << "Received is_migration_to_account=true option "
+                             "when user is not logged in";
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 }
 
 std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
-  return GetProfileDescription(
-      original_profile_ ? *original_profile_ : profile_,
-      g_browser_process->GetApplicationLocale(),
-      /*include_address_and_contacts=*/true);
+  if (original_profile_) {
+    // Return description without source notice for profile update.
+    return GetProfileDescription(*original_profile_,
+                                 g_browser_process->GetApplicationLocale(),
+                                 /*include_address_and_contacts=*/true);
+  }
+
+  if (is_migration_to_account_ ||
+      profile_.source() == AutofillProfile::Source::kAccount) {
+    return GetSourceNotice();
+  }
+
+  // Address profile won't be saved to Google Account when user is not logged
+  // in.
+  return GetProfileDescription(profile_,
+                               g_browser_process->GetApplicationLocale(),
+                               /*include_address_and_contacts=*/true);
+}
+
+std::u16string SaveUpdateAddressProfileMessageController::GetSourceNotice() {
+  const signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+  const CoreAccountInfo primary_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CHECK(!primary_account_info.IsEmpty())
+      << "The user's address profile is going to be saved in their Google "
+         "Account, but user is not signed in";
+
+  return l10n_util::GetStringFUTF16(
+      is_migration_to_account_
+          ? IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE
+          : IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE,
+      base::UTF8ToUTF16(primary_account_info.email));
 }
 
 std::u16string
