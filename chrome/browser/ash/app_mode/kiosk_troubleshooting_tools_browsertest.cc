@@ -19,6 +19,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 using policy::DeveloperToolsPolicyHandler::Availability::kAllowed;
 using policy::DeveloperToolsPolicyHandler::Availability::kDisallowed;
@@ -104,6 +106,14 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
     return new_browser;
   }
 
+  bool IsLactActiveBrowserResizable() {
+    BrowserWindow* lact_active_window =
+        BrowserList::GetInstance()->GetLastActive()->window();
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+        lact_active_window->GetNativeWindow());
+    return widget->widget_delegate()->CanResize();
+  }
+
   Profile* profile() const { return initial_browser()->profile(); }
 
   Browser* initial_browser() const {
@@ -127,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   UpdateTroubleshootingToolsPolicy(/*enable=*/true);
   EnableDevTools();
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
-                                                /* is_docked= */ false);
+                                                /*is_docked=*/false);
   ExpectOpenBrowser(chromeos::KioskBrowserWindowType::kOpenedDevToolsBrowser);
 
   // Shut down the session when kiosk troubleshooting tools get disabled.
@@ -144,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 
   // Devtools are not enabled, but disabled by default.
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
-                                                /* is_docked= */ false);
+                                                /*is_docked=*/false);
 
   ExpectOnlyKioskAppOpen();
   histogram.ExpectTotalCount(chromeos::kKioskNewBrowserWindowHistogram, 0);
@@ -157,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 
   EnableDevTools();
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
-                                                /* is_docked= */ false);
+                                                /*is_docked=*/false);
   ExpectOnlyKioskAppOpen();
 
   // Since the devtools are allowed, the devtools window is open, but
@@ -194,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EnableDevTools();
 
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
-                                                /* is_docked= */ false);
+                                                /*is_docked=*/false);
 
   EmulateOpenNewWindowShortcutPressed();
   EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
@@ -210,12 +220,31 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
+                       AllTroubleshootingToolsAreResizable) {
+  InitializeRegularOnlineKiosk();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+  ExpectOnlyKioskAppOpen();
+  EnableDevTools();
+
+  // The main browser should not be resizable.
+  EXPECT_FALSE(IsLactActiveBrowserResizable());
+
+  DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
+                                                /*is_docked=*/false);
+  EXPECT_TRUE(IsLactActiveBrowserResizable());
+
+  EmulateOpenNewWindowShortcutPressed();
+  EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
+  EXPECT_TRUE(IsLactActiveBrowserResizable());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
                        NewWindowDisallowedNoShow) {
   InitializeRegularOnlineKiosk();
   ExpectOnlyKioskAppOpen();
 
   // Explicitly open a new window to make sure it will be closed.
-  Browser::Create(Browser::CreateParams(profile(), /* user_gesture=*/true));
+  Browser::Create(Browser::CreateParams(profile(), /*user_gesture=*/true));
   EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(app_session()));
 
   histogram.ExpectBucketCount(

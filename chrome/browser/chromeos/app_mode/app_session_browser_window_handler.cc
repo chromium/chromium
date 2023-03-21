@@ -15,12 +15,26 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "kiosk_troubleshooting_controller_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
+
+namespace {
+
+void MakeWindowResizable(BrowserWindow* window) {
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
+  if (widget) {
+    widget->widget_delegate()->SetCanResize(true);
+  }
+}
+
+}  // namespace
 
 const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
 
@@ -83,6 +97,7 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
   }
 
   if (IsDevToolsAllowedBrowser(browser)) {
+    MakeWindowResizable(browser->window());
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedDevToolsBrowser);
@@ -91,6 +106,7 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
   }
 
   if (IsNormalTroubleshootingBrowserAllowed(browser)) {
+    MakeWindowResizable(browser->window());
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
