@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_options.h"
@@ -268,12 +269,19 @@ void IdleSpellCheckController::Invoke(IdleDeadline* deadline) {
   } else if (state_ == State::kColdModeRequested) {
     state_ = State::kInColdModeInvocation;
     cold_mode_requester_->Invoke(deadline);
-    if (cold_mode_requester_->FullyCheckedCurrentRootEditable())
+    if (cold_mode_requester_->FullyCheckedCurrentRootEditable()) {
       state_ = State::kInactive;
-    else
+    } else {
       SetNeedsColdModeInvocation();
+    }
   } else {
-    NOTREACHED();
+    // TODO(crbug.com/1424540): The other states are unexpected but reached in
+    // real world. We work around it and dump debugging information.
+    static auto* state_data = base::debug::AllocateCrashKeyString(
+        "spellchecker-state-on-invocation", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(state_data, GetStateAsString());
+    NOTREACHED() << GetStateAsString();
+    Deactivate();
   }
 }
 
@@ -327,6 +335,20 @@ void IdleSpellCheckController::SetNeedsMoreColdModeInvocationForTesting() {
 void IdleSpellCheckController::SetSpellCheckingDisabled(
     const Element& element) {
   cold_mode_requester_->RemoveFromFullyChecked(element);
+}
+
+const char* IdleSpellCheckController::GetStateAsString() const {
+  static const char* const kTexts[] = {
+#define V(state) #state,
+      FOR_EACH_IDLE_SPELL_CHECK_CONTROLLER_STATE(V)
+#undef V
+  };
+
+  unsigned index = static_cast<unsigned>(state_);
+  if (index < std::size(kTexts)) {
+    return kTexts[index];
+  }
+  return "Invalid";
 }
 
 }  // namespace blink

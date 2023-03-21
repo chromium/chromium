@@ -73,6 +73,11 @@ class CORE_EXPORT IdleSpellCheckController final
   void Trace(Visitor*) const override;
 
  private:
+  friend class Internals;
+
+  // For testing and debugging only.
+  const char* GetStateAsString() const;
+
   class IdleCallback;
 
   LocalDOMWindow& GetWindow() const;

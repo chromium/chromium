@@ -2095,12 +2095,6 @@ void Internals::cancelCurrentSpellCheckRequest(
 
 String Internals::idleTimeSpellCheckerState(Document* document,
                                             ExceptionState& exception_state) {
-  static const char* const kTexts[] = {
-#define V(state) #state,
-      FOR_EACH_IDLE_SPELL_CHECK_CONTROLLER_STATE(V)
-#undef V
-  };
-
   if (!document || !document->GetFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
@@ -2108,14 +2102,10 @@ String Internals::idleTimeSpellCheckerState(Document* document,
     return String();
   }
 
-  IdleSpellCheckController::State state = document->GetFrame()
-                                              ->GetSpellChecker()
-                                              .GetIdleSpellCheckController()
-                                              .GetState();
-  auto* const* const it = std::begin(kTexts) + static_cast<size_t>(state);
-  DCHECK_GE(it, std::begin(kTexts)) << "Unknown state value";
-  DCHECK_LT(it, std::end(kTexts)) << "Unknown state value";
-  return *it;
+  return document->GetFrame()
+      ->GetSpellChecker()
+      .GetIdleSpellCheckController()
+      .GetStateAsString();
 }
 
 void Internals::runIdleTimeSpellChecker(Document* document,
