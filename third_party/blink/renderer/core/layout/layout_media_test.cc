@@ -68,4 +68,15 @@ TEST_F(LayoutMediaTest, BlockifyInlineFlex) {
   EXPECT_FALSE(child_box->IsInline());
 }
 
+TEST_F(LayoutMediaTest, DisallowContainerBeyondMedia) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::-webkit-media-controls { contain: none; }
+      ::-webkit-media-controls-overlay-enclosure { position: fixed; }
+    </style>
+    <video controls></video>
+  )HTML");
+  // Pass if LayoutObject::AssertLaidOut() didn't fail.
+}
+
 }  // namespace blink

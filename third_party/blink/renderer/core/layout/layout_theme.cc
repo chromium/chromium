@@ -281,6 +281,18 @@ void LayoutTheme::AdjustStyle(const Element* element,
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
+  if (RuntimeEnabledFeatures::LayoutMediaChildPaintContainmentEnabled()) {
+    return R"CSS(
+audio::-webkit-media-controls,
+video::-webkit-media-controls {
+    contain: paint !important;
+}
+video::-webkit-media-text-track-container {
+    contain: paint !important;
+    position: relative !important;
+}
+)CSS";
+  }
   return g_empty_string;
 }
 
