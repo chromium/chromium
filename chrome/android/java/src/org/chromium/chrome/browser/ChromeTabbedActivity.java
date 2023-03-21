@@ -608,7 +608,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     boolean hasNextTab = !(getTabModelSelector().getTotalTabCount() == 0
                             || (!getTabModelSelector().isIncognitoSelected()
                                     && getTabModelSelector().getModel(false).getCount() == 0));
-
                     boolean multiWindowActive =
                             MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(
                                     ChromeTabbedActivity.this)
@@ -655,7 +654,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         && getTabModelSelector().getModel(false).getCount() == 0));
 
         if (!overviewVisible && !hasNextTab) {
-            mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
+            mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, true);
         }
     }
 
