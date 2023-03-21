@@ -566,6 +566,7 @@ void DualReadingListModel::ReadingListWillAddEntry(
     DCHECK_EQ(model, account_model_.get());
     DCHECK(account_model_->IsTrackingSyncMetadata());
     NotifyObserversWithWillUpdateEntry(entry.URL());
+    UpdateEntryStateCountersOnEntryRemoval(*GetEntryByURL(entry.URL()));
     return;
   }
 
@@ -580,6 +581,8 @@ void DualReadingListModel::ReadingListDidAddEntry(
     reading_list::EntrySource source) {
   DCHECK(!suppress_observer_notifications_);
 
+  UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
+
   if (model == account_model_.get() &&
       local_or_syncable_model_->GetEntryByURL(url)) {
     // The entry was added to `account_model_`, but since it was already present
@@ -589,8 +592,6 @@ void DualReadingListModel::ReadingListDidAddEntry(
     NotifyObserversWithDidUpdateEntry(url);
     return;
   }
-
-  UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
 
   for (auto& observer : observers_) {
     observer.ReadingListDidAddEntry(this, url, source);

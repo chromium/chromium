@@ -2683,5 +2683,94 @@ TEST_F(DualReadingListModelTest,
                                             /*unread_size=*/1ul));
 }
 
+TEST_F(DualReadingListModelTest,
+       ShouldMaintainCountsWhenAddLocalEntryFromSync) {
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled());
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+
+  ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
+                                            /*unread_size=*/0ul));
+
+  EXPECT_CALL(observer_, ReadingListWillAddEntry(
+                             HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
+                                              /*unread_size=*/0ul),
+                             _));
+  EXPECT_CALL(observer_, ReadingListDidAddEntry(
+                             HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
+                                              /*unread_size=*/1ul),
+                             _, _));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = local_or_syncable_model_ptr_->BeginBatchUpdates();
+  local_or_syncable_model_ptr_->SyncAddEntry(
+      TestEntryBuilder(kUrl, clock_.Now()).Build());
+
+  EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
+                                            /*unread_size=*/1ul));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+}
+
+TEST_F(DualReadingListModelTest,
+       ShouldMaintainCountsWhenAddAccountEntryFromSync) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled());
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kNotFound);
+
+  ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
+                                            /*unread_size=*/0ul));
+
+  EXPECT_CALL(observer_, ReadingListWillAddEntry(
+                             HasCountersEqual(/*size=*/0ul, /*unseen_size=*/0ul,
+                                              /*unread_size=*/0ul),
+                             _));
+  EXPECT_CALL(observer_, ReadingListDidAddEntry(
+                             HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
+                                              /*unread_size=*/1ul),
+                             _, _));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = account_model_ptr_->BeginBatchUpdates();
+  account_model_ptr_->SyncAddEntry(
+      TestEntryBuilder(kUrl, clock_.Now()).Build());
+
+  EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
+                                            /*unread_size=*/1ul));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+}
+
+TEST_F(DualReadingListModelTest,
+       ShouldMaintainCountsWhenAddLocalExistingEntryFromSync) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now()).SetRead()}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
+                                            /*unread_size=*/0ul));
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(
+                             HasCountersEqual(/*size=*/1ul, /*unseen_size=*/0ul,
+                                              /*unread_size=*/0ul),
+                             _));
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(
+                             HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
+                                              /*unread_size=*/1ul),
+                             _));
+
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = account_model_ptr_->BeginBatchUpdates();
+  account_model_ptr_->SyncAddEntry(
+      TestEntryBuilder(kUrl, clock_.Now() + base::Seconds(1)).Build());
+
+  EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/1ul, /*unseen_size=*/1ul,
+                                            /*unread_size=*/1ul));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+}
+
 }  // namespace
 }  // namespace reading_list
