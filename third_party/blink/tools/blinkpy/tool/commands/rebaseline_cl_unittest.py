@@ -283,7 +283,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'builders': [],
             'patchset': None,
             'flag_specific': None,
-            'resultDB': None
+            'resultDB': True,
         }
         options.update(kwargs)
         return optparse.Values(options)
@@ -694,7 +694,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 step_name='not_site_per_process_blink_web_tests (with patch)'))
 
         exit_code = self.command.execute(
-            self.command_options(builders=['MOCK Try Linux Multiple Steps']),
+            self.command_options(builders=['MOCK Try Linux Multiple Steps'],
+                                 resultDB=False),
             ['one/text-fail.html', 'one/does-not-exist.html'], self.tool)
         self.assertEqual(exit_code, 0)
         baseline_set = TestBaselineSet(self.tool.builders)

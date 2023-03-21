@@ -90,7 +90,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                                  dest='resultDB',
                                  action='store_false',
                                  default=True,
-                                 help='Do not Fetch results from resultDB.'),
+                                 help=optparse.SUPPRESS_HELP),
             self.no_optimize_option,
             self.dry_run_option,
             self.results_directory_option,
@@ -127,6 +127,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self._tool = tool
         self._dry_run = options.dry_run
         self._resultdb_fetcher = options.resultDB
+        if not self._resultdb_fetcher:
+            _log.warning('`--no-resultDB` is unsupported and will be '
+                         'removed soon (crbug.com/1406660).')
+            self._tool.user.prompt('Press enter to acknowledge: ')
         self.git_cl = self.git_cl or GitCL(tool)
         # '--dry-run' implies '--no-trigger-jobs'.
         options.trigger_jobs = options.trigger_jobs and not self._dry_run
