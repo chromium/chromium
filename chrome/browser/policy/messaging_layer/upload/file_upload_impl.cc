@@ -25,6 +25,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -103,12 +104,13 @@ StatusOr<int64_t> GetChunkGranularity(
   int64_t upload_granularity = -1;
   std::string upload_granularity_string;
   if (!headers->GetNormalizedHeader(kUploadChunkGranularityHeader,
-                                    &upload_granularity_string) ||
-      !base::StringToInt64(upload_granularity_string, &upload_granularity) ||
+                                    &upload_granularity_string)) {
+    return Status(error::DATA_LOSS, "No granularity returned");
+  }
+  if (!base::StringToInt64(upload_granularity_string, &upload_granularity) ||
       upload_granularity <= 0L) {
-    return Status(error::DATA_LOSS,
-                  base::StrCat({"Unexpected upload granularity=",
-                                upload_granularity_string}));
+    return Status(error::DATA_LOSS, base::StrCat({"Unexpected granularity=",
+                                                  upload_granularity_string}));
   }
   return upload_granularity;
 }
@@ -371,6 +373,7 @@ class FileUploadDelegate::NextStepContext
       int64_t total,
       int64_t uploaded,
       base::StringPiece session_token,
+      ScopedReservation scoped_reservation,
       base::WeakPtr<FileUploadDelegate> delegate,
       base::OnceCallback<
           void(StatusOr<std::pair<int64_t /*uploaded*/,
@@ -378,7 +381,8 @@ class FileUploadDelegate::NextStepContext
       : ActionContext(std::move(delegate), std::move(result_cb)),
         total_(total),
         uploaded_(uploaded),
-        session_token_(session_token) {}
+        session_token_(session_token),
+        scoped_reservation_(std::move(scoped_reservation)) {}
 
   void Run() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -453,9 +457,8 @@ class FileUploadDelegate::NextStepContext
           upload_received < 0 || uploaded_ > upload_received) {
         Complete(Status(
             error::DATA_LOSS,
-            base::StrCat(
-                {"Unexpected received=", base::NumberToString(upload_received),
-                 ", expected=", base::NumberToString(uploaded_)})));
+            base::StrCat({"Unexpected received=", upload_received_string,
+                          ", expected=", base::NumberToString(uploaded_)})));
         return;
       }
     }
@@ -492,6 +495,17 @@ class FileUploadDelegate::NextStepContext
     }
     resource_request->headers.SetHeader(kUploadOffsetHeader,
                                         base::NumberToString(upload_received));
+
+    // See whether we have enough memory for the buffer.
+    ScopedReservation buffer_reservation(size, scoped_reservation_);
+    if (!buffer_reservation.reserved()) {
+      // Do not post error status - it would stop the whole job.
+      // Post success without making any progress!
+      Complete(std::make_pair(upload_received, session_token_));
+      return;
+    }
+    // Attach the new reservation.
+    scoped_reservation_.HandOver(buffer_reservation);
 
     // Retrieve data from the file to be attached on a thread pool, then resume
     // on the current task runner. Note: it could be done with
@@ -538,6 +552,9 @@ class FileUploadDelegate::NextStepContext
       int64_t size,
       scoped_refptr<::net::HttpResponseHeaders> headers) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Buffer no longer used.
+    scoped_reservation_.Reduce(size);
 
     auto status_result =
         CheckResponseAndGetStatus(std::move(url_loader_), headers);
@@ -590,7 +607,7 @@ class FileUploadDelegate::NextStepContext
                                   base::NumberToString(handle->GetLength())}));
     }
 
-    // Load into buffer. TODO(b/264399295): Add memory resource control.
+    // Load into buffer.
     buffer.resize(
         size);  // Initialization is redundant, but std::string mandates it.
     const int read_size = handle->Read(offset, buffer.data(), size);
@@ -622,6 +639,9 @@ class FileUploadDelegate::NextStepContext
   // Helper to upload the data.
   std::unique_ptr<network::SimpleURLLoader> url_loader_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Memory usage by upload.
+  ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Should remain the last member so it will be destroyed first and
   // invalidate all weak pointers.
@@ -710,9 +730,9 @@ class FileUploadDelegate::FinalContext
       }
       if (!base::StringToInt64(upload_received_string, &upload_received) ||
           upload_received < 0) {
-        Complete(Status(error::DATA_LOSS,
-                        base::StrCat({"Unexpected received=",
-                                      base::NumberToString(upload_received)})));
+        Complete(Status(
+            error::DATA_LOSS,
+            base::StrCat({"Unexpected received=", upload_received_string})));
         return;
       }
     }
@@ -940,20 +960,23 @@ void FileUploadDelegate::DoNextStep(
     int64_t total,
     int64_t uploaded,
     base::StringPiece session_token,
+    ScopedReservation scoped_reservation,
     base::OnceCallback<void(StatusOr<std::pair<int64_t /*uploaded*/,
                                                std::string /*session_token*/>>)>
         result_cb) {
   if (!::content::BrowserThread::CurrentlyOn(::content::BrowserThread::UI)) {
     ::content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&FileUploadDelegate::DoNextStep, GetWeakPtr(),
-                                  total, uploaded, std::string(session_token),
-                                  std::move(result_cb)));
+        FROM_HERE,
+        base::BindOnce(&FileUploadDelegate::DoNextStep, GetWeakPtr(), total,
+                       uploaded, std::string(session_token),
+                       std::move(scoped_reservation), std::move(result_cb)));
     return;
   }
 
   InitializeOnce();
 
-  (new NextStepContext(total, uploaded, session_token, GetWeakPtr(),
+  (new NextStepContext(total, uploaded, session_token,
+                       std::move(scoped_reservation), GetWeakPtr(),
                        std::move(result_cb)))
       ->Run();
 }

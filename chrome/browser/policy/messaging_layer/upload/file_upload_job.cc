@@ -29,6 +29,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 
@@ -162,10 +163,9 @@ FileUploadJob::EventHelper::~EventHelper() {
   }
 }
 
-// FileUploadJob progresses based on the last recorded state.
-// Called back once the job is located or created.
-// `done_cb_` is going to post update as the next tracking event.
-void FileUploadJob::EventHelper::Run(base::OnceCallback<void(Status)> done_cb) {
+void FileUploadJob::EventHelper::Run(
+    const ScopedReservation& scoped_reservation,
+    base::OnceCallback<void(Status)> done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!done_cb_) << "Helper already running";
   done_cb_ = std::move(done_cb);
@@ -214,7 +214,8 @@ void FileUploadJob::EventHelper::Run(base::OnceCallback<void(Status)> done_cb) {
   if (job_->tracker().uploaded() < job_->tracker().total()) {
     // Job in progress, perform next step. Upon completion success post new
     // event and upload the current one.
-    job_->NextStep(base::BindOnce(&EventHelper::RepostAndComplete,
+    job_->NextStep(scoped_reservation,
+                   base::BindOnce(&EventHelper::RepostAndComplete,
                                   weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -335,7 +336,8 @@ void FileUploadJob::DoneInitiate(
   tracker_.set_session_token(session_token.data(), session_token.size());
 }
 
-void FileUploadJob::NextStep(base::OnceClosure done_cb) {
+void FileUploadJob::NextStep(const ScopedReservation& scoped_reservation,
+                             base::OnceClosure done_cb) {
   base::ScopedClosureRunner done(std::move(done_cb));
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   DCHECK(event_helper_) << "Event must be associated with the job";
@@ -367,6 +369,7 @@ void FileUploadJob::NextStep(base::OnceClosure done_cb) {
       base::BindOnce(&Delegate::DoNextStep, base::Unretained(delegate_),
                      tracker_.total(), tracker_.uploaded(),
                      tracker_.session_token(),
+                     ScopedReservation(0uL, scoped_reservation),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &FileUploadJob::DoneNextStep,
                          weak_ptr_factory_.GetWeakPtr(), std::move(done)))));

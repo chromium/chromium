@@ -81,6 +81,7 @@ absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
 void ProcessFileUpload(FileUploadJob::Delegate* delegate,
                        Priority priority,
                        Record record_copy,
+                       const ScopedReservation& scoped_reservation,
                        base::OnceCallback<void(Status)> done_cb) {
   // Here we need to determine which events we got. It would be better to
   // use protobuf reflection and detect upload_settings presence in the event,
@@ -115,7 +116,8 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
           priority, std::move(record_copy), std::move(log_upload_event),
           delegate,
           base::BindOnce(
-              [](base::OnceCallback<void(Status)> done_cb,
+              [](ScopedReservation scoped_reservation,
+                 base::OnceCallback<void(Status)> done_cb,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.ok()) {
                   LOG(WARNING) << "Failed to locate/create upload job, status="
@@ -126,9 +128,9 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
                 }
                 // Job has been located or created.
                 job_or_error.ValueOrDie()->event_helper()->Run(
-                    std::move(done_cb));
+                    scoped_reservation, std::move(done_cb));
               },
-              std::move(done_cb)));
+              ScopedReservation(0uL, scoped_reservation), std::move(done_cb)));
       break;
     }
     default:
@@ -293,7 +295,9 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&ProcessFileUpload, base::Unretained(delegate_.get()),
-                       priority, std::move(record_copy), std::move(resume_cb)));
+                       priority, std::move(record_copy),
+                       ScopedReservation(0uL, scoped_reservation_),
+                       std::move(resume_cb)));
     return;  // We will resume on `resume_cb`
   }
 

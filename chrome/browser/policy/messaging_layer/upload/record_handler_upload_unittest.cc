@@ -100,6 +100,7 @@ class MockFileUploadDelegate : public FileUploadJob::Delegate {
               (int64_t total,
                int64_t uploaded,
                base::StringPiece session_token,
+               ScopedReservation scoped_reservation,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*uploaded*/,
                                       std::string /*session_token*/>>)> cb),
@@ -338,9 +339,10 @@ TEST_F(RecordHandlerUploadTest, SuccessfulNextStep) {
   test::TestEvent<CompletionResponse> responder_event;
 
   EXPECT_CALL(*delegate_, DoInitiate).Times(0);
-  EXPECT_CALL(*delegate_, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _))
+  EXPECT_CALL(*delegate_, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _, _))
       .WillOnce(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -470,9 +472,10 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
   test::TestEvent<CompletionResponse> responder_event;
 
   EXPECT_CALL(*delegate_, DoInitiate).Times(0);
-  EXPECT_CALL(*delegate_, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _))
+  EXPECT_CALL(*delegate_, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _, _))
       .WillOnce(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -577,9 +580,10 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
           std::move(ResponseBuilder().SetSuccess(true))));
 
   EXPECT_CALL(*delegate_, DoInitiate).Times(0);
-  EXPECT_CALL(*delegate_, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _))
+  EXPECT_CALL(*delegate_, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _, _))
       .WillOnce(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {

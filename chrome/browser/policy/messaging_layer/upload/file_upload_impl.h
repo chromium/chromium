@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -54,11 +55,12 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
       int64_t total,
       int64_t uploaded,
       base::StringPiece session_token,
+      ScopedReservation scoped_reservation,
       base::OnceCallback<void(
           StatusOr<std::pair<int64_t /*uploaded*/,
                              std::string /*session_token*/>>)> cb) override;
   void DoFinalize(
-      base::StringPiece access_parameters,
+      base::StringPiece session_token,
       base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb)
       override;
 

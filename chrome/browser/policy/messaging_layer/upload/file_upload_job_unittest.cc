@@ -53,6 +53,7 @@ class MockFileUploadJobDelegate : public FileUploadJob::Delegate {
               (int64_t total,
                int64_t uploaded,
                base::StringPiece session_token,
+               ScopedReservation scoped_reservation,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*uploaded*/,
                                       std::string /*session_token*/>>)> cb),
@@ -69,11 +70,21 @@ class MockFileUploadJobDelegate : public FileUploadJob::Delegate {
 
 class FileUploadJobTest : public ::testing::Test {
  protected:
-  template <typename Method>
-  void RunAsyncJobAndWait(FileUploadJob& job, Method method) {
+  template <typename Method, class... Args>
+  void RunAsyncJobAndWait(FileUploadJob& job, Method method, Args&&... args) {
     test::TestCallbackAutoWaiter waiter;
-    (job.*method)(base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
+    (job.*method)(std::forward<Args>(args)...,
+                  base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
                                  base::Unretained(&waiter)));
+  }
+
+  void SetUp() override {
+    memory_resource_ =
+        base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
+  }
+
+  void TearDown() override {
+    EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -82,6 +93,8 @@ class FileUploadJobTest : public ::testing::Test {
   FileUploadJob::TestEnvironment manager_test_env_;
 
   MockFileUploadJobDelegate mock_delegate_;
+
+  scoped_refptr<ResourceManager> memory_resource_;
 };
 
 TEST_F(FileUploadJobTest, SuccessfulRun) {
@@ -112,10 +125,11 @@ TEST_F(FileUploadJobTest, SuccessfulRun) {
   ASSERT_FALSE(job->tracker().has_status());
   EXPECT_THAT(job->settings().retry_count(), Eq(0));
 
-  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
       .Times(3)
       .WillRepeatedly(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -123,8 +137,9 @@ TEST_F(FileUploadJobTest, SuccessfulRun) {
             std::move(cb).Run(
                 std::make_pair(uploaded + 100L, std::string(session_token)));
           });
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
   for (size_t i = 0u; i < 3u; ++i) {
-    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
     ASSERT_FALSE(job->tracker().has_status());
   }
 
@@ -253,9 +268,10 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
   ASSERT_FALSE(job->tracker().has_status());
   EXPECT_THAT(job->settings().retry_count(), Eq(0));
 
-  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
       .WillOnce(Invoke(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -265,14 +281,16 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
           }))
       .WillOnce(Invoke(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
             EXPECT_THAT(uploaded, AllOf(Ge(0L), Lt(total)));
             std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
           }));
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
   for (size_t i = 0u; i < 3u; ++i) {
-    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
   }
   ASSERT_TRUE(job->tracker().has_status());
   EXPECT_THAT(
@@ -309,10 +327,11 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
   ASSERT_FALSE(job->tracker().has_status());
   EXPECT_THAT(job->settings().retry_count(), Eq(0));
 
-  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
       .Times(3)
       .WillRepeatedly(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -320,8 +339,9 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
             std::move(cb).Run(
                 std::make_pair(uploaded + 100L, std::string(session_token)));
           });
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
   for (size_t i = 0u; i < 3u; ++i) {
-    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
     ASSERT_FALSE(job->tracker().has_status());
   }
 
@@ -368,10 +388,11 @@ TEST_F(FileUploadJobTest, IncompleteUpload) {
   ASSERT_FALSE(job->tracker().has_status());
   EXPECT_THAT(job->settings().retry_count(), Eq(0));
 
-  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
       .Times(3)
       .WillRepeatedly(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -379,8 +400,9 @@ TEST_F(FileUploadJobTest, IncompleteUpload) {
             std::move(cb).Run(std::make_pair(uploaded + 100L - 1L,
                                              std::string(session_token)));
           });
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
   for (size_t i = 0u; i < 3u; ++i) {
-    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
     ASSERT_FALSE(job->tracker().has_status());
   }
 
@@ -421,9 +443,10 @@ TEST_F(FileUploadJobTest, ExcessiveUpload) {
   ASSERT_FALSE(job->tracker().has_status());
   EXPECT_THAT(job->settings().retry_count(), Eq(0));
 
-  EXPECT_CALL(mock_delegate_, DoNextStep(300L, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(300L, _, StrEq("ABC"), _, _))
       .WillOnce(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -431,9 +454,10 @@ TEST_F(FileUploadJobTest, ExcessiveUpload) {
             std::move(cb).Run(
                 std::make_pair(uploaded + 500L, std::string(session_token)));
           });
-  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
+  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
   ASSERT_FALSE(job->tracker().has_status());
-  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
   ASSERT_TRUE(job->tracker().has_status());
   EXPECT_THAT(job->tracker().status(),
               AllOf(Property(&StatusProto::code, Eq(error::OUT_OF_RANGE)),
@@ -469,9 +493,10 @@ TEST_F(FileUploadJobTest, BackingUpload) {
   ASSERT_FALSE(job->tracker().has_status());
   EXPECT_THAT(job->settings().retry_count(), Eq(0));
 
-  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
       .WillOnce(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -481,15 +506,17 @@ TEST_F(FileUploadJobTest, BackingUpload) {
           })
       .WillOnce(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
             std::move(cb).Run(
                 std::make_pair(uploaded - 1L, std::string(session_token)));
           });
-  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
+  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
   ASSERT_FALSE(job->tracker().has_status());
-  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
   ASSERT_TRUE(job->tracker().has_status());
   EXPECT_THAT(job->tracker().status(),
               AllOf(Property(&StatusProto::code, Eq(error::DATA_LOSS)),
@@ -517,10 +544,11 @@ TEST_F(FileUploadJobTest, SuccessfulResumption) {
       job->GetWeakPtr(), Priority::IMMEDIATE, std::move(record_copy),
       std::move(log_upload_event)));
   EXPECT_CALL(mock_delegate_, DoInitiate).Times(0);
-  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
       .Times(2)
       .WillRepeatedly(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -528,8 +556,9 @@ TEST_F(FileUploadJobTest, SuccessfulResumption) {
             std::move(cb).Run(
                 std::make_pair(uploaded + 100L, std::string(session_token)));
           });
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
   for (size_t i = 0u; i < 2u; ++i) {
-    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+    RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
     ASSERT_FALSE(job->tracker().has_status());
   }
 
@@ -567,7 +596,8 @@ TEST_F(FileUploadJobTest, FailToResumeStep) {
   EXPECT_CALL(mock_delegate_, DoInitiate).Times(0);
   EXPECT_CALL(mock_delegate_, DoNextStep).Times(0);
   EXPECT_CALL(mock_delegate_, DoFinalize).Times(0);
-  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep);
+  ScopedReservation scoped_reservation(0uL, memory_resource_);
+  RunAsyncJobAndWait(*job, &FileUploadJob::NextStep, scoped_reservation);
   ASSERT_TRUE(job->tracker().has_status());
   EXPECT_THAT(
       job->tracker().status(),
@@ -702,10 +732,11 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
     // In production code we would probably also compare `uploaded` to the one
     // specified in the log_upload_event, and only proceed if they match, but in
     // the test we can do differently.
-    EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+    EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
         .Times(Between(1, 3))
         .WillRepeatedly(
             [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+               ScopedReservation scoped_reservation,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*uploaded*/,
                                       std::string /*session_token*/>>)> cb) {
@@ -737,6 +768,7 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
           base::BindOnce(
               [](base::ScopedClosureRunner done,
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
+                 scoped_refptr<ResourceManager> memory_resource,
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.ok()) {
@@ -750,10 +782,11 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
                 EXPECT_OK(job_or_error) << job_or_error.status();
                 auto* const job = job_or_error.ValueOrDie();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
-                job->NextStep(done.Release());
+                ScopedReservation scoped_reservation(0uL, memory_resource);
+                job->NextStep(scoped_reservation, done.Release());
               },
               std::move(done), base::Unretained(&jobs_weak_ptrs),
-              base::Unretained(&failures)));
+              memory_resource_, base::Unretained(&failures)));
     }
   }
   EXPECT_THAT(failures.load(), Eq(kJobsCount - 1));
@@ -898,10 +931,11 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
   }
 
   // Make 3 steps.
-  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _))
+  EXPECT_CALL(mock_delegate_, DoNextStep(_, _, StrEq("ABC"), _, _))
       .Times(3)
       .WillRepeatedly(
           [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             ScopedReservation scoped_reservation,
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
@@ -919,6 +953,7 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
     FileUploadJob::Manager::GetInstance()->sequenced_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&FileUploadJob::NextStep, job_weak_ptr,
+                       ScopedReservation(0uL, memory_resource_),
                        base::BindOnce(&test::TestCallbackAutoWaiter::Signal,
                                       base::Unretained(&waiter))));
   }

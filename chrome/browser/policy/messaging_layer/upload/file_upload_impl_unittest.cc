@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/uploading/upload_job_impl.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -74,6 +75,16 @@ constexpr char kTokenValid[] = "VALID_TOKEN";
 constexpr char kTestData[] =
     "0123456789012345678901234567890123456789012345678901234567890123456789";
 constexpr size_t kTestDataSize = sizeof(kTestData) - 1;
+
+constexpr char kUploadStatusHeader[] = "X-Goog-Upload-Status";
+constexpr char kUploadCommandHeader[] = "X-Goog-Upload-Command";
+constexpr char kUploadChunkGranularityHeader[] =
+    "X-Goog-Upload-Chunk-Granularity";
+constexpr char kUploadUrlHeader[] = "X-Goog-Upload-Url";
+constexpr char kUploadSizeReceivedHeader[] = "X-Goog-Upload-Size-Received";
+constexpr char kUploadOffsetHeader[] = "X-Goog-Upload-Offset";
+constexpr char kUploadProtocolHeader[] = "X-Goog-Upload-Protocol";
+constexpr char kUploadIdHeader[] = "X-GUploader-UploadID";
 
 // Test-only access token manager fake, that allows to pre-populate
 // expected valid and invalid tokens ahead of the test execution.
@@ -209,6 +220,9 @@ class FileUploadDelegateTest : public ::testing::Test {
   }
 
   void SetUp() override {
+    memory_resource_ =
+        base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
+
     url_loader_factory_ =
         base::MakeRefCounted<::network::TestSharedURLLoaderFactory>();
     test_server_.RegisterRequestHandler(base::BindRepeating(
@@ -219,6 +233,7 @@ class FileUploadDelegateTest : public ::testing::Test {
 
   void TearDown() override {
     ASSERT_TRUE(test_server_.ShutdownAndWaitUntilComplete());
+    EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
   std::unique_ptr<FileUploadDelegate> PrepareFileUploadDelegate() {
@@ -264,9 +279,9 @@ class FileUploadDelegateTest : public ::testing::Test {
         IsSupersetOf({
             Pair("Authorization",
                  ::testing::MatcherCast<std::string>(StartsWith("Bearer "))),
-            Pair("X-Goog-Upload-Protocol",
+            Pair(kUploadProtocolHeader,
                  ::testing::MatcherCast<std::string>(StrEq("resumable"))),
-            Pair("X-Goog-Upload-Command",
+            Pair(kUploadCommandHeader,
                  ::testing::MatcherCast<std::string>(StrEq("start"))),
             Pair("X-Goog-Upload-Header-Content-Length",
                  ::testing::MatcherCast<std::string>(
@@ -282,8 +297,8 @@ class FileUploadDelegateTest : public ::testing::Test {
     EXPECT_THAT(request.relative_url, StrEq(kResumableUrl));
     EXPECT_THAT(request.headers,
                 IsSupersetOf({
-                    Pair("X-Goog-Upload-Protocol", StrEq("resumable")),
-                    Pair("X-Goog-Upload-Command", StrEq("query")),
+                    Pair(kUploadProtocolHeader, StrEq("resumable")),
+                    Pair(kUploadCommandHeader, StrEq("query")),
                 }));
   }
 
@@ -294,9 +309,9 @@ class FileUploadDelegateTest : public ::testing::Test {
     EXPECT_THAT(
         request.headers,
         IsSupersetOf({
-            Pair("X-Goog-Upload-Protocol", StrEq("resumable")),
-            Pair("X-Goog-Upload-Command", StrEq("upload")),
-            Pair("X-Goog-Upload-Offset", StrEq(base::NumberToString(offset))),
+            Pair(kUploadProtocolHeader, StrEq("resumable")),
+            Pair(kUploadCommandHeader, StrEq("upload")),
+            Pair(kUploadOffsetHeader, StrEq(base::NumberToString(offset))),
         }));
   }
 
@@ -305,8 +320,8 @@ class FileUploadDelegateTest : public ::testing::Test {
     EXPECT_THAT(request.relative_url, StrEq(kResumableUrl));
     EXPECT_THAT(request.headers,
                 IsSupersetOf({
-                    Pair("X-Goog-Upload-Protocol", StrEq("resumable")),
-                    Pair("X-Goog-Upload-Command", StrEq("finalize")),
+                    Pair(kUploadProtocolHeader, StrEq("resumable")),
+                    Pair(kUploadCommandHeader, StrEq("finalize")),
                 }));
   }
 
@@ -327,6 +342,8 @@ class FileUploadDelegateTest : public ::testing::Test {
 
   FakeOAuth2AccessTokenManagerWithCaching access_token_manager_{
       &token_manager_delegate_};
+
+  scoped_refptr<ResourceManager> memory_resource_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -350,10 +367,10 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStart) {
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
-        response->AddCustomHeader("X-Goog-Upload-Chunk-Granularity",
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
-        response->AddCustomHeader("X-Goog-Upload-Url",
+        response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_OK);
       }));
@@ -361,8 +378,7 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStart) {
   test::TestEvent<
       StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
       init_done;
-  delegate->DoInitiate(origin_path(), GetServerURL(kResumableUrl).spec(),
-                       init_done.cb());
+  delegate->DoInitiate(origin_path(), /*upload_parameters=*/"", init_done.cb());
   const auto& result = init_done.result();
   ASSERT_OK(result) << result.status();
   ASSERT_THAT(result.ValueOrDie().first,
@@ -382,36 +398,36 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "final");
-        response->AddCustomHeader("X-Goog-Upload-Chunk-Granularity",
+        response->AddCustomHeader(kUploadStatusHeader, "final");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
-        response->AddCustomHeader("X-Goog-Upload-Url",
+        response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_OK);
       }))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
-        response->AddCustomHeader("X-Goog-Upload-Url",
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_OK);
       }))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
-        response->AddCustomHeader("X-Goog-Upload-Chunk-Granularity",
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
         response->set_code(::net::HTTP_OK);
       }))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
-        response->AddCustomHeader("X-Goog-Upload-Chunk-Granularity",
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
-        response->AddCustomHeader("X-Goog-Upload-Url",
+        response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_INTERNAL_SERVER_ERROR);
       }));
@@ -424,7 +440,7 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), GetServerURL(kResumableUrl).spec(),
+    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
                          init_done.cb());
     EXPECT_THAT(init_done.result().status(),
                 AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
@@ -438,12 +454,12 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), GetServerURL(kResumableUrl).spec(),
+    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
                          init_done.cb());
     EXPECT_THAT(init_done.result().status(),
                 AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
                       Property(&Status::error_message,
-                               StrEq("Unexpected upload granularity="))));
+                               StrEq("No granularity returned"))));
   }
   {
     // Prepare access token.
@@ -452,7 +468,7 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), GetServerURL(kResumableUrl).spec(),
+    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
                          init_done.cb());
     EXPECT_THAT(init_done.result().status(),
                 AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
@@ -466,7 +482,7 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), GetServerURL(kResumableUrl).spec(),
+    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
                          init_done.cb());
     EXPECT_THAT(
         init_done.result().status(),
@@ -483,7 +499,7 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
     test::TestEvent<
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
         init_done;
-    delegate->DoInitiate(origin_path(), GetServerURL(kResumableUrl).spec(),
+    delegate->DoInitiate(origin_path(), /*upload_parameters=*/"",
                          init_done.cb());
     EXPECT_THAT(
         init_done.result().status(),
@@ -501,22 +517,23 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStep) {
   std::unique_ptr<FileUploadJob::Delegate> delegate =
       PrepareFileUploadDelegate();
 
-  // Set up responses: query at offset=2*granularity, and make one upload.
+  // Set up responses: query at offset = kMaxUploadBufferSize, and make one
+  // upload.
   EXPECT_CALL(mock_request_call_, Call(_, _))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
-        response->AddCustomHeader("X-Goog-Upload-Chunk-Granularity",
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
-        response->AddCustomHeader("X-Goog-Upload-Size-Received",
+        response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
       }))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectStep(kMaxUploadBufferSize, request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
+        response->AddCustomHeader(kUploadStatusHeader, "active");
         response->set_code(::net::HTTP_OK);
       }));
 
@@ -525,8 +542,9 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStep) {
       step_done;
   delegate->DoNextStep(
       kTestDataSize, kMaxUploadBufferSize,
+      /*session_token=*/
       base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
-      step_done.cb());
+      ScopedReservation(0uL, memory_resource_), step_done.cb());
   const auto& result = step_done.result();
   ASSERT_OK(result) << result.status();
   ASSERT_THAT(
@@ -542,23 +560,24 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStepTillEnd) {
   std::unique_ptr<FileUploadJob::Delegate> delegate =
       PrepareFileUploadDelegate();
 
-  // Set up responses: query at offset=2*granularity, and make one upload.
+  // Set up responses: query at offset = (kTestDataSize - kMaxUploadBufferSize),
+  // and make one upload.
   EXPECT_CALL(mock_request_call_, Call(_, _))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
-        response->AddCustomHeader("X-Goog-Upload-Chunk-Granularity",
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
         response->AddCustomHeader(
-            "X-Goog-Upload-Size-Received",
+            kUploadSizeReceivedHeader,
             base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
       }))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectStep(kTestDataSize - kMaxUploadBufferSize, request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "final");
+        response->AddCustomHeader(kUploadStatusHeader, "final");
         response->set_code(::net::HTTP_OK);
       }));
 
@@ -567,8 +586,9 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStepTillEnd) {
       step_done;
   delegate->DoNextStep(
       kTestDataSize, kTestDataSize - kMaxUploadBufferSize,
+      /*session_token=*/
       base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
-      step_done.cb());
+      ScopedReservation(0uL, memory_resource_), step_done.cb());
   const auto& result = step_done.result();
   ASSERT_OK(result) << result.status();
   ASSERT_THAT(result.ValueOrDie().first,
@@ -578,7 +598,205 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStepTillEnd) {
                   {origin_path(), "\n", GetServerURL(kResumableUrl).spec()})));
 }
 
-// TODO(b/264399295): Add failure tests.
+TEST_F(FileUploadDelegateTest, UploadStepOutOfMemory) {
+  // Prepare the delegate.
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  // Set up responses: query at offset = (kTestDataSize - kMaxUploadBufferSize).
+  EXPECT_CALL(mock_request_call_, Call(_, _))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
+                                  base::NumberToString(kDataGranularity));
+        response->AddCustomHeader(
+            kUploadSizeReceivedHeader,
+            base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
+        response->set_code(::net::HTTP_OK);
+      }));
+
+  test::TestEvent<
+      StatusOr<std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
+      step_done;
+  ScopedReservation scoped_reservation(memory_resource_->GetTotal(),
+                                       memory_resource_);
+  ASSERT_TRUE(scoped_reservation.reserved());
+  delegate->DoNextStep(
+      kTestDataSize, kTestDataSize - kMaxUploadBufferSize,
+      /*session_token=*/
+      base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+      std::move(scoped_reservation), step_done.cb());
+  const auto& result = step_done.result();
+  ASSERT_OK(result) << result.status();
+  ASSERT_THAT(result.ValueOrDie().first,
+              Eq(static_cast<int64_t>(kTestDataSize - kMaxUploadBufferSize)));
+  ASSERT_THAT(result.ValueOrDie().second,
+              StrEq(base::StrCat(
+                  {origin_path(), "\n", GetServerURL(kResumableUrl).spec()})));
+}
+
+TEST_F(FileUploadDelegateTest, UploadStepFailures) {
+  // Prepare the delegate.
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  // Set up responses: query at offset = (kTestDataSize - kMaxUploadBufferSize).
+  EXPECT_CALL(mock_request_call_, Call(_, _))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "unknown");
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
+                                  base::NumberToString(kDataGranularity));
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(
+            kUploadSizeReceivedHeader,
+            base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
+                                  base::NumberToString(kDataGranularity));
+        response->AddCustomHeader(kUploadSizeReceivedHeader, "12345Z");
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader, "12345Z");
+        response->AddCustomHeader(
+            kUploadSizeReceivedHeader,
+            base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
+                                  base::NumberToString(kDataGranularity));
+        response->AddCustomHeader(kUploadSizeReceivedHeader,
+                                  base::NumberToString(kMaxUploadBufferSize));
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectStep(kMaxUploadBufferSize, request);
+        response->AddCustomHeader(kUploadStatusHeader, "unknown");
+        response->set_code(::net::HTTP_OK);
+      }));
+
+  {
+    test::TestEvent<StatusOr<
+        std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
+        step_done;
+    delegate->DoNextStep(
+        kTestDataSize, kMaxUploadBufferSize,
+        /*session_token=*/
+        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        ScopedReservation(0uL, memory_resource_), step_done.cb());
+    const auto& result = step_done.result();
+    ASSERT_THAT(result.status(),
+                AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+                      Property(&Status::error_message,
+                               StrEq("Unexpected upload status=unknown"))));
+  }
+  {
+    test::TestEvent<StatusOr<
+        std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
+        step_done;
+    delegate->DoNextStep(
+        kTestDataSize, kMaxUploadBufferSize,
+        /*session_token=*/
+        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        ScopedReservation(0uL, memory_resource_), step_done.cb());
+    const auto& result = step_done.result();
+    ASSERT_THAT(result.status(),
+                AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+                      Property(&Status::error_message,
+                               StrEq("No upload size returned"))));
+  }
+  {
+    test::TestEvent<StatusOr<
+        std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
+        step_done;
+    delegate->DoNextStep(
+        kTestDataSize, kMaxUploadBufferSize,
+        /*session_token=*/
+        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        ScopedReservation(0uL, memory_resource_), step_done.cb());
+    const auto& result = step_done.result();
+    ASSERT_THAT(result.status(),
+                AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+                      Property(&Status::error_message,
+                               StrEq("No granularity returned"))));
+  }
+  {
+    test::TestEvent<StatusOr<
+        std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
+        step_done;
+    delegate->DoNextStep(
+        kTestDataSize, kMaxUploadBufferSize,
+        /*session_token=*/
+        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        ScopedReservation(0uL, memory_resource_), step_done.cb());
+    const auto& result = step_done.result();
+    ASSERT_THAT(
+        result.status(),
+        AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+              Property(&Status::error_message,
+                       StrEq(base::StrCat(
+                           {"Unexpected received=12345Z, expected=",
+                            base::NumberToString(kMaxUploadBufferSize)})))));
+  }
+  {
+    test::TestEvent<StatusOr<
+        std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
+        step_done;
+    delegate->DoNextStep(
+        kTestDataSize, kMaxUploadBufferSize,
+        /*session_token=*/
+        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        ScopedReservation(0uL, memory_resource_), step_done.cb());
+    const auto& result = step_done.result();
+    ASSERT_THAT(result.status(),
+                AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+                      Property(&Status::error_message,
+                               StrEq("Unexpected granularity=12345Z"))));
+  }
+  {
+    test::TestEvent<StatusOr<
+        std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
+        step_done;
+    delegate->DoNextStep(
+        kTestDataSize, kMaxUploadBufferSize,
+        /*session_token=*/
+        base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        ScopedReservation(0uL, memory_resource_), step_done.cb());
+    const auto& result = step_done.result();
+    ASSERT_THAT(result.status(),
+                AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+                      Property(&Status::error_message,
+                               StrEq("Unexpected upload status=unknown"))));
+  }
+}
 
 TEST_F(FileUploadDelegateTest, SuccessfulUploadFinish) {
   // Prepare the delegate.
@@ -590,26 +808,27 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadFinish) {
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "active");
-        response->AddCustomHeader("X-Goog-Upload-Chunk-Granularity",
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
-        response->AddCustomHeader("X-Goog-Upload-Size-Received",
+        response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kTestDataSize));
         response->set_code(::net::HTTP_OK);
       }))
       .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
                               ::net::test_server::BasicHttpResponse* response) {
         ExpectFinish(request);
-        response->AddCustomHeader("X-Goog-Upload-Status", "final");
-        response->AddCustomHeader("X-Goog-Upload-Size-Received",
+        response->AddCustomHeader(kUploadStatusHeader, "final");
+        response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kTestDataSize));
-        response->AddCustomHeader("X-GUploader-UploadID", kUploadId);
+        response->AddCustomHeader(kUploadIdHeader, kUploadId);
         response->set_code(::net::HTTP_OK);
       }));
 
   test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
   delegate->DoFinalize(
-      base::StrCat({origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+      /*session_token=*/base::StrCat(
+          {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
       finish_done.cb());
   const auto& result = finish_done.result();
   ASSERT_OK(result) << result.status();
@@ -619,5 +838,120 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadFinish) {
   EnsureOriginFileIsErased();
 }
 
-// TODO(b/264399295): Add failure tests.
+TEST_F(FileUploadDelegateTest, FinishFailures) {
+  // Prepare the delegate.
+  std::unique_ptr<FileUploadJob::Delegate> delegate =
+      PrepareFileUploadDelegate();
+
+  // Set up responses: query at offset=total, and finalize.
+  EXPECT_CALL(mock_request_call_, Call(_, _))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "unknown");
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadSizeReceivedHeader, "12345Z");
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadSizeReceivedHeader,
+                                  base::NumberToString(kTestDataSize));
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectFinish(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectQuery(request);
+        response->AddCustomHeader(kUploadStatusHeader, "active");
+        response->AddCustomHeader(kUploadSizeReceivedHeader,
+                                  base::NumberToString(kTestDataSize));
+        response->set_code(::net::HTTP_OK);
+      }))
+      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
+                              ::net::test_server::BasicHttpResponse* response) {
+        ExpectFinish(request);
+        response->AddCustomHeader(kUploadStatusHeader, "final");
+        response->set_code(::net::HTTP_OK);
+      }));
+
+  {
+    test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
+    delegate->DoFinalize(
+        /*session_token=*/base::StrCat(
+            {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        finish_done.cb());
+    const auto& result = finish_done.result();
+    ASSERT_THAT(result.status(),
+                AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+                      Property(&Status::error_message,
+                               "Unexpected upload status=unknown")));
+  }
+  {
+    test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
+    delegate->DoFinalize(
+        /*session_token=*/base::StrCat(
+            {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        finish_done.cb());
+    const auto& result = finish_done.result();
+    ASSERT_THAT(
+        result.status(),
+        AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+              Property(&Status::error_message, "No upload size returned")));
+  }
+  {
+    test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
+    delegate->DoFinalize(
+        /*session_token=*/base::StrCat(
+            {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        finish_done.cb());
+    const auto& result = finish_done.result();
+    ASSERT_THAT(
+        result.status(),
+        AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+              Property(&Status::error_message, "Unexpected received=12345Z")));
+  }
+  {
+    test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
+    delegate->DoFinalize(
+        /*session_token=*/base::StrCat(
+            {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        finish_done.cb());
+    const auto& result = finish_done.result();
+    ASSERT_THAT(result.status(),
+                AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+                      Property(&Status::error_message,
+                               "Unexpected upload status=active")));
+  }
+  {
+    test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
+    delegate->DoFinalize(
+        /*session_token=*/base::StrCat(
+            {origin_path(), "\n", GetServerURL(kResumableUrl).spec()}),
+        finish_done.cb());
+    const auto& result = finish_done.result();
+    ASSERT_THAT(
+        result.status(),
+        AllOf(Property(&Status::error_code, Eq(error::DATA_LOSS)),
+              Property(&Status::error_message, "No upload ID returned")));
+  }
+}
 }  // namespace reporting

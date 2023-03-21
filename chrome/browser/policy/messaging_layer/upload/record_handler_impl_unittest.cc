@@ -88,6 +88,7 @@ class MockFileUploadDelegate : public FileUploadJob::Delegate {
               (int64_t total,
                int64_t uploaded,
                base::StringPiece session_token,
+               ScopedReservation scoped_reservation,
                base::OnceCallback<void(
                    StatusOr<std::pair<int64_t /*uploaded*/,
                                       std::string /*session_token*/>>)> cb),

@@ -26,6 +26,7 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
+#include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -58,12 +59,14 @@ class FileUploadJob {
                                     std::string /*session_token*/>>)> cb) = 0;
 
     // Asynchronously uploads the next chunk.
+    // Uses `scoped_reservation` to manage memory usage by data buffer.
     // Calls back with new `uploaded` and `session_token` (could be the same),
     // or Status in case of an error.
     virtual void DoNextStep(
         int64_t total,
         int64_t uploaded,
         base::StringPiece session_token,
+        ScopedReservation scoped_reservation,
         base::OnceCallback<
             void(StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) = 0;
@@ -71,7 +74,7 @@ class FileUploadJob {
     // Asynchronously finalizes upload (once `uploaded` reached `total`).
     // Calls back with `access_parameters`, or Status in case of error.
     virtual void DoFinalize(
-        base::StringPiece access_parameters,
+        base::StringPiece session_token,
         base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
             cb) = 0;
 
@@ -140,9 +143,11 @@ class FileUploadJob {
     ~EventHelper();
 
     // FileUploadJob progresses based on the last recorded state.
-    // Called back once the job is located or created.
+    // Called once the job is located or created.
+    // Uses `scoped_reservation` to manage memory usage by data buffer.
     // `done_cb_` is going to post update as the next tracking event.
-    void Run(base::OnceCallback<void(Status)> done_cb);
+    void Run(const ScopedReservation& scoped_reservation,
+             base::OnceCallback<void(Status)> done_cb);
 
    private:
     // Complete and call `done_cb_` (with OK, if the event is accepted for
@@ -177,7 +182,8 @@ class FileUploadJob {
   // including `session_token` that must be set and identifies the external
   // access on the next steps.
   // Then the Job proceeds with one or more calls to `NextStep`: after every
-  // step `tracker_` is updated. Note that `session_token` might change if it
+  // step `tracker_` is updated and `scoped_reservation` is used to manage
+  // memory usage by data buffer. Note that `session_token` might change if it
   // is necessary to track the progress externally.
   // After the Job finished uploading, it calls `Finalize`, setting up
   // `access_parameters` or error status in `tracker_`.
@@ -189,7 +195,8 @@ class FileUploadJob {
   // possible (but not necessary) to provide `done_cb` callback to be called
   // once finished - this option is mostly used for testing.
   void Initiate(base::OnceClosure done_cb = base::DoNothing());
-  void NextStep(base::OnceClosure done_cb = base::DoNothing());
+  void NextStep(const ScopedReservation& scoped_reservation,
+                base::OnceClosure done_cb = base::DoNothing());
   void Finalize(base::OnceClosure done_cb = base::DoNothing());
 
   // Test-only explicit setter of the event helper.
