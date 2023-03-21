@@ -23,6 +23,7 @@
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -32,6 +33,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "content/public/browser/download_manager.h"
 
@@ -605,6 +607,8 @@ void DownloadBubbleUIController::ScheduleCancelForEphemeralWarning(
 }
 
 void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {
-  download::SetShouldSuppressDownloadBubbleIph(
-      browser_->profile()->GetOriginalProfile(), true);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          browser_->profile());
+  tracker->NotifyEvent("download_bubble_interaction");
 }

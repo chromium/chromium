@@ -23,9 +23,6 @@ bool IsDownloadConnectorEnabled(Profile* profile);
 // Whether to suppress the download bubble IPH. This will be true for users
 // who have interacted with the download bubble prior to the IPH being added.
 bool ShouldSuppressDownloadBubbleIph(Profile* profile);
-// TODO(crbug.com/1420750): This setter is temporary and should be removed when
-// the IPH is implemented.
-void SetShouldSuppressDownloadBubbleIph(Profile* profile, bool suppress);
 
 }  // namespace download
 

@@ -32,6 +32,9 @@ BASE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature,
 BASE_FEATURE(kIPHDesktopCustomizeChromeFeature,
              "IPH_DesktopCustomizeChrome",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDownloadToolbarButtonFeature,
+             "IPH_DownloadToolbarButton",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHExtensionsMenuFeature,
              "IPH_ExtensionsMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);

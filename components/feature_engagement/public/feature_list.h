@@ -247,6 +247,8 @@ DEFINE_VARIATION_PARAM(kIPHDesktopCustomizeChromeFeature,
                        "IPH_DesktopCustomizeChrome");
 DEFINE_VARIATION_PARAM(kIPHDesktopTabGroupsNewGroupFeature,
                        "IPH_DesktopTabGroupsNewGroup");
+DEFINE_VARIATION_PARAM(kIPHDownloadToolbarButtonFeature,
+                       "IPH_DownloadToolbarButton");
 DEFINE_VARIATION_PARAM(kIPHExtensionsMenuFeature, "IPH_ExtensionsMenu");
 DEFINE_VARIATION_PARAM(kIPHFocusModeFeature, "IPH_FocusMode");
 DEFINE_VARIATION_PARAM(kIPHGlobalMediaControls, "IPH_GlobalMediaControls");
@@ -425,6 +427,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),
         VARIATION_ENTRY(kIPHDesktopCustomizeChromeFeature),
         VARIATION_ENTRY(kIPHDesktopTabGroupsNewGroupFeature),
+        VARIATION_ENTRY(kIPHDownloadToolbarButtonFeature),
         VARIATION_ENTRY(kIPHExtensionsMenuFeature),
         VARIATION_ENTRY(kIPHFocusModeFeature),
         VARIATION_ENTRY(kIPHGlobalMediaControls),

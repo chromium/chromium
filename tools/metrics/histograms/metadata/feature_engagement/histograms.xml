@@ -114,6 +114,7 @@ chromium-metrics-reviews@google.com.
       summary="download page for screenshot"/>
   <variant name="IPH_DownloadSettings"
       summary="accessing download settings from download home"/>
+  <variant name="IPH_DownloadToolbarButton" summary="download toolbar button"/>
   <variant name="IPH_EphemeralTab"
       summary="new label on the context menu for Ephemeral Tab"/>
   <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>

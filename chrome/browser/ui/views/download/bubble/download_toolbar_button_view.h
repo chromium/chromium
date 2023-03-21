@@ -63,6 +63,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void UpdateIcon() override;
   void OnThemeChanged() override;
   void Layout() override;
+  bool ShouldShowInkdropAfterIphInteraction() override;
 
   // DownloadBubbleNavigationHandler:
   void OpenPrimaryDialog() override;
@@ -98,6 +99,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void ButtonPressed();
   void CreateBubbleDialogDelegate(std::unique_ptr<View> bubble_contents_view);
   void OnBubbleDelegateDeleted();
+
+  // Callback invoked when the partial view is closed.
+  void OnPartialViewClosed();
 
   // Creates a timer to track the auto-close task. Does not start the timer.
   void CreateAutoCloseTimer();

@@ -36811,6 +36811,8 @@ should be able to be added at any place in this file.
   <suffix name="DownloadPageScreenshot"
       label="For DownloadPageScreenshot feature."/>
   <suffix name="DownloadSettings" label="For DownloadSettings feature."/>
+  <suffix name="DownloadToolbarButton"
+      label="For Download toolbar button feature."/>
   <suffix name="EphemeralTab" label="For Ephemeral Tab."/>
   <suffix name="ExploreSitesTile" label="For Explore Sites feature."/>
   <suffix name="ExtensionsMenu" label="For Extensions menu opening."/>

@@ -15,12 +15,16 @@
 #include "base/timer/timer.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -33,6 +37,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/user_education_class_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -56,6 +62,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -132,6 +139,7 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
   SetVisible(false);
+  SetProperty(views::kElementIdentifierKey, kDownloadToolbarButtonElementId);
 
   badge_image_view_ = AddChildView(std::make_unique<views::ImageView>());
   badge_image_view_->SetPaintToLayer();
@@ -364,6 +372,10 @@ void DownloadToolbarButtonView::Layout() {
   ShowPendingDownloadStartedAnimation();
 }
 
+bool DownloadToolbarButtonView::ShouldShowInkdropAfterIphInteraction() {
+  return false;
+}
+
 std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
   if (is_primary_partial_view_) {
     return CreateRowListView(bubble_controller_->GetPartialView());
@@ -415,6 +427,11 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
     std::unique_ptr<View> bubble_contents_view) {
   if (!bubble_contents_view)
     return;
+  // If the IPH is showing, close it to avoid showing the download dialog over
+  // it.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHDownloadToolbarButtonFeature);
+
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       this, views::BubbleBorder::TOP_RIGHT);
   bubble_delegate->SetTitle(
@@ -444,6 +461,23 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate_ = bubble_delegate.get();
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
   bubble_delegate_->GetWidget()->Show();
+
+  // For IPH bubble. The IPH should show when the partial view is closed, either
+  // manually or automatically.
+  if (is_primary_partial_view_) {
+    bubble_delegate_->SetCloseCallback(
+        base::BindOnce(&DownloadToolbarButtonView::OnPartialViewClosed,
+                       base::Unretained(this)));
+  }
+}
+
+void DownloadToolbarButtonView::OnPartialViewClosed() {
+  if (download::ShouldSuppressDownloadBubbleIph(
+          browser_->profile()->GetOriginalProfile())) {
+    return;
+  }
+  browser_->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHDownloadToolbarButtonFeature);
 }
 
 void DownloadToolbarButtonView::CreateAutoCloseTimer() {
@@ -533,7 +567,8 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
 
 SkColor DownloadToolbarButtonView::GetIconColor() const {
   return icon_color_.value_or(
-      controller_->GetIconInfo().is_active
+      controller_->GetIconInfo().is_active ||
+              GetProperty(user_education::kHasInProductHelpPromoKey)
           ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
           : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
 }

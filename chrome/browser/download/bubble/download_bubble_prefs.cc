@@ -64,9 +64,4 @@ bool ShouldSuppressDownloadBubbleIph(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kDownloadBubbleIphSuppression);
 }
 
-void SetShouldSuppressDownloadBubbleIph(Profile* profile, bool suppress) {
-  profile->GetPrefs()->SetBoolean(prefs::kDownloadBubbleIphSuppression,
-                                  suppress);
-}
-
 }  // namespace download

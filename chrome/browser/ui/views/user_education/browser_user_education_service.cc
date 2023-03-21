@@ -433,6 +433,14 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHPriceTrackingInSidePanelFeature,
       kSidePanelButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));
+
+  // kIPHDownloadToolbarButtonFeature:
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForSnoozePromo(
+                    feature_engagement::kIPHDownloadToolbarButtonFeature,
+                    kDownloadToolbarButtonElementId, IDS_DOWNLOAD_BUBBLE_PROMO)
+                    .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+                    .SetBubbleTitleText(IDS_DOWNLOAD_BUBBLE_PROMO_TITLE)));
 }
 
 void MaybeRegisterChromeTutorials(

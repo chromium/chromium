@@ -2600,6 +2600,14 @@ are declared in tools/grit/grit_rule.gni.
                desc="Tooltip label for the button to open all downloads">
         Show all downloads in a new tab
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PROMO"
+               desc="Text for the in-product-help bubble shown for the download bubble.">
+        Manage files as they download, and open them when they’re done
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PROMO_TITLE"
+               desc="Title for the in-product-help bubble shown for the download bubble.">
+        Find your downloads here
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_DOWNLOAD_STATUS_MESSAGE_WITH_SEPARATOR"
                desc="The download status and message are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
         <ph name="STATUS">$1<ex>100/120 MB</ex></ph> • <ph name="MESSAGE">$2<ex>Opening in 10 seconds...</ex></ph>

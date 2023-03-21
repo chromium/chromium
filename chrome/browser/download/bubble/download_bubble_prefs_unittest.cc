@@ -138,7 +138,9 @@ TEST_F(DownloadBubblePrefsTest, V2FeatureFlagDisabled_NoMVP_YesV2) {
 TEST_F(DownloadBubblePrefsTest, ShouldSuppressIph) {
   // Test default value.
   EXPECT_FALSE(ShouldSuppressDownloadBubbleIph(profile_));
-  SetShouldSuppressDownloadBubbleIph(profile_, true);
+
+  // Test when user has previous interaction with the bubble.
+  profile_->GetPrefs()->SetBoolean(prefs::kDownloadBubbleIphSuppression, true);
   EXPECT_TRUE(ShouldSuppressDownloadBubbleIph(profile_));
 }
 
