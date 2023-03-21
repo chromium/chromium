@@ -455,7 +455,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'PerDeviceMouseSubsection', 'per_device_mouse_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
- ['PerDevicePointingStick', 'per_device_pointing_stick_test.js'],
+ [
+   'PerDevicePointingStick', 'per_device_pointing_stick_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
  [
    'PerDevicePointingStickSubsection',
    'per_device_pointing_stick_subsection_test.js',

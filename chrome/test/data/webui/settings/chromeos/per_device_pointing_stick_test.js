@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeInputDeviceSettingsProvider, fakePointingSticks, setInputDeviceSettingsProviderForTesting, SettingsPerDevicePointingStickElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {fakePointingSticks, fakePointingSticks2, SettingsPerDevicePointingStickElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -11,27 +11,21 @@ suite('PerDevicePointingStick', function() {
    * @type {?SettingsPerDevicePointingStickElement}
    */
   let perDevicePointingStickPage = null;
-  /**
-   * @type {?FakeInputDeviceSettingsProvider}
-   */
-  let provider = null;
 
   setup(() => {
     PolymerTest.clearBody();
-    provider = new FakeInputDeviceSettingsProvider();
-    provider.setFakePointingSticks(fakePointingSticks);
-    setInputDeviceSettingsProviderForTesting(provider);
   });
 
   teardown(() => {
     perDevicePointingStickPage = null;
-    provider = null;
   });
 
-  function initializePerDevicePointingStickPage() {
+  function initializePerDevicePointingStickPage(
+      pointingSticks = fakePointingSticks) {
     perDevicePointingStickPage =
         document.createElement('settings-per-device-pointing-stick');
     assertTrue(perDevicePointingStickPage != null);
+    perDevicePointingStickPage.pointingSticks = pointingSticks;
     document.body.appendChild(perDevicePointingStickPage);
     return flushTasks();
   }
@@ -42,12 +36,12 @@ suite('PerDevicePointingStick', function() {
         'settings-per-device-pointing-stick-subsection');
     assertEquals(fakePointingSticks.length, subsections.length);
 
-    const newFakePointingSticks = fakePointingSticks.slice(1);
-    provider.setFakePointingSticks(newFakePointingSticks);
+    // Check the number of subsections when the pointing stick list is updated.
+    perDevicePointingStickPage.pointingSticks = fakePointingSticks2;
     await flushTasks();
     subsections = perDevicePointingStickPage.shadowRoot.querySelectorAll(
         'settings-per-device-pointing-stick-subsection');
-    assertEquals(newFakePointingSticks.length, subsections.length);
+    assertEquals(fakePointingSticks2.length, subsections.length);
   });
 
   test(

@@ -182,3 +182,17 @@ export const fakePointingSticks: PointingStick[] = [
     },
   },
 ];
+
+export const fakePointingSticks2: PointingStick[] = [
+  {
+    id: 12,
+    deviceKey: 'test:key',
+    name: 'Fake Lexmark-Unicomp FSR',
+    isExternal: true,
+    settings: {
+      swapRight: true,
+      sensitivity: 5,
+      accelerationEnabled: true,
+    },
+  },
+];
