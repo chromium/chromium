@@ -86,6 +86,58 @@ export const fakeKeyboards: Keyboard[] = [
   },
 ];
 
+export const fakeKeyboards2: Keyboard[] = [
+  {
+    id: 9,
+    deviceKey: 'test:key',
+    name: 'Fake ERGO K860',
+    isExternal: true,
+    metaKey: MetaKey.kCommand,
+    modifierKeys: [
+      ModifierKey.kAlt,
+      ModifierKey.kBackspace,
+      ModifierKey.kCapsLock,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
+    ],
+    settings: {
+      modifierRemappings: {
+        [ModifierKey.kControl]: ModifierKey.kCapsLock,
+        [ModifierKey.kCapsLock]: ModifierKey.kAssistant,
+      },
+      topRowAreFkeys: false,
+      suppressMetaFkeyRewrites: false,
+      autoRepeatEnabled: false,
+      autoRepeatDelay: mojoTimeDelta(2000),
+      autoRepeatInterval: mojoTimeDelta(2000),
+    },
+  },
+  {
+    id: 10,
+    deviceKey: 'test:key',
+    name: 'Fake AT Translated Set 2 ',
+    isExternal: false,
+    metaKey: MetaKey.kSearch,
+    modifierKeys: [
+      ModifierKey.kAlt,
+      ModifierKey.kAssistant,
+      ModifierKey.kBackspace,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
+    ],
+    settings: {
+      modifierRemappings: {},
+      topRowAreFkeys: true,
+      suppressMetaFkeyRewrites: true,
+      autoRepeatEnabled: true,
+      autoRepeatDelay: mojoTimeDelta(150),
+      autoRepeatInterval: mojoTimeDelta(20),
+    },
+  },
+];
+
 export const fakeTouchpads: Touchpad[] = [
   {
     id: 2,

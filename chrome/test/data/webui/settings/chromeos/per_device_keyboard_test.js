@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DevicePageBrowserProxyImpl, FakeInputDeviceSettingsProvider, fakeKeyboards, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, Router, routes, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -14,30 +14,23 @@ suite('PerDeviceKeyboard', function() {
    * @type {?SettingsPerDeviceKeyboardElement}
    */
   let perDeviceKeyboardPage = null;
-  /**
-   * @type {?FakeInputDeviceSettingsProvider}
-   */
-  let provider = null;
 
   setup(() => {
     PolymerTest.clearBody();
-    provider = new FakeInputDeviceSettingsProvider();
-    provider.setFakeKeyboards(fakeKeyboards);
-    setInputDeviceSettingsProviderForTesting(provider);
   });
 
   teardown(() => {
     perDeviceKeyboardPage = null;
-    provider = null;
     Router.getInstance().resetRouteForTesting();
   });
 
-  function initializePerDeviceKeyboardPage() {
+  function initializePerDeviceKeyboardPage(keyboards = fakeKeyboards) {
     DevicePageBrowserProxyImpl.setInstanceForTesting(
         new TestDevicePageBrowserProxy());
     perDeviceKeyboardPage =
         document.createElement('settings-per-device-keyboard');
     assertTrue(perDeviceKeyboardPage != null);
+    perDeviceKeyboardPage.keyboards = keyboards;
     document.body.appendChild(perDeviceKeyboardPage);
     return flushTasks();
   }
@@ -48,12 +41,12 @@ suite('PerDeviceKeyboard', function() {
         'settings-per-device-keyboard-subsection');
     assertEquals(fakeKeyboards.length, subsections.length);
 
-    const newFakeKeyboards = fakeKeyboards.slice(1);
-    provider.setFakeKeyboards(newFakeKeyboards);
+    // Check the number of subsections when the keyboard list is updated.
+    perDeviceKeyboardPage.keyboards = fakeKeyboards2;
     await flushTasks();
     subsections = perDeviceKeyboardPage.shadowRoot.querySelectorAll(
         'settings-per-device-keyboard-subsection');
-    assertEquals(newFakeKeyboards.length, subsections.length);
+    assertEquals(fakeKeyboards2.length, subsections.length);
   });
 
   test(
@@ -91,7 +84,7 @@ suite('PerDeviceKeyboard', function() {
 
   test('Help message shown when no keyboards are connected', async () => {
     await initializePerDeviceKeyboardPage();
-    provider.setFakeKeyboards([]);
+    perDeviceKeyboardPage.keyboards = [];
     await flushTasks();
     assertTrue(isVisible(perDeviceKeyboardPage.shadowRoot.querySelector(
         '#noKeyboardsConnectedContainer')));

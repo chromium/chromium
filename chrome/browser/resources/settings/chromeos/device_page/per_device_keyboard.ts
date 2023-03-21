@@ -24,16 +24,13 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
-import {KeyboardSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
-import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
-import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_settings_types.js';
+import {Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard.html.js';
 
 const SettingsPerDeviceKeyboardElementBase =
@@ -73,14 +70,6 @@ export class SettingsPerDeviceKeyboardElement extends
   protected keyboards: Keyboard[];
   private browserProxy: DevicePageBrowserProxy =
       DevicePageBrowserProxyImpl.getInstance();
-  private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
-  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
-      getInputDeviceSettingsProvider();
-
-  constructor() {
-    super();
-    this.observeKeyboardSettings();
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -97,20 +86,6 @@ export class SettingsPerDeviceKeyboardElement extends
     this.attemptDeepLink();
   }
 
-  private observeKeyboardSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
-        FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
-      return;
-    }
-
-    this.keyboardSettingsObserverReceiver =
-        new KeyboardSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observeKeyboardSettings(
-        this.keyboardSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
-  }
-
   private onShowKeyboardShortcutViewerTap(): void {
     this.browserProxy.showKeyboardShortcutViewer();
   }
@@ -119,10 +94,6 @@ export class SettingsPerDeviceKeyboardElement extends
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT,
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
-  }
-
-  onKeyboardListUpdated(keyboards: Keyboard[]): void {
-    this.keyboards = keyboards;
   }
 
   protected hasKeyboards(): boolean {

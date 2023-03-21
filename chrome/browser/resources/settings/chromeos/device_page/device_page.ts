@@ -31,7 +31,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PointingStickSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+import {KeyboardSettingsObserverReceiver, PointingStickSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Router} from '../router.js';
@@ -40,7 +40,7 @@ import {getTemplate} from './device_page.html.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, PointingStick} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, PointingStick} from './input_device_settings_types.js';
 
 interface SettingsDevicePageElement {
   $: {
@@ -194,6 +194,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       pointingSticks: {
         type: Array,
       },
+      keyboards: {
+        type: Array,
+      },
     };
   }
 
@@ -207,6 +210,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   protected pointingSticks: PointingStick[];
+  protected keyboards: Keyboard[];
   private browserProxy_: DevicePageBrowserProxy;
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
@@ -214,7 +218,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private isDeviceSettingsSplitEnabled_: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;
+  private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface;
+
   constructor() {
     super();
 
@@ -222,6 +228,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     if (this.isDeviceSettingsSplitEnabled_) {
       this.inputDeviceSettingsProvider = getInputDeviceSettingsProvider();
       this.observePointingStickSettings();
+      this.observeKeyboardSettings();
     }
   }
 
@@ -266,6 +273,24 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   onPointingStickListUpdated(pointingSticks: PointingStick[]): void {
     this.pointingSticks = pointingSticks;
+  }
+
+  private observeKeyboardSettings(): void {
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
+      return;
+    }
+
+    this.keyboardSettingsObserverReceiver =
+        new KeyboardSettingsObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider.observeKeyboardSettings(
+        this.keyboardSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
+  }
+
+  onKeyboardListUpdated(keyboards: Keyboard[]): void {
+    this.keyboards = keyboards;
   }
 
   private getPointersTitle_(): string {

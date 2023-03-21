@@ -109,7 +109,7 @@ export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} f
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
-export {fakeKeyboards, fakeMice, fakePointingSticks, fakePointingSticks2, fakeTouchpads} from './device_page/fake_input_device_data.js';
+export {fakeKeyboards, fakeKeyboards2, fakeMice, fakePointingSticks, fakePointingSticks2, fakeTouchpads} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {MetaKey, ModifierKey} from './device_page/input_device_settings_types.js';
