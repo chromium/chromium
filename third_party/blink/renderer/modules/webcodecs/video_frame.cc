@@ -354,9 +354,6 @@ absl::optional<media::VideoPixelFormat> CopyToFormat(
   if (!(mappable || texturable))
     return absl::nullopt;
 
-  const size_t num_planes =
-      mappable ? frame.layout().num_planes() : frame.NumTextures();
-
   // The |frame|.BitDepth() restriction is to avoid treating a P016LE frame as a
   // low-bit depth frame.
   if (!mappable && frame.RequiresExternalSampler() && frame.BitDepth() == 8u) {
@@ -379,10 +376,19 @@ absl::optional<media::VideoPixelFormat> CopyToFormat(
       return absl::nullopt;
   }
 
-  // Make sure layout() is as expected before committing to being able to read
-  // back pixels.
-  if (num_planes != media::VideoFrame::NumPlanes(frame.format()))
+  if (mappable) {
+    DCHECK_EQ(frame.layout().num_planes(),
+              media::VideoFrame::NumPlanes(frame.format()));
+    return frame.format();
+  }
+
+  // For legacy shared image formats, readback only works when planes and
+  // textures are 1:1.
+  if (frame.shared_image_format_type() ==
+          media::SharedImageFormatType::kLegacy &&
+      frame.NumTextures() != media::VideoFrame::NumPlanes(frame.format())) {
     return absl::nullopt;
+  }
 
   return frame.format();
 }
