@@ -2211,6 +2211,10 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
 }
 
 TEST_F(AcceleratorControllerTest, TestToggleHighContrastPinned) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kAccessibilityAcceleratorNotificationsTimeout);
+
   ui::Accelerator accelerator(ui::VKEY_H,
                               ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
   EXPECT_TRUE(ProcessInController(accelerator));
@@ -2687,6 +2691,10 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
 }
 
 TEST_F(MagnifiersAcceleratorsTester, TestToggleMagnifiersPinned) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::features::kAccessibilityAcceleratorNotificationsTimeout);
+
   FakeMagnificationManager manager;
   manager.SetPrefs(user_pref_service());
 

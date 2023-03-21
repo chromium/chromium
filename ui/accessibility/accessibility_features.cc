@@ -195,7 +195,7 @@ bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled() {
 
 BASE_FEATURE(kAccessibilityAcceleratorNotificationsTimeout,
              "AccessibilityAcceleratorNotificationsTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
   return base::FeatureList::IsEnabled(
