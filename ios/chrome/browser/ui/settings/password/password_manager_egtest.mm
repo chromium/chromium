@@ -12,6 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/password_manager/core/common/password_manager_constants.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
@@ -382,8 +383,10 @@ id<GREYMatcher> ToolbarSettingsSubmenuButton() {
 // Returns matcher for the password details / add password view footer displayed
 // when the note length is approaching max limit.
 id<GREYMatcher> TooLongNoteFooter() {
-  return grey_text(l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION));
+  return grey_text(l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION,
+      base::NumberToString16(
+          password_manager::constants::kMaxPasswordNoteLength)));
 }
 
 // Saves an example form in the store.

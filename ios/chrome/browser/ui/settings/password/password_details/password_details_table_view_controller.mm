@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/common/password_manager_constants.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -52,6 +53,7 @@
 namespace {
 
 using base::UmaHistogramEnumeration;
+using password_manager::constants::kMaxPasswordNoteLength;
 using password_manager::metrics_util::LogPasswordSettingsReauthResult;
 using password_manager::metrics_util::PasswordCheckInteraction;
 using password_manager::metrics_util::ReauthResult;
@@ -85,8 +87,6 @@ const CGFloat kSymbolSize = 15;
 const CGFloat kRecommendationSymbolSize = 22;
 // Minimal amount of characters in password note to display the warning.
 const int kMinNoteCharAmountForWarning = 901;
-// Maximal amount of characters that a password note can contain.
-const int kMaxNoteCharAmount = 1000;
 
 }  // namespace
 
@@ -435,8 +435,9 @@ const int kMaxNoteCharAmount = 1000;
     int password = IsPasswordGroupingEnabled() ? section : 0;
     NSString* footerText =
         self.passwordDetailsInfoItems[password].isNoteFooterShown
-            ? l10n_util::GetNSString(
-                  IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION)
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION,
+                  base::NumberToString16(kMaxPasswordNoteLength))
             : @"";
     [footer setSubtitle:footerText];
   }
@@ -691,7 +692,7 @@ const int kMaxNoteCharAmount = 1000;
   [self setOrExtendAuthValidityTimer];
   // Update save button state based on the note's length and validity of other
   // input fields.
-  BOOL noteValid = tableViewItem.text.length <= kMaxNoteCharAmount;
+  BOOL noteValid = tableViewItem.text.length <= kMaxPasswordNoteLength;
   tableViewItem.validText = noteValid;
   self.shouldEnableEditDoneButton =
       noteValid && [self checkIfValidUsernames] && [self checkIfValidPasswords];
@@ -717,8 +718,9 @@ const int kMaxNoteCharAmount = 1000;
         base::mac::ObjCCastStrict<TableViewTextHeaderFooterView>(footer);
     NSString* footerText =
         shouldDisplayNoteFooter
-            ? l10n_util::GetNSString(
-                  IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION)
+            ? l10n_util::GetNSStringF(
+                  IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION,
+                  base::NumberToString16(kMaxPasswordNoteLength))
             : @"";
     [textFooter setSubtitle:footerText];
   }
@@ -956,7 +958,7 @@ const int kMaxNoteCharAmount = 1000;
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
     if (self.passwordDetailsInfoItems[i].passwordNoteItem.text.length >
-        kMaxNoteCharAmount) {
+        kMaxPasswordNoteLength) {
       return NO;
     }
   }
@@ -1093,8 +1095,9 @@ const int kMaxNoteCharAmount = 1000;
                 initWithType:PasswordDetailsItemTypeNoteFooter];
         footer.subtitle =
             passwordItem.isNoteFooterShown
-                ? l10n_util::GetNSString(
-                      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION)
+                ? l10n_util::GetNSStringF(
+                      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION,
+                      base::NumberToString16(kMaxPasswordNoteLength))
                 : @"";
         [model setFooter:footer forSectionWithIdentifier:sectionForPassword];
       }

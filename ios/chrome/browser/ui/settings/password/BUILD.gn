@@ -284,6 +284,7 @@ source_set("eg2_tests") {
     ":password_constants",
     "//base:base",
     "//base/test:test_support",
+    "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/policy:generated",
     "//components/strings",

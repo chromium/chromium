@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/common/password_manager_constants.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -73,8 +74,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 const CGFloat kSymbolSize = 15;
 // Minimal amount of characters in password note to display the warning.
 const int kMinNoteCharAmountForWarning = 901;
-// Maximal amount of characters that a password note can contain.
-const int kMaxNoteCharAmount = 1000;
 
 }  // namespace
 
@@ -115,7 +114,8 @@ const int kMaxNoteCharAmount = 1000;
 // Yes, when the footer informing about the max note length is shown.
 @property(nonatomic, assign) BOOL isNoteFooterShown;
 
-// Yes, when the note's length is less or equal than `kMaxNoteCharAmount`.
+// Yes, when the note's length is less or equal than
+// `password_manager::constants::kMaxPasswordNoteLength`.
 @property(nonatomic, assign) BOOL isNoteValid;
 
 // If YES, the password details are shown without requiring any authentication.
@@ -358,8 +358,10 @@ const int kMaxNoteCharAmount = 1000;
 - (TableViewLinkHeaderFooterItem*)tooLongNoteMessageFooterItem {
   TableViewLinkHeaderFooterItem* item =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  item.text = l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION);
+  item.text = l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION,
+      base::NumberToString16(
+          password_manager::constants::kMaxPasswordNoteLength));
   return item;
 }
 
@@ -616,7 +618,8 @@ const int kMaxNoteCharAmount = 1000;
 
   // Update save button state based on the note's length and validity of other
   // input fields.
-  BOOL noteValid = tableViewItem.text.length <= kMaxNoteCharAmount;
+  BOOL noteValid = tableViewItem.text.length <=
+                   password_manager::constants::kMaxPasswordNoteLength;
   if (self.isNoteValid != noteValid) {
     self.isNoteValid = noteValid;
     tableViewItem.validText = noteValid;
