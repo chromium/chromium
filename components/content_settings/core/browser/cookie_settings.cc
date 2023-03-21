@@ -218,7 +218,12 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
       base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI);
   if (block && storage_access_api_enabled &&
       ShouldConsiderStorageAccessGrants(overrides)) {
-    if (url::IsSameOriginWith(url, first_party_url) ||
+    // The Storage Access API allows access in A(B(A)) case (or similar). Do the
+    // same-origin check first for performance reasons.
+    const url::Origin origin = url::Origin::Create(url);
+    const url::Origin first_party_origin = url::Origin::Create(first_party_url);
+    if (origin.IsSameOriginWith(first_party_origin) ||
+        net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin) ||
         host_content_settings_map_->GetContentSetting(
             url, first_party_url, ContentSettingsType::STORAGE_ACCESS) ==
             CONTENT_SETTING_ALLOW) {

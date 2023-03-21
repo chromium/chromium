@@ -1002,16 +1002,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithoutImplicitGrantBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostASubdomain));
 
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
-  // TODO(crbug.com/1425562): requestStorageAccess behavior should be align with
-  // hasStorageAccess, i.e. prompt should not be shown.
-  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-  EXPECT_EQ(1, prompt_factory()->RequestTypeSeen(
-                   permissions::RequestType::kStorageAccess));
+
+  EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA),
             CookieBundleWithContent("cross-site=a.test"));
@@ -1047,21 +1041,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithoutImplicitGrantBrowserTest,
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostASubdomain, "/empty.html");
 
-  prompt_factory()->set_response_type(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), NoCookies());
 
   EXPECT_TRUE(
       storage::test::RequestAndCheckStorageAccessForFrame(GetNestedFrame()));
-  // TODO(crbug.com/1425562): requestStorageAccess should resolve to true
-  // without showing the prompt, according to spec PR:
-  // https://github.com/privacycg/storage-access/pull/169
-  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
-  EXPECT_EQ(1, prompt_factory()->RequestTypeSeen(
-                   permissions::RequestType::kStorageAccess));
-
+  EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
   EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostASubdomain),
             CookieBundle("cross-site=a.test"));
 }

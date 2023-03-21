@@ -972,28 +972,27 @@ TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
 }
 
 TEST_P(CookieSettingsTest,
-       AnnotateAndMoveUserBlockedCookies_SameOriginEmbed_ThirdPartyContext) {
+       AnnotateAndMoveUserBlockedCookies_SameSiteEmbed_ThirdPartyContext) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
   net::CookieAccessResultList maybe_included_cookies = {
-      {*MakeCanonicalCookie("cookie", kURL), {}}};
+      {*MakeCanonicalCookie("cookie", kDomainURL), {}}};
   net::CookieAccessResultList excluded_cookies = {
-      {*MakeCanonicalCookie("excluded_other", kURL),
-       // The ExclusionReason below is irrelevant, as long as there is
-       // one.
+      {*MakeCanonicalCookie("excluded_other", kDomainURL),
+       // The ExclusionReason below is irrelevant, as long as there is one.
        net::CookieAccessResult(net::CookieInclusionStatus(
            net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY))}};
-  url::Origin origin = url::Origin::Create(GURL(kURL));
+  url::Origin origin = url::Origin::Create(GURL(kDomainURL));
 
   const bool expected_any_allowed =
       IsForceAllowThirdPartyCookies() || IsStorageAccessGrantEligible();
 
-  // Note that `url` matches the `top_frame_origin`. This is a third-party
-  // context for the purposes of third-party-cookie-blocking, even though the
-  // request URL and the top-frame URL are same-origin with each other.
+  // Note that the site of `url` matches the site of `top_frame_origin`. This is
+  // a third-party context for the purposes of third-party-cookie-blocking, even
+  // though the request URL and the top-frame URL are same-site with each other.
   EXPECT_EQ(settings.AnnotateAndMoveUserBlockedCookies(
-                GURL(kURL), net::SiteForCookies(), &origin,
+                GURL(kSubDomainURL), net::SiteForCookies(), &origin,
                 net::FirstPartySetMetadata(net::SamePartyContext(),
                                            /*frame_entry=*/nullptr,
                                            /*top_frame_entry=*/nullptr),

@@ -334,12 +334,12 @@ TEST_P(CookieSettingsTest, CookiesBlockThirdParty) {
           /*top_frame_origin=*/absl::nullopt, GetCookieSettingOverrides()));
   EXPECT_FALSE(cookie_settings_->IsCookieSessionOnly(kBlockedSite));
 
-  // A(B(A)) context. The inner frame is same-origin with the top-level frame,
+  // A(B(subA)) context. The inner frame is same-site with the top-level frame,
   // but there's an intermediate cross-site frame.
   EXPECT_EQ(IsForceAllowThirdPartyCookies() || IsStorageAccessGrantEligible(),
             cookie_settings_->IsFullCookieAccessAllowed(
-                kBlockedSite, net::SiteForCookies(),
-                /*top_frame_origin=*/url::Origin::Create(kBlockedSite),
+                kHttpsSubdomainSite, net::SiteForCookies(),
+                /*top_frame_origin=*/url::Origin::Create(kHttpsSite),
                 GetCookieSettingOverrides()));
 }
 

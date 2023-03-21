@@ -17,6 +17,7 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -352,9 +353,12 @@ bool CookieSettings::HasSessionOnlyOrigins() const {
 bool CookieSettings::IsAllowedByStorageAccessGrant(
     const GURL& url,
     const GURL& first_party_url) const {
-  if (url::IsSameOriginWith(url, first_party_url)) {
-    // This must be an A(B(A)) case (or similar). The Storage Access API allows
-    // access in such cases.
+  // The Storage Access API allows access in A(B(A)) case (or similar). Do the
+  // same-origin check first for performance reasons.
+  const url::Origin origin = url::Origin::Create(url);
+  const url::Origin first_party_origin = url::Origin::Create(first_party_url);
+  if (origin.IsSameOriginWith(first_party_origin) ||
+      net::SchemefulSite(origin) == net::SchemefulSite(first_party_origin)) {
     return true;
   }
   const ContentSettingPatternSource* match =
