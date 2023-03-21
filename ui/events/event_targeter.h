@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_EVENT_TARGETER_H_
 #define UI_EVENTS_EVENT_TARGETER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -14,7 +15,10 @@ class EventTarget;
 
 class EVENTS_EXPORT EventTargeter {
  public:
-  virtual ~EventTargeter() {}
+  EventTargeter();
+  EventTargeter(const EventTargeter&) = delete;
+  EventTargeter& operator=(const EventTargeter&) = delete;
+  virtual ~EventTargeter();
 
   // Returns the target |event| should be dispatched to. If there is no such
   // target, return NULL. If |event| is a located event, the location of |event|
@@ -31,6 +35,15 @@ class EVENTS_EXPORT EventTargeter {
   // coordinate space).
   virtual EventTarget* FindNextBestTarget(EventTarget* previous_target,
                                           Event* event) = 0;
+
+ private:
+  friend class EventProcessor;
+
+  base::WeakPtr<EventTargeter> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  base::WeakPtrFactory<EventTargeter> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

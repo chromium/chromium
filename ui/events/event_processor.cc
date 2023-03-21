@@ -34,10 +34,13 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
     EventTarget* root = GetRootForEvent(event_to_dispatch);
     DCHECK(root);
     EventTargeter* targeter = root->GetEventTargeter();
+    base::WeakPtr<EventTargeter> weak_targeter;
     if (targeter) {
+      weak_targeter = targeter->GetWeakPtr();
       target = targeter->FindTargetForEvent(root, event_to_dispatch);
     } else {
       targeter = GetDefaultEventTargeter();
+      weak_targeter = targeter->GetWeakPtr();
       if (event_to_dispatch->target())
         target = root;
       else
@@ -70,8 +73,10 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
         return details;
       }
 
-      if (details.target_destroyed || event->handled() || !target)
+      if (details.target_destroyed || event->handled() || !target ||
+          !weak_targeter) {
         break;
+      }
 
       DCHECK(targeter);
       target = targeter->FindNextBestTarget(target, event_to_dispatch);
