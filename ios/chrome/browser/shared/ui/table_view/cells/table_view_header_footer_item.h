@@ -7,13 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/list_model/list_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 @class ChromeTableViewStyler;
 
 // TableViewHeaderFooterItem holds the model data for a given table view
 // header/footer item.
-@interface TableViewHeaderFooterItem : ListItem
+@interface TableViewHeaderFooterItem : TableViewItem
 
 // Configures the given headerFooter view with the item's information. Override
 // this method to specialize. At this level, only accessibility properties are
