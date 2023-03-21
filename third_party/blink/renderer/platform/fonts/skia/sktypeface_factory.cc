@@ -41,17 +41,4 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFilenameAndTtcIndex(
 #endif
 }
 
-// static
-sk_sp<SkTypeface> SkTypeface_Factory::FromFamilyNameAndFontStyle(
-    const std::string& family_name,
-    const SkFontStyle& font_style) {
-#if !BUILDFLAG(IS_MAC)
-  auto fm(SkFontMgr::RefDefault());
-  return fm->legacyMakeTypeface(family_name.c_str(), font_style);
-#else
-  NOTREACHED();
-  return nullptr;
-#endif
-}
-
 }  // namespace blink
