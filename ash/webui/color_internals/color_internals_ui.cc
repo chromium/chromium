@@ -22,6 +22,9 @@ ColorInternalsUI::ColorInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUIColorInternalsHost);
+  data_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   data_source->AddResourcePath("", IDR_ASH_COLOR_INTERNALS_INDEX_HTML);
   data_source->AddResourcePath(

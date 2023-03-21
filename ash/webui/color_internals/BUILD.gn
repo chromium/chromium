@@ -28,7 +28,7 @@ static_library("color_internals") {
 }
 
 js2gtest("browser_tests_js") {
-  test_type = "mojo_lite_webui"
+  test_type = "mojo_webui"
 
   sources = [ "test/color_internals_browsertest.js" ]
 
