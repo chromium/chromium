@@ -81,6 +81,7 @@
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_features.h"
@@ -882,6 +883,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Site Details Page does not display the number of cookies for the origin.
   const CookieTreeNode* root = cookies_tree_model_->GetRoot();
+  int64_t size = 0;
   std::string usage_string;
   std::string cookie_string;
   std::string fps_string;
@@ -897,9 +899,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     if (title != usage_hostname) {
       continue;
     }
-    int64_t size = site->InclusiveSize();
-    if (size != 0)
-      usage_string = base::UTF16ToUTF8(ui::FormatBytes(size));
+    size += site->InclusiveSize();
 
     // Usage info only includes unpartitioned cookies, so each cookie must be
     // inspected.
@@ -944,6 +944,19 @@ void SiteSettingsHandler::OnGetUsageInfo() {
     }
     break;
   }
+
+  for (const BrowsingDataModel::BrowsingDataEntryView& entry :
+       *browsing_data_model_) {
+    if (*entry.primary_host != usage_hostname) {
+      continue;
+    }
+    size += entry.data_details->storage_size;
+  }
+
+  if (size > 0) {
+    usage_string = base::UTF16ToUTF8(ui::FormatBytes(size));
+  }
+
   FireWebUIListener("usage-total-changed", base::Value(usage_origin_),
                     base::Value(usage_string), base::Value(cookie_string),
                     base::Value(fps_string), base::Value(fpsPolicy));

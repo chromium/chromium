@@ -32,6 +32,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
@@ -703,6 +704,34 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     fake_browsing_data_model->AddBrowsingData(
         url::Origin::Create(GURL("https://www.google.com")),
         BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
+
+    handler()->SetModelsForTesting(std::move(mock_cookies_tree_model),
+                                   std::move(fake_browsing_data_model));
+  }
+
+  void SetupModelsWithIsolatedWebAppData(
+      const std::string& isolated_web_app_url,
+      int64_t usage) {
+    auto container = std::make_unique<LocalDataContainer>(
+        /*browsing_data_cookie_helper=*/nullptr,
+        /*database_helper=*/nullptr,
+        /*browsing_data_local_storage_helper=*/nullptr,
+        /*session_storage_helper=*/nullptr,
+        /*indexed_db_helper=*/nullptr,
+        /*file_system_helper=*/nullptr,
+        /*quota_helper=*/nullptr,
+        /*service_worker_helper=*/nullptr,
+        /*data_shared_worker_helper=*/nullptr,
+        /*cache_storage_helper=*/nullptr);
+    auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
+        std::move(container), profile()->GetExtensionSpecialStoragePolicy());
+
+    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
+    fake_browsing_data_model->AddBrowsingData(
+        url::Origin::Create(GURL(isolated_web_app_url)),
+        static_cast<BrowsingDataModel::StorageType>(
+            ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
+        usage);
 
     handler()->SetModelsForTesting(std::move(mock_cookies_tree_model),
                                    std::move(fake_browsing_data_model));
@@ -5303,6 +5332,22 @@ TEST_F(SiteSettingsHandlerTest,
   handler()->SendNotificationPermissionReviewList();
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
+}
+
+TEST_F(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo) {
+  std::string iwa_url =
+      "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  SetupModelsWithIsolatedWebAppData(iwa_url, 1000);
+
+  base::Value::List args;
+  args.Append(iwa_url);
+  handler()->HandleFetchUsageTotal(args);
+  handler()->ServicePendingRequests();
+
+  ValidateUsageInfo(
+      /*expected_usage_host=*/iwa_url, /*expected_usage_string=*/"1,000 B",
+      /*expected_cookie_string=*/"",
+      /*expected_fps_member_count_string=*/"", /*expected_fps_policy=*/false);
 }
 
 }  // namespace settings

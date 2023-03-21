@@ -175,6 +175,7 @@ class SiteSettingsHandler
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetExtensionName);
 #endif
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo);
 
   // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
   // serviced when both models are built.
