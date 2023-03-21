@@ -107,7 +107,7 @@ const int kMaxBookmarksSearchResults = 50;
   DCHECK(self.sharedState);
 
   // Set up observers.
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState = [self originalBrowserState];
   _modelBridge = std::make_unique<BookmarkModelBridge>(
       self, self.sharedState.profileBookmarkModel);
   _syncedBookmarksObserver =
@@ -244,7 +244,7 @@ const int kMaxBookmarksSearchResults = 50;
   }
 
   // Add "Managed Bookmarks" to the table if it exists.
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState = [self originalBrowserState];
   bookmarks::ManagedBookmarkService* managedBookmarkService =
       ManagedBookmarkServiceFactory::GetForBrowserState(browserState);
   const BookmarkNode* managedNode = managedBookmarkService->managed_node();
@@ -553,6 +553,13 @@ const int kMaxBookmarksSearchResults = 50;
 
 #pragma mark - Private Helpers
 
+// The original chrome browser state used for services that don't exist in
+// incognito mode. E.g., `_syncSetupService`, `_syncService` and
+// `ManagedBookmarkService`.
+- (ChromeBrowserState*)originalBrowserState {
+  return _browser->GetBrowserState()->GetOriginalChromeBrowserState();
+}
+
 - (BOOL)hasBookmarksOrFolders {
   if (self.sharedState.tableViewDisplayedRootNode ==
       self.sharedState.profileBookmarkModel->root_node()) {
@@ -587,7 +594,7 @@ const int kMaxBookmarksSearchResults = 50;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState = [self originalBrowserState];
   bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   PrefService* prefService = browserState->GetPrefs();

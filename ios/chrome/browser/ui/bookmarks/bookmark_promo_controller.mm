@@ -50,7 +50,10 @@
   self = [super init];
   if (self) {
     _delegate = delegate;
-    ChromeBrowserState* browserState = browser->GetBrowserState();
+    ChromeBrowserState* browserState =
+        browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    // TODO(crbug.com/1426262): Decide whether to show the signin promo in
+    // incognito mode and revisit this code.
     // Incognito browser can go away before this class is released (once the
     // last incognito winwdow is closed), this code avoids keeping a pointer to
     // it.
@@ -109,7 +112,8 @@
   }
 
   DCHECK(_browser);
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
+  ChromeBrowserState* browserState =
+      _browser->GetBrowserState()->GetOriginalChromeBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   if ([SigninPromoViewMediator
