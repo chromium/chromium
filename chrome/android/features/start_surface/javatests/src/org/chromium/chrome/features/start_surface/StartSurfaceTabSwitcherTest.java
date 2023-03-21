@@ -146,7 +146,6 @@ public class StartSurfaceTabSwitcherTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1395518")
     public void testShow_SingleAsTabSwitcher() {
         if (mImmediateReturn) {
             StartSurfaceTestUtils.waitForStartSurfaceVisible(mLayoutChangedCallbackHelper,
@@ -158,6 +157,7 @@ public class StartSurfaceTabSwitcherTest {
             }
             // Single surface is shown as homepage. Clicks "more_tabs" button to get into tab
             // switcher.
+            onViewWaiting(withId(R.id.primary_tasks_surface_view));
             StartSurfaceTestUtils.clickTabSwitcherButton(mActivityTestRule.getActivity());
         } else {
             TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
