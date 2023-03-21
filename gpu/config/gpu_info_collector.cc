@@ -346,20 +346,13 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
       gl::GetRequestedGLImplementationFromCommandLine(command_line,
                                                       &fallback_to_software);
 
-  if (implementation.has_value()) {
-    gpu_info->gl_implementation = implementation->GLString();
-    gpu_info->angle_implementation = implementation->ANGLEString();
-
+  if (implementation == gl::kGLImplementationDisabled) {
     // If GL is disabled then we don't need GPUInfo.
-    if (implementation == gl::kGLImplementationDisabled) {
-      gpu_info->gl_vendor = "Disabled";
-      gpu_info->gl_renderer = "Disabled";
-      gpu_info->gl_version = "Disabled";
-      return true;
-    }
-  }
-
-  if (implementation == gl::GetSoftwareGLImplementation()) {
+    gpu_info->gl_vendor = "Disabled";
+    gpu_info->gl_renderer = "Disabled";
+    gpu_info->gl_version = "Disabled";
+    return true;
+  } else if (implementation == gl::GetSoftwareGLImplementation()) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
@@ -388,8 +381,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 
 bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
   TRACE_EVENT0("startup", "gpu_info_collector::CollectGraphicsInfoGL");
-  gl::GLImplementationParts implementation = gl::GetGLImplementationParts();
-  DCHECK_NE(implementation, gl::kGLImplementationNone);
+  DCHECK_NE(gl::GetGLImplementationParts(), gl::kGLImplementationNone);
   gl::GLDisplayEGL* egl_display = display->GetAs<gl::GLDisplayEGL>();
 
   // Now that we can check GL extensions, update passthrough support info.
@@ -409,8 +401,6 @@ bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
     return false;
   }
 
-  gpu_info->gl_implementation = implementation.GLString();
-  gpu_info->angle_implementation = implementation.ANGLEString();
   if (egl_display) {
     gpu_info->display_type =
         GetDisplayTypeString(egl_display->GetDisplayType());

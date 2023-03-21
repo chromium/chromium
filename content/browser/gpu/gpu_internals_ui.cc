@@ -241,10 +241,8 @@ base::Value::List GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
                                                gpu_info.machine_model_name));
   basic_info.Append(display::BuildGpuInfoEntry("Machine model version",
                                                gpu_info.machine_model_version));
-  basic_info.Append(display::BuildGpuInfoEntry("GL implementation",
-                                               gpu_info.gl_implementation));
-  basic_info.Append(display::BuildGpuInfoEntry("ANGLE implementation",
-                                               gpu_info.angle_implementation));
+  basic_info.Append(display::BuildGpuInfoEntry(
+      "GL implementation parts", gpu_info.gl_implementation_parts.ToString()));
   basic_info.Append(
       display::BuildGpuInfoEntry("Display type", gpu_info.display_type));
   basic_info.Append(
