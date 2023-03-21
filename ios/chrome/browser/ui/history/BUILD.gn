@@ -172,6 +172,7 @@ source_set("eg2_tests") {
   deps = [
     ":constants",
     "//base",
+    "//components/sync/base",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",

@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sync/base/command_line_switches.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
@@ -119,6 +120,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 @end
 
 @implementation HistoryUITestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.additional_args.push_back(std::string("--") +
+                                   syncer::kSyncShortNudgeDelayForTest);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -285,13 +293,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that searching a typed URL (after Sync is enabled and the URL is
 // uploaded to the Sync server) displays only entries matching the search term.
-// TODO(crbug.com/1421761): This test is flaky on devices.
-#if IPHONE_OS_SIMULATOR
-#define MAYBE_testSearchSyncedHistory testSearchSyncedHistory
-#else
-#define MAYBE_testSearchSyncedHistory FLAKY_testSearchSyncedHistory
-#endif
-- (void)MAYBE_testSearchSyncedHistory {
+- (void)testSearchSyncedHistory {
   const char syncedURL[] = "http://mockurl/sync/";
   const GURL mockURL(syncedURL);
 
