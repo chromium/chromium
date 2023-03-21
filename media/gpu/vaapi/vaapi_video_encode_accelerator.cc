@@ -1080,7 +1080,7 @@ void VaapiVideoEncodeAccelerator::DestroyTask() {
   DCHECK(vaapi_wrapper_ || pending_encode_results_.empty());
   pending_encode_results_ = {};
 
-  encoder_ = nullptr;
+  encoder_.reset();
 
   delete this;
 }

@@ -89,11 +89,11 @@ VaapiVideoEncoderDelegate::EncodeResult::metadata() const {
 VaapiVideoEncoderDelegate::VaapiVideoEncoderDelegate(
     scoped_refptr<VaapiWrapper> vaapi_wrapper,
     base::RepeatingClosure error_cb)
-    : vaapi_wrapper_(vaapi_wrapper), error_cb_(error_cb) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+    : vaapi_wrapper_(vaapi_wrapper), error_cb_(error_cb) {}
 
-VaapiVideoEncoderDelegate::~VaapiVideoEncoderDelegate() = default;
+VaapiVideoEncoderDelegate::~VaapiVideoEncoderDelegate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 size_t VaapiVideoEncoderDelegate::GetBitstreamBufferSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

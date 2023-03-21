@@ -275,9 +275,7 @@ VP8VaapiVideoEncoderDelegate::VP8VaapiVideoEncoderDelegate(
     base::RepeatingClosure error_cb)
     : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb) {}
 
-VP8VaapiVideoEncoderDelegate::~VP8VaapiVideoEncoderDelegate() {
-  // VP8VaapiVideoEncoderDelegate can be destroyed on any thread.
-}
+VP8VaapiVideoEncoderDelegate::~VP8VaapiVideoEncoderDelegate() = default;
 
 bool VP8VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,

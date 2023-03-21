@@ -245,19 +245,38 @@ class VaapiVideoEncodeAcceleratorTest
     ResetEncoder();
   }
 
-  void ResetEncoder() NO_THREAD_SAFETY_ANALYSIS {
+  void ResetEncoder() {
     encoder_.reset(new VaapiVideoEncodeAccelerator);
     auto* vaapi_encoder =
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
-    vaapi_encoder->vaapi_wrapper_ = mock_vaapi_wrapper_;
-    vaapi_encoder->encoder_ =
-        std::make_unique<MockVP9VaapiVideoEncoderDelegate>(
-            mock_vaapi_wrapper_,
-            base::BindRepeating(&VaapiVideoEncodeAcceleratorTest::OnError,
-                                base::Unretained(this)));
+    base::WaitableEvent event;
+    auto on_error_cb = base::BindRepeating(
+        &VaapiVideoEncodeAcceleratorTest::OnError, base::Unretained(this));
+    // Set |encoder_| and |vaapi_wrapper_| of |vaapi_encoder| in the encoder
+    // sequence.
+    vaapi_encoder->encoder_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](VaapiVideoEncodeAccelerator* vaapi_encoder,
+               scoped_refptr<VaapiWrapper> vaapi_wrapper,
+               base::RepeatingClosure on_error_cb,
+               raw_ptr<MockVP9VaapiVideoEncoderDelegate>* mock_encoder,
+               base::WaitableEvent* event) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(
+                  vaapi_encoder->encoder_sequence_checker_);
+              vaapi_encoder->vaapi_wrapper_ = vaapi_wrapper;
+              vaapi_encoder->encoder_ =
+                  std::make_unique<MockVP9VaapiVideoEncoderDelegate>(
+                      vaapi_wrapper, std::move(on_error_cb));
+              *mock_encoder =
+                  reinterpret_cast<MockVP9VaapiVideoEncoderDelegate*>(
+                      vaapi_encoder->encoder_.get());
+              event->Signal();
+            },
+            base::Unretained(vaapi_encoder), mock_vaapi_wrapper_, on_error_cb,
+            base::Unretained(&mock_encoder_), base::Unretained(&event)));
+    event.Wait();
     EXPECT_CALL(*this, OnError()).Times(0);
-    mock_encoder_ = reinterpret_cast<MockVP9VaapiVideoEncoderDelegate*>(
-        vaapi_encoder->encoder_.get());
   }
 
   void SetDefaultMocksBehavior(const VideoEncodeAccelerator::Config& config) {
@@ -399,8 +418,7 @@ class VaapiVideoEncodeAcceleratorTest
         }));
 
     EXPECT_CALL(*mock_encoder_, PrepareEncodeJob(_))
-        .WillOnce(WithArgs<0>([encoder = encoder_.get(),
-                               use_temporal_layer_encoding](
+        .WillOnce(WithArgs<0>([use_temporal_layer_encoding](
                                   VaapiVideoEncoderDelegate::EncodeJob& job) {
           if (use_temporal_layer_encoding) {
             // Set Vp9Metadata on temporal layer encoding.
@@ -587,8 +605,7 @@ class VaapiVideoEncodeAcceleratorTest
 
     for (size_t i = 0; i < num_spatial_layers; ++i) {
       EXPECT_CALL(*mock_encoder_, PrepareEncodeJob(_))
-          .WillOnce(WithArgs<0>([encoder = encoder_.get()](
-                                    VaapiVideoEncoderDelegate::EncodeJob& job) {
+          .WillOnce(WithArgs<0>([](VaapiVideoEncoderDelegate::EncodeJob& job) {
             // Set Vp9Metadata on spatial layer encoding.
             CodecPicture* picture = job.picture().get();
             reinterpret_cast<VP9Picture*>(picture)->metadata_for_encoding =

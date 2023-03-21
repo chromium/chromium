@@ -201,9 +201,7 @@ H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
     base::RepeatingClosure error_cb)
     : VaapiVideoEncoderDelegate(std::move(vaapi_wrapper), error_cb) {}
 
-H264VaapiVideoEncoderDelegate::~H264VaapiVideoEncoderDelegate() {
-  // H264VaapiVideoEncoderDelegate can be destroyed on any thread.
-}
+H264VaapiVideoEncoderDelegate::~H264VaapiVideoEncoderDelegate() = default;
 
 bool H264VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,
