@@ -112,7 +112,8 @@ class BASE_EXPORT MadvFreeDiscardableMemoryPosix : public DiscardableMemory {
   // destruction.
   raw_ptr<std::atomic<size_t>> allocator_byte_count_;
 
-  raw_ptr<void> data_;
+  // Data comes from mmap() and we manage its poisioning.
+  RAW_PTR_EXCLUSION void* data_;
   bool is_locked_ = true;
 
   // If true, MADV_FREE will not be set on Unlock().
