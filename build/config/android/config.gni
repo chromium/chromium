@@ -246,10 +246,6 @@ if (is_android || is_chromeos) {
     # resources.arsc.
     enable_unused_resource_stripping = true
 
-    # Controls whether |baseline_profile_path| is respected. Useful to disable
-    # baseline profiles on some bots.
-    enable_baseline_profiles = true
-
     # The target to use as the system WebView implementation.
     if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
       system_webview_apk_target = "//android_webview:system_webview_64_apk"
