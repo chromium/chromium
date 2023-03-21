@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Dein Google Drive-Cache wurde geleert.</translation>
 <translation id="2239068707900391003">Person mit Kaffee</translation>
 <translation id="2251368349685848079">Aus Papierkorb wiederherstellen</translation>
+<translation id="2278133026967558505">Dateizugriff durch alle Websites und URLs</translation>
 <translation id="2282155092769082568">URL für Autokonfiguration:</translation>
 <translation id="2284767815536050991">Wechselmedium</translation>
 <translation id="2288278176040912387">Plattenspieler</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Fehlende Angabe bei „Alternativer Name für Betreff stimmt überein“ oder „Domain-Suffix stimmt überein“ zur Bestätigung der Identität des Authentifizierungsservers</translation>
 <translation id="7165320105431587207">Fehler beim Konfigurieren des Netzwerks</translation>
 <translation id="7170041865419449892">Außer Reichweite</translation>
+<translation id="7179579940054351344">Dateizugriff durch alle Websites und URLs außer <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Datei speichern unter</translation>

@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. මුරපද විකල්ප තට්ටු කරන්න</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">පරිවර්තන සැකසීම් නැවත සකසන්න</translation>
+<translation id="284581348330507117">අනන්‍ය මුරපද තනන්න</translation>
 <translation id="2848086008667475748">සැකසීම් තුළ පෙරනිමි බවට පත් කරන්න…</translation>
 <translation id="2858204748079866344">ඔබේ පෞද්ගලිකත්වය ආරක්‍ෂා කිරීමට, Chrome මෙම ක්‍ෂේත්‍රය තුළ ඔබේ මුරපදය ස්වයං පිරවුම නොකරයි.</translation>
 <translation id="285960592395650245">බාගැනීම යළි උත්සාහ කරන්න</translation>
@@ -374,6 +375,7 @@
 <translation id="3595252146048399851">ඔබට සැම විට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහුර්ත කළ යුතු දේ තෝරා ගත හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
 <translation id="3603009562372709545">සබැඳි URL පිටපත් කරන්න</translation>
 <translation id="3607167657931203000">ස්වයං පිරවුම් දත්ත</translation>
+<translation id="3608008480985212611">ඔබේ මනාප කළමනාකරණය කිරීමට පුරන්න.</translation>
 <translation id="3609785682760573515">සමමු වේ...</translation>
 <translation id="3631443864840848029">මෙම වෙබ් අඩවිය සඳහා ඔබ ඔබගේ වර්තමාන මුරපදය සුරකින බව සහතික කර ගන්න.</translation>
 <translation id="3638472932233958418">පෙර පූරණ වෙබ් පිටු</translation>
@@ -541,6 +543,7 @@
 <translation id="48274138579728272">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="4833686396768033263">මෑත ටැබ ලබා ගත නොහැකිය</translation>
 <translation id="4833786495304741580">භාවිත සංඛ්‍යාල්ඛන සහ බිඳ වැටීම් වාර්තා ස්වයංක්‍රියව Google වෙත යවයි.</translation>
+<translation id="4834499902900503484">ඔබ Chrome වෙත පුරනය වී ඇති විට, ඔබ සුරකින මුරපද ඔබේ Google ගිණුමට යනු ඇත. මෙය ක්‍රියා විරහිත කිරීම සඳහා, <ph name="BEGIN_LINK" />සැකසීම් වෙත යන්න<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">ඔබේ පිටුසන්, ඉතිහාසය, මුරපද සහ තවත් දේ ඔබේ Google ගිණුමට තවදුරටත් සමමුහුර්ත නොවනු ඇත.</translation>
 <translation id="4844899002472726590">ඔබ ලැදිකමක් දක්වන මාතෘකා බලන්න සහ සංස්කරණය කරන්න</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> සඳහා මුරපදය මකන්න ද?</translation>
@@ -649,6 +652,7 @@
 <translation id="5704908597376970822">පිරීමට නොහැකිය.</translation>
 <translation id="5706552126692816153">1 දිනකට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="5711039611392265845">පෞද්ගලිකත්වයට, ආරක්‍ෂාවට, සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා <ph name="BEGIN_LINK" />සමමුහූර්තය සහ Google සේවා<ph name="END_LINK" /> බලන්න</translation>
+<translation id="5718049162805123412">ඔබ දැන් මේවා වෙනස් කළ යුතු ය</translation>
 <translation id="5724941645893276623">වෙබය පුද්ගලිකව බ්‍රව්ස් කිරීමට, නව ටැබයක් එක් කරන්න</translation>
 <translation id="5728700505257787410">කනගාටුයි, ඔබේ ගිණුම වෙත පුරනය විමේදි ගැටලුවක් තිබේ.</translation>
 <translation id="5733084997078800044">Chrome ඉඟිය</translation>
@@ -684,6 +688,7 @@
 <translation id="5899314093904173337">ආසන්නයේ සිටින පුද්ගලයින් සමග බෙදා ගැනීමට, ඔවුන්ට මෙම QR කේතය ඔවුන්ගේ කැමරාවෙන් හෝ QR සැකෑන් කිරීමේ යෙදුමෙන් ස්කෑන් කිරීමට ඉඩ දෙන්න</translation>
 <translation id="5911030830365207728">Google පරිවර්තනය</translation>
 <translation id="5913600720976431809">පිටුව පරිවර්තන කිරීමට විවෘත කරන්න</translation>
+<translation id="5922999516621365983">එය ඇමිණීමට පටිත්ත මෙතැනට අදින්න.</translation>
 <translation id="5938160824633642847">ඔබේ උපාංගය මුළුමනින්ම පිරී ඇත. ඉඩ නිදහස් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="5948291296578561264">මෙය ඔබට ඔබේ ඡායාරූප පුස්තකාලයට ඡායාරූප සුරැකීමට ඉඩ සලසයි.</translation>
 <translation id="5951816930277761335">සබැඳිය බෙදා ගන්න</translation>
@@ -1131,6 +1136,7 @@
 <translation id="891658175948553296">අඩවියක පෙළ උද්දීපනය කරන්න</translation>
 <translation id="8917490105272468696">ඔව්, මම කැමතියි</translation>
 <translation id="8928133177108699615">ඩෙස්ක්ටොප්</translation>
+<translation id="894191600409472540">ප්‍රබල මුරපද තනන්න</translation>
 <translation id="8952559610785099500">මුරපදය එක් කරන්න</translation>
 <translation id="8953046091948372197">ඔබ ඔබේ මුරපද මෙතැනින් සොයා ගනියි</translation>
 <translation id="895541991026785598">ගැටලුවක් වාර්තා කරන්න</translation>

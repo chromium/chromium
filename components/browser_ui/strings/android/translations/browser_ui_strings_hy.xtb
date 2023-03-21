@@ -56,6 +56,7 @@
 <translation id="2030769033451695672">Հպեք՝ <ph name="URL_OF_THE_CURRENT_TAB" /> վերադառնալու համար</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2091887806945687916">Ձայն</translation>
+<translation id="2117655453726830283">Հաջորդ սլայդը</translation>
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="216989819110952009">Նույնիսկ դնելով կանաչ ապակիներով ակնոցներ՝ Դորոթին և իր ընկերները շլացան այս</translation>
 <translation id="2176704795966505152">Ցույց տալ մասշտաբավորման ընտրանքը հիմնական ընտրացանկում</translation>
@@ -93,6 +94,7 @@
 <translation id="257931822824936280">Ընդարձակված - կոծկելու համար սեղմեք:</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2597457036804169544">Կայքերում չկիրառել մուգ թեման</translation>
+<translation id="2606760465469169465">Ավտոմատ ստուգում</translation>
 <translation id="2621115761605608342">Թույլատրել JavaScript-ը նշված կայքի համար:</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
@@ -113,6 +115,7 @@
 <translation id="3008272652534848354">Վերակայել թույլտվությունները</translation>
 <translation id="301521992641321250">Ավտոմատ արգելափակված է</translation>
 <translation id="3069226013421428034">Նշեք այն կայքերը, որոնց համար երրորդ կողմի ծառայությունների միջոցով մուտքը պետք է թույլատրվի։</translation>
+<translation id="310297983047869047">Նախորդ սլայդը</translation>
 <translation id="3109724472072898302">Կոծկված</translation>
 <translation id="3114012059975132928">Տեսանվագարկիչ</translation>
 <translation id="3115898365077584848">Ցուցադրել տեղեկությունները</translation>
@@ -188,6 +191,7 @@
 <translation id="4440642537584213025">Ծավալել «<ph name="TARGET_DESCRIPTION" />»-ը</translation>
 <translation id="4468959413250150279">Անջատել ձայնը առանձին կայքերում</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# քուքի}one{# քուքի}other{# քուքի}}</translation>
+<translation id="4478158430052450698">Հեշտացնել մասշտաբի հարմարեցումը տարբեր կայքերի համար</translation>
 <translation id="4479647676395637221">Հարցնել նախքան ձեր տեսախցիկը կայքերին հասանելի դարձնելը (խորհուրդ է տրվում)</translation>
 <translation id="4505788138578415521">URL-ը ծավալվել է</translation>
 <translation id="4534723447064627427">Որպեսզի խոսափողը հասանելի դառնա <ph name="APP_NAME" />-ին, միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
@@ -223,6 +227,7 @@
 <translation id="5197729504361054390">Ձեր ընտրած կոնտակտները հասանելի կդառնան <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքին:</translation>
 <translation id="5216942107514965959">Վերջին այցելությունը՝ այսօր</translation>
 <translation id="5225463052809312700">Միացնել տեսախցիկը</translation>
+<translation id="5229337741799419985">Այս կարգավորումն աշխատում է առանց ձեզ նույնականացնելու կամ կայքերին թույլատրելու տեսնել ձեր այցելությունների պատմությունը</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5264323282659631142">Հեռացնել «<ph name="CHIP_LABEL" />» չիպը</translation>
 <translation id="528192093759286357">Լիաէկրան ռեժիմից դուրս գալու համար քաշեք վերևից և հպեք «Հետ» կոճակին:</translation>
@@ -309,6 +314,7 @@
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6689172468748959065">Պրոֆիլի լուսանկարներ</translation>
 <translation id="6697925417670533197">Ընթացիկ ներբեռնումներ</translation>
+<translation id="6701547804986694515">Կայքը, որն այցելում եք, կարող է Chrome-ից պահել տեղեկություններ, որոնք հավաստում են, որ դուք ռոբոտ չեք։ Երբ դուք կայքեր եք դիտարկում, դրանք կարող են Chrome-ում տեղեկություններ պահել, որոնք հաստատում են, որ դուք իրական օգտատեր եք։</translation>
 <translation id="6722828510648505498">Արգելափակել նույնականացման ծառայությունների մուտքի հարցումները։</translation>
 <translation id="6746124502594467657">Տեղափոխել վար</translation>
 <translation id="6749077623962119521">Զրոյացնե՞լ թույլտվությունները</translation>
@@ -426,6 +432,7 @@
 <translation id="8751914237388039244">Ընտրեք պատկեր</translation>
 <translation id="8801436777607969138">Արգելափակել JavaScript-ը նշված կայքի համար:</translation>
 <translation id="8803526663383843427">Երբ գործառույթը միացված է</translation>
+<translation id="8805385115381080995">Դիտարկումն ավելի արագ է դարձնել, քանի որ քիչ հավանական է, որ կայքը խնդրի ձեզ հաստատել, որ դուք իրական օգտատեր եք</translation>
 <translation id="8816026460808729765">Արգելել կայքերին օգտագործել տվիչները</translation>
 <translation id="8823559166155093873">Արգելափակել քուքիները</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -449,5 +456,6 @@
 <translation id="9162462602695099906">Այս էջը վտանգավոր է</translation>
 <translation id="9201023452444595544">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն</translation>
 <translation id="930525582205581608">Հեռացնե՞լ այս կայքը</translation>
+<translation id="947156494302904893">Կայքերը, որոնք այցելում եք, կարող են ստուգել՝ արդյոք դուք իրական օգտատեր եք, թե՝ ռոբոտ</translation>
 <translation id="967624055006145463">Պահված տվյալներ</translation>
 </translationbundle>

@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1014750484722996375">Plochy</translation>
 <translation id="1018219910092211213">DNS sa nedá preložiť</translation>
 <translation id="1018656279737460067">Zrušené</translation>
+<translation id="1022433422498218992">Všeobecné ovládanie</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vlákien: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozícii je nová funkcia. Viac sa dozviete pomocou šípky nahor.</translation>
 <translation id="1059913517121127803">Skenovanie sa nepodarilo spustiť</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
 <translation id="1664796644829245314">Zobraziť ukážku položky <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
+<translation id="1669047024429367828">Viditeľnosť</translation>
 <translation id="1672499492233627739">Videoprenos z webovej kamery</translation>
 <translation id="1676557873873341166">Nahráva sa video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prekladač DNS je prítomný</translation>
+<translation id="1710499924611012470">Navigácia dostupnosti</translation>
 <translation id="1715359911173058521">Pri komunikácii so skenerom sa vyskytol problém. Skontrolujte pripojenie k sieti alebo rozhraniu USB a skúste to znova.</translation>
 <translation id="1717874160321062422">Spravujú <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Menné servery</translation>
@@ -135,6 +139,7 @@
 <translation id="2056550196601855911">IPv4 alebo IPv6</translation>
 <translation id="2080070583977670716">Ďalšie nastavenia</translation>
 <translation id="2085089206770112532">Zníženie jasu obrazovky</translation>
+<translation id="2102231663024125441">Úprava textu</translation>
 <translation id="2105810540595158374">Zariadenie je herný ovládač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzia <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">K dispozícii je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB.</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Kľúčová aktualizácia</translation>
 <translation id="2860473693272905224">Položte na skener ďalšiu stranu</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
+<translation id="2873483161362553159">Navigácia v prehliadači</translation>
 <translation id="2874939134665556319">Predchádzajúca skladba</translation>
 <translation id="2878387241690264070">Za <ph name="NUM_SECONDS" /> s sa batéria vybila o <ph name="RATE" /></translation>
 <translation id="2902312830803030883">Ďalšie akcie</translation>
@@ -660,6 +666,7 @@
 <translation id="6766275201586212568">Neúspešné preklady DNS</translation>
 <translation id="6768237774506518020">Vysoká miera neúspešných prekladov DNS</translation>
 <translation id="6791471867139427246">farba osvetlenia klávesnice</translation>
+<translation id="6798678288485555829">Navigácia v texte</translation>
 <translation id="680983167891198932">Kľúč</translation>
 <translation id="6816797338148849397">K dispozícii sú informácie súvisiace s vaším výberom. Prístup získate pomocou šípky nahor.</translation>
 <translation id="6838167112108853532">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že povolené pripojené názvy prístupových bodov (APN) sú deaktivované alebo odstránené.</translation>

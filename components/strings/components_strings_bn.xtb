@@ -387,6 +387,7 @@
 <translation id="1822540298136254167">আপনি যে ওয়েবসাইটগুলি দেখেন এবং দেখার জন্য সময় খরচ করেন</translation>
 <translation id="1824402189105105503">Eighth Roll</translation>
 <translation id="1826516787628120939">চেক করা হচ্ছে</translation>
+<translation id="1826968372364864056">ফর্ম মুছুন</translation>
 <translation id="1828959155404624835">গাড়ি ভাড়া নেওয়া</translation>
 <translation id="1834321415901700177">এই সাইটটিতে ক্ষতিকর প্রোগ্রাম রয়েছে</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
@@ -1226,7 +1227,6 @@
 <translation id="399952081411886534">অন্যান্য ফিচার যা বিজ্ঞাপনগুলিকে আরও ব্যক্তিগত করে তোলে</translation>
 <translation id="4000598935132966791">ম্যানেজ করা ব্রাউজারে সাইট সীমাবদ্ধতা সম্পর্কে আরও জানুন</translation>
 <translation id="4006465311664329701">Google Pay-এর সাথে যুক্ত 'পেমেন্ট পদ্ধতি', 'অফার' ও 'ঠিকানা'</translation>
-<translation id="4009243425692662128">আপনার প্রিন্ট করা পৃষ্ঠার কন্টেন্ট বিশ্লেষণের জন্য Google Cloud বা থার্ড-পার্টিকে পাঠানো হয়েছে। যেমন, কোনও সংবেদনশীল ডেটা আছে কিনা জানার জন্য এটি হয়ত স্ক্যান করা হতে পারে।</translation>
 <translation id="4010758435855888356">স্টোরেজ অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="401170183602135785">এনভেলপ C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}one{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}other{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}}</translation>
@@ -1970,6 +1970,7 @@
 <translation id="5786044859038896871">আপনি কি আপনার কার্ডের তথ্য পূরণ করতে চান?</translation>
 <translation id="578633867165174378">Chrome-এর হিসেবে আপনার এখনই ব্যবহার করা পাসওয়ার্ডের তথ্য চুরি হয়ে গেছে। আমরা সাজেস্ট করছি এখনই এই পাসওয়ার্ড পরিবর্তন করুন।</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{কোনওটিই নয়}=1{১টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}one{#টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}other{#টি অ্যাকাউন্টের জন্য সাইন-ইন ডেটা}}</translation>
 <translation id="580241730938216256">আপডেট শুরু করুন</translation>
 <translation id="5803412860119678065">আপনি কি আপনার <ph name="CARD_DETAIL" /> এর তথ্য পূরণ করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
@@ -2524,6 +2525,7 @@
 <translation id="7201591969684833065">আপনার অ্যাডমিনিস্ট্রেটর দেখতে পাবেন:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী ট্যাব খুলতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="7203375778433816396">Chrome-কে সিস্টেমের ডিফল্ট ব্রাউজার হিসেবে সেট করুন</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{কোনওটিই নয়}=1{১টি পাসকী}one{#টি পাসকী}other{#টি পাসকী}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> নিরাপত্তা মান মেনে চলে না।</translation>
 <translation id="7210993021468939304">কন্টেনারের মধ্যে Linux অ্যাক্টিভিটি দেখা যাবে এবং কন্টেনারের মধ্যেই Linux অ্যাপ ইনস্টল করা ও চালানো যাবে</translation>
 <translation id="721197778055552897">এই সমস্যাটি সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />৷</translation>

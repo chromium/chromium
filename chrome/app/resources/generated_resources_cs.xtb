@@ -865,6 +865,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1744108098763830590">stránka na pozadí</translation>
 <translation id="1745732479023874451">Spravovat kontakty</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}few{Otevřít a upravit # soubory v této webové aplikaci?}many{Otevřít a upravit # souboru v této webové aplikaci?}other{Otevřít a upravit # souborů v této webové aplikaci?}}</translation>
+<translation id="1748329107062243374">K přihlášení na web <ph name="WEBSITE" /> použijte přístupový klíč ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1748563609363301860">Heslo můžete uložit do účtu Google nebo jen do tohoto zařízení</translation>
 <translation id="1749733017156547309">Heslo je povinné</translation>
 <translation id="1750172676754093297">Váš bezpečnostní klíč neumí ukládat otisky</translation>
@@ -1990,7 +1991,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2710101514844343743">Údaje o využití a diagnostice</translation>
 <translation id="271033894570825754">Nové</translation>
 <translation id="2711073837061989559">Zkušební funkce</translation>
-<translation id="2712207122921938368">Vytvoření přístupového klíče na jiném zařízení</translation>
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2713444072780614174">Bílá</translation>
 <translation id="2714180132046334502">Tmavé pozadí</translation>
@@ -4228,6 +4228,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4708849949179781599">Ukončit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Obnovit nastavení</translation>
 <translation id="4713409221649555176">Smazat při zavření všech oken</translation>
+<translation id="4715631922189108923">Upravit uživatelské jméno</translation>
 <translation id="47158868804223727">Kliknutím na název skupiny ji rozbalíte nebo sbalíte</translation>
 <translation id="4716483597559580346">Kvůli lepšímu zabezpečení zařízení vyčistěte pomocí funkce Powerwash</translation>
 <translation id="471759229191973607">Změnit motiv</translation>
@@ -4639,6 +4640,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5108967062857032718">Nastavení – odstranit aplikace Android</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Odstranit jazyk <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Otevřít skupinu v novém okně</translation>
 <translation id="5111646998522066203">Ukončit anonymní režim</translation>
 <translation id="5111692334209731439">&amp;Správce záložek</translation>
 <translation id="5111794652433847656">V tomto zařízení nejsou pro web <ph name="APP_NAME" /> žádné přístupové klíče</translation>
@@ -5423,7 +5425,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="583431638776747">Web nebyl k dispozici</translation>
 <translation id="5834581999798853053">Zbývá přibližně <ph name="TIME" /> min</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – probíhá záznam z fotoaparátu nebo mikrofonu</translation>
-<translation id="5835625581856809102">Naskenujte tento QR kód pomocí zařízení, ve kterém chcete vytvořit přístupový klíč pro <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Weby mohou žádat o úpravu souborů a složek v zařízení</translation>
 <translation id="5836999627049108525">Jazyk, ze kterého se má překládat</translation>
 <translation id="583756221537636748">Pouzdro</translation>
@@ -5860,7 +5861,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6227002569366039565">Tuto bublinu vyberete stisknutím klávesové zkratky |<ph name="ACCELERATOR" />|. Opětovným stisknutím vyberete prvek, na který ukazuje.</translation>
 <translation id="6227280783235722609">rozšíření</translation>
 <translation id="6229849828796482487">Odpojit síť Wi-Fi</translation>
-<translation id="6230165830166519105">Vyzkoušet jiný způsob</translation>
 <translation id="6231782223312638214">Navrženo</translation>
 <translation id="6231881193380278751">Přidejte do adresy URL parametr dotazu pro automatickou aktualizaci stránky: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterie</translation>
@@ -7565,6 +7565,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7762243782113123335">Litujeme, něco se pokazilo. Zašlete nám prosím zpětnou vazbu s hashtagem #bruschetta v popisu. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Přidat adresu</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> z <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Otevřít skupinu v novém okně</translation>
 <translation id="7765158879357617694">Přesunout</translation>
 <translation id="7765507180157272835">Je potřeba Bluetooth a Wi-Fi</translation>
 <translation id="7766082757934713382">Pomáhá snižovat využití dat v síti prostřednictvím pozastavení automatických aktualizací aplikací a systému</translation>
@@ -8074,6 +8075,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8203732864715032075">Odesílat vám oznámení a zapamatovat si tento počítač pro Zprávy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Displeje a periferní zařízení se mohou nakrátko resetovat. Pokud chcete, aby se tato změna projevila, odpojte periferní zařízení a poté je znovu připojte.</translation>
 <translation id="820568752112382238">Nejnavštěvovanější weby</translation>
+<translation id="8206267832882844324">Upravit poznámku</translation>
 <translation id="8206745257863499010">Melodie</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Vyberte přístupový klíč</translation>
@@ -8682,6 +8684,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 &lt;p&gt;Konfiguraci můžete provést pomocí příkazového řádku. Další informace o příznacích a proměnných prostředí zobrazíte zadáním příkazu: &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Provádět pro vaši organizaci úlohy týkající se zabezpečení, například spravovat certifikáty a klíče uložené v zařízení</translation>
 <translation id="8755376271068075440">Větší</translation>
+<translation id="8755584192133371929">Vyberte kartu, kterou chcete sdílet</translation>
 <translation id="875604634276263540">Adresa URL obrázku není platná</translation>
 <translation id="8756969031206844760">Aktualizovat heslo?</translation>
 <translation id="8757203080302669031">Tato karta aktivně hledá zařízení Bluetooth.</translation>

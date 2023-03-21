@@ -262,6 +262,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="2834399722155632105">3. Dodirnite Opcije lozinke</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Poništi postavke Prevodioca</translation>
+<translation id="284581348330507117">Kreirajte jedinstvene lozinke</translation>
 <translation id="2848086008667475748">Postavite kao zadano u Postavkama…</translation>
 <translation id="2858204748079866344">Radi zaštite vaše privatnosti, Chrome neće automatski popunjavati vašu lozinku u ovoj rubrici.</translation>
 <translation id="285960592395650245">Ponovo pokušaj preuzeti</translation>
@@ -374,7 +375,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3595252146048399851">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="3603009562372709545">Kopiraj URL linka</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
-<translation id="3608008480985212611">Prijavite se da biste upravljali svojim preferencijama.</translation>
+<translation id="3608008480985212611">Prijavite se da upravljate postavkama.</translation>
 <translation id="3609785682760573515">Sinhroniziranje…</translation>
 <translation id="3631443864840848029">Vodite računa da pohranite trenutnu lozinku za ovu web lokaciju.</translation>
 <translation id="3638472932233958418">Predučitaj web stranice</translation>
@@ -481,6 +482,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4474494258097106883">Napravljeno za vaš iPhone</translation>
 <translation id="4476574785019001431">Postavke</translation>
 <translation id="448433063499977729">Sinhronizacija je isključena</translation>
+<translation id="4489536976005181779">{count,plural, =1{Stranica je dodana na listu za čitanje na računu {email}}one{Stranice su dodane na listu za čitanje na računu {email}}few{Stranice su dodane na listu za čitanje na računu {email}}other{Stranice su dodane na listu za čitanje na računu {email}}}</translation>
 <translation id="4496373720959965247">Dodajte kartice i mijenjajte stranice</translation>
 <translation id="4502566650163919158">Provjeri sada</translation>
 <translation id="4505980578794259603">Posljednja provjera: <ph name="TIME" />.</translation>
@@ -651,6 +653,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5704908597376970822">Nije se moguće prijaviti.</translation>
 <translation id="5706552126692816153">Aktivan prije 1 dan</translation>
 <translation id="5711039611392265845">Za više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka, pogledajte <ph name="BEGIN_LINK" />Sinhronizacija i Googleove usluge<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Trebate ih odmah promijeniti</translation>
 <translation id="5724941645893276623">Da privatno pregledate web, dodajte novu karticu</translation>
 <translation id="5728700505257787410">Žao nam je, došlo je do problema s prijavom na vaš račun.</translation>
 <translation id="5733084997078800044">Savjet za Chrome</translation>
@@ -1134,6 +1137,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="891658175948553296">Istaknite tekst na web lokaciji</translation>
 <translation id="8917490105272468696">Pristajem</translation>
 <translation id="8928133177108699615">Računar</translation>
+<translation id="894191600409472540">Kreirajte jake lozinke</translation>
 <translation id="8952559610785099500">Dodajte lozinku</translation>
 <translation id="8953046091948372197">Lozinke ćete pronaći ovdje</translation>
 <translation id="895541991026785598">Prijavite problem</translation>

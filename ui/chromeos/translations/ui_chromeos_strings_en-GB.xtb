@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">Person with coffee</translation>
 <translation id="2251368349685848079">Restore from bin</translation>
+<translation id="2278133026967558505">File access by all websites and URLs</translation>
 <translation id="2282155092769082568">Auto-configuration URL:</translation>
 <translation id="2284767815536050991">removable storage</translation>
 <translation id="2288278176040912387">Record player</translation>
@@ -627,6 +628,7 @@
 <translation id="603895874132768835">You won't be able to use this network until you set up a new PIN</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> network, not connected</translation>
+<translation id="6073060579181816027">Multiple file locations</translation>
 <translation id="6074825444536523002">Google form</translation>
 <translation id="6079871810119356840">Hungarian with QWERTY keyboard</translation>
 <translation id="6096979789310008754">Search text cleared, showing all files and folders.</translation>
@@ -767,6 +769,7 @@
 <translation id="7162080671816799010">Missing 'subject alternative name match' or 'domain suffix match' to validate the authentication server identity</translation>
 <translation id="7165320105431587207">Failed to configure network</translation>
 <translation id="7170041865419449892">Out of range</translation>
+<translation id="7179579940054351344">File access by all websites and URLs except <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Save file as</translation>

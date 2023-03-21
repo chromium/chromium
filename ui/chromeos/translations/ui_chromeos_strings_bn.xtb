@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">আপনার Google Drive ক্যাশে খালি করা হয়েছে।</translation>
 <translation id="2239068707900391003">কফি কাপ ধরে আছে এমন ব্যক্তির ছবি</translation>
 <translation id="2251368349685848079">ট্র্যাশ থেকে ফিরিয়ে আনুন</translation>
+<translation id="2278133026967558505">সব ওয়েবসাইট এবং URL ফাইল অ্যাক্সেস করতে পারবে</translation>
 <translation id="2282155092769082568">স্বতঃকনফিগারেশান URL:</translation>
 <translation id="2284767815536050991">সরিয়ে দেওয়া যায় এমন স্টোরেজ</translation>
 <translation id="2288278176040912387">রেকর্ড প্লেয়ার</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">যাচাইকরণ সার্ভারের পরিচয় যাচাই করতে 'সাবজেক্টের বিকল্প নামের সাথে মিল আছে' বা 'ডোমেন সাফিক্সের সাথে মিল আছে' এমন বিষয় নেই</translation>
 <translation id="7165320105431587207">নেটওয়ার্ক কনফিগার করা যায়নি</translation>
 <translation id="7170041865419449892">নির্দিষ্ট তারিখের বাইরে</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> ছাড়া সব ওয়েবসাইট এবং URL ফাইল অ্যাক্সেস করতে পারবে</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> জিবি</translation>
 <translation id="7191454237977785534">ফাইল এই রূপে সেভ করুন</translation>

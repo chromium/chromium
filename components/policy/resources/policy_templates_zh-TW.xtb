@@ -3169,7 +3169,6 @@
 <translation id="3977304360459208438">在傳輸層安全標準 (TLS) 中使用 3DES 加密套件的預設設定</translation>
 <translation id="3979738908158213640">可在 SAML 驗證期間取得執行裝置認證存取權的網址</translation>
 <translation id="3983162212222338509">系統 DNS 解析可能會在網路服務內部或外部執行，也可能部分在內部執行，部分在外部執行，實際情況取決於系統設定和功能旗標。</translation>
-<translation id="3984028218719007910">決定登出後 <ph name="PRODUCT_OS_NAME" /> 是否要保留本機帳戶資料。如果設為 True，<ph name="PRODUCT_OS_NAME" /> 不會保留任何永久帳戶，並且在登出後會刪除使用者工作階段的所有資料。如果這項政策設為 False 或未設定，裝置會保留 (加密) 本機使用者資料。</translation>
 <translation id="3986700049001404598">允許使用者透過 Chrome 工作管理員結束程序</translation>
 <translation id="398884292557092447">如果將這項政策設為 True 或不設定，使用者將可控管 UI 中的信用卡自動填入建議。
 

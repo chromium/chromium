@@ -262,6 +262,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2834399722155632105">3. Ketuk Opsi Sandi</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Reset Setelan Terjemahan</translation>
+<translation id="284581348330507117">Buat sandi yang unik</translation>
 <translation id="2848086008667475748">Jadikan Default di Setelan …</translation>
 <translation id="2858204748079866344">Untuk melindungi privasi Anda, Chrome tidak akan melakukan IsiOtomatis sandi di kolom ini.</translation>
 <translation id="285960592395650245">Coba Download Lagi</translation>
@@ -374,6 +375,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3595252146048399851">Anda dapat memilih jenis data yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="3603009562372709545">Salin URL Tautan</translation>
 <translation id="3607167657931203000">Data Isi-Otomatis</translation>
+<translation id="3608008480985212611">Login untuk mengelola preferensi Anda.</translation>
 <translation id="3609785682760573515">Menyinkronkan...</translation>
 <translation id="3631443864840848029">Pastikan Anda menyimpan sandi saat ini untuk situs ini.</translation>
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
@@ -650,6 +652,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5704908597376970822">Tidak dapat login.</translation>
 <translation id="5706552126692816153">Aktif 1 Hari yang Lalu</translation>
 <translation id="5711039611392265845">Untuk setelan lainnya yang berkaitan dengan privasi, keamanan, dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Sinkronisasi dan Layanan Google<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Anda harus mengubahnya sekarang</translation>
 <translation id="5724941645893276623">Untuk browsing web secara rahasia, tambahkan tab baru</translation>
 <translation id="5728700505257787410">Maaf, terjadi error saat masuk ke akun Anda.</translation>
 <translation id="5733084997078800044">Tips Chrome</translation>
@@ -1133,6 +1136,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="891658175948553296">Tandai Teks di Situs</translation>
 <translation id="8917490105272468696">Ya, Saya Setuju</translation>
 <translation id="8928133177108699615">Desktop</translation>
+<translation id="894191600409472540">Buat sandi yang kuat</translation>
 <translation id="8952559610785099500">Tambahkan Sandi</translation>
 <translation id="8953046091948372197">Sandi Anda akan ditampilkan di sini</translation>
 <translation id="895541991026785598">Laporkan Masalah</translation>

@@ -1983,7 +1983,6 @@
 <translation id="2710101514844343743">使用状況データと診断データ</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">試用版</translation>
-<translation id="2712207122921938368">別のデバイスでパスキーを作成する</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2714180132046334502">暗い背景</translation>
@@ -3732,7 +3731,6 @@
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
-<translation id="4277529130885813215">別のデバイスを使用</translation>
 <translation id="4278390842282768270">許可</translation>
 <translation id="4278498748067682896">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>
@@ -5418,7 +5416,6 @@
 <translation id="583431638776747">サイトを利用できませんでした</translation>
 <translation id="5834581999798853053">あと約 <ph name="TIME" /> 分</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - カメラまたはマイクで記録中です</translation>
-<translation id="5835625581856809102"><ph name="APP_NAME" /> のパスキーを作成するデバイスで、この QR コードをスキャンしてください</translation>
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
 <translation id="5836999627049108525">翻訳元の言語</translation>
 <translation id="583756221537636748">ケース</translation>
@@ -5856,7 +5853,6 @@
 <translation id="6227002569366039565">このバブルをフォーカスするには |<ph name="ACCELERATOR" />| を押し、バブルが指している要素をフォーカスするにはもう一度押します。</translation>
 <translation id="6227280783235722609">拡張機能</translation>
 <translation id="6229849828796482487">Wi-Fi ネットワークとの接続を切断する</translation>
-<translation id="6230165830166519105">別の方法を試す</translation>
 <translation id="6231782223312638214">候補</translation>
 <translation id="6231881193380278751">ページを自動更新するには URL にクエリ パラメータを追加します: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">バッテリー</translation>
@@ -6121,6 +6117,7 @@
 <translation id="6469557521904094793">モバイル ネットワークをオンにする</translation>
 <translation id="6470823736074966819">通知をミュートする</translation>
 <translation id="6472893788822429178">ホーム ボタンを表示する</translation>
+<translation id="6474352027343282094">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスでパスワードを使用するには、&lt;a target='_blank' href='chrome://password-manager/'&gt;Google アカウントに保存&lt;/a&gt;してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスでパスワードを使用するには、&lt;a target='_blank' href='chrome://password-manager/'&gt;Google アカウントに保存&lt;/a&gt;してください。}}</translation>
 <translation id="6474498546677193336">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Linux をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="6474884162850599008">Google ドライブ アカウントを切断する</translation>
 <translation id="6475294023568239942">ディスクの空き領域を確保するか、設定で Linux ディスクのサイズを変更してください</translation>
@@ -7617,6 +7614,7 @@
 <translation id="7817361223956157679">画面キーボードは現在のところ Linux アプリでは使用できません</translation>
 <translation id="7818135753970109980">新しいテーマが追加されました（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="7819605256207059717">組織でブロックされました</translation>
+<translation id="7820400255539998692"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにします。</translation>
 <translation id="7820561748632634942">スイッチを追加で割り当てますか？</translation>
 <translation id="782057141565633384">動画アドレスをコピー(&amp;C)</translation>
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>

@@ -2004,7 +2004,6 @@
 <translation id="2710101514844343743">使用情況和診斷資料</translation>
 <translation id="271033894570825754">全新</translation>
 <translation id="2711073837061989559">試用功能</translation>
-<translation id="2712207122921938368">在其他裝置上建立密鑰</translation>
 <translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -3754,7 +3753,6 @@
 <translation id="4275397969489577657">啟用活動串流記錄</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
 <translation id="4277434192562187284">XML 設定來源</translation>
-<translation id="4277529130885813215">改用其他裝置</translation>
 <translation id="4278390842282768270">已允許</translation>
 <translation id="4278498748067682896">您將使用「Kiosk 和標牌升級」授權，此授權只允許裝置在 Kiosk 或標牌模式下運作。如果您想使用者登入裝置，請返回並使用「Chrome Enterprise 升級」註冊。</translation>
 <translation id="4278779213160967034">此程序可能需時幾分鐘。正在下載檔案。</translation>
@@ -5442,7 +5440,6 @@
 <translation id="583431638776747">找不到網站</translation>
 <translation id="5834581999798853053">還有大約 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 相機或麥克風錄製中</translation>
-<translation id="5835625581856809102">使用您要為 <ph name="APP_NAME" /> 建立密鑰的裝置來掃瞄此 QR 碼</translation>
 <translation id="583673505367439042">網站可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="5836999627049108525">要翻譯的語言</translation>
 <translation id="583756221537636748">充電盒</translation>
@@ -5880,7 +5877,6 @@
 <translation id="6227002569366039565">㩒一下 |<ph name="ACCELERATOR" />| 就可以突顯呢個對話氣泡，再㩒一下就可以突顯說明對話氣泡指向嘅元素。</translation>
 <translation id="6227280783235722609">擴充程式</translation>
 <translation id="6229849828796482487">解除連接 Wi-Fi 網絡</translation>
-<translation id="6230165830166519105">改用其他方式</translation>
 <translation id="6231782223312638214">建議</translation>
 <translation id="6231881193380278751">在網址中新增查詢參數以自動重新整理網頁：chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">電池</translation>

@@ -3192,7 +3192,6 @@
 <translation id="3977304360459208438">在传输层安全协议 (TLS) 中使用 3DES 加密套件的默认设置</translation>
 <translation id="3979738908158213640">有权在 SAML 身份验证过程中执行设备认证的网址</translation>
 <translation id="3983162212222338509">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，或部分在网络进程中、部分在网络进程外运行，具体取决于系统配置和功能标志。</translation>
-<translation id="3984028218719007910">确定 <ph name="PRODUCT_OS_NAME" />是否要在退出后保留本地帐号数据。如果将此政策设置为 true，<ph name="PRODUCT_OS_NAME" />就不会持续保留帐号，且会在退出后舍弃用户会话中的所有数据。如果未配置此政策或将其设置为 false，设备就会保留（经过加密的）本地用户数据。</translation>
 <translation id="3986700049001404598">允许用户通过 Chrome 任务管理器终止进程</translation>
 <translation id="398884292557092447">如果此政策设为 True 或未设置，则用户可以控制界面中的信用卡信息自动填充建议。
 

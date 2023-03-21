@@ -477,6 +477,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3587596251841506391">Ajudar a melhorar a segurança na Web</translation>
 <translation id="3597179440835065298">Receba sugestões melhores</translation>
 <translation id="3602290021589620013">Visualizar</translation>
+<translation id="360901359071773787">Excluir os últimos 15 minutos?</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3622349720008044802">Gerenciar janelas</translation>
 <translation id="3631987586758005671">Compartilhando com <ph name="DEVICE_NAME" /></translation>
@@ -823,6 +824,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5517095782334947753">Você tem favoritos, histórico, senhas e outras configurações da conta <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Quando os testes estão ativados e se o Chrome colocou você aleatoriamente em um teste ativo, seu histórico de navegação vai afetar os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chrome exclui seus interesses mais antigos do que um mês.</translation>
 <translation id="5524843473235508879">Redirecionamento bloqueado.</translation>
+<translation id="554297709083131118">Os seguintes dados dos últimos 15 minutos serão excluídos</translation>
 <translation id="5548606607480005320">Confirmação de segurança</translation>
 <translation id="5555525474779371165">Escolha sua proteção no Navegação segura</translation>
 <translation id="5556459405103347317">Recarregar</translation>
@@ -1264,6 +1266,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="78270725016672455">O computador quer registrar este dispositivo para fazer login em um site</translation>
 <translation id="7844171778363018843">Nenhum dado selecionado para sincronização</translation>
 <translation id="7846296061357476882">Serviços do Google</translation>
+<translation id="7847228556075070294">O histórico, os cookies e outros dados foram excluídos</translation>
 <translation id="784934925303690534">Período</translation>
 <translation id="7851858861565204677">Outros dispositivos</translation>
 <translation id="7853202427316060426">Atividade</translation>

@@ -1988,7 +1988,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2710101514844343743">İstifadə və diaqnostika datası</translation>
 <translation id="271033894570825754">Yeni</translation>
 <translation id="2711073837061989559">Sınaqlar</translation>
-<translation id="2712207122921938368">Başqa cihazda giriş açarı yaradın</translation>
 <translation id="2713106313042589954">Kameranı deaktiv edin</translation>
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2714180132046334502">Tünd arxa fon</translation>
@@ -3736,7 +3735,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4275397969489577657">Tədbir yayım girişini aktiv edin</translation>
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
 <translation id="4277434192562187284">XML konfiqurasiya mənbəyi</translation>
-<translation id="4277529130885813215">Digər cihazdan istifadə edin</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
 <translation id="4278498748067682896">Cihazın yalnız köşk və ya işarə rejimində işləməsinə imkan verən Köşk və İşarə Güncəlləməsindən istifadə edəcəksiniz. İstifadəçilərin cihaza daxil olmasını istəyirsinizsə, geri qayıdın və Chrome Enterprise Upgrade ilə qeydiyyatdan keçin.</translation>
 <translation id="4278779213160967034">Bu, bir neçə dəqiqə çəkə bilər. Fayllar endirilir.</translation>
@@ -5425,7 +5423,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="583431638776747">Sayt əlçatan deyildi</translation>
 <translation id="5834581999798853053">Təxminən <ph name="TIME" /> dəqiqə qaldı</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Kamera və ya mikrofon qeydə alması</translation>
-<translation id="5835625581856809102">Bu QR kodunu <ph name="APP_NAME" /> üçün giriş açarı yaratmaq istədiyiniz cihazla skan edin</translation>
 <translation id="583673505367439042">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="5836999627049108525">Bu Dildən Tərcümə edin:</translation>
 <translation id="583756221537636748">Qutu</translation>
@@ -5861,7 +5858,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6227002569366039565">Bu qabarcığı fokuslamaq üçün |<ph name="ACCELERATOR" />| düyməsini basın, sonra onun yönəldiyi elementi fokuslamaq üçün yenidən basın.</translation>
 <translation id="6227280783235722609">artırma</translation>
 <translation id="6229849828796482487">Wi‑Fi şəbəkəsini ayırın</translation>
-<translation id="6230165830166519105">Başqa yolu sınayın</translation>
 <translation id="6231782223312638214">Təklif edilən</translation>
 <translation id="6231881193380278751">Səhifəni avtomatik yeniləmək üçün URL-də sorğu parametri əlavə edin: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batareya</translation>
@@ -6616,6 +6612,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6903022061658753260">Datanız bu hesab üçün sinxronizasiyanı aktiv etdiyiniz bütün Chrome brauzerlərində sinxronlaşdırılacaq. ChromeOS sinxronizasiya seçimləri üçün <ph name="LINK_BEGIN" />ChromeOS ayarlarına<ph name="LINK_END" /> keçin.</translation>
 <translation id="6903590427234129279">Hamısını açın (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> üzrə axtarış edin</translation>
 <translation id="6904344821472985372">Fayl girişini ləğv edin</translation>
 <translation id="6904655473976120856">Çıxmaq üçün Tətbiq düyməsinə basın</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Parollarınızı təhlükəsiz saxlamaq üçün Google Parol Meneceri 1 dəqiqə fəaliyyətsiz qaldıqdan sonra kilidlənir}other{Parollarınızı təhlükəsiz saxlamaq üçün Google Parol Meneceri {NUM_MINS} dəqiqə fəaliyyətsiz qaldıqdan sonra kilidlənir}}</translation>
@@ -8688,6 +8685,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> cihazınız güncəllənməlidir</translation>
 <translation id="8763927697961133303">USB cihazı</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> üzrə bütün axtarışları göstərin</translation>
 <translation id="8767621466733104912">Chrome'u bütün istifadəçilər üçün avtomatik güncəlləyin</translation>
 <translation id="8770406935328356739">Artırma kökü kataqolu</translation>
 <translation id="8771300903067484968">Başlanğıc səhifəsinin arxa fonu defolt arxa fona sıfırlanıb.</translation>

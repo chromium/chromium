@@ -477,6 +477,7 @@
 <translation id="3587596251841506391">ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="3597179440835065298">আরও ভাল পরামর্শ পাওয়া</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
+<translation id="360901359071773787">শেষ ১৫ মিনিটের তথ্য মুছবেন?</translation>
 <translation id="3616113530831147358">অডিও</translation>
 <translation id="3622349720008044802">উইন্ডো ম্যানেজ করুন</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-এর সাথে শেয়ার করা হচ্ছে</translation>
@@ -824,6 +825,7 @@
 <translation id="5517095782334947753">আপনার জন্য <ph name="FROM_ACCOUNT" /> থেকে বুকমার্কস, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস আছে।</translation>
 <translation id="5524761631371622910">ট্রায়াল চালু থাকাকালীন, Chrome আপনার জন্য র‍্যান্ডমলি ট্রায়াল রাখলে, যে বিজ্ঞাপনগুলি আপনি দেখেন তাতে এবং নিচে অনুমান করা আগ্রহগুলিতে আপনার ভ্রাউজিং ইতিহাস প্রভাব ফেলতে পারে। আপনার গোপনীয়তা রক্ষা করার জন্য, Chrome প্রতি মাসে রোলিংয়ের ভিত্তিতে আপনার আগ্রহগুলি মুছে দেয়।</translation>
 <translation id="5524843473235508879">রিডাইরেক্ট ব্লক করা হয়েছে।</translation>
+<translation id="554297709083131118">শেষ ১৫ মিনিটের নিম্নলিখিত ডেটা মুছে ফেলা হবে</translation>
 <translation id="5548606607480005320">নিরাপত্তা সংক্রান্ত পরীক্ষা</translation>
 <translation id="5555525474779371165">আপনার Safe Browsing সুরক্ষা বেছে নিন</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
@@ -1265,6 +1267,7 @@
 <translation id="78270725016672455">কোনও সাইটে সাইন-ইন করার জন্য আপনার কম্পিউটার এই ডিভাইসটি রেজিস্টার করতে চায়</translation>
 <translation id="7844171778363018843">সিঙ্ক করার জন্য কোনও ডেটা বেছে নেওয়া হয়নি</translation>
 <translation id="7846296061357476882">Google পরিষেবা</translation>
+<translation id="7847228556075070294">মুছে ফেলা ইতিহাস, কুকি, এবং অন্যান্য ডেটা</translation>
 <translation id="784934925303690534">সময় সীমা</translation>
 <translation id="7851858861565204677">অন্যান্য ডিভাইস</translation>
 <translation id="7853202427316060426">ক্রিয়াকলাপ</translation>

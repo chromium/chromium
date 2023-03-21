@@ -866,6 +866,7 @@
 <translation id="1744108098763830590">фонавая старонка</translation>
 <translation id="1745732479023874451">Кіраваць кантактамі</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Адкрыць і змяніць у гэтай вэб-праграме # файл?}few{Адкрыць і змяніць у гэтай вэб-праграме # файлы?}many{Адкрыць і змяніць у гэтай вэб-праграме # файлаў?}other{Адкрыць і змяніць у гэтай вэб-праграме # файла?}}</translation>
+<translation id="1748329107062243374">Выкарыстайце ключ доступу з прылады "<ph name="DEVICE_NAME" />" для ўваходу на сайт <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Вы можаце захаваць пароль ва Уліковым запісе Google або толькі на гэтай прыладзе</translation>
 <translation id="1749733017156547309">Неабходна ўказаць пароль</translation>
 <translation id="1750172676754093297">Не ўдалося захаваць адбіткі пальцаў на вашым ключы бяспекі</translation>
@@ -1991,7 +1992,6 @@
 <translation id="2710101514844343743">Даныя пра выкарыстанне і дыягностыку</translation>
 <translation id="271033894570825754">Новае</translation>
 <translation id="2711073837061989559">Пробныя версіі функцый</translation>
-<translation id="2712207122921938368">Стварыце ключ доступу на іншай прыладзе</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
 <translation id="2713444072780614174">Белы</translation>
 <translation id="2714180132046334502">Цёмны фон</translation>
@@ -4228,6 +4228,7 @@
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Аднавіць налады</translation>
 <translation id="4713409221649555176">Выдаляць пры закрыцці ўсіх вокнаў</translation>
+<translation id="4715631922189108923">Змяніць імя карыстальніка</translation>
 <translation id="47158868804223727">Каб разгарнуць або згарнуць групу, націсніце на яе назву</translation>
 <translation id="4716483597559580346">Выканаць Powerwash для павышэння бяспекі</translation>
 <translation id="471759229191973607">Змяніць тэму</translation>
@@ -4639,6 +4640,7 @@
 <translation id="5108967062857032718">Налады &gt; Выдаліць праграмы Android</translation>
 <translation id="5109044022078737958">Мія</translation>
 <translation id="5109816792918100764">Выдаліць наступную мову: <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Адкрыць групу ў новым акне</translation>
 <translation id="5111646998522066203">Выйсці з рэжыму інкогніта</translation>
 <translation id="5111692334209731439">&amp;Менеджар закладак</translation>
 <translation id="5111794652433847656">Для сайта <ph name="APP_NAME" /> на гэтай прыладзе няма ключоў доступу</translation>
@@ -5425,7 +5427,6 @@
 <translation id="583431638776747">Сайт быў недаступны</translation>
 <translation id="5834581999798853053">Засталося каля <ph name="TIME" /> хв</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – ідзе запіс з камеры або мікрафона</translation>
-<translation id="5835625581856809102">Адсканіруйце гэты QR-код з дапамогай прылады, на якой вы хочаце стварыць ключ доступу для <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Сайты могуць запытваць дазвол на змяненне файлаў або папак на прыладзе</translation>
 <translation id="5836999627049108525">З якой мовы перакласці</translation>
 <translation id="583756221537636748">Чахол</translation>
@@ -5863,7 +5864,6 @@
 <translation id="6227002569366039565">Націсніце |<ph name="ACCELERATOR" />|, каб перайсці да гэтага ўсплывальнага апавяшчэння, а затым яшчэ раз, каб перайсці да элемента, на які яно вядзе.</translation>
 <translation id="6227280783235722609">пашырэнне</translation>
 <translation id="6229849828796482487">Адключыцца ад сеткі Wi-Fi</translation>
-<translation id="6230165830166519105">Паспрабаваць іншы спосаб</translation>
 <translation id="6231782223312638214">Прапанаваныя</translation>
 <translation id="6231881193380278751">Дадайце параметр запыту ў URL-адрас для аўтаматычнага абнаўлення старонкі: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Акумулятар</translation>
@@ -7570,6 +7570,7 @@
 <translation id="7762243782113123335">Нешта пайшло не так. Адпраўце нам водгук, дадаўшы слова #bruschetta у яго апісанне. Код памылкі: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Дадаць адрас</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> з дамена <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Адкрыць групу ў новым акне</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7765507180157272835">Патрабуецца падключэнне да Bluetooth і Wi-Fi</translation>
 <translation id="7766082757934713382">Дапамагае знізіць выкарыстанне трафіка ў сетцы, прыпыняючы аўтаматычныя абнаўленні сістэмы і праграм</translation>
@@ -8078,6 +8079,7 @@
 <translation id="8203732864715032075">Адпраўляць вам апавяшчэнні і зрабіць гэты камп'ютар стандартным для праграмы "Паведамленні". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Вашы дысплэі і перыферыйныя прылады могуць перазапусціцца. Адключыце перыферыйныя прылады і падключыце іх зноў, каб гэта змяненне ўступіла ў сілу.</translation>
 <translation id="820568752112382238">Сайты, якія часцей за ўсё наведваліся</translation>
+<translation id="8206267832882844324">Змяніць нататку</translation>
 <translation id="8206745257863499010">Блюзавы</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8207404892907560325">Выберыце ключ доступу</translation>
@@ -8686,6 +8688,7 @@
           &lt;p&gt;Аднак вы па-ранейшаму можаце наладжваць проксі-сервер праз камандны радок.  Падрабязней пра параметры і пераменныя асяроддзя глядзіце &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Выкананне для вашай арганізацыі заданняў, звязаных з бяспекай, напрыклад, кіраванне сертыфікатамі і ключамі, якія захоўваюцца на прыладзе</translation>
 <translation id="8755376271068075440">&amp;Павялічыць</translation>
+<translation id="8755584192133371929">Выберыце ўкладку для абагульвання</translation>
 <translation id="875604634276263540">Няправільны URL-адрас відарыса</translation>
 <translation id="8756969031206844760">Абнавіць пароль?</translation>
 <translation id="8757203080302669031">Гэта ўкладка шукае прылады з Bluetooth.</translation>

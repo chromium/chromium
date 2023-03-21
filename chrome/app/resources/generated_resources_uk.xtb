@@ -877,6 +877,7 @@
 <translation id="1744108098763830590">фонова сторінка</translation>
 <translation id="1745732479023874451">Керувати контактами</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Відкрити та редагувати # файл у цьому веб-додатку?}few{Відкрити та редагувати # файли в цьому веб-додатку?}many{Відкрити та редагувати # файлів у цьому веб-додатку?}other{Відкрити та редагувати # файлу в цьому веб-додатку?}}</translation>
+<translation id="1748329107062243374">Використовуйте ключ доступу з пристрою <ph name="DEVICE_NAME" /> для входу на веб-сайті <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Ви можете зберегти цей пароль в обліковому записі Google або лише на цьому пристрої</translation>
 <translation id="1749733017156547309">Потрібно ввести пароль</translation>
 <translation id="1750172676754093297">На вашому ключі безпеки не можна зберігати відбитки пальців</translation>
@@ -2006,7 +2007,6 @@
 <translation id="2710101514844343743">Дані про використання й діагностику</translation>
 <translation id="271033894570825754">Новий</translation>
 <translation id="2711073837061989559">Пробні версії функцій</translation>
-<translation id="2712207122921938368">Створіть ключ доступу на іншому пристрої</translation>
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2713444072780614174">Білий</translation>
 <translation id="2714180132046334502">Темний фон</translation>
@@ -4246,6 +4246,7 @@
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
 <translation id="4713409221649555176">Видаляти, коли закриваються всі вікна</translation>
+<translation id="4715631922189108923">Змінити ім’я користувача</translation>
 <translation id="47158868804223727">Натисніть назву групи, щоб розгорнути чи згорнути її</translation>
 <translation id="4716483597559580346">Powerwash для додаткового захисту</translation>
 <translation id="471759229191973607">Змінити тему</translation>
@@ -4657,6 +4658,7 @@
 <translation id="5108967062857032718">Налаштування – Видалення додатків Android</translation>
 <translation id="5109044022078737958">Краля</translation>
 <translation id="5109816792918100764">Вилучити таку мову: <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Відкрити групу в новому вікні</translation>
 <translation id="5111646998522066203">Закрити анонімні вікна</translation>
 <translation id="5111692334209731439">&amp;Диспетчер закладок</translation>
 <translation id="5111794652433847656">На цьому пристрої немає ключів доступу для додатка <ph name="APP_NAME" /></translation>
@@ -5441,7 +5443,6 @@
 <translation id="583431638776747">Сайт недоступний</translation>
 <translation id="5834581999798853053">Залишилося приблизно <ph name="TIME" /> хв.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – запис на камері або мікрофоні ввімкнено</translation>
-<translation id="5835625581856809102">Відскануйте цей QR-код за допомогою пристрою, на якому ви хочете створити ключ доступу для додатка <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Сайти можуть просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="5836999627049108525">Вихідна мова</translation>
 <translation id="583756221537636748">Чохол</translation>
@@ -5878,7 +5879,6 @@
 <translation id="6227002569366039565">Натисніть |<ph name="ACCELERATOR" />|, щоб виділити цю спливаючу підказку, а потім ще раз – щоб виділити елемент, якого вона стосується.</translation>
 <translation id="6227280783235722609">розширення</translation>
 <translation id="6229849828796482487">Від'єднати мережу Wi-Fi</translation>
-<translation id="6230165830166519105">Спробувати інший спосіб</translation>
 <translation id="6231782223312638214">Пропозиції</translation>
 <translation id="6231881193380278751">Додайте в URL-адресу параметр запиту для автоматичного оновлення сторінки: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Акумулятор</translation>
@@ -6639,6 +6639,7 @@
 <translation id="6903022061658753260">Ваші дані синхронізуватимуться в усіх веб-переглядачах Chrome, де ви ввімкнули синхронізацію для цього облікового запису. Щоб переглянути параметри синхронізації ОС Chrome, відкрийте відповідні <ph name="LINK_BEGIN" />налаштування<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Відкрити всі (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Увімкнути синхронізацію</translation>
+<translation id="6903916726032521638">Шукати: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Скасувати доступ до файлу</translation>
 <translation id="6904655473976120856">Щоб вийти, натисніть кнопку додатка</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Щоб захистити ваші паролі, Google Менеджер паролів блокується через 1 хвилину бездіяльності}one{Щоб захистити ваші паролі, Google Менеджер паролів блокується через {NUM_MINS} хвилину бездіяльності}few{Щоб захистити ваші паролі, Google Менеджер паролів блокується через {NUM_MINS} хвилини бездіяльності}many{Щоб захистити ваші паролі, Google Менеджер паролів блокується через {NUM_MINS} хвилин бездіяльності}other{Щоб захистити ваші паролі, Google Менеджер паролів блокується через {NUM_MINS} хвилини бездіяльності}}</translation>
@@ -7585,6 +7586,7 @@
 <translation id="7762243782113123335">Сталася помилка. Надішліть відгук і додайте в його опис хештег #bruschetta. Код помилки: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Додати адресу</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> з домену <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Відкрити групу в новому вікні</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7765507180157272835">Потрібно ввімкнути Bluetooth і Wi-Fi</translation>
 <translation id="7766082757934713382">Допомагає зменшити використання мережевого трафіку, призупиняючи автоматичні оновлення додатків і системи</translation>
@@ -8094,6 +8096,7 @@
 <translation id="8203732864715032075">Надсилає сповіщення й за умовчанням зберігає цей комп’ютер у додатку Повідомлення. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Дисплеї та периферійні пристрої можуть перезавантажитися. Щоб ця зміна почала діяти, відключіть і повторно підключіть периферійні пристрої.</translation>
 <translation id="820568752112382238">Сайти, які часто відвідуються</translation>
+<translation id="8206267832882844324">Редагувати примітку</translation>
 <translation id="8206745257863499010">Блюз</translation>
 <translation id="8206859287963243715">Мобільний</translation>
 <translation id="8207404892907560325">Виберіть ключ доступу</translation>
@@ -8702,6 +8705,7 @@
           &lt;p&gt;Проте ви можете виконати конфігурацію за допомогою командного рядка.  Щоб отримати докладнішу інформацію про прапорці та змінні середовища, відвідайте &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Виконувати пов'язані з безпекою завдання для вашої організації, наприклад керувати сертифікатами й ключами, які зберігаються на пристрої.</translation>
 <translation id="8755376271068075440">&amp;Великий</translation>
+<translation id="8755584192133371929">Виберіть вкладку, якою хочете поділитися</translation>
 <translation id="875604634276263540">URL-адреса зображення недійсна</translation>
 <translation id="8756969031206844760">Оновити пароль?</translation>
 <translation id="8757203080302669031">Ця вкладка активно шукає пристрої з Bluetooth.</translation>
@@ -8711,6 +8715,7 @@
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> потребує оновлення</translation>
 <translation id="8763927697961133303">Пристрій USB</translation>
 <translation id="8766796754185931010">Котоері</translation>
+<translation id="8767069439158587614">Показати всі пошукові запити, пов’язані з: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Автоматично оновлювати Chrome для всіх користувачів</translation>
 <translation id="8770406935328356739">Кореневий каталог розширення</translation>
 <translation id="8771300903067484968">Фон початкової сторінки було скинуто. Тепер це фон за умовчанням.</translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">‏حافظه پنهان Google Drive پاک شد.</translation>
 <translation id="2239068707900391003">شخصی قهوه در دست</translation>
 <translation id="2251368349685848079">بازیابی از حذف‌شده‌ها</translation>
+<translation id="2278133026967558505">دسترسی همه وب‌سایت‌ها و نشانی‌های وب به فایل</translation>
 <translation id="2282155092769082568">نشانی وب پیکربندی خودکار</translation>
 <translation id="2284767815536050991">فضای ذخیره‌سازی جداشدنی</translation>
 <translation id="2288278176040912387">ضبط صوت</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">«تطابق نام جایگزین موضوع» یا «تطابق پسوند دامنه» برای تأیید هویت سرور اصالت‌سنجی وجود ندارد</translation>
 <translation id="7165320105431587207">پیکربندی شبکه انجام نشد</translation>
 <translation id="7170041865419449892">خارج از محدوده</translation>
+<translation id="7179579940054351344">دسترسی همه وب‌سایت‌ها و نشانی‌های وب به فایل به‌استثنای <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">بازآوری</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> گیگابایت</translation>
 <translation id="7191454237977785534">ذخیره فایل به‌عنوان</translation>

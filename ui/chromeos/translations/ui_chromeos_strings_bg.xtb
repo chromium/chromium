@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Кешът ви в Google Диск бе изчистен.</translation>
 <translation id="2239068707900391003">Човек с кафе</translation>
 <translation id="2251368349685848079">Възстановяване от кошчето</translation>
+<translation id="2278133026967558505">Достъп до файла от всички уебсайтове и URL адреси</translation>
 <translation id="2282155092769082568">URL адрес за автоматично конфигуриране:</translation>
 <translation id="2284767815536050991">сменяемо хранилище</translation>
 <translation id="2288278176040912387">Грамофон</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">„Съответствие на алтернативното име на субекта“ или „Съответствие на суфикса на домейна“ не са конфигурирани с цел потвърждаване на самоличността на сървъра за удостоверяване</translation>
 <translation id="7165320105431587207">Конфигурирането на мрежата не бе успешно</translation>
 <translation id="7170041865419449892">Извън обхват</translation>
+<translation id="7179579940054351344">Достъп до файла от всички уебсайтове и URL адреси освен <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Опресняване</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Запазване на файла като</translation>

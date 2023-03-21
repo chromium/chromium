@@ -864,6 +864,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1744108098763830590">page en arrière-plan</translation>
 <translation id="1745732479023874451">Gérer les contacts</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Ouvrir et modifier # fichier dans cette appli Web ?}other{Ouvrir et modifier # fichiers dans cette appli Web ?}}</translation>
+<translation id="1748329107062243374">Utiliser une clé d'accès de <ph name="DEVICE_NAME" /> pour vous connecter à <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Vous pouvez enregistrer ce mot de passe dans votre compte Google ou uniquement sur cet appareil</translation>
 <translation id="1749733017156547309">Veuillez saisir votre mot de passe</translation>
 <translation id="1750172676754093297">Impossible de stocker des empreintes digitales dans votre clé de sécurité</translation>
@@ -1989,7 +1990,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2710101514844343743">Données d'utilisation et de diagnostic</translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
-<translation id="2712207122921938368">Créer une clé d'accès sur un autre appareil</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2714180132046334502">Arrière-plan sombre</translation>
@@ -4228,6 +4228,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurer les paramètres</translation>
 <translation id="4713409221649555176">Supprimer lorsque vous fermez toutes les fenêtres</translation>
+<translation id="4715631922189108923">Modifier le nom d'utilisateur</translation>
 <translation id="47158868804223727">Cliquez sur le nom du groupe pour le développer ou le réduire</translation>
 <translation id="4716483597559580346">Powerwash pour plus de sécurité</translation>
 <translation id="471759229191973607">Modifier le thème</translation>
@@ -4639,6 +4640,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5108967062857032718">Paramètres – Supprimer les applications Android</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Supprimer <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Ouvrir le groupe dans une nouvelle fenêtre</translation>
 <translation id="5111646998522066203">Quitter le mode navigation privée</translation>
 <translation id="5111692334209731439">&amp;Gestionnaire de favoris</translation>
 <translation id="5111794652433847656">Aucune clé d'accès pour <ph name="APP_NAME" /> sur cet appareil</translation>
@@ -5426,7 +5428,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="583431638776747">Site non disponible</translation>
 <translation id="5834581999798853053">Environ <ph name="TIME" /> minutes restantes</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> –  Enregistrement vidéo ou audio</translation>
-<translation id="5835625581856809102">Scannez ce code QR avec l'appareil sur lequel vous voulez créer une clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Les sites peuvent demander à modifier les fichiers et les dossiers sur votre appareil</translation>
 <translation id="5836999627049108525">Langue source</translation>
 <translation id="583756221537636748">Étui</translation>
@@ -5864,7 +5865,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6227002569366039565">Appuyez sur |<ph name="ACCELERATOR" />| pour sélectionner cette info-bulle, puis appuyez de nouveau pour sélectionner l'élément vers lequel elle pointe.</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Se déconnecter du réseau Wi-Fi</translation>
-<translation id="6230165830166519105">Essayer une autre méthode</translation>
 <translation id="6231782223312638214">Suggestions</translation>
 <translation id="6231881193380278751">Ajoutez un paramètre de requête dans l'URL pour une actualisation automatique de la page : chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batterie</translation>
@@ -7567,6 +7567,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7762243782113123335">Désolé, un problème est survenu. Veuillez envoyer vos commentaires en incluant #bruschetta dans la description. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Ajouter une adresse</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> du domaine <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Ouvrir le groupe dans une nouvelle fenêtre</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7765507180157272835">Veuillez activer le Bluetooth et le Wi-Fi</translation>
 <translation id="7766082757934713382">Aide à réduire la consommation de données réseau en suspendant les mises à jour automatiques du système et des applications</translation>
@@ -8076,6 +8077,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8203732864715032075">Vous envoyer des notifications et mémoriser cet ordinateur pour l'utilisation de l'appli Messages. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Vos écrans et périphériques peuvent se réinitialiser brièvement. Pour que cette modification soit prise en compte, débranchez et rebranchez vos périphériques.</translation>
 <translation id="820568752112382238">Sites les plus consultés</translation>
+<translation id="8206267832882844324">Modifier la note</translation>
 <translation id="8206745257863499010">Musique</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8207404892907560325">Choisir une clé d'accès</translation>
@@ -8684,6 +8686,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
         &lt;p&gt;Vous avez toujours la possibilité d'effectuer la configuration via la ligne de commande. Pour plus d'informations sur les indicateurs et les variables d'environnement, veuillez vous reporter à &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Effectuer des tâches liées à la sécurité de votre organisation telles que la gestion des certificats et des clés stockés sur l'appareil</translation>
 <translation id="8755376271068075440">P&amp;lus grand</translation>
+<translation id="8755584192133371929">Sélectionner un onglet à partager</translation>
 <translation id="875604634276263540">L'URL de l'image est incorrecte</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
 <translation id="8757203080302669031">Cet onglet recherche activement des appareils Bluetooth.</translation>

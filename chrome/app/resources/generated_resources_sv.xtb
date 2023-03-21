@@ -874,6 +874,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1744108098763830590">bakgrundssida</translation>
 <translation id="1745732479023874451">Hantera kontakter</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Vill du öppna och redigera # filer i den här webbappen?}}</translation>
+<translation id="1748329107062243374">Använd en nyckel från <ph name="DEVICE_NAME" /> för att logga in på <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Du kan spara det här lösenordet i Google-kontot eller endast på den här enheten</translation>
 <translation id="1749733017156547309">Ett lösenord krävs</translation>
 <translation id="1750172676754093297">Det går inte att lagra fingeravtryck på säkerhetsnyckeln</translation>
@@ -2003,7 +2004,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2710101514844343743">Diagnostik- och användningsdata</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Provversioner</translation>
-<translation id="2712207122921938368">Skapa en nyckel på en annan enhet</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2713444072780614174">Vit</translation>
 <translation id="2714180132046334502">Mörk bakgrund</translation>
@@ -4243,6 +4243,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4708849949179781599">Avsluta <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Återställ inställningarna</translation>
 <translation id="4713409221649555176">Radera när du stänger alla fönster</translation>
+<translation id="4715631922189108923">Redigera användarnamn</translation>
 <translation id="47158868804223727">Utöka eller komprimera gruppen genom att klicka på namnet</translation>
 <translation id="4716483597559580346">Gör en powerwash för ökad säkerhet</translation>
 <translation id="471759229191973607">Byt tema</translation>
@@ -4654,6 +4655,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5108967062857032718">Inställningar – ta bort Android-appar</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Ta bort <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Öppna gruppen i ett nytt fönster</translation>
 <translation id="5111646998522066203">Avsluta inkognitoläget</translation>
 <translation id="5111692334209731439">&amp;Bokmärkeshanteraren</translation>
 <translation id="5111794652433847656">Det finns inga nycklar för <ph name="APP_NAME" /> på den här enheten</translation>
@@ -5440,7 +5442,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="583431638776747">Webbplatsen var inte tillgänglig</translation>
 <translation id="5834581999798853053">Ca <ph name="TIME" /> minuter kvar</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kameran eller mikrofonen spelar in</translation>
-<translation id="5835625581856809102">Skanna den här QR-koden med enheten där du vill skapa en nyckel för <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Webbplatser får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="5836999627049108525">Språk att översätta från</translation>
 <translation id="583756221537636748">Fodral</translation>
@@ -5878,7 +5879,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6227002569366039565">Flytta fokus till den här bubblan genom att trycka på |<ph name="ACCELERATOR" />|. Flytta sedan fokus till det som bubblan pekar på genom att trycka på samma tangent en gång till.</translation>
 <translation id="6227280783235722609">tillägg</translation>
 <translation id="6229849828796482487">Koppla från wifi-nätverk</translation>
-<translation id="6230165830166519105">Testa ett annat sätt</translation>
 <translation id="6231782223312638214">Förslag</translation>
 <translation id="6231881193380278751">Lägg till en frågeparameter i webbadressen för att automatiskt uppdatera sidan: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batteri</translation>
@@ -6633,6 +6633,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6903022061658753260">Din data synkroniseras i alla Chrome-webbläsare där du har aktiverat synkronisering för det här kontot. Synkroniseringsalternativen i Chrome OS hittar du i <ph name="LINK_BEGIN" />inställningarna för Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Öppna alla (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
+<translation id="6903916726032521638">Sök efter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Återkalla filåtkomst</translation>
 <translation id="6904655473976120856">Tryck på appknappen för att avsluta</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{För att skydda dina lösenord låses Google Lösenordshantering efter 1 minuts inaktivitet}other{För att skydda dina lösenord låses Google Lösenordshantering efter {NUM_MINS} minuters inaktivitet}}</translation>
@@ -7579,6 +7580,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7762243782113123335">Något gick fel. Skicka feedback och ange #bruschetta i beskrivningen. Felkoden är <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Lägg till adress</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> från <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Öppna gruppen i ett nytt fönster</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7765507180157272835">Bluetooth och wifi krävs</translation>
 <translation id="7766082757934713382">Du kan minska användningen av nätverksdata genom att pausa automatiska app- och systemuppdateringar</translation>
@@ -8088,6 +8090,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8203732864715032075">Skicka aviseringar till dig och komma ihåg den här datorn som standard för Messages. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Skärmen och kringutrustningen kan återställas tillfälligt. Du måste koppla ifrån och sätta i kringutrustningen igen för att ändringen ska träda i kraft.</translation>
 <translation id="820568752112382238">Mest besökta webbplatser</translation>
+<translation id="8206267832882844324">Redigera anteckning</translation>
 <translation id="8206745257863499010">Bluesig</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Välj en nyckel</translation>
@@ -8696,6 +8699,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
         &lt;p&gt;Du kan fortfarande konfigurera via kommandoraden. Läs &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; om du vill veta mer om flaggningar och miljövariabler.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Utför säkerhetsrelaterade uppgifter för organisationen, som att hantera certifikat och nycklar som lagras på enheten</translation>
 <translation id="8755376271068075440">&amp;Större</translation>
+<translation id="8755584192133371929">Välj en flik att dela</translation>
 <translation id="875604634276263540">Avbildningens webbadress är ogiltig</translation>
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
 <translation id="8757203080302669031">Aktiv sökning efter Bluetooth-enheter på fliken.</translation>
@@ -8705,6 +8709,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> behöver uppdateras</translation>
 <translation id="8763927697961133303">USB-enhet</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Visa alla sökningar efter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Uppdatera Chrome automatiskt för alla användare</translation>
 <translation id="8770406935328356739">Tilläggets rotkatalog</translation>
 <translation id="8771300903067484968">Startsidans bakgrund har återställts till standardbakgrunden.</translation>

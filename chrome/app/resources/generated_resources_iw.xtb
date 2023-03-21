@@ -1996,7 +1996,6 @@
 <translation id="2710101514844343743">מידע על אופן השימוש בנתונים וניתוח הביצועים</translation>
 <translation id="271033894570825754">חדש</translation>
 <translation id="2711073837061989559">תקופות ניסיון</translation>
-<translation id="2712207122921938368">יצירת מפתח גישה במכשיר אחר</translation>
 <translation id="2713106313042589954">השבתת המצלמה</translation>
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2714180132046334502">רקע כהה</translation>
@@ -5420,7 +5419,6 @@
 <translation id="583431638776747">האתר לא היה זמין</translation>
 <translation id="5834581999798853053">נותרו בערך <ph name="TIME" /> דקות</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - הקלטה במצלמה או במיקרופון</translation>
-<translation id="5835625581856809102">‏יש לסרוק את קוד ה-QR הזה באמצעות המכשיר שבו ברצונך ליצור מפתח גישה עבור <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">אתרים יכולים לבקש הרשאה לערוך קבצים ותיקיות במכשיר שלך</translation>
 <translation id="5836999627049108525">שפת המקור לתרגום</translation>
 <translation id="583756221537636748">כיסוי</translation>
@@ -5858,7 +5856,6 @@
 <translation id="6227002569366039565">מקישים על |<ph name="ACCELERATOR" />| כדי להתמקד בבועה הזו, ומקישים שוב כדי להתמקד ברכיב שאליו היא מפנה.</translation>
 <translation id="6227280783235722609">תוסף</translation>
 <translation id="6229849828796482487">‏ניתוק רשת ה-Wi-Fi</translation>
-<translation id="6230165830166519105">רוצה לנסות דרך אחרת?</translation>
 <translation id="6231782223312638214">מוצע</translation>
 <translation id="6231881193380278751">‏יש להוסיף פרמטר שאילתה בכתובת האתר כדי לרענן את הדף באופן אוטומטי: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">סוללה</translation>
@@ -6614,6 +6611,7 @@
 <translation id="6903022061658753260">‏הנתונים שלך יסונכרנו בכל דפדפני Chrome שבהם הפעלת את הסנכרון עם החשבון הזה. <ph name="LINK_BEGIN" />בהגדרות של ChromeOS<ph name="LINK_END" /> ניתן לראות את אפשרויות הסנכרון של ChromeOS.</translation>
 <translation id="6903590427234129279">פתיחת כל החלונות (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
+<translation id="6903916726032521638">חיפוש של <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">ביטול גישה לקבצים</translation>
 <translation id="6904655473976120856">כדי לצאת, צריך ללחוץ על לחצן האפליקציה</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר דקה אחת של חוסר פעילות}one{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר {NUM_MINS} דקות של חוסר פעילות}two{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר {NUM_MINS} דקות של חוסר פעילות}other{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר {NUM_MINS} דקות של חוסר פעילות}}</translation>
@@ -8680,6 +8678,7 @@
 <translation id="8762886931014513155">צריך לעדכן את ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">‏התקן USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">הצגת כל החיפושים של <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">‏עדכון אוטומטי של Chrome אצל כל המשתמשים</translation>
 <translation id="8770406935328356739">ספריית הבסיס של תוסף</translation>
 <translation id="8771300903067484968">רקע דף הפתיחה עבר איפוס לרקע ברירת המחדל.</translation>

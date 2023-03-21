@@ -387,6 +387,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1822540298136254167">Weby, ktoré navštívite, a čas, ktorý na nich strávite</translation>
 <translation id="1824402189105105503">Ôsmy kotúč</translation>
 <translation id="1826516787628120939">Kontroluje sa</translation>
+<translation id="1826968372364864056">Vymazať formulár</translation>
 <translation id="1828959155404624835">Autopožičovne</translation>
 <translation id="1834321415901700177">Tento web obsahuje škodlivé programy</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
@@ -1221,7 +1222,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="399952081411886534">Ďalšie funkcie, ktoré zvyšujú ochranu súkromia pri reklamách</translation>
 <translation id="4000598935132966791">Ďalšie informácie o obmedzeniach webov v spravovaných prehliadačoch</translation>
 <translation id="4006465311664329701">Spôsoby platby, ponuky a adresy používajúce Google Pay</translation>
-<translation id="4009243425692662128">Obsah stránok, ktoré vytlačíte, sa odosiela na analýzu do služby Google Cloud alebo tretím stranám. Môže sa v ňom napríklad kontrolovať prítomnosť citlivých údajov.</translation>
 <translation id="4010758435855888356">Chcete povoliť prístup k úložisku?</translation>
 <translation id="401170183602135785">Obálka C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokument PDF s {COUNT} stranou}few{Dokument PDF s {COUNT} stranami}many{Dokument PDF s {COUNT} strany}other{Dokument PDF s {COUNT} stranami}}</translation>
@@ -1965,6 +1965,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5786044859038896871">Chcete vyplniť informácie o karte?</translation>
 <translation id="578633867165174378">Chrome našiel heslo, ktoré ste práve použili, v zozname hesiel odhalených pri porušení ochrany údajov. Odporúčame, aby ste si ho okamžite zmenili.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Žiadne}=1{prihlasovacie údaje pre 1 účet}few{prihlasovacie údaje pre # účty}many{sign-in data for # accounts}other{prihlasovacie údaje pre # účtov}}</translation>
 <translation id="580241730938216256">Spustiť aktualizáciu</translation>
 <translation id="5803412860119678065">Chcete vyplniť informácie o karte <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Povolenia</translation>
@@ -2519,6 +2520,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7201591969684833065">Váš správca uvidí:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, stlačením klávesov Tab a potom Enter otvorte novú kartu inkognito a prehliadajte v súkromí</translation>
 <translation id="7203375778433816396">Nastaviť Chrome ako predvolený prehliadač systému</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Žiadny}=1{1 prístupový kľúč}few{# prístupové kľúče}many{# passkeys}other{# prístupových kľúčov}}</translation>
 <translation id="7210863904660874423">Web <ph name="HOST_NAME" /> nespĺňa bezpečnostné štandardy.</translation>
 <translation id="7210993021468939304">Aktivita Linux v rámci kontajnera. Môže inštalovať a spúšťať aplikácie pre systém LInux v kontajneri.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /> o tomto probléme.</translation>

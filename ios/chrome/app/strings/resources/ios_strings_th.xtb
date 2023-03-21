@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. แตะตัวเลือกรหัสผ่าน</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">รีเซ็ตการตั้งค่าการแปล</translation>
+<translation id="284581348330507117">สร้างรหัสผ่านที่ไม่ซ้ำกัน</translation>
 <translation id="2848086008667475748">ตั้งเป็นค่าเริ่มต้นในการตั้งค่า…</translation>
 <translation id="2858204748079866344">Chrome จะไม่ป้อนรหัสผ่านลงในช่องนี้โดยอัตโนมัติเพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
 <translation id="285960592395650245">ลองดาวน์โหลดอีกครั้ง</translation>
@@ -481,6 +482,7 @@
 <translation id="4474494258097106883">สร้างขึ้นเพื่อ iPhone ของคุณ</translation>
 <translation id="4476574785019001431">การตั้งค่า</translation>
 <translation id="448433063499977729">ปิดการซิงค์แล้ว</translation>
+<translation id="4489536976005181779">{count,plural, =1{เพิ่มหน้าลงในเรื่องรออ่านในบัญชีของคุณแล้ว {email}}other{เพิ่มหน้าลงในเรื่องรออ่านในบัญชีของคุณแล้ว {email}}}</translation>
 <translation id="4496373720959965247">เพิ่มแท็บและสลับระหว่างหน้า</translation>
 <translation id="4502566650163919158">ตรวจสอบเลย</translation>
 <translation id="4505980578794259603">ตรวจสอบล่าสุดเมื่อ <ph name="TIME" /></translation>
@@ -651,6 +653,7 @@
 <translation id="5704908597376970822">ลงชื่อเข้าใช้ไม่ได้</translation>
 <translation id="5706552126692816153">ใช้งานเมื่อ 1 วันที่ผ่านมา</translation>
 <translation id="5711039611392265845">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />การซิงค์และบริการต่างๆ ของ Google<ph name="END_LINK" /></translation>
+<translation id="5718049162805123412">คุณควรเปลี่ยนรหัสผ่านดังกล่าวตอนนี้เลย</translation>
 <translation id="5724941645893276623">เพิ่มแท็บใหม่เพื่อท่องเว็บแบบส่วนตัว</translation>
 <translation id="5728700505257787410">ขออภัย เกิดปัญหาในการลงชื่อเข้าใช้บัญชีของคุณ</translation>
 <translation id="5733084997078800044">เคล็ดลับสำหรับ Chrome</translation>
@@ -1134,6 +1137,7 @@
 <translation id="891658175948553296">ไฮไลต์ข้อความในเว็บไซต์</translation>
 <translation id="8917490105272468696">ได้สิ ตกลง</translation>
 <translation id="8928133177108699615">เดสก์ท็อป</translation>
+<translation id="894191600409472540">สร้างรหัสผ่านที่รัดกุม</translation>
 <translation id="8952559610785099500">เพิ่มรหัสผ่าน</translation>
 <translation id="8953046091948372197">คุณจะเห็นรหัสผ่านที่นี่</translation>
 <translation id="895541991026785598">รายงานปัญหา</translation>

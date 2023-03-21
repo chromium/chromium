@@ -1990,7 +1990,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2710101514844343743">Date de utilizare și diagnosticare</translation>
 <translation id="271033894570825754">Nou</translation>
 <translation id="2711073837061989559">Versiuni de încercare</translation>
-<translation id="2712207122921938368">Creează o cheie de acces pe alt dispozitiv</translation>
 <translation id="2713106313042589954">Dezactivează camera foto</translation>
 <translation id="2713444072780614174">Alb</translation>
 <translation id="2714180132046334502">Fundal întunecat</translation>
@@ -3740,7 +3739,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4275397969489577657">Activează înregistrarea fluxului de evenimente</translation>
 <translation id="4275830172053184480">Reporniți gadgetul</translation>
 <translation id="4277434192562187284">Sursa de configurare XML</translation>
-<translation id="4277529130885813215">Folosește alt dispozitiv</translation>
 <translation id="4278390842282768270">Se permite</translation>
 <translation id="4278498748067682896">Vei folosi un upgrade Kiosk &amp; Signage în urma căruia dispozitivul va putea să ruleze doar în modul chioșc sau pentru semne. Dacă vrei ca utilizatorii să se conecteze la dispozitiv, revino și înregistrează-te folosind Upgrade-ul la Chrome Enterprise.</translation>
 <translation id="4278779213160967034">Procesul poate dura câteva minute. Se descarcă fișierele.</translation>
@@ -5429,7 +5427,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="583431638776747">Site-ul nu este disponibil</translation>
 <translation id="5834581999798853053">Au mai rămas aproape <ph name="TIME" /> min.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – camera foto sau microfonul înregistrează</translation>
-<translation id="5835625581856809102">Scanează acest cod QR folosind dispozitivul pe care vrei să creezi o cheie de acces pentru <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="5836999627049108525">Limba din care se traduce</translation>
 <translation id="583756221537636748">Caz</translation>
@@ -5867,7 +5864,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6227002569366039565">Apasă pe |<ph name="ACCELERATOR" />| pentru a focaliza acest balon, apoi apasă din nou pentru a focaliza elementul spre care indică.</translation>
 <translation id="6227280783235722609">extensie</translation>
 <translation id="6229849828796482487">Deconectează rețeaua Wi-Fi</translation>
-<translation id="6230165830166519105">Încearcă altă metodă</translation>
 <translation id="6231782223312638214">Sugestii</translation>
 <translation id="6231881193380278751">Adaugă un parametru de interogare în adresa URL pentru a actualiza automat pagina: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterie</translation>

@@ -262,6 +262,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2834399722155632105">3. Tapiwch Opsiynau Cyfrinair</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Ailosod Gosodiadau Translate</translation>
+<translation id="284581348330507117">Crëwch gyfrineiriau unigryw</translation>
 <translation id="2848086008667475748">Gwneud yn Ddiofyn yn y Gosodiadau…</translation>
 <translation id="2858204748079866344">Er mwyn amddiffyn eich preifatrwydd, ni fydd Chrome yn awtolenwi eich cyfrinair yn y maes hwn.</translation>
 <translation id="285960592395650245">Ceisio Lawrlwytho Eto</translation>
@@ -374,6 +375,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3595252146048399851">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />. Gall Google bersonoleiddio Search a gwasanaethau eraill yn seiliedig ar eich hanes.</translation>
 <translation id="3603009562372709545">Copïo Dolen URL</translation>
 <translation id="3607167657931203000">Data Awtolenwi</translation>
+<translation id="3608008480985212611">Mewngofnodwch i reoli eich dewisiadau.</translation>
 <translation id="3609785682760573515">Wrthi’n cysoni...</translation>
 <translation id="3631443864840848029">Gwnewch yn siŵr eich bod yn cadw'ch cyfrinair presennol ar gyfer y wefan hon.</translation>
 <translation id="3638472932233958418">Rhag-lwytho Tudalennau Gwe</translation>
@@ -541,6 +543,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="48274138579728272">Marcio fel wedi'i Ddarllen</translation>
 <translation id="4833686396768033263">Nid yw'r Tabiau Diweddar ar gael</translation>
 <translation id="4833786495304741580">Yn anfon ystadegau defnydd ac adroddiadau damweiniau at Google yn awtomatig.</translation>
+<translation id="4834499902900503484">Pan fyddwch wedi mewngofnodi i Chrome, bydd cyfrineiriau rydych yn eu cadw yn mynd i'ch Cyfrif Google. I ddiffodd hwn, <ph name="BEGIN_LINK" />ewch i'r gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Ni fydd eich nodau tudalen, eich hanes, eich cyfrineiriau, a rhagor yn cael eu cysoni i'ch Cyfrif Google mwyach.</translation>
 <translation id="4844899002472726590">Gweld a golygu pynciau y mae gennych ddiddordeb ynddynt</translation>
 <translation id="4848999860252535517">Dileu Cyfrinair ar gyfer <ph name="WEBSITE" />?</translation>
@@ -649,6 +652,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5704908597376970822">Methu â mewngofnodi.</translation>
 <translation id="5706552126692816153">Yma 1 Diwrnod yn ôl</translation>
 <translation id="5711039611392265845">Mae ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, ewch i <ph name="BEGIN_LINK" />Gysoni a Gwasanaethau Google<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Dylech newid y rhain nawr</translation>
 <translation id="5724941645893276623">I bori'r we yn breifat, ychwanegwch dab newydd</translation>
 <translation id="5728700505257787410">Mae'n ddrwg gennym, bu problem wrth fewngofnodi i'ch cyfrif.</translation>
 <translation id="5733084997078800044">Awgrym Chrome</translation>
@@ -684,6 +688,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5899314093904173337">I rannu â phobl gerllaw, gadewch iddynt sganio'r cod QR hwn gyda'u camera neu ap sganio codau QR</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Dewisiadau i Gyfieithu'r dudalen</translation>
+<translation id="5922999516621365983">Llusgwch y tab yma i'w binio.</translation>
 <translation id="5938160824633642847">Mae'ch dyfais bron yn llawn. Crëwch ragor o le a rhowch gynnig arall arni.</translation>
 <translation id="5948291296578561264">Mae hyn yn eich galluogi i gadw lluniau i'ch llyfrgell luniau.</translation>
 <translation id="5951816930277761335">Rhannu'r Ddolen</translation>
@@ -1131,6 +1136,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="891658175948553296">Amlygu Testun ar Wefan</translation>
 <translation id="8917490105272468696">Iawn, Rwy'n Cydsynio</translation>
 <translation id="8928133177108699615">Bwrdd gwaith</translation>
+<translation id="894191600409472540">Creu cyfrineiriau cryf</translation>
 <translation id="8952559610785099500">Ychwanegu Cyfrinair</translation>
 <translation id="8953046091948372197">Byddwch yn gweld eich cyfrineiriau yma</translation>
 <translation id="895541991026785598">Adrodd am Broblem</translation>

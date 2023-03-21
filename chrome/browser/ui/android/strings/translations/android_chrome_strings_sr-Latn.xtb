@@ -477,6 +477,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3587596251841506391">Poboljšajte bezbednost na vebu</translation>
 <translation id="3597179440835065298">Dobijajte bolje predloge</translation>
 <translation id="3602290021589620013">Pregled</translation>
+<translation id="360901359071773787">Želite da izbrišete poslednjih 15 minuta?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
 <translation id="3631987586758005671">Deli se sa: <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5517095782334947753">Imate obeleživače, lozinke i ostala podešavanja iz <ph name="FROM_ACCOUNT" /> naloga.</translation>
 <translation id="5524761631371622910">Dok probni periodi traju i ako vas je Chrome nasumično postavio u aktivni probni period, istorija pregledanja utiče na oglase koje vidite i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome briše interesovanja svakog meseca čim postanu dostupna.</translation>
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
+<translation id="554297709083131118">Sledeći podaci iz poslednjih 15 minuta će biti izbrisani</translation>
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5555525474779371165">Odaberite zaštitu pomoću Bezbednog pregledanja</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
@@ -1263,6 +1265,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="78270725016672455">Računar želi da registruje ovaj uređaj za prijavu na veb-lokaciju</translation>
 <translation id="7844171778363018843">Nema podataka izabranih za sinhronizaciju</translation>
 <translation id="7846296061357476882">Google usluge</translation>
+<translation id="7847228556075070294">Izbrisana istorija, kolačići i drugi podaci</translation>
 <translation id="784934925303690534">Vremenski opseg</translation>
 <translation id="7851858861565204677">Drugi uređaji</translation>
 <translation id="7853202427316060426">Aktivnost</translation>

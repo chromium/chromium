@@ -477,6 +477,7 @@ Privatni tokeni stanja poboljšavaju zaštitu privatnosti na webu i ne mogu se k
 <translation id="3587596251841506391">Poboljšajte sigurnost na webu</translation>
 <translation id="3597179440835065298">Dobijajte bolje prijedloge</translation>
 <translation id="3602290021589620013">Pregled</translation>
+<translation id="360901359071773787">Izbrisati posljednjih 15 minuta?</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
 <translation id="3631987586758005671">Dijeljenje s uređajem <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5517095782334947753">Imate oznake, historiju, lozinke i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Tokom probnog perioda i ako vas je Chrome nasumično ubacio u aktivni probni period, vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše interesovanja na mjesečnoj osnovi.</translation>
 <translation id="5524843473235508879">Preusmjeravanje je blokirano.</translation>
+<translation id="554297709083131118">Izbrisat će se sljedeći podaci iz posljednjih 15 minuta</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
 <translation id="5555525474779371165">Odaberite zaštitu Sigurno pregledanje</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
@@ -1263,6 +1265,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="78270725016672455">Vaš računar želi registrirati ovaj uređaj radi prijave na web lokaciju</translation>
 <translation id="7844171778363018843">Nije odabrana nijedna vrsta podataka za sinhroniziranje</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>
+<translation id="7847228556075070294">Izbrisana historija, kolačići i drugi podaci</translation>
 <translation id="784934925303690534">Vremenski raspon</translation>
 <translation id="7851858861565204677">Drugi uređaji</translation>
 <translation id="7853202427316060426">Aktivnost</translation>

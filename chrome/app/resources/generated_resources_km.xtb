@@ -562,6 +562,7 @@
 <translation id="1485015260175968628">ឥឡូវនេះវាអាច៖</translation>
 <translation id="1485141095922496924">កំណែ <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">ស្វែងរកពាក្យសម្ងាត់</translation>
+<translation id="1486486872607808064">ស្កេន​កូដ QR នេះ​ដោយ​ប្រើ​កាមេរ៉ា​នៅ​លើ​ឧបករណ៍​ដែល​អ្នក​ចង់​បង្កើត​កូដសម្ងាត់​សម្រាប់ <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">បើក - ការកំណត់ផ្ទាល់ខ្លួន</translation>
 <translation id="1493892686965953381">កំពុងរង់ចាំ <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">​គេហទំព័រ​អាចស្នើសុំប្រើពុម្ព​អក្សរ​ ដែលបានដំឡើងនៅលើឧបករណ៍របស់អ្នក</translation>
@@ -771,6 +772,7 @@
 <translation id="164936512206786300">ឈប់ផ្គូផ្គង​ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="1651008383952180276">អ្នក​ត្រូវតែ​បញ្ចូល​ឃ្លាសម្ងាត់​ដូចគ្នា​ពីរដង</translation>
 <translation id="1652326691684645429">បើក​ការចែករំលែក​នៅជិត</translation>
+<translation id="1654580009054503925">មិន​បាន​អនុញ្ញាត​ឱ្យ​បង្ហាញ​សំណើ​</translation>
 <translation id="1656528038316521561">ភាពស្រអាប់​ផ្ទៃខាងក្រោយ</translation>
 <translation id="1657406563541664238">ជួយធ្វើឲ្យ <ph name="PRODUCT_NAME" /> ប្រសើរជាងមុនដោយការផ្ញើស្ថិតិការប្រើប្រាស់ និងរបាយការណ៍គាំងទៅ Google ដោយស្វ័យប្រវត្តិ។</translation>
 <translation id="1657937299377480641">ដើម្បីចូលគណនីម្ដងទៀត ដើម្បី​ចូលប្រើ​ធនធាន​អប់រំ សូមស្នើសុំការអនុញ្ញាតពីមាតាបិតារបស់អ្នក</translation>
@@ -2004,7 +2006,6 @@
 <translation id="2710101514844343743">ទិន្នន័យ​ប្រើប្រាស់ និងវិភាគ</translation>
 <translation id="271033894570825754">ថ្មី</translation>
 <translation id="2711073837061989559">ការសាកល្បង</translation>
-<translation id="2712207122921938368">បង្កើត​កូដសម្ងាត់​នៅ​លើ​ឧបករណ៍​ផ្សេង</translation>
 <translation id="2713106313042589954">បិទកាមេរ៉ា</translation>
 <translation id="2713444072780614174">ស</translation>
 <translation id="2714180132046334502">ផ្ទៃខាង​ក្រោយ​ងងឹត</translation>
@@ -3420,6 +3421,7 @@
 <translation id="3957079323242030166">ទិន្នន័យ​បម្រុង​ទុក​នឹង​មិន​រាប់​បញ្ចូល​ទៅក្នុងកម្រិត​កំណត់នៃទំហំ​ផ្ទុកថាស​របស់អ្នក​ទេ។</translation>
 <translation id="3957844511978444971">ចុច “យល់ព្រម” ដើម្បី​បញ្ជាក់​អំពី​ការ​ជ្រើសរើស​ការកំណត់​សេវាកម្ម​របស់​ Google ទាំងនេះ​។</translation>
 <translation id="3958088479270651626">នាំចូលចំណាំ និងការកំណត់</translation>
+<translation id="3958110062351175311">បាន​អនុញ្ញាត​ឱ្យ​បង្ហាញ​សំណើ​នៅ​ក្នុង​របារឧបករណ៍</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">សកម្មភាព​ច្រើន​ទៀត​សម្រាប់ <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">ការការពារស្តង់ដារប្រឆាំងនឹងគេហទំព័រ ការទាញយក និងកម្មវិធី​បន្ថែមដែលដឹងថាមានគ្រោះថ្នាក់</translation>
@@ -3679,6 +3681,7 @@
 <translation id="4205157409548006256">មានបញ្ហា ពេលកំពុងកំណត់រចនាសម្ព័ន្ធ Linux។</translation>
 <translation id="4206144641569145248">មនុស្សភពក្រៅ</translation>
 <translation id="4206323443866416204">របាយការណ៍មតិស្ថាបនា</translation>
+<translation id="4206585797409671301">បាន​អនុញ្ញាត​ឱ្យ​បង្ហាញ​សំណើ</translation>
 <translation id="4207932031282227921">បានស្នើសុំការអនុញ្ញាត, ចុច F6 ដើម្បីឆ្លើយតប</translation>
 <translation id="4208390505124702064">ស្វែងរក <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">ធំ</translation>
@@ -3754,7 +3757,6 @@
 <translation id="4275397969489577657">បើក​ការធ្វើ​កំណត់ហេតុ​កម្រងព្រឹត្តិការណ៍</translation>
 <translation id="4275830172053184480">ចាប់ផ្តើមឧបករណ៍របស់អ្នកឡើងវិញ</translation>
 <translation id="4277434192562187284">ប្រភពនៃ​ការកំណត់រចនាសម្ព័ន្ធ XML</translation>
-<translation id="4277529130885813215">ប្រើ​ឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="4278390842282768270">បានអនុញ្ញាត</translation>
 <translation id="4278498748067682896">អ្នកនឹងប្រើ Kiosk &amp; Signage Upgrade ដែលអនុញ្ញាតឱ្យឧបករណ៍​ដំណើរការក្នុងមុខងារ​បញ្ជរ ឬ​ផ្ទាំង​អេក្រង់​ឌីជីថល​តែប៉ុណ្ណោះ។ ប្រសិនបើអ្នកចង់​ឱ្យអ្នកប្រើប្រាស់​ចូលឧបករណ៍ សូមត្រឡប់ក្រោយ ហើយចុះឈ្មោះ​ដោយប្រើ Chrome Enterpirse Upgrade។</translation>
 <translation id="4278779213160967034">ដំណើរការនេះអាចចំណាយពេលពីរបីនាទី។ កំពុងទាញយកឯកសារ។</translation>
@@ -4348,6 +4350,7 @@
 <translation id="481574578487123132">ឧបករណ៍ដែលបានភ្ជាប់</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, ព័ត៌មាន​លម្អិត</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{បានលុបចំណាំ 1}other{បានលុបចំណាំ {COUNT}}}</translation>
+<translation id="4816900689218414104">បង្កើត​កូដសម្ងាត់​នៅ​លើ​ទូរសព្ទ ឬ​ថេប្លេត</translation>
 <translation id="4819323978093861656">{0,plural, =0{កំពុង​បិទ​ឥឡូវ​នេះ។}=1{នឹង​បិទ​ក្នុង​រយៈពេល៖ 1 វិនាទី}other{នឹង​បិទ​ក្នុង​រយៈពេល៖ # វិនាទី}}</translation>
 <translation id="4819607494758673676">ការជូនដំណឹងរបស់ Google ជំនួយការ</translation>
 <translation id="4820236583224459650">កំណត់ជា​សំបុត្រ​សកម្ម</translation>
@@ -5445,7 +5448,6 @@
 <translation id="583431638776747">មិនអាចប្រើ​គេហទំព័រ​បានទេ</translation>
 <translation id="5834581999798853053">នៅសល់ <ph name="TIME" /> ប្រហែលនាទីទៀត</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - កាមេរ៉ា ឬ​មីក្រូហ្វូន​កំពុង​ថត​</translation>
-<translation id="5835625581856809102">ស្កេន​កូដ QR​ នេះ​ដោយ​ប្រើ​ឧបករណ៍​ដែល​អ្នក​ចង់​បង្កើត​កូដសម្ងាត់​សម្រាប់ <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">គេហទំព័រ​អាចស្នើសុំកែឯកសារ និងថត​នៅក្នុងឧបករណ៍​របស់អ្នក</translation>
 <translation id="5836999627049108525">ភាសា​ត្រូវ​បកប្រែពី</translation>
 <translation id="583756221537636748">ករណី</translation>
@@ -5883,7 +5885,6 @@
 <translation id="6227002569366039565">ចុច |<ph name="ACCELERATOR" />| ដើម្បីផ្ដោតពពុះនេះ រួចចុចម្ដងទៀត ដើម្បីផ្ដោតធាតុ​ដែលវាកំពុងចង្អុលទៅ។</translation>
 <translation id="6227280783235722609">កម្មវិធីបន្ថែម​</translation>
 <translation id="6229849828796482487">ផ្ដាច់​បណ្ដាញ Wi-Fi</translation>
-<translation id="6230165830166519105">សាកល្បងវិធីផ្សេងទៀត</translation>
 <translation id="6231782223312638214">បានផ្តល់យោបល់</translation>
 <translation id="6231881193380278751">បន្ថែមប៉ារ៉ាម៉ែត្រសំណួរនៅក្នុង URL ដើម្បីផ្ទុកទំព័រឡើងវិញដោយស្វ័យប្រវត្តិ៖ chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ថ្ម</translation>
@@ -6250,6 +6251,7 @@
 <translation id="6562117348069327379">រក្សាទុក​កំណត់ហេតុប្រព័ន្ធ​ទៅក្នុង​បញ្ជីទាញយក។</translation>
 <translation id="656293578423618167">ផ្លូវ និងឈ្មោះឯកសារវែងពេក។  សូមរក្សាទុកជាមួយឈ្មោះខ្លីជាងនេះ ឬទៅទីតាំងដ៏ទៃទៀត។</translation>
 <translation id="6568283005472142698">ការស្វែងរកផ្ទាំង</translation>
+<translation id="6570622975915850879">ប្រើឧបករណ៍ផ្សេង</translation>
 <translation id="65711204837946324">ត្រូវការ​ការអនុញ្ញាត ដើម្បី​ទាញយក</translation>
 <translation id="6571533309669248172">ការកំណត់​ទម្រង់​អក្សរ</translation>
 <translation id="6571772921213691236">កែទិន្នន័យ​សម្រាប់​ចូលគណនី</translation>
@@ -6813,6 +6815,7 @@
 <translation id="7044606776288350625">ទិន្នន័យសមកាលកម្ម​</translation>
 <translation id="7047059339731138197">ជ្រើសរើស​ផ្ទៃខាងក្រោយ</translation>
 <translation id="7049293980323620022">រក្សាឯកសារឬ?</translation>
+<translation id="70496770794393383">បាន​រក្សាទុក​តារាង​ពាក្យសម្ងាត់</translation>
 <translation id="7050037487872780845">ការកំណត់រចនាសម្ព័ន្ធ​ហតស្ប៉តមិន​ត្រឹមត្រូវ</translation>
 <translation id="7051551856857948729">លាក់តម្លៃ IBAN</translation>
 <translation id="7052237160939977163">ផ្ញើទិន្នន័យតាមដានប្រតិបត្តិការ</translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Disk keşiniz silinib.</translation>
 <translation id="2239068707900391003">Kofe içən adam</translation>
 <translation id="2251368349685848079">Zibil qutusundan bərpa edin</translation>
+<translation id="2278133026967558505">Bütün veb-sayt və URL-lər tərəfindən fayla giriş</translation>
 <translation id="2282155092769082568">Avtokonfiqurasiya URL-i:</translation>
 <translation id="2284767815536050991">çıxarıla bilən yaddaş</translation>
 <translation id="2288278176040912387">Rekord oyunçu</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">İdentifikasiya serverinin həqiqiliyini doğrulamaq üçün "Subyektin alternativ ad uyğunluğu" və ya "Domen şəkilçisi uyğunluğu" çatışmır</translation>
 <translation id="7165320105431587207">Şəbəkəni konfiqurasiya etmək uğursuz oldu</translation>
 <translation id="7170041865419449892">Xətdən kənar</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> istisna olmaqla bütün veb-sayt və URL-lər tərəfindən fayla giriş</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Faylın saxlanma formatı:</translation>

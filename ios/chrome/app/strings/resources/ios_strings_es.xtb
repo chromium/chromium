@@ -262,6 +262,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2834399722155632105">3. Toca Opciones de las contraseñas</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" /> (<ph name="URL" />)</translation>
 <translation id="2843803966603263712">Restablecer ajustes trad.</translation>
+<translation id="284581348330507117">Crea contraseñas únicas</translation>
 <translation id="2848086008667475748">Establecer como predeterminado en Ajustes…</translation>
 <translation id="2858204748079866344">Para proteger tu privacidad, Chrome no autocompletará tu contraseña en este campo.</translation>
 <translation id="285960592395650245">Reintentar descarga</translation>
@@ -374,6 +375,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3595252146048399851">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="3603009562372709545">Copiar URL de enlace</translation>
 <translation id="3607167657931203000">Datos de la función Autocompletar</translation>
+<translation id="3608008480985212611">Inicia sesión para gestionar tus preferencias.</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
 <translation id="3631443864840848029">Asegúrate de guardar la contraseña que usas en este sitio.</translation>
 <translation id="3638472932233958418">Precargar páginas web</translation>
@@ -650,6 +652,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5704908597376970822">No se puede iniciar sesión.</translation>
 <translation id="5706552126692816153">Activo hace 1 día</translation>
 <translation id="5711039611392265845">Para ver más ajustes relacionados con la privacidad, la seguridad y la recogida de datos, accede a <ph name="BEGIN_LINK" />Sincronización y servicios de Google<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Deberías cambiarlas de inmediato</translation>
 <translation id="5724941645893276623">Para navegar por la Web de forma privada, añade una nueva pestaña.</translation>
 <translation id="5728700505257787410">Error al iniciar sesión en tu cuenta</translation>
 <translation id="5733084997078800044">Consejo de Chrome</translation>
@@ -1133,6 +1136,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="891658175948553296">Resalta texto en un sitio</translation>
 <translation id="8917490105272468696">Sí, acepto</translation>
 <translation id="8928133177108699615">Ordenador</translation>
+<translation id="894191600409472540">Crea contraseñas seguras</translation>
 <translation id="8952559610785099500">Añadir contraseña</translation>
 <translation id="8953046091948372197">Aquí verás tus contraseñas</translation>
 <translation id="895541991026785598">Notificar un problema</translation>

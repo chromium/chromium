@@ -875,6 +875,7 @@
 <translation id="1744108098763830590">страница на заднина</translation>
 <translation id="1745732479023874451">Управувајте со контакти</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Да се отворат и изменат # датотека во оваа веб-апликација?}other{Да се отворат и изменат # датотеки во оваа веб-апликација?}}</translation>
+<translation id="1748329107062243374">Користете криптографски клуч од <ph name="DEVICE_NAME" /> за да се најавите на <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Отсега може да ја зачувате лозинкава во сметката на Google или само на уредов</translation>
 <translation id="1749733017156547309">Полето за лозинката е задолжително</translation>
 <translation id="1750172676754093297">Вашиот безбедносен клуч не може да складира отпечатоци</translation>
@@ -2004,7 +2005,6 @@
 <translation id="2710101514844343743">Податоци за користење и дијагностика</translation>
 <translation id="271033894570825754">Ново</translation>
 <translation id="2711073837061989559">Пробни периоди</translation>
-<translation id="2712207122921938368">Создајте криптографски клуч на друг уред</translation>
 <translation id="2713106313042589954">Исклучи ја камерата</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2714180132046334502">Темна заднина</translation>
@@ -4656,6 +4656,7 @@
 <translation id="5108967062857032718">Поставки - Отстранете ги апликациите за Android</translation>
 <translation id="5109044022078737958">Миа</translation>
 <translation id="5109816792918100764">Отстранете го <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Отворање група во нов прозорец</translation>
 <translation id="5111646998522066203">Излези од инкогнито</translation>
 <translation id="5111692334209731439">&amp;Управник со обележувачи</translation>
 <translation id="5111794652433847656">Нема криптографски клучеви за <ph name="APP_NAME" /> на уредов</translation>
@@ -5442,7 +5443,6 @@
 <translation id="583431638776747">Сајтот не беше достапен</translation>
 <translation id="5834581999798853053">Преостануваат околу <ph name="TIME" /> минути</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - камерата или микрофонот снима</translation>
-<translation id="5835625581856809102">Скенирајте го QR-кодов со уредот каде што сакате да создадете криптографски клуч за <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Сајтовите може да прашуваат за да ги изменуваат датотеките и папките на уредот</translation>
 <translation id="5836999627049108525">Јазик од кој треба да се преведе</translation>
 <translation id="583756221537636748">Футрола за полнење</translation>
@@ -5880,7 +5880,6 @@
 <translation id="6227002569366039565">Притиснете |<ph name="ACCELERATOR" />| за да го фокусирате балончево, а потоа притиснете пак за да го фокусирате на елементот на кој посочува.</translation>
 <translation id="6227280783235722609">екстензија</translation>
 <translation id="6229849828796482487">Исклучување Wi-Fi мрежа</translation>
-<translation id="6230165830166519105">Обидете се поинаку</translation>
 <translation id="6231782223312638214">Предложено</translation>
 <translation id="6231881193380278751">Додајте параметар на барањето во URL за автоматско освежување на страницата: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батерија</translation>
@@ -7583,6 +7582,7 @@
 <translation id="7762243782113123335">За жал, нешто тргна наопаку. Испратете повратни информации со #bruschetta во описот. Кодот за грешката е <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Додај адреса</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> од <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Отворање група во нов прозорец</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7765507180157272835">Потребни се Bluetooth и Wi-Fi</translation>
 <translation id="7766082757934713382">Помага да се намали сообраќајот на мрежата со паузирање на автоматските ажурирања на апликациите и системот</translation>
@@ -8703,6 +8703,7 @@
         &lt;p&gt;Сепак, сѐ уште може да конфигурирате преку командната линија. Погледнете &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; за повеќе информации за знаменцата и променливите на околината.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Извршување задачи поврзани со безбедноста за вашата организација, како што е управување со сертификати и клучеви складирани на уредот</translation>
 <translation id="8755376271068075440">&amp;Поголем</translation>
+<translation id="8755584192133371929">Изберете картичка за споделување</translation>
 <translation id="875604634276263540">URL-адресата на сликата е неважечка</translation>
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8757203080302669031">Картичкава активно бара уреди со Bluetooth.</translation>

@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. 輕按 [密碼選項]</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2843803966603263712">重設翻譯設定</translation>
+<translation id="284581348330507117">設定獨特的密碼</translation>
 <translation id="2848086008667475748">在「設定」中設定為「預設」…</translation>
 <translation id="2858204748079866344">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
 <translation id="285960592395650245">重試下載</translation>
@@ -651,6 +652,7 @@
 <translation id="5704908597376970822">無法登入。</translation>
 <translation id="5706552126692816153">曾於 1 天前在線</translation>
 <translation id="5711039611392265845">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" />。</translation>
+<translation id="5718049162805123412">您應立即變更這些密碼</translation>
 <translation id="5724941645893276623">如要以無痕模式瀏覽網頁，請開啟新分頁</translation>
 <translation id="5728700505257787410">抱歉，登入您的帳戶時發生問題。</translation>
 <translation id="5733084997078800044">Chrome 提示</translation>
@@ -1132,6 +1134,7 @@
 <translation id="891658175948553296">突顯網站的文字</translation>
 <translation id="8917490105272468696">係，我同意</translation>
 <translation id="8928133177108699615">桌面模式</translation>
+<translation id="894191600409472540">建立安全度高的密碼</translation>
 <translation id="8952559610785099500">新增密碼</translation>
 <translation id="8953046091948372197">這裡會顯示您的密碼</translation>
 <translation id="895541991026785598">報告問題</translation>

@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. 비밀번호 옵션 탭하기</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">번역 설정 재설정</translation>
+<translation id="284581348330507117">사용한 적이 없는 비밀번호를 만드세요.</translation>
 <translation id="2848086008667475748">설정에서 기본 브라우저로 지정…</translation>
 <translation id="2858204748079866344">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
 <translation id="285960592395650245">다운로드 다시 시도</translation>
@@ -651,6 +652,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5704908597376970822">로그인할 수 없습니다</translation>
 <translation id="5706552126692816153">1일 전 사용됨</translation>
 <translation id="5711039611392265845">개인 정보 보호, 보안, 데이터 수집에 관한 설정을 더 보려면 <ph name="BEGIN_LINK" />동기화 및 Google 서비스<ph name="END_LINK" />를 참조하세요.</translation>
+<translation id="5718049162805123412">지금 변경해야 합니다.</translation>
 <translation id="5724941645893276623">비공개로 웹을 탐색하려면 새 탭을 추가하세요.</translation>
 <translation id="5728700505257787410">죄송합니다. 계정에 로그인하는 중에 문제가 발생했습니다.</translation>
 <translation id="5733084997078800044">Chrome 관련 도움말</translation>
@@ -1134,6 +1136,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="891658175948553296">사이트의 텍스트 강조표시</translation>
 <translation id="8917490105272468696">사용</translation>
 <translation id="8928133177108699615">데스크톱</translation>
+<translation id="894191600409472540">안전한 비밀번호를 만드세요.</translation>
 <translation id="8952559610785099500">비밀번호 추가</translation>
 <translation id="8953046091948372197">여기에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="895541991026785598">문제 신고</translation>

@@ -415,6 +415,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3081696990447829002">Espandi il menu</translation>
 <translation id="3087734570205094154">In basso</translation>
 <translation id="3090989381251959936">Attiva/disattiva <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">versione</translation>
 <translation id="309749186376891736">Sposta il cursore</translation>
 <translation id="3100274880412651815">Ignora modalità di acquisizione</translation>
 <translation id="3105917916468784889">Acquisisce uno screenshot</translation>
@@ -573,6 +574,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3846575436967432996">Nessuna informazione di rete disponibile</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="385300504083504382">Inizio</translation>
+<translation id="3859364108019690">Impossibile trasmettere app in streaming</translation>
 <translation id="3861651314799684201">Premi invio per registrare a schermo intero</translation>
 <translation id="3871092408932389764">Minimo</translation>
 <translation id="3886872229787704059">Aperto oggi</translation>
@@ -689,6 +691,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4424159417645388645">Scrivania 5</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4435022394553622295">Visualizza le notifiche e le app del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
+<translation id="4440032176046152627">Questa rete non supporta lo streaming di app dal tuo telefono. Prova ad attivare l'hotspot del telefono. Scopri di più.</translation>
 <translation id="4441283832827406317">Le app sono ordinate per nome</translation>
 <translation id="4445159312344259901">Accedi per sbloccare</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notifica importante}other{# notifiche importanti}}</translation>
@@ -1315,6 +1318,9 @@ Nuova installazione</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Zoom automatico attivato.</translation>
+<translation id="7519649142417630956">Dopo l'arresto del dispositivo, l'amministratore uscirà dall'account e non potrà controllare il dispositivo.
+
+Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accensione.</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate. Le altre app verranno salvate.</translation>
@@ -1667,6 +1673,7 @@ Nuova installazione</translation>
 <translation id="938963181863597773">Cosa è segnato sul mio calendario?</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="951991426597076286">Rifiuta</translation>
+<translation id="953431725143473984">Vuoi arrestare il dispositivo?</translation>
 <translation id="954052413789300507">Spazio disponibile insufficiente per il file <ph name="FILENAME" />. Libera spazio.</translation>
 <translation id="974545358917229949">Visualizzazione di <ph name="RESULT_COUNT" /> risultati per <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Passa alla fine del documento</translation>

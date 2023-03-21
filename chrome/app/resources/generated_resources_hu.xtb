@@ -2003,7 +2003,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2710101514844343743">Használati és diagnosztikai adatok</translation>
 <translation id="271033894570825754">Új</translation>
 <translation id="2711073837061989559">Próbaidőszakok</translation>
-<translation id="2712207122921938368">Azonosítókulcs létrehozása másik eszközön</translation>
 <translation id="2713106313042589954">Kamera kikapcsolása</translation>
 <translation id="2713444072780614174">Fehér</translation>
 <translation id="2714180132046334502">Sötét háttér</translation>
@@ -3752,7 +3751,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4275397969489577657">Esemény streamnaplózásának engedélyezése</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4277434192562187284">XML-konfigurációs forrás</translation>
-<translation id="4277529130885813215">Másik eszköz használata</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="4278498748067682896">Kioszk vagy tájékoztatóeszköz frissítését fogja használni, amely csak kioszk- vagy tájékoztatómód futtatását teszi lehetővé az eszköz számára. Ha azt szeretné, hogy a felhasználók be tudjanak jelentkezni az eszközre, lépjen vissza, és regisztráljon a Chrome Enterprise frissítés használatával.</translation>
 <translation id="4278779213160967034">Ez a folyamat néhány percet is igénybe vehet. Fájlok letöltése…</translation>
@@ -5444,7 +5442,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="583431638776747">A webhelyhez nem lehetett hozzáférni</translation>
 <translation id="5834581999798853053">Körülbelül <ph name="TIME" /> perc van hátra</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – A kamera vagy a mikrofon felvételt készít</translation>
-<translation id="5835625581856809102">Olvassa be ezt a QR-kódot azzal az eszközzel, amelyen jelszót szeretne létrehozni a következőhöz: <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">A webhelyek engedélyt kérhetnek arra, hogy szerkeszthessék az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="5836999627049108525">Fordítás forrásnyelve</translation>
 <translation id="583756221537636748">Tok</translation>
@@ -5882,7 +5879,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6227002569366039565">Nyomja le a következő gombot, ha erre a buborékra szeretne fókuszálni, majd nyomja meg újra, hogy arra az elemre fókuszáljon, amelyre mutat: |<ph name="ACCELERATOR" />|.</translation>
 <translation id="6227280783235722609">bővítményt</translation>
 <translation id="6229849828796482487">Lecsatlakozás a Wi-Fi-hálózatról</translation>
-<translation id="6230165830166519105">Próbálkozás máshogy</translation>
 <translation id="6231782223312638214">Javasolt</translation>
 <translation id="6231881193380278751">Adjon meg egy lekérdezési paramétert az URL-ben az oldal automatikus frissítéséhez: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
@@ -6637,6 +6633,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6903022061658753260">Adatait szinkronizálja a rendszer az összes olyan Chrome böngészőben, amelyeken bekapcsolta a szinkronizálást erre a fiókra vonatkozóan. A ChromeOS szinkronizálási lehetőségeiért lépjen a <ph name="LINK_BEGIN" />ChromeOS beállításaihoz<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Összes (<ph name="URL_COUNT" />) megnyitása</translation>
 <translation id="6903907808598579934">Szinkronizálás bekapcsolása</translation>
+<translation id="6903916726032521638">Keresés a következőre: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Fájlhozzáférés visszavonása</translation>
 <translation id="6904655473976120856">Kilépéshez nyomja meg az Alkalmazás gombot</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Jelszavai biztonságának megőrzése érdekében a Google Jelszókezelő 1 perc tétlenség után zárolódik}other{Jelszavai biztonságának megőrzése érdekében a Google Jelszókezelő {NUM_MINS} perc tétlenség után zárolódik}}</translation>
@@ -8712,6 +8709,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> eszközét frissíteni kell</translation>
 <translation id="8763927697961133303">USB-eszköz</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Összes keresés megjelenítése erre: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">A Chrome automatikus frissítése az összes felhasználó számára</translation>
 <translation id="8770406935328356739">A bővítmény gyökérkönyvtára</translation>
 <translation id="8771300903067484968">A kezdőoldal háttere vissza lett állítva az alapértelmezett háttérre.</translation>

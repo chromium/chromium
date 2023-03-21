@@ -387,6 +387,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1822540298136254167">Os sites que você visita e o tempo gasto neles</translation>
 <translation id="1824402189105105503">Oitavo rolo</translation>
 <translation id="1826516787628120939">Em verificação</translation>
+<translation id="1826968372364864056">Limpar formulário</translation>
 <translation id="1828959155404624835">Aluguel de carro</translation>
 <translation id="1834321415901700177">Este site contém programas perigosos</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
@@ -1225,7 +1226,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="399952081411886534">Outros recursos para tornar os anúncios mais particulares</translation>
 <translation id="4000598935132966791">Saiba mais sobre as restrições de sites em navegadores gerenciados</translation>
 <translation id="4006465311664329701">Formas de pagamento, ofertas e endereços que usam o Google Pay</translation>
-<translation id="4009243425692662128">O conteúdo das páginas que você imprime é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, ele pode ser verificado em busca de dados sensíveis.</translation>
 <translation id="4010758435855888356">Permitir acesso ao armazenamento?</translation>
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}one{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
@@ -1969,6 +1969,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5786044859038896871">Quer preencher as informações do cartão?</translation>
 <translation id="578633867165174378">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. Recomendamos mudá-la agora mesmo.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Nenhum}=1{dados de login para 1 conta}one{dados de login para # conta}other{dados de login para # contas}}</translation>
 <translation id="580241730938216256">Iniciar atualização</translation>
 <translation id="5803412860119678065">Quer preencher as informações do seu cartão <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -2524,6 +2525,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7201591969684833065">O administrador pode ver:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />: pressione "Tab" e depois "Enter" para abrir uma nova guia anônima e navegar com privacidade</translation>
 <translation id="7203375778433816396">Definir o Chrome como o navegador padrão do sistema</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Nenhuma}=1{1 chave de acesso}one{# chave de acesso}other{# chaves de acesso}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> não adere aos padrões de segurança.</translation>
 <translation id="7210993021468939304">A atividade do Linux no contêiner, bem como instalar e executar apps do Linux no contêiner</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre este problema.</translation>

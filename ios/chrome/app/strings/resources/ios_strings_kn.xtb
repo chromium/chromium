@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಗಳು ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">ಅನುವಾದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
+<translation id="284581348330507117">ಅನನ್ಯ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ</translation>
 <translation id="2848086008667475748">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಡೀಫಾಲ್ಟ್ ಎಂಬುದನ್ನು ಬದಲಿಸಿ…</translation>
 <translation id="2858204748079866344">ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, Chrome ಈ ಫೀಲ್ಡ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸ್ವಯಂ ಭರ್ತಿ ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="285960592395650245">ಡೌನ್‌ಲೋಡ್ ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
@@ -481,6 +482,7 @@
 <translation id="4474494258097106883">ನಿಮ್ಮ iPhone ಗಾಗಿ ನಿರ್ಮಿಸಲಾಗಿದೆ</translation>
 <translation id="4476574785019001431">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="448433063499977729">ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="4489536976005181779">{count,plural, =1{ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟವನ್ನು ಸೇರಿಸಲಾಗಿದೆ, {email}}one{ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ, {email}}other{ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಗೆ ಪುಟಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ, {email}}}</translation>
 <translation id="4496373720959965247">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ ಮತ್ತು ಪುಟಗಳ ನಡುವೆ ಬದಲಿಸಿ</translation>
 <translation id="4502566650163919158">ಈಗಲೇ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4505980578794259603">ಕೊನೆಯ ಬಾರಿ ಪರಿಶೀಲಿಸಿದ ಸಮಯ <ph name="TIME" />.</translation>
@@ -651,6 +653,7 @@
 <translation id="5704908597376970822">ಸೈನ್ ಇನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="5706552126692816153">1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="5711039611392265845">ಗೌಪ್ಯತೆ, ಸುರಕ್ಷತೆ ಮತ್ತು ಡೇಟಾ ಸಂಗ್ರಹಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಹೆಚ್ಚಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗಾಗಿ <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಮತ್ತು Google ಸೇವೆಗಳನ್ನು<ph name="END_LINK" /> ನೋಡಿ.</translation>
+<translation id="5718049162805123412">ಇವುಗಳನ್ನು ನೀವು ಈಗಲೇ ಬದಲಾಯಿಸಬೇಕು</translation>
 <translation id="5724941645893276623">ವೆಬ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು, ಹೊಸ ಟ್ಯಾಬ್ ಒಂದನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5728700505257787410">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವಲ್ಲಿ ಸಮಸ್ಯೆ ಇದೆ.</translation>
 <translation id="5733084997078800044">Chrome ಸಲಹೆ</translation>
@@ -1134,6 +1137,7 @@
 <translation id="891658175948553296">ಸೈಟ್‌ನಲ್ಲಿ ಪಠ್ಯವನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="8917490105272468696">ಹೌದು, ನಾನು ಒಪ್ಪಿಕೊಳ್ಳುತ್ತೇನೆ</translation>
 <translation id="8928133177108699615">ಡೆಸ್ಕ್‌ಟಾಪ್</translation>
+<translation id="894191600409472540">ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ</translation>
 <translation id="8952559610785099500">ಪಾಸ್‌ವರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="8953046091948372197">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಬಹುದು</translation>
 <translation id="895541991026785598">ಸಮಸ್ಯೆಯನ್ನು ವರದಿಮಾಡಿ</translation>

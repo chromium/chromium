@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. የይለፍ ቃል አማራጮችን መታ ያድርጉ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />፣ <ph name="STATE" />፣ <ph name="URL" /></translation>
 <translation id="2843803966603263712">የትርጉም ቅንብሮችን ዳግም አስጀምር</translation>
+<translation id="284581348330507117">ልዩ የይለፍ ቃላትን ይፍጠሩ</translation>
 <translation id="2848086008667475748">በቅንብሮች ውስጥ ነባሪ ያድርጉ…</translation>
 <translation id="2858204748079866344">የእርስዎን ግላዊነት ለመጠበቅ፣ Chrome በዚህ መስክ ውስጥ የእርስዎን የይለፍ ቃል በራስ-ሰር አይሞላውም።</translation>
 <translation id="285960592395650245">ማውረድ ዳግም ሞክር</translation>
@@ -542,6 +543,7 @@
 <translation id="48274138579728272">እንደተነበበ ምልክት አድርግ</translation>
 <translation id="4833686396768033263">የቅርብ ጊዜ ትሮች አይገኙም</translation>
 <translation id="4833786495304741580">የአጠቃቀም ስታቲስቲክስስን እና የስንክል ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል።</translation>
+<translation id="4834499902900503484">ወደ Chrome በመለያ ሲገቡ የሚያስቀምጧቸው የይለፍ ቃላት ወደ Google መለያዎ ውስጥ ይገባሉ። ይህን ለማጥፋት <ph name="BEGIN_LINK" />ወደ ቅንብሮች ይሂዱ<ph name="END_LINK" />።</translation>
 <translation id="4840495572919996524">የእርስዎ እልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ተጨማሪ ነገሮች ከእንግዲህ ከGoogle መለያዎ ጋር አይሰምሩም።</translation>
 <translation id="4844899002472726590">የሚፈልጓቸውን ርዕሶች ይመልከቱ እና ያርትዑ</translation>
 <translation id="4848999860252535517">የ<ph name="WEBSITE" /> የይለፍ ቃል ይሰረዝ?</translation>
@@ -650,6 +652,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5704908597376970822">መግባት አልተቻለም።</translation>
 <translation id="5706552126692816153">1 ቀን በፊት ንቁ ነበር</translation>
 <translation id="5711039611392265845">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />ስምረት እና የGoogle አገልግሎቶች<ph name="END_LINK" /></translation>
+<translation id="5718049162805123412">እነዚህን አሁን መቀየር አለብዎት</translation>
 <translation id="5724941645893276623">ድሩን በግል ለማሰስ አዲስ ትር ያክሉ</translation>
 <translation id="5728700505257787410">ይቅርታ፣ ወደ መለያዎ መግባት ላይ ችግር ነበር።</translation>
 <translation id="5733084997078800044">የChrome ጠቃሚ ምክር</translation>
@@ -685,6 +688,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5899314093904173337">በአቅራቢያ ካሉ ሰዎች ጋር ለማጋራት ይህን የQR ኮድ በእነሱ ካሜራ ወይም የQR ቃኚ መተግበሪያ እንዲቃኙ ይፍቀዱላቸው</translation>
 <translation id="5911030830365207728">Google ትርጉም</translation>
 <translation id="5913600720976431809">ገጹን ለመተርጎም አማራጮች</translation>
+<translation id="5922999516621365983">ትርን ለመሰካት ወደዚህ ይጎትቱት።</translation>
 <translation id="5938160824633642847">ይህ መሣሪያ ሊሞላ ትንሽ ነው የቀረው። ቦታ ያስለቅቁና እንደገና ይሞክሩ።</translation>
 <translation id="5948291296578561264">ይህ ፎቶዎችን ወደ የፎቶ ቤተ-መጽሔፍትዎ እንዲያስቀምጡ ያስችልዎታል።</translation>
 <translation id="5951816930277761335">አገናኙን ያጋሩ</translation>
@@ -1132,6 +1136,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="891658175948553296">በአንድ ጣቢያ ላይ አጭር ማሳያ ጽሑፍ</translation>
 <translation id="8917490105272468696">አዎ፣ ገብቼያለሁ</translation>
 <translation id="8928133177108699615">ዴስክቶፕ</translation>
+<translation id="894191600409472540">ጠንካራ የይለፍ ቃላትን ይፍጠሩ</translation>
 <translation id="8952559610785099500">የይለፍ ቃል ያክሉ</translation>
 <translation id="8953046091948372197">የእርስዎን የይለፍ ቃላት እዚህ ያገኛሉ</translation>
 <translation id="895541991026785598">ችግር ሪፖርት ያድርጉ</translation>

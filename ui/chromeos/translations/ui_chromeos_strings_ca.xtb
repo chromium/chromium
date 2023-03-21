@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">S'ha esborrat la memòria cau del teu Google Drive.</translation>
 <translation id="2239068707900391003">Persona amb un cafè</translation>
 <translation id="2251368349685848079">Restaura de la paperera</translation>
+<translation id="2278133026967558505">Tots els llocs web i tots els URL poden accedir al fitxer</translation>
 <translation id="2282155092769082568">URL de configuració automàtica:</translation>
 <translation id="2284767815536050991">emmagatzematge extraïble</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Cal emplenar els camps "Nom alternatiu d'assumpte coincident" o "Sufix de domini coincident" per validar la identitat del servidor d'autenticació</translation>
 <translation id="7165320105431587207">No s'ha pogut configurar la xarxa</translation>
 <translation id="7170041865419449892">Fora de l'interval</translation>
+<translation id="7179579940054351344">Tots els llocs web i tots els URL poden accedir al fitxer, excepte <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Anomena i desa</translation>

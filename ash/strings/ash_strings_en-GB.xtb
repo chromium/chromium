@@ -425,6 +425,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3081696990447829002">Expand menu</translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="3090989381251959936">Toggle <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">version</translation>
 <translation id="309749186376891736">Move cursor</translation>
 <translation id="3100274880412651815">Dismiss capture mode</translation>
 <translation id="3105917916468784889">Take screenshot</translation>
@@ -459,6 +460,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3256109297135787951">Remove the highlight from an item on your shelf</translation>
 <translation id="3260969790895726815">Speech is processed locally and dictation works offline, but some voice commands won’t work.</translation>
 <translation id="3269597722229482060">Right-click</translation>
+<translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Linux apps aren’t currently supported</translation>
 <translation id="3289674678944039601">Charging via adaptor</translation>
 <translation id="3290356915286466215">Unsecured</translation>
@@ -683,6 +685,7 @@ Connect your device to power.</translation>
 <translation id="4269883910223712419">The admin of this device has the ability to:</translation>
 <translation id="4274537685965975248">The Ctrl + Alt + Down Arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + Right Arrow.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
+<translation id="4280601795273309128">Security updates ended. Upgrade your device.</translation>
 <translation id="4283888303416325161">Enter password for more security</translation>
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +874,7 @@ Connect your device to power.</translation>
 <translation id="5147567197700016471">Unlocked</translation>
 <translation id="5150070631291639005">Privacy settings</translation>
 <translation id="5155897006997040331">Reading speed</translation>
+<translation id="5163434717504750796">Battery health <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Cycle count <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Save desk as a template</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
 <translation id="5170568018924773124">Show in folder</translation>
@@ -1342,6 +1346,7 @@ New install</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
 <translation id="7452560014878697800">An application is using your camera</translation>
 <translation id="7453330308669753048">Search history result removed</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> until full</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
@@ -1705,6 +1710,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9178475906033259337">Displaying one result for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">This feature allows you to quickly access any signed-in user without requiring a password. Only use this feature with accounts that you trust.</translation>
 <translation id="9183456764293710005">Full-screen Magnifier</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> left</translation>
 <translation id="9193626018745640770">Casting on an unknown receiver</translation>
 <translation id="9194617393863864469">Sign in another user...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> resolution changed to <ph name="RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>

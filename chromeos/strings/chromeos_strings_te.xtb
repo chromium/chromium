@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1014750484722996375">డెస్క్‌లు</translation>
 <translation id="1018219910092211213">DNSను పరిష్కరించడం సాధ్యం కాదు</translation>
 <translation id="1018656279737460067">రద్దయింది</translation>
+<translation id="1022433422498218992">జనరల్ కంట్రోల్స్</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">ఆగిపోయింది - ఇంక్ లేదు</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />ను ప్రివ్యూ చేయండి</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
+<translation id="1669047024429367828">విజిబిలిటీ</translation>
 <translation id="1672499492233627739">వెబ్‌క్యామ్ వీడియో ఫీడ్</translation>
 <translation id="1676557873873341166">వీడియో తీస్తోంది</translation>
 <translation id="1703835215927279855">లెటర్</translation>
 <translation id="1706391837335750954">DNS రిసాల్వర్ అందుబాటులో ఉంది</translation>
+<translation id="1710499924611012470">యాక్సెసిబిలిటీ నావిగేషన్</translation>
 <translation id="1715359911173058521">స్కానర్‌తో కమ్యూనికేట్ చేయడంలో ఎదో సమస్య ఉంది. నెట్‌వర్క్ లేదా USB కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" />, అలాగే <ph name="SECOND_MANAGER" /> ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="1726100011689679555">పేరు సర్వర్‌లు</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">ప్రామాణీకరణ రకం</translation>
 <translation id="1782199038061388045">అనువాదం</translation>
+<translation id="1790209694022261219">విండోలు, డెస్క్‌లు</translation>
 <translation id="1792647875738159689">స్కానింగ్ రద్దు అవుతోంది</translation>
 <translation id="1801418420130173017">ముదురు రంగు రూపాన్ని డిజేబుల్ చేయండి</translation>
 <translation id="1807246157184219062">లేత</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">మరిన్ని సెట్టింగ్‌లు</translation>
 <translation id="2085089206770112532">డిస్‌ప్లే బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
+<translation id="2102231663024125441">టెక్స్ట్‌ను ఎడిట్ చేయడం</translation>
 <translation id="2105810540595158374">పరికర రకం గేమ్ కంట్రోలర్.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, వెర్షన్ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBలో <ph name="AVAILABLE_MEMORY" /> GB అందుబాటులో ఉంది</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">ముఖ్యమైన అప్‌డేట్</translation>
 <translation id="2860473693272905224">స్కానర్ మీద మరొక పేజీని పెట్టండి</translation>
 <translation id="2872961005593481000">షట్ డౌన్ చేయండి</translation>
+<translation id="2873483161362553159">బ్రౌజర్ నావిగేషన్</translation>
 <translation id="2874939134665556319">మునుపటి ట్రాక్</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> సెకన్లలో <ph name="RATE" /> డిశ్చార్జ్ చేయబడింది.</translation>
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">సంపూర్ణం</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> కీని నొక్కారు</translation>
 <translation id="435692326371619097">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">అన్ని షార్ట్‌కట్‌లను రీసెట్ చేయండి</translation>
 <translation id="4378373042927530923">రన్ కాలేదు</translation>
 <translation id="4378551569595875038">కనెక్టింగ్...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">విఫలమైన DNS రిజల్యూషన్‌లు</translation>
 <translation id="6768237774506518020">అధిక DNS రిజల్యూషన్ వైఫల్య రేటు</translation>
 <translation id="6791471867139427246">కీబోర్డ్ లైట్ రంగు</translation>
+<translation id="6798678288485555829">టెక్స్ట్ నావిగేషన్</translation>
 <translation id="680983167891198932">కీ</translation>
 <translation id="6816797338148849397">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారం అందుబాటులో ఉంది. యాక్సెస్ చేయడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="6838167112108853532">ఈ APNను డిజేబుల్ చేయడం లేదా తీసివేయడం సాధ్యపడదు. ఎనేబుల్ చేయబడిన అటాచ్ చేయబడిన APNలు డిసేబుల్ లేదా తీసివేయబడ్డాయని నిర్ధారించుకోండి.</translation>

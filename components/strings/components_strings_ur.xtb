@@ -388,6 +388,7 @@
 <translation id="1822540298136254167">آپ کی ملاحظہ کردہ ویب سائٹس اور ان پر گزارا گیا وقت</translation>
 <translation id="1824402189105105503">آٹھواں رول</translation>
 <translation id="1826516787628120939">چیک کیا جا رہا ہے</translation>
+<translation id="1826968372364864056">فارم صاف کریں</translation>
 <translation id="1828959155404624835">کار رینٹلز</translation>
 <translation id="1834321415901700177">یہ سائٹ نقصاندہ پروگرامز پر مشتمل ہے</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
@@ -1227,7 +1228,6 @@
 <translation id="399952081411886534">دیگر وہ خصوصیات جو اشتہارات کو مزید نجی بناتی ہیں</translation>
 <translation id="4000598935132966791">نظم کردہ براؤزرز میں سائٹ کی پابندیوں کے بارے میں مزید جانیں</translation>
 <translation id="4006465311664329701">‏Google Pay استعمال کرنے والے ادائیگی کے طریقے، پیشکشیں اور پتے</translation>
-<translation id="4009243425692662128">‏آپ کے پرنٹ کردہ صفحات کا مواد تجزیہ کے لیے Google کلاؤڈ یا فریقین ثالث کو بھیجا جاتا ہے۔ مثال کے طور پر، اسے حساس ڈیٹا کیلئے اسکین کیا جا سکتا ہے۔</translation>
 <translation id="4010758435855888356">اسٹوریج تک رسائی کی اجازت دیں؟</translation>
 <translation id="401170183602135785">‏C6 لفافہ</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{‏{COUNT} صفحہ پر مشتمل PDF دستاویز}other{‏{COUNT} صفحات پر مشتمل PDF دستاویز}}</translation>
@@ -1971,6 +1971,7 @@
 <translation id="5786044859038896871">کیا آپ اپنے کارڈ کی معلومات پُر کرنا چاہتے ہیں؟</translation>
 <translation id="578633867165174378">‏Chrome کو وہ پاس ورڈ مل گیا جو آپ نے ابھی ڈیٹا کی خلاف ورزی میں استعمال کیا ہے۔ ہم اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتے ہیں۔</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{کوئی نہیں}=1{1 اکاؤنٹ کے لیے سائن ان ڈیٹا}other{# اکاؤنٹس کے لیے سائن ان ڈیٹا}}</translation>
 <translation id="580241730938216256">اپ ڈیٹ شروع کریں</translation>
 <translation id="5803412860119678065">کیا آپ اپنے <ph name="CARD_DETAIL" /> کو پُر کرنا چاہتے ہیں؟</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
@@ -2527,6 +2528,7 @@
 <translation id="7201591969684833065">آپ کا منتظم یہ دیکھ سکتا ہے:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، نجی طور پر براؤز کرنے کے لیے ایک نیا پوشیدگی ٹیب کھولنے کی خاطر ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="7203375778433816396">‏Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{کوئی نہیں}=1{1 پاس کی}other{# پاس کیز}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> سیکیورٹی کے معیارات کی پابندی نہیں کرتا ہے۔</translation>
 <translation id="7210993021468939304">‏کنٹینر کے اندر Linux کی سرگرمی اور کنٹینر کے اندر Linux ایپ کو انسٹال کرکے چلا سکتا ہے</translation>
 <translation id="721197778055552897">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" />۔</translation>

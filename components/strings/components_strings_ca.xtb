@@ -1225,7 +1225,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="399952081411886534">Altres funcions que augmenten la privadesa dels anuncis</translation>
 <translation id="4000598935132966791">Més informació sobre les restriccions aplicades als llocs web en navegadors gestionats</translation>
 <translation id="4006465311664329701">Formes de pagament, ofertes i adreces que fan servir Google Pay</translation>
-<translation id="4009243425692662128">El contingut de les pàgines que imprimeixes s'envia a Google Cloud o a tercers perquè l'analitzin. Per exemple, pot ser que s'analitzi per detectar-hi dades sensibles.</translation>
 <translation id="4010758435855888356">Vols permetre l'accés a l'emmagatzematge?</translation>
 <translation id="401170183602135785">Sobre C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF que conté {COUNT} pàgina}other{Document PDF que conté {COUNT} pàgines}}</translation>
@@ -1367,7 +1366,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4306812610847412719">porta-retalls</translation>
 <translation id="4308567447483056043">Aquesta política s'ignora perquè l'usuari no està afiliat. Perquè s'apliqui aquesta política, el navegador i el perfil de Chrome han d'estar gestionats per la mateixa organització a través de la consola d'administració.</translation>
 <translation id="4310070645992025887">Cerca els teus recorreguts</translation>
-<translation id="4310496734563057511">Si comparteixes aquest dispositiu amb altres persones, pots activar Windows Hello per verificar que ets tu sempre que utilitzis una contrasenya desada</translation>
+<translation id="4310496734563057511">Si comparteixes aquest dispositiu amb altres persones, pots activar Windows Hello per verificar la teva identitat sempre que utilitzis una contrasenya desada</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloqueja (opció predeterminada)</translation>
 <translation id="4314815835985389558">Gestiona la sincronització</translation>

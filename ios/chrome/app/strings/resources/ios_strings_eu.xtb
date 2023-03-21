@@ -262,6 +262,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2834399722155632105">3. Sakatu Password Options (pasahitzen aukerak).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Berrezarri Translate ezarpenak</translation>
+<translation id="284581348330507117">Sortu pasahitz esklusiboak</translation>
 <translation id="2848086008667475748">Ezarri aukera lehenetsi gisa Ezarpenak atalean…</translation>
 <translation id="2858204748079866344">Zure pribatutasuna babesteko, Chrome-k ez du automatikoki idatziko pasahitza eremu honetan.</translation>
 <translation id="285960592395650245">Saiatu berriro deskargatzen</translation>
@@ -374,6 +375,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3595252146048399851">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK" />ezarpenetara<ph name="END_LINK" />. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="3603009562372709545">Kopiatu estekaren URLa</translation>
 <translation id="3607167657931203000">Bete automatikoki</translation>
+<translation id="3608008480985212611">Hasi saioa zure hobespenak kudeatzeko.</translation>
 <translation id="3609785682760573515">Sinkronizatzen…</translation>
 <translation id="3631443864840848029">Ziurtatu webgune honen pasahitza gordetzen duzula.</translation>
 <translation id="3638472932233958418">Aurrekargatu web-orriak</translation>
@@ -519,6 +521,7 @@ Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sink
 <translation id="4737560986434232178">Bilatu erabilitako azken fitxetan</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4747097190499141774">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak. Pasaesaldia dutenek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da bidaltzen Google-ra, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="4751162929052964260"><ph name="TITLE" />, <ph name="STATE" />, gailu honetan soilik, <ph name="URL" /></translation>
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>
 <translation id="4766112107778026136">Discover eta jarraitzen</translation>
 <translation id="4775879719735953715">Arakatzaile lehenetsia</translation>
@@ -540,6 +543,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="48274138579728272">Markatu irakurritako gisa</translation>
 <translation id="4833686396768033263">Ez daude erabilgarri azken fitxak</translation>
 <translation id="4833786495304741580">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri.</translation>
+<translation id="4834499902900503484">Chrome-n saioa hasita daukazunean, gordetzen dituzun pasahitzak Google-ko kontuan biltegiratzen dira. Aukera hori desaktibatzeko, <ph name="BEGIN_LINK" />joan ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Laster-markak, historia, pasahitzak eta beste ez dira sinkronizatuko Google-ko kontuarekin aurrerantzean.</translation>
 <translation id="4844899002472726590">Ikusi eta editatu interesatzen zaizkizun gaiak</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" /> webguneko pasahitza ezabatu nahi duzu?</translation>
@@ -648,6 +652,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5704908597376970822">Ezin da hasi saioa.</translation>
 <translation id="5706552126692816153">Aktibo duela 1 egun</translation>
 <translation id="5711039611392265845">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa eta Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
+<translation id="5718049162805123412">Berehala aldatzea gomendatzen dizugu</translation>
 <translation id="5724941645893276623">Sarea modu pribatuan arakatzeko, gehitu beste fitxa bat</translation>
 <translation id="5728700505257787410">Arazo bat izan da kontuan saioa hastean.</translation>
 <translation id="5733084997078800044">Chrome-ren inguruko aholkua</translation>
@@ -683,6 +688,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5899314093904173337">Ingurukoekin partekatu nahi izanez gero, eska iezaiezu QR kode hau eskaneatzeko kamera edo QR kodeak eskaneatzeko aplikazio baten bidez</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Orria itzultzeko aukerak</translation>
+<translation id="5922999516621365983">Fitxa ainguratzeko, arrasta ezazu hona.</translation>
 <translation id="5938160824633642847">Gailua ia beteta dago. Egin toki pixka bat eta saiatu berriro.</translation>
 <translation id="5948291296578561264">Honekin, argazkien liburutegian gorde ahalko dituzu argazkiak.</translation>
 <translation id="5951816930277761335">Partekatu esteka</translation>
@@ -943,6 +949,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7600965453749440009">Ez itzuli <ph name="LANGUAGE" /> inoiz</translation>
 <translation id="7603852183842204213"><ph name="NUMBER_OF_BLOCKED_POPUPS" /> leiho blokeatuta</translation>
 <translation id="7607521702806708809">Ezabatu pasahitza</translation>
+<translation id="7611459119367035420">Hemen dituzu fitxa ainguratuak.</translation>
 <translation id="7638584964844754484">Pasaesaldi okerra</translation>
 <translation id="7646263789464975852">Menua → Ezarpenak → Segurtasun-egiaztapena</translation>
 <translation id="7646772052135772216">Pasahitzen sinkronizazioa ez dabil</translation>
@@ -955,6 +962,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7720410380936703141">SAIATU BERRIRO</translation>
 <translation id="7726702057919861819">Menua → Historia → Garbitu arakatze-datuak</translation>
+<translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Gailu honetan soilik.</translation>
 <translation id="7738120385185846461">Eman arazo baten berri…</translation>
 <translation id="7741325291586284254">Ezkutuko moduko beste fitxa baten orria</translation>
 <translation id="7744394900930577716">Beste aplikazio batzuetako pasahitzak</translation>
@@ -1128,6 +1136,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="891658175948553296">Nabarmendu webgune bateko testua</translation>
 <translation id="8917490105272468696">Bai, ados</translation>
 <translation id="8928133177108699615">Mahaigainekoa</translation>
+<translation id="894191600409472540">Sortu pasahitz konplexuak</translation>
 <translation id="8952559610785099500">Gehitu pasahitz bat</translation>
 <translation id="8953046091948372197">Hemen dituzu pasahitzak</translation>
 <translation id="895541991026785598">Jakinarazi arazo bat</translation>

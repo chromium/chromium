@@ -273,6 +273,7 @@
 <translation id="6365489425007284765">{COUNT,plural, =1{1 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}other{# 分間使用しなかった場合、管理者は閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。既存のタブは開いたままになります。}}</translation>
 <translation id="6412673304250309937">Chrome に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="6418662306461808273">既存の Chrome プロファイルに切り替えますか？</translation>
+<translation id="6493527311031785448">Google Chrome が <ph name="AUTHENTICATION_PURPOSE" /> を試行しています</translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>

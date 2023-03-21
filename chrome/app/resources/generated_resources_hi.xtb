@@ -875,6 +875,7 @@
 <translation id="1744108098763830590">पेजभूमि पेज</translation>
 <translation id="1745732479023874451">संपर्कों को प्रबंधित करें</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{क्या # फ़ाइल को इस वेब ऐप्लिकेशन में खोलकर उसमें बदलाव करना है?}other{क्या # फ़ाइलों को इस वेब ऐप्लिकेशन में खोलकर उनमें बदलाव करना है?}}</translation>
+<translation id="1748329107062243374"><ph name="WEBSITE" /> पर साइन इन करने के लिए, <ph name="DEVICE_NAME" /> से पासकी इस्तेमाल करें</translation>
 <translation id="1748563609363301860">आप इस पासवर्ड को अपने Google खाते या सिर्फ़ इस डिवाइस में सेव कर सकते हैं</translation>
 <translation id="1749733017156547309">पासवर्ड ज़रूरी है</translation>
 <translation id="1750172676754093297">आपकी सुरक्षा कुंजी फ़िंगरप्रिंट स्टोर नहीं कर सकती है.</translation>
@@ -2004,7 +2005,6 @@
 <translation id="2710101514844343743">इस्तेमाल और निदान से जुड़ा डेटा</translation>
 <translation id="271033894570825754">नया</translation>
 <translation id="2711073837061989559">ट्रायल</translation>
-<translation id="2712207122921938368">किसी दूसरे डिवाइस पर पासकी सेट करें</translation>
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2713444072780614174">सफ़ेद</translation>
 <translation id="2714180132046334502">गहरा बैकग्राउंड</translation>
@@ -4655,6 +4655,7 @@
 <translation id="5108967062857032718">सेटिंग - Android ऐप्लिकेशन निकालें</translation>
 <translation id="5109044022078737958">मिया</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> हटाएं</translation>
+<translation id="5111326646107464148">ग्रुप को नई विंडो में खोलें</translation>
 <translation id="5111646998522066203">गुप्त मोड से बाहर निकलें</translation>
 <translation id="5111692334209731439">&amp;बुकमार्क मैनेजर</translation>
 <translation id="5111794652433847656"><ph name="APP_NAME" /> के लिए, इस डिवाइस पर कोई पासकी नहीं है</translation>
@@ -5441,7 +5442,6 @@
 <translation id="583431638776747">साइट को ऐक्सेस नहीं किया जा सका</translation>
 <translation id="5834581999798853053">करीब <ph name="TIME" /> मिनट शेष हैं</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - कैमरा या माइक्रोफ़ोन रिकॉर्डिंग</translation>
-<translation id="5835625581856809102">उस डिवाइस पर यह क्यूआर कोड स्कैन करें जिसके लिए आपको <ph name="APP_NAME" /> की पासकी बनानी है</translation>
 <translation id="583673505367439042">साइटें आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती हैं</translation>
 <translation id="5836999627049108525">वह भाषा जिससे अनुवाद करना है</translation>
 <translation id="583756221537636748">केस</translation>
@@ -5879,7 +5879,6 @@
 <translation id="6227002569366039565">इस बबल पर फ़ोकस करने के लिए, ।<ph name="ACCELERATOR" />। दबाएं. इसे दोबारा दबाकर उस एलिमेंट पर फ़ोकस करें जिसकी ओर यह बबल इशारा कर रहा है.</translation>
 <translation id="6227280783235722609">एक्सटेंशन</translation>
 <translation id="6229849828796482487">वाई-फ़ाई नेटवर्क को डिसकनेक्ट करें</translation>
-<translation id="6230165830166519105">कोई दूसरा तरीका आज़माएं</translation>
 <translation id="6231782223312638214">सुझाया गया</translation>
 <translation id="6231881193380278751">पेज को अपने आप रीफ्रेश करने के लिए URL में एक क्‍वेरी पैरामीटर जोड़ें: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">बैटरी</translation>
@@ -6636,6 +6635,7 @@
 <translation id="6903022061658753260">आपका डेटा, उन सभी Chrome ब्राउज़र पर सिंक हो जाएगा जहां आपने इस खाते से जुड़े डेटा को सिंक करने की सुविधा चालू की है. ChromeOS पर उपलब्ध, डेटा सिंक करने के विकल्पों के बारे में जानने के लिए <ph name="LINK_BEGIN" />ChromeOS की सेटिंग<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="6903590427234129279">सभी यूआरएल (<ph name="URL_COUNT" />) खोलें</translation>
 <translation id="6903907808598579934">सिंक करना चालू करें</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> खोजें</translation>
 <translation id="6904344821472985372">फ़ाइल एक्सेस रद्द करें</translation>
 <translation id="6904655473976120856">बाहर निकलने के लिए ऐप्लिकेशन बटन दबाएं</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{1 मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}one{{NUM_MINS} मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}other{{NUM_MINS} मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}}</translation>
@@ -7582,6 +7582,7 @@
 <translation id="7762243782113123335">माफ़ करें, कोई गड़बड़ी हुई. कृपया जानकारी में #bruschetta शामिल करके, इसकी शिकायत करें. गड़बड़ी कोड <ph name="ERROR" /> है.</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> से <ph name="DOWNLOAD_RECEIVED" /></translation>
+<translation id="7764527477537408401">ग्रुप को नई विंडो में खोलें</translation>
 <translation id="7765158879357617694">ले जाएं</translation>
 <translation id="7765507180157272835">ब्लूटूथ और वाई-फ़ाई ज़रूरी हैं</translation>
 <translation id="7766082757934713382">इससे आप ऐप्लिकेशन और सिस्टम को अपने-आप अपडेट होने से रोक सकते हैं. इससे आपका नेटवर्क डेटा कम खर्च होगा</translation>
@@ -8699,6 +8700,7 @@
           &lt;p&gt;लेकिन आप फिर भी कमांड लाइन के ज़रिए कॉन्फ़िगर कर सकते हैं. फ़्लैग और वातावरण वैरिएबल पर ज़्यादा जानकारी के लिए कृपया &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; देखें.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">अपने संगठन के लिए, सुरक्षा से जुड़े काम करें, जैसे कि प्रमाणपत्र और डिवाइस में सेव किए गए बटनों को मैनेज करना</translation>
 <translation id="8755376271068075440">&amp;बड़ा</translation>
+<translation id="8755584192133371929">शेयर करने के लिए कोई टैब चुनें</translation>
 <translation id="875604634276263540">इमेज का यूआरएल अमान्य है</translation>
 <translation id="8756969031206844760">पासवर्ड अपडेट करें?</translation>
 <translation id="8757203080302669031">यह टैब, ब्लूटूथ डिवाइस के लिए लगातार स्कैन कर रहा है.</translation>
@@ -8708,6 +8710,7 @@
 <translation id="8762886931014513155">आपके <ph name="DEVICE_TYPE" /> को अपडेट की ज़रूरत है</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
 <translation id="8766796754185931010">कोटोएरी</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> की सभी खोजें दिखाएं</translation>
 <translation id="8767621466733104912">Chrome को सभी उपयोगकर्ताओं के लिए अपने आप अपडेट करें</translation>
 <translation id="8770406935328356739">एक्‍सटेंशन मूल निर्देशिका</translation>
 <translation id="8771300903067484968">स्टार्ट पेज के बैकग्राउंड को डिफ़ॉल्ट बैकग्राउंड पर रीसेट कर दिया गया है.</translation>

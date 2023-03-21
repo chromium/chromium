@@ -453,7 +453,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1401308693935339022">Brug placering. Tillad, at apps og tjenester med placeringstilladelse kan bruge denne enheds lokation. Google kan jævnligt indsamle lokationsdata og bruge disse data på en anonym måde for at forbedre lokationsnøjagtigheden og lokationsbaserede tjenester.</translation>
 <translation id="1403222014593521787">Der kunne ikke oprettes forbindelse til proxyserveren</translation>
 <translation id="1405779994569073824">Gået ned.</translation>
-<translation id="1406500794671479665">Bekræfter...</translation>
+<translation id="1406500794671479665">Verificerer...</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="140723521119632973">Aktivering af mobildata</translation>
@@ -2005,7 +2005,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2710101514844343743">Brugs- og diagnostikdata</translation>
 <translation id="271033894570825754">Nyt</translation>
 <translation id="2711073837061989559">Prøveperioder</translation>
-<translation id="2712207122921938368">Opret en adgangsnøgle på en anden enhed</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2713444072780614174">Hvid</translation>
 <translation id="2714180132046334502">Mørk baggrund</translation>
@@ -3755,7 +3754,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4275397969489577657">Aktivér logning af begivenhedsstreaming</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
 <translation id="4277434192562187284">XML-konfigurationskilde</translation>
-<translation id="4277529130885813215">Brug en anden enhed</translation>
 <translation id="4278390842282768270">Tilladt</translation>
 <translation id="4278498748067682896">Du skal bruge en terminal- og signeringsopgradering, der kun tillader, at enheden køres i terminal- eller signeringstilstand. Hvis du gerne vil have, at brugere logger ind på enheden, kan du gå tilbage og tilmelde dig via Chrome Enterprise-opgraderingen.</translation>
 <translation id="4278779213160967034">Denne proces kan tage et par minutter. Downloader filer.</translation>
@@ -4246,6 +4244,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4708849949179781599">Afslut <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Gendan indstillinger</translation>
 <translation id="4713409221649555176">Slet, når du lukker alle vinduer</translation>
+<translation id="4715631922189108923">Rediger brugernavn</translation>
 <translation id="47158868804223727">Klik på gruppenavnet for at udvide eller skjule det</translation>
 <translation id="4716483597559580346">Udfør powerwash som et ekstra sikkerhedsniveau</translation>
 <translation id="471759229191973607">Skift tema</translation>
@@ -5444,7 +5443,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="583431638776747">Websitet var ikke tilgængeligt</translation>
 <translation id="5834581999798853053">Omkring <ph name="TIME" /> minutter tilbage</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kameraet eller mikrofonen optager</translation>
-<translation id="5835625581856809102">Scan denne QR-kode med den enhed, hvor du vil oprette en adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Websites kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="5836999627049108525">Sprog, der skal oversættes fra</translation>
 <translation id="583756221537636748">Etui</translation>
@@ -5882,7 +5880,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6227002569366039565">Tryk på |<ph name="ACCELERATOR" />| for at fokusere på denne boble, og tryk igen for at fokusere på det element, den peger på.</translation>
 <translation id="6227280783235722609">udvidelse</translation>
 <translation id="6229849828796482487">Afbryd forbindelsen til Wi-Fi-netværket</translation>
-<translation id="6230165830166519105">Prøv på en anden måde</translation>
 <translation id="6231782223312638214">Foreslået</translation>
 <translation id="6231881193380278751">Tilføj en forespørgselsparameter i webadressen for at opdatere siden automatisk: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batteri</translation>
@@ -6639,6 +6636,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6903022061658753260">Dine data synkroniseres på tværs af alle Chrome-browsere, hvor du har aktiveret synkronisering for denne konto. Du kan se valgmuligheder for ChromeOS-synkronisering i <ph name="LINK_BEGIN" />ChromeOS-indstillingerne<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Åbn alle (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
+<translation id="6903916726032521638">Søg efter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Tilbagekald filadgang</translation>
 <translation id="6904655473976120856">Tryk på knappen App for at afslutte</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{For at beskytte dine adgangskoder låses Google Adgangskodeadministrator efter 1 minuts inaktivitet}one{For at beskytte dine adgangskoder låses Google Adgangskodeadministrator efter {NUM_MINS} minuts inaktivitet}other{For at beskytte dine adgangskoder låses Google Adgangskodeadministrator efter {NUM_MINS} minutters inaktivitet}}</translation>
@@ -8094,6 +8092,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8203732864715032075">Sende dig notifikationer og huske denne computer som standard til Beskeder. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Dine skærme og eksterne enheder nulstilles muligvis. Træk stikket ud af dine eksterne enheder, og tilslut dem derefter igen, så ændringerne kan træde i kraft.</translation>
 <translation id="820568752112382238">Mest besøgte websites</translation>
+<translation id="8206267832882844324">Rediger note</translation>
 <translation id="8206745257863499010">BB King</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8207404892907560325">Vælg en adgangsnøgle</translation>
@@ -8713,6 +8712,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8762886931014513155">Din <ph name="DEVICE_TYPE" /> skal opdateres</translation>
 <translation id="8763927697961133303">USB-enhed</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Vis alle søgninger efter <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Opdater Chrome automatisk for alle brugere</translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
 <translation id="8771300903067484968">Baggrunden for startsiden er nulstillet til standardbaggrunden.</translation>

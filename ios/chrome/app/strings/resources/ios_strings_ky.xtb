@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. Сырсөздүн параметрлерин таптап коюңуз</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Котор жөндөөлрн кайр кюу</translation>
+<translation id="284581348330507117">Өзгөчө сырсөз түзүңүз</translation>
 <translation id="2848086008667475748">Жөндөөлөрдө демейки катары коюу…</translation>
 <translation id="2858204748079866344">Купуялыгыңызды коргоо максатында, Chrome бул талаага сырсөзүңүздү автоматтык түрдө киргизбейт.</translation>
 <translation id="285960592395650245">Дагы бир жолу жүктөп алуу</translation>
@@ -374,6 +375,7 @@
 <translation id="3595252146048399851">Эмнени шайкештирүү керек экенин ар дайым <ph name="BEGIN_LINK" />параметрлерден<ph name="END_LINK" /> тандай аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
 <translation id="3603009562372709545">Шилтеменин URL көчүрүү</translation>
 <translation id="3607167657931203000">Дайындарды автотолтуруу</translation>
+<translation id="3608008480985212611">Параметрлериңизди тескөө үчүн аккаунтуңузга кириңиз.</translation>
 <translation id="3609785682760573515">Шайкештештирилүүдө…</translation>
 <translation id="3631443864840848029">Бул сайт үчүн учурдагы сырсөзүңүздү сактап калышыңыз керек.</translation>
 <translation id="3638472932233958418">Желебет алдн-ал жүкт</translation>
@@ -480,6 +482,7 @@
 <translation id="4474494258097106883">iPhone үчүн түзүлгөн</translation>
 <translation id="4476574785019001431">Параметрлер</translation>
 <translation id="448433063499977729">Шайкештирүү өчүрүлгөн</translation>
+<translation id="4489536976005181779">{count,plural, =1{Барак {email} аккаунтуңуздагы окуу тизмесине кошулду}other{Барактар {email} аккаунтуңуздагы окуу тизмесине кошулду}}</translation>
 <translation id="4496373720959965247">Өтмөктөрдү кошуп, барактарды которуштуруңуз</translation>
 <translation id="4502566650163919158">Азыр текшерүү</translation>
 <translation id="4505980578794259603">Акыркы жолу качан текшерилген: <ph name="TIME" />.</translation>
@@ -650,6 +653,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5704908597376970822">Аккаунтка кирген жоксуз.</translation>
 <translation id="5706552126692816153">Соңку аракеттер: 1 күн мурун</translation>
 <translation id="5711039611392265845">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка жөндөөлөрдү көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү жана Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз.</translation>
+<translation id="5718049162805123412">Аларды азыр өзгөртүшүңүз керек</translation>
 <translation id="5724941645893276623">Интернетти купуя серептөө үчүн жаңы өтмөк кошуңуз</translation>
 <translation id="5728700505257787410">Кечиресиз, каттоо эсебиңзге кирип жаткнда көйгй келип чыкты.</translation>
 <translation id="5733084997078800044">Chrome кеңеши</translation>
@@ -1133,6 +1137,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="891658175948553296">Сайттагы текстти бөлүп көрсөтүңүз</translation>
 <translation id="8917490105272468696">Ооба, мен макулмун</translation>
 <translation id="8928133177108699615">Иш такта</translation>
+<translation id="894191600409472540">Татаал сырсөз түзүңүз</translation>
 <translation id="8952559610785099500">Сырсөз кошуу</translation>
 <translation id="8953046091948372197">Сырсөздөрүңүздү ушул жерден табасыз</translation>
 <translation id="895541991026785598">Маселе жөнндө кабрл</translation>

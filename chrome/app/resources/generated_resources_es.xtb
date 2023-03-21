@@ -863,6 +863,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1744108098763830590">página en segundo plano</translation>
 <translation id="1745732479023874451">Gestionar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Abrir y editar # archivos en esta aplicación web?}}</translation>
+<translation id="1748329107062243374">Usa una llave de acceso de <ph name="DEVICE_NAME" /> para iniciar sesión en <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Puedes guardar la contraseña en tu cuenta de Google o solo en este dispositivo</translation>
 <translation id="1749733017156547309">Debes introducir una contraseña</translation>
 <translation id="1750172676754093297">Tu llave de seguridad no puede almacenar huellas dactilares</translation>
@@ -1989,7 +1990,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
-<translation id="2712207122921938368">Crea una llave de acceso en otro dispositivo</translation>
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -4639,6 +4639,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5108967062857032718">Configuración - Quitar aplicaciones de Android</translation>
 <translation id="5109044022078737958">Atleta</translation>
 <translation id="5109816792918100764">Quitar <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Abrir grupo en una ventana nueva</translation>
 <translation id="5111646998522066203">Salir del modo Incógnito</translation>
 <translation id="5111692334209731439">&amp;Administrador de marcadores</translation>
 <translation id="5111794652433847656">No hay claves de acceso disponibles para <ph name="APP_NAME" /> en este dispositivo</translation>
@@ -5425,7 +5426,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="583431638776747">El sitio no estaba disponible</translation>
 <translation id="5834581999798853053">Unos <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: grabación de la cámara o del micrófono</translation>
-<translation id="5835625581856809102">Escanea este código QR con el dispositivo en el que quieras crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Los sitios pueden solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="5836999627049108525">Idioma del que se va a traducir</translation>
 <translation id="583756221537636748">Funda</translation>
@@ -5863,7 +5863,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6227002569366039565">Pulsa |<ph name="ACCELERATOR" />| para enfocar este cuadro y vuelve a pulsar para enfocar el elemento que señala.</translation>
 <translation id="6227280783235722609">extensión</translation>
 <translation id="6229849828796482487">Desconectar red Wi-Fi</translation>
-<translation id="6230165830166519105">Probar otra manera</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6231881193380278751">Añade un parámetro de consulta en la URL para actualizar la página automáticamente: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batería</translation>
@@ -6618,6 +6617,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6903022061658753260">Tus datos se sincronizarán en todos los navegadores Chrome en los que hayas activado la sincronización para esta cuenta. Para consultar las opciones de sincronización de ChromeOS, ve a la <ph name="LINK_BEGIN" />configuración de ChromeOS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Abrir todas (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
+<translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Revocar acceso a archivo</translation>
 <translation id="6904655473976120856">Pulsa el botón de la aplicación para salir.</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Para proteger tus contraseñas, el Gestor de contraseñas de Google se bloquea después de 1 minuto de inactividad}other{Para proteger tus contraseñas, el Gestor de contraseñas de Google se bloquea después de {NUM_MINS} minutos de inactividad}}</translation>
@@ -7564,6 +7564,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7762243782113123335">Se ha producido un error. Envíanos tus comentarios e incluye el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Añadir dirección</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> desde <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Abrir grupo en una ventana nueva</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7765507180157272835">Se necesitan Bluetooth y Wi‑Fi</translation>
 <translation id="7766082757934713382">Ayuda a reducir el uso de datos de red al pausar las actualizaciones automáticas de aplicaciones y del sistema</translation>
@@ -8682,6 +8683,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
           &lt;p&gt;Aún puedes configurar el sistema mediante la línea de comandos. Para obtener más información sobre los indicadores y sobre las variables del entorno, consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Realizar tareas para tu organización relacionadas con la seguridad, como gestionar certificados y claves almacenadas en el dispositivo</translation>
 <translation id="8755376271068075440">&amp;Mayor</translation>
+<translation id="8755584192133371929">Selecciona una pestaña para compartirla</translation>
 <translation id="875604634276263540">La URL de la imagen no es válida</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8757203080302669031">En esta pestaña se están buscando dispositivos Bluetooth de forma activa.</translation>
@@ -8691,6 +8693,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8762886931014513155">Es necesario actualizar tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Mostrar todas las búsquedas de <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Actualizar Chrome automáticamente para todos los usuarios</translation>
 <translation id="8770406935328356739">Directorio raíz de la extensión</translation>
 <translation id="8771300903067484968">El fondo de pantalla de la página de inicio se ha restablecido al fondo de pantalla predeterminado.</translation>

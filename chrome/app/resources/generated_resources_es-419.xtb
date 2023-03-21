@@ -860,6 +860,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1744108098763830590">página en segundo plano</translation>
 <translation id="1745732479023874451">Administrar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Quieres abrir y editar # archivos en la aplicación web?}}</translation>
+<translation id="1748329107062243374">Usa una llave de acceso de <ph name="DEVICE_NAME" /> para acceder a <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Puedes guardar esta contraseña en tu Cuenta de Google o solo en este dispositivo</translation>
 <translation id="1749733017156547309">Debes ingresar una contraseña</translation>
 <translation id="1750172676754093297">Tu llave de seguridad no puede almacenar huellas dactilares</translation>
@@ -1985,7 +1986,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2710101514844343743">Datos de uso y diagnóstico</translation>
 <translation id="271033894570825754">Nuevo</translation>
 <translation id="2711073837061989559">Pruebas</translation>
-<translation id="2712207122921938368">Crea una llave de acceso en otro dispositivo</translation>
 <translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2713444072780614174">Blanco</translation>
 <translation id="2714180132046334502">Fondo oscuro</translation>
@@ -4636,6 +4636,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5108967062857032718">Configuración - Quitar las apps de Android</translation>
 <translation id="5109044022078737958">Victoria</translation>
 <translation id="5109816792918100764">Quitar <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Abrir grupo en una ventana nueva</translation>
 <translation id="5111646998522066203">Salir del modo incógnito</translation>
 <translation id="5111692334209731439">Adminis&amp;trador de favoritos</translation>
 <translation id="5111794652433847656">No hay ninguna llave de acceso para <ph name="APP_NAME" /> en este dispositivo</translation>
@@ -5422,7 +5423,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="583431638776747">El sitio no se encontraba disponible.</translation>
 <translation id="5834581999798853053">Faltan aproximadamente <ph name="TIME" /> minutos.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: La cámara o el micrófono están grabando</translation>
-<translation id="5835625581856809102">Escanea este código QR con el dispositivo en el que quieras crear una llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Permitir que los sitios soliciten permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="5836999627049108525">Idioma del texto de origen</translation>
 <translation id="583756221537636748">Caso</translation>
@@ -5860,7 +5860,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6227002569366039565">Presiona |<ph name="ACCELERATOR" />| para enfocar el cuadro y, luego, otra vez para enfocar el elemento al que señala.</translation>
 <translation id="6227280783235722609">extensión</translation>
 <translation id="6229849828796482487">Desconectar la red Wi-Fi</translation>
-<translation id="6230165830166519105">Probar otro método</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6231881193380278751">Agregar un parámetro de consulta en la URL para actualizar automáticamente la página: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batería</translation>
@@ -7561,6 +7560,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7762243782113123335">Se produjo un error. Envía tus comentarios con el hashtag #bruschetta en la descripción. El código de error es <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Abrir grupo en una ventana nueva</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7765507180157272835">Necesitas Bluetooth y Wi-Fi</translation>
 <translation id="7766082757934713382">Ayuda a reducir el uso de datos de la red pausando las actualizaciones automáticas de apps y del sistema</translation>
@@ -8679,6 +8679,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
           &lt;p&gt;Aún puedes establecer la configuración mediante la línea de comando. Consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obtener más información sobre etiquetas y variables del entorno.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Realizar tareas de seguridad para tu organización, como administrar las claves y los certificados almacenados en el dispositivo</translation>
 <translation id="8755376271068075440">&amp;Mayor</translation>
+<translation id="8755584192133371929">Selecciona una pestaña para compartir</translation>
 <translation id="875604634276263540">La URL de la imagen no es válida</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8757203080302669031">Esta pestaña está buscando dispositivos Bluetooth de forma activa.</translation>

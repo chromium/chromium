@@ -389,6 +389,7 @@
 <translation id="1822540298136254167">మీరు సందర్శించిన వెబ్‌సైట్‌లు, వాటిపై వెచ్చించిన సమయం</translation>
 <translation id="1824402189105105503">ఎయిత్ రోల్</translation>
 <translation id="1826516787628120939">చెక్ చేస్తోంది</translation>
+<translation id="1826968372364864056">ఫారమ్‌ను క్లియర్ చేయండి</translation>
 <translation id="1828959155404624835">అద్దెకు కార్లు</translation>
 <translation id="1834321415901700177">ఈ సైట్‌లో హానికరమైన ప్రోగ్రామ్‌లు ఉన్నాయి</translation>
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
@@ -1227,7 +1228,6 @@
 <translation id="399952081411886534">యాడ్‌లను మరింత ప్రైవేట్ చేసే ఇతర ఫీచర్‌లు</translation>
 <translation id="4000598935132966791">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలోని సైట్ పరిమితుల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="4006465311664329701">Google Payను ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు, ఆఫర్‌లు, అడ్రస్‌లు</translation>
-<translation id="4009243425692662128">మీరు ప్రింట్ చేసిన పేజీల కంటెంట్, విశ్లేషణ కోసం Google Cloud లేదా థర్డ్-పార్టీలకు పంపబడుతుంది. ఉదాహరణకు, ఇది సున్నితమైన వ్యక్తిగత సమాచారం కోసం స్కాన్ చేయబడవచ్చు.</translation>
 <translation id="4010758435855888356">స్టోరేజ్‌ను యాక్సెస్ చేయడానికి అనుమతించాలా?</translation>
 <translation id="401170183602135785">ఎన్వలప్ C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF డాక్యుమెంట్‌‌లో {COUNT} పేజీ ఉంది}other{PDF డాక్యుమెంట్‌‌లో {COUNT} పేజీలు ఉన్నాయి}}</translation>
@@ -1971,6 +1971,7 @@
 <translation id="5786044859038896871">మీరు మీ కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="578633867165174378">డేటా ఉల్లంఘనలో మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్‌ను Chrome కనుగొనింది. ఇప్పుడే ఈ పాస్‌వర్డ్‌ను మార్చమని మేము సిఫార్సు చేస్తున్నాము.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{ఏవీ లేవు}=1{1 ఖాతాకు సంబంధించిన సైన్-ఇన్ డేటా}other{# ఖాతాలకు సంబంధించిన సైన్-ఇన్ డేటా}}</translation>
 <translation id="580241730938216256">అప్‌డేట్‌ను ప్రారంభించండి</translation>
 <translation id="5803412860119678065">మీరు మీ <ph name="CARD_DETAIL" /> కార్డ్ సమాచారం పూరించాలనుకుంటున్నారా?</translation>
 <translation id="5804241973901381774">అనుమతులు</translation>
@@ -2526,6 +2527,7 @@
 <translation id="7201591969684833065">మీ నిర్వాహకుడు వీటిని చూడగలరు:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="7203375778433816396">Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్-కీ}other{# పాస్-కీలు}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> భద్రతా ప్రమాణాలకు కట్టుబడి లేదు.</translation>
 <translation id="7210993021468939304">కంటెయినర్ లోపల Linux యాక్టివిటీ, కంటెయినర్ లోపల Linux యాప్‌లను ఇన్‌స్టాల్ చేయవచ్చు</translation>
 <translation id="721197778055552897">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి <ph name="END_LINK" />.</translation>

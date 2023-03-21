@@ -939,6 +939,7 @@
 <translation id="8492972329130824181">Ez dago erabilgarri etxeko sarea. Datu-ibiltaritzak gaituta egon behar du konektatu ahal izateko.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elementu ateratzen…</translation>
 <translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktibatu gailua konfiguratu ondoren, administratzaileak kudeatua</translation>
+<translation id="8512483403832814140">Edonoiz</translation>
 <translation id="8521441079177373948">Erresuma Batukoa</translation>
 <translation id="853494022971700746">Frantsesa (Frantzia)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>

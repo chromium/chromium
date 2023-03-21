@@ -9,6 +9,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
+<translation id="1082009148392559545">Էկրանապահի ներբեռնում</translation>
 <translation id="1094693127011229778">IP հասցեն անհասանելի է</translation>
 <translation id="1113892970288677790">Ընտրեք առաջարկվող պատկերներ</translation>
 <translation id="1119447706177454957">Ներքին սխալ</translation>
@@ -91,6 +92,7 @@
 <translation id="1717874160321062422">Կառավարում են՝ <ph name="FIRST_MANAGER" /> և <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Անունների սերվերներ</translation>
 <translation id="1731082422893354635">Bluetooth հպահարթակ</translation>
+<translation id="1738949837603788263">Գոտի <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Չհաջողվեց բեռնել պատկերները։ Ստուգեք ձեր կապը կամ նորից փորձեք բեռնել պատկերները։</translation>
 <translation id="1751249301761991853">Անձնական կարգավորումներ</translation>
 <translation id="1753496554272155572">Փակել պաստառի նախադիտումը</translation>
@@ -607,6 +609,7 @@
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
 <translation id="6379086450106841622">հպէկրան</translation>
 <translation id="6381741036071372448">Փորձարկեք ձեր ստեղնաշարը</translation>
+<translation id="6382182670717268353">Էկրանապահի նախադիտում</translation>
 <translation id="6388847657025262518">Սկաների փաստաթղթերի մատակարարը լռվել է։ Ստուգեք մատակարարը և նորից փորձեք։</translation>
 <translation id="6394634179843537518">Ավելացնել ֆայլ</translation>
 <translation id="6410257289063177456">Պատկերների ֆայլեր</translation>
@@ -699,6 +702,7 @@
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7180865173735832675">Հարմարեցնել</translation>
+<translation id="7184043045742675738">Կոճակը կարգավորելու համար սեղմեք ցանկացած ստեղն։ Փոխեք դիրքը մկնիկի կամ սլաքի ստեղների միջոցով։</translation>
 <translation id="7212734716605298123">Ներկառուցված ծրագրաշարի թարմացումներ արտաքին սարքերի համար</translation>
 <translation id="7216409898977639127">Բջջային օպերատոր</translation>
 <translation id="725133483556299729">Ընտրել էլ․ հասցե</translation>
@@ -740,6 +744,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB հպէկրան</translation>
 <translation id="7595982850646262331">Մնացել է <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">Փոխեք դիրքը մկնիկի կամ սլաքի ստեղների միջոցով։</translation>
 <translation id="7620771111601174153">Մանրամասն Օգնության կենտրոնի մասին</translation>
 <translation id="763165478673169849">Վերջին զրոյացման ժամանակը</translation>
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
@@ -866,6 +871,7 @@
 <translation id="8798441408945964110">Մատակարարի անունը</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Պաստառ</translation>
+<translation id="8820457400746201697">Գործողությունը կատարելու համար տեղափոխեք հպման կապույտ կետը։ Կարգավորելու համար ընտրեք կապված ստեղնը։</translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8834539327799336565">Միացված է</translation>
 <translation id="8845001906332463065">Օգնություն</translation>

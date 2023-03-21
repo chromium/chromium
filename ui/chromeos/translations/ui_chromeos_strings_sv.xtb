@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Ditt cacheminne har rensats på Google Drive.</translation>
 <translation id="2239068707900391003">Person med en kopp kaffe</translation>
 <translation id="2251368349685848079">Återställ från papperskorgen</translation>
+<translation id="2278133026967558505">Filåtkomst för alla webbplatser och webbadresser</translation>
 <translation id="2282155092769082568">Webbadress för automatisk konfiguration:</translation>
 <translation id="2284767815536050991">externt lagringsutrymme</translation>
 <translation id="2288278176040912387">Skivspelare</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Matchning av ämnets andra namn eller Matchning av domänsuffix saknas för att validera autentiseringsserverns identitet</translation>
 <translation id="7165320105431587207">Det gick inte att konfigurera nätverket</translation>
 <translation id="7170041865419449892">Utanför räckvidden</translation>
+<translation id="7179579940054351344">Filåtkomst för alla webbplatser och webbadresser utom <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Spara filen som</translation>

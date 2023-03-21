@@ -865,6 +865,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1744108098763830590">fona lapa</translation>
 <translation id="1745732479023874451">Pārvaldīt kontaktpersonas</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{Vai atvērt un rediģēt # failus šajā tīmekļa lietotnē?}one{Vai atvērt un rediģēt # failu šajā tīmekļa lietotnē?}other{Vai atvērt un rediģēt # failus šajā tīmekļa lietotnē?}}</translation>
+<translation id="1748329107062243374">Ierīces “<ph name="DEVICE_NAME" />” piekļuves atslēgas izmantošana, lai pierakstītos vietnē <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Varat saglabāt šo paroli Google kontā vai tikai šajā ierīcē</translation>
 <translation id="1749733017156547309">Jānorāda parole.</translation>
 <translation id="1750172676754093297">Jūsu drošības atslēgā nevar saglabāt pirkstu nospiedumus.</translation>
@@ -1990,7 +1991,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2710101514844343743">Lietojuma un diagnostikas dati</translation>
 <translation id="271033894570825754">Jauns</translation>
 <translation id="2711073837061989559">Izmēģinājuma versijas</translation>
-<translation id="2712207122921938368">Piekļuves atslēgas izveide citā ierīcē</translation>
 <translation id="2713106313042589954">Izslēgt kameru</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2714180132046334502">Tumšs fons</translation>
@@ -4641,6 +4641,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5108967062857032718">Iestatījumi — Android lietotņu noņemšana</translation>
 <translation id="5109044022078737958">Atlēte</translation>
 <translation id="5109816792918100764">Noņemt šo valodu: <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Atvērt grupu jaunā logā</translation>
 <translation id="5111646998522066203">Iziet no inkognito režīma</translation>
 <translation id="5111692334209731439">Grāmat&amp;zīmju pārvaldnieks</translation>
 <translation id="5111794652433847656">Šajā ierīcē zvanītājam <ph name="APP_NAME" /> nav nevienas piekļuves atslēgas.</translation>
@@ -5425,7 +5426,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="583431638776747">Vietne nebija pieejama</translation>
 <translation id="5834581999798853053">Atlikušas apmēram <ph name="TIME" /> minūtes</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> — ierakstīšana ar kameru vai mikrofonu</translation>
-<translation id="5835625581856809102">Skenējiet šo kvadrātkodu, izmantojot ierīci, kurā vēlaties izveidot piekļuves atslēgu vietnei <ph name="APP_NAME" />.</translation>
 <translation id="583673505367439042">Atļaut vietnēm pieprasīt atļauju rediģēt failus un mapes jūsu ierīcē</translation>
 <translation id="5836999627049108525">Valoda, no kuras tulkot</translation>
 <translation id="583756221537636748">Futrālis</translation>
@@ -5862,7 +5862,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6227002569366039565">Nospiediet taustiņu |<ph name="ACCELERATOR" />|, lai fokusētu šo burbuli. Pēc tam vēlreiz nospiediet šo taustiņu, lai fokusētu elementu, uz ko tas norāda.</translation>
 <translation id="6227280783235722609">paplašinājums</translation>
 <translation id="6229849828796482487">Wi-Fi tīkla atvienošana</translation>
-<translation id="6230165830166519105">Mēģināt citādi</translation>
 <translation id="6231782223312638214">Ieteikts</translation>
 <translation id="6231881193380278751">Vietrādī URL pievienojiet vaicājuma parametru, lai automātiski atsvaidzinātu lapu: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akumulators</translation>
@@ -7568,6 +7567,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7762243782113123335">Diemžēl radās problēma. Lūdzu, iesniedziet atsauksmi, aprakstā norādot atsauci #bruschetta. Kļūdas kods ir <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Pievienot adresi</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> no <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Atvērt grupu jaunā logā</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
 <translation id="7765507180157272835">Nepieciešams Bluetooth un Wi-Fi savienojums</translation>
 <translation id="7766082757934713382">Palīdz samazināt tīkla datu lietojumu, apturot automātiskos lietotņu un sistēmas atjauninājumus.</translation>
@@ -8685,6 +8685,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
           &lt;p&gt;Konfigurēšanai joprojām varat izmantot komandrindu. Plašāku informāciju par karogiem un vides mainīgajiem, lūdzu, skatiet pārlūkprogrammā &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt;.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Organizācijā veikt ar drošību saistītus uzdevumus, piemēram, pārvaldīt sertifikātus un atslēgas, kas tiek glabātas ierīcē</translation>
 <translation id="8755376271068075440">Lielāks</translation>
+<translation id="8755584192133371929">Atlasiet kopīgojamo cilni</translation>
 <translation id="875604634276263540">Attēla URL nav derīgs</translation>
 <translation id="8756969031206844760">Vai atjaunināt paroli?</translation>
 <translation id="8757203080302669031">Šajā cilnē tiek aktīvi meklētas Bluetooth ierīces.</translation>

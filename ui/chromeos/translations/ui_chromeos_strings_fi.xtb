@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Driven välimuisti on tyhjennetty.</translation>
 <translation id="2239068707900391003">Henkilö ja kahvikuppi</translation>
 <translation id="2251368349685848079">Palauta roskakorista</translation>
+<translation id="2278133026967558505">Pääsy tiedostoon kaikilta sivustoilta ja kaikista URL-osoitteista</translation>
 <translation id="2282155092769082568">Automaattisen määrityksen URL-osoite:</translation>
 <translation id="2284767815536050991">siirrettävä tallennustila</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">"Aiheen vaihtoehtoisen nimen vastaavuus" tai "Verkkotunnuksen päätteen vastaavuus" puuttuu todennuspalvelimen henkilöllisyyden vahvistamista varten</translation>
 <translation id="7165320105431587207">Verkon asetuksien määrittäminen epäonnistui</translation>
 <translation id="7170041865419449892">Katvealueella</translation>
+<translation id="7179579940054351344">Pääsy tiedostoon kaikilta sivustoilta ja kaikista URL-osoitteista paitsi täältä: <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> Gt</translation>
 <translation id="7191454237977785534">Tallenna tiedosto nimellä</translation>

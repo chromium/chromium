@@ -870,6 +870,7 @@
 <translation id="1744108098763830590">дэвсгэр хуудас</translation>
 <translation id="1745732479023874451">Харилцагчдыг удирдах</translation>
 <translation id="1748283190377208783">{0,plural, =1{ашиглаагүй олон тооны төлөв}other{# файлыг энэ веб аппад нээж, засах уу?}}</translation>
+<translation id="1748329107062243374"><ph name="WEBSITE" />-д нэвтрэхийн тулд <ph name="DEVICE_NAME" />-н passkey-г ашиглах</translation>
 <translation id="1748563609363301860">Та энэ нууц үгийг Google Бүртгэлдээ эсвэл зөвхөн энэ төхөөрөмж дээр хадгалах боломжтой</translation>
 <translation id="1749733017156547309">Нууц үг шаардлагатай</translation>
 <translation id="1750172676754093297">Таны аюулгүй байдлын түлхүүрт хурууны хээ хадгалах боломжгүй</translation>
@@ -1999,7 +2000,6 @@
 <translation id="2710101514844343743">Ашиглалт болон оношилгооны өгөгдөл</translation>
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2711073837061989559">Туршилтын хугацаа</translation>
-<translation id="2712207122921938368">Өөр төхөөрөмж дээр passkey үүсгэнэ үү</translation>
 <translation id="2713106313042589954">Камерыг унтраах</translation>
 <translation id="2713444072780614174">Цагаан</translation>
 <translation id="2714180132046334502">Бараан дэвсгэр</translation>
@@ -4650,6 +4650,7 @@
 <translation id="5108967062857032718">Тохиргоо - Андройд апп-г устгах</translation>
 <translation id="5109044022078737958">Миа</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" />-г хасах</translation>
+<translation id="5111326646107464148">Бүлгийг шинэ цонхонд нээх</translation>
 <translation id="5111646998522066203">Нууцлалын цонхыг хаах</translation>
 <translation id="5111692334209731439">&amp; Хадгалагдсан хуудсын менежер</translation>
 <translation id="5111794652433847656">Энэ төхөөрөмжид <ph name="APP_NAME" />-д зориулсан passkey байхгүй байна</translation>
@@ -5437,7 +5438,6 @@
 <translation id="583431638776747">Сайт боломжгүй байсан</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> үлдсэн минутын тухай</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Камер, эсвэл микрофоны бичлэг</translation>
-<translation id="5835625581856809102">Та <ph name="APP_NAME" />-д passkey үүсгэхийг хүсэж буй төхөөрөмжөөрөө энэ QR кодыг скан хийнэ үү</translation>
 <translation id="583673505367439042">Сайтууд таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой</translation>
 <translation id="5836999627049108525">Орчуулах хэл</translation>
 <translation id="583756221537636748">Гэр</translation>
@@ -5874,7 +5874,6 @@
 <translation id="6227002569366039565">Энэ бөмбөлгийг сонгохын тулд |<ph name="ACCELERATOR" />| дээр дараад, дараа нь үүний зааж буй элементийг сонгохын тулд дахин дарна уу.</translation>
 <translation id="6227280783235722609">өргөтгөл</translation>
 <translation id="6229849828796482487">Wi-Fi сүлжээг салгах</translation>
-<translation id="6230165830166519105">Өөр аргаар оролдож үзэх</translation>
 <translation id="6231782223312638214">Зөвлөсөн</translation>
 <translation id="6231881193380278751">Хуудсыг автоматаар сэргээх үүднээс асуулгын парамыг нэмэх: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Баттерей</translation>
@@ -7575,6 +7574,7 @@
 <translation id="7762243782113123335">Уучлаарай, алдаа гарлаа. Тайлбарт #bruschetta-р санал хүсэлт илгээнэ үү. Алдааны код нь <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" />-н <ph name="DOWNLOAD_RECEIVED" /></translation>
+<translation id="7764527477537408401">Бүлгийг шинэ цонхонд нээх</translation>
 <translation id="7765158879357617694">Зөөх</translation>
 <translation id="7765507180157272835">Bluetooth болон Wi-Fi шаардлагатай</translation>
 <translation id="7766082757934713382">Автомат апп болон систем шинэчлэлтийг түр зогсоосноор сүлжээний дата ашиглалтыг багасгахад тусалдаг</translation>
@@ -8688,6 +8688,7 @@
 <translation id="8754200782896249056">&lt;p&gt; Дэмжлэг бүхий дэлгэцийн орчинд <ph name="PRODUCT_NAME" />-г ачаалж байх үед системийн proxy тохиргоог ашиглана. Гэхдээ таны систед аливаа дэмжлэг байхгүй эсвэл таны системийн тохиргоо нь алдаатай байж болох юм.&lt;/p&gt; &lt;p&gt;Та системын тохиргоог тушаалын мөрөөр дамжуулан хийх боломжтой. &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; -с туг болон орчны хувьсагчийн талаарх нэмэлт мэдээллийг авах боломжтой.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Төхөөрөмжид хадгалсан гэрчилгээ болон түлхүүрийг удирдах зэрэг танай байгууллагын аюулгүй байдалтай холбоотой ажлуудыг гүйцэтгэх</translation>
 <translation id="8755376271068075440">&amp; Илүү том</translation>
+<translation id="8755584192133371929">Хуваалцахын тулд таб сонгоно уу</translation>
 <translation id="875604634276263540">Зургийн url буруу байна</translation>
 <translation id="8756969031206844760">Нууц үгийг шинэчлэх үү?</translation>
 <translation id="8757203080302669031">Энэ таб Bluetooth төхөөрөмжүүдийг идэвхтэйгээр скан хийж байна.</translation>

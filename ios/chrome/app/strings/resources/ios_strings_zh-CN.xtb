@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. 点按“密码选项”</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2843803966603263712">重置翻译设置</translation>
+<translation id="284581348330507117">创建互不重复的密码</translation>
 <translation id="2848086008667475748">在“设置”中设为默认选项…</translation>
 <translation id="2858204748079866344">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
 <translation id="285960592395650245">重试下载</translation>
@@ -651,6 +652,7 @@
 <translation id="5704908597376970822">无法登录。</translation>
 <translation id="5706552126692816153">1 天前曾有活动</translation>
 <translation id="5711039611392265845">若要了解更多与隐私、安全和数据收集相关的设置，请参阅<ph name="BEGIN_LINK" />同步功能和 Google 服务<ph name="END_LINK" />。</translation>
+<translation id="5718049162805123412">您应立即更改这些密码</translation>
 <translation id="5724941645893276623">若要私密地浏览网页，请添加新标签页</translation>
 <translation id="5728700505257787410">很抱歉，登录您的帐号时出现问题。</translation>
 <translation id="5733084997078800044">Chrome 小窍门</translation>
@@ -1134,6 +1136,7 @@
 <translation id="891658175948553296">在网站上突出显示文字</translation>
 <translation id="8917490105272468696">我同意</translation>
 <translation id="8928133177108699615">桌面版</translation>
+<translation id="894191600409472540">创建安全系数高的密码</translation>
 <translation id="8952559610785099500">添加密码</translation>
 <translation id="8953046091948372197">您的密码会显示在此处</translation>
 <translation id="895541991026785598">报告问题</translation>

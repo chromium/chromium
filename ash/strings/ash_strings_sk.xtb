@@ -415,6 +415,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3081696990447829002">Rozbaliť ponuku</translation>
 <translation id="3087734570205094154">Spodok</translation>
 <translation id="3090989381251959936">Prepnúť funkciu <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">verzia</translation>
 <translation id="309749186376891736">Presunúť kurzor</translation>
 <translation id="3100274880412651815">Zrušiť režim snímania</translation>
 <translation id="3105917916468784889">Nasnímať obrazovku</translation>
@@ -576,6 +577,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3846575436967432996">Informácie o sieti nie sú k dispozícii</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="385300504083504382">Začiatok</translation>
+<translation id="3859364108019690">Aplikácie sa nedajú streamovať</translation>
 <translation id="3861651314799684201">Celú obrazovku nahráte stlačením klávesa Enter</translation>
 <translation id="3871092408932389764">Najnižší</translation>
 <translation id="3886872229787704059">Otvorené dnes</translation>
@@ -692,6 +694,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4424159417645388645">5. plocha</translation>
 <translation id="4430019312045809116">Hlasitosť</translation>
 <translation id="4435022394553622295">Zobrazujte si upozornenia a aplikácie svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
+<translation id="4440032176046152627">Táto sieť nepodporuje streamovanie aplikácií z telefónu. Skúste v telefóne zapnúť hotspot. Ďalšie informácie</translation>
 <translation id="4441283832827406317">Aplikácie sú zoradené podľa názvu</translation>
 <translation id="4445159312344259901">Odomknite prihlásením</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 dôležité upozornenie}few{# dôležité upozornenia}many{# important notifications}other{# dôležitých upozornení}}</translation>
@@ -1232,6 +1235,7 @@ Nová inštalácia</translation>
 <translation id="7026338066939101231">Zníženie</translation>
 <translation id="7029814467594812963">Ukončiť reláciu</translation>
 <translation id="7032161822340700104">Je povolených iba šesť šablón. Ak chcete uložiť novú šablónu, niektorú odstráňte.</translation>
+<translation id="7034025838182392395">Aplikácia <ph name="APP_NAME" /> chce použiť zariadenie <ph name="DEVICE_NAME" />. Zapnite v zariadení fyzický prepínač <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Zbaliť stavovú oblasť</translation>
 <translation id="7045033600005038336">Chcete šablónu nahradiť?</translation>
@@ -1317,6 +1321,9 @@ Nová inštalácia</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Centrovanie kamery je zapnuté.</translation>
+<translation id="7519649142417630956">Po vypnutí bude správca odhlásený a nebude môcť ovládať vaše zariadenie.
+
+Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7526573455193969409">Sieť môže byť sledovaná</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikácie pre Linux a okná inkognito momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
@@ -1402,6 +1409,7 @@ Nová inštalácia</translation>
 <translation id="793716872548410480">Schránku zobrazíte klávesmi <ph name="SHORTCUT_KEY_NAME" /> + V. Posledných päť skopírovaných položiek sa uloží do vašej schránky.</translation>
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7944023924886109030">Zobraziť všetky dnešné udalosti</translation>
+<translation id="7947798320695032612">Aplikácia <ph name="APP_NAME" /> chce použiť vaše zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Stmavenie klávesnice</translation>
 <translation id="7963992254934562106">Zdroj: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vybrať priečinok…</translation>
@@ -1668,6 +1676,7 @@ Nová inštalácia</translation>
 <translation id="938963181863597773">Čo mám v kalendári?</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="951991426597076286">Odmietnuť</translation>
+<translation id="953431725143473984">Chcete zariadenie vypnúť?</translation>
 <translation id="954052413789300507">Nie je dostatok priestoru na súbor <ph name="FILENAME" />. Uvoľnite miesto.</translation>
 <translation id="974545358917229949">Zobrazujú sa výsledky (<ph name="RESULT_COUNT" />) pre <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Prechod na koniec dokumentu</translation>

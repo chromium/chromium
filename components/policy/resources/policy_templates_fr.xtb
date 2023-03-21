@@ -3211,7 +3211,6 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="3977304360459208438">Utiliser le paramètre par défaut pour les suites de chiffrement 3DES dans TLS</translation>
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
 <translation id="3983162212222338509">La résolution DNS du système peut être exécutée dans le processus réseau, en dehors de celui-ci, ou partiellement à l'intérieur et à l'extérieur du processus réseau, en fonction de la configuration du système et des flags de fonctionnalité.</translation>
-<translation id="3984028218719007910">Détermine si <ph name="PRODUCT_OS_NAME" /> doit conserver les données locales des comptes après la déconnexion. Si cette règle est définie sur "true", aucun compte persistant n'est conservé par <ph name="PRODUCT_OS_NAME" />. Par ailleurs, toutes les données de la session utilisateur sont supprimées après la déconnexion. Si cette règle est définie sur "false" ou si elle n'est pas configurée, l'appareil peut conserver des données utilisateur locales (chiffrées).</translation>
 <translation id="3986700049001404598">Autoriser les utilisateurs à mettre fin aux processus dans le gestionnaire de tâches Chrome</translation>
 <translation id="398884292557092447">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
 
@@ -4011,6 +4010,23 @@ Lorsque cette règle est désactivée, la protection des téléchargements n'env
 Si cette règle est désactivée, l'utilisateur ne voit pas cette promo.</translation>
 <translation id="4768446404233019970">Activer les suites de chiffrement 3DES dans TLS</translation>
 <translation id="4770334626033858263">Configuration utilisée pour générer et valider le code d'accès parental.</translation>
+<translation id="4771861383714907912">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
+
+      Cette règle n'a aucune incidence si la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'est pas configurée.
+
+      Lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint, <ph name="PRODUCT_NAME" /> exécute les actions configurées dans celle-ci.
+
+      La règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'a aucune incidence si elle est vide ou si elle n'est pas configurée.
+
+      Actions acceptées :
+
+      <ph name="CLOSE_BROWSERS_ACTION" /> : ferme toutes les fenêtres de navigateur et les PWA pour ce profil. Non disponible sur Android.
+
+      <ph name="SHOW_PROFILE_PICKER_ACTION" /> : affiche la fenêtre de sélection des profils. Non disponible sur Android.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> : efface les données de navigation correspondantes. Pour en savoir plus, consultez la règle <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> et <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> nécessitent que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "True".</translation>
 <translation id="4773997835955617342">Modifie la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
 
       Si cette règle est activée, la valeur de la règle "KerberosCustomPrefilledConfig" est appliquée en tant que configuration suggérée et figure dans la section "Paramètres avancés" de la boîte de dialogue d'authentification Kerberos.
@@ -5036,6 +5052,7 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
 <translation id="5722577409367087850">Charger l'extension</translation>
 <translation id="5728154254076636808">Permet de créer des copies itinérantes pour les données de profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Mot de passe Kerberos. L'espace réservé <ph name="PASSWORD_PLACEHOLDER" /> est remplacé par le mot de passe de connexion.</translation>
+<translation id="573183812760497142">Bloquer le partitionnement du stockage tiers pour ces origines</translation>
 <translation id="5732972008943405952">Importer les données de saisie automatique du navigateur par défaut à la première exécution</translation>
 <translation id="5733040281451845496">Si cette règle est activée, les délais liés à la gestion de l'alimentation et les limites relatives à la durée de session ne sont activés que lorsque l'utilisateur a effectué une première activité au cours d'une session.
 
@@ -6215,6 +6232,11 @@ Cette règle sera supprimée prochainement de <ph name="PRODUCT_NAME" />.</trans
 
       Si vous désactivez cette règle, ou si vous ne la configurez pas, aucune information d'utilisation n'est transmise.</translation>
 <translation id="6823711520976094072">Si cette règle est définie sur une valeur inférieure à 1 Mo ou qu'elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la taille de cache par défaut (256 Mo) pour mettre en cache les applications et les extensions installées par plusieurs utilisateurs d'un même appareil, ce qui évite à chacun d'eux de les télécharger de nouveau.</translation>
+<translation id="6828729771894228555">Permet de définir une liste de formats d'URL indiquant des origines de premier niveau (URL dans la barre d'adresse de l'onglet) qui bloquent le partitionnement du stockage tiers (partitionnement du stockage iFrame multi-origine).
+          Si cette règle n'est pas configurée ou si une origine de premier niveau ne correspond pas, la valeur de <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> est utilisée.
+          Pour en savoir plus sur les formats valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+          Notez que les formats que vous répertoriez ici sont traités comme des origines, et non comme des URL. Vous ne devez donc pas spécifier de chemin d'accès.
+          Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Cette règle contrôle la refactorisation récente des API Graphics3D dans le plug-in PPAPI.
 
 La migration n'affecte que les détails de l'implémentation interne et ne devrait modifier aucun comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.
@@ -7415,6 +7437,7 @@ Cette règle d'entreprise permet aux administrateurs de contrôler si leurs util
 <translation id="7962093600142350905">Cette règle détermine si des imprimantes Privet disponibles s'affichent dans la boîte de dialogue d'aperçu avant impression à l'attention des utilisateurs.
       Si cette règle est activée, les imprimantes Privet disponibles s'affichent.
       Si vous désactivez cette règle ou ne la configurez pas, les imprimantes Privet ne s'affichent pas dans la boîte de dialogue d'aperçu avant impression, cette méthode d'impression étant obsolète.</translation>
+<translation id="7970660709107174905">Paramètres de partitionnement du stockage tiers</translation>
 <translation id="7972642710812569707">Forcer la réactivation de WebSQL dans des contextes tiers.</translation>
 <translation id="7973609468423251675">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 
@@ -7911,6 +7934,10 @@ Si l'une des règles suivantes est définie, cette règle doit être désactivé
 <translation id="838870586332499308">Activer l'itinérance des données</translation>
 <translation id="8392478748777481636">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
+<translation id="8394518861160238324">Le partitionnement du stockage tiers est activé par défaut pour certains utilisateurs à partir de M113, mais peut être désactivé via le flag Chrome.
+          Si cette règle est définie sur <ph name="ALLOW_PARTITIONING_VALUE" /> ou n'est pas configurée, le partitionnement du stockage tiers peut être activé.
+          Si cette règle est définie sur <ph name="BLOCK_PARTITIONING_VALUE" />, le partitionnement du stockage tiers ne peut pas être activé.
+          Pour en savoir plus sur le partitionnement du stockage tiers, consultez https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Délai d'inactivité pour l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="8395749934754392549">Contrôle les paramètres du conteneur Android (ARC) et des applications Android.</translation>
 <translation id="8398952282584132331">Activer l'écran de confidentialité</translation>

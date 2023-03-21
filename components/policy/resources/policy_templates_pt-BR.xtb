@@ -148,6 +148,7 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
       A configuração <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> só terá efeito se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> for definida como falsa.</translation>
 <translation id="1147732569915511430">Hash SHA-256 da imagem de avatar.</translation>
 <translation id="1148415065145333943">Desativar o modo avançado de carregamento da bateria</translation>
+<translation id="1149841949061115313">Canal LTC</translation>
 <translation id="1150742937785306405">Permitir que os usuários ativem ou desativem a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para anúncios sugeridos pelo site no dispositivo.</translation>
 <translation id="1151353063931113432">Permitir imagens nestes sites</translation>
 <translation id="1151987132434751822">Os esquemas de autenticação aos quais as credenciais de políticas podem ser aplicadas. Eles podem ser um:
@@ -2221,6 +2222,7 @@ Se a política for ativada ou não for definida, o usuário poderá definir a im
 
       Se a política for definida como "Desativada", os controles de mídia não serão exibidos na tela de bloqueio.</translation>
 <translation id="3072847235228302527">Definir os Termos de Serviço para uma conta local do dispositivo</translation>
+<translation id="3074032542020543133">Canal LTS</translation>
 <translation id="3077650998740742747">
 Comportamento padrão (política não definida)
 Quando uma conta é adicionada à área de conteúdo, uma pequena caixa de diálogo pode aparecer pedindo para o usuário criar um novo perfil. Essa caixa de diálogo pode ser dispensada.
@@ -3237,7 +3239,6 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="3977304360459208438">Usar a configuração padrão para pacotes de criptografia 3DES em TLS</translation>
 <translation id="3979738908158213640">URLs que terão acesso para realizar o atestado do dispositivo durante a autenticação SAML</translation>
 <translation id="3983162212222338509">A resolução de DNS pode ser executada dentro ou fora do processo de rede, ou parcialmente dentro e parcialmente fora, dependendo da configuração do sistema e das flags de recursos.</translation>
-<translation id="3984028218719007910">Determina se o <ph name="PRODUCT_OS_NAME" /> deve manter os dados locais da conta após a saída. Se for configurada como true, nenhuma conta persistente será mantida pelo <ph name="PRODUCT_OS_NAME" /> e todos os dados da sessão do usuário serão descartados após a saída. Se esta política for configurada como false ou não for configurada, o dispositivo poderá manter os dados locais do usuário (criptografados).</translation>
 <translation id="3986700049001404598">Permitir que os usuários encerrem processos no gerenciador de tarefas do Chrome</translation>
 <translation id="398884292557092447">Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na IU.
 
@@ -3366,6 +3367,20 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="4101282687722389021">Carimbo de data/hora UTC do último horário em que a entrada foi atualizada. Enviada como uma string, porque o carimbo de data/hora não caberia em um número inteiro.</translation>
 <translation id="4102347680024644994">Relatar eventos de detecção e resposta estendidas (XDR, na sigla em inglês)</translation>
 <translation id="4105989332710272578">Desativar a aplicação da Transparência dos certificados para uma lista de URLs</translation>
+<translation id="4110126170080699437">Por motivos de segurança, a
+API <ph name="GET_DISPLAY_MEDIA_API_NAME" /> Web exige
+que um gesto anterior do usuário ("ativação temporária") seja chamado. Caso contrário,
+ela vai falhar.
+
+Com esse conjunto de políticas, os administradores podem especificar origens em que essa API pode ser
+chamada sem o gesto anterior do usuário.
+
+Para informações detalhadas sobre padrões de URL válidos, consulte
+https://chromeenterprise.google/intl/pt_br/policies/url-patterns/. O valor *
+não é aceito para esta política.
+
+Se a política for deixada sem definição, todas as origens vão exigir um gesto anterior do usuário para chamar
+essa API.</translation>
 <translation id="4114059938441379876">Se a política for definida, será possível configurar um URL em que os usuários poderão mudar a senha após receber um aviso no navegador. O serviço de proteção de senha direcionará os usuários ao URL (apenas protocolos HTTP e HTTPS) designado pela política. Para que o <ph name="PRODUCT_NAME" /> capture corretamente o hash com sal da nova senha na página de mudança de senha, essa página precisa seguir as diretrizes apresentadas em https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
       Se a política for desativada ou não for definida, o serviço direcionará os usuários para https://myaccount.google.com para mudar a senha.
@@ -7237,6 +7252,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 
       Se a política for desativada ou deixada sem definição, as políticas de nuvem do usuário terão prioridade por padrão.</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
+<translation id="76580522298425324">Permitir captura de tela sem o gesto anterior do usuário</translation>
 <translation id="7666228839913571182">Permitir cookies de terceiros</translation>
 <translation id="7668830462800981702">Se a política for definida como "Ativada", uma pesquisa padrão será realizada quando o usuário digitar um texto na barra de endereço que não seja um URL. Para especificar o provedor de pesquisa padrão, configure o restante das políticas de pesquisa padrão. Se essas políticas forem deixadas em branco, o usuário poderá escolher o provedor padrão. Se a política for definida como "Desativada", nenhuma pesquisa será realizada quando o usuário digitar um texto na barra de endereço que não seja um URL.
 

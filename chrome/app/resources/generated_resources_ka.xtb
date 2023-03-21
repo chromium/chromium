@@ -864,6 +864,7 @@
 <translation id="1744108098763830590">ფონური გვერდი</translation>
 <translation id="1745732479023874451">კონტაქტების მართვა</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{გსურთ, გახსნათ და დაარედაქტიროთ # ფაილი ამ ვებ-აპში?}}</translation>
+<translation id="1748329107062243374"><ph name="WEBSITE" />-ში შესასვლელად გამოიყენეთ <ph name="DEVICE_NAME" />-ის წვდომის გასაღები</translation>
 <translation id="1748563609363301860">პაროლის შენახვა შეგიძლიათ როგორც თქვენს Google ანგარიშში, ისე მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="1749733017156547309">პაროლი სავალდებულოა.</translation>
 <translation id="1750172676754093297">თქვენს უსაფრთხოების გასაღებზე თითის ანაბეჭდების შენახვა ვერ მოხერხდება</translation>
@@ -1991,7 +1992,6 @@
 <translation id="2710101514844343743">გამოყენებისა და დიაგნოსტიკის მონაცემები</translation>
 <translation id="271033894570825754">ახალი</translation>
 <translation id="2711073837061989559">ცდები</translation>
-<translation id="2712207122921938368">შექმენით წვდომის გასაღები სხვა მოწყობილობაზე</translation>
 <translation id="2713106313042589954">კამერის გამორთვა</translation>
 <translation id="2713444072780614174">თეთრი</translation>
 <translation id="2714180132046334502">მუქი ფონი</translation>
@@ -4643,6 +4643,7 @@
 <translation id="5108967062857032718">პარამეტრები — Android-ის აპების ამოშლა</translation>
 <translation id="5109044022078737958">მია</translation>
 <translation id="5109816792918100764">წაიშალოს <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">ჯგუფის გახსნა ახალ ფანჯარაში</translation>
 <translation id="5111646998522066203">ინკოგნიტო რეჟიმიდან გასვლა</translation>
 <translation id="5111692334209731439">&amp;და მონიშნულების მმართველი</translation>
 <translation id="5111794652433847656">ამ მოწყობილობაზე არ არის წვდომის გასაღებები <ph name="APP_NAME" />-ისთვის</translation>
@@ -5429,7 +5430,6 @@
 <translation id="583431638776747">საიტი მიუწვდომელი იყო</translation>
 <translation id="5834581999798853053">დარჩენილია დაახლოებით <ph name="TIME" /> წუთი</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> — მიმდინარეობს ჩაწერა კამერიდან ან მიკროფონიდან</translation>
-<translation id="5835625581856809102">დაასკანირეთ ეს QR კოდი იმ მოწყობილობით, რომელზეც გსურთ, შექმნათ წვდომის გასაღები <ph name="APP_NAME" />-ისთვის</translation>
 <translation id="583673505367439042">საიტებს შეუძლია თქვენს მოწყობილობაზე არსებული ფაილებისა და საქაღალდეების რედაქტირების თხოვნა</translation>
 <translation id="5836999627049108525">ენა, რომლიდანაც უნდა ითარგმნოს</translation>
 <translation id="583756221537636748">სათავსო</translation>
@@ -5868,7 +5868,6 @@
 <translation id="6227002569366039565">დააჭირეთ |<ph name="ACCELERATOR" />|-ს, ეს ბუშტი ფოკუსში რომ მოაქციოთ, შემდეგ კი დააჭირეთ ხელახლა, ფოკუსში ის ელემენტი რომ მოაქციოთ, რომელსაც ის მიემართება.</translation>
 <translation id="6227280783235722609">გაფართოება</translation>
 <translation id="6229849828796482487">Wi-Fi ქსელის გათიშვა</translation>
-<translation id="6230165830166519105">სხვა მეთოდით ცდა</translation>
 <translation id="6231782223312638214">შემოთავაზებული</translation>
 <translation id="6231881193380278751">URL-ში დაამატეთ მოთხოვნის პარამეტრი, გვერდის ავტომატური განახლებისათვის: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ბატარეა</translation>
@@ -7570,6 +7569,7 @@
 <translation id="7762243782113123335">სამწუხაროდ, წარმოიქმნა შეფერხება. გთხოვთ, გამოგვეხმაუროთ ჰეშთეგით #bruschetta აღწერილობაში. შეცდომის კოდია <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">მისამართის დამატება</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> <ph name="DOWNLOAD_DOMAIN" />-დან</translation>
+<translation id="7764527477537408401">ჯგუფის გახსნა ახალ ფანჯარაში</translation>
 <translation id="7765158879357617694">გადატანა</translation>
 <translation id="7765507180157272835">საჭიროა Bluetooth და Wi-Fi</translation>
 <translation id="7766082757934713382">დაგეხმარებათ ქსელის მიერ მონაცემთა მოხმარების შემცირებაში აპებისა და სისტემის განახლებების ავტომატური განახლებების დაპაუზების გზით</translation>
@@ -8687,6 +8687,7 @@
        &lt;p&gt;მიუხედავად ამისა თქვენ მაინც შეძლებთ ბრძანებათა სტრიქონიდან სისტემის კონფიგურაციას. იხილეთ &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; ალმებსა და გარემოს ცვლილებებზე დამატებითი ინფორმაციისთვის.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">თქვენი ორგანიზაციისთვის უსაფრთხოებასთან დაკავშირებული ამოცანების შესრულება, როგორიცაა მოწყობილობაზე შენახული სერტიფიკატებისა და გასაღებების მართვა</translation>
 <translation id="8755376271068075440">&amp;უფრო დიდი</translation>
+<translation id="8755584192133371929">აირჩიეთ ჩანართი გასაზიარებლად</translation>
 <translation id="875604634276263540">სურათის url არასწორია</translation>
 <translation id="8756969031206844760">გსურთ პაროლის განახლება?</translation>
 <translation id="8757203080302669031">ეს ჩანართი აქტიურად ასკანირებს Bluetooth მოწყობილობებს.</translation>

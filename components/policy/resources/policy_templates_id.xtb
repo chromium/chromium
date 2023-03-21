@@ -3247,7 +3247,6 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
 <translation id="3977304360459208438">Gunakan setelan default untuk cipher suite 3DES di TLS</translation>
 <translation id="3979738908158213640">URL yang akan diberi akses untuk melakukan pengesahan perangkat saat autentikasi SAML</translation>
 <translation id="3983162212222338509">Resolusi DNS sistem dapat berjalan di dalam atau di luar proses jaringan, atau sebagian di dalam dan sebagian di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.</translation>
-<translation id="3984028218719007910">Menentukan apakah <ph name="PRODUCT_OS_NAME" /> menyimpan data akun lokal setelah keluar. Jika disetel ke true, maka tidak ada akun yang terus-menerus disimpan oleh <ph name="PRODUCT_OS_NAME" /> dan semua data dari sesi pengguna akan dihapus setelah keluar. Jika kebijakan ini disetel ke false atau tidak dikonfigurasi, perangkat dapat menyimpan data pengguna lokal (yang dienkripsi).</translation>
 <translation id="3986700049001404598">Izinkan pengguna mengakhiri proses dengan pengelola tugas Chrome</translation>
 <translation id="398884292557092447">Jika kebijakan disetel ke Benar (True) atau tidak disetel, pengguna akan dapat mengontrol saran isi otomatis untuk kartu kredit di UI.
 
@@ -4069,6 +4068,23 @@ Jika kebijakan ini disetel ke nonaktif, perlindungan download tidak akan mengiri
 Jika kebijakan disetel ke Nonaktif, promo Ekstensi Penyedia Kredensial tidak akan ditampilkan kepada pengguna.</translation>
 <translation id="4768446404233019970">Mengaktifkan cipher suite 3DES di TLS</translation>
 <translation id="4770334626033858263">Konfigurasi yang digunakan untuk membuat dan memverifikasi Kode Akses Orang Tua.</translation>
+<translation id="4771861383714907912">Daftar tindakan yang akan dijalankan saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai.
+
+      Jika kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak disetel, kebijakan ini tidak akan berpengaruh.
+
+      Saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai, <ph name="PRODUCT_NAME" /> akan menjalankan tindakan yang dikonfigurasi di kebijakan ini.
+
+      Jika kebijakan ini disetel ke kosong atau tidak disetel, kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak akan berpengaruh.
+
+      Tindakan yang didukung adalah:
+
+      '<ph name="CLOSE_BROWSERS_ACTION" />': menutup semua jendela browser dan PWA untuk profil ini. Tidak didukung di Android.
+
+      '<ph name="SHOW_PROFILE_PICKER_ACTION" />': menampilkan jendela Pemilih Profil. Tidak didukung di Android.
+
+      '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />', '<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />', '<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', '<ph name="CLEAR_SITE_SETTINGS_ACTION" />', '<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />': menghapus data penjelajahan yang sesuai. Lihat kebijakan <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> untuk detail selengkapnya.
+
+      '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', dan '<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />' mengharuskan kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true).</translation>
 <translation id="4773997835955617342">Mengubah konfigurasi <ph name="KRB5_CONFIG" /> yang disarankan untuk tiket baru yang dibuat secara manual.
 
       Jika kebijakan ini disetel ke aktif, nilai kebijakan 'KerberosCustomPrefilledConfig' akan diterapkan sebagai konfigurasi yang disarankan dan akan ditampilkan di bagian "Lanjutan" pada dialog autentikasi Kerberos.
@@ -5120,6 +5136,7 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="5722577409367087850">Muat ekstensi</translation>
 <translation id="5728154254076636808">Mengaktifkan pembuatan salinan roaming untuk data profil <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Sandi Kerberos. Placeholder <ph name="PASSWORD_PLACEHOLDER" /> diganti dengan sandi login.</translation>
+<translation id="573183812760497142">Memblokir partisi penyimpanan pihak ketiga untuk origin ini</translation>
 <translation id="5732972008943405952">Mengimpor data formulir isi-otomatis dari browser default saat pertama kali dijalankan</translation>
 <translation id="5733040281451845496">Jika kebijakan disetel ke Aktif, penundaan pengelolaan daya dan batas durasi sesi tidak akan dimulai hingga aktivitas pengguna pertama terjadi dalam suatu sesi.
 
@@ -6334,6 +6351,11 @@ Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> pada masa mendatang.<
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada penggunaan informasi yang dilaporkan.</translation>
 <translation id="6823711520976094072">Jika disetel di bawah 1 MB atau tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan ukuran default 256 MiB untuk menyimpan cache aplikasi dan ekstensi yang akan diinstal oleh beberapa pengguna di satu perangkat, sehingga setiap pengguna tidak perlu mendownload ulang satu per satu aplikasi dan ekstensi tersebut.</translation>
+<translation id="6828729771894228555">Memungkinkan Anda menetapkan daftar pola URL yang menentukan origin level atas (URL di kolom URL tab) yang memblokir partisi penyimpanan pihak ketiga (partisi dari penyimpanan iframe lintas origin).
+          Jika kebijakan ini tidak disetel atau origin tingkat atas tidak cocok, nilai dari <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> akan digunakan.
+          Untuk informasi selengkapnya tentang pola yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+          Perlu diingat bahwa pola yang Anda cantumkan di sini dianggap sebagai origin, bukan URL, jadi Anda tidak perlu menentukan jalur.
+          Untuk informasi selengkapnya terkait partisi penyimpanan pihak ketiga, lihat https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Kebijakan ini mengontrol pemfaktoran ulang terbaru untuk Graphics3D API dalam plugin PPAPI.
 
 Migrasi hanya memengaruhi detail implementasi internal dan seharusnya tidak
@@ -7555,6 +7577,7 @@ Kebijakan perusahaan ini dibuat untuk memungkinkan administrator mengontrol apak
 <translation id="7962093600142350905">Kebijakan ini mengontrol apakah printer privet yang tersedia akan ditampilkan kepada pengguna di dialog pratinjau cetak.
       Jika kebijakan ini disetel ke Aktif, printer privet yang tersedia akan ditampilkan.
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, printer privet tidak akan muncul di pratinjau cetak, karena metode pencetakan ini sudah tidak digunakan lagi.</translation>
+<translation id="7970660709107174905">Setelan partisi penyimpanan pihak ketiga</translation>
 <translation id="7972642710812569707">Paksa WebSQL di konteks pihak ketiga diaktifkan kembali.</translation>
 <translation id="7973609468423251675">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -8065,6 +8088,10 @@ perangkat akan digunakan selama pengguna login.</translation>
 <translation id="838870586332499308">Aktifkan roaming data</translation>
 <translation id="8392478748777481636">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />'.</translation>
 <translation id="8393850527597048037">Khusus Platform</translation>
+<translation id="8394518861160238324">Mulai M113, partisi penyimpanan pihak ketiga diaktifkan secara default bagi beberapa pengguna, tetapi dapat dinonaktifkan melalui tanda Chrome.
+          Jika kebijakan ini disetel ke <ph name="ALLOW_PARTITIONING_VALUE" /> atau tidak disetel, partisi penyimpanan pihak ketiga dapat diaktifkan.
+          Jika kebijakan ini disetel ke <ph name="BLOCK_PARTITIONING_VALUE" />, partisi penyimpanan pihak ketiga tidak dapat diaktifkan.
+          Untuk informasi selengkapnya terkait partisi penyimpanan pihak ketiga, lihat https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Waktu tunggu tidak ada aktivitas untuk screensaver layar kunci pengguna.</translation>
 <translation id="8395749934754392549">Mengontrol setelan untuk container Android (ARC) dan aplikasi Android.</translation>
 <translation id="8398952282584132331">Mengaktifkan layar privasi</translation>

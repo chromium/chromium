@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">‏המטמון שלך ב-Google Drive נוקה.</translation>
 <translation id="2239068707900391003">אדם עם קפה</translation>
 <translation id="2251368349685848079">שחזור מהאשפה</translation>
+<translation id="2278133026967558505">‏גישה לקובץ מכל האתרים וכתובות ה-URL</translation>
 <translation id="2282155092769082568">כתובת אתר של תצורה אוטומטית:</translation>
 <translation id="2284767815536050991">אחסון נשלף</translation>
 <translation id="2288278176040912387">פטיפון</translation>
@@ -768,6 +769,7 @@
 <translation id="7162080671816799010">חסר ערך בשדה 'התאמה של שמות נושאים חלופיים' או בשדה 'התאמה של סיומות אתרים' לצורך אימות הזהות של השרת</translation>
 <translation id="7165320105431587207">כשל בהגדרת התצורה של הרשת</translation>
 <translation id="7170041865419449892">מחוץ לטווח</translation>
+<translation id="7179579940054351344">‏גישה לקובץ מכל האתרים וכתובות ה-URL מלבד <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7189874332498648577">‎<ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">שמירה בשם</translation>

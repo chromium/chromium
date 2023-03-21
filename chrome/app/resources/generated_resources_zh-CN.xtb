@@ -1981,7 +1981,6 @@
 <translation id="2710101514844343743">使用情况和诊断数据</translation>
 <translation id="271033894570825754">新建</translation>
 <translation id="2711073837061989559">试用版</translation>
-<translation id="2712207122921938368">在另一部设备上创建通行密钥</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2714180132046334502">深色背景</translation>
@@ -3730,7 +3729,6 @@
 <translation id="4275397969489577657">启用事件流记录功能</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
 <translation id="4277434192562187284">XML 配置来源</translation>
-<translation id="4277529130885813215">换一部设备</translation>
 <translation id="4278390842282768270">允许</translation>
 <translation id="4278498748067682896">您将使用“自助服务终端和数字标牌升级”，这种升级仅允许相应设备在自助服务终端或数字标牌模式下运行。如果希望用户登录相应设备，请返回，然后使用 Chrome 企业版升级进行注册。</translation>
 <translation id="4278779213160967034">此过程可能需要几分钟的时间。正在下载文件。</translation>
@@ -5415,7 +5413,6 @@
 <translation id="583431638776747">网站出问题了</translation>
 <translation id="5834581999798853053">约剩 <ph name="TIME" /> 分钟</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 摄像头或麦克风正在录制/录音</translation>
-<translation id="5835625581856809102">通过您要为<ph name="APP_NAME" />创建通行密钥所在的设备，扫描此二维码</translation>
 <translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
 <translation id="5836999627049108525">原文语言</translation>
 <translation id="583756221537636748">耳机盒</translation>
@@ -5852,7 +5849,6 @@
 <translation id="6227002569366039565">按 |<ph name="ACCELERATOR" />| 可聚焦于此气泡，然后再聚焦于它所指向的元素。</translation>
 <translation id="6227280783235722609">扩展程序</translation>
 <translation id="6229849828796482487">断开 WLAN 网络连接</translation>
-<translation id="6230165830166519105">换个方式</translation>
 <translation id="6231782223312638214">建议</translation>
 <translation id="6231881193380278751">在网址中添加查询参数可自动刷新相应网页：chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">电池</translation>

@@ -129,6 +129,7 @@
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
+<translation id="1604857178818051494">Паузирање аудиовизуелни содржини</translation>
 <translation id="1610778689852195798">„Врати“</translation>
 <translation id="1611993646327628135">Вклучено</translation>
 <translation id="1618835956950524778">Нагласете го копчето за стартерот на полицата</translation>
@@ -190,6 +191,7 @@
 <translation id="1862380676329487333">Ажурирај и одјави се</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1869497990620230175">Брзи датотеки</translation>
+<translation id="1871023081802165724">Пуштање аудиовизуелни содржини</translation>
 <translation id="1879018240766558464">Прозорците „Инкогнито“ не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="1882814835921407042">Нема мобилна мрежа</translation>
 <translation id="1882897271359938046">Отсликување во <ph name="DISPLAY_NAME" /></translation>
@@ -241,6 +243,7 @@
 <translation id="2132302418721800944">Снимање цел екран</translation>
 <translation id="2135456203358955318">Закотвена лупа</translation>
 <translation id="2148716181193084225">Денес</translation>
+<translation id="2149229036084364364">Одење на претходната песна</translation>
 <translation id="2161132820593978283">Пробајте врамување на камера за да бидете во средината на екранот на видеоповици. Вклучете го во „Брзи поставки“.</translation>
 <translation id="2170530631236737939">Повлечете надолу со три прста за да излезете од „Преглед“</translation>
 <translation id="2185166372312820725">Одете на претходната картичка</translation>
@@ -370,6 +373,7 @@
 <translation id="2865888419503095837">Информации за мрежа</translation>
 <translation id="2872353916818027657">Замени примарен монитор</translation>
 <translation id="2872961005593481000">Исклучи</translation>
+<translation id="2876338922445400217">Зумирање на екранот</translation>
 <translation id="2878884018241093801">Нема неодамнешни ставки</translation>
 <translation id="2885950158625301909">Дознајте повеќе</translation>
 <translation id="2891209721153296020">„Поништи избор“</translation>
@@ -394,6 +398,7 @@
 <translation id="3009178788565917040">Излез</translation>
 <translation id="3009958530611748826">Изберете папка за зачувување</translation>
 <translation id="301282384882049174">Споделено од вашиот администратор</translation>
+<translation id="3018135054368884502">Премотување аудиовизуелни содржини нанапред</translation>
 <translation id="3033545621352269033">Вклучено</translation>
 <translation id="3033912566804961911">Комбинирајте со <ph name="DESK_NAME" /></translation>
 <translation id="3036649622769666520">Отвори датотеки</translation>
@@ -410,6 +415,7 @@
 <translation id="3081696990447829002">Прошири го менито</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090989381251959936">Вклучете/исклучете <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">верзија</translation>
 <translation id="309749186376891736">Премести го покажувачот</translation>
 <translation id="3100274880412651815">Отфрли го режимот на снимање</translation>
 <translation id="3105917916468784889">Сними слика од екранот</translation>
@@ -496,6 +502,7 @@
 <translation id="353086728817903341">Поврзано со <ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="3533126039236445965">Апликации на полица</translation>
 <translation id="3542066395059568317">Ќе видите препораки за да можете да продолжите каде што сте застанале. Може да кликнете со десното копче за да ги отстраните препораките.</translation>
+<translation id="3546121235777416274">Нагласување на прозорецот „Слика во слика“</translation>
 <translation id="3552189655002856821">Wi-Fi е исклучено</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> е прикачена</translation>
 <translation id="3558768885091059911">Да се вклучи пристап за камера и микрофон?</translation>
@@ -576,6 +583,7 @@
 <translation id="3891340733213178823">Притиснете Ctrl+Shift+Q двапати за да се одјавите.</translation>
 <translation id="3893630138897523026">ChromeVox (говорни повратни информации)</translation>
 <translation id="3897533311200664389">Започнете текстуално барање</translation>
+<translation id="3898464793473355515">Ротирање на екранот 90 степени во насока на стрелките на часовникот</translation>
 <translation id="3899995891769452915">Гласовно внесување</translation>
 <translation id="3900355044994618856">Вашата сесија ќе заврши по <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Се поврзува со <ph name="NAME" /></translation>
@@ -744,6 +752,7 @@
 <translation id="4702647871202761252">Исклучен е екранот за приватност</translation>
 <translation id="4706121060329443414">Подоцна ќе се изврши обид за преземање. Говорот ќе биде испратен до Google за обработка засега.</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
+<translation id="4708065238214351979">Зголемување на осветленоста на тастатурата</translation>
 <translation id="4717575069099566988">Вашиот кабел USB-C не поддржува USB4. Изведбата на уредот може да биде ограничена.</translation>
 <translation id="4730374152663651037">ЧЕСТО КОРИСТЕНИ</translation>
 <translation id="4731797938093519117">Пристап за родители</translation>
@@ -770,6 +779,7 @@
 <translation id="4849058404725798627">Нагласи го предметот со фокус на тастатурата</translation>
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
 <translation id="485634149294284819">Влезете во менито за тастатура</translation>
+<translation id="485806788160414322">Пуштање или паузирање аудиовизуелни содржини</translation>
 <translation id="4860284199500934869">Проверете ја мрежната врска за да се преземе <ph name="FILENAME" /></translation>
 <translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4864648187878336334">Работна површина 15</translation>
@@ -789,6 +799,7 @@
 <translation id="492453977506755176">Копче за режим на снимање</translation>
 <translation id="4925542575807923399">Администраторот на оваа сметка бара таа да биде првата пријавена сметка во сесија со повеќе пријавувања.</translation>
 <translation id="4929163402621253029">Дали зборувате? Исклучен ви е звукот. Дознајте повеќе</translation>
+<translation id="493076006037866439">Одзумирање на екранот</translation>
 <translation id="4936329710968938986">Сите, исклучено</translation>
 <translation id="4938176435186993759">Сокриј ги сите предлози</translation>
 <translation id="4945196315133970626">Исклучи известувања</translation>
@@ -797,6 +808,7 @@
 <translation id="4952936045814352993">„Лоцирај го телефонот“ не е достапна кога се оневозможени звуците на алармите</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> бара да го вратите вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
 <translation id="4961318399572185831">Емитувај го екранот</translation>
+<translation id="4966431234408005599">Зголемување на јачината на звукот</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ч. <ph name="MINUTES" /> м. <ph name="SECONDS" /> с.</translation>
 <translation id="4975771730019223894">Значки за апликации</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -820,6 +832,7 @@
 <translation id="5045550434625856497">Погрешна лозинка</translation>
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
+<translation id="5092436659250499817">Вклучување/Исклучување заднинско светло на тастатура</translation>
 <translation id="509790653408515442">Кога ќе ги стримувате апликациите од телефонот, ќе се појават тука</translation>
 <translation id="5098537242461068432">Работната површина и прозорците се отворени повторно</translation>
 <translation id="5104236669533825617">Не може да се создаде снимка на екран</translation>
@@ -844,6 +857,7 @@
 <translation id="5208059991603368177">Вклучено</translation>
 <translation id="5216991270656129561">Исклучено до <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Одјави се</translation>
+<translation id="5229343007215035173">Вклучување/Исклучување „Заштита на приватноста“</translation>
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="523505283826916779">Поставки за пристапност</translation>
 <translation id="5245201184978705914">Не може да се генерира транскрипција</translation>
@@ -957,6 +971,7 @@
 <translation id="576341972084747908">Преземате опасна датотека <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Групата на полица е исклучена.</translation>
 <translation id="576453121877257266">„Ноќното светло“ е вклучено.</translation>
+<translation id="5764569119212455782">Префрлање на последниот избран јазик</translation>
 <translation id="5769373120130404283">Екран за приватност</translation>
 <translation id="5773950591113557721">Ова дозволува пристап за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="5774295353725270860">Отвори ја апликацијата Датотеки</translation>
@@ -968,6 +983,7 @@
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
+<translation id="5841296711770970362">Одење на следната песна</translation>
 <translation id="584525477304726060">Задржете за максимирање</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> не е активирана.</translation>
 <translation id="5860033963881614850">Исклучено</translation>
@@ -1103,6 +1119,7 @@
 <translation id="6497418457565568043">„Не вознемирувај“ е вклучено</translation>
 <translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6507618042428827377">Префрлање на следниот достапен метод за внесување</translation>
 <translation id="6508923215158854599">Проверете дали вашиот Chromebook е на истата Wi-Fi мрежа со вашиот уред Chromecast.</translation>
 <translation id="6515727200518652613">Врската со камерата се изгуби, се прави обид за повторно поврзување.</translation>
 <translation id="6520517963145875092">Изберете прозорец за да сликате</translation>
@@ -1387,6 +1404,7 @@
 <translation id="7942349550061667556">Црвена</translation>
 <translation id="7944023924886109030">Видете ги сите денешни настани</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" /></translation>
+<translation id="7951630946012935453">Затемнување тастатура</translation>
 <translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
 <translation id="797512352675305461">Вклучете/исклучете ја лупата на цел екран</translation>
@@ -1518,10 +1536,12 @@
 <translation id="8598235756057743477">Подредете ги апликациите по име или боја.</translation>
 <translation id="8609384513243082612">Отворете нова картичка</translation>
 <translation id="8614517853887502247">Известувањата од <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> се сокриени бидејќи има вклучено заштита од прикажување</translation>
+<translation id="8619138598101195078">Намалување на јачината на звукот</translation>
 <translation id="8627191004499078455">Поврзан со <ph name="DEVICE_NAME" /></translation>
 <translation id="8630991711272431708">Исклучете го пристапот до камерата</translation>
 <translation id="8631727435199967028">Поставки за пристапност</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
+<translation id="8638637208069328956">Вклучување/Исклучување микрофон</translation>
 <translation id="8639760480004882931">Преостануваат <ph name="PERCENTAGE" /></translation>
 <translation id="8641805545866562088">Се освежува списокот со профили. Почекајте неколку минути.</translation>
 <translation id="8646417893960517480">Тајмер за <ph name="TOTAL_TIME" /></translation>
@@ -1540,6 +1560,7 @@
 <translation id="8717459106217102612">Изберете претходен збор или буква</translation>
 <translation id="8721053961083920564">Вклучување/исклучување звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Снимање на целиот екран</translation>
+<translation id="8725214031272624704">Прикажување список на достапни методи за внесување</translation>
 <translation id="8731487213223706745">Завршува во <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Можеби се обидува да ви ги украде ударите на тастатурата</translation>
 <translation id="8735678380411481005">Боја на заднинско светло на тастатура</translation>

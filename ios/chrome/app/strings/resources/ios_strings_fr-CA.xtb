@@ -262,6 +262,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2834399722155632105">3. Appuyez sur Options de mot de passe</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Réinit. param. Traduction</translation>
+<translation id="284581348330507117">Créer des mots de passe uniques</translation>
 <translation id="2848086008667475748">Définir par défaut dans Paramètres…</translation>
 <translation id="2858204748079866344">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ avec votre mot de passe.</translation>
 <translation id="285960592395650245">Réessayer téléchargement</translation>
@@ -374,6 +375,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3595252146048399851">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3603009562372709545">Copier lien URL</translation>
 <translation id="3607167657931203000">Données de saisie auto</translation>
+<translation id="3608008480985212611">Connectez-vous pour gérer vos préférences.</translation>
 <translation id="3609785682760573515">Synchronisation en cours...</translation>
 <translation id="3631443864840848029">Assurez-vous que vous enregistrez votre mot de passe actuel pour ce site.</translation>
 <translation id="3638472932233958418">Précharger pages Web</translation>
@@ -480,6 +482,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
 <translation id="4476574785019001431">Paramètres</translation>
 <translation id="448433063499977729">La synchronisation a été désactivée</translation>
+<translation id="4489536976005181779">{count,plural, =1{ page ajoutée à votre liste de lecture dans votre compte, {email}}one{ page ajoutée à votre liste de lecture dans votre compte, {email}}other{ pages ajoutées à votre liste de lecture dans votre compte, {email}}}</translation>
 <translation id="4496373720959965247">Ajoutez des onglets et basculez entre les pages</translation>
 <translation id="4502566650163919158">Vérifier maintenant</translation>
 <translation id="4505980578794259603">Dernière vérification : <ph name="TIME" />.</translation>
@@ -650,6 +653,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5704908597376970822">Impossible de se connecter.</translation>
 <translation id="5706552126692816153">Actif il y a 1 jour</translation>
 <translation id="5711039611392265845">Pour voir plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, consultez l'article <ph name="BEGIN_LINK" />Synchronisation et services Google<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Vous devriez les modifier maintenant</translation>
 <translation id="5724941645893276623">Pour naviguer confidentiellement sur le Web, ouvrez un nouvel onglet</translation>
 <translation id="5728700505257787410">Un problème est survenu lors de la connexion à votre compte.</translation>
 <translation id="5733084997078800044">Astuce Chrome</translation>
@@ -1133,6 +1137,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="891658175948553296">Mettre du texte en surbrillance sur un site</translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>
 <translation id="8928133177108699615">Bureau</translation>
+<translation id="894191600409472540">Créez des mots de passe forts</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="8953046091948372197">Vous trouverez vos mots de passe ici</translation>
 <translation id="895541991026785598">Signaler un problème</translation>

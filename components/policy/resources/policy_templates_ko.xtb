@@ -3214,7 +3214,6 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 <translation id="3977304360459208438">TLS에서 3DES 암호화 스위트의 기본 설정 사용</translation>
 <translation id="3979738908158213640">SAML 인증을 하는 동안 기기 증명을 실행할 권한이 부여되는 URL입니다.</translation>
 <translation id="3983162212222338509">시스템 DNS 변환은 시스템 구성 및 기능 플래그에 따라 네트워크 프로세스 내부 또는 외부에서 실행되거나 부분적으로 내부 및 외부에서 실행될 수 있습니다.</translation>
-<translation id="3984028218719007910"><ph name="PRODUCT_OS_NAME" />이(가) 로그아웃 뒤에 로컬 계정 데이터를 유지할 지를 결정합니다. true로 설정하면, <ph name="PRODUCT_OS_NAME" />이(가) 유지하는 영구 계정이 없으며 사용자 세션의 모든 데이터가 로그아웃 뒤에 삭제됩니다. 이 정책이 false로 설정되거나 구성되지 않으면 기기는 암호화된 로컬 사용자 데이터를 유지합니다.</translation>
 <translation id="3986700049001404598">사용자가 Chrome 작업 관리자에서 프로세스를 종료하도록 허용</translation>
 <translation id="398884292557092447">정책을 True로 설정하거나 설정하지 않으면 사용자가 UI에서 신용카드의 자동 완성 추천을 제어할 수 있습니다.
 

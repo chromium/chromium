@@ -1225,7 +1225,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="399952081411886534">Autres fonctionnalités améliorant la confidentialité des annonces</translation>
 <translation id="4000598935132966791">En savoir plus sur les restrictions liées au site dans les navigateurs gérés</translation>
 <translation id="4006465311664329701">Modes de paiement, offres et adresses utilisant Google Pay</translation>
-<translation id="4009243425692662128">Le contenu des pages que vous imprimez est envoyé à Google Cloud ou à des tiers pour être analysé, par exemple pour vérifier qu'il ne contient pas de données sensibles.</translation>
 <translation id="4010758435855888356">Autoriser l'accès à l'espace de stockage ?</translation>
 <translation id="401170183602135785">Enveloppe C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF contenant {COUNT} page}one{Document PDF contenant {COUNT} page}other{Document PDF contenant {COUNT} pages}}</translation>

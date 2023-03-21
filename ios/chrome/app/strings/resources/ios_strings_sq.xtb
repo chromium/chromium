@@ -262,6 +262,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2834399722155632105">3. Trokit tek "Opsionet e fjalëkalimeve"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Rivendos cilësimet e përkthimit</translation>
+<translation id="284581348330507117">Krijo fjalëkalime unike</translation>
 <translation id="2848086008667475748">Bëje "Të parazgjedhur" te "Cilësimet"…</translation>
 <translation id="2858204748079866344">Për të mbrojtur privatësinë tënde, Chrome nuk do ta plotësojë automatikisht fjalëkalimin tënd në këtë fushë.</translation>
 <translation id="285960592395650245">Provo sërish shkarkimin</translation>
@@ -374,6 +375,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3595252146048399851">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="3603009562372709545">Kopjo URL-në e lidhjes</translation>
 <translation id="3607167657931203000">Plotëso automatikisht të dhënat</translation>
+<translation id="3608008480985212611">Identifikohu për të menaxhuar preferencat e tua.</translation>
 <translation id="3609785682760573515">Po sinkronizon...</translation>
 <translation id="3631443864840848029">Sigurohu që po e ruan fjalëkalimin aktual për këtë sajt.</translation>
 <translation id="3638472932233958418">Ngarko paraprakisht faqet e uebit</translation>
@@ -541,6 +543,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="48274138579728272">Shëno si të lexuar</translation>
 <translation id="4833686396768033263">Skedat e fundit nuk ofrohen</translation>
 <translation id="4833786495304741580">Dërgon automatikisht te Google statistika të përdorimit dhe raportet e ndërprerjeve aksidentale.</translation>
+<translation id="4834499902900503484">Kur je i identifikuar në Chrome, fjalëkalimet që ruan do të shkojnë te "Llogaria jote e Google". Për ta çaktivizuar këtë, <ph name="BEGIN_LINK" />shko te cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Faqeshënuesit, historiku, fjalëkalimet etj. nuk do të sinkronizohen më në "Llogarinë tënde të Google".</translation>
 <translation id="4844899002472726590">Shiko dhe modifiko temat që të interesojnë</translation>
 <translation id="4848999860252535517">Të fshihet fjalëkalimi për <ph name="WEBSITE" />?</translation>
@@ -649,6 +652,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5704908597376970822">Nuk mund të identifkohesh.</translation>
 <translation id="5706552126692816153">Aktiv 1 ditë më parë</translation>
 <translation id="5711039611392265845">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shiko <ph name="BEGIN_LINK" />Sinkronizimi dhe shërbimet e Google<ph name="END_LINK" /></translation>
+<translation id="5718049162805123412">Duhet t'i ndryshosh këto tani</translation>
 <translation id="5724941645893276623">Për të shfletuar uebin në mënyrë private, shto një skedë të re</translation>
 <translation id="5728700505257787410">Na vjen keq, ka pasur një problem identifikimi në llogarinë tënde.</translation>
 <translation id="5733084997078800044">Këshillë për Chrome</translation>
@@ -684,6 +688,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5899314093904173337">Për të ndarë me personat në afërsi, lejoji të skanojnë këtë kod QR me kamerën e tyre ose aplikacionin e skanerit të kodeve QR</translation>
 <translation id="5911030830365207728">Përkthe me Google</translation>
 <translation id="5913600720976431809">Opsionet për përkthimin e faqes</translation>
+<translation id="5922999516621365983">Zvarrite skedën këtu për ta gozhduar.</translation>
 <translation id="5938160824633642847">Pajisja jote është thuajse plot. Liro hapësirë dhe provo përsëri.</translation>
 <translation id="5948291296578561264">Kjo të lejon të ruash fotografi në bibliotekën tënde të fotografive.</translation>
 <translation id="5951816930277761335">Ndaj lidhjen</translation>
@@ -1131,6 +1136,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="891658175948553296">Thekso tekstin në një sajt</translation>
 <translation id="8917490105272468696">Po, jam dakord</translation>
 <translation id="8928133177108699615">Desktop</translation>
+<translation id="894191600409472540">Krijo fjalëkalime të forta</translation>
 <translation id="8952559610785099500">Shto fjalëkalimin</translation>
 <translation id="8953046091948372197">Këtu do të gjesh fjalëkalimet e tua</translation>
 <translation id="895541991026785598">Raporto një problem</translation>

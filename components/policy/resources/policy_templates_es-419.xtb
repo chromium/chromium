@@ -3240,7 +3240,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="3977304360459208438">Usar la configuración predeterminada para los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="3979738908158213640">URL a las que se les concede acceso para realizar la certificación de los dispositivos durante la autenticación de SAML</translation>
 <translation id="3983162212222338509">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red, o bien parcialmente dentro y parcialmente fuera, según la configuración del sistema y las marcas de función</translation>
-<translation id="3984028218719007910">Determina si <ph name="PRODUCT_OS_NAME" /> mantiene los datos de cuenta locales tras cerrar la sesión. Si el valor se establece en "true", <ph name="PRODUCT_OS_NAME" /> no conservará ninguna cuenta de forma permanente y todos los datos de la sesión del usuario se descartarán al cerrar la sesión. Si esta política no se configura o se establece en "false", el dispositivo puede guardar datos de usuario locales (encriptados).</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen los procesos con el Administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si estableces la política como verdadera o no la estableces, los usuarios podrán controlar las sugerencias de Autocompletar para las tarjetas de crédito en la IU.
 
@@ -4062,6 +4061,23 @@ Si la inhabilitas, la protección de descargas no enviará datos a Google para o
 Si la inhabilitas, no se le mostrará la promoción para la extensión del Proveedor de credenciales al usuario.</translation>
 <translation id="4768446404233019970">Habilitar los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">La configuración que se usa para generar y verificar el código de acceso parental.</translation>
+<translation id="4771861383714907912">Lista de acciones para ejecutar cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Si no estableces la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, esta política no tendrá efecto.
+
+      Cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> ejecuta las acciones configuradas en esta política.
+
+      Si la dejas vacía o no la estableces, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
+
+      Se admiten las siguientes acciones:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": cierra todas las ventanas del navegador y las AWP de este perfil. No es compatible con Android.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": muestra la ventana del Selector de perfiles. No es compatible con Android.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": borran los datos de navegación correspondientes. Para obtener más información, consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" y "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />" requieren que establezcas la política <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera.</translation>
 <translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
 
       Si habilitas esta política, el valor de la política "KerberosCustomPrefilledConfig" se aplicará como la configuración sugerida y se mostrará en la sección "Configuración avanzada" del diálogo de autenticación de Kerberos.
@@ -5113,6 +5129,7 @@ Si no estableces la política, ningún dominio podrá acceder a las URLs de file
 <translation id="5722577409367087850">Cargar la extensión</translation>
 <translation id="5728154254076636808">Habilita la creación de las copias de itinerancia para los datos de perfil de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Contraseña de Kerberos. La contraseña de acceso reemplaza al marcador de posición <ph name="PASSWORD_PLACEHOLDER" />.</translation>
+<translation id="573183812760497142">Bloquear la partición de almacenamiento de terceros para estos orígenes</translation>
 <translation id="5732972008943405952">Importar el formulario de Autocompletar del navegador predeterminado en la primera ejecución</translation>
 <translation id="5733040281451845496">Si habilitas la política, se iniciarán los tiempos de espera para la administración de la energía y los límites de extensión de la sesión después de la primera actividad del usuario en una sesión.
 
@@ -6326,6 +6343,11 @@ La política se quitará de <ph name="PRODUCT_NAME" /> en el futuro.</translatio
 
       Si inhabilitas la política o no la estableces, no se informarán datos sobre el uso.</translation>
 <translation id="6823711520976094072">Si la estableces en menos de 1 MB o no la estableces, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado (256 MB) para almacenar en caché las apps y extensiones cuando las instalen varios usuarios del mismo dispositivo. Esta acción evitará que cada usuario las tenga que volver a descargar.</translation>
+<translation id="6828729771894228555">Te permite configurar una lista de patrones de URL que especifican los orígenes de nivel superior (la URL en la barra de direcciones de la pestaña) que bloquean la partición de almacenamiento de terceros (partición de almacenamiento de iframe de origen cruzado).
+          Si no estableces esta política o un origen de nivel superior no coincide, se usará el valor de <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />.
+          Para obtener información detallada sobre los patrones válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+          Ten en cuenta que los patrones que incluyas aquí se tratarán como orígenes, no como URLs, por lo que no debes especificar una ruta de acceso.
+          Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Esta política controla la refactorización reciente de las APIs de Graphics3D en el complemento PPAPI.
 
 La migración solo afecta los detalles de implementación internos y no debe
@@ -7545,6 +7567,7 @@ Esta política empresarial existe para permitir que los administradores controle
 <translation id="7962093600142350905">Esta política controla si el usuario visualiza las impresoras Privet disponibles en el diálogo de la vista previa de impresión.
       Si habilitas esta política, se mostrarán las impresoras Privet disponibles.
       Si la inhabilitas o no la estableces, no se mostrarán impresoras Privet en la vista previa, ya que ese método de impresión está obsoleto.</translation>
+<translation id="7970660709107174905">Configuración de la partición de almacenamiento de terceros</translation>
 <translation id="7972642710812569707">Forzar que se vuelva a habilitar WebSQL en contextos de terceros</translation>
 <translation id="7973609468423251675">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -8070,6 +8093,10 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="838870586332499308">Activar la itinerancia de datos</translation>
 <translation id="8392478748777481636">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />".</translation>
 <translation id="8393850527597048037">Solo para la plataforma</translation>
+<translation id="8394518861160238324">A partir de M113, la partición de almacenamiento de terceros está activada de forma predeterminada para algunos usuarios, pero se puede inhabilitar mediante la función experimental de Chrome.
+          Si estableces esta política como <ph name="ALLOW_PARTITIONING_VALUE" /> o no la estableces, se podrá habilitar la partición de almacenamiento de terceros.
+          Si estableces esta política como <ph name="BLOCK_PARTITIONING_VALUE" />, no se podrá habilitar la partición de almacenamiento de terceros.
+          Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Tiempo de espera de inactividad de la pantalla de bloqueo del protector de pantalla del usuario</translation>
 <translation id="8395749934754392549">Controla la configuración para las apps y el contenedor de Android (ARC).</translation>
 <translation id="8398952282584132331">Habilitar la pantalla de privacidad</translation>

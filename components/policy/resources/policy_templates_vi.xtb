@@ -3222,7 +3222,6 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
 <translation id="3977304360459208438">Dùng chế độ cài đặt mặc định cho bộ thuật toán mật mã 3DES trong TLS</translation>
 <translation id="3979738908158213640">Các URL sẽ được cấp quyền truy cập để chứng thực thiết bị trong khi xác thực SAML</translation>
 <translation id="3983162212222338509">Quá trình phân giải DNS của hệ thống có thể chạy trong hoặc ngoài quy trình mạng, hoặc có một phần chạy trong và một phần chạy ngoài quy trình mạng, tuỳ vào cấu hình hệ thống và cờ tính năng.</translation>
-<translation id="3984028218719007910">Xác định liệu <ph name="PRODUCT_OS_NAME" /> có lưu dữ liệu tài khoản trên máy sau khi đăng xuất hay không. Nếu được đặt thành đúng, không có tài khoản lâu dài nào được <ph name="PRODUCT_OS_NAME" /> lưu và tất cả các dữ liệu từ phiên của người dùng sẽ bị hủy bỏ sau khi đăng xuất. Nếu chính sách này được đặt thành sai hoặc không được định cấu hình, thiết bị có thể lưu lại dữ liệu người dùng trên máy (được mã hóa).</translation>
 <translation id="3986700049001404598">Cho phép người dùng kết thúc quá trình bằng trình quản lý tác vụ Chrome</translation>
 <translation id="398884292557092447">Nếu bạn đặt chính sách này thành True hoặc không đặt, thì người dùng có thể kiểm soát các nội dung đề xuất tự động điền cho thẻ tín dụng trong giao diện người dùng.
 

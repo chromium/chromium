@@ -1987,7 +1987,6 @@
 <translation id="2710101514844343743">Пайдалану және диагностика деректері</translation>
 <translation id="271033894570825754">Жаңа</translation>
 <translation id="2711073837061989559">Сынақ нұсқалары</translation>
-<translation id="2712207122921938368">Кіру кілтін басқа құрылғыда жасаңыз</translation>
 <translation id="2713106313042589954">Камераны өшіру</translation>
 <translation id="2713444072780614174">Ақ</translation>
 <translation id="2714180132046334502">Қараңғы фон</translation>
@@ -3738,7 +3737,6 @@
 <translation id="4275397969489577657">Іс-шара трансляциялау журналын қосу</translation>
 <translation id="4275830172053184480">Құрылғыңызды қайта іске қосу</translation>
 <translation id="4277434192562187284">XML конфигурациялау дереккөзі</translation>
-<translation id="4277529130885813215">Басқа құрылғыны пайдалану</translation>
 <translation id="4278390842282768270">Рұқсат етілген</translation>
 <translation id="4278498748067682896">Құрылғыға киоск немесе цифрлық тақта режимінде ғана жұмыс істеуге мүмкіндік беретін Kiosk &amp; Signage Upgrade лицензиясын пайдаланасыз. Пайдаланушыларға құрылғыға кіруге рұқсат бергіңіз келсе, Chrome Enterprise Upgrade лицензиясын пайдаланып, тіркеліңіз.</translation>
 <translation id="4278779213160967034">Бұл бірнеше минут алуы мүмкін. Файлдар жүктеп алынуда.</translation>
@@ -5430,7 +5428,6 @@
 <translation id="583431638776747">Сайт қолжетімді болмады.</translation>
 <translation id="5834581999798853053">Шамамен <ph name="TIME" /> минут қалды</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – камерадан не микрофоннан жазу</translation>
-<translation id="5835625581856809102"><ph name="APP_NAME" /> үшін кіру кілтін жасағыңыз келетін құрылғымен осы QR кодын сканерлеңіз.</translation>
 <translation id="583673505367439042">Сайттар құрылғыңыздағы файлдар мен қалталарды өзгертуге рұқсат сұрай алады.</translation>
 <translation id="5836999627049108525">Аударылатын тіл</translation>
 <translation id="583756221537636748">Қап</translation>
@@ -5869,7 +5866,6 @@
 <translation id="6227002569366039565">Осы қалқымалы анықтаманы ерекшелеу үшін |<ph name="ACCELERATOR" />| пернесін басыңыз, содан кейін нұсқалған элементті ерекшелеу үшін пернені тағы басыңыз.</translation>
 <translation id="6227280783235722609">кеңейтім</translation>
 <translation id="6229849828796482487">Wi-Fi желісін ажырату</translation>
-<translation id="6230165830166519105">Басқа жолмен көру</translation>
 <translation id="6231782223312638214">Ұсынылған</translation>
 <translation id="6231881193380278751">Бетті автоматты жаңарту үшін URL мекенжайында сұрау параметрін қосыңыз: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батарея</translation>

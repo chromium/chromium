@@ -150,6 +150,7 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
       Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
 <translation id="1147732569915511430">De SHA-256-hash van de avatarafbeelding.</translation>
 <translation id="1148415065145333943">Geavanceerde batterijoplaadmodus uitzetten</translation>
+<translation id="1149841949061115313">KLS-kanaal</translation>
 <translation id="1150742937785306405">Sta gebruikers toe de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor door sites voorgestelde advertenties aan of uit te zetten op hun apparaat.</translation>
 <translation id="1151353063931113432">Afbeeldingen toestaan op deze sites</translation>
 <translation id="1151987132434751822">De verificatieschema's waarvoor de inloggegevens van het beleid kunnen worden toegepast. Kan een van de volgende zijn:
@@ -2193,6 +2194,7 @@ De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit b
 
       Als je het beleid niet toepast, wordt mediabediening op het vergrendelscherm uitgezet.</translation>
 <translation id="3072847235228302527">De Servicevoorwaarden instellen voor een apparaat-lokaal account</translation>
+<translation id="3074032542020543133">LDS-kanaal</translation>
 <translation id="3077650998740742747">
 Standaardgedrag (beleid niet ingesteld)
 Als een account wordt toegevoegd in het contentgedeelte, verschijnt er een klein dialoogvenster met de vraag om een nieuw profiel te maken. Dit dialoogvenster kan worden gesloten.
@@ -3204,7 +3206,6 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
 <translation id="3977304360459208438">Gebruik de standaardinstellingen voor 3DES cipher suites in TLS</translation>
 <translation id="3979738908158213640">URL's die toegang krijgen om apparaatattesten uit te voeren tijdens SAML-verificatie</translation>
 <translation id="3983162212222338509">De DNS-omzetting van het systeem kan binnen of buiten het netwerkproces worden uitgevoerd, of gedeeltelijk binnen en gedeeltelijk buiten het netwerkproces, afhankelijk van de systeemconfiguratie en functievlaggen.</translation>
-<translation id="3984028218719007910">Bepaalt of <ph name="PRODUCT_OS_NAME" /> na het afmelden lokale accountgegevens bewaart. Als dit is ingesteld op 'true', bewaart <ph name="PRODUCT_OS_NAME" /> geen bestaande accounts en worden alle gegevens over de gebruikerssessie na het afmelden gewist. Als dit beleid is ingesteld op 'false' of niet is geconfigureerd, bewaart het apparaat mogelijk (gecodeerde) lokale gebruikersgegevens.</translation>
 <translation id="3986700049001404598">Gebruikers toestaan processen te beëindigen met taakbeheer van Chrome</translation>
 <translation id="398884292557092447">Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch invullen' voor creditcards in de UI.
 
@@ -3333,6 +3334,13 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
 <translation id="4102347680024644994">Rapporteren over XDR-gebeurtenissen (Extended Detection and Response)</translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitzetten</translation>
+<translation id="4110126170080699437">Om veiligheidsredenen moet voor de web-API <ph name="GET_DISPLAY_MEDIA_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukt deze.
+
+Als dit beleid is ingesteld, kunnen beheerders oorsprongen opgeven waarvoor deze API kan worden aangeroepen zonder eerder gebruikersgebaar.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. * is geen geaccepteerde waarde voor dit beleid.
+
+Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersgebaar vereist om deze API aan te roepen.</translation>
 <translation id="4114059938441379876">Als je dit beleid instelt, stel je de URL in waarmee gebruikers hun wachtwoord moeten wijzigen nadat zij een waarschuwing zien in de browser. De service voor wachtwoordbeveiliging stuurt gebruikers naar de URL (alleen HTTP- en HTTPS-protocollen) die je opgeeft via dit beleid. Zorg dat je pagina voor het wijzigen van wachtwoorden voldoet aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de salted hash van het nieuwe wachtwoord op deze pagina voor het wijzigen van wachtwoorden juist vastlegt.
 
       Als je dit beleid niet toepast of niet instelt, stuurt de service gebruikers naar https://myaccount.google.com om hun wachtwoord te wijzigen.
@@ -3993,6 +4001,23 @@ Als je dit beleid niet toepast, stuurt de downloadbeveiliging geen gegevens naar
 Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggegevensproviders niet getoond aan de gebruiker.</translation>
 <translation id="4768446404233019970">3DES cipher suites aanzetten in TLS</translation>
 <translation id="4770334626033858263">De configuratie die is gebruikt om de toegangscode voor ouders te genereren en te verifiëren.</translation>
+<translation id="4771861383714907912">Lijst met acties die moeten worden uitgevoerd als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt.
+
+      Als het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> niet is ingesteld, heeft dit beleid geen effect.
+
+      Als de time-out van het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> is bereikt, voert <ph name="PRODUCT_NAME" /> de acties uit die in dit beleid zijn ingesteld.
+
+      Als je dit beleid leeg laat of niet instelt, heeft het beleid <ph name="IDLE_TIMEOUT_POLICY_NAME" /> geen effect.
+
+      Deze acties worden ondersteund:
+
+<ph name="CLOSE_BROWSERS_ACTION" />: alle browservensters en PWA's voor dit profiel sluiten. Niet ondersteund op Android.
+
+      <ph name="SHOW_PROFILE_PICKER_ACTION" />: het profielkiezervenster tonen. Niet ondersteund op Android.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: de bijbehorende browsegegevens wissen. Zie het beleid <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> voor meer informatie.
+
+      Voor <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> en <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> moet het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> zijn ingesteld op True.</translation>
 <translation id="4773997835955617342">Hiermee wordt de voorgestelde <ph name="KRB5_CONFIG" />-configuratie voor de nieuwe handmatig gemaakte tickets gewijzigd.
 
       Als je dit beleid toepast, wordt de waarde van het beleid KerberosCustomPrefilledConfig toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie.
@@ -5017,6 +5042,7 @@ Als je het beleid niet instelt, hebben alle domeinen geen toegang tot file://-UR
 <translation id="5722577409367087850">De extensie laden</translation>
 <translation id="5728154254076636808">Aanmaak van roaming-exemplaren voor <ph name="PRODUCT_NAME" />-profielgegevens aanzetten</translation>
 <translation id="5729308727912841256">Kerberos-wachtwoord. De tijdelijke aanduiding <ph name="PASSWORD_PLACEHOLDER" /> wordt vervangen door het wachtwoord voor inloggen.</translation>
+<translation id="573183812760497142">Partitionering van opslag door derden blokkeren voor deze oorsprongen</translation>
 <translation id="5732972008943405952">Formuliergegevens voor Automatisch invullen importeren uit standaardbrowser bij eerste uitvoering</translation>
 <translation id="5733040281451845496">Als je het beleid toepast, gaan de perioden voor stroombeheer en voor de maximale sessielengte pas in zodra de eerste gebruikersactiviteit plaatsvindt in een sessie.
 
@@ -6184,6 +6210,11 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
       Als je het beleid niet toepast of niet instelt, wordt er geen gebruiksinformatie gerapporteerd.</translation>
 <translation id="6823711520976094072">Als je het beleid instelt op een waarde lager dan 1 MB of als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaardgrootte van 256 MB voor het cachen van apps en extensies voor installaties door meerdere gebruikers van één apparaat. Hierdoor is het niet nodig om elke app of extensie voor elke gebruiker opnieuw te downloaden.</translation>
+<translation id="6828729771894228555">Hiermee kun je een lijst met URL-patronen opgeven van oorsprongen op het hoogste niveau (de URL in de adresbalk van het tabblad) die partitionering van opslag door derden blokkeren (partitionering van cross-origin iframe-opslag).
+          Als je dit beleid niet instelt of als de oorsprong op het hoogste niveau niet overeenkomt, wordt de waarde van <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> gebruikt.
+          Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige patronen.
+          Houd er rekening mee dat patronen die je hier opgeeft, worden behandeld als oorsprongen, niet als URL's. Geef dus geen pad op.
+          Ga naar https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/ voor meer informatie over partitionering van opslag door derden.</translation>
 <translation id="6829632070341067746">Dit beleid beheert de recente refactor voor Graphics3D-API's in PPAPI-plug-in.
 
 De migratie heeft alleen invloed op interne implementatiegegevens en verandert niets aan het gedrag. Dit beleid kan worden gebruikt als PPAPI-apps niet werken zoals verwacht.
@@ -7072,6 +7103,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 
       Als je het beleid niet instelt of niet toepast, krijgen cloudbeleidsregels op gebruikersniveau een standaardprioriteit.</translation>
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
+<translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
 <translation id="7666228839913571182">Cookies van derden toestaan</translation>
 <translation id="7668830462800981702">Als je het beleid toepast, wordt er een standaard zoekopdracht uitgevoerd als de gebruiker in de adresbalk tekst invoert die geen URL is. Als je de standaard zoekprovider wilt opgeven, stel je alle andere standaard zoekbeleidsregels in. Als je die zoekbeleidsregels leeg laat, kan de gebruiker zelf de standaardprovider kiezen. Als je het beleid niet toepast, wordt er geen zoekopdracht uitgevoerd als de gebruiker in de adresbalk tekst invoert die geen URL is.
 
@@ -7380,6 +7412,7 @@ Met dit bedrijfsbeleid kunnen beheerders bepalen of hun gebruikers de extra thro
 <translation id="7962093600142350905">Met dit beleid bepaal je of gebruikers beschikbare Privet-printers te zien krijgen in het dialoogvenster met afdrukvoorbeeld.
       Als je dit beleid aanzet, worden beschikbare Privet-printers getoond.
       Als je dit beleid niet toepast of niet instelt, worden Privet-printers niet getoond in het dialoogvenster met afdrukvoorbeeld, omdat deze afdrukmethode is verouderd.</translation>
+<translation id="7970660709107174905">Instellingen voor partitionering van opslag door derden</translation>
 <translation id="7972642710812569707">Afdwingen dat WebSQL in contexten van derden opnieuw wordt aangezet.</translation>
 <translation id="7973609468423251675">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -7874,6 +7907,10 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="838870586332499308">Dataroaming aanzetten</translation>
 <translation id="8392478748777481636">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="8393850527597048037">Alleen platform</translation>
+<translation id="8394518861160238324">Partitionering van opslag door derden staat standaard aan voor sommige gebruikers vanaf M113, maar kan worden uitgezet via Chrome-flag.
+          Als je dit beleid instelt op <ph name="ALLOW_PARTITIONING_VALUE" /> of niet instelt, kan partitionering van opslag door derden worden aangezet.
+          Als je dit beleid instelt op <ph name="BLOCK_PARTITIONING_VALUE" />, kan partitionering van opslag door derden niet worden aangezet.
+          Ga naar https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/ voor meer informatie over partitionering van opslag door derden.</translation>
 <translation id="8395350646076131800">Time-out van de screensaver voor het vergrendelscherm.</translation>
 <translation id="8395749934754392549">Beheert instellingen voor de Android-container (ARC) en Android-apps.</translation>
 <translation id="8398952282584132331">Privacyscherm aanzetten</translation>

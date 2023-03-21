@@ -2007,7 +2007,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2710101514844343743">Data ng paggamit at mga diagnostic</translation>
 <translation id="271033894570825754">Bago</translation>
 <translation id="2711073837061989559">Mga Trial</translation>
-<translation id="2712207122921938368">Gumawa ng passkey sa ibang device</translation>
 <translation id="2713106313042589954">I-off ang camera</translation>
 <translation id="2713444072780614174">Puti</translation>
 <translation id="2714180132046334502">Madilim na background</translation>
@@ -3758,7 +3757,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4275397969489577657">I-enable ang pag-log ng stream ng event</translation>
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4277434192562187284">Source ng XML configuration</translation>
-<translation id="4277529130885813215">Gumamit ng ibang device</translation>
 <translation id="4278390842282768270">Pinapayagan</translation>
 <translation id="4278498748067682896">Gagamit ka ng Pag-upgrade sa Kiosk at Signage na nagbibigay-daan lang sa device na tumakbo sa kiosk o signage mode. Kung gusto mong mag-sign in sa device ang mga user, bumalik at mag-enroll gamit ang Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Puwedeng magtagal ang prosesong ito nang ilang minuto. Nagda-download ng mga file.</translation>
@@ -5441,7 +5439,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="583431638776747">Hindi available ang site</translation>
 <translation id="5834581999798853053">Mga <ph name="TIME" /> (na) minuto ang natitira</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Nagre-record ang camera o mikropono</translation>
-<translation id="5835625581856809102">I-scan ang QR code na ito gamit ang device kung saan mo gustong gumawa ng passkey para sa <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Puwedeng hilingin ng mga site na mag-edit ng mga file at folder sa iyong device</translation>
 <translation id="5836999627049108525">Wikang pagmumulan ng Pagsalin</translation>
 <translation id="583756221537636748">Case</translation>
@@ -5880,7 +5877,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6227002569366039565">Pindutin ang |<ph name="ACCELERATOR" />| para ma-focus ang bubble na ito, at pagkatapos ay pindutin ito ulit para ma-focus ang element na itinuturo nito.</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="6229849828796482487">Idiskonekta ang Wi-Fi network</translation>
-<translation id="6230165830166519105">Sumubok ng ibang paraan</translation>
 <translation id="6231782223312638214">Iminungkahi</translation>
 <translation id="6231881193380278751">Magdagdag ng query param sa URL upang awtomatikong i-refresh ang page: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Baterya</translation>

@@ -387,6 +387,7 @@
 <translation id="1822540298136254167">Сиз баш баккан вебсайттар жана аларда өткөргөн убакыт</translation>
 <translation id="1824402189105105503">Сегизинчи барабан</translation>
 <translation id="1826516787628120939">Текшерүүдө</translation>
+<translation id="1826968372364864056">Форманы тазалоо</translation>
 <translation id="1828959155404624835">Ижарага берилүүчү унаалар</translation>
 <translation id="1834321415901700177">Бул сайтта зыянкеч программалар камтылган</translation>
 <translation id="1838374766361614909">Изделип жаткан нерсени өчүрүү</translation>
@@ -1224,7 +1225,6 @@
 <translation id="399952081411886534">Жарнамалардын купуялыгын жогорулата турган башка функциялар</translation>
 <translation id="4000598935132966791">Башкарылган серепчилердеги сайт чектөөлөрү тууралуу кеңири маалымат</translation>
 <translation id="4006465311664329701">Google Pay'ди колдонгон төлөм ыкмалары, сунуштар жана даректер</translation>
-<translation id="4009243425692662128">Басып чыгарган барактардагы нерселер тууралуу маалымат талдоо үчүн Google Булутка же үчүнчү тараптарга жөнөтүлөт. Мисалы, анда купуя маалыматтын болуусу текшерилет.</translation>
 <translation id="4010758435855888356">Сактагычты колдонууга уруксат бересизби?</translation>
 <translation id="401170183602135785">Конверт C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} беттен турган PDF документи}other{{COUNT} беттен турган PDF документи}}</translation>
@@ -1968,6 +1968,7 @@
 <translation id="5786044859038896871">Карточкаңыздын маалыматын толтурасызбы?</translation>
 <translation id="578633867165174378">Chrome жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганын аныктады. Бул сырсөздү азыр өзгөртүүнү сунуштайбыз.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Жок}=1{1 аккаунтка кирүү дайындары}other{# аккаунтка кирүү дайындары}}</translation>
 <translation id="580241730938216256">Жаңыртып баштоо</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> толтурасызбы?</translation>
 <translation id="5804241973901381774">Уруксаттар</translation>
@@ -2523,6 +2524,7 @@
 <translation id="7201591969684833065">Администраторуңуз төмөнкүлөрдү көрөт:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Купуя карап чыкканга жашыруун өтмөктү ачуу үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="7203375778433816396">Chrome'ду системанын демейки серепчиси катары коюу</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Жок}=1{1 мүмкүндүк алуу ачкычы}other{# мүмкүндүк алуу ачкычы}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> сайты коопсуздук стандарттарына жооп бербейт.</translation>
 <translation id="7210993021468939304">Контейнердеги Linux аракеттери Linux колдонмолорун контейнердин алкагында орнотуп, иштете алышат</translation>
 <translation id="721197778055552897">Бул көйгөй жөнүндө <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" />.</translation>

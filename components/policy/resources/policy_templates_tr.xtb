@@ -3228,7 +3228,6 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
 <translation id="3977304360459208438">TLS'de 3DES şifre paketleri için varsayılan ayarı kullan</translation>
 <translation id="3979738908158213640">SAML kimlik doğrulaması sırasında cihaz onayı gerçekleştirmek için erişim izni verilecek URL'ler</translation>
 <translation id="3983162212222338509">Sistem DNS çözümlemesi, sistem yapılandırmasına ve özellik bayraklarına bağlı olarak ağ işleminin içinde veya dışında ya da kısmen içinde kısmen dışında çalıştırılabilir.</translation>
-<translation id="3984028218719007910">Çıkış yapıldıktan sonra yerel hesap verilerinin <ph name="PRODUCT_OS_NAME" /> tarafından korunup korunmayacağını belirler. True değerine ayarlanırsa, kalıcı hesaplar <ph name="PRODUCT_OS_NAME" /> tarafından korunmaz ve çıkış yapıldıktan sonra kullanıcı oturumuna ilişkin tüm veriler kaybedilir. Bu politika false değerine ayarlanırsa veya hiçbir şekilde ayarlanmazsa, cihaz (şifreli) yerel kullanıcı verilerini koruyabilir.</translation>
 <translation id="3986700049001404598">Kullanıcıların, Chrome görev yöneticisini kullanarak işlemleri sona erdirmesine izin ver</translation>
 <translation id="398884292557092447">Politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar, kullanıcı arayüzünde kredi kartları için otomatik doldurma önerilerini kontrol edebilirler.
 
@@ -4024,6 +4023,23 @@ Bu politika devre dışı bırakıldığında indirme koruması, karar için Goo
 Politika, Devre Dışı değerine ayarlanırsa Kimlik Bilgisi Sağlayıcı uzantısı promosyonu, kullanıcıya gösterilmez.</translation>
 <translation id="4768446404233019970">TLS'de 3DES şifre paketlerini etkinleştir</translation>
 <translation id="4770334626033858263">Ebeveyn Erişim Kodu'nu oluşturmak ve doğrulamak için kullanılan yapılandırma.</translation>
+<translation id="4771861383714907912"><ph name="IDLE_TIMEOUT_POLICY_NAME" /> politikasındaki zaman aşımına ulaşıldığında gerçekleştirilecek işlemlerin listesi.
+
+      <ph name="IDLE_TIMEOUT_POLICY_NAME" /> politikası ayarlanmazsa bu politikanın hiçbir etkisi olmaz.
+
+      <ph name="IDLE_TIMEOUT_POLICY_NAME" /> politikasındaki zaman aşımına ulaşıldığında <ph name="PRODUCT_NAME" />, bu politikada yapılandırılan işlemleri çalıştırır.
+
+      Bu politika boşsa veya ayarlanmamışsa <ph name="IDLE_TIMEOUT_POLICY_NAME" /> politikasının hiçbir etkisi yoktur.
+
+      Desteklenen işlemler şunlardır:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": Bu profildeki tüm tarayıcı pencerelerini ve PWA'ları (Progresif Web Uygulaması) kapatır. Android'de desteklenmez.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": Profil seçici penceresini gösterir. Android'de desteklenmez.
+
+      '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />', '<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />', '<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', '<ph name="CLEAR_SITE_SETTINGS_ACTION" />', '<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />': İlgili tarama verilerini temizleyin. Daha fazla bilgi için <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> politikasına bakın.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />'" ve "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />" işlemleri için <ph name="SYNC_DISABLED_POLICY_NAME" /> politikasının doğru değerine ayarlanması gerekir.</translation>
 <translation id="4773997835955617342">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
 
       Bu politika etkinleştirilirse "KerberosCustomPrefilledConfig" politikasının değeri önerilen yapılandırma olarak uygulanır ve Kerberos kimlik doğrulama iletişim kutusunun "Gelişmiş" bölümünde gösterilir.
@@ -5060,6 +5076,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="5722577409367087850">Uzantıyı yükle</translation>
 <translation id="5728154254076636808"><ph name="PRODUCT_NAME" /> profil verileri için dolaşım kopyalarının oluşturulmasını etkinleştir</translation>
 <translation id="5729308727912841256">Kerberos şifresi. <ph name="PASSWORD_PLACEHOLDER" /> yer tutucusunun yerine giriş şifresi gelir.</translation>
+<translation id="573183812760497142">Bu kaynaklar için üçüncü taraf depolama bölümlendirme işlevini engelle</translation>
 <translation id="5732972008943405952">İlk çalıştırmada, otomatik doldurma formu verilerini varsayılan tarayıcıdan içe aktar</translation>
 <translation id="5733040281451845496">Politika, Etkin değerine ayarlandığında güç yönetimi gecikmeleri ve oturum süresi sınırları oturumdaki ilk kullanıcı etkinliğine kadar çalışmaya başlamaz.
 
@@ -6247,6 +6264,11 @@ Bu politika, gelecekte <ph name="PRODUCT_NAME" /> ürününden kaldırılacaktı
 
       Politika, Devre Dışı olarak ayarlanır veya ayarlanmadan bırakılırsa hiçbir kullanım bilgisi raporlanmaz.</translation>
 <translation id="6823711520976094072">1 MB'tan daha düşük bir değere ayarlandığında veya ayarlanmamış olarak bırakıldığında, <ph name="PRODUCT_OS_NAME" /> tek bir cihazın birden fazla kullanıcısı tarafından yüklenmek üzere uygulamaları ve uzantıları önbelleğe almak için 256 MiB olan varsayılan boyutu kullanır. Bu şekilde, uygulamaları ve uzantıları her kullanıcı için yeniden indirme ihtiyacını ortadan kaldırır.</translation>
+<translation id="6828729771894228555">Üçüncü taraf depolama bölümlendirmelerini (çapraz kaynak iFrame depolamasını bölümlendirme) engelleyen üst düzey kaynakların belirtildiği bir URL kalıpları (sekmenin adres çubuğundaki URL) listesi oluşturmanıza olanak tanır.
+          Bu politika ayarlanmadan bırakılırsa veya üst düzey kaynak eşleşmezse <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> değeri kullanılır.
+          Geçerli kalıplar hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.
+          Burada listelediğiniz kalıpların URL değil kaynak olarak değerlendirildiğini, bu yüzden bir yol belirtmemeniz gerektiğini unutmayın.
+          Üçüncü taraf depolama bölümlendirme işlevi hakkında ayrıntılı bilgi için lütfen https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/ adresine bakın.</translation>
 <translation id="6829632070341067746">Bu politika, PPAPI eklentisindeki Graphics3D API'leri için kısa süre önce yapılan yeni düzenlemeyi kontrol eder.
 
 Taşıma işlemi yalnızca dahili uygulama ayrıntılarını etkiler ve hiçbir davranışı değiştirmez. Ancak bu politika, PPAPI uygulamalarının beklendiği gibi çalışmaması durumunda kullanılabilir.
@@ -7456,6 +7478,7 @@ Bu kurumsal politika ile yöneticiler, kullanıcılarının ek kısıtlamayı et
 <translation id="7962093600142350905">Bu politika, kullanılabilir privet yazıcılarının yazdırma önizleme iletişim kutusunda kullanıcılara gösterilip gösterilmeyeceğini kontrol eder.
       Bu politika Etkin değerine ayarlanırsa kullanılabilir privet yazıcıları gösterilir.
       Bu politikanın Devre Dışı değerine ayarlanması ya da ayarlanmadan bırakılması, bu yazdırma yöntemi kullanımdan kaldırıldığı için privet yazıcılarının baskı önizlemede görünmemesine neden olur.</translation>
+<translation id="7970660709107174905">Üçüncü taraf depolama bölümlendirme ayarları</translation>
 <translation id="7972642710812569707">Üçüncü taraf bağlamındaki WebSQL'yi yeniden etkinleştirilmeye zorla.</translation>
 <translation id="7973609468423251675">Bu politikanın artık kullanılmadığını ve <ph name="PRODUCT_OS_NAME" /> sürüm 85'te kaldırılacağını unutmayın. Lütfen bunun yerine <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> politikasını kullanın.
 
@@ -7971,6 +7994,10 @@ cihazın klavye arka ışığı rengi varsayılan olarak ayarlanır.</translatio
 <translation id="838870586332499308">Veri dolaşımını etkinleştir</translation>
 <translation id="8392478748777481636">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />" politikasını kullanın.</translation>
 <translation id="8393850527597048037">Sadece Platform</translation>
+<translation id="8394518861160238324">Üçüncü taraf depolama bölümlendirme işlevi, M113 sürümünden itibaren bazı kullanıcılar için varsayılan olarak etkindir, ancak Chrome flag'i aracılığıyla devre dışı bırakılabilir.
+          Bu politika <ph name="ALLOW_PARTITIONING_VALUE" /> değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf depolama bölümlendirme işlevi etkinleştirilebilir.
+          Bu politika <ph name="BLOCK_PARTITIONING_VALUE" /> değerine ayarlanırsa üçüncü taraf depolama bölümlendirme işlevi etkinleştirilemez.
+          Üçüncü taraf depolama bölümlendirme işlevi hakkında ayrıntılı bilgi için lütfen https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/ adresine bakın.</translation>
 <translation id="8395350646076131800">Kullanıcı ekran koruyucusu kilit ekranı boşta kalma zaman aşımı.</translation>
 <translation id="8395749934754392549">Android kapsayıcı (ARC) ve Android uygulamaları ile ilgili ayarları kontrol eder.</translation>
 <translation id="8398952282584132331">Gizlilik ekranını etkinleştir</translation>

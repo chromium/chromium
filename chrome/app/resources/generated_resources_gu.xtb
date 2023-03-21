@@ -1987,7 +1987,6 @@
 <translation id="2710101514844343743">વપરાશ અને નિદાનનો ડેટા</translation>
 <translation id="271033894570825754">નવું</translation>
 <translation id="2711073837061989559">અજમાયશો</translation>
-<translation id="2712207122921938368">કોઈ અન્ય ડિવાઇસ પર પાસકી બનાવો</translation>
 <translation id="2713106313042589954">કૅમેરા બંધ કરો</translation>
 <translation id="2713444072780614174">શ્વેત</translation>
 <translation id="2714180132046334502">ઘાટું બૅકગ્રાઉન્ડ</translation>
@@ -3737,7 +3736,6 @@
 <translation id="4275397969489577657">ઇવેન્ટ સ્ટ્રીમ લૉગિંગ ચાલુ કરો</translation>
 <translation id="4275830172053184480">તમારું ઉપકરણ પુનઃપ્રારંભ કરો</translation>
 <translation id="4277434192562187284">XML કન્ફિગ્યુરેશન સૉર્સ</translation>
-<translation id="4277529130885813215">કોઈ અન્ય ડિવાઇસનો ઉપયોગ કરો</translation>
 <translation id="4278390842282768270">મંજૂર</translation>
 <translation id="4278498748067682896">તમે 'કિઓસ્ક અને સાઇનેજ અપગ્રેડ'નો ઉપયોગ કરશો, જે ડિવાઇસને ફક્ત કિઓસ્ક અને સાઇનેજ મોડમાં ચલાવવાની મંજૂરી આપે છે. જો તમે ઇચ્છતા હો કે વપરાશકર્તાઓ ડિવાઇસમાં સાઇન ઇન કરે, તો કૃપા કરીને પાછા જાઓ અને Chrome Enterprise Upgradeનો ઉપયોગ કરીને નોંધણી કરો.</translation>
 <translation id="4278779213160967034">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. ફાઇલ ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
@@ -4227,6 +4225,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> છોડો</translation>
 <translation id="4711638718396952945">સેટિંગ રિસ્ટોર કરો</translation>
 <translation id="4713409221649555176">તમે બધી વિન્ડો બંધ કરો ત્યારે ડિલીટ કરો</translation>
+<translation id="4715631922189108923">વપરાશકર્તાના નામમાં ફેરફાર કરો</translation>
 <translation id="47158868804223727">ગ્રૂપને મોટું કે નાનું કરવા માટે, તેના નામ પર ક્લિક કરો</translation>
 <translation id="4716483597559580346">વધારાની સુરક્ષા માટે પાવરવૉશ</translation>
 <translation id="471759229191973607">થીમ બદલો</translation>
@@ -5426,7 +5425,6 @@
 <translation id="583431638776747">સાઇટ ઉપલબ્ધ ન હતી</translation>
 <translation id="5834581999798853053">લગભગ <ph name="TIME" /> મિનિટ બાકી</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - કૅમેરા અથવા માઇક્રોફોન રેકોર્ડિંગ</translation>
-<translation id="5835625581856809102"><ph name="APP_NAME" /> માટે જ્યાં તમે કોઈ પાસકી બનાવવા માગતા હો, તે ડિવાઇસ વડે ત્યાં આ QR કોડ સ્કૅન કરો</translation>
 <translation id="583673505367439042">સાઇટ તમારા ડિવાઇસમાંની ફાઇલોમાં અને ફોલ્ડરોમાં ફેરફાર કરવાનું પૂછી શકે છે</translation>
 <translation id="5836999627049108525">જેમાંથી અનુવાદ કરવાનો હોય, એ ભાષા</translation>
 <translation id="583756221537636748">કેસ</translation>
@@ -5865,7 +5863,6 @@ USB ડિવાઇસ</translation>
 <translation id="6227002569366039565">આ બબલ પર ફોકસ કરવા માટે, પછી ફરીથી તે જે ઘટક તરફ નિર્દેશ કરે છે તેની પર ફોકસ કરવા માટે |<ph name="ACCELERATOR" />| દબાવો.</translation>
 <translation id="6227280783235722609">એક્સ્ટેંશન</translation>
 <translation id="6229849828796482487">વાઇ-ફાઇ નેટવર્ક ડિસકનેક્ટ કરો</translation>
-<translation id="6230165830166519105">બીજી રીત અજમાવી જુઓ</translation>
 <translation id="6231782223312638214">સૂચવેલા</translation>
 <translation id="6231881193380278751">પેજને ઑટો રિફ્રેશ કરવા માટે URLમાં એક ક્વેરી પરમ ઉમેરો: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">બૅટરી</translation>
@@ -6622,6 +6619,7 @@ USB ડિવાઇસ</translation>
 <translation id="6903022061658753260">તમે આ એકાઉન્ટ માટે સિંક કરવાનો વિકલ્પ જે Chrome બ્રાઉઝરમાં ચાલુ કર્યો હોય, તે તમામ બ્રાઉઝરમાં તમારો ડેટા સિંક કરવામાં આવશે. ChromeOSના સિંક કરવાના વિકલ્પો માટે, <ph name="LINK_BEGIN" />ChromeOS સેટિંગ<ph name="LINK_END" /> પર જાઓ.</translation>
 <translation id="6903590427234129279">બધી (<ph name="URL_COUNT" />) URL ખોલો</translation>
 <translation id="6903907808598579934">સમન્વયન ચાલુ કરો</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> શોધો</translation>
 <translation id="6904344821472985372">ફાઇલ ઍક્સેસને રદબાતલ કરો</translation>
 <translation id="6904655473976120856">બહાર નીકળવા માટે ઍપ્લિકેશન બટન દવાબો</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, 1 મિનિટની નિષ્ક્રિયતા પછી Google Password Manager તેમને લૉક કરે છે}one{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, {NUM_MINS} મિનિટની નિષ્ક્રિયતા પછી Google Password Manager તેમને લૉક કરે છે}other{તમારા પાસવર્ડને સુરક્ષિત રાખવા માટે, {NUM_MINS} મિનિટની નિષ્ક્રિયતા પછી Google Password Manager તેમને લૉક કરે છે}}</translation>
@@ -8072,6 +8070,7 @@ USB ડિવાઇસ</translation>
 <translation id="8203732864715032075">તમને નોટિફિકેશન મોકલે અને મેસેજ માટે ડિફૉલ્ટ તરીકે આ કમ્પ્યુટરને યાદ રાખે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">તમારા ડિસ્પ્લે અને પેરિફેરલને કદાચ થોડાક સમય માટે રીસેટ કરવામાં આવી શકે. આ ફેરફાર લાગુ થાય તે માટે, તમારા પેરિફેરલને અનપ્લગ કરો અને ફરીથી પ્લગ કરો.</translation>
 <translation id="820568752112382238">સૌથી વધુ મુલાકાત લેવાયેલી સાઇટ</translation>
+<translation id="8206267832882844324">નોધમાં ફેરફાર કરો</translation>
 <translation id="8206745257863499010">બ્લુસી</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8207404892907560325">કોઈ પાસકી પસંદ કરો</translation>
@@ -8690,6 +8689,7 @@ USB ડિવાઇસ</translation>
 <translation id="8762886931014513155">તમારા <ph name="DEVICE_TYPE" />ને અપડેટની જરૂર છે</translation>
 <translation id="8763927697961133303">USB ઉપકરણ</translation>
 <translation id="8766796754185931010">કોતોએરી</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />ની બધી શોધ બતાવો</translation>
 <translation id="8767621466733104912">Chrome ને તમામ વપરાશકર્તાઓ માટે ઑટોમૅટિક રીતે અપડેટ કરો</translation>
 <translation id="8770406935328356739">એક્સ્ટેન્શન રૂટ ડિરેક્ટરી</translation>
 <translation id="8771300903067484968">પ્રારંભ પેજના બૅકગ્રાઉન્ડને ડિફૉલ્ટ બૅકગ્રાઉન્ડ તરીકે સેટ કરવામાં આવ્યું છે.</translation>

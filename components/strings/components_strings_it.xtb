@@ -387,6 +387,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1822540298136254167">Siti web visitati e tempo trascorso sui siti</translation>
 <translation id="1824402189105105503">Ottavo rullo</translation>
 <translation id="1826516787628120939">Verifica in corso...</translation>
+<translation id="1826968372364864056">Cancella modulo</translation>
 <translation id="1828959155404624835">Autonoleggi</translation>
 <translation id="1834321415901700177">Il sito contiene programmi dannosi.</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
@@ -1222,7 +1223,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="399952081411886534">Altre funzionalità che rendono gli annunci più privati</translation>
 <translation id="4000598935132966791">Scopri di più sulle limitazioni dei siti nei browser gestiti</translation>
 <translation id="4006465311664329701">Metodi di pagamento, offerte e indirizzi che utilizzano Google Pay</translation>
-<translation id="4009243425692662128">I contenuti delle pagine che stampi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere sottoposti a scansione alla ricerca di dati sensibili.</translation>
 <translation id="4010758435855888356">Vuoi consentire l'accesso allo spazio di archiviazione?</translation>
 <translation id="401170183602135785">Busta C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF contenente {COUNT} pagina}other{Documento PDF contenente {COUNT} pagine}}</translation>
@@ -1966,6 +1966,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5786044859038896871">Vuoi inserire automaticamente i dati della carta?</translation>
 <translation id="578633867165174378">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Ti consigliamo di cambiare subito questa password.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Nessuno}=1{dati di accesso per 1 account}other{dati di accesso per # account}}</translation>
 <translation id="580241730938216256">Avvia aggiornamento</translation>
 <translation id="5803412860119678065">Vuoi inserire automaticamente <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
@@ -2520,6 +2521,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7201591969684833065">L'amministratore è in grado di vedere:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aprire una nuova scheda di navigazione in incognito per navigare in privato</translation>
 <translation id="7203375778433816396">Imposta Chrome come browser predefinito del sistema</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Nessuna}=1{1 passkey}other{# passkey}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non è conforme agli standard di sicurezza.</translation>
 <translation id="7210993021468939304">Attività Linux all'interno del container; possono installare ed eseguire app Linux all'interno del container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> su questo problema.</translation>

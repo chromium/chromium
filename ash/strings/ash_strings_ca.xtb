@@ -415,6 +415,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3081696990447829002">Desplega el menú</translation>
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3090989381251959936">Commuta <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">versió</translation>
 <translation id="309749186376891736">Mou el cursor</translation>
 <translation id="3100274880412651815">Ignora el mode de captura</translation>
 <translation id="3105917916468784889">Fes una captura de pantalla</translation>
@@ -1232,6 +1233,7 @@ Instal·lació nova</translation>
 <translation id="7026338066939101231">Disminueix</translation>
 <translation id="7029814467594812963">Tanca la sessió</translation>
 <translation id="7032161822340700104">Només s'admeten 6 plantilles. Suprimeix-ne una per desar-ne una de nova.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> vol utilitzar <ph name="DEVICE_NAME" />. Activa l'interruptor físic de <ph name="DEVICE_NAME" /> del dispositiu.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistent de Google</translation>
 <translation id="7042322267639375032">Replega l'àrea d'estat</translation>
 <translation id="7045033600005038336">Vols substituir la plantilla?</translation>
@@ -1399,6 +1401,7 @@ Instal·lació nova</translation>
 <translation id="793716872548410480">Prem <ph name="SHORTCUT_KEY_NAME" />+V per veure el porta-retalls. Els 5 darrers elements que has copiat estan desats al porta-retalls.</translation>
 <translation id="7942349550061667556">Vermell</translation>
 <translation id="7944023924886109030">Mostra tots els esdeveniments per a avui</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> vol utilitzar <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenua el teclat</translation>
 <translation id="7963992254934562106">De: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Selecciona una carpeta...</translation>

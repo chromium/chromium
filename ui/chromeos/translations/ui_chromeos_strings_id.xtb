@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Cache Google Drive Anda telah dihapus.</translation>
 <translation id="2239068707900391003">Orang dengan kopi</translation>
 <translation id="2251368349685848079">Pulihkan dari sampah</translation>
+<translation id="2278133026967558505">Akses file oleh semua situs dan URL</translation>
 <translation id="2282155092769082568">URL konfigurasi otomatis:</translation>
 <translation id="2284767815536050991">penyimpanan eksternal</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">'Kecocokan nama alternatif subjek' atau 'Kecocokan suffix domain' tidak ada untuk memvalidasi identitas server autentikasi</translation>
 <translation id="7165320105431587207">Gagal mengonfigurasi jaringan</translation>
 <translation id="7170041865419449892">Di luar cakupan</translation>
+<translation id="7179579940054351344">Akses file oleh semua situs dan URL kecuali <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Perbarui</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Simpan file sebagai</translation>

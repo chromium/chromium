@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Кеш Google Диска очищено.</translation>
 <translation id="2239068707900391003">Людина з кавою</translation>
 <translation id="2251368349685848079">Відновити з кошика</translation>
+<translation id="2278133026967558505">Доступ до файлу для всіх веб-сайтів і URL-адрес</translation>
 <translation id="2282155092769082568">URL-адреса автоконфігурації:</translation>
 <translation id="2284767815536050991">знімний носій</translation>
 <translation id="2288278176040912387">Грамофон</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Підтвердити справжність сервера автентифікації неможливо, оскільки поле "Збіг з альтернативною назвою суб’єкта" або "Збіг із суфіксом домену", не заповнено</translation>
 <translation id="7165320105431587207">Помилка налаштування мережі</translation>
 <translation id="7170041865419449892">За межами досяжності</translation>
+<translation id="7179579940054351344">Доступ до файлу для всіх веб-сайтів і URL-адрес, крім <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Зберегти файл як</translation>

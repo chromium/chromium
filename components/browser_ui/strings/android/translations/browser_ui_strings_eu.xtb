@@ -56,6 +56,7 @@
 <translation id="2030769033451695672">Sakatu hau <ph name="URL_OF_THE_CURRENT_TAB" /> webgunera itzultzeko</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2091887806945687916">Soinua</translation>
+<translation id="2117655453726830283">Hurrengo diapositiba</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="216989819110952009">Begiak betaurreko berdeekin babestuta bazituzten ere, Dorothy eta haren lagunak txundituta geratu ziren</translation>
 <translation id="2176704795966505152">Erakutsi zoomaren aukera menu nagusian</translation>
@@ -114,6 +115,7 @@
 <translation id="3008272652534848354">Berrezarri baimenak</translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
 <translation id="3069226013421428034">Eman webgune jakin batean saioa hasteko baimena hirugarrenei.</translation>
+<translation id="310297983047869047">Aurreko diapositiba</translation>
 <translation id="3109724472072898302">Tolestuta</translation>
 <translation id="3114012059975132928">Bideo-erreproduzigailua</translation>
 <translation id="3115898365077584848">Erakutsi informazioa</translation>
@@ -189,6 +191,7 @@
 <translation id="4440642537584213025">Zabaldu <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Desaktibatu webgune jakin baten audioa.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
+<translation id="4478158430052450698">Erraztu zooma pertsonalizatzea hainbat webgunetarako</translation>
 <translation id="4479647676395637221">Webguneei kamera erabiltzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="4505788138578415521">URLa zabalduta dago</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> aplikazioari mikrofonoa erabiltzeko baimena emateko, mikrofonoa erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">Кофе кармаган адам</translation>
 <translation id="2251368349685848079">Таштандылар кутусунан калыбына келтирүү</translation>
+<translation id="2278133026967558505">Файлга бардык вебсайттардан жана URL даректеринен кирүү мүмкүнчүлүгү</translation>
 <translation id="2282155092769082568">Автоконфигурация URL'и:</translation>
 <translation id="2284767815536050991">ташыма сактагыч</translation>
 <translation id="2288278176040912387">Жазууну ойноткуч</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Сервердин аныктыгын текшерүү мүмкүн эмес, анткени "Субъекттин кошумча аталышына дал келүү" же "Домен суффиксине дал келүү" жок</translation>
 <translation id="7165320105431587207">Тармак конфигурацияланбай калды</translation>
 <translation id="7170041865419449892">Арымдан тышкары</translation>
+<translation id="7179579940054351344">Файлга <ph name="NON_RESTRICTED_DESTINATIONS" /> башка бардык вебсайттардан жана URL даректеринен кирүү мүмкүнчүлүгү</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> Гб</translation>
 <translation id="7191454237977785534">Файлды төмөнкүдөй сактоо</translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Drive-ի ձեր քեշը մաքրվել է։</translation>
 <translation id="2239068707900391003">Սուրճով մարդ</translation>
 <translation id="2251368349685848079">Վերականգնել աղբարկղից</translation>
+<translation id="2278133026967558505">Ֆայլի հասանելիություն բոլոր կայքերի և URL-ների միջոցով</translation>
 <translation id="2282155092769082568">Ինքնակազմաձևման URL-ը՝</translation>
 <translation id="2284767815536050991">շարժական կրիչ</translation>
 <translation id="2288278176040912387">Գրամոֆոն</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Սերվերի իսկությունը հնարավոր չէ հաստատել, քանի որ «Սուբյեկտի այլընտրանքային անվան համընկնում» կամ «Տիրույթի վերջածանցի համընկնում» դաշտերը լրացված չեն</translation>
 <translation id="7165320105431587207">Չհաջողվեց կազմաձևել ցանցը</translation>
 <translation id="7170041865419449892">Ծածկույթից դուրս</translation>
+<translation id="7179579940054351344">Ֆայլի հասանելիություն բոլոր կայքերի և URL-ների միջոցով (բացառությամբ հետևյալների՝ <ph name="NON_RESTRICTED_DESTINATIONS" />)</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ԳԲ</translation>
 <translation id="7191454237977785534">Պահել ֆայլը որպես</translation>
@@ -939,6 +941,7 @@
 <translation id="8492972329130824181">Տնային ցանցը հասանելի չէ։ Կապ ապահովելու համար անհրաժեշտ է միացնել տվյալների ռոումինգը։</translation>
 <translation id="8499098729323186194">Տարրերը (<ph name="NUMBER_OF_ITEMS" />) արտահանվում են…</translation>
 <translation id="8502913769543567768">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />։ Ակտիվացրեք՝ սարքը կարգավորելուց հետո։ Կառավարվում է ադմինիստրատորի կողմից</translation>
+<translation id="8512483403832814140">Ցանկացած ժամանակ</translation>
 <translation id="8521441079177373948">ՄԹ</translation>
 <translation id="853494022971700746">ֆրանսերեն (Ֆրանսիա)</translation>
 <translation id="8540608333167683902">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>

@@ -262,6 +262,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2834399722155632105">3. Tryk på Valgmuligheder for adgangskoder</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Nulstil oversættelsesindstillinger</translation>
+<translation id="284581348330507117">Opret unikke adgangskoder</translation>
 <translation id="2848086008667475748">Angiv som standard i Indstillinger…</translation>
 <translation id="2858204748079866344">Af hensyn til beskyttelsen af dine personlige oplysninger autofylder Chrome ikke din adgangskode i dette felt.</translation>
 <translation id="285960592395650245">Prøv at downloade igen</translation>
@@ -542,6 +543,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="48274138579728272">Markér som læst</translation>
 <translation id="4833686396768033263">Seneste faner er ikke tilgængelige</translation>
 <translation id="4833786495304741580">Sender automatisk brugsstatistik og nedbrudsrapporter til Google.</translation>
+<translation id="4834499902900503484">Når du er logget ind i Chrome, opbevares de adgangskoder, du gemmer, på din Google-konto. <ph name="BEGIN_LINK" />Gå til indstillingerne<ph name="END_LINK" /> for at deaktivere dette.</translation>
 <translation id="4840495572919996524">Dine bogmærker, din historik, dine adgangskoder og meget andet synkroniseres ikke længere med din Google-konto.</translation>
 <translation id="4844899002472726590">Se og rediger de emner, du er interesseret i</translation>
 <translation id="4848999860252535517">Vil du slette adgangskoden til <ph name="WEBSITE" />?</translation>
@@ -650,6 +652,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5704908597376970822">Det lykkedes ikke at logge ind.</translation>
 <translation id="5706552126692816153">Aktiv for 1 dag siden</translation>
 <translation id="5711039611392265845">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling under <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Du bør ændre adgangskoderne med det samme</translation>
 <translation id="5724941645893276623">Tilføj en ny fane for at surfe privat på nettet</translation>
 <translation id="5728700505257787410">Der var et problem med at logge ind på din konto.</translation>
 <translation id="5733084997078800044">Tip til Chrome</translation>
@@ -685,6 +688,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5899314093904173337">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode med deres kamera eller app til scanning af QR-koder</translation>
 <translation id="5911030830365207728">Google Oversæt</translation>
 <translation id="5913600720976431809">Valgmuligheder for oversættelse af side</translation>
+<translation id="5922999516621365983">Træk fanen hertil for at fastgøre den.</translation>
 <translation id="5938160824633642847">Din enhed er ved at løbe tør for plads. Frigør plads, og prøv igen.</translation>
 <translation id="5948291296578561264">Dermed kan du gemme fotos i din fotosamling.</translation>
 <translation id="5951816930277761335">Del linket</translation>
@@ -1132,6 +1136,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="891658175948553296">Fremhæv tekst på et website</translation>
 <translation id="8917490105272468696">Ja tak</translation>
 <translation id="8928133177108699615">Computer</translation>
+<translation id="894191600409472540">Opret stærke adgangskoder</translation>
 <translation id="8952559610785099500">Tilføj adgangskode</translation>
 <translation id="8953046091948372197">Her finder du dine adgangskoder</translation>
 <translation id="895541991026785598">Rapportér et problem</translation>

@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. పాస్‌వర్డ్ ఆప్షన్‌లను ట్యాప్ చేయండి</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">అనువాద సెట్టింగ్‌లను రీసెట్ చేయి</translation>
+<translation id="284581348330507117">భిన్నమైన పాస్‌వర్డ్‌లను క్రియేట్ చేయండి</translation>
 <translation id="2848086008667475748">సెట్టింగ్‌లకు వెళ్లి దానిని 'ఆటోమేటిక్ సెట్టింగ్'గా సెట్ చేయండి…</translation>
 <translation id="2858204748079866344">మీ గోప్యతను సంరక్షించడానికి, Chrome ఈ ఫీల్డ్‌లో మీ పాస్‌వర్డ్‌ను ఆటోమేటిక్‌గా పూరించదు.</translation>
 <translation id="285960592395650245">రీట్రై డౌన్‌లోడ్‌</translation>
@@ -481,6 +482,7 @@
 <translation id="4474494258097106883">మీ iPhone కోసం రూపొందించబడింది</translation>
 <translation id="4476574785019001431">సెట్టింగ్‌లు</translation>
 <translation id="448433063499977729">సింక్ ఆఫ్ చేయబడింది</translation>
+<translation id="4489536976005181779">{count,plural, =1{మీ ఖాతా, {email}‌లోని చదవాల్సిన లిస్ట్‌కు పేజీని జోడించడం జరిగింది}other{మీ ఖాతా, {email}‌లోని చదవాల్సిన లిస్ట్‌కు పేజీలను జోడించడం జరిగింది}}</translation>
 <translation id="4496373720959965247">ట్యాబ్‌లను జోడించండి మరియు పేజీల మధ్య మారండి</translation>
 <translation id="4502566650163919158">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="4505980578794259603">చివరగా చెక్ చేసినది <ph name="TIME" />.</translation>
@@ -651,6 +653,7 @@
 <translation id="5704908597376970822">సైన్ ఇన్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="5706552126692816153">1 రోజు క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="5711039611392265845">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్ &amp; Google సర్వీసుల<ph name="END_LINK" />ను చూడండి.</translation>
+<translation id="5718049162805123412">మీరు ఇప్పుడు వీటిని మార్చాలి</translation>
 <translation id="5724941645893276623">వెబ్‌ను ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి, కొత్త ట్యాబ్‌ను జోడించండి</translation>
 <translation id="5728700505257787410">క్షమించండి, మీ ఖాతాకు సైన్ ఇన్ చేయడంలో సమస్య ఉంది.</translation>
 <translation id="5733084997078800044">Chrome చిట్కా</translation>
@@ -1134,6 +1137,7 @@
 <translation id="891658175948553296">సైట్‌లో టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
 <translation id="8917490105272468696">సరే, నాకు సమ్మతమే</translation>
 <translation id="8928133177108699615">డెస్క్‌టాప్</translation>
+<translation id="894191600409472540">శక్తివంతమైన పాస్‌వర్డ్‌లను క్రియేట్ చేయండి</translation>
 <translation id="8952559610785099500">పాస్‌వర్డ్‌ను జోడించండి</translation>
 <translation id="8953046091948372197">మీరు మీ పాస్‌వర్డ్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="895541991026785598">ఒక సమస్యను రిపోర్ట్ చేయండి</translation>

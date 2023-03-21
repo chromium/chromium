@@ -477,6 +477,7 @@ Privatne oznake poboljšavaju privatnost na webu i ne mogu se upotrebljavati da 
 <translation id="3587596251841506391">Za bolju sigurnost na webu</translation>
 <translation id="3597179440835065298">Bolji prijedlozi</translation>
 <translation id="3602290021589620013">Pregled</translation>
+<translation id="360901359071773787">Želite li izbrisati zadnjih 15 min?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Upravljanje prozorima</translation>
 <translation id="3631987586758005671">Dijeljenje s uređajem <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5517095782334947753">Imate oznake, povijest, zaporke i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Tijekom eksperimenata i ako vas je Chrome nasumično rasporedio u aktivni eksperiment, vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chrome kontinuirano briše vaše interese svakog mjeseca.</translation>
 <translation id="5524843473235508879">Preusmjeravanje je blokirano.</translation>
+<translation id="554297709083131118">Izbrisat će se sljedeći podaci za zadnjih 15 min</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
 <translation id="5555525474779371165">Odaberite svoju zaštitu sigurnog pregledavanja</translation>
 <translation id="5556459405103347317">Ponovno učitaj</translation>

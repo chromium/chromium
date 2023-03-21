@@ -415,6 +415,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3081696990447829002">Kembangkan menu</translation>
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3090989381251959936">Togol <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">versi</translation>
 <translation id="309749186376891736">Alihkan kursor</translation>
 <translation id="3100274880412651815">Ketepikan mod tangkap</translation>
 <translation id="3105917916468784889">Ambil tangkapan skrin</translation>
@@ -576,6 +577,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3846575436967432996">Tiada maklumat rangkaian tersedia</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Permulaan</translation>
+<translation id="3859364108019690">Tidak dapat menstrim apl</translation>
 <translation id="3861651314799684201">Tekan kekunci enter untuk merakam skrin penuh</translation>
 <translation id="3871092408932389764">Terendah</translation>
 <translation id="3886872229787704059">Dibuka hari ini</translation>
@@ -691,6 +693,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4424159417645388645">Meja 5</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
 <translation id="4435022394553622295">Lihat pemberitahuan dan apl telefon anda pada <ph name="DEVICE_TYPE" /> anda</translation>
+<translation id="4440032176046152627">Rangkaian ini tidak menyokong apl penstriman daripada telefon anda. Cuba hidupkan tempat liputan telefon anda. Ketahui lebih lanjut.</translation>
 <translation id="4441283832827406317">Apl diisih mengikut nama</translation>
 <translation id="4445159312344259901">Log masuk untuk membuka kunci</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan penting}other{# pemberitahuan penting}}</translation>
@@ -1317,6 +1320,9 @@ Pemasangan baharu</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Pembingkaian kamera dihidupkan.</translation>
+<translation id="7519649142417630956">Setelah peranti dimatikan, pentadbir akan log keluar dan tidak akan dapat mengawal peranti anda.
+
+Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.</translation>
 <translation id="7526573455193969409">Rangkaian mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Apl Linux dan tetingkap inkognito tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
@@ -1670,6 +1676,7 @@ Pemasangan baharu</translation>
 <translation id="938963181863597773">Apakah acara dalam kalendar saya?</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="951991426597076286">Tolak</translation>
+<translation id="953431725143473984">Matikan peranti?</translation>
 <translation id="954052413789300507">Ruang tidak mencukupi untuk <ph name="FILENAME" />. Kosongkan ruang.</translation>
 <translation id="974545358917229949">Memaparkan <ph name="RESULT_COUNT" /> hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Pergi ke bahagian hujung dokumen</translation>

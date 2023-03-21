@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">3. Πατήστε Επιλογές κωδικών πρόσβασης</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Επαν.ρυθ.μετάφ.</translation>
+<translation id="284581348330507117">Δημιουργήστε μοναδικούς κωδικούς πρόσβασης</translation>
 <translation id="2848086008667475748">Ορισμός ως προεπιλεγμένου στις Ρυθμίσεις…</translation>
 <translation id="2858204748079866344">Προκειμένου να προστατεύσει το απόρρητό σας, το Chrome δεν θα συμπληρώνει αυτόματα τον κωδικό πρόσβασής σας σε αυτό το πεδίο.</translation>
 <translation id="285960592395650245">Επανάληψη λήψης</translation>
@@ -481,6 +482,7 @@
 <translation id="4474494258097106883">Δημιουργήθηκε για το iPhone</translation>
 <translation id="4476574785019001431">Ρυθμίσεις</translation>
 <translation id="448433063499977729">Ο συγχρονισμός απενεργοποιήθηκε</translation>
+<translation id="4489536976005181779">{count,plural, =1{Η σελίδα προστέθηκε στη λίστα ανάγνωσης στον λογαριασμό σας, {email}}other{Οι σελίδες προστέθηκαν στη λίστα ανάγνωσης στον λογαριασμό σας, {email}}}</translation>
 <translation id="4496373720959965247">Προσθέστε καρτέλες και κάντε εναλλαγή μεταξύ σελίδων</translation>
 <translation id="4502566650163919158">Έλεγχος τώρα</translation>
 <translation id="4505980578794259603">Τελευταίος έλεγχος: <ph name="TIME" /></translation>
@@ -651,6 +653,7 @@
 <translation id="5704908597376970822">Δεν είναι δυνατή η σύνδεση.</translation>
 <translation id="5706552126692816153">Ενεργή 1 ημέρα πριν</translation>
 <translation id="5711039611392265845">Για περισσότερες ρυθμίσεις που σχετίζονται με το απόρρητο, την ασφάλεια και τη συλλογή δεδομένων, ανατρέξτε στην ενότητα <ph name="BEGIN_LINK" />Συγχρονισμός και υπηρεσίες Google<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Πρέπει να τους αλλάξετε άμεσα</translation>
 <translation id="5724941645893276623">Για να περιηγηθείτε στον ιστό ιδιωτικά, προσθέστε μια νέα καρτέλα.</translation>
 <translation id="5728700505257787410">Παρουσιάστηκε πρόβλημα με τη σύνδεση στον λογαριασμό σας.</translation>
 <translation id="5733084997078800044">Συμβουλή για το Chrome</translation>
@@ -1135,6 +1138,7 @@
 <translation id="891658175948553296">Επισημάνετε κείμενο σε έναν ιστότοπο</translation>
 <translation id="8917490105272468696">Ναι, συμφωνώ</translation>
 <translation id="8928133177108699615">Για υπολογιστή</translation>
+<translation id="894191600409472540">Δημιουργήστε ισχυρούς κωδικούς πρόσβασης</translation>
 <translation id="8952559610785099500">Προσθήκη κωδικού πρόσβασης</translation>
 <translation id="8953046091948372197">Εδώ θα βρείτε τους κωδικούς πρόσβασής σας</translation>
 <translation id="895541991026785598">Αναφορά προβλήματος</translation>

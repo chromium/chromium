@@ -262,6 +262,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2834399722155632105">3. Dodirnite Opcije lozinki</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Resetuj podešavanja Prevodioca</translation>
+<translation id="284581348330507117">Napravite jedinstvene lozinke</translation>
 <translation id="2848086008667475748">Podesi kao podrazumevano u Podešavanjima…</translation>
 <translation id="2858204748079866344">Radi zaštite privatnosti Chrome neće automatski unositi vašu lozinku u ovo polje.</translation>
 <translation id="285960592395650245">Probaj ponovo preuzimanje</translation>
@@ -481,6 +482,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4474494258097106883">Napravljeno za iPhone</translation>
 <translation id="4476574785019001431">Podešavanja</translation>
 <translation id="448433063499977729">Sinhronizacija je isključena</translation>
+<translation id="4489536976005181779">{count,plural, =1{Stranica je dodata na listu za čitanje na nalogu, {email}}one{Stranice su dodate na listu za čitanje na nalogu, {email}}few{Stranice su dodate na listu za čitanje na nalogu, {email}}other{Stranice su dodate na listu za čitanje na nalogu, {email}}}</translation>
 <translation id="4496373720959965247">Dodajte kartice i prelazite sa jedne stranice na drugu</translation>
 <translation id="4502566650163919158">Proveri</translation>
 <translation id="4505980578794259603">Poslednja provera: <ph name="TIME" />.</translation>
@@ -651,6 +653,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5704908597376970822">Prijavljivanje nije uspelo.</translation>
 <translation id="5706552126692816153">Poslednja aktivnost: pre 1 dan</translation>
 <translation id="5711039611392265845">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK" />Sinhronizacija i Google usluge<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Odmah ih promenite</translation>
 <translation id="5724941645893276623">Da biste privatno pregledali veb, dodajte novu karticu</translation>
 <translation id="5728700505257787410">Žao nam je, došlo je do problema pri prijavljivanju na nalog.</translation>
 <translation id="5733084997078800044">Savet za Chrome</translation>
@@ -1134,6 +1137,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="891658175948553296">Istaknite tekst na sajtu</translation>
 <translation id="8917490105272468696">Da, omogući</translation>
 <translation id="8928133177108699615">Računar</translation>
+<translation id="894191600409472540">Napravite jake lozinke</translation>
 <translation id="8952559610785099500">Dodajte lozinku</translation>
 <translation id="8953046091948372197">Ovde ćete pronaći lozinke</translation>
 <translation id="895541991026785598">Prijavite problem</translation>

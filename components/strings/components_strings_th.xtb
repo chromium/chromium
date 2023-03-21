@@ -387,6 +387,7 @@
 <translation id="1822540298136254167">เว็บไซต์ที่คุณเข้าชมและเวลาที่ใช้ไป</translation>
 <translation id="1824402189105105503">ม้วนกระดาษ 8</translation>
 <translation id="1826516787628120939">กำลังตรวจสอบ</translation>
+<translation id="1826968372364864056">ล้างแบบฟอร์ม</translation>
 <translation id="1828959155404624835">การเช่ารถ</translation>
 <translation id="1834321415901700177">เว็บไซต์นี้มีโปรแกรมอันตราย</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
@@ -1224,7 +1225,6 @@
 <translation id="399952081411886534">ฟีเจอร์อื่นๆ ที่ทำให้โฆษณาเป็นส่วนตัวมากขึ้น</translation>
 <translation id="4000598935132966791">ดูข้อมูลเพิ่มเติมเกี่ยวกับการจำกัดเว็บไซต์ในเบราว์เซอร์ที่มีการจัดการ</translation>
 <translation id="4006465311664329701">วิธีการชำระเงิน ข้อเสนอ และที่อยู่จาก Google Pay</translation>
-<translation id="4009243425692662128">ระบบจะส่งเนื้อหาของหน้าที่คุณพิมพ์ไปยัง Google Cloud หรือบุคคลที่สามเพื่อการวิเคราะห์ เช่น สแกนหาข้อมูลที่ละเอียดอ่อน</translation>
 <translation id="4010758435855888356">อนุญาตให้เข้าถึงพื้นที่เก็บข้อมูลไหม</translation>
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{เอกสาร PDF ที่มี {COUNT} หน้า}other{เอกสาร PDF ที่มี {COUNT} หน้า}}</translation>
@@ -1968,6 +1968,7 @@
 <translation id="5786044859038896871">คุณต้องการกรอกข้อมูลบัตรไหม</translation>
 <translation id="578633867165174378">Chrome พบว่ารหัสผ่านที่คุณเพิ่งใช้รั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เราขอแนะนำให้เปลี่ยนรหัสผ่านนี้ทันที</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{ไม่มี}=1{ข้อมูลการลงชื่อเข้าใช้สำหรับ 1 บัญชี}other{ข้อมูลการลงชื่อเข้าใช้สำหรับ # บัญชี}}</translation>
 <translation id="580241730938216256">เริ่มอัปเดต</translation>
 <translation id="5803412860119678065">คุณต้องการกรอกข้อมูล <ph name="CARD_DETAIL" /> ไหม</translation>
 <translation id="5804241973901381774">การอนุญาต</translation>
@@ -2523,6 +2524,7 @@
 <translation id="7201591969684833065">ผู้ดูแลระบบจะเห็นสิ่งต่อไปนี้</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเปิดแท็บที่ไม่ระบุตัวตนแท็บใหม่ในการท่องเว็บแบบส่วนตัว</translation>
 <translation id="7203375778433816396">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นของระบบ</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{ไม่มี}=1{1 พาสคีย์}other{# พาสคีย์}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ไม่เป็นไปตามมาตรฐานความปลอดภัย</translation>
 <translation id="7210993021468939304">กิจกรรม Linux ในคอนเทนเนอร์ และติดตั้งรวมถึงเรียกใช้แอป Linux ในคอนเทนเนอร์ได้</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /> เกี่ยวกับปัญหานี้</translation>

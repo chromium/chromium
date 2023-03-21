@@ -56,6 +56,7 @@
 <translation id="2030769033451695672">Gusa ili urudi kwenye <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="2091887806945687916">Sauti</translation>
+<translation id="2117655453726830283">Slaidi inayofuata</translation>
 <translation id="2148716181193084225">Leo</translation>
 <translation id="216989819110952009">Licha ya kuwa walivaa miwani ya kijani machoni Dorothy pamoja na marafiki zake kwanza kabisa walishangazwa na uzuri wa jiji la ajabu.</translation>
 <translation id="2176704795966505152">Onyesha chaguo la kukuza kwenye menyu kuu</translation>
@@ -114,6 +115,7 @@
 <translation id="3008272652534848354">Badilisha ruhusa</translation>
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
 <translation id="3069226013421428034">Ruhusu uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
+<translation id="310297983047869047">Slaidi iliyotangulia</translation>
 <translation id="3109724472072898302">Imekunjwa</translation>
 <translation id="3114012059975132928">Kicheza video</translation>
 <translation id="3115898365077584848">Onyesha Maelezo</translation>
@@ -189,6 +191,7 @@
 <translation id="4440642537584213025">Panua <ph name="TARGET_DESCRIPTION" /></translation>
 <translation id="4468959413250150279">Zima sauti katika tovuti mahususi.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{Kidakuzi #}other{Vidakuzi #}}</translation>
+<translation id="4478158430052450698">Hurahisisha kuweka mapendeleo kwenye kipengele cha kuza katika tovuti tofauti</translation>
 <translation id="4479647676395637221">Uliza kwanza kabla ya kuruhusu tovuti zitumie kamera yako (inapendekezwa)</translation>
 <translation id="4505788138578415521">URL imepanuliwa</translation>
 <translation id="4534723447064627427">Ili uruhusu <ph name="APP_NAME" /> ifikie maikrofoni yako, washa pia maikrofoni katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>

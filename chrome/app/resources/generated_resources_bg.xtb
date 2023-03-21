@@ -2000,7 +2000,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2710101514844343743">Данни за употребата и диагностиката</translation>
 <translation id="271033894570825754">Създаване</translation>
 <translation id="2711073837061989559">Експерименти</translation>
-<translation id="2712207122921938368">Създайте код за достъп на друго устройство</translation>
 <translation id="2713106313042589954">Изключване на камерата</translation>
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2714180132046334502">Тъмен фон</translation>
@@ -3751,7 +3750,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4275397969489577657">Активиране на записването в регистрационен файл за потоците на събития</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4277434192562187284">Източник на конфигурацията чрез XML</translation>
-<translation id="4277529130885813215">Използване на друго устройство</translation>
 <translation id="4278390842282768270">Разрешено</translation>
 <translation id="4278498748067682896">Ще използвате лиценз Kiosk &amp; Signage Upgrade, който позволява на устройството да работи само в павилионен режим или режим за дигитални знаци и надписи. Ако искате потребителите да влизат в профили на устройството, върнете се назад и го регистрирайте, като използвате Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Този процес може да отнеме няколко минути. Файловете се изтеглят.</translation>
@@ -5442,7 +5440,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="583431638776747">Сайтът не бе налице</translation>
 <translation id="5834581999798853053">Остават около <ph name="TIME" /> минути</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – записва се чрез камерата или микрофона</translation>
-<translation id="5835625581856809102">Сканирайте този QR код с устройството, на което искате да създадете код за достъп за <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Сайтовете могат да извеждат запитвания за редактиране на файловете и папките на устройството ви</translation>
 <translation id="5836999627049108525">Изходен език</translation>
 <translation id="583756221537636748">Кутия</translation>
@@ -5880,7 +5877,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6227002569366039565">Натиснете |<ph name="ACCELERATOR" />|, за да поставите фокуса върху това балонче, след което го натиснете отново, за да поставите фокуса върху елемента, към който сочи то.</translation>
 <translation id="6227280783235722609">разширение</translation>
 <translation id="6229849828796482487">Прекратяване на връзката с Wi-Fi мрежата</translation>
-<translation id="6230165830166519105">Опит по друг начин</translation>
 <translation id="6231782223312638214">Предложени</translation>
 <translation id="6231881193380278751">За да се опреснява страницата автоматично, добавете към URL адреса параметър на заявката: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Батерия</translation>
@@ -6635,6 +6631,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6903022061658753260">Данните ви ще бъдат синхронизирани с всички браузъри Chrome, на които сте включили синхронизирането за този профил. За опциите за синхронизиране в Chrome OS отворете <ph name="LINK_BEGIN" />настройките на операционната система<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Отваряне на всички (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Включване на синхронизирането</translation>
+<translation id="6903916726032521638">Търсене на „<ph name="QUERY_CLUSTER_NAME" />“</translation>
 <translation id="6904344821472985372">Оттегляне на достъпа до файлове</translation>
 <translation id="6904655473976120856">За изход натиснете бутона на приложението</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{С цел защита на паролите ви Google Мениджър на пароли се заключва след 1 минута неактивност}other{С цел защита на паролите ви Google Мениджър на пароли се заключва след {NUM_MINS} минути неактивност}}</translation>
@@ -8710,6 +8707,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> се нуждае от актуализация</translation>
 <translation id="8763927697961133303">USB устройство</translation>
 <translation id="8766796754185931010">Котоери</translation>
+<translation id="8767069439158587614">Показване на всички търсения за „<ph name="QUERY_CLUSTER_NAME" />“</translation>
 <translation id="8767621466733104912">Автоматично актуализиране на Chrome за всички потребители</translation>
 <translation id="8770406935328356739">Основна директория на разширението</translation>
 <translation id="8771300903067484968">Възстановен е стандартният фон на началната страница.</translation>

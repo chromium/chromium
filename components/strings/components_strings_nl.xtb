@@ -387,6 +387,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1822540298136254167">Websites die je bezoekt en waarop je tijd doorbrengt</translation>
 <translation id="1824402189105105503">8e rol</translation>
 <translation id="1826516787628120939">Controleren</translation>
+<translation id="1826968372364864056">Formulier leegmaken</translation>
 <translation id="1828959155404624835">Autoverhuur</translation>
 <translation id="1834321415901700177">Deze site bevat schadelijke programma's</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
@@ -1220,7 +1221,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="399952081411886534">Andere functies die advertenties meer privé maken</translation>
 <translation id="4000598935132966791">Meer informatie over sitebeperkingen in beheerde browsers</translation>
 <translation id="4006465311664329701">Betaalmethoden, aanbiedingen en adressen via Google Pay</translation>
-<translation id="4009243425692662128">De content van pagina's die je afdrukt, wordt naar Google Cloud of derden gestuurd voor analyse. De tekst kan bijvoorbeeld worden gescand op gevoelige gegevens of malware.</translation>
 <translation id="4010758435855888356">Toegang tot opslag toestaan?</translation>
 <translation id="401170183602135785">Envelop C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Pdf-document met {COUNT} pagina}other{Pdf-document met {COUNT} pagina's}}</translation>
@@ -1964,6 +1964,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5786044859038896871">Wil je de gegevens van je creditcard laten invullen?</translation>
 <translation id="578633867165174378">Chrome heeft het wachtwoord dat je net hebt gebruikt, gevonden bij een gegevenslek. We raden je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Geen}=1{inloggegevens voor 1 account}other{inloggegevens voor # accounts}}</translation>
 <translation id="580241730938216256">Update starten</translation>
 <translation id="5803412860119678065">Wil je de gegevens van je <ph name="CARD_DETAIL" /> laten invullen?</translation>
 <translation id="5804241973901381774">Rechten</translation>
@@ -2518,6 +2519,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7201591969684833065">De beheerder kan het volgende zien:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en daarna op Enter om een nieuw incognitotabblad te openen om privé te browsen.</translation>
 <translation id="7203375778433816396">Chrome instellen als standaardbrowser van het systeem</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Geen}=1{1 toegangssleutel}other{# toegangssleutels}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> voldoet niet aan de beveiligingsnormen.</translation>
 <translation id="7210993021468939304">Linux-activiteit in de container, en kan Linux-apps in de container installeren en uitvoeren</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>

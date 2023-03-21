@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">మీ Google Drive కాష్ క్లియర్ చేయబడింది.</translation>
 <translation id="2239068707900391003">కాఫీని పట్టుకుని ఉన్న వ్యక్తి</translation>
 <translation id="2251368349685848079">ట్రాష్ నుండి రీస్టోర్ చేయండి</translation>
+<translation id="2278133026967558505">అన్ని వెబ్‌సైట్‌లు, URLలకు ఫైల్ యాక్సెస్‌ను ఇవ్వండి</translation>
 <translation id="2282155092769082568">ఆటోకాన్ఫిగరేషన్ URL:</translation>
 <translation id="2284767815536050991">తీసివేయదగిన స్టోరేజ్</translation>
 <translation id="2288278176040912387">రికార్డ్ ప్లేయర్</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">ప్రామాణీకరణ సర్వర్ గుర్తింపును ధృవీకరించడానికి 'సబ్జెక్ట్ ప్రత్యామ్నాయ పేరు మ్యాచ్' లేదా 'డొమైన్ సఫిక్స్ మ్యాచ్' అందుబాటులో లేదు</translation>
 <translation id="7165320105431587207">నెట్‌వర్క్‌ను కాన్ఫిగర్ చేయడంలో విఫలమైంది</translation>
 <translation id="7170041865419449892">పరిధిని దాటింది</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> లింక్‌ను మినహాయించి అన్ని వెబ్‌సైట్‌లు, URLలకు ఫైల్ యాక్సెస్‌ను ఇవ్వండి</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయండి</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ఫైల్‌ను ఇలా సేవ్ చేయండి</translation>

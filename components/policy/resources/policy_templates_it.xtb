@@ -151,6 +151,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
       L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
 <translation id="1147732569915511430">L'hash SHA-256 dell'immagine dell'avatar.</translation>
 <translation id="1148415065145333943">Disattiva la modalità di ricarica avanzata della batteria</translation>
+<translation id="1149841949061115313">Canale LTC</translation>
 <translation id="1150742937785306405">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli annunci suggeriti dai siti.</translation>
 <translation id="1151353063931113432">Consenti immagini su questi siti</translation>
 <translation id="1151987132434751822">Gli schemi di autenticazione per i quali è possibile applicare le credenziali del criterio. È possibile impostare uno dei seguenti valori:
@@ -2196,6 +2197,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se viene impostato su Disattivato, i controlli multimediali nella schermata di blocco vengono disattivati.</translation>
 <translation id="3072847235228302527">Imposta i Termini di servizio di un account locale del dispositivo</translation>
+<translation id="3074032542020543133">Canale LTS</translation>
 <translation id="3077650998740742747">
 Comportamento predefinito (Criterio non impostato)
 Quando viene aggiunto un account nell'area dei contenuti, potrebbe essere visualizzata una piccola finestra di dialogo che chiede all'utente di creare un nuovo profilo. Questa finestra di dialogo è ignorabile.
@@ -3212,7 +3214,6 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
 <translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
-<translation id="3984028218719007910">Consente di stabilire se tenere o meno memorizzati in <ph name="PRODUCT_OS_NAME" /> i dati degli account locali dopo l'uscita. Se la norma viene impostata su true, in <ph name="PRODUCT_OS_NAME" /> non verranno conservati gli account persistenti e tutti i dati della sessione utente verranno eliminati dopo l'uscita. Se la norma viene impostata su false o non viene configurata, il dispositivo potrebbe conservare i dati utente locali (criptati).</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
 
@@ -3341,6 +3342,13 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
 <translation id="4102347680024644994">Segnala eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="4105989332710272578">Disattiva l'imposizione di Certificate Transparency per un elenco di URL</translation>
+<translation id="4110126170080699437">Per motivi di sicurezza, l'API web <ph name="GET_DISPLAY_MEDIA_API_NAME" /> richiede che venga chiamato un gesto dell'utente precedente ("attivazione temporanea") o la chiamata non andrà a buon fine.
+
+Con questo criterio, gli amministratori possono specificare le origini da cui è possibile chiamare l'API senza gesto dell'utente precedente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * non è un valore accettato per questo criterio.
+
+Se questo criterio non viene configurato, tutte le origini richiederanno un gesto dell'utente precedente per chiamare questa API.</translation>
 <translation id="4114059938441379876">La configurazione del criterio consente di impostare l'URL per gli utenti per la modifica delle proprie password dopo aver visualizzato un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTPS) indicato tramite questo criterio. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
       Se il criterio viene disattivato o se non viene configurato, il servizio reindirizza gli utenti al sito https://myaccount.google.com per la modifica della propria password.
@@ -7130,6 +7138,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
       Se il criterio non viene configurato o se viene impostato su Disattivato, i criteri relativi al cloud degli utenti hanno la priorità per impostazione predefinita.</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
+<translation id="76580522298425324">Consenti acquisizione schermo senza gesto dell'utente precedente</translation>
 <translation id="7666228839913571182">Consenti cookie di terze parti</translation>
 <translation id="7668830462800981702">Se il criterio viene impostato su Attivato, viene eseguita una ricerca predefinita quando un utente inserisce nella barra degli indirizzi un testo che non è un URL. Per specificare il provider di ricerca predefinito, imposta gli altri criteri relativi alla ricerca predefinita. Se non configuri questi criteri, l'utente può scegliere il provider predefinito. Se il criterio viene impostato su Disattivato, non viene eseguita alcuna ricerca quando l'utente inserisce nella barra degli indirizzi un testo che non è un URL.
 

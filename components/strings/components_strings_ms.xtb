@@ -387,6 +387,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1822540298136254167">Tapak web yang anda lawati dan tempoh anda melayarinya</translation>
 <translation id="1824402189105105503">Gulungan Kelapan</translation>
 <translation id="1826516787628120939">Menyemak</translation>
+<translation id="1826968372364864056">Kosongkan Borang</translation>
 <translation id="1828959155404624835">Sewaan kereta</translation>
 <translation id="1834321415901700177">Tapak ini mengandungi atur cara berbahaya</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
@@ -1226,7 +1227,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="399952081411886534">Ciri lain yang menjadikan iklan lebih peribadi</translation>
 <translation id="4000598935132966791">Ketahui lebih lanjut tentang sekatan laman dalam penyemak imbas terurus</translation>
 <translation id="4006465311664329701">Kaedah pembayaran, Tawaran dan Alamat yang Menggunakan Google Pay</translation>
-<translation id="4009243425692662128">Kandungan halaman yang anda cetak dihantar ke Google Cloud atau pihak ketiga untuk analisis. Contohnya, teks itu mungkin diimbas untuk mencari data sensitif.</translation>
 <translation id="4010758435855888356">Benarkan akses storan?</translation>
 <translation id="401170183602135785">Sampul C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF mengandungi {COUNT} halaman}other{Dokumen PDF mengandungi {COUNT} halaman}}</translation>
@@ -1970,6 +1970,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5786044859038896871">Adakah anda ingin mengisi maklumat kad anda?</translation>
 <translation id="578633867165174378">Chrome menemukan kata laluan yang baru sahaja anda gunakan dalam pelanggaran data. Chrome mengesyorkan agar anda menukar kata laluan ini sekarang.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Tiada}=1{data log masuk untuk 1 akaun}other{data log masuk untuk # akaun}}</translation>
 <translation id="580241730938216256">Mulakan pengemaskinian</translation>
 <translation id="5803412860119678065">Adakah anda ingin mengisi <ph name="CARD_DETAIL" /> anda?</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
@@ -2525,6 +2526,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7201591969684833065">Pentadbir anda dapat melihat:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk membuka tab Inkognito baharu untuk semak imbas secara peribadi</translation>
 <translation id="7203375778433816396">Tetapkan Chrome sebagai penyemak imbas lalai sistem</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Tiada}=1{1 kunci laluan}other{# kunci laluan}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi piawaian keselamatan.</translation>
 <translation id="7210993021468939304">Aktiviti Linux dalam bekas dan boleh memasang serta menjalankan apl Linux dalam bekas</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> mengenai masalah ini.</translation>

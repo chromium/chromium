@@ -415,6 +415,7 @@
 <translation id="3081696990447829002">મેનૂ વિસ્તૃત કરો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">સંસ્કરણ</translation>
 <translation id="309749186376891736">કર્સર ખસેડો</translation>
 <translation id="3100274880412651815">કૅપ્ચર મોડ છોડી દો</translation>
 <translation id="3105917916468784889">સ્ક્રીનશૉટ લો</translation>
@@ -1232,6 +1233,7 @@
 <translation id="7026338066939101231">હ્રાસ</translation>
 <translation id="7029814467594812963">સત્રમાંથી બહાર નીકળો</translation>
 <translation id="7032161822340700104">માત્ર 6 નમૂનાઓને સાચવવાની મંજૂરી છે. નવો નમૂનો સાચવવા માટે કોઈ નમૂનો કાઢી નાખો.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" />નો ઉપયોગ કરવા માગે છે. તમારા ડિવાઇસની વાસ્તવિક <ph name="DEVICE_NAME" /> સ્વિચ ચાલુ કરો.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">સ્ટેટસ એરિયા ઓછો કરો</translation>
 <translation id="7045033600005038336">નમૂનો બદલીએ?</translation>
@@ -1402,6 +1404,7 @@
 <translation id="793716872548410480">તમારું ક્લિપબોર્ડ જોવા માટે <ph name="SHORTCUT_KEY_NAME" /> + V દબાવો. તમે કૉપિ કરેલી છેલ્લી 5 આઇટમ તમારા ક્લિપબોર્ડ પર સાચવવામાં આવી છે.</translation>
 <translation id="7942349550061667556">લાલ</translation>
 <translation id="7944023924886109030">આજની તમામ ઇવેન્ટ જુઓ</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> તમારા <ph name="DEVICE_NAME" />નો ઉપયોગ કરવા માગે છે</translation>
 <translation id="7951630946012935453">ડિમ કીબોર્ડ</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> તરફથી</translation>
 <translation id="7968693143708939792">ફોલ્ડર પસંદ કરો...</translation>

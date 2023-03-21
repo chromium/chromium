@@ -387,6 +387,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1822540298136254167">Web lokacije koje ste posjetili i vrijeme koje ste proveli na njima</translation>
 <translation id="1824402189105105503">Osma rolna</translation>
 <translation id="1826516787628120939">Provjera</translation>
+<translation id="1826968372364864056">Obriši obrazac</translation>
 <translation id="1828959155404624835">Iznajmljivanje automobila</translation>
 <translation id="1834321415901700177">Web lokacija sadrži štetne programe</translation>
 <translation id="1838374766361614909">Obriši pretraživanje</translation>
@@ -1225,7 +1226,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="399952081411886534">Druge funkcije koje oglase čine privatnijima</translation>
 <translation id="4000598935132966791">Saznajte više o ograničenjima web lokacija u upravljanim preglednicima</translation>
 <translation id="4006465311664329701">Načini plaćanja, ponude i adrese iz Google Paya</translation>
-<translation id="4009243425692662128">Sadržaj stranica koje štampate se šalje na analizu u Google Cloud ili trećim stranama. Naprimjer, može se skenirati radi otkrivanja postojanja osjetljivih podataka.</translation>
 <translation id="4010758435855888356">Dozvoliti pristup pohrani?</translation>
 <translation id="401170183602135785">Koverta C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF dokument sadrži {COUNT} stranicu}one{PDF dokument sadrži {COUNT} stranicu}few{PDF dokument sadrži {COUNT} stranice}other{PDF dokument sadrži {COUNT} stranica}}</translation>
@@ -1969,6 +1969,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5786044859038896871">Želite li popuniti informacije o svojoj kartici?</translation>
 <translation id="578633867165174378">Chrome je u narušavanju podataka pronašao lozinku koju ste upravo koristili. Preporučujemo da odmah promijenite tu lozinku.</translation>
 <translation id="5789643057113097023">,</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Ništa}=1{podaci za prijavu za 1 račun}one{podaci za prijavu za # račun}few{podaci za prijavu za # računa}other{podaci za prijavu za # računa}}</translation>
 <translation id="580241730938216256">Pokreni ažuriranje</translation>
 <translation id="5803412860119678065">Želite li popuniti svoju karticu <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Odobrenja</translation>
@@ -2524,6 +2525,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7201591969684833065">Administrator može vidjeti:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da otvorite novu anonimnu karticu i da privatno pregledate</translation>
 <translation id="7203375778433816396">Postavite Chrome kao zadani preglednik sistema</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Ništa}=1{1 pristupni ključ}one{# pristupni ključ}few{# pristupna ključa}other{# pristupnih ključeva}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> se ne pridržava sigurnosnih standarda.</translation>
 <translation id="7210993021468939304">Aktivnost Linuxa se nalazi u spremniku i moguće je instalirati i pokrenuti Linux aplikacije unutar spremnika</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o ovom problemu.</translation>

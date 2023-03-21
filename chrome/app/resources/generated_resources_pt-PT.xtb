@@ -1992,7 +1992,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2710101514844343743">Dados de utilização e diagnósticos</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Avaliações</translation>
-<translation id="2712207122921938368">Crie uma token de acesso noutro dispositivo</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Fundo escuro</translation>
@@ -3744,7 +3743,6 @@ Pretende pará-lo?</translation>
 <translation id="4275397969489577657">Ativar o registo de transmissões de eventos</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4277434192562187284">Origem da configuração XML</translation>
-<translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="4278390842282768270">Permitido</translation>
 <translation id="4278498748067682896">Irá usar uma atualização do modo quiosque e sinalização, que só permite que o dispositivo seja executado no modo quiosque ou sinalização. Se quiser que os utilizadores iniciem sessão no dispositivo, retroceda e inscreva-se através da Chrome Enterprise Upgrade.</translation>
 <translation id="4278779213160967034">Este processo pode demorar alguns minutos. A transferir ficheiros.</translation>
@@ -5434,7 +5432,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="583431638776747">O site não estava disponível</translation>
 <translation id="5834581999798853053">Faltam cerca de <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – câmara ou microfone a gravar</translation>
-<translation id="5835625581856809102">Leia este código QR com o dispositivo no qual quer criar uma token de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Os sites podem solicitar a edição de ficheiros ou de pastas no seu dispositivo</translation>
 <translation id="5836999627049108525">Idioma de Traduzir de</translation>
 <translation id="583756221537636748">Caixa</translation>
@@ -5873,7 +5870,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6227002569366039565">Prima |<ph name="ACCELERATOR" />| para focar este balão e, em seguida, focar o elemento para o qual está a apontar.</translation>
 <translation id="6227280783235722609">extensão</translation>
 <translation id="6229849828796482487">Desligar rede Wi-Fi</translation>
-<translation id="6230165830166519105">Experimente outra forma</translation>
 <translation id="6231782223312638214">Sugerido</translation>
 <translation id="6231881193380278751">Adicione um parâmetro de consulta no URL para atualizar automaticamente a página: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>

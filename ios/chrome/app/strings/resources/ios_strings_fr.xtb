@@ -262,6 +262,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2834399722155632105">3. Appuyez sur "Options de mots de passe"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Réinitialiser paramètres Traduction</translation>
+<translation id="284581348330507117">Créez des mots de passe uniques</translation>
 <translation id="2848086008667475748">Configurer par défaut dans les réglages…</translation>
 <translation id="2858204748079866344">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement le champ du mot de passe.</translation>
 <translation id="285960592395650245">Relancer téléchargement</translation>
@@ -374,6 +375,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3595252146048399851">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3603009562372709545">Copier l'URL du lien</translation>
 <translation id="3607167657931203000">Saisie automatique</translation>
+<translation id="3608008480985212611">Connectez-vous pour gérer vos préférences.</translation>
 <translation id="3609785682760573515">Synchronisation en cours…</translation>
 <translation id="3631443864840848029">Veillez à enregistrer votre mot de passe actuel pour ce site.</translation>
 <translation id="3638472932233958418">Précharger pages Web</translation>
@@ -541,6 +543,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="48274138579728272">Marquer comme lu</translation>
 <translation id="4833686396768033263">Onglets récents indisponibles</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
+<translation id="4834499902900503484">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez le sont dans votre compte Google. Pour désactiver cette option, <ph name="BEGIN_LINK" />accédez aux paramètres<ph name="END_LINK" />.</translation>
 <translation id="4840495572919996524">Vos favoris, votre historique, vos mots de passe et d'autres paramètres ne seront plus synchronisés avec votre compte Google.</translation>
 <translation id="4844899002472726590">Voir et modifier les thèmes qui vous intéressent</translation>
 <translation id="4848999860252535517">Supprimer le mot pour <ph name="WEBSITE" /> ?</translation>
@@ -649,6 +652,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5704908597376970822">Impossible de se connecter.</translation>
 <translation id="5706552126692816153">Actif il y a 1 jour</translation>
 <translation id="5711039611392265845">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la section <ph name="BEGIN_LINK" />Services Google/Synchronisation<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
 <translation id="5724941645893276623">Pour naviguer sur le Web en mode privé, ajoutez un onglet</translation>
 <translation id="5728700505257787410">Désolé, problème lors de la connexion à votre compte.</translation>
 <translation id="5733084997078800044">Astuce Chrome</translation>
@@ -684,6 +688,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5899314093904173337">Pour partager un contenu avec des personnes à proximité, laissez-les scanner ce code QR avec leur appareil photo ou leur application de lecture de codes QR</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5913600720976431809">Options de traduction de la page</translation>
+<translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
 <translation id="5938160824633642847">Votre appareil est presque saturé. Libérez de l'espace et réessayez.</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre bibliothèque.</translation>
 <translation id="5951816930277761335">Partagez le lien</translation>
@@ -1132,6 +1137,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="891658175948553296">Mettez du texte en surbrillance sur un site</translation>
 <translation id="8917490105272468696">J'accepte</translation>
 <translation id="8928133177108699615">Bureau</translation>
+<translation id="894191600409472540">Créez des mots de passe sécurisés</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="8953046091948372197">Vos mots de passe s'afficheront ici</translation>
 <translation id="895541991026785598">Signaler un problème</translation>

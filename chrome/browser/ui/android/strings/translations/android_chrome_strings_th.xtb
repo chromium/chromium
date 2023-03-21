@@ -477,6 +477,7 @@
 <translation id="3587596251841506391">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ต</translation>
 <translation id="3597179440835065298">รับคำแนะนำที่ดียิ่งขึ้น</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
+<translation id="360901359071773787">ลบ 15 นาทีที่ผ่านมาใช่ไหม</translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3622349720008044802">จัดการหน้าต่าง</translation>
 <translation id="3631987586758005671">กำลังแชร์กับ <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@
 <translation id="5517095782334947753">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
 <translation id="5524761631371622910">เมื่อเริ่มการทดสอบและหาก Chrome สุ่มคุณไปไว้ในการทดสอบที่ดำเนินอยู่ ประวัติการท่องเว็บจะส่งผลต่อโฆษณาที่คุณเห็นและความสนใจที่ระบบคาดคะเนไว้ดังที่แสดงอยู่ด้านล่างนี้ Chrome ลบความสนใจเป็นประจำทุกเดือนเพื่อปกป้องความเป็นส่วนตัวของคุณ</translation>
 <translation id="5524843473235508879">การเปลี่ยนเส้นทางถูกบล็อก</translation>
+<translation id="554297709083131118">ระบบจะลบข้อมูลต่อไปนี้จาก 15 นาทีที่ผ่านมา</translation>
 <translation id="5548606607480005320">การตรวจสอบความปลอดภัย</translation>
 <translation id="5555525474779371165">เลือกระดับการปกป้องด้วย Google Safe Browsing</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
@@ -1263,6 +1265,7 @@
 <translation id="78270725016672455">คอมพิวเตอร์ต้องการลงทะเบียนอุปกรณ์นี้เพื่อลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="7844171778363018843">ไม่ได้เลือกข้อมูลที่จะซิงค์</translation>
 <translation id="7846296061357476882">บริการของ Google</translation>
+<translation id="7847228556075070294">ลบประวัติการเข้าชม คุกกี้ และข้อมูลอื่นๆ แล้ว</translation>
 <translation id="784934925303690534">ช่วงเวลา</translation>
 <translation id="7851858861565204677">อุปกรณ์อื่นๆ</translation>
 <translation id="7853202427316060426">กิจกรรม</translation>

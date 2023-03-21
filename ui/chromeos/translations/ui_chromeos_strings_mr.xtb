@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">तुमची Google Drive कॅशे साफ केली आहे.</translation>
 <translation id="2239068707900391003">कॉफी पीत असलेली व्यक्ती</translation>
 <translation id="2251368349685848079">ट्रॅशमधून रिस्टोअर करा</translation>
+<translation id="2278133026967558505">सर्व वेबसाइट आणि URLs ना फाइलचा अ‍ॅक्सेस आहे</translation>
 <translation id="2282155092769082568">स्वयंकॉन्फिगरेशन URL:</translation>
 <translation id="2284767815536050991">काढून टाकण्यायोग्य स्टोरेज</translation>
 <translation id="2288278176040912387">रेकॉर्ड प्लेयर</translation>
@@ -767,6 +768,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7162080671816799010">ऑथेंटिकेशन सर्व्हर ओळख प्रमाणित करण्यासाठी 'विषयाच्या पर्यायी नावाची जुळणी' किंवा 'डोमेन सफिक्स जुळणी' उपलब्ध नाही</translation>
 <translation id="7165320105431587207">नेटवर्क कॉंफिगर करण्यात अयशस्वी</translation>
 <translation id="7170041865419449892">रेंजच्या बाहेर</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> वगळता सर्व वेबसाइट आणि URLs ना फाइलचा अ‍ॅक्सेस आहे</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">या फॉरमॅटमध्ये फाइल सेव्ह करा</translation>

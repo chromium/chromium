@@ -2006,7 +2006,6 @@
 <translation id="2710101514844343743">사용 및 진단 데이터</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2711073837061989559">무료 체험</translation>
-<translation id="2712207122921938368">다른 기기에 패스키 생성</translation>
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2714180132046334502">어두운 배경</translation>
@@ -3754,7 +3753,6 @@
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
 <translation id="4277434192562187284">XML 구성 소스</translation>
-<translation id="4277529130885813215">다른 기기 사용</translation>
 <translation id="4278390842282768270">허용됨</translation>
 <translation id="4278498748067682896">기기가 키오스크 또는 사이니지 모드로만 실행되도록 하는 키오스크 및 사이니지 업그레이드를 사용합니다. 사용자가 기기에 로그인할 수 있게 하려면 뒤로 돌아가서 Chrome Enterprise 업그레이드를 사용해 등록하세요.</translation>
 <translation id="4278779213160967034">이 과정은 몇 분 정도 걸릴 수 있습니다. 파일 다운로드 중</translation>
@@ -5444,7 +5442,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="583431638776747">사이트를 사용할 수 없음</translation>
 <translation id="5834581999798853053">약 <ph name="TIME" />분 남음</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 카메라 또는 마이크 녹음</translation>
-<translation id="5835625581856809102"><ph name="APP_NAME" />의 패스키를 생성하려는 기기로 이 QR 코드를 스캔하세요.</translation>
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="5836999627049108525">출발 언어</translation>
 <translation id="583756221537636748">케이스</translation>
@@ -5882,7 +5879,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6227002569366039565">|<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정한 다음 다시 풍선이 가리키는 요소에 포커스를 지정하세요.</translation>
 <translation id="6227280783235722609">확장 프로그램</translation>
 <translation id="6229849828796482487">Wi-Fi 네트워크 연결 해제</translation>
-<translation id="6230165830166519105">다른 방법 시도</translation>
 <translation id="6231782223312638214">추천</translation>
 <translation id="6231881193380278751">검색어 매개변수를 URL에 추가하여 다음 페이지를 자동으로 새로고침하세요. chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">배터리</translation>

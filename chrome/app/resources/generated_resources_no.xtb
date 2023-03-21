@@ -2001,7 +2001,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2710101514844343743">Bruks- og diagnostikkdata</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Prøveprosjekter</translation>
-<translation id="2712207122921938368">Opprett en tilgangsnøkkel på en annen enhet</translation>
 <translation id="2713106313042589954">Slå av kameraet</translation>
 <translation id="2713444072780614174">Hvit</translation>
 <translation id="2714180132046334502">Mørk bakgrunn</translation>
@@ -3750,7 +3749,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4275397969489577657">Slå på loggføring av aktivitetsstrømmer</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4277434192562187284">XML-konfigurasjonskilde</translation>
-<translation id="4277529130885813215">Bruk en annen enhet</translation>
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="4278498748067682896">Du kommer til å bruke en Kiosk og skilt-oppgradering, som gjør at enheten kun kan kjøres i kiosk- eller skiltmodus. Hvis du vil at brukere skal logge på enheten, må du gå tilbake og registrere den med Chrome Enterprise-oppgraderingen.</translation>
 <translation id="4278779213160967034">Denne prosessen kan ta noen minutter. Laster ned filer.</translation>
@@ -5438,7 +5436,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="583431638776747">Nettstedet var ikke tilgjengelig</translation>
 <translation id="5834581999798853053">Omtrent <ph name="TIME" /> minutter igjen</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kamera- eller mikrofonopptak</translation>
-<translation id="5835625581856809102">Skann denne QR-koden med enheten der du vil opprette en tilgangsnøkkel for <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Nettsteder kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="5836999627049108525">Språket du vil oversette fra</translation>
 <translation id="583756221537636748">Kasus</translation>
@@ -5877,7 +5874,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6227002569366039565">Trykk på |<ph name="ACCELERATOR" />| for å fokusere på denne boblen, og trykk en gang til for å fokusere på elementet den peker på.</translation>
 <translation id="6227280783235722609">utvidelse</translation>
 <translation id="6229849828796482487">Koble fra wifi-nettverket</translation>
-<translation id="6230165830166519105">Prøv en annen måte</translation>
 <translation id="6231782223312638214">Foreslått</translation>
 <translation id="6231881193380278751">Legg til en forespørselsparameter i nettadressen for å laste inn siden på nytt automatisk: chrome://device-log/?refresh=&lt;sek&gt;</translation>
 <translation id="6232017090690406397">Batteri</translation>

@@ -386,6 +386,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1822540298136254167">Tashrif buyurilgan saytlar</translation>
 <translation id="1824402189105105503">Sakkizinchi oʻram</translation>
 <translation id="1826516787628120939">Tekshirilmoqda</translation>
+<translation id="1826968372364864056">Shaklni tozalash</translation>
 <translation id="1828959155404624835">Avtomobil ijarasi</translation>
 <translation id="1834321415901700177">Bu saytda zararli DT mavjud</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
@@ -1220,7 +1221,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="399952081411886534">Reklamalarda maxfiylikni oshiruvchi boshqa funksiyalar</translation>
 <translation id="4000598935132966791">Boshqariladigan brauzerlarda sayt cheklovlari haqida batafsil</translation>
 <translation id="4006465311664329701">Google Pay xizmatidagi bank kartalari, takliflar va manzillar</translation>
-<translation id="4009243425692662128">Chop etiladigan sahifalar kontenti tahlil qilinishi uchun Google Cloud yoki tashqi xizmatlarga yuboriladi. Masalan, tarkibida maxfiy axborot borligini aniqlash uchun.</translation>
 <translation id="4010758435855888356">Xotiraga ruxsat berilsinmi?</translation>
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} ta sahifadan iborat PDF hujjat}other{{COUNT} ta sahifadan iborat PDF hujjat}}</translation>
@@ -1964,6 +1964,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5786044859038896871">Bank karta ma’lumotlari to‘ldirilsinmi?</translation>
 <translation id="578633867165174378">Chrome hozirgina oshkor qilingan parol ishlatganini aniqladi. Parolingizni hoziroq yangilashni tavsiya qilamiz.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Hech qanday}=1{1 ta hisobga kirish maʼlumotlari}other{# ta hisobga kirish maʼlumotlari}}</translation>
 <translation id="580241730938216256">Yangilashni boshlash</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" /> kartangiz ma’lumotlari to‘ldirilsinmi?</translation>
 <translation id="5804241973901381774">Ruxsatlar</translation>
@@ -2518,6 +2519,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7201591969684833065">Administratorga koʻrinadigan axborotlar:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Inkognito varaq ochish va internetdan maxfiy foydalanish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="7203375778433816396">Chrome brauzerini standart brauzer qilish</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Hech qanday}=1{1 ta kod}other{# ta kod}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> sayti xavfsizlik standartlariga muvofiq kelmadi.</translation>
 <translation id="7210993021468939304">Konteyner ichidagi Linux jarayonlari va Linux ilovalarining konteyner ichida oʻrnatilishi va ishga tushirilishi</translation>
 <translation id="721197778055552897">Bu muammo haqidagi <ph name="BEGIN_LINK" />tafsilotlar<ph name="END_LINK" />.</translation>

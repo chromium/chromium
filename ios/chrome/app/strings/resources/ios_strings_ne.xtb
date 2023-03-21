@@ -262,6 +262,7 @@
 <translation id="2834399722155632105">३. पासवर्डसम्बन्धी विकल्पहरूमा ट्याप गर्नुहोस्</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">अनुवाद सेटिङहरू रिसेट गर्नुहोस्</translation>
+<translation id="284581348330507117">अद्वितीय पासवर्डहरू सिर्जना गर्नुहोस्</translation>
 <translation id="2848086008667475748">सेटिङमा गई यसलाई डिफल्ट ब्राउजर बनाउनुहोस्…</translation>
 <translation id="2858204748079866344">तपाईंको गोपनीयताको सुरक्षा गर्न Chrome ले यो फिल्डमा तपाईंको पासवर्ड स्वतः भर्ने छैन।</translation>
 <translation id="285960592395650245">डाउनलोड गर्न पुन: प्रयास गर्नुहोस्</translation>
@@ -481,6 +482,7 @@
 <translation id="4474494258097106883">तपाईंको iPhone का लागि बनाइएको</translation>
 <translation id="4476574785019001431">सेटिङहरू</translation>
 <translation id="448433063499977729">सिंक गर्ने सुविधा अफ गरिएको छ</translation>
+<translation id="4489536976005181779">{count,plural, =1{यो पेज तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएको छ}other{यी पेजहरू तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएका छन्}}</translation>
 <translation id="4496373720959965247">ट्याबहरू थप्नुहोस् र पृष्ठहरू बीच बदल्नुहोस्</translation>
 <translation id="4502566650163919158">अहिले नै जाँच्नुहोस्</translation>
 <translation id="4505980578794259603">अन्तिम पटक <ph name="TIME" /> जाँच गरिएको थियो।</translation>
@@ -651,6 +653,7 @@
 <translation id="5704908597376970822">साइन इन गर्न सकिएन।</translation>
 <translation id="5706552126692816153">१ दिनअघि सक्रिय</translation>
 <translation id="5711039611392265845">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />सिंक तथा Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्।</translation>
+<translation id="5718049162805123412">तपाईंले अहिले नै यी पासवर्डहरू बदल्नु पर्छ</translation>
 <translation id="5724941645893276623">निजी रूपमा वेब ब्राउज गर्न कुनै नयाँ ट्याब थप्नुहोस्</translation>
 <translation id="5728700505257787410">माफ गर्नुहोस्, तपाईंको खातामा भित्र जाँदा समस्या भएको थियो।</translation>
 <translation id="5733084997078800044">Chrome सम्बन्धी सुझाव</translation>
@@ -1134,6 +1137,7 @@
 <translation id="891658175948553296">कुनै साइटमा देखाइएको टेक्स्ट हाइलाइट गर्नुहोस्</translation>
 <translation id="8917490105272468696">हो, म सहमत छु</translation>
 <translation id="8928133177108699615">डेस्कटप</translation>
+<translation id="894191600409472540">भरपर्दा पासवर्डहरू सिर्जना गर्नुहोस्</translation>
 <translation id="8952559610785099500">पासवर्ड थप्नुहोस्</translation>
 <translation id="8953046091948372197">तपाईंका पासवर्डहरू यहाँ देखिने छन्</translation>
 <translation id="895541991026785598">समस्या रिपोर्ट गर्नुहोस्</translation>

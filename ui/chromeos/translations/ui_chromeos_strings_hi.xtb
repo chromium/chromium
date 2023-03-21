@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">आपके Google Drive की कैश मेमोरी मिटा दी गई है.</translation>
 <translation id="2239068707900391003">कॉफ़ी का मग पकड़ा हुआ व्यक्ति</translation>
 <translation id="2251368349685848079">ट्रैश से वापस लाएं</translation>
+<translation id="2278133026967558505">सभी वेबसाइट और यूआरएल, फ़ाइल ऐक्सेस कर सकते हैं</translation>
 <translation id="2282155092769082568">URL का अपने आप कॉन्‍फ़िगरेशन:</translation>
 <translation id="2284767815536050991">डिवाइस का निकाले जा सकने वाला स्टोरेज</translation>
 <translation id="2288278176040912387">रिकॉर्ड प्‍लेयर</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">'विषय के दूसरे नाम से मिलती-जुलती' या 'डोमेन सफ़िक्स से मिलती-जुलती' जैसी जानकारी उपलब्ध नहीं होने की वजह से, पुष्टि करने वाले सर्वर की पहचान नहीं की जा सकती</translation>
 <translation id="7165320105431587207">नेटवर्क कॉन्फ़िगर करने में विफल</translation>
 <translation id="7170041865419449892">तय सीमा के मुताबिक नहीं है</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> को छोड़कर सभी वेबसाइट और यूआरएल, फ़ाइल ऐक्सेस कर सकते हैं</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> जीबी</translation>
 <translation id="7191454237977785534">फ़ाइल को इस रूप में सेव करें</translation>

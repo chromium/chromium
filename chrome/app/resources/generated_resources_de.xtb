@@ -1985,7 +1985,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2710101514844343743">Nutzungsdaten &amp; Fehlerberichte</translation>
 <translation id="271033894570825754">Neu</translation>
 <translation id="2711073837061989559">Tests</translation>
-<translation id="2712207122921938368">Passkey auf einem anderen Gerät erstellen</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2714180132046334502">Dunkler Hintergrund</translation>
@@ -5420,7 +5419,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="583431638776747">Website nicht verfügbar</translation>
 <translation id="5834581999798853053">Noch etwa <ph name="TIME" /> Minuten</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Kamera oder Mikrofon nimmt auf</translation>
-<translation id="5835625581856809102">Scanne diesen QR-Code mit dem Gerät, auf dem du einen Passkey für <ph name="APP_NAME" /> erstellen möchtest</translation>
 <translation id="583673505367439042">Websites dürfen nachfragen, wenn sie Dateien oder Ordner auf meinem Gerät bearbeiten möchten</translation>
 <translation id="5836999627049108525">Ausgangssprache</translation>
 <translation id="583756221537636748">Case</translation>
@@ -5857,7 +5855,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6227002569366039565">Drücke |<ph name="ACCELERATOR" />|, um dieses Infofeld hervorzuheben. Wiederhole den Vorgang, um zu dem Element zu wechseln, auf das es zeigt.</translation>
 <translation id="6227280783235722609">Erweiterung</translation>
 <translation id="6229849828796482487">WLAN-Verbindung trennen</translation>
-<translation id="6230165830166519105">Andere Anmeldeoption</translation>
 <translation id="6231782223312638214">Vorgeschlagen</translation>
 <translation id="6231881193380278751">Abfrageparameter in URL zum automatischen Aktualisieren der Seite hinzufügen: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Akku</translation>
@@ -6612,6 +6609,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6903022061658753260">Deine Daten werden mit allen Chrome-Browsern synchronisiert, in denen du die Synchronisierung für dieses Konto aktiviert hast. Synchronisierungsoptionen für Chrome OS findest du in den <ph name="LINK_BEGIN" />Chrome OS-Einstellungen<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Alle öffnen (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
+<translation id="6903916726032521638">Nach <ph name="QUERY_CLUSTER_NAME" /> suchen</translation>
 <translation id="6904344821472985372">Zugriff auf Datei aufheben</translation>
 <translation id="6904655473976120856">Klicke zum Beenden des Modus auf die App-Schaltfläche</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Zum Schutz deiner Passwörter wird der Google Passwortmanager nach 1 Minute Inaktivität gesperrt}other{Zum Schutz deiner Passwörter wird der Google Passwortmanager nach {NUM_MINS} Minuten Inaktivität gesperrt}}</translation>
@@ -8685,6 +8683,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8762886931014513155">Dein <ph name="DEVICE_TYPE" /> muss aktualisiert werden</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Alle Suchanfragen für <ph name="QUERY_CLUSTER_NAME" /> anzeigen</translation>
 <translation id="8767621466733104912">Chrome automatisch für alle Nutzer aktualisieren</translation>
 <translation id="8770406935328356739">Stammverzeichnis der Erweiterung</translation>
 <translation id="8771300903067484968">Der Hintergrund der Startseite wurde auf den standardmäßigen Hintergrund zurückgesetzt.</translation>

@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1014750484722996375">Scrivanie</translation>
 <translation id="1018219910092211213">Impossibile risolvere la richiesta DNS</translation>
 <translation id="1018656279737460067">Operazione annullata</translation>
+<translation id="1022433422498218992">Controlli generali</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
 <translation id="1059913517121127803">Impossibile avviare la scansione</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Operazione interrotta - Inchiostro esaurito</translation>
 <translation id="1664796644829245314">Visualizza <ph name="PREVIEW_OBJECT" /> in anteprima</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
+<translation id="1669047024429367828">Visibilità</translation>
 <translation id="1672499492233627739">Feed video della webcam</translation>
 <translation id="1676557873873341166">Acquisizione video in corso…</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS presente</translation>
+<translation id="1710499924611012470">Navigazione in Accessibilità</translation>
 <translation id="1715359911173058521">Si è verificato un problema di collegamento con lo scanner. Controlla la rete o la connessione USB e riprova.</translation>
 <translation id="1717874160321062422">Dispositivo gestito da <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Server dei nomi</translation>
@@ -135,6 +139,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2085089206770112532">Riduci la luminosità del display</translation>
+<translation id="2102231663024125441">Modifica del testo</translation>
 <translation id="2105810540595158374">Il dispositivo è un controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versione <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB disponibili su <ph name="TOTAL_MEMORY" /></translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Aggiornamento critico</translation>
 <translation id="2860473693272905224">Posiziona un'altra pagina sullo scanner</translation>
 <translation id="2872961005593481000">Spegni</translation>
+<translation id="2873483161362553159">Navigazione nel browser</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="2902312830803030883">Altre azioni</translation>
@@ -660,6 +666,7 @@
 <translation id="6766275201586212568">Risoluzioni DNS non riuscite</translation>
 <translation id="6768237774506518020">Percentuale errori di risoluzione DNS elevata</translation>
 <translation id="6791471867139427246">colore della luce della tastiera</translation>
+<translation id="6798678288485555829">Navigazione nel testo</translation>
 <translation id="680983167891198932">Chiave</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
 <translation id="6838167112108853532">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN collegati abilitati siano disattivati o rimossi.</translation>

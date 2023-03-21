@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1014750484722996375">Radne površine</translation>
 <translation id="1018219910092211213">DNS ne može da se razreši</translation>
 <translation id="1018656279737460067">Otkazano</translation>
+<translation id="1022433422498218992">Opšte kontrole</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> niti, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Dostupna je nova funkcija. Koristite taster sa strelicom nagore da biste saznali više.</translation>
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspelo</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
 <translation id="1664796644829245314">Pregled za <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
+<translation id="1669047024429367828">Vidljivost</translation>
 <translation id="1672499492233627739">Video fid veb-kamere</translation>
 <translation id="1676557873873341166">Snima se video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
+<translation id="1710499924611012470">Kretanje kroz pristupačnost</translation>
 <translation id="1715359911173058521">Došlo je do problema u komunikaciji sa skenerom. Proverite mrežnu ili USB vezu i probajte ponovo.</translation>
 <translation id="1717874160321062422">Upravljaju <ph name="FIRST_MANAGER" /> i <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Serveri imena</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tip potvrde identiteta</translation>
 <translation id="1782199038061388045">prevod</translation>
+<translation id="1790209694022261219">Prozori i radne površine</translation>
 <translation id="1792647875738159689">Otkazuje se skeniranje</translation>
 <translation id="1801418420130173017">Onemogućite tamnu temu</translation>
 <translation id="1807246157184219062">Svetla</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4 ili IPv6</translation>
 <translation id="2080070583977670716">Više podešavanja</translation>
 <translation id="2085089206770112532">Smanjite osvetljenost ekrana</translation>
+<translation id="2102231663024125441">Uređivanje teksta</translation>
 <translation id="2105810540595158374">Uređaj je kontroler za igre.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno: <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Važno ažuriranje</translation>
 <translation id="2860473693272905224">Postavite još jednu stranicu na skener</translation>
 <translation id="2872961005593481000">Isključi</translation>
+<translation id="2873483161362553159">Kretanje u pregledaču</translation>
 <translation id="2874939134665556319">Prethodna pesma</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="2902312830803030883">Još radnji</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Potpuno</translation>
 <translation id="4333390807948134856">Taster <ph name="KEY_NAME" /> je pritisnut</translation>
 <translation id="435692326371619097">Upravljajte podešavanjima naziva pristupne tačke mreže. Nazivi pristupnih tačaka uspostavljaju vezu između mobilne mreže i interneta. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Resetuj sve prečice</translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
 <translation id="6768237774506518020">Velika stopa neuspeha DNS razrešavanja</translation>
 <translation id="6791471867139427246">boja osvetljenja tastature</translation>
+<translation id="6798678288485555829">Kretanje kroz tekst</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije vezane za vaš izbor. Koristite taster sa strelicom nagore da biste im pristupili.</translation>
 <translation id="6838167112108853532">Ne možete da onemogućite ni uklonite ovaj naziv pristupne tačke. Uverite se da su omogućeni priloženi nazivi pristupnih tačaka onemogućeni ili uklonjeni.</translation>

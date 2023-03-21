@@ -1998,7 +1998,6 @@
 <translation id="2710101514844343743">የአጠቃቀም እና የምርመራ ውሂብ</translation>
 <translation id="271033894570825754">አዲስ</translation>
 <translation id="2711073837061989559">ሙከራዎች</translation>
-<translation id="2712207122921938368">ሌላ መሣሪያ ላይ አንድ የይለፍ ቁልፍ ይፍጠሩ</translation>
 <translation id="2713106313042589954">ካሜራ አጥፋ</translation>
 <translation id="2713444072780614174">ነጭ</translation>
 <translation id="2714180132046334502">ጨለማ ጀርባ</translation>
@@ -3746,7 +3745,6 @@
 <translation id="4275397969489577657">የክስተት ዥረት ምዝግብ ማስታወሻን ያንቁ</translation>
 <translation id="4275830172053184480">መሣሪያዎን ዳግም ያስጀምሩ</translation>
 <translation id="4277434192562187284">የXML ውቅረት ምንጭ</translation>
-<translation id="4277529130885813215">ሌላ መሣሪያ ተጠቀም</translation>
 <translation id="4278390842282768270">ተፈቅዷል</translation>
 <translation id="4278498748067682896">መሣሪያው በኪዮስክ ወይም በምልክት ሁነታ ላይ ብቻ እንዲሰራ የሚያስችል የኪዮስክ እና የምልክት ማሻሻያ ይጠቀማሉ። ተጠቃሚዎች ወደ መሣሪያው እንዲገቡ ከፈለጉ እባክዎ ይመለሱ እና የChrome የንግድ ድርጅት ማሻሸያን በመጠቀም ይመዝገቡ።</translation>
 <translation id="4278779213160967034">ይህ ሂደት ጥቂት ደቂቃዎችን ሊወስድ ይችላል። ፋይሎችን በማውረድ ላይ።</translation>
@@ -4236,6 +4234,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ን አቋርጥ</translation>
 <translation id="4711638718396952945">ቅንብሮችን ወደነበሩበት መልስ</translation>
 <translation id="4713409221649555176">ሁሉንም መስኮቶች ሲዘጉ ይሰርዙ</translation>
+<translation id="4715631922189108923">የተጠቃሚ ስምን አርትዕ</translation>
 <translation id="47158868804223727">እሱን ለመዘርጋት ወይም ለመሰብሰብ የቡድኑን ስም ጠቅ ያድርጉ</translation>
 <translation id="4716483597559580346">Powerwash ለደህንነት ታክሏል</translation>
 <translation id="471759229191973607">ገጽታን ለውጥ</translation>
@@ -5434,7 +5433,6 @@
 <translation id="583431638776747">ጣቢያ አልተገኘም</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> ደቂቃዎች አካባቢ ቀርቷል</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ካሜራ ወይም ማይክራፎን በመቅረጽ ላይ ነው</translation>
-<translation id="5835625581856809102">ለ<ph name="APP_NAME" /> የይለፍ ቁልፍ መፍጠር በሚፈልጉት መሣሪያ ይህን QR ኮድ ይቃኙት።</translation>
 <translation id="583673505367439042">ጣቢያዎች በመሣሪያዎ ላይ ያሉ ፋይሎችን እና አቃፊዎችን ለማርትዕ መጠየቅ ይችላሉ</translation>
 <translation id="5836999627049108525">የሚተረጎመው ቋንቋ</translation>
 <translation id="583756221537636748">መያዣ</translation>
@@ -5872,7 +5870,6 @@
 <translation id="6227002569366039565">ይህንን ዓረፋ ለማነጣጠር |<ph name="ACCELERATOR" />|ን ይጫኑ፣ ከዚያም እንደገና የሚያመለክተውን አባለ ነገር ለማነጣጠር እንደገናን ይጫኑ።</translation>
 <translation id="6227280783235722609">ቅጥያ</translation>
 <translation id="6229849828796482487">የWi-Fi አውታረ መረብ ግንኙነትን አቋርጥ</translation>
-<translation id="6230165830166519105">ሌላ መንገድ ይሞክሩ</translation>
 <translation id="6231782223312638214">በአስተያየት የተጠቆሙ</translation>
 <translation id="6231881193380278751">ገጹን በራስ-ለማደስ በዩአርኤል ውስጥ የመጠይቅ ልኬት ያክሉ፦ chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ባትሪ</translation>
@@ -8090,6 +8087,7 @@ nil</translation>
 <translation id="8203732864715032075">ማሳወቂያዎችን ለእርስዎ ይልካል እና ይህን ኮምፒውተር ለመልዕክቶች በነባሪነት ያስታውሳል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">የእርስዎ ማሳያዎች እና ተቀጥላዎች ለአንድ አፍታ ዳግም ሊጀመሩ ይችላሉ። ይህ ለውጥ እንዲተገበር ተቀጥላዎችዎን ነቅለው እንደገና ይሰኩ።</translation>
 <translation id="820568752112382238">በብዛት የተጎበኙ ጣቢያዎች</translation>
+<translation id="8206267832882844324">ማስታወሻን አርትዕ</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8207404892907560325">የይለፍ ቁልፍ ይምረጡ</translation>

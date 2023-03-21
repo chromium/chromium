@@ -387,6 +387,7 @@
 <translation id="1822540298136254167">Сайты, которые вы посещали, и время пребывания на них</translation>
 <translation id="1824402189105105503">Восьмой рулон</translation>
 <translation id="1826516787628120939">Проверка</translation>
+<translation id="1826968372364864056">Очистить форму</translation>
 <translation id="1828959155404624835">Прокат автомобилей</translation>
 <translation id="1834321415901700177">Сайт содержит вредоносное ПО</translation>
 <translation id="1838374766361614909">Удалить условия поиска</translation>
@@ -809,6 +810,7 @@
 <translation id="2951588413176968965">Мой почтовый ящик</translation>
 <translation id="2952820037279740115">Закрыть все окна в режиме инкогнито</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Таблица сохраненных способов оплаты</translation>
 <translation id="295526156371527179">Внимание! Это правило не объединено, так как оно не является словарем.</translation>
 <translation id="2955913368246107853">Закрыть панель поиска</translation>
 <translation id="2958544468932521864">Крикет</translation>
@@ -1224,7 +1226,6 @@
 <translation id="399952081411886534">Другие функции, повышающие конфиденциальность рекламы</translation>
 <translation id="4000598935132966791">Подробнее о доступе к сайтам в управляемых браузерах</translation>
 <translation id="4006465311664329701">Способы оплаты, адреса и специальные предложения из Google Pay</translation>
-<translation id="4009243425692662128">Содержание страниц, которые вы печатаете, отправляется в Google Cloud или третьим лицам для анализа. В частности, оно может быть просканировано на наличие конфиденциальных данных.</translation>
 <translation id="4010758435855888356">Предоставить доступ к хранилищу?</translation>
 <translation id="401170183602135785">Конверт C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-документ, состоящий из {COUNT} страницы}one{PDF-документ, состоящий из {COUNT} страницы}few{PDF-документ, состоящий из {COUNT} страниц}many{PDF-документ, состоящий из {COUNT} страниц}other{PDF-документ, состоящий из {COUNT} страницы}}</translation>
@@ -1968,6 +1969,7 @@
 <translation id="5786044859038896871">Заполнить данные банковской карты?</translation>
 <translation id="578633867165174378">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Советуем изменить его прямо сейчас.</translation>
 <translation id="5789643057113097023">:</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Нет данных}=1{учетные данные для 1 аккаунта}one{учетные данные для # аккаунта}few{учетные данные для # аккаунтов}many{учетные данные для # аккаунтов}other{учетные данные для # аккаунта}}</translation>
 <translation id="580241730938216256">Обновить</translation>
 <translation id="5803412860119678065">Заполнить данные банковской карты <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
@@ -2523,6 +2525,7 @@
 <translation id="7201591969684833065">Администратор может отслеживать:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть новую вкладку в режиме инкогнито.</translation>
 <translation id="7203375778433816396">Сделать Chrome браузером по умолчанию</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Нет ключей доступа}=1{1 ключ доступа}one{# ключ доступа}few{# ключа доступа}many{# ключей доступа}other{# ключа доступа}}</translation>
 <translation id="7210863904660874423">Сайт <ph name="HOST_NAME" /> не соответствует стандартам безопасности.</translation>
 <translation id="7210993021468939304">Действия Linux в контейнере (также он может устанавливать и запускать приложения Linux из контейнера).</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Подробнее <ph name="END_LINK" /> об этой неполадке.</translation>
@@ -2775,6 +2778,7 @@
 <translation id="7736959720849233795">Копировать адрес ссылки</translation>
 <translation id="7740996059027112821">Стандартный</translation>
 <translation id="77424286611022110">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Таблица сохраненных адресов</translation>
 <translation id="774634243536837715">Опасный контент заблокирован</translation>
 <translation id="7751971323486164747">Настроить шрифты и их размеры в Chrome</translation>
 <translation id="7752995774971033316">Не управляется</translation>
@@ -3016,6 +3020,7 @@
 <translation id="8347658365704983341">Дистанционное обучение</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8351131234907093545">Создать заметку</translation>
+<translation id="835203957414790336">Содержание страниц, которые вы печатаете, и информация о принтере отправляются в Google Cloud или третьим лицам для анализа. В частности, они могут быть просканированы на наличие конфиденциальных данных.</translation>
 <translation id="8355270400102541638">Локальный идентификатор сбоя:</translation>
 <translation id="8363502534493474904">Отключите режим полета.</translation>
 <translation id="8364627913115013041">Не задано</translation>

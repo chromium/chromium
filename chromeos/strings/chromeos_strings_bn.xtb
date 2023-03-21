@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1014750484722996375">ডেস্ক</translation>
 <translation id="1018219910092211213">ডিএনএস (DNS) সংক্রান্ত সমস্যার সমাধান করা যায়নি</translation>
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
+<translation id="1022433422498218992">সাধারণ নিয়ন্ত্রণ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1059913517121127803">স্ক্যান শুরু করা যায়নি</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-এর প্রিভিউ দেখুন</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
+<translation id="1669047024429367828">দৃশ্যমানতা</translation>
 <translation id="1672499492233627739">ওয়েবক্যাম ভিডিও ফিড</translation>
 <translation id="1676557873873341166">ভিডিও ক্যাপচার করা হচ্ছে</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS সমাধানকারী স্ক্রিন পিন করা</translation>
+<translation id="1710499924611012470">অ্যাক্সেসযোগ্যতা নেভিগেশন</translation>
 <translation id="1715359911173058521">স্ক্যানারের সাথে কানেক্ট করতে সমস্যা হচ্ছে। নেটওয়ার্ক বা ইউএসবি কানেকশন চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> এবং <ph name="SECOND_MANAGER" /> ম্যানেজ করে</translation>
 <translation id="1726100011689679555">নেম সার্ভারগুলি</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">যাচাইকরণের প্রকার</translation>
 <translation id="1782199038061388045">অনুবাদ</translation>
+<translation id="1790209694022261219">উইন্ডো এবং ডেস্ক</translation>
 <translation id="1792647875738159689">স্ক্যানিং বাতিল করা হচ্ছে</translation>
 <translation id="1801418420130173017">ডার্ক থিম বন্ধ করুন</translation>
 <translation id="1807246157184219062">আলো</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
+<translation id="2102231663024125441">টেক্সট এডিটিং</translation>
 <translation id="2105810540595158374">ডিভাইস একটি গেম কন্ট্রোলার।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ভার্সন <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> জিবির মধ্যে <ph name="AVAILABLE_MEMORY" /> জিবি উপলভ্য</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">জরুরি আপডেট</translation>
 <translation id="2860473693272905224">স্ক্যানারে অন্য একটি পৃষ্ঠা রাখুন</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
+<translation id="2873483161362553159">ব্রাউজার নেভিগেশন</translation>
 <translation id="2874939134665556319">পূর্ববর্তী ট্র্যাক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ শেষ হয়েছে।</translation>
 <translation id="2902312830803030883">আরও অ্যাকশন</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">পূর্ণ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কী প্রেস করা হয়েছে</translation>
 <translation id="435692326371619097">নেটওয়ার্ক APN সেটিংস ম্যানেজ করুন। APN একটি সেলুলার নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">সমস্ত শর্টকাট রিসেট করুন</translation>
 <translation id="4378373042927530923">চালানো যায়নি</translation>
 <translation id="4378551569595875038">সংযুক্ত হচ্ছে...</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">DNS রেজোলিউশন সফল হয়নি</translation>
 <translation id="6768237774506518020">DNS রেজোলিউশনের বেশি ফেল রেট</translation>
 <translation id="6791471867139427246">কীবোর্ড লাইট কালার</translation>
+<translation id="6798678288485555829">টেক্সট নেভিগেশন</translation>
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="6838167112108853532">এই APN বন্ধ করা বা সরানো যাচ্ছে না। চালু করা আছে এমন অ্যাটাচ করা APN বন্ধ করা বা সরানো আছে কিনা তা নিশ্চিত করুন।</translation>

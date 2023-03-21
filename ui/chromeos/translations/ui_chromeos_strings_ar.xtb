@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">شخص يحمل كوب قهوة</translation>
 <translation id="2251368349685848079">الاستعادة من المهملات</translation>
+<translation id="2278133026967558505">‏وصول جميع المواقع الإلكترونية وعناوين URL إلى الملفات</translation>
 <translation id="2282155092769082568">‏عنوان URL للإعداد التلقائي:</translation>
 <translation id="2284767815536050991">وحدة تخزين قابلة للإزالة</translation>
 <translation id="2288278176040912387">مشغّل أقراص مسجلة</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">لم يتم العثور على "مطابقة الاسم البديل للموضوع" أو "مطابقة لاحقة النطاق" للتحقّق من هوية خادم المصادقة.</translation>
 <translation id="7165320105431587207">تعذّر إعداد الشبكة</translation>
 <translation id="7170041865419449892">خارج النطاق</translation>
+<translation id="7179579940054351344">‏وصول جميع المواقع الإلكترونية وعناوين URL إلى الملفات باستثناء <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> غيغابايت</translation>
 <translation id="7191454237977785534">حفظ الملف باسم</translation>

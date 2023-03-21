@@ -415,6 +415,7 @@
 <translation id="3081696990447829002">ምናሌ ዘርጋ</translation>
 <translation id="3087734570205094154">ግርጌ</translation>
 <translation id="3090989381251959936"><ph name="FEATURE_NAME" /> ቀያይር። <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">ስሪት</translation>
 <translation id="309749186376891736">ጠቋሚን አንቀሳቅስ</translation>
 <translation id="3100274880412651815">የማንሳት ሁነታን ያሰናብቱ</translation>
 <translation id="3105917916468784889">ቅጽበታዊ ገጽ እይታን ያነሳል</translation>
@@ -1230,6 +1231,7 @@
 <translation id="7026338066939101231">ቅነሳ</translation>
 <translation id="7029814467594812963">ከክፍለ-ጊዜ ውጣ</translation>
 <translation id="7032161822340700104">6 ቅንብር ደንቦች ብቻ ናቸው የሚፈቀዱት። አዲሱን ለማስቀመጥ ቅንብር ደንቡን ያስወግዱ።</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> <ph name="DEVICE_NAME" />ን መጠቀም ይፈልጋል። የመሣሪያዎን አካላዊ <ph name="DEVICE_NAME" /> ማብሪያ ማጥፊያ ያብሩ።</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />፣ Google ረዳት</translation>
 <translation id="7042322267639375032">የሁኔታ አካባቢን ሰብስብ</translation>
 <translation id="7045033600005038336">ቅንብር ደንብ ይተካ?</translation>
@@ -1400,6 +1402,7 @@
 <translation id="793716872548410480">የእርስዎን ቅንጥብ ሰሌዳ ለመመልከት <ph name="SHORTCUT_KEY_NAME" /> + Vን ይጫኑ። እርስዎ የቀዷቸው የመጨረሻዎቹ 5 ንጥሎች ቅንጥብ ሰሌዳዎ ላይ ተቀምጠዋል።</translation>
 <translation id="7942349550061667556">ቀይ</translation>
 <translation id="7944023924886109030">ሁሉንም የዛሬ ክስተቶች አሳይ</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> የእርስዎን <ph name="DEVICE_NAME" /> መጠቀም ይፈልጋል</translation>
 <translation id="7951630946012935453">የቁልፍ ሰሌዳን አደብዝዝ</translation>
 <translation id="7963992254934562106">ከ<ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">አቃፊ ምረጥ...</translation>

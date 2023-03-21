@@ -262,6 +262,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2834399722155632105">3. Dodirnite Opcije zaporke</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Vrati Prevoditelj na zadano</translation>
+<translation id="284581348330507117">Izradite jedinstvene zaporke</translation>
 <translation id="2848086008667475748">Postavi kao zadano u Postavkama…</translation>
 <translation id="2858204748079866344">Da bi zaštitio vašu privatnost, Chrome neće automatski popuniti zaporku u ovom polju.</translation>
 <translation id="285960592395650245">Pokušaj preuzeti ponovo</translation>
@@ -481,6 +482,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4474494258097106883">Razvijeno za vaš iPhone</translation>
 <translation id="4476574785019001431">Postavke</translation>
 <translation id="448433063499977729">Sinkroniziranje je isključeno</translation>
+<translation id="4489536976005181779">{count,plural, =1{Stranica je dodana na vaš popis za čitanje na vašem računu, {email}}one{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}few{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}other{Stranice su dodane na vaš popis za čitanje na vašem računu, {email}}}</translation>
 <translation id="4496373720959965247">Dodajte kartice i prebacujte se između stranica</translation>
 <translation id="4502566650163919158">Provjeri sada</translation>
 <translation id="4505980578794259603">Zadnja provjera: <ph name="TIME" />.</translation>
@@ -651,6 +653,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5704908597376970822">Prijava nije uspjela.</translation>
 <translation id="5706552126692816153">Aktivan prije jednog dana</translation>
 <translation id="5711039611392265845">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljku <ph name="BEGIN_LINK" />Sinkronizacija i Googleove usluge<ph name="END_LINK" />.</translation>
+<translation id="5718049162805123412">Trebali biste ih odmah promijeniti</translation>
 <translation id="5724941645893276623">Da biste privatno pregledavali web, dodajte novu karticu</translation>
 <translation id="5728700505257787410">Došlo je do problema prilikom prijave na vaš račun.</translation>
 <translation id="5733084997078800044">Savjet za Chrome</translation>
@@ -1134,6 +1137,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="891658175948553296">Istaknite tekst na web-lokaciji</translation>
 <translation id="8917490105272468696">Da, pristajem</translation>
 <translation id="8928133177108699615">Računalo</translation>
+<translation id="894191600409472540">Izradite snažne zaporke</translation>
 <translation id="8952559610785099500">Dodavanje zaporke</translation>
 <translation id="8953046091948372197">Ovdje ćete pronaći svoje zaporke</translation>
 <translation id="895541991026785598">Prijavljivanje problema</translation>

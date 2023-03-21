@@ -875,6 +875,7 @@
 <translation id="1744108098763830590">ਪਿਛੋਕੜ ਸਫ਼ਾ</translation>
 <translation id="1745732479023874451">ਸੰਪਰਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{ਕੀ ਇਸ ਵੈੱਬ ਐਪ ਵਿੱਚ # ਫ਼ਾਈਲ ਖੋਲ੍ਹਣਾ ਅਤੇ ਉਸਦਾ ਸੰਪਾਦਨ ਕਰਨਾ ਹੈ?}other{ਕੀ ਇਸ ਵੈੱਬ ਐਪ ਵਿੱਚ # ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣਾ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨਾ ਹੈ?}}</translation>
+<translation id="1748329107062243374"><ph name="WEBSITE" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ <ph name="DEVICE_NAME" /> ਤੋਂ ਪਾਸਕੀ ਵਰਤੋ</translation>
 <translation id="1748563609363301860">ਤੁਸੀਂ ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਜਾਂ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="1749733017156547309">ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="1750172676754093297">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਫਿੰਗਰਪ੍ਰਿੰਟਾਂ ਨੂੰ ਸਟੋਰ ਨਹੀਂ ਕਰ ਸਕਦੀ</translation>
@@ -2004,7 +2005,6 @@
 <translation id="2710101514844343743">ਵਰਤੋਂ ਅਤੇ ਤਸ਼ਖੀਸ ਡਾਟਾ</translation>
 <translation id="271033894570825754">ਨਵਾਂ</translation>
 <translation id="2711073837061989559">ਪਰਖਾਂ</translation>
-<translation id="2712207122921938368">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਕੀ ਬਣਾਓ</translation>
 <translation id="2713106313042589954">ਕੈਮਰਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="2713444072780614174">ਸਫ਼ੈਦ</translation>
 <translation id="2714180132046334502">ਗੂੜ੍ਹਾ ਬੈਕਗ੍ਰਾਊਂਡ</translation>
@@ -4243,6 +4243,7 @@
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ਨੂੰ ਛੱਡੋ</translation>
 <translation id="4711638718396952945">ਸੈਟਿੰਗਾਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="4713409221649555176">ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਵੇਲੇ ਮਿਟਾਓ</translation>
+<translation id="4715631922189108923">ਵਰਤੋਂਕਾਰ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="47158868804223727">ਇਸ ਦਾ ਵਿਸਤਾਰ ਕਰਨ ਜਾਂ ਸਮੇਟਣ ਲਈ ਗਰੁੱਪ ਦੇ ਨਾਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4716483597559580346">ਵਾਧੂ ਸੁਰੱਖਿਆ ਲਈ ਪਾਵਰਵਾਸ਼</translation>
 <translation id="471759229191973607">ਥੀਮ ਬਦਲੋ</translation>
@@ -4654,6 +4655,7 @@
 <translation id="5108967062857032718">ਸੈਟਿੰਗਾਂ - Android ਐਪਾਂ ਹਟਾਓ</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> ਨੂੰ ਹਟਾਓ</translation>
+<translation id="5111326646107464148">ਗਰੁੱਪ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5111646998522066203">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="5111692334209731439">&amp;ਬੁੱਕਮਾਰਕ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="5111794652433847656">ਇਸ ਡੀਵਾਈਸ 'ਤੇ <ph name="APP_NAME" /> ਲਈ ਕੋਈ ਪਾਸਕੀ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
@@ -5440,7 +5442,6 @@
 <translation id="583431638776747">ਸਾਈਟ ਉਪਲਬਧ ਨਹੀਂ ਸੀ</translation>
 <translation id="5834581999798853053">ਲਗਭਗ <ph name="TIME" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ਕੈਮਰਾ ਜਾਂ ਮਾਈਕ੍ਰੋਫੋਨ ਰਿਕਾਰਡਿੰਗ</translation>
-<translation id="5835625581856809102">ਇਸ QR ਕੋਡ ਨੂੰ ਉਸ ਡੀਵਾਈਸ ਨਾਲ ਸਕੈਨ ਕਰੋ ਜਿੱਥੇ ਤੁਸੀਂ <ph name="APP_NAME" /> ਲਈ ਪਾਸਕੀ ਬਣਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
 <translation id="583673505367439042">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="5836999627049108525">ਉਹ ਭਾਸ਼ਾ ਜਿਸ ਤੋਂ ਅਨੁਵਾਦ ਕਰਨਾ ਹੈ</translation>
 <translation id="583756221537636748">ਕੇਸ</translation>
@@ -5878,7 +5879,6 @@
 <translation id="6227002569366039565">ਇਸ ਬੁਲਬੁਲੇ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ |<ph name="ACCELERATOR" />| ਦਬਾਓ, ਅਤੇ ਫਿਰ ਉਸ ਤੱਤ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ ਇਸ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ ਜਿਸ ਵੱਲ ਇਹ ਇਸ਼ਾਰਾ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="6227280783235722609">ਐਕਸਟੈਂਸ਼ਨ</translation>
 <translation id="6229849828796482487">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="6230165830166519105">ਕੋਈ ਹੋਰ ਤਰੀਕਾ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
 <translation id="6231782223312638214">ਸੁਝਾਏ ਗਏ</translation>
 <translation id="6231881193380278751">ਪੰਨੇ ਨੂੰ ਸਵੈਚਲਿਤ-ਰੀਫ੍ਰੈਸ਼ ਕਰਨ ਲਈ URL ਵਿੱਚ ਪੁੱਛਗਿੱਛ param ਜੋੜੋ: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">ਬੈਟਰੀ</translation>
@@ -6636,6 +6636,7 @@
 <translation id="6903022061658753260">ਤੁਹਾਡਾ ਡਾਟਾ ਉਨ੍ਹਾਂ ਸਾਰੇ Chrome ਬ੍ਰਾਊਜ਼ਰਾਂ ਵਿੱਚ ਸਿੰਕ ਕੀਤਾ ਜਾਵੇਗਾ ਜਿੱਥੇ ਤੁਸੀਂ ਇਸ ਖਾਤੇ ਲਈ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਹੈ। ChromeOS ਸਿੰਕ ਵਿਕਲਪਾਂ ਲਈ, <ph name="LINK_BEGIN" />ChromeOS ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="6903590427234129279">ਸਾਰੇ (<ph name="URL_COUNT" />) ਖੋਲ੍ਹੋ</translation>
 <translation id="6903907808598579934">ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> ਖੋਜੋ</translation>
 <translation id="6904344821472985372">ਫਾਈਲ ਪਹੁੰਚ ਰੱਦ ਕਰੋ</translation>
 <translation id="6904655473976120856">ਬਾਹਰ ਜਾਣ ਲਈ ਐਪ ਬਟਨ ਦਬਾਓ</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, Google Password Manager 1 ਮਿੰਟ ਦੀ ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਤੋਂ ਬਾਅਦ ਲਾਕ ਹੋ ਜਾਂਦਾ ਹੈ}one{ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, Google Password Manager {NUM_MINS} ਮਿੰਟ ਦੀ ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਤੋਂ ਬਾਅਦ ਲਾਕ ਹੋ ਜਾਂਦਾ ਹੈ}other{ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, Google Password Manager {NUM_MINS} ਮਿੰਟਾਂ ਦੀ ਅਕਿਰਿਆਸ਼ੀਲਤਾ ਤੋਂ ਬਾਅਦ ਲਾਕ ਹੋ ਜਾਂਦਾ ਹੈ}}</translation>
@@ -7582,6 +7583,7 @@
 <translation id="7762243782113123335">ਮਾਫ਼ ਕਰਨਾ, ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਵਰਣਨ ਵਿੱਚ #bruschetta ਸ਼ਾਮਲ ਕਰ ਕੇ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰੋ। ਗੜਬੜ ਕੋਡ <ph name="ERROR" /> ਹੈ।</translation>
 <translation id="7764225426217299476">ਪਤਾ ਜੋੜੋ</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> ਤੋਂ <ph name="DOWNLOAD_RECEIVED" /></translation>
+<translation id="7764527477537408401">ਗਰੁੱਪ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="7765158879357617694">ਮੂਵ ਕਰੋ</translation>
 <translation id="7765507180157272835">ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7766082757934713382">ਸਵੈਚਲਿਤ ਐਪ ਅਤੇ ਸਿਸਟਮ ਅੱਪਡੇਟ ਨੂੰ ਰੋਕ ਕੇ ਨੈੱਟਵਰਕ ਡਾਟਾ ਵਰਤੋਂ ਘਟਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਦੀ ਹੈ</translation>
@@ -8089,6 +8091,7 @@
 <translation id="8203732864715032075">ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣੀਆਂ ਅਤੇ ਇਸ ਕੰਪਿਊਟਰ ਨੂੰ 'ਸੁਨੇਹਾ' ਲਈ ਯਾਦ ਰੱਖਣ 'ਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਕਰਨਾ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">ਤੁਹਾਡੇ ਡਿਸਪਲੇ ਅਤੇ ਪੈਰੀਫੈਰਲ ਕੁਝ ਸਮੇਂ ਵਿੱਚ ਰੀਸੈੱਟ ਹੋ ਸਕਦੇ ਹਨ। ਇਸ ਤਬਦੀਲੀ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ, ਆਪਣੇ ਪੈਰੀਫੈਰਲਾਂ ਨੂੰ ਹਟਾ ਕੇ ਦੁਬਾਰਾ ਲਗਾਓ।</translation>
 <translation id="820568752112382238">ਸਭ ਤੋਂ ਵੱਧ ਦੇਖੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ</translation>
+<translation id="8206267832882844324">ਨੋਟ-ਕਥਨ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8207404892907560325">ਪਾਸਕੀ ਚੁਣੋ</translation>
@@ -8697,6 +8700,7 @@
           &lt;p&gt;ਪਰ ਤੁਸੀਂ ਤਦ ਵੀ ਕਮਾਂਡ ਫ਼ਾਈਲ ਰਾਹੀਂ ਸੰਰੂਪਿਤ ਕਰ ਸਕਦੇ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਫਲੈਗ ਅਤੇ ਵਾਤਾਵਰਨ ਵੈਰੀਏਬਲਾਂ 'ਤੇ ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; ਦੇਖੋ।&lt;/p&gt;</translation>
 <translation id="8755175579224030324">ਆਪਣੀ ਸੰਸਥਾ ਲਈ ਸੁਰੱਖਿਆ-ਸੰਬੰਧਿਤ ਕਾਰਜ ਕਰੋ, ਜਿਵੇਂ ਕਿ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ ਅਤੇ ਕੁੰਜੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨਾ</translation>
 <translation id="8755376271068075440">&amp;ਵੱਡਾ</translation>
+<translation id="8755584192133371929">ਸਾਂਝਾ ਕਰਨ ਲਈ ਕੋਈ ਟੈਬ ਚੁਣੋ</translation>
 <translation id="875604634276263540">ਚਿੱਤਰ URL ਅਵੈਧ ਹੈ</translation>
 <translation id="8756969031206844760">ਕੀ ਪਾਸਵਰਡ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8757203080302669031">ਇਹ ਟੈਬ ਕਿਰਿਆਸ਼ੀਲ ਤੌਰ 'ਤੇ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰ ਰਹੀ ਹੈ।</translation>
@@ -8706,6 +8710,7 @@
 <translation id="8762886931014513155">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਇੱਕ ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="8763927697961133303">USB ਡੀਵਾਈਸ</translation>
 <translation id="8766796754185931010">ਕੋਟੋਇਰੀ</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" /> ਦੀਆਂ ਸਾਰੀਆਂ ਖੋਜਾਂ ਦਿਖਾਓ</translation>
 <translation id="8767621466733104912">Chrome ਨੂੰ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="8770406935328356739">ਐਕਸਟੈਂਸ਼ਨ ਰੂਟ ਡਾਇਰੈਕਟਰੀ</translation>
 <translation id="8771300903067484968">ਸ਼ੁਰੂਆਤੀ ਪੰਨੇ ਦੇ ਬੈਕਗ੍ਰਾਊਂਡ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬੈਕਗ੍ਰਾਊਂਡ ਵਜੋਂ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>

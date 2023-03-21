@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">La cache di Google Drive è stata svuotata.</translation>
 <translation id="2239068707900391003">Persona con caffè</translation>
 <translation id="2251368349685848079">Ripristina dal cestino</translation>
+<translation id="2278133026967558505">Accesso ai file da parte di tutti i siti web e gli URL</translation>
 <translation id="2282155092769082568">URL di configurazione automatica:</translation>
 <translation id="2284767815536050991">dispositivo di archiviazione rimovibile</translation>
 <translation id="2288278176040912387">Giradischi</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Manca "Corrispondenza nome alternativo del soggetto" o "Corrispondenza suffisso di dominio" per la conferma dell'identità del server di autenticazione</translation>
 <translation id="7165320105431587207">Impossibile configurare la rete</translation>
 <translation id="7170041865419449892">Fuori dal raggio d'azione</translation>
+<translation id="7179579940054351344">Accesso ai file da parte di tutti i siti web e gli URL tranne <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Salva file con nome</translation>

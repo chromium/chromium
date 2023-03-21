@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1014750484722996375">Espaços de trabalho</translation>
 <translation id="1018219910092211213">Não foi possível resolver o DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1022433422498218992">Controles gerais</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Parado (sem tinta)</translation>
 <translation id="1664796644829245314">Visualizar <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrado</translation>
+<translation id="1669047024429367828">Visibilidade</translation>
 <translation id="1672499492233627739">Feed de vídeo da webcam</translation>
 <translation id="1676557873873341166">Captura de vídeo ativada</translation>
 <translation id="1703835215927279855">Carta</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
+<translation id="1710499924611012470">Navegação de acessibilidade</translation>
 <translation id="1715359911173058521">Ocorreu um problema na comunicação com o scanner. Verifique a rede ou a conexão USB e tente novamente.</translation>
 <translation id="1717874160321062422">Gerenciado por <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tipo de autenticação</translation>
 <translation id="1782199038061388045">tradução</translation>
+<translation id="1790209694022261219">Janelas e espaços de trabalho</translation>
 <translation id="1792647875738159689">Cancelando digitalização</translation>
 <translation id="1801418420130173017">Desativar o tema escuro</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2085089206770112532">Diminuir o brilho da tela</translation>
+<translation id="2102231663024125441">Edição de texto</translation>
 <translation id="2105810540595158374">Este dispositivo é um controle de jogo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB disponíveis</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Atualização crítica</translation>
 <translation id="2860473693272905224">Coloque outra página no scanner</translation>
 <translation id="2872961005593481000">Desligar</translation>
+<translation id="2873483161362553159">Navegação no navegador</translation>
 <translation id="2874939134665556319">Faixa anterior</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2902312830803030883">Mais ações</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Inteira</translation>
 <translation id="4333390807948134856">A tecla <ph name="KEY_NAME" /> está sendo pressionada</translation>
 <translation id="435692326371619097">Gerenciar configurações do APN de rede. Os APNs estabelecem uma conexão entre a rede celular e a Internet. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Redefinir todos os atalhos</translation>
 <translation id="4378373042927530923">Não executada</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">Falha em resoluções de DNS</translation>
 <translation id="6768237774506518020">Taxa elevada de erro de resolução de DNS</translation>
 <translation id="6791471867139427246">cor da luz do teclado</translation>
+<translation id="6798678288485555829">Navegação de texto</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
 <translation id="6838167112108853532">Não é possível desativar ou remover este APN. Desative ou remova os APNs em anexo.</translation>

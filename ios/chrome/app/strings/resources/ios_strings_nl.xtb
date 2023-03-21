@@ -262,6 +262,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2834399722155632105">3. Tik op Wachtwoordopties.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2843803966603263712">Vertaalinstellingen opnieuw instellen</translation>
+<translation id="284581348330507117">Maak unieke wachtwoorden</translation>
 <translation id="2848086008667475748">Als standaard instellen in Instellingen…</translation>
 <translation id="2858204748079866344">Ter bescherming van je privacy wordt je wachtwoord niet automatisch in dit veld ingevuld door Chrome.</translation>
 <translation id="285960592395650245">Download opnieuw proberen</translation>
@@ -481,6 +482,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4474494258097106883">Ontworpen voor je iPhone</translation>
 <translation id="4476574785019001431">Instellingen</translation>
 <translation id="448433063499977729">Synchronisatie is uitgezet</translation>
+<translation id="4489536976005181779">{count,plural, =1{Pagina toegevoegd aan je leeslijst in je account, {email}}other{Pagina's toegevoegd aan je leeslijst in je account, {email}}}</translation>
 <translation id="4496373720959965247">Tabbladen toevoegen en tussen pagina's schakelen</translation>
 <translation id="4502566650163919158">Nu checken</translation>
 <translation id="4505980578794259603">Laatst gecheckt: <ph name="TIME" /></translation>
@@ -651,6 +653,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5704908597376970822">Kan niet inloggen.</translation>
 <translation id="5706552126692816153">1 dag geleden actief</translation>
 <translation id="5711039611392265845">Bekijk <ph name="BEGIN_LINK" />Synchronisatie en Google-services<ph name="END_LINK" /> voor meer instellingen die verband houden met privacy, beveiliging en gegevensverzameling.</translation>
+<translation id="5718049162805123412">Je moet ze nu wijzigen</translation>
 <translation id="5724941645893276623">Voeg een nieuw tabblad toe als je privé wilt browsen</translation>
 <translation id="5728700505257787410">Er is een probleem opgetreden met het inloggen op je account.</translation>
 <translation id="5733084997078800044">Chrome-tip</translation>
@@ -1134,6 +1137,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="891658175948553296">Markeer tekst op een site</translation>
 <translation id="8917490105272468696">Ja, aanzetten</translation>
 <translation id="8928133177108699615">Desktop</translation>
+<translation id="894191600409472540">Maak sterke wachtwoorden</translation>
 <translation id="8952559610785099500">Wachtwoord toevoegen</translation>
 <translation id="8953046091948372197">Hier vind je je wachtwoorden</translation>
 <translation id="895541991026785598">Een probleem melden</translation>

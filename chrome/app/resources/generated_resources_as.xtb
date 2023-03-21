@@ -2002,7 +2002,6 @@
 <translation id="2710101514844343743">ব্যৱহাৰ আৰু ডায়েগন’ষ্টিক ডেটা</translation>
 <translation id="271033894570825754">নতুন</translation>
 <translation id="2711073837061989559">ট্ৰায়েল</translation>
-<translation id="2712207122921938368">অন্য এটা ডিভাইচত এটা পাছকী সৃষ্টি কৰক</translation>
 <translation id="2713106313042589954">কেমেৰা অফ কৰক</translation>
 <translation id="2713444072780614174">বগা</translation>
 <translation id="2714180132046334502">নেপথ্য ৰং গাঢ়</translation>
@@ -3751,7 +3750,6 @@
 <translation id="4275397969489577657">অনুষ্ঠানৰ ষ্ট্ৰীম লগিং সক্ষম কৰক</translation>
 <translation id="4275830172053184480">আপোনাৰ ডিভাইচটো ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="4277434192562187284">XML কনফিগাৰেশ্বনৰ উৎস</translation>
-<translation id="4277529130885813215">আন এটা ডিভাইচ ব্যৱহাৰ কৰক</translation>
 <translation id="4278390842282768270">অনুমতি দিয়া হৈছে</translation>
 <translation id="4278498748067682896">আপুনি এটা কিঅ’স্ক আৰু ছাইনেজ আপগ্ৰে’ড ব্যৱহাৰ কৰিব যিয়ে ডিভাইচটোক কেৱল কিঅ’স্ক অথবা ছাইনেজ ম’ডত চলিবলৈ দিয়ে। আপুনি যদি ব্যৱহাৰকাৰীয়ে ডিভাইচটোত ছাইন ইন কৰাটো বিচাৰে, অনুগ্ৰহ কৰি উভতি যাওক আৰু Chrome Enterpriseৰ আপগ্ৰে’ড ব্যৱহাৰ কৰি পঞ্জীয়ন কৰক।</translation>
 <translation id="4278779213160967034">এই প্ৰক্ৰিয়াৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে। ফাইল ডাউনল’ড কৰি থকা হৈছে।</translation>
@@ -5441,7 +5439,6 @@
 <translation id="583431638776747">ছাইটটো উপলব্ধ নহয়</translation>
 <translation id="5834581999798853053">আনুমানিক <ph name="TIME" /> মিনিট বাকী আছে</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - কেমেৰা বা মাইক্ৰফ’নৰ জৰিয়তে ৰেকর্ডিং</translation>
-<translation id="5835625581856809102">আপুনি যিটো ডিভাইচত <ph name="APP_NAME" />ৰ বাবে পাছকী সৃষ্টি কৰিব বিচাৰিছে সেইটোৰ জৰিয়তে এই কিউআৰ ক’ডটো স্কেন কৰক</translation>
 <translation id="583673505367439042">ছাইটে আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="5836999627049108525">অনুবাদ কৰিব লগা ভাষা</translation>
 <translation id="583756221537636748">কেছ</translation>
@@ -5879,7 +5876,6 @@
 <translation id="6227002569366039565">এই বাবলটোত ফ’কাছ কৰিবলৈ |<ph name="ACCELERATOR" />| টিপক, তাৰ পাছত এইটোৱে সূচায় থকা উপাদানটো ফ’কাছ কৰিবলৈ আকৌ টিপক।</translation>
 <translation id="6227280783235722609">এক্সটেনশ্বন</translation>
 <translation id="6229849828796482487">ৱাই-ফাই নেটৱৰ্কৰ সংযোগ বিচ্ছিন্ন কৰক</translation>
-<translation id="6230165830166519105">অন্য ধৰণে চেষ্টা কৰক</translation>
 <translation id="6231782223312638214">পৰামৰ্শিত</translation>
 <translation id="6231881193380278751">পৃষ্ঠাটো স্বয়ংক্ৰিয়ভাৱে ৰিফ্রে’শ্ব কৰিবলৈ সন্ধানৰ এটা পৰম যোগ কৰক: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">বেটাৰী</translation>
@@ -6636,6 +6632,7 @@
 <translation id="6903022061658753260">আপোনাৰ ডেটা সমগ্ৰ Chrome ব্ৰাউজাৰত ছিংক কৰা হ’ব য’ত আপুনি এই একাউণ্টটোৰ বাবে ছিংক কৰাৰ সুবিধাটো অন কৰিছে। ChromeOS ছিংক কৰাৰ বিকল্পসমূহৰ বাবে <ph name="LINK_BEGIN" />ChromeOSৰ ছেটিঙ<ph name="LINK_END" />লৈ যাওক।</translation>
 <translation id="6903590427234129279">আটাইবোৰ (<ph name="URL_COUNT" /> টা) খোলক</translation>
 <translation id="6903907808598579934">ছিংক অন কৰক</translation>
+<translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> সন্ধান কৰক</translation>
 <translation id="6904344821472985372">ফাইলৰ এক্সেছ প্ৰত্যাহাৰ কৰক</translation>
 <translation id="6904655473976120856">প্ৰস্থান কৰিবলৈ এপ্ বুটামটো টিপক</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত ৰাখিবলৈ, ১ মিনিট নিষ্ক্ৰিয় হৈ থকাৰ পাছত Google Password Manager লক হৈ যায়}one{আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত ৰাখিবলৈ, {NUM_MINS} মিনিট নিষ্ক্ৰিয় হৈ থকাৰ পাছত Google Password Manager লক হৈ যায়}other{আপোনাৰ পাছৱৰ্ডসমূহ সুৰক্ষিত ৰাখিবলৈ, {NUM_MINS} মিনিট নিষ্ক্ৰিয় হৈ থকাৰ পাছত Google Password Manager লক হৈ যায়}}</translation>
@@ -8710,6 +8707,7 @@
 <translation id="8762886931014513155">আপোনাৰ <ph name="DEVICE_TYPE" />ক আপডে'ট কৰাৰ আৱশ্যক হৈছে।</translation>
 <translation id="8763927697961133303">ইউএছবি ডিভাইচ</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614"><ph name="QUERY_CLUSTER_NAME" />ৰ আটাইবোৰ সন্ধান দেখুৱাওক</translation>
 <translation id="8767621466733104912">সকলো ব্যৱহাৰকাৰীৰ বাবে Chrome স্বয়ংক্ৰিয়ভাৱে আপডে'ট কৰক</translation>
 <translation id="8770406935328356739">এক্সটেনশ্বন ৰুট ডাইৰেক্টৰী</translation>
 <translation id="8771300903067484968">আৰম্ভণিৰ পৃষ্ঠাৰ নেপথ্য ডিফ’ল্ট নেপথ্যলৈ ৰিছেট কৰা হ’ল।</translation>

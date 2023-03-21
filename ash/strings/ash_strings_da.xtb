@@ -415,6 +415,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3081696990447829002">Udvid menu</translation>
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3090989381251959936">Slå <ph name="FEATURE_NAME" /> til/fra. <ph name="STATE_TEXT" /></translation>
+<translation id="3095995014811312755">version</translation>
 <translation id="309749186376891736">Flyttemarkør</translation>
 <translation id="3100274880412651815">Luk optagelsestilstand</translation>
 <translation id="3105917916468784889">Tag screenshot</translation>
@@ -1232,6 +1233,7 @@ Installeret for nylig</translation>
 <translation id="7026338066939101231">Reducer</translation>
 <translation id="7029814467594812963">Afslut session</translation>
 <translation id="7032161822340700104">Der kan højst være 6 skabeloner. Fjern en skabelon for at gemme en ny.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> vil bruge <ph name="DEVICE_NAME" />. Aktivér din enheds fysiske <ph name="DEVICE_NAME" />-kontakt.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Skjul statusområde</translation>
 <translation id="7045033600005038336">Vil du erstatte skabelonen?</translation>
@@ -1402,6 +1404,7 @@ Installeret for nylig</translation>
 <translation id="793716872548410480">Tryk på <ph name="SHORTCUT_KEY_NAME" />+V for at se din udklipsholder. De seneste fem elementer, du har kopieret, gemmes i din udklipsholder.</translation>
 <translation id="7942349550061667556">Rød</translation>
 <translation id="7944023924886109030">Se alle begivenheder for i dag</translation>
+<translation id="7947798320695032612"><ph name="APP_NAME" /> vil bruge <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Dæmp tastaturets lys</translation>
 <translation id="7963992254934562106">Fra <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Vælg mappe...</translation>

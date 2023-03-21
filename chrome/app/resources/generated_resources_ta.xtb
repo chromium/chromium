@@ -873,6 +873,7 @@
 <translation id="1744108098763830590">பின்புலப் பக்கம்</translation>
 <translation id="1745732479023874451">தொடர்புகளை நிர்வகியுங்கள்</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{இந்த இணைய ஆப்ஸில் # ஃபைல்களைத் திறந்து திருத்த வேண்டுமா?}}</translation>
+<translation id="1748329107062243374"><ph name="WEBSITE" /> இணையதளத்தில் உள்நுழைய <ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து கடவுச்சாவியைப் பயன்படுத்துங்கள்</translation>
 <translation id="1748563609363301860">இந்தக் கடவுச்சொல்லை உங்கள் Google கணக்கிலோ இந்தச் சாதனத்தில் மட்டுமோ சேமிக்கலாம்</translation>
 <translation id="1749733017156547309">கடவுச்சொல் தேவை</translation>
 <translation id="1750172676754093297">உங்கள் பாதுகாப்பு விசையில் கைரேகைகளைச் சேமிக்க முடியவில்லை</translation>
@@ -2002,7 +2003,6 @@
 <translation id="2710101514844343743">'உபயோகம் மற்றும் பிழை கண்டறிதல்' தொடர்பான தரவு</translation>
 <translation id="271033894570825754">புதிது</translation>
 <translation id="2711073837061989559">சோதனைகள்</translation>
-<translation id="2712207122921938368">வேறொரு சாதனத்தில் கடவுச்சாவியை உருவாக்குங்கள்</translation>
 <translation id="2713106313042589954">கேமராவை முடக்கு</translation>
 <translation id="2713444072780614174">வெள்ளை</translation>
 <translation id="2714180132046334502">அடர்த்தியான பின்புலம்</translation>
@@ -4653,6 +4653,7 @@
 <translation id="5108967062857032718">அமைப்புகள் - Android ஆப்ஸை அகற்றவும்</translation>
 <translation id="5109044022078737958">மியா</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> மொழியை அகற்றும்</translation>
+<translation id="5111326646107464148">புதிய சாளரத்தில் குழுவைத் திற</translation>
 <translation id="5111646998522066203">மறைநிலையிலிருந்து வெளியேறு</translation>
 <translation id="5111692334209731439">&amp;புக்மார்க் மேனேஜர்</translation>
 <translation id="5111794652433847656">இந்தச் சாதனத்தில் <ph name="APP_NAME" /> தளத்திற்கான கடவுக்குறியீடுகள் எதுவுமில்லை</translation>
@@ -5434,7 +5435,6 @@
 <translation id="583431638776747">தளம் கிடைக்கவில்லை</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> நிமிடங்கள் உள்ளன</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - கேமரா அல்லது மைக்ரோஃபோன் ரெக்கார்டு செய்கிறது</translation>
-<translation id="5835625581856809102">நீங்கள் <ph name="APP_NAME" />க்கான கடவுச்சாவியை உருவாக்க விரும்பும் சாதனத்தில் இந்த QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="583673505367439042">எனது சாதனத்தில் உள்ள கோப்புகளிலும் ஃபோல்டர்களிலும் மாற்றம் செய்ய முயலும்போது தளங்கள் அனுமதி கேட்க வேண்டும்</translation>
 <translation id="5836999627049108525">மூல மொழி</translation>
 <translation id="583756221537636748">கேஸ்</translation>
@@ -5872,7 +5872,6 @@
 <translation id="6227002569366039565">இந்தக் குமிழை ஃபோகஸ் செய்ய, |<ph name="ACCELERATOR" />| அழுத்தவும். குமிழ் சுட்டிக்காட்டுவதை ஃபோகஸ் செய்ய அதை மீண்டும் அழுத்தவும்.</translation>
 <translation id="6227280783235722609">நீட்டிப்பு</translation>
 <translation id="6229849828796482487">வைஃபை நெட்வொர்க்கைத் துண்டி</translation>
-<translation id="6230165830166519105">வேறு வழியில் முயல்க</translation>
 <translation id="6231782223312638214">பரிந்துரைக்கப்படுவது</translation>
 <translation id="6231881193380278751">பக்கத்தைத் தானாகப் புதுப்பிக்க, URL இல் வினவல் அளவுருவைச் சேர்க்கவும்: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
@@ -7571,6 +7570,7 @@
 <translation id="7762243782113123335">ஏதோ தவறாகிவிட்டது. விளக்கத்தில் #bruschetta உடன் கருத்தைச் சமர்ப்பிக்கவும். பிழை குறியீடு: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">முகவரியைச் சேர்</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> இலிருந்து <ph name="DOWNLOAD_RECEIVED" /></translation>
+<translation id="7764527477537408401">புதிய சாளரத்தில் குழுவைத் திற</translation>
 <translation id="7765158879357617694">நகர்த்து</translation>
 <translation id="7765507180157272835">புளூடூத் &amp; வைஃபை இணைப்பு தேவை</translation>
 <translation id="7766082757934713382">ஆப்ஸ் மற்றும் சிஸ்டத்திற்கான தானியங்கு புதுப்பிப்புகளை இடைநிறுத்துவதன் மூலம் நெட்வொர்க் டேட்டா பயன்பாட்டைக் குறைக்க உதவுகிறது</translation>
@@ -8689,6 +8689,7 @@
           &lt;p&gt;ஆனால் கட்டளை வரியின் வழியாக நீங்கள் இப்போதும் உள்ளமைக்க முடியும். கொடிகள் மற்றும் சூழ்நிலை மாறிகள் தொடர்பான கூடுதல் தகவல்களை அறிய &lt;code&gt;கைமுறை <ph name="PRODUCT_BINARY_NAME" />PRODUCT_BINARY_NAME&lt;/code&gt;ஐப் பார்க்கவும்.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">சாதனத்தில் சேமிக்கப்பட்டுள்ள சான்றிதழ்களையும் பாதுகாப்பு விசைகளையும் நிர்வகிப்பது போன்ற பாதுகாப்பு தொடர்பான பணிகளை உங்கள் நிறுவனத்திற்காகச் செய்தல்</translation>
 <translation id="8755376271068075440">&amp;பெரியது</translation>
+<translation id="8755584192133371929">பகிர்வதற்கான பக்கத்தைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="875604634276263540">தவறான பட url</translation>
 <translation id="8756969031206844760">கடவுச்சொல்லைப் புதுப்பிக்கவா?</translation>
 <translation id="8757203080302669031">இந்தத் தாவல் புளூடூத் சாதனங்கள் உள்ளனவா எனத் தொடர்ந்து ஸ்கேன் செய்கிறது.</translation>

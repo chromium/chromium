@@ -810,6 +810,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2951588413176968965">My mailbox</translation>
 <translation id="2952820037279740115">Close all incognito windows</translation>
 <translation id="2952904171810469095">A2 x 5</translation>
+<translation id="2954624054936281172">Saved payment methods table</translation>
 <translation id="295526156371527179">Warning: This policy was not merged as a dictionary as specified by policy because it is not a dictionary.</translation>
 <translation id="2955913368246107853">Close find bar</translation>
 <translation id="2958544468932521864">Cricket</translation>
@@ -1226,7 +1227,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="399952081411886534">Other features that make ads more private</translation>
 <translation id="4000598935132966791">Learn more about site restrictions in managed browsers</translation>
 <translation id="4006465311664329701">Payment methods, offers and addresses using Google Pay</translation>
-<translation id="4009243425692662128">The content of pages that you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="4010758435855888356">Allow storage access?</translation>
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF document containing {COUNT} page}other{PDF document containing {COUNT} pages}}</translation>
@@ -2779,6 +2779,7 @@ Additional details:
 <translation id="7736959720849233795">Copy link address</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="77424286611022110">This site shows intrusive or misleading ads. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Saved addresses table</translation>
 <translation id="774634243536837715">Dangerous content blocked.</translation>
 <translation id="7751971323486164747">Customise font sizes and typefaces in Chrome</translation>
 <translation id="7752995774971033316">Unmanaged</translation>
@@ -3020,6 +3021,7 @@ Additional details:
 <translation id="8347658365704983341">Distance learning</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8351131234907093545">Create note</translation>
+<translation id="835203957414790336">The content of pages that you print and information about your printer is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="8355270400102541638">Local crash context:</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
 <translation id="8364627913115013041">Not set.</translation>

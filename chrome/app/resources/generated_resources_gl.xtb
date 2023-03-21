@@ -862,6 +862,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1744108098763830590">páxina en segundo plano</translation>
 <translation id="1745732479023874451">Xestionar contactos</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Queres abrir e editar # ficheiros nesta aplicación web?}}</translation>
+<translation id="1748329107062243374">Usa unha clave de acceso de <ph name="DEVICE_NAME" /> para iniciar sesión en <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Podes gardar este contrasinal na túa Conta de Google ou só neste dispositivo</translation>
 <translation id="1749733017156547309">Necesítase un contrasinal</translation>
 <translation id="1750172676754093297">A túa chave de seguranza non pode almacenar impresións dixitais</translation>
@@ -1987,7 +1988,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2710101514844343743">Datos de uso e diagnóstico</translation>
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Probas</translation>
-<translation id="2712207122921938368">Crea unha clave de acceso noutro dispositivo</translation>
 <translation id="2713106313042589954">Apagar cámara</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714180132046334502">Fondo escuro</translation>
@@ -4226,6 +4226,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4708849949179781599">Pechar <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restaurar configuración</translation>
 <translation id="4713409221649555176">Eliminar datos cando peches todas as ventás</translation>
+<translation id="4715631922189108923">Editar nome de usuario</translation>
 <translation id="47158868804223727">Fai clic no nome do grupo para despregalo ou contraelo</translation>
 <translation id="4716483597559580346">Levar a cabo un Powerwash para conseguir unha maior seguranza</translation>
 <translation id="471759229191973607">Cambiar tema</translation>
@@ -4637,6 +4638,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5108967062857032718">Configuración: eliminar aplicacións para Android</translation>
 <translation id="5109044022078737958">Atleta</translation>
 <translation id="5109816792918100764">Quitar <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Abrir o grupo nunha ventá nova</translation>
 <translation id="5111646998522066203">Saír do modo de incógnito</translation>
 <translation id="5111692334209731439">&amp;Xestor de marcadores</translation>
 <translation id="5111794652433847656">Non hai claves de acceso para <ph name="APP_NAME" /> neste dispositivo</translation>
@@ -5421,7 +5423,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="583431638776747">O sitio non estaba dispoñible</translation>
 <translation id="5834581999798853053">Quedan uns <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: estase gravando contido coa cámara ou co micrófono</translation>
-<translation id="5835625581856809102">Escanea este código QR co dispositivo no que queres crear unha clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Os sitios poden pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="5836999627049108525">Idioma do que traducir</translation>
 <translation id="583756221537636748">Estoxo</translation>
@@ -5858,7 +5859,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6227002569366039565">Preme |<ph name="ACCELERATOR" />| para enfocar este globo e, logo, volve premelo para enfocar o elemento cara ao que apunta.</translation>
 <translation id="6227280783235722609">extensión</translation>
 <translation id="6229849828796482487">Desconectar rede wifi</translation>
-<translation id="6230165830166519105">Probar outro método</translation>
 <translation id="6231782223312638214">Suxerido</translation>
 <translation id="6231881193380278751">Introduce un parámetro de consulta no URL para actualizar automaticamente a páxina: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batería</translation>
@@ -6613,6 +6613,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6903022061658753260">Os teus datos sincronizaranse en todos os navegadores Chrome nos que activases a sincronización para esta conta. Para ver as opcións de sincronización de Chrome OS, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Abrir todos os URL (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
+<translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Revogar o acceso aos ficheiros</translation>
 <translation id="6904655473976120856">Preme o botón Aplicación para saír</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Para manter a salvo os teus contrasinais, o xestor de contrasinais de Google bloquéase despois de 1 minuto de inactividade}other{Para manter a salvo os teus contrasinais, o xestor de contrasinais de Google bloquéase despois de {NUM_MINS} minutos de inactividade}}</translation>
@@ -7559,6 +7560,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7762243782113123335">Vaia, produciuse un erro. Envía un comentario que inclúa "#bruschetta" na descrición. Código de erro: <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Abrir o grupo nunha ventá nova</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7765507180157272835">É necesario dispoñer de Bluetooth e dunha wifi</translation>
 <translation id="7766082757934713382">Contribúe a reducir o uso de datos da rede ao poñer en pausa as actualizacións automáticas de aplicacións e do sistema</translation>
@@ -8067,6 +8069,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8203732864715032075">Envíache notificacións e lembra de modo predeterminado este ordenador para Mensaxes. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">É posible que as túas pantallas e os teus periféricos se restablezan en breve. Para que se aplique este cambio, desconecta os periféricos e volve conectalos.</translation>
 <translation id="820568752112382238">Sitios máis visitados</translation>
+<translation id="8206267832882844324">Editar nota</translation>
 <translation id="8206745257863499010">Tipo blues</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8207404892907560325">Escolle unha clave de acceso</translation>
@@ -8675,6 +8678,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
         &lt;p&gt;Pero aínda así podes efectuar a configuración a través da liña de comandos. Consulta &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obter máis información acerca das marcas e das variables do contorno.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Realizar tarefas relacionadas coa seguranza para a túa organización, como a xestión de certificados e claves almacenados no dispositivo</translation>
 <translation id="8755376271068075440">&amp;Máis grande</translation>
+<translation id="8755584192133371929">Selecciona unha pestana para compartir</translation>
 <translation id="875604634276263540">O URL da imaxe non é valido</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
 <translation id="8757203080302669031">Esta pestana está buscando dispositivos Bluetooth de maneira activa.</translation>
@@ -8684,6 +8688,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8762886931014513155">O dispositivo <ph name="DEVICE_TYPE" /> necesita unha actualización</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
+<translation id="8767069439158587614">Mostrar todas as buscas de <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Actualizar Chrome para todos os usuarios automaticamente</translation>
 <translation id="8770406935328356739">Directorio raíz da extensión</translation>
 <translation id="8771300903067484968">Restableceuse o fondo predeterminado da pantalla de inicio.</translation>

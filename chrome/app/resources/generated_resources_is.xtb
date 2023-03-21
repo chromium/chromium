@@ -875,6 +875,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1744108098763830590">bakgrunnssíða</translation>
 <translation id="1745732479023874451">Stjórna tengiliðum</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{Opna og breyta # skrá í þessu vefforriti?}other{Opna og breyta # skrám í þessu vefforriti?}}</translation>
+<translation id="1748329107062243374">Nota aðgangslykil úr <ph name="DEVICE_NAME" /> fyrir innskráningu á <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Þú getur vistað þetta aðgangsorð á Google reikningnum þínum eða eingöngu í þessu tæki</translation>
 <translation id="1749733017156547309">Aðgangsorðs er krafist</translation>
 <translation id="1750172676754093297">Öryggislykillinn þinn getur ekki vistað fingraför</translation>
@@ -2004,7 +2005,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2710101514844343743">Notkunar- og greiningargögn</translation>
 <translation id="271033894570825754">Nýtt</translation>
 <translation id="2711073837061989559">Prufuútgáfur</translation>
-<translation id="2712207122921938368">Búðu til aðgangslykil í öðru tæki</translation>
 <translation id="2713106313042589954">Slökkva á myndavél</translation>
 <translation id="2713444072780614174">Hvítur</translation>
 <translation id="2714180132046334502">Dökkur bakgrunnur</translation>
@@ -4244,6 +4244,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4708849949179781599">Loka <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Endurheimta stillingar</translation>
 <translation id="4713409221649555176">Eyða þegar þú lokar öllum gluggum</translation>
+<translation id="4715631922189108923">Breyta notandanafni</translation>
 <translation id="47158868804223727">Smelltu á heiti hópsins til að stækka hann eða minnka</translation>
 <translation id="4716483597559580346">Djúphreinsun fyrir aukið öryggi</translation>
 <translation id="471759229191973607">Skipta um þema</translation>
@@ -4655,6 +4656,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5108967062857032718">Stillingar – fjarlægja Android forrit</translation>
 <translation id="5109044022078737958">Þura</translation>
 <translation id="5109816792918100764">Fjarlægja <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Opna hóp í nýjum glugga</translation>
 <translation id="5111646998522066203">Fara úr huliðsstillingu</translation>
 <translation id="5111692334209731439">&amp;Bókamerkjastjórnun</translation>
 <translation id="5111794652433847656">Það eru engir aðgangslyklar fyrir <ph name="APP_NAME" /> í tækinu</translation>
@@ -5441,7 +5443,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="583431638776747">Vefsvæði var ekki tiltækt</translation>
 <translation id="5834581999798853053">Um <ph name="TIME" /> mínútur eftir</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – upptaka á myndavél eða hljóðnema</translation>
-<translation id="5835625581856809102">Skannaðu þennan QR-kóða með tækinu þar sem þú vilt búa til aðgangslykil fyrir <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Vefsvæði geta beðið um leyfi til að breyta skrám og möppum í tækinu þínu</translation>
 <translation id="5836999627049108525">Tungumál sem á að þýða úr</translation>
 <translation id="583756221537636748">Hulstur</translation>
@@ -5879,7 +5880,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6227002569366039565">Ýttu á |<ph name="ACCELERATOR" />| til að setja þessa blöðru í fókus og ýttu svo aftur til að fókusa á eininguna sem hún vísar á.</translation>
 <translation id="6227280783235722609">viðbót</translation>
 <translation id="6229849828796482487">Aftengja Wi-Fi net</translation>
-<translation id="6230165830166519105">Prófa aðra leið</translation>
 <translation id="6231782223312638214">Tillögur</translation>
 <translation id="6231881193380278751">Bættu fyrirspurnarbreytu við vefslóðina til að endurnýja síðuna sjálfkrafa: chrome://device-log/?refresh=&lt;sek.&gt;</translation>
 <translation id="6232017090690406397">Rafhlaða</translation>
@@ -7582,6 +7582,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7762243782113123335">Eitthvað fór úrskeiðis. Sendu ábendingu með #bruschetta í lýsingunni. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Bæta við heimilisfangi</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> frá <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Opna hóp í nýjum glugga</translation>
 <translation id="7765158879357617694">Færa</translation>
 <translation id="7765507180157272835">Bluetooth- og Wi-Fi-tengingar eru áskildar</translation>
 <translation id="7766082757934713382">Hjálpar til við að minnka gagnanotkun á neti með því að setja sjálfvirkar forrita- og kerfisuppfærslur í bið</translation>
@@ -8090,6 +8091,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8203732864715032075">Fáðu sendar tilkynningar og láttu muna eftir þessari tölvu fyrir Messages. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Skjáir og jaðartæki verða hugsanlega endurstillt í stutta stund. Til að breytingin taki gildi þarftu að taka jaðartækin úr sambandi og setja þau aftur í samband.</translation>
 <translation id="820568752112382238">Mest heimsóttu vefsvæðin</translation>
+<translation id="8206267832882844324">Breyta athugasemd</translation>
 <translation id="8206745257863499010">Blúsaður</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8207404892907560325">Veldu aðgangslykil</translation>
@@ -8698,6 +8700,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
           &lt;p&gt;Þú getur samt sem áður grunnstillt með skipanalínunni. Skoðaðu &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; til að fá frekari upplýsingar um flögg og umhverfisbreytur.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Framkvæma öryggistengd verkefni fyrir fyrirtækið þitt, svo sem að stjórna vottorðum og lyklum sem geymd eru í tækinu</translation>
 <translation id="8755376271068075440">Stærri</translation>
+<translation id="8755584192133371929">Velja flipa til að deila</translation>
 <translation id="875604634276263540">Vefslóð myndar er ógild</translation>
 <translation id="8756969031206844760">Uppfæra aðgangsorð?</translation>
 <translation id="8757203080302669031">Þessi flipi er að leita að Bluetooth-tækjum</translation>

@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1014750484722996375">Bureaus</translation>
 <translation id="1018219910092211213">Kan DNS niet omzetten</translation>
 <translation id="1018656279737460067">Geannuleerd</translation>
+<translation id="1022433422498218992">Algemene bedieningselementen</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nieuwe functie beschikbaar, gebruik de pijl-omhoog voor meer informatie.</translation>
 <translation id="1059913517121127803">Kan scannen niet starten</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
 <translation id="1664796644829245314">Voorbeeld van <ph name="PREVIEW_OBJECT" /> laten zien</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
+<translation id="1669047024429367828">Zichtbaarheid</translation>
 <translation id="1672499492233627739">Videofeed van webcam</translation>
 <translation id="1676557873873341166">Video opnemen</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver aanwezig</translation>
+<translation id="1710499924611012470">Toegankelijkheidsnavigatie</translation>
 <translation id="1715359911173058521">Er is een communicatieprobleem met de scanner. Check het netwerk of de USB-aansluiting en probeer het opnieuw.</translation>
 <translation id="1717874160321062422">Beheerd door <ph name="FIRST_MANAGER" /> en <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Naamservers</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Verificatietype</translation>
 <translation id="1782199038061388045">vertaling</translation>
+<translation id="1790209694022261219">Vensters en bureaus</translation>
 <translation id="1792647875738159689">Scannen annuleren</translation>
 <translation id="1801418420130173017">Donker thema uitzetten</translation>
 <translation id="1807246157184219062">Licht</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2085089206770112532">Helderheid van scherm verlagen</translation>
+<translation id="2102231663024125441">Tekstbewerking</translation>
 <translation id="2105810540595158374">Apparaat is een gamecontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB van <ph name="TOTAL_MEMORY" /> GB beschikbaar</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Kritieke update</translation>
 <translation id="2860473693272905224">Leg een andere pagina op de scanner</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
+<translation id="2873483161362553159">Browsernavigatie</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> ontladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="2902312830803030883">Meer acties</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Volledig</translation>
 <translation id="4333390807948134856">Er is op de toets <ph name="KEY_NAME" /> gedrukt</translation>
 <translation id="435692326371619097">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Alle snelkoppelingen resetten</translation>
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
 <translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4382484599443659549">Pdf</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
 <translation id="6791471867139427246">kleur van toetsenbordverlichting</translation>
+<translation id="6798678288485555829">Tekstnavigatie</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
 <translation id="6838167112108853532">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette gekoppelde APN's uitstaan of worden verwijderd.</translation>

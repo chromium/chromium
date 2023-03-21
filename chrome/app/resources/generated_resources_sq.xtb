@@ -860,6 +860,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1744108098763830590">faqja e sfondit</translation>
 <translation id="1745732479023874451">Menaxho kontaktet</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{Të hapen dhe të modifikohen # skedarë në këtë aplikacion uebi?}}</translation>
+<translation id="1748329107062243374">Përdor një çelës kalimi nga <ph name="DEVICE_NAME" /> për t'u identifikuar në <ph name="WEBSITE" /></translation>
 <translation id="1748563609363301860">Mund ta ruash këtë fjalëkalim në "Llogarinë tënde të Google" ose vetëm në këtë pajisje</translation>
 <translation id="1749733017156547309">Kërkohet një fjalëkalim</translation>
 <translation id="1750172676754093297">Çelësi yt i sigurisë nuk mund t'i ruajë gjurmët e gishtave</translation>
@@ -1986,7 +1987,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2710101514844343743">Të dhënat e përdorimit dhe të diagnostikimit</translation>
 <translation id="271033894570825754">E re</translation>
 <translation id="2711073837061989559">Provat</translation>
-<translation id="2712207122921938368">Krijo një çelës kalimi në një pajisje tjetër</translation>
 <translation id="2713106313042589954">Çaktivizo kamerën</translation>
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2714180132046334502">Sfondi i errët</translation>
@@ -4225,6 +4225,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4708849949179781599">Dil nga <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restauro cilësimet</translation>
 <translation id="4713409221649555176">Fshiji kur mbyll të gjitha dritaret</translation>
+<translation id="4715631922189108923">Redakto emrin e përdoruesit</translation>
 <translation id="47158868804223727">Kliko emrin e grupit për ta zgjeruar ose për ta palosur atë</translation>
 <translation id="4716483597559580346">Powerwash për më shumë siguri</translation>
 <translation id="471759229191973607">Ndrysho temën</translation>
@@ -4636,6 +4637,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5108967062857032718">Cilësimet - Hiq aplikacionet Android</translation>
 <translation id="5109044022078737958">Mia</translation>
 <translation id="5109816792918100764">Hiq <ph name="LANGUAGE_NAME" /></translation>
+<translation id="5111326646107464148">Hape grupin në një dritare të re</translation>
 <translation id="5111646998522066203">Dil nga modaliteti i fshehtë</translation>
 <translation id="5111692334209731439">&amp;Menaxheri i faqeshënuesve</translation>
 <translation id="5111794652433847656">Nuk ka asnjë çelës kalimi për <ph name="APP_NAME" /> në këtë pajisje</translation>
@@ -5422,7 +5424,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="583431638776747">Sajti nuk ofrohej</translation>
 <translation id="5834581999798853053">Rreth <ph name="TIME" /> minuta të mbetura</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - kamera ose mikrofoni po regjistron</translation>
-<translation id="5835625581856809102">Skanoje këtë kod QR me pajisjen aty ku dëshiron të krijosh një çelës kalimi për <ph name="APP_NAME" /></translation>
 <translation id="583673505367439042">Sajtet mund të kërkojnë të modifikojnë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="5836999627049108525">Gjuha nga e cila do të përkthesh</translation>
 <translation id="583756221537636748">Kasa</translation>
@@ -5860,7 +5861,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6227002569366039565">Shtyp |<ph name="ACCELERATOR" />| për të fokusuar këtë flluskë dhe më pas shtype përsëri për të fokusuar elementin të cilit i drejtohet.</translation>
 <translation id="6227280783235722609">shtesë</translation>
 <translation id="6229849828796482487">Shkëput rrjetin Wi-Fi</translation>
-<translation id="6230165830166519105">Provo një mënyrë tjetër</translation>
 <translation id="6231782223312638214">Sugjerimet</translation>
 <translation id="6231881193380278751">Shto një parametër të kërkesës në URL për të rifreskuar automatikisht faqen: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Bateria</translation>
@@ -7561,6 +7561,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7762243782113123335">Më vjen keq, ndodhi një gabim. Jep komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" />.</translation>
 <translation id="7764225426217299476">Shto adresë</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> nga <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="7764527477537408401">Hape grupin në një dritare të re</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
 <translation id="7765507180157272835">Nevojiten Bluetooth-i dhe Wi-Fi</translation>
 <translation id="7766082757934713382">Ndihmon për të zvogëluar përdorimin e të dhënave të rrjetit duke i vendosur në pauzë përditësimet e aplikacioneve dhe sistemit</translation>
@@ -8068,6 +8069,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8203732864715032075">Të dërgon njoftime dhe kthen parazgjedhjen për të kujtuar këtë kompjuter për "Mesazhet". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8205432712228803050">Ekranet dhe pajisjet e tua periferike mund të rivendosen shkurtimisht. Që të zbatohet ky ndryshim, hiqi dhe rilidhi pajisjet periferike.</translation>
 <translation id="820568752112382238">Sajtet më të vizituara</translation>
+<translation id="8206267832882844324">Redakto shënimin</translation>
 <translation id="8206745257863499010">Bluzi</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8207404892907560325">Zgjidh një çelës kalimi</translation>
@@ -8676,6 +8678,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
           &lt;p&gt;Por, mund të vazhdosh konfigurimin përmes rreshtit të komandës. Shiko &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; për më shumë informacion rreth flamujve dhe ndryshoreve të mjedisit.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Kryej detyra të lidhura me sigurinë për organizatën tënde, siç është menaxhimi i certifikatave dhe çelësat e ruajtur në pajisje</translation>
 <translation id="8755376271068075440">&amp;Më i madh</translation>
+<translation id="8755584192133371929">Zgjidh një skedë për ta ndarë</translation>
 <translation id="875604634276263540">URL e imazhit është e pavlefshme</translation>
 <translation id="8756969031206844760">Të përditësohet fjalëkalimi?</translation>
 <translation id="8757203080302669031">Kjo skedë po skanon në mënyrë aktive për pajisje Bluetooth.</translation>

@@ -152,6 +152,7 @@
 <translation id="2236732657580416950">Η κρυφή μνήμη του Google Drive διαγράφηκε.</translation>
 <translation id="2239068707900391003">Άτομο με καφέ</translation>
 <translation id="2251368349685848079">Επαναφορά από τον κάδο</translation>
+<translation id="2278133026967558505">Πρόσβαση στο αρχείο από όλους τους ιστοτόπους και τα URL</translation>
 <translation id="2282155092769082568">Αυτόματη διαμόρφωση URL</translation>
 <translation id="2284767815536050991">αφαιρούμενος αποθηκευτικός χώρος</translation>
 <translation id="2288278176040912387">Πικάπ</translation>
@@ -781,6 +782,7 @@
 <translation id="7162080671816799010">Λείπουν τα στοιχεία Αντιστοιχία εναλλακτικού ονόματος υποκειμένου ή Αντιστοιχία επιθήματος τομέα, για επικύρωση της ταυτότητας διακομιστή ελέγχου ταυτότητας.</translation>
 <translation id="7165320105431587207">Αποτυχία διαμόρφωσης δικτύου</translation>
 <translation id="7170041865419449892">Εκτός εύρους τιμών</translation>
+<translation id="7179579940054351344">Πρόσβαση στο αρχείο από όλους τους ιστοτόπους και τα URL εκτός από <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Αποθήκευση αρχείου ως</translation>
