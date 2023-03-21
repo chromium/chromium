@@ -10,7 +10,7 @@ import subprocess
 from gpu_path_util import CHROMIUM_SRC_DIR, setup_fuchsia_paths
 # pylint: enable=unused-import
 
-from common import register_common_args  # pylint: disable=no-name-in-module
+from common import register_common_args  # pylint: disable=import-error
 
 
 def RunTestOnFuchsiaDevice(script_type):
