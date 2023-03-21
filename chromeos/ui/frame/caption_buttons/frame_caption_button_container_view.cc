@@ -528,9 +528,7 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
   size_button_->SetTooltipText(l10n_util::GetStringUTF16(message_id));
 
   // Size button also needs to update its visibility when float state changes.
-  size_button_->SetVisible(
-      model_->IsVisible(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
-      use_zoom_icons);
+  UpdateCaptionButtonState(/*animate=*/true);
   size_button_->SetEnabled(
       model_->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||
       use_zoom_icons);
