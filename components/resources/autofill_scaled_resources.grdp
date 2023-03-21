@@ -13,6 +13,16 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_CC_TROY" file="autofill/troy.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG" file="autofill/virtual_card_enroll.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_DARK" file="autofill/virtual_card_enroll_dark.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_AMEX" file="autofill/metadata/amex.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_DINERS" file="autofill/metadata/diners.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_DISCOVER" file="autofill/metadata/discover.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_GENERIC" file="autofill/metadata/cc-generic.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_JCB" file="autofill/metadata/jcb.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_MASTERCARD" file="autofill/metadata/mastercard.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_MIR" file="autofill/metadata/mir.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_UNIONPAY" file="autofill/metadata/unionpay.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_VISA" file="autofill/metadata/visa.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_TROY" file="autofill/metadata/troy.png" />
   <if expr="_google_chrome">
     <then>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="google_chrome/autofill/googlepay.png" />

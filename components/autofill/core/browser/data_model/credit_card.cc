@@ -213,31 +213,47 @@ std::u16string CreditCard::NetworkForDisplay(const std::string& network) {
 
 // static
 int CreditCard::IconResourceId(const std::string& network) {
+  bool should_show_metadata_icon = base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewCardArtAndNetworkImages);
+
   if (network == kAmericanExpressCard)
-    return IDR_AUTOFILL_CC_AMEX;
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_AMEX
+                                     : IDR_AUTOFILL_CC_AMEX;
   if (network == kDinersCard)
-    return IDR_AUTOFILL_CC_DINERS;
-  if (network == kDiscoverCard)
-    return IDR_AUTOFILL_CC_DISCOVER;
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_DINERS
+                                     : IDR_AUTOFILL_CC_DINERS;
+  if (network == kDiscoverCard) {
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_DISCOVER
+                                     : IDR_AUTOFILL_CC_DISCOVER;
+  }
   if (network == kEloCard)
     return IDR_AUTOFILL_CC_ELO;
   if (network == kJCBCard)
-    return IDR_AUTOFILL_CC_JCB;
-  if (network == kMasterCard)
-    return IDR_AUTOFILL_CC_MASTERCARD;
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_JCB
+                                     : IDR_AUTOFILL_CC_JCB;
+  if (network == kMasterCard) {
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
+                                     : IDR_AUTOFILL_CC_MASTERCARD;
+  }
   if (network == kMirCard)
-    return IDR_AUTOFILL_CC_MIR;
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_MIR
+                                     : IDR_AUTOFILL_CC_MIR;
   if (network == kTroyCard)
-    return IDR_AUTOFILL_CC_TROY;
-  if (network == kUnionPay)
-    return IDR_AUTOFILL_CC_UNIONPAY;
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_TROY
+                                     : IDR_AUTOFILL_CC_TROY;
+  if (network == kUnionPay) {
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
+                                     : IDR_AUTOFILL_CC_UNIONPAY;
+  }
   if (network == kVisaCard)
-    return IDR_AUTOFILL_CC_VISA;
+    return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_VISA
+                                     : IDR_AUTOFILL_CC_VISA;
 
   // If you hit this DCHECK, the above list of cases needs to be updated to
   // include a new card.
   DCHECK_EQ(kGenericCard, network);
-  return IDR_AUTOFILL_CC_GENERIC;
+  return should_show_metadata_icon ? IDR_AUTOFILL_METADATA_CC_GENERIC
+                                   : IDR_AUTOFILL_CC_GENERIC;
 }
 
 // static
