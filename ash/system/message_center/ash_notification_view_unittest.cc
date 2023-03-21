@@ -16,6 +16,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/message_center/ash_notification_drag_controller.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_style.h"
@@ -1521,7 +1522,13 @@ TEST_P(AshNotificationViewDragTest, Basics) {
 
   // Check the notification catalog name.
   tester.ExpectBucketCount("Ash.NotificationView.ImageDrag.Start",
-                           ash::NotificationCatalogName::kNone, 1);
+                           NotificationCatalogName::kNone, 1);
+  tester.ExpectBucketCount(
+      "Ash.NotificationView.ImageDrag.EndState",
+      DroppedToWidget()
+          ? AshNotificationDragController::DragEndState::kCompletedWithDrop
+          : AshNotificationDragController::DragEndState::kCompletedWithoutDrop,
+      1);
 
   // The the message center bubble is closed and the popup notification is
   // dismissed when drag ends.

@@ -74396,6 +74396,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Chrome process launch failed"/>
 </enum>
 
+<enum name="NotificationImageDragEndState">
+<!-- Defined in ash/system/message_center/ash_notification_drag_controller.h -->
+
+  <int value="0" label="InterruptedByNewDrag"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="CompletedWithDrop"/>
+  <int value="3" label="CompletedWithoutDrop"/>
+</enum>
+
 <enum name="NotificationPermissionState">
   <int value="0" label="Allowed"/>
   <int value="1" label="Denied by device policy"/>

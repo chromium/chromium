@@ -3745,6 +3745,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationView.ImageDrag.EndState"
+    enum="NotificationImageDragEndState" expires_after="M121">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the notification drag end state when the notification image drag
+    ends.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotificationView.ImageDrag.Start"
     enum="NotificationCatalogName" expires_after="M121">
   <owner>andrewxu@chromium.org</owner>

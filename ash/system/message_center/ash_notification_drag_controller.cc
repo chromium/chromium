@@ -36,14 +36,14 @@ void AshNotificationDragController::OnDragStarted() {
     // A drag-and-drop session could start before an async drop finishes. In
     // this case, neither `OnDropCompleted()` nor `OnDragCancelled()` is called.
     // Therefore, clean up the active notification drag handling.
-    CleanUp();
+    CleanUp(DragEndState::kInterruptedByNewDrag);
   } else {
     drag_in_progress_ = true;
   }
 }
 
 void AshNotificationDragController::OnDragCancelled() {
-  CleanUp();
+  CleanUp(DragEndState::kCancelled);
 }
 
 void AshNotificationDragController::OnDropCompleted(
@@ -51,12 +51,14 @@ void AshNotificationDragController::OnDropCompleted(
   // Remove the dragged notification from the message center if drag-and-drop
   // ends with copy. `MessageCenter::RemoveNotification()` guarantees that only
   // unpinned notifications are removable to users.
+  DragEndState state = DragEndState::kCompletedWithoutDrop;
   if (drag_operation == ui::mojom::DragOperation::kCopy) {
     message_center::MessageCenter::Get()->RemoveNotification(
         *dragged_notification_id_, /*by_user=*/true);
+    state = DragEndState::kCompletedWithDrop;
   }
 
-  CleanUp();
+  CleanUp(state);
 }
 
 void AshNotificationDragController::WriteDragDataForView(
@@ -118,7 +120,7 @@ bool AshNotificationDragController::CanStartDragForView(
     // this case, neither `OnDropCompleted()` nor `OnDragCancelled()` is called.
     // Therefore, clean up the active notification drag handling.
     if (drag_in_progress_) {
-      CleanUp();
+      CleanUp(DragEndState::kInterruptedByNewDrag);
     }
   }
 
@@ -190,11 +192,14 @@ void AshNotificationDragController::OnNotificationDragWillStart(
       /*mark_notification_as_read=*/true);
 }
 
-void AshNotificationDragController::CleanUp() {
+void AshNotificationDragController::CleanUp(DragEndState state) {
   DCHECK(drag_in_progress_);
   drag_in_progress_ = false;
   dragged_notification_id_.reset();
   drag_drop_client_observer_.Reset();
+
+  base::UmaHistogramEnumeration("Ash.NotificationView.ImageDrag.EndState",
+                                state);
 }
 
 }  // namespace ash
