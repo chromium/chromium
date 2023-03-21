@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -23,7 +25,8 @@ final class SaveUpdateAddressProfilePromptController {
     }
 
     @CalledByNative
-    private static SaveUpdateAddressProfilePromptController create(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static SaveUpdateAddressProfilePromptController create(
             long nativeSaveUpdateAddressProfilePromptController) {
         return new SaveUpdateAddressProfilePromptController(
                 nativeSaveUpdateAddressProfilePromptController);

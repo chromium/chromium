@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -43,7 +44,7 @@ public class SaveUpdateAddressProfilePrompt {
     private final PropertyModel mDialogModel;
     private final View mDialogView;
     private final EditorDialog mEditorDialog;
-    private final AddressEditor mAddressEditor;
+    private AddressEditor mAddressEditor;
     private boolean mEditorClosingPending;
 
     /**
@@ -86,7 +87,8 @@ public class SaveUpdateAddressProfilePrompt {
      * Shows the dialog for saving an address.
      */
     @CalledByNative
-    private void show() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void show() {
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
@@ -121,8 +123,8 @@ public class SaveUpdateAddressProfilePrompt {
      * @param negativeButtonText the text on the negative button.
      */
     @CalledByNative
-    private void setDialogDetails(
-            String title, String positiveButtonText, String negativeButtonText) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void setDialogDetails(String title, String positiveButtonText, String negativeButtonText) {
         mDialogModel.set(ModalDialogProperties.TITLE, title);
         mDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText);
         mDialogModel.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText);
@@ -138,7 +140,8 @@ public class SaveUpdateAddressProfilePrompt {
      * @param phone the phone to be saved.
      */
     @CalledByNative
-    private void setSaveDetails(String address, String email, String phone) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void setSaveDetails(String address, String email, String phone) {
         showTextIfNotEmpty(mDialogView.findViewById(R.id.address), address);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.email), email);
         showTextIfNotEmpty(mDialogView.findViewById(R.id.phone), phone);
@@ -153,7 +156,8 @@ public class SaveUpdateAddressProfilePrompt {
      * @param newDetails details in the new profile that differ.
      */
     @CalledByNative
-    private void setUpdateDetails(String subtitle, String oldDetails, String newDetails) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void setUpdateDetails(String subtitle, String oldDetails, String newDetails) {
         showTextIfNotEmpty(mDialogView.findViewById(R.id.subtitle), subtitle);
         showHeaders(!TextUtils.isEmpty(oldDetails));
         showTextIfNotEmpty(mDialogView.findViewById(R.id.details_old), oldDetails);
@@ -164,7 +168,8 @@ public class SaveUpdateAddressProfilePrompt {
      * Dismisses the prompt without returning any user response.
      */
     @CalledByNative
-    private void dismiss() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void dismiss() {
         // Do not dismiss the editor if closing is pending to not abort the animation.
         if (!mEditorClosingPending && mEditorDialog.isShowing()) mEditorDialog.dismiss();
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
@@ -228,5 +233,13 @@ public class SaveUpdateAddressProfilePrompt {
         KeyboardVisibilityDelegate.getInstance().addKeyboardVisibilityListener(isShowing -> {
             if (!isShowing && nicknameInput.hasFocus()) nicknameInput.clearFocus();
         });
+    }
+
+    void setAddressEditorForTesting(AddressEditor addressEditor) {
+        mAddressEditor = addressEditor;
+    }
+
+    View getDialogViewForTesting() {
+        return mDialogView;
     }
 }

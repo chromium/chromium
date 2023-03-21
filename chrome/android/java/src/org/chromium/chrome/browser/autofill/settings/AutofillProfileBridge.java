@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.settings;
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -33,7 +34,7 @@ import java.util.Locale;
  * form.
  */
 @JNINamespace("autofill")
-public class AutofillProfileBridge {
+public final class AutofillProfileBridge {
     /**
      * Address field types.
      * This list must be kept in-sync with the corresponding enum in
@@ -233,7 +234,8 @@ public class AutofillProfileBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         String getDefaultCountryCode();
         void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
         void getRequiredFields(String countryCode, List<Integer> requiredFields);
