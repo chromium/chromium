@@ -25,6 +25,10 @@
 // Returns the number of stored credentials.
 + (int)storedCredentialsCount;
 
+// Sets the pref recording whether the one-time account storage notice was
+// shown. Used to either suppress or force the notice to appear in tests.
++ (void)setAccountStorageNoticeShown:(BOOL)shown;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_MANAGER_APP_INTERFACE_H_

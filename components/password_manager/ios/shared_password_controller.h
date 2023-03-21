@@ -44,6 +44,13 @@ class PasswordManagerClient;
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion;
 
+// Whether to show the one-time notice that passwords stored in the signed-in
+// account might be offered as suggestions.
+- (BOOL)shouldShowAccountStorageNotice;
+
+// Must only be called if shouldShowAccountStorageNotice: is true.
+- (void)showAccountStorageNotice:(void (^)())completion;
+
 @end
 
 // Per-tab shared password controller. Handles parsing forms, loading
