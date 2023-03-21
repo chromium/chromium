@@ -209,7 +209,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   if (display_key != gl::DisplayKey::kDefault) {
     gl::GLDisplay* keyed_display = gl::GetDisplay(gpu_preference, display_key);
     if (!keyed_display->IsInitialized()) {
-      keyed_display->InitializeFromDisplay(display);
+      keyed_display->Initialize(display);
     }
     display = keyed_display;
   }

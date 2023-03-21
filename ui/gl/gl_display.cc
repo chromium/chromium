@@ -507,6 +507,26 @@ void EGLAPIENTRY LogEGLDebugMessage(EGLenum error,
   }
 }
 
+void SetEglDebugMessageControl() {
+  static bool egl_debug_message_control_is_set = false;
+  if (!egl_debug_message_control_is_set) {
+    EGLAttrib controls[] = {
+        EGL_DEBUG_MSG_CRITICAL_KHR,
+        EGL_TRUE,
+        EGL_DEBUG_MSG_ERROR_KHR,
+        EGL_TRUE,
+        EGL_DEBUG_MSG_WARN_KHR,
+        EGL_TRUE,
+        EGL_DEBUG_MSG_INFO_KHR,
+        EGL_TRUE,
+        EGL_NONE,
+        EGL_NONE,
+    };
+
+    eglDebugMessageControlKHR(&LogEGLDebugMessage, controls);
+  }
+}
+
 }  // namespace
 
 GLDisplay::GLDisplay(uint64_t system_device_id,
@@ -634,80 +654,48 @@ bool GLDisplayEGL::Initialize(bool supports_angle,
   if (display_ != EGL_NO_DISPLAY)
     return true;
 
-  if (!InitializeDisplay(supports_angle, init_displays, native_display)) {
+  if (!InitializeDisplay(supports_angle, init_displays, native_display,
+                         /*existing_display=*/nullptr)) {
     return false;
   }
-  InitializeCommon();
+  InitializeCommon(/*for_testing=*/false);
 
-  if (ext->b_EGL_ANGLE_power_preference) {
-    gpu_switching_observer_ =
-        std::make_unique<EGLGpuSwitchingObserver>(display_);
-    ui::GpuSwitchingManager::GetInstance()->AddObserver(
-        gpu_switching_observer_.get());
-  }
   return true;
 }
 
-bool GLDisplayEGL::InitializeFromDisplay(GLDisplay* other_display) {
+bool GLDisplayEGL::Initialize(GLDisplay* other_display) {
+  DCHECK(other_display);
+  DCHECK_EQ(display_, EGL_NO_DISPLAY);
+  DCHECK_NE(display_key_, other_display->display_key());
   GLDisplayEGL* other_display_egl = other_display->GetAs<GLDisplayEGL>();
-  if (!other_display_egl->IsInitialized()) {
+  if (other_display_egl == nullptr || !other_display_egl->IsInitialized()) {
     return false;
   }
 
-  if (display_key_ == other_display->display_key()) {
-    return true;
-  }
-
-  if (display_ != EGL_NO_DISPLAY) {
-    return true;
-  }
-
+  // Only allow initialization from a display from the same device.
   if (other_display_egl->system_device_id() != system_device_id_) {
     return false;
   }
 
-  type_ = other_display_egl->type();
-  display_type_ = other_display_egl->GetDisplayType();
-  native_display_ = other_display_egl->GetNativeDisplay();
-  ext = std::make_unique<DisplayExtensionsEGL>(*other_display_egl->ext.get());
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  std::vector<std::string> enabled_angle_features =
-      GetStringVectorFromCommandLine(command_line,
-                                     switches::kEnableANGLEFeatures);
-  std::vector<std::string> disabled_angle_features =
-      GetStringVectorFromCommandLine(command_line,
-                                     switches::kDisableANGLEFeatures);
-  bool disable_all_angle_features =
-      command_line->HasSwitch(switches::kDisableGpuDriverBugWorkarounds);
-
-  EGLDisplay display =
-      GetDisplayFromType(display_type_, native_display_, enabled_angle_features,
-                         disabled_angle_features, disable_all_angle_features,
-                         system_device_id_, display_key_);
-
-  if (!eglInitialize(display, nullptr, nullptr)) {
-    LOG(ERROR) << "Failed to initialize new display from existing display.";
+  auto gl_implementation = GetGLImplementationParts();
+  bool supports_angle = (gl_implementation.gl == kGLImplementationEGLANGLE);
+  std::vector<DisplayType> init_displays;
+  init_displays.push_back(other_display_egl->GetDisplayType());
+  if (!InitializeDisplay(supports_angle, init_displays,
+                         other_display_egl->GetNativeDisplay(),
+                         other_display_egl)) {
     return false;
   }
 
-  display_ = display;
+  InitializeCommon(/*for_testing=*/false);
 
-  InitializeCommon();
-
-  if (ext->b_EGL_ANGLE_power_preference) {
-    gpu_switching_observer_ =
-        std::make_unique<EGLGpuSwitchingObserver>(display_);
-    ui::GpuSwitchingManager::GetInstance()->AddObserver(
-        gpu_switching_observer_.get());
-  }
   return true;
 }
 
 void GLDisplayEGL::InitializeForTesting() {
   display_ = eglGetCurrentDisplay();
   ext->InitializeExtensionSettings(display_);
-  InitializeCommon();
+  InitializeCommon(/*for_testing=*/true);
 }
 
 bool GLDisplayEGL::InitializeExtensionSettings() {
@@ -721,7 +709,8 @@ bool GLDisplayEGL::InitializeExtensionSettings() {
 // needs a full Display init before it can query the Display extensions.
 bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
                                      std::vector<DisplayType> init_displays,
-                                     EGLDisplayPlatform native_display) {
+                                     EGLDisplayPlatform native_display,
+                                     gl::GLDisplayEGL* existing_display) {
   if (display_ != EGL_NO_DISPLAY)
     return true;
 
@@ -729,20 +718,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
 
   bool supports_egl_debug = g_driver_egl.client_ext.b_EGL_KHR_debug;
   if (supports_egl_debug) {
-    EGLAttrib controls[] = {
-        EGL_DEBUG_MSG_CRITICAL_KHR,
-        EGL_TRUE,
-        EGL_DEBUG_MSG_ERROR_KHR,
-        EGL_TRUE,
-        EGL_DEBUG_MSG_WARN_KHR,
-        EGL_TRUE,
-        EGL_DEBUG_MSG_INFO_KHR,
-        EGL_TRUE,
-        EGL_NONE,
-        EGL_NONE,
-    };
-
-    eglDebugMessageControlKHR(&LogEGLDebugMessage, controls);
+    SetEglDebugMessageControl();
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -769,22 +745,24 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
       continue;
     }
 
-    // Init ANGLE platform now that we have the global display.
-    if (supports_angle) {
-      if (!angle::InitializePlatform(display)) {
-        LOG(ERROR) << "ANGLE Platform initialization failed.";
+    if (!existing_display) {
+      // Init ANGLE platform now that we have the global display.
+      if (supports_angle) {
+        if (!angle::InitializePlatform(display)) {
+          LOG(ERROR) << "ANGLE Platform initialization failed.";
+        }
+
+        SetANGLEImplementation(
+            GetANGLEImplementationFromDisplayType(display_type));
       }
 
-      SetANGLEImplementation(
-          GetANGLEImplementationFromDisplayType(display_type));
-    }
-
-    // The platform may need to unset its platform specific display env in case
-    // of vulkan if the platform doesn't support Vulkan surface.
-    absl::optional<base::ScopedEnvironmentVariableOverride> unset_display;
-    if (display_type == ANGLE_VULKAN) {
-      unset_display = GLDisplayEglUtil::GetInstance()
-                          ->MaybeGetScopedDisplayUnsetForVulkan();
+      // The platform may need to unset its platform specific display env in
+      // case of vulkan if the platform doesn't support Vulkan surface.
+      absl::optional<base::ScopedEnvironmentVariableOverride> unset_display;
+      if (display_type == ANGLE_VULKAN) {
+        unset_display = GLDisplayEglUtil::GetInstance()
+                            ->MaybeGetScopedDisplayUnsetForVulkan();
+      }
     }
 
     if (!eglInitialize(display, nullptr, nullptr)) {
@@ -796,23 +774,31 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
       continue;
     }
 
-    std::ostringstream display_type_string;
-    auto gl_implementation = GetGLImplementationParts();
-    display_type_string << GetGLImplementationGLName(gl_implementation);
-    if (gl_implementation.gl == kGLImplementationEGLANGLE) {
-      display_type_string << ":" << DisplayTypeString(display_type);
+    if (!existing_display) {
+      std::ostringstream display_type_string;
+      auto gl_implementation = GetGLImplementationParts();
+      display_type_string << GetGLImplementationGLName(gl_implementation);
+      if (gl_implementation.gl == kGLImplementationEGLANGLE) {
+        display_type_string << ":" << DisplayTypeString(display_type);
+      }
+
+      static auto* egl_display_type_key = base::debug::AllocateCrashKeyString(
+          "egl-display-type", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(egl_display_type_key,
+                                     display_type_string.str());
+
+      UMA_HISTOGRAM_ENUMERATION("GPU.EGLDisplayType", display_type,
+                                DISPLAY_TYPE_MAX);
     }
-
-    static auto* egl_display_type_key = base::debug::AllocateCrashKeyString(
-        "egl-display-type", base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(egl_display_type_key,
-                                   display_type_string.str());
-
-    UMA_HISTOGRAM_ENUMERATION("GPU.EGLDisplayType", display_type,
-                              DISPLAY_TYPE_MAX);
     display_ = display;
     display_type_ = display_type;
-    ext->InitializeExtensionSettings(display);
+    if (!existing_display) {
+      ext->InitializeExtensionSettings(display);
+    } else {
+      type_ = existing_display->type();
+      ext =
+          std::make_unique<DisplayExtensionsEGL>(*existing_display->ext.get());
+    }
     return true;
   }
 
@@ -821,7 +807,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
   return false;
 }
 
-void GLDisplayEGL::InitializeCommon() {
+void GLDisplayEGL::InitializeCommon(bool for_testing) {
   // According to https://source.android.com/compatibility/android-cdd.html the
   // EGL_IMG_context_priority extension is mandatory for Virtual Reality High
   // Performance support, but due to a bug in Android Nougat the extension
@@ -893,6 +879,15 @@ void GLDisplayEGL::InitializeCommon() {
     egl_android_native_fence_sync_supported_ = true;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  if (!for_testing) {
+    if (ext->b_EGL_ANGLE_power_preference) {
+      gpu_switching_observer_ =
+          std::make_unique<EGLGpuSwitchingObserver>(display_);
+      ui::GpuSwitchingManager::GetInstance()->AddObserver(
+          gpu_switching_observer_.get());
+    }
+  }
 }
 #endif  // defined(USE_EGL)
 

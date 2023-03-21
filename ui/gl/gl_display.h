@@ -90,7 +90,7 @@ class GL_EXPORT GLDisplay {
   virtual void* GetDisplay() const = 0;
   virtual void Shutdown() = 0;
   virtual bool IsInitialized() const = 0;
-  virtual bool InitializeFromDisplay(GLDisplay* display) = 0;
+  virtual bool Initialize(GLDisplay* display) = 0;
 
   template <typename GLDisplayPlatform>
   GLDisplayPlatform* GetAs();
@@ -131,7 +131,7 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool Initialize(bool supports_angle,
                   std::vector<DisplayType> init_displays,
                   EGLDisplayPlatform native_display);
-  bool InitializeFromDisplay(GLDisplay* other_display) override;
+  bool Initialize(GLDisplay* other_display) override;
   void InitializeForTesting();
   bool InitializeExtensionSettings();
 
@@ -169,8 +169,9 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   bool InitializeDisplay(bool supports_angle,
                          std::vector<DisplayType> init_displays,
-                         EGLDisplayPlatform native_display);
-  void InitializeCommon();
+                         EGLDisplayPlatform native_display,
+                         gl::GLDisplayEGL* existing_display);
+  void InitializeCommon(bool for_testing);
 
   EGLDisplay display_ = EGL_NO_DISPLAY;
   EGLDisplayPlatform native_display_ = EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
