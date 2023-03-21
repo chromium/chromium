@@ -73,13 +73,7 @@ void InterestGroupKAnonymityManager::QuerySetsCallback(
                                                  update_time};
     interest_group_manager_->UpdateKAnonymity(data);
   }
-  for (size_t i = size; i < unhashed_query.size(); i++) {
-    // If we fail, update the data set anyway until we can verify that the
-    // server is stable.
-    StorageInterestGroup::KAnonymityData data = {unhashed_query[i], false,
-                                                 update_time};
-    interest_group_manager_->UpdateKAnonymity(data);
-  }
+  // Don't update sets if the request failed.
 }
 
 void InterestGroupKAnonymityManager::RegisterAdKeysAsJoined(
@@ -127,8 +121,10 @@ void InterestGroupKAnonymityManager::OnGotLastReportedTime(
 
 void InterestGroupKAnonymityManager::JoinSetCallback(std::string key,
                                                      bool status) {
-  // Update the time regardless of status until we verify the server is stable.
-  interest_group_manager_->UpdateLastKAnonymityReported(key);
+  if (status) {
+    // Update the last reported time if the request succeeded.
+    interest_group_manager_->UpdateLastKAnonymityReported(key);
+  }
   joins_in_progress.erase(key);
 }
 

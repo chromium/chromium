@@ -38,7 +38,7 @@ namespace {
 
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(5);
 constexpr base::TimeDelta kRequestMargin = base::Minutes(5);
-constexpr base::TimeDelta kKeyCacheDuration = base::Hours(4);
+constexpr base::TimeDelta kKeyCacheDuration = base::Hours(24);
 constexpr int kMaxRetries = 5;
 constexpr size_t kMaxQueueSize = 100;
 

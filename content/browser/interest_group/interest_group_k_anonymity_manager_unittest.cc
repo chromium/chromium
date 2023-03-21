@@ -36,7 +36,7 @@ class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
   void JoinSet(std::string id,
                base::OnceCallback<void(bool)> callback) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), has_error_));
+        FROM_HERE, base::BindOnce(std::move(callback), !has_error_));
   }
 
   void QuerySets(
@@ -241,8 +241,6 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
   const url::Origin owner = url::Origin::Create(top_frame);
   const std::string name = "foo";
 
-  base::Time start_time = base::Time::Now();
-
   auto manager = CreateManager(/*has_error=*/true);
   blink::InterestGroup g = MakeInterestGroup(owner, "foo");
   const std::string kAd1KAnonBidKey = KAnonKeyForAdBid(g, GURL(kAdURL));
@@ -266,17 +264,12 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
       GetLastReported(manager.get(), kAd1KAnonBidKey);
   ASSERT_TRUE(ad_reported);
 
-  // TODO(behamilton): Change this once we expect the server to be stable.
-  EXPECT_LE(start_time, ad_reported);
-  // EXPECT_EQ(base::Time::Min(), group_name_reported);
+  EXPECT_EQ(base::Time::Min(), ad_reported);
 
   auto maybe_group = GetGroup(manager.get(), owner, name);
   ASSERT_TRUE(maybe_group);
 
-  // TODO(behamilton): Change this once we expect the server to be stable.
-  EXPECT_LE(start_time, maybe_group->bidding_ads_kanon[0].last_updated);
-  // EXPECT_EQ(base::Time::Min(),
-  // maybe_group->bidding_ads_kanon[0].last_updated);
+  EXPECT_EQ(base::Time::Min(), maybe_group->bidding_ads_kanon[0].last_updated);
 }
 
 class MockAnonymityServiceDelegate : public KAnonymityServiceDelegate {
