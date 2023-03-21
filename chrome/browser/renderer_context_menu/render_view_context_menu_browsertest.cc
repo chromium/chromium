@@ -2796,4 +2796,35 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadingMode) {
   ASSERT_TRUE(menu3->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 }
 
+// Ensure that the context menu can tolerate changes to session history that
+// happen between menu initialization and command execution.
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, BackAfterBackEntryRemoved) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigationController& controller = web_contents->GetController();
+
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // At the time the context menu is created, it is possible to navigate back,
+  // so the back menu item is enabled. While the context menu is open, we
+  // navigate back to the first entry. This will make it so that there is no
+  // back entry to navigate to when clicking the back menu item.
+  base::OnceClosure nav_to_first_entry = base::BindLambdaForTesting([&]() {
+    content::TestNavigationObserver back_nav_observer(web_contents);
+    EXPECT_TRUE(controller.CanGoBack());
+    controller.GoBack();
+    back_nav_observer.Wait();
+    EXPECT_FALSE(controller.CanGoBack());
+  });
+
+  ContextMenuWaiter menu_observer(IDC_BACK, std::move(nav_to_first_entry));
+  content::SimulateMouseClickAt(web_contents, 0,
+                                blink::WebMouseEvent::Button::kRight,
+                                gfx::Point(15, 15));
+  menu_observer.WaitForMenuOpenAndClose();
+}
+
 }  // namespace

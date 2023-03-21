@@ -53,8 +53,14 @@ ContextMenuWaiter::ContextMenuWaiter(int command_to_execute)
   maybe_command_to_execute_ = command_to_execute;
 }
 
-ContextMenuWaiter::~ContextMenuWaiter() {
+ContextMenuWaiter::ContextMenuWaiter(int command_to_execute,
+                                     base::OnceClosure before_execute)
+    : ContextMenuWaiter() {
+  maybe_command_to_execute_ = command_to_execute;
+  before_execute_ = std::move(before_execute);
 }
+
+ContextMenuWaiter::~ContextMenuWaiter() = default;
 
 void ContextMenuWaiter::MenuShown(RenderViewContextMenu* context_menu) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -82,8 +88,12 @@ void ContextMenuWaiter::Cancel(RenderViewContextMenu* context_menu) {
   for (size_t i = 0; i < menu_model.GetItemCount(); ++i)
     captured_command_ids_.push_back(menu_model.GetCommandIdAt(i));
 
-  if (maybe_command_to_execute_)
+  if (maybe_command_to_execute_) {
+    if (before_execute_) {
+      std::move(before_execute_).Run();
+    }
     context_menu->ExecuteCommand(*maybe_command_to_execute_, 0);
+  }
   context_menu->Cancel();
   run_loop_.Quit();
 }

@@ -44,6 +44,10 @@ class ContextMenuWaiter {
  public:
   ContextMenuWaiter();
   explicit ContextMenuWaiter(int command_to_execute);
+  // `before_execute` will be run after the context menu is opened and before
+  // executing `command_to_execute`.
+  explicit ContextMenuWaiter(int command_to_execute,
+                             base::OnceClosure before_execute);
 
   ContextMenuWaiter(const ContextMenuWaiter&) = delete;
   ContextMenuWaiter& operator=(const ContextMenuWaiter&) = delete;
@@ -66,6 +70,7 @@ class ContextMenuWaiter {
 
   base::RunLoop run_loop_;
   absl::optional<int> maybe_command_to_execute_;
+  base::OnceClosure before_execute_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_RENDER_VIEW_CONTEXT_MENU_BROWSERTEST_UTIL_H_

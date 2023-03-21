@@ -2823,12 +2823,21 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecRotateCCW();
       break;
 
+    // When the context menu was initialized, we checked whether there were
+    // back/forward entries. Session history may have changed while the context
+    // menu was open. So we need to check `CanGoBack`/`CanGoForward` again.
     case IDC_BACK:
-      embedder_web_contents_->GetController().GoBack();
+      if (auto& controller = embedder_web_contents_->GetController();
+          controller.CanGoBack()) {
+        controller.GoBack();
+      }
       break;
 
     case IDC_FORWARD:
-      embedder_web_contents_->GetController().GoForward();
+      if (auto& controller = embedder_web_contents_->GetController();
+          controller.CanGoForward()) {
+        controller.GoForward();
+      }
       break;
 
     case IDC_SAVE_PAGE:
