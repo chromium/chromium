@@ -64,7 +64,13 @@ public class QuickDeleteController {
     private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED);
                 showSnackbar();
+                break;
+            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED);
                 break;
             default:
                 break;

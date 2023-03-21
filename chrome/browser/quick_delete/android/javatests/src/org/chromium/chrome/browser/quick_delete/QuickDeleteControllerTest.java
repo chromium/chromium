@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -71,6 +72,38 @@ public class QuickDeleteControllerTest {
 
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.snackbar),
                 "quick_delete_snackbar");
+    }
+
+    @Test
+    @MediumTest
+    public void testDeleteClickedHistogram_WhenClickingDelete() throws IOException {
+        openQuickDeleteDialog();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Privacy.QuickDelete",
+                                QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED, 1)
+                        .build();
+
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testCancelClickedHistogram_WhenClickingCancel() throws IOException {
+        openQuickDeleteDialog();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Privacy.QuickDelete",
+                                QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED, 1)
+                        .build();
+
+        onViewWaiting(withId(R.id.negative_button)).perform(click());
+
+        histogramWatcher.assertExpected();
     }
 
     private void openQuickDeleteDialog() {
