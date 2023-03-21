@@ -307,8 +307,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainRejectNonASCII);
 // Blocks the 'Set-Cookie' request header on outbound fetch requests.
 NET_EXPORT BASE_DECLARE_FEATURE(kBlockSetCookieHeader);
 
-NET_EXPORT BASE_DECLARE_FEATURE(kOptimisticBlockfileWrite);
-
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 

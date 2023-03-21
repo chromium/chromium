@@ -64,8 +64,7 @@ class NET_EXPORT_PRIVATE EntryImpl
                     IOBuffer* buf,
                     int buf_len,
                     CompletionOnceCallback callback,
-                    bool truncate,
-                    bool* optimistic);
+                    bool truncate);
   int ReadSparseDataImpl(int64_t offset,
                          IOBuffer* buf,
                          int buf_len,
@@ -224,8 +223,7 @@ class NET_EXPORT_PRIVATE EntryImpl
                         IOBuffer* buf,
                         int buf_len,
                         CompletionOnceCallback callback,
-                        bool truncate,
-                        bool* optimistic);
+                        bool truncate);
 
   // Initializes the storage for an internal or external data block.
   bool CreateDataBlock(int index, int size);
@@ -312,7 +310,6 @@ class NET_EXPORT_PRIVATE EntryImpl
   bool read_only_;            // True if not yet writing.
   bool dirty_ = false;        // True if we detected that this is a dirty entry.
   std::unique_ptr<SparseControl> sparse_;  // Support for sparse entries.
-  int io_count_ = 0;
 };
 
 }  // namespace disk_cache

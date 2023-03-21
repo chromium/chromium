@@ -77,8 +77,7 @@ void BackendIO::OnIOComplete(int result) {
   DCHECK(IsEntryOperation());
   DCHECK_NE(result, net::ERR_IO_PENDING);
   result_ = result;
-  if (notify_controller_)
-    NotifyController();
+  NotifyController();
 }
 
 // Runs on the primary thread.
@@ -391,16 +390,11 @@ void BackendIO::ExecuteEntryOperation() {
           entry_->ReadDataImpl(index_, offset_, buf_.get(), buf_len_,
                                base::BindOnce(&BackendIO::OnIOComplete, this));
       break;
-    case OP_WRITE: {
-      bool optimistic = false;
-      result_ =
-          entry_->WriteDataImpl(index_, offset_, buf_.get(), buf_len_,
-                                base::BindOnce(&BackendIO::OnIOComplete, this),
-                                truncate_, &optimistic);
-      if (optimistic)
-        notify_controller_ = false;
+    case OP_WRITE:
+      result_ = entry_->WriteDataImpl(
+          index_, offset_, buf_.get(), buf_len_,
+          base::BindOnce(&BackendIO::OnIOComplete, this), truncate_);
       break;
-    }
     case OP_READ_SPARSE:
       result_ = entry_->ReadSparseDataImpl(
           offset64_, buf_.get(), buf_len_,
