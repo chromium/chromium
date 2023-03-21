@@ -3998,6 +3998,16 @@
           '--single-process-tests',
         ],
       },
+      'gl_unittests': {
+        'args': [
+          '--single-process-tests',
+        ],
+      },
+      'gpu_unittests': {
+        'args': [
+          '--single-process-tests',
+        ],
+      },
       'media_unittests': {
         'args': [
           '--single-process-tests',
