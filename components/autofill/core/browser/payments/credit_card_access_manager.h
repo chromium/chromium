@@ -141,8 +141,7 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
   void OnSettingsPageFIDOAuthToggled(bool opt_in);
 
   // Resets the rate limiter for fetching unmask deatils. Used with
-  // PostTaskWithDelay() with a timeout, and also called by AutofillDriver on
-  // page refresh.
+  // PostTaskWithDelay() with a timeout.
   void SignalCanFetchUnmaskDetails();
 
   // Caches CreditCard and corresponding CVC for unmasked card so that

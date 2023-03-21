@@ -580,12 +580,6 @@ void ContentAutofillDriver::OnContextMenuShownInField(
 void ContentAutofillDriver::DidNavigateFrame(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSameDocument()) {
-    // On page refresh, reset the rate limiter for fetching authentication
-    // details for credit card unmasking.
-    if (autofill_manager_ && autofill_manager_->GetCreditCardAccessManager()) {
-      autofill_manager_->GetCreditCardAccessManager()
-          ->SignalCanFetchUnmaskDetails();
-    }
     return;
   }
 
