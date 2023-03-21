@@ -48,8 +48,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #endif
@@ -375,14 +373,6 @@ void SupervisedUserService::SetActive(bool active) {
     delegate_->SetActive(active_);
 
   settings_service_->SetActive(active_);
-
-  // Now activate/deactivate anything not handled by the delegate yet.
-#if BUILDFLAG(IS_CHROMEOS)
-  // Re-set the default theme to turn the SU theme on/off.
-  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
-  if (theme_service->UsingDefaultTheme() || theme_service->UsingSystemTheme())
-    theme_service->UseDefaultTheme();
-#endif
 
   // Trigger a sync reconfig to enable/disable the right SU data types.
   // The logic to do this lives in the SupervisedUserSyncModelTypeController.
