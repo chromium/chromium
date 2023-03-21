@@ -160,6 +160,7 @@
 /libavif/src
 /libc++-static/libc++.a
 /libdrm/src
+/libei/src
 /libgav1/src
 /libgifcodec
 /libipp/libipp
