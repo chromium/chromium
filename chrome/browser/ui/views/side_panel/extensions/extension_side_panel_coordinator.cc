@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/common/extensions/api/side_panel.h"
@@ -162,11 +163,40 @@ std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView() {
   host_ =
       ExtensionViewHostFactory::CreateSidePanelHost(side_panel_url_, browser_);
 
+  // Handle the containing view calling window.close();
+  // The base::Unretained() below is safe because this object owns `host_`, so
+  // the callback will never fire if `this` is deleted.
+  host_->SetCloseHandler(base::BindOnce(
+      &ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel,
+      base::Unretained(this)));
+
   auto extension_view = std::make_unique<ExtensionViewViews>(host_.get());
   extension_view->SetVisible(true);
 
   scoped_view_observation_.Observe(extension_view.get());
   return extension_view;
+}
+
+void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
+    ExtensionHost* host) {
+  DCHECK_EQ(host, host_.get());
+  auto* coordinator =
+      BrowserView::GetBrowserViewForBrowser(browser_)->side_panel_coordinator();
+
+  // If the SidePanelEntry for this extension is showing when window.close() is
+  // called, close the side panel. Otherwise, clear the entry's cached view.
+  SidePanelEntry* entry = global_registry_->GetEntryForKey(GetEntryKey());
+  DCHECK(entry);
+
+  if (coordinator->IsSidePanelEntryShowing(entry)) {
+    coordinator->Close();
+  } else {
+    entry->ClearCachedView();
+  }
+
+  // Closing the panel or removing the view should synchronously result in
+  // the extension view being destroyed, which destroys `host_`.
+  DCHECK(!host_);
 }
 
 void ExtensionSidePanelCoordinator::NavigateIfNecessary() {

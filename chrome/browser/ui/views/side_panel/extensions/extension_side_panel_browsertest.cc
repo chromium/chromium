@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/test_image_loader.h"
@@ -414,6 +415,114 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SetOptions_Path) {
   // should be active.
   side_panel_coordinator()->Show(extension_key);
   ASSERT_TRUE(panel_1_listener.WaitUntilSatisfied());
+}
+
+// Test that calling window.close() from an extension side panel deletes the
+// panel's web contents and closes the extension's side panel if it's also
+// shown.
+// TODO(crbug.com/1423302): Add a test case for contextual extension panels.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, WindowCloseCalled) {
+  // Install an extension and show its side panel.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+  SidePanelEntry::Key extension_key =
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id());
+  EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
+
+  {
+    ExtensionTestMessageListener default_path_listener("default_path");
+    side_panel_coordinator()->Show(extension_key);
+    ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  }
+
+  auto* extension_coordinator =
+      extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser())
+          ->GetExtensionCoordinatorForTesting(extension->id());
+
+  // Call window.close() from the extension's side panel page and wait for the
+  // web contents to be destroyed.
+  {
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        extension_coordinator->GetHostWebContentsForTesting());
+    ASSERT_TRUE(content::ExecuteScript(
+        extension_coordinator->GetHostWebContentsForTesting(),
+        "window.close();"));
+    destroyed_watcher.Wait();
+  }
+
+  // The side panel should now be closed.
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Show the extension's side panel again.
+  ExtensionTestMessageListener default_path_listener("default_path");
+  side_panel_coordinator()->Show(extension_key);
+  ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Show another side panel type so the extension's panel's view gets cached.
+  TestSidePanelEntryWaiter reading_list_waiter(
+      global_registry()->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kReadingList)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kReadingList);
+  reading_list_waiter.WaitForEntryShown();
+  EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key)->CachedView());
+
+  // Calling window.close() from within the panel should invalidate the cached
+  // view when the extension panel is not shown.
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      extension_coordinator->GetHostWebContentsForTesting());
+  ASSERT_TRUE(content::ExecuteScript(
+      extension_coordinator->GetHostWebContentsForTesting(),
+      "window.close();"));
+  destroyed_watcher.Wait();
+
+  // The side panel should be open because the reading list entry is still
+  // shown.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+}
+
+// Test that calling window.close() from an extension side panel when it is
+// shown closes the side panel even if another entry is loading and will be
+// shown.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       WindowCloseCalledWhenLoading) {
+  // Install an extension and show its side panel.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+  SidePanelEntry::Key extension_key =
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id());
+  EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
+
+  {
+    ExtensionTestMessageListener default_path_listener("default_path");
+    side_panel_coordinator()->Show(extension_key);
+    ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
+    EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  }
+
+  auto* extension_coordinator =
+      extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser())
+          ->GetExtensionCoordinatorForTesting(extension->id());
+
+  // Start showing another entry and call window.close() from the extension's
+  // side panel page while the other entry is still loading but not shown. The
+  // extension's side panel web content should still be destroyed and the side
+  // panel will close.
+  {
+    side_panel_coordinator()->Show(SidePanelEntry::Id::kReadingList);
+
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        extension_coordinator->GetHostWebContentsForTesting());
+    ASSERT_TRUE(content::ExecuteScript(
+        extension_coordinator->GetHostWebContentsForTesting(),
+        "window.close();"));
+    destroyed_watcher.Wait();
+  }
+
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
 }
 
 class ExtensionSidePanelDisabledBrowserTest : public ExtensionBrowserTest {

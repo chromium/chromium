@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_icon_image.h"
 
 class Browser;
@@ -81,6 +82,11 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // extension's SidePanelEntry is about to be shown in the side panel and a
   // view for the entry has not been cached.
   std::unique_ptr<views::View> CreateView();
+
+  // Called when window.close() is called from the extension's side panel page.
+  // This closes the side panel if the extension's panel is showing. Otherwise
+  // it clears the extension entry's cached view.
+  void HandleCloseExtensionSidePanel(ExtensionHost* host);
 
   // Loads the `side_panel_url_` into the WebContents of the view for the
   // extension's SidePanelEntry. To avoid unnecessary updates, this is only

@@ -322,15 +322,17 @@ SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  SidePanelContentSwappingContainer* content_wrapper =
-      static_cast<SidePanelContentSwappingContainer*>(
-          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
-  DCHECK(content_wrapper);
-  return content_wrapper->loading_entry();
+  return GetLoadingEntry();
 }
 
-bool SidePanelCoordinator::IsSidePanelShowing() {
+bool SidePanelCoordinator::IsSidePanelShowing() const {
   return GetContentView() != nullptr;
+}
+
+bool SidePanelCoordinator::IsSidePanelEntryShowing(
+    const SidePanelEntry* entry) const {
+  return IsSidePanelShowing() && current_entry_ &&
+         current_entry_.get() == entry;
 }
 
 void SidePanelCoordinator::Show(
@@ -406,6 +408,14 @@ SidePanelEntry* SidePanelCoordinator::GetActiveContextualEntryForKey(
   return GetActiveContextualRegistry()
              ? GetActiveContextualRegistry()->GetEntryForKey(entry_key)
              : nullptr;
+}
+
+SidePanelEntry* SidePanelCoordinator::GetLoadingEntry() const {
+  SidePanelContentSwappingContainer* content_wrapper =
+      static_cast<SidePanelContentSwappingContainer*>(
+          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
+  DCHECK(content_wrapper);
+  return content_wrapper->loading_entry();
 }
 
 bool SidePanelCoordinator::IsGlobalEntryShowing(
@@ -522,12 +532,9 @@ absl::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
 
   // If we are waiting on content swapping delays we want to return the id for
   // the entry we are attempting to swap to.
-  const SidePanelContentSwappingContainer* content_wrapper =
-      static_cast<SidePanelContentSwappingContainer*>(
-          GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
-  DCHECK(content_wrapper);
-  if (const auto* entry = content_wrapper->loading_entry())
+  if (const auto* entry = GetLoadingEntry()) {
     return entry->key();
+  }
 
   // If we are not waiting on content swapping we want to return the active
   // selected entry id.

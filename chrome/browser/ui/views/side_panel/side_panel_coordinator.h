@@ -86,7 +86,11 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   SidePanelEntry* GetLoadingEntryForTesting() const;
 
-  bool IsSidePanelShowing();
+  bool IsSidePanelShowing() const;
+
+  // Returns whether `entry` is currently being shown in the side panel. Note:
+  // this returns false if `entry` is current loading but not actually shown.
+  bool IsSidePanelEntryShowing(const SidePanelEntry* entry) const;
 
   // Re-runs open new tab URL check and sets button state to enabled/disabled
   // accordingly.
@@ -119,6 +123,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   SidePanelEntry* GetActiveContextualEntryForKey(
       const SidePanelEntry::Key& entry_key);
+
+  // Returns the current loading entry or nullptr if none exists.
+  SidePanelEntry* GetLoadingEntry() const;
 
   // Returns whether the global entry with the same key as `entry_key` is
   // showing.
