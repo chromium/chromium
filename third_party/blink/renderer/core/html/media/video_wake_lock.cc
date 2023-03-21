@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/html/media/remote_playback_controller.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -49,11 +48,7 @@ VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
   VideoElement().addEventListener(event_type_names::kLeavepictureinpicture,
                                   this, true);
   VideoElement().addEventListener(event_type_names::kVolumechange, this, true);
-
-  if (RuntimeEnabledFeatures::VideoWakeLockOptimisationHiddenMutedEnabled())
-    StartIntersectionObserver();
-  else
-    is_visible_ = true;
+  StartIntersectionObserver();
 
   RemotePlaybackController* remote_playback_controller =
       RemotePlaybackController::From(VideoElement());
@@ -66,11 +61,8 @@ VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
 void VideoWakeLock::ElementDidMoveToNewDocument() {
   SetExecutionContext(VideoElement().GetExecutionContext());
   SetPage(GetContainingPage(VideoElement()));
-
-  if (RuntimeEnabledFeatures::VideoWakeLockOptimisationHiddenMutedEnabled()) {
-    intersection_observer_->disconnect();
-    StartIntersectionObserver();
-  }
+  intersection_observer_->disconnect();
+  StartIntersectionObserver();
 }
 
 void VideoWakeLock::PageVisibilityChanged() {
@@ -79,8 +71,6 @@ void VideoWakeLock::PageVisibilityChanged() {
 
 void VideoWakeLock::OnVisibilityChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  DCHECK(RuntimeEnabledFeatures::VideoWakeLockOptimisationHiddenMutedEnabled());
-
   is_visible_ = (entries.back()->intersectionRatio() > 0);
   Update();
 }
@@ -198,10 +188,11 @@ void VideoWakeLock::UpdateWakeLockService() {
   if (!wake_lock_service_)
     return;
 
-  if (active_)
+  if (active_) {
     wake_lock_service_->RequestWakeLock();
-  else
+  } else {
     wake_lock_service_->CancelWakeLock();
+  }
 }
 
 void VideoWakeLock::StartIntersectionObserver() {

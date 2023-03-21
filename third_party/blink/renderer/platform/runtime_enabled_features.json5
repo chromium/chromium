@@ -3485,12 +3485,6 @@
       base_feature: "none",
     },
     {
-      name: "VideoWakeLockOptimisationHiddenMuted",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ViewportHeightClientHintHeader",
       status: "stable",
     },

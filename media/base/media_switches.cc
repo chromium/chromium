@@ -885,10 +885,6 @@ const base::FeatureParam<bool>
     kHardwareSecureDecryptionFallbackOnHardwareContextReset{
         &kHardwareSecureDecryptionFallback, "on_hardware_context_reset", true};
 
-BASE_FEATURE(kWakeLockOptimisationHiddenMuted,
-             "kWakeLockOptimisationHiddenMuted",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If active, enable HiDPI mode that increases the display scale factor
 // while capturing a low-resolution tab.
 BASE_FEATURE(kWebContentsCaptureHiDpi,
