@@ -1,0 +1,9 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button expanded name='Will expand'
+++++++++staticText name='Will expand'
+++++++++++inlineTextBox name='Will expand'
+++++++group ispopup=auto
+++++++++staticText name='PopoverIsExpanded'
+++++++++++inlineTextBox name='PopoverIsExpanded'
