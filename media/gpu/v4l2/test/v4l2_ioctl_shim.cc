@@ -91,12 +91,23 @@ std::ostream& operator<<(std::ostream& ostream,
 // Logs whether given ioctl request |request_code| succeeded
 // or failed given |ret|.
 void LogIoctlResult(int ret, int request_code) {
-  PLOG_IF(ERROR, ret != kIoctlOk && errno != EAGAIN)
-      << "Ioctl request failed for " << V4L2RequestCodeToString(request_code)
-      << ".";
-  PLOG_IF(INFO, ret != kIoctlOk && errno == EAGAIN)
-      << "Ioctl request failed for " << V4L2RequestCodeToString(request_code)
-      << "with error code EAGAIN.";
+  if (ret != kIoctlOk) {
+    switch (errno) {
+      case EAGAIN:
+        LOG(INFO) << "Ioctl request failed for "
+                  << V4L2RequestCodeToString(request_code)
+                  << " with error code EAGAIN.";
+        break;
+      case EBUSY:
+        LOG(WARNING) << "Ioctl request returned EBUSY for "
+                     << V4L2RequestCodeToString(request_code)
+                     << " and should be retried.";
+        break;
+      default:
+        LOG(ERROR) << "Ioctl request failed for "
+                   << V4L2RequestCodeToString(request_code) << ".";
+    }
+  }
   VLOG_IF(4, ret == kIoctlOk)
       << V4L2RequestCodeToString(request_code) << " succeeded.";
 }
@@ -608,10 +619,20 @@ bool V4L2IoctlShim::MediaRequestIocQueue(
 bool V4L2IoctlShim::MediaRequestIocReinit(
     const std::unique_ptr<V4L2Queue>& queue) const {
   int req_fd = queue->media_request_fd();
+  constexpr uint32_t kMaxRetries = 16;
+  uint32_t retries = 0;
 
-  const bool ret = Ioctl(MEDIA_REQUEST_IOC_REINIT, req_fd);
+  do {
+    if (Ioctl(MEDIA_REQUEST_IOC_REINIT, req_fd)) {
+      return true;
+    }
 
-  return ret;
+    usleep(1 << retries);
+  } while (++retries < kMaxRetries);
+
+  LOG(ERROR) << "MediaRequestIocReinit ioctl call timed out.";
+
+  return false;
 }
 
 bool V4L2IoctlShim::FindMediaDevice() {
