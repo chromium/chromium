@@ -197,7 +197,8 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
   auto run_on_os_login_sub_manager = std::make_unique<RunOnOsLoginSubManager>(
       *profile_, *registrar, *sync_bridge, *icon_manager);
   auto uninstallation_via_os_settings_sub_manager =
-      std::make_unique<UninstallationViaOsSettingsSubManager>(*registrar);
+      std::make_unique<UninstallationViaOsSettingsSubManager>(*profile_,
+                                                              *registrar);
   sub_managers_.push_back(std::move(shortcut_sub_manager));
   sub_managers_.push_back(std::move(file_handling_sub_manager));
   sub_managers_.push_back(std::move(protocol_handling_sub_manager));
@@ -724,8 +725,9 @@ void OsIntegrationManager::UnregisterUrlHandlers(const AppId& app_id) {
 
 void OsIntegrationManager::UnregisterWebAppOsUninstallation(
     const AppId& app_id) {
-  if (ShouldRegisterUninstallationViaOsSettingsWithOs())
-    UnegisterUninstallationViaOsSettingsWithOs(app_id, profile_);
+  if (ShouldRegisterUninstallationViaOsSettingsWithOs()) {
+    UnregisterUninstallationViaOsSettingsWithOs(app_id, profile_);
+  }
 }
 
 void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,

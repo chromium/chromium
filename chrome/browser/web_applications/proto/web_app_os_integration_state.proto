@@ -57,6 +57,7 @@ message ShortcutMenus {
 
 message OsUninstallRegistration {
   optional bool registered_with_os = 1;
+  optional string display_name = 2;
 }
 
 message FileHandling {
@@ -76,8 +77,10 @@ message FileHandling {
   repeated FileHandler file_handlers = 1;
 }
 
-// Represents all the common OS Integration states to be stored in the web_app
-// DB that matches the values in the OS.
+// Represents all OS integration. This is intended to be the 'final' OS
+// integration state, after any logic that would filter/modify/disable any of
+// the features. When stored in the database, this represents the expected OS
+// integration state for this app.
 message WebAppOsIntegrationState {
   reserved 2, 8;
   optional ShortcutDescription shortcut = 1;

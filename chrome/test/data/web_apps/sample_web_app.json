@@ -23,7 +23,10 @@
          "title": "Name1234"
       },
       "shortcut_menus": [  ],
-      "uninstall_registration": true
+      "uninstall_registration": {
+         "display_name": "Name1234",
+         "registered_with_os": true
+      }
    },
    "dark_mode_background_color": "none",
    "dark_mode_theme_color": "rgba(34,214,187,1)",

@@ -111,9 +111,16 @@ base::Value OsStatesDebugValue(
   }
 
   if (current_states.has_uninstall_registration()) {
-    debug_dict.Set(
-        "uninstall_registration",
-        current_states.uninstall_registration().registered_with_os());
+    base::Value::Dict state;
+    proto::OsUninstallRegistration os_uninstall =
+        current_states.uninstall_registration();
+    if (os_uninstall.has_registered_with_os()) {
+      state.Set("registered_with_os", os_uninstall.registered_with_os());
+    }
+    if (os_uninstall.has_display_name()) {
+      state.Set("display_name", os_uninstall.display_name());
+    }
+    debug_dict.Set("uninstall_registration", std::move(state));
   }
 
   if (current_states.has_shortcut_menus()) {

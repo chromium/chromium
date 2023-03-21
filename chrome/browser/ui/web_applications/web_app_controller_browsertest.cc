@@ -39,6 +39,10 @@
 #include "chrome/common/chrome_features.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#endif
+
 namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
@@ -55,6 +59,18 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest()
     features::kWebAppsCrosapi, ash::features::kLacrosPrimary
 #endif
   });
+
+#if BUILDFLAG(IS_WIN)
+  registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
+  base::win::RegKey key;
+  // In a real registry, this key would exist, but since we're using
+  // hive override, it's empty, so we create this key.
+  // TODO(https://b/273981744): Move this and the registry override to the
+  // OsIntegrationTestOverride class.
+  key.Create(HKEY_CURRENT_USER,
+             L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+             KEY_SET_VALUE);
+#endif
 }
 
 WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;

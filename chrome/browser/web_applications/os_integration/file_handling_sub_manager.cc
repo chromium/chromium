@@ -51,7 +51,7 @@ apps::FileHandlers ConvertFileHandlingProtoToFileHandlers(
 }
 
 bool HasFileHandling(
-    const proto::WebAppOsIntegrationState os_integration_state) {
+    const proto::WebAppOsIntegrationState& os_integration_state) {
   return (os_integration_state.has_file_handling() &&
           os_integration_state.file_handling().file_handlers_size() > 0);
 }

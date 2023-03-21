@@ -123,5 +123,5 @@ TEST_F(RegisterUninstallationViaOsSettingsTest, RegValues) {
   ASSERT_EQ(uninstall_key_.ReadValue(L"DisplayIcon", &value), ERROR_SUCCESS);
   EXPECT_EQ(value, icon_path.value());
 
-  UnregisterUninstallationViaOsSettings(register_key_);
+  EXPECT_TRUE(UnregisterUninstallationViaOsSettings(register_key_));
 }

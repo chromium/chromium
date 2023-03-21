@@ -12,24 +12,22 @@ namespace web_app {
 #if !BUILDFLAG(IS_WIN)
 
 // This block defines stub implementations of OS specific methods for
-// uninstallation command. Currently, only Windows has their own implementation.
+// uninstallation command. Currently, only Windows has its own implementation.
 bool ShouldRegisterUninstallationViaOsSettingsWithOs() {
   return false;
 }
 
-void RegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
+bool RegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
                                                const std::string& app_name,
                                                Profile* profile) {
-  DCHECK(ShouldRegisterUninstallationViaOsSettingsWithOs());
-  // Stub function for OS's which don't register uninstallation command with the
-  // OS.
+  NOTREACHED();
+  return true;
 }
 
-void UnegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
-                                                Profile* profile) {
-  DCHECK(ShouldRegisterUninstallationViaOsSettingsWithOs());
-  // Stub function for OS's which don't register uninstallation command with the
-  // OS.
+bool UnregisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
+                                                 Profile* profile) {
+  NOTREACHED();
+  return true;
 }
 
 #endif  // !BUILDFLAG(IS_WIN)

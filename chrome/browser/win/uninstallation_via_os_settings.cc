@@ -72,12 +72,13 @@ bool RegisterUninstallationViaOsSettings(
   return true;
 }
 
-void UnregisterUninstallationViaOsSettings(const std::wstring& name) {
+bool UnregisterUninstallationViaOsSettings(const std::wstring& name) {
   base::win::RegKey uninstall_reg_key;
   LONG result = uninstall_reg_key.Open(HKEY_CURRENT_USER, kUninstallRegistryKey,
                                        KEY_QUERY_VALUE);
-  if (result != ERROR_SUCCESS)
-    return;
+  if (result == ERROR_FILE_NOT_FOUND) {
+    return true;
+  }
 
-  uninstall_reg_key.DeleteKey(name.c_str());
+  return uninstall_reg_key.DeleteKey(name.c_str()) == ERROR_SUCCESS;
 }

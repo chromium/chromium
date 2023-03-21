@@ -25,6 +25,7 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
@@ -60,14 +61,18 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/shortcut.h"
+#include "base/win/windows_types.h"
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
+#include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/win/jumplist_updater.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/icon_util.h"
@@ -344,6 +349,104 @@ std::vector<SkColor> OsIntegrationTestOverride::GetIconColorsForShortcutsMenu(
 bool OsIntegrationTestOverride::IsShortcutsMenuRegisteredForApp(
     const std::wstring& app_user_model_id) {
   return base::Contains(jump_list_entry_map_, app_user_model_id);
+}
+
+base::expected<bool, std::string>
+OsIntegrationTestOverride::IsUninstallRegisteredWithOs(
+    const AppId& app_id,
+    const std::string& app_name,
+    Profile* profile) {
+  constexpr wchar_t kUninstallRegistryKey[] =
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
+
+  base::win::RegKey uninstall_reg_key;
+  LONG result = uninstall_reg_key.Open(HKEY_CURRENT_USER, kUninstallRegistryKey,
+                                       KEY_READ);
+
+  if (result == ERROR_FILE_NOT_FOUND) {
+    return base::unexpected(
+        "Cannot find the uninstall registry key. If a testing hive is being "
+        "used, then this key needs to be created there on initialization.");
+  }
+
+  if (result != ERROR_SUCCESS) {
+    return base::unexpected(
+        base::StringPrintf("Cannot open the registry key: %ld", result));
+  }
+
+  const std::wstring key =
+      GetUninstallStringKeyForTesting(profile->GetPath(), app_id);
+
+  base::win::RegKey uninstall_reg_entry_key;
+  result = uninstall_reg_entry_key.Open(uninstall_reg_key.Handle(), key.c_str(),
+                                        KEY_READ);
+  if (result == ERROR_FILE_NOT_FOUND) {
+    return base::ok(false);
+  }
+
+  if (result != ERROR_SUCCESS) {
+    return base::unexpected(
+        base::StringPrintf("Error opening uninstall key for app: %ld", result));
+  }
+
+  std::wstring display_icon_path;
+  std::wstring display_name;
+  std::wstring display_version;
+  std::wstring application_version;
+  std::wstring publisher;
+  std::wstring uninstall_string;
+  DWORD no_repair;
+  DWORD no_modify;
+  bool read_success = true;
+  read_success &= uninstall_reg_entry_key.ReadValue(
+                      L"DisplayIcon", &display_icon_path) == ERROR_SUCCESS;
+  read_success &= uninstall_reg_entry_key.ReadValue(
+                      L"DisplayName", &display_name) == ERROR_SUCCESS;
+  read_success &= uninstall_reg_entry_key.ReadValue(
+                      L"DisplayVersion", &display_version) == ERROR_SUCCESS;
+  read_success &=
+      uninstall_reg_entry_key.ReadValue(L"ApplicationVersion",
+                                        &application_version) == ERROR_SUCCESS;
+  read_success &= uninstall_reg_entry_key.ReadValue(L"Publisher", &publisher) ==
+                  ERROR_SUCCESS;
+  read_success &= uninstall_reg_entry_key.ReadValue(
+                      L"UninstallString", &uninstall_string) == ERROR_SUCCESS;
+  read_success &= uninstall_reg_entry_key.ReadValueDW(
+                      L"NoRepair", &no_repair) == ERROR_SUCCESS;
+  read_success &= uninstall_reg_entry_key.ReadValueDW(
+                      L"NoModify", &no_modify) == ERROR_SUCCESS;
+  if (!read_success) {
+    return base::unexpected("Error reading registry values");
+  }
+
+  if (display_version != L"1.0" || application_version != L"1.0" ||
+      no_repair != 1 || no_modify != 1 ||
+      publisher != install_static::GetChromeInstallSubDirectory()) {
+    return base::unexpected("Incorrect static registry data.");
+  }
+
+  base::FilePath web_app_icon_dir = GetOsIntegrationResourcesDirectoryForApp(
+      profile->GetPath(), app_id, GURL());
+  base::FilePath expected_icon_path =
+      internals::GetIconFilePath(web_app_icon_dir, base::UTF8ToUTF16(app_name));
+  if (expected_icon_path.value() != display_icon_path) {
+    return base::unexpected(base::StrCat(
+        {"Invalid icon path ", base::WideToUTF8(display_icon_path),
+         ", expected ", base::WideToUTF8(expected_icon_path.value())}));
+  }
+  if (base::UTF8ToWide(app_name) != display_name) {
+    return base::unexpected(
+        base::StrCat({"Invalid display name ", base::WideToUTF8(display_name),
+                      ", expected ", app_name}));
+  }
+  std::wstring expected_uninstall_substr =
+      base::StrCat({L"--uninstall-app-id=", base::UTF8ToWide(app_id)});
+  if (!base::Contains(uninstall_string, expected_uninstall_substr)) {
+    return base::unexpected(base::StrCat({"Could not find uninstall flag: ",
+                                          base::WideToUTF8(uninstall_string)}));
+  }
+
+  return true;
 }
 #endif
 

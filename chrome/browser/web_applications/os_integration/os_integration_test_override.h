@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -147,6 +148,14 @@ class OsIntegrationTestOverride
       const std::wstring& app_user_model_id);
   int GetCountOfShortcutIconsCreated(const std::wstring& app_user_model_id);
   bool IsShortcutsMenuRegisteredForApp(const std::wstring& app_user_model_id);
+
+  // Returns true if the given app_id/name/profile is registered with the OS in
+  // the uninstall menu, and false if it isn't. The unexpected value is a string
+  // description of the error.
+  base::expected<bool, std::string> IsUninstallRegisteredWithOs(
+      const AppId& app_id,
+      const std::string& app_name,
+      Profile* profile);
 #endif
 
   bool AreShortcutsMenuRegistered();
@@ -235,9 +244,11 @@ class OsIntegrationTestOverride
   // Records all ShellLinkItems for a given AppUserModelId for handling
   // shortcuts menu registration.
   JumpListEntryMap jump_list_entry_map_;
+
 #elif BUILDFLAG(IS_MAC)
   base::ScopedTempDir chrome_apps_folder_;
   std::map<base::FilePath, bool> startup_enabled_;
+
 #elif BUILDFLAG(IS_LINUX)
   base::ScopedTempDir desktop_;
   base::ScopedTempDir startup_;

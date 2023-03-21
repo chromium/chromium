@@ -111,6 +111,10 @@ class UninstallationViaOsSettingsSubManagerTest
     return result.Get<AppId>();
   }
 
+  OsIntegrationTestOverride& test_override() const {
+    return *test_override_->test_override;
+  }
+
  protected:
   WebAppProvider& provider() { return *provider_; }
 
@@ -138,16 +142,20 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
-    if (IsOsUninstallationSupported()) {
-      ASSERT_TRUE(
-          os_integration_state.uninstall_registration().registered_with_os());
-    } else {
-      ASSERT_FALSE(os_integration_state.uninstall_registration()
-                       .has_registered_with_os());
-    }
+    EXPECT_EQ(
+        IsOsUninstallationSupported(),
+        os_integration_state.uninstall_registration().registered_with_os());
   } else {
     ASSERT_FALSE(os_integration_state.has_uninstall_registration());
   }
+#if BUILDFLAG(IS_WIN)
+  base::expected<bool, std::string> result =
+      test_override().IsUninstallRegisteredWithOs(app_id, "Test App",
+                                                  profile());
+  ASSERT_TRUE(result.has_value())
+      << "Error parsing os integration: " << result.error();
+  EXPECT_TRUE(result.value());
+#endif
 }
 
 TEST_P(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
@@ -159,16 +167,23 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
-    if (IsOsUninstallationSupported()) {
-      ASSERT_FALSE(
-          os_integration_state.uninstall_registration().registered_with_os());
-    } else {
-      ASSERT_FALSE(os_integration_state.uninstall_registration()
-                       .has_registered_with_os());
-    }
+    EXPECT_FALSE(
+        os_integration_state.uninstall_registration().registered_with_os());
   } else {
     ASSERT_FALSE(os_integration_state.has_uninstall_registration());
   }
+  if (IsOsUninstallationSupported()) {
+    ASSERT_FALSE(
+        os_integration_state.uninstall_registration().registered_with_os());
+  }
+#if BUILDFLAG(IS_WIN)
+  base::expected<bool, std::string> result =
+      test_override().IsUninstallRegisteredWithOs(app_id, "Test App",
+                                                  profile());
+  ASSERT_TRUE(result.has_value())
+      << "Error parsing os integration: " << result.error();
+  EXPECT_FALSE(result.value());
+#endif
 }
 
 TEST_P(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
@@ -183,8 +198,9 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     UninstallationViaOsSettingsSubManagerTest,
-    ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kDisabled),
+    ::testing::Values(OsIntegrationSubManagersState::kDisabled,
+                      OsIntegrationSubManagersState::kSaveStateToDB,
+                      OsIntegrationSubManagersState::kSaveStateAndExecute),
     test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace

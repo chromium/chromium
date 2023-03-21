@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -20,7 +21,8 @@ class WebAppRegistrar;
 // settings. Currently this is only used on Windows OS.
 class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
  public:
-  explicit UninstallationViaOsSettingsSubManager(WebAppRegistrar& registrar);
+  explicit UninstallationViaOsSettingsSubManager(Profile& profile,
+                                                 WebAppRegistrar& registrar);
   ~UninstallationViaOsSettingsSubManager() override;
   void Start() override;
   void Shutdown() override;
@@ -35,7 +37,10 @@ class UninstallationViaOsSettingsSubManager : public OsIntegrationSubManager {
                base::OnceClosure callback) override;
 
  private:
+  const raw_ref<Profile> profile_;
   const raw_ref<WebAppRegistrar> registrar_;
+  base::WeakPtrFactory<UninstallationViaOsSettingsSubManager> weak_factory_{
+      this};
 };
 
 }  // namespace web_app
