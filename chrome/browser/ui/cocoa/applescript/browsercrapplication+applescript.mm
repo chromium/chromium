@@ -76,14 +76,14 @@ using bookmarks::BookmarkModel;
 
   Profile* lastProfile = [appDelegate lastProfile];
   if (!lastProfile) {
-    AppleScript::SetError(AppleScript::errGetProfile);
+    AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
   }
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(lastProfile);
   if (!model->loaded()) {
-    AppleScript::SetError(AppleScript::errBookmarkModelLoad);
+    AppleScript::SetError(AppleScript::Error::kBookmarkModelLoad);
     return nil;
   }
 
@@ -101,15 +101,15 @@ using bookmarks::BookmarkModel;
 
   Profile* lastProfile = [appDelegate lastProfile];
   if (!lastProfile) {
-    AppleScript::SetError(AppleScript::errGetProfile);
+    AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
   }
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(lastProfile);
   if (!model->loaded()) {
-    AppleScript::SetError(AppleScript::errBookmarkModelLoad);
-    return NULL;
+    AppleScript::SetError(AppleScript::Error::kBookmarkModelLoad);
+    return nullptr;
   }
 
   BookmarkFolderAppleScript* bookmarksBar =

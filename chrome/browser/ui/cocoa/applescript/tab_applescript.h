@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_TAB_APPLESCRIPT_H_
 #define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_TAB_APPLESCRIPT_H_
 
-#include "base/memory/raw_ptr.h"
-
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
 
@@ -15,20 +13,8 @@ namespace content {
 class WebContents;
 }
 
-class Profile;
-
 // Represents a tab scriptable item in applescript.
-@interface TabAppleScript : ElementAppleScript {
- @private
-  raw_ptr<content::WebContents> _webContents;  // weak.
-
-  raw_ptr<Profile> _profile;  // weak.
-
-  // Contains the temporary URL when a user creates a new folder/item with
-  // url specified like
-  // |make new tab with properties {url:"http://google.com"}|.
-  NSString* _tempURL;
-}
+@interface TabAppleScript : ElementAppleScript
 
 // Doesn't actually create the tab here but just assigns the ID, tab is created
 // when it calls insertInTabs: of a particular window, it is used in cases

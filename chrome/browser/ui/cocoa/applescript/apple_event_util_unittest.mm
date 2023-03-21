@@ -232,27 +232,25 @@ TEST_F(AppleEventUtilTest, ValueToAppleEventDescriptor) {
     absl::optional<base::Value> value =
         base::JSONReader::Read(cases[i].json_input);
     NSAppleEventDescriptor* descriptor =
-        chrome::mac::ValueToAppleEventDescriptor(&*value);
+        chrome::mac::ValueToAppleEventDescriptor(value.value());
 
-    EXPECT_EQ(cases[i].expected_aedesc_dump,
-              AEDescToString([descriptor aeDesc]))
+    EXPECT_EQ(cases[i].expected_aedesc_dump, AEDescToString(descriptor.aeDesc))
         << "i: " << i;
-    EXPECT_EQ(cases[i].expected_aedesc_type,
-              [descriptor descriptorType]) << "i: " << i;
+    EXPECT_EQ(cases[i].expected_aedesc_type, descriptor.descriptorType)
+        << "i: " << i;
   }
 
   // Test boolean values separately because boolean NSAppleEventDescriptors
   // return different values across different system versions when their
   // -description method is called.
 
-  const bool all_bools[] = { true, false };
-  for (bool b : all_bools) {
+  for (bool b : {true, false}) {
     base::Value value(b);
     NSAppleEventDescriptor* descriptor =
-        chrome::mac::ValueToAppleEventDescriptor(&value);
+        chrome::mac::ValueToAppleEventDescriptor(value);
 
-    EXPECT_EQ(typeBoolean, [descriptor descriptorType]);
-    EXPECT_EQ(b, [descriptor booleanValue]);
+    EXPECT_EQ(typeBoolean, descriptor.descriptorType);
+    EXPECT_EQ(b, descriptor.booleanValue);
   }
 }
 

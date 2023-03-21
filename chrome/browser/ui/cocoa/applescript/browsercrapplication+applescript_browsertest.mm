@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
@@ -21,21 +21,21 @@
 #include "testing/gtest_mac.h"
 #include "ui/gfx/geometry/size.h"
 
-typedef InProcessBrowserTest BrowserCrApplicationAppleScriptTest;
+using BrowserCrApplicationAppleScriptTest = InProcessBrowserTest;
 
 // Create windows of different |Type|.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
   // Create additional |Browser*| objects of different type.
   Profile* profile = browser()->profile();
-  Browser* b1 = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
+  Browser* b1 = Browser::Create(Browser::CreateParams(
+      Browser::TYPE_POPUP, profile, /*user_gesture=*/true));
   Browser* b2 = Browser::Create(Browser::CreateParams::CreateForApp(
-      "Test", true /* trusted_source */, gfx::Rect(), profile, true));
+      "Test", /*trusted_source=*/true, gfx::Rect(), profile,
+      /*user_gesture=*/true));
 
   EXPECT_EQ(3U, [[NSApp appleScriptWindows] count]);
   for (WindowAppleScript* window in [NSApp appleScriptWindows]) {
-    EXPECT_NSEQ(AppleScript::kWindowsProperty,
-                [window containerProperty]);
+    EXPECT_NSEQ(AppleScript::kWindowsProperty, [window containerProperty]);
     EXPECT_NSEQ(NSApp, [window container]);
   }
 
@@ -47,9 +47,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
 // Insert a new window.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
                        DISABLED_InsertWindow) {
-  // Emulate what applescript would do when creating a new window.
-  // Emulate a script like |set var to make new window with properties
-  // {visible:false}|.
+  // Emulate what AppleScript would do when creating a new window.
+  // Emulate a script like:
+  //
+  //   set var to make new window with properties {visible:false}|.
   base::scoped_nsobject<WindowAppleScript> aWindow(
       [[WindowAppleScript alloc] init]);
   base::scoped_nsobject<NSNumber> var([[aWindow.get() uniqueID] copy]);
@@ -62,8 +63,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   WindowAppleScript* window = [NSApp appleScriptWindows][0];
   EXPECT_NSEQ(@YES, [aWindow.get() valueForKey:@"isVisible"]);
   EXPECT_EQ([window container], NSApp);
-  EXPECT_NSEQ(AppleScript::kWindowsProperty,
-              [window containerProperty]);
+  EXPECT_NSEQ(AppleScript::kWindowsProperty, [window containerProperty]);
   EXPECT_NSEQ(var, [window uniqueID]);
 }
 
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   // Remove all the windows, just created.
   count = (int)[[NSApp appleScriptWindows] count];
   for (int i = 0; i < 5; ++i) {
-    for(int j = 0; j < 3; ++j) {
+    for (int j = 0; j < 3; ++j) {
       [NSApp removeFromAppleScriptWindowsAtIndex:0];
     }
     count = count - 3;
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   }
 }
 
-// Check for objectSpecifer of the root scripting object.
+// Check for object specifier of the root scripting object.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, ObjectSpecifier) {
   // Should always return nil to indicate its the root scripting object.
   EXPECT_EQ(nil, [NSApp objectSpecifier]);
@@ -105,8 +105,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, BookmarkFolders) {
   EXPECT_EQ(2U, [bookmarkFolders count]);
 
   for (BookmarkFolderAppleScript* bookmarkFolder in bookmarkFolders) {
-    EXPECT_EQ(NSApp,
-              [bookmarkFolder container]);
+    EXPECT_EQ(NSApp, [bookmarkFolder container]);
     EXPECT_NSEQ(AppleScript::kBookmarkFoldersProperty,
                 [bookmarkFolder containerProperty]);
   }

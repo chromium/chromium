@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_WINDOW_APPLESCRIPT_H_
 #define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_WINDOW_APPLESCRIPT_H_
 
-#include "base/memory/raw_ptr.h"
-
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
 
@@ -16,11 +14,7 @@ class Profile;
 @class TabAppleScript;
 
 // Represents a window class.
-@interface WindowAppleScript : ElementAppleScript {
- @private
-  raw_ptr<Browser> _browser;  // weak.
-}
-
+@interface WindowAppleScript : ElementAppleScript
 // Creates a new window, returns nil if there is an error.
 - (instancetype)init;
 
@@ -56,12 +50,12 @@ class Profile;
 - (void)insertInTabs:(TabAppleScript*)aTab;
 
 // Insert a tab at some position in the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)insertInTabs:(TabAppleScript*)aTab atIndex:(int)index;
 
 // Remove a window from the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)removeFromTabsAtIndex:(int)index;
 

@@ -4,27 +4,32 @@
 
 #import "chrome/browser/ui/cocoa/applescript/element_applescript.h"
 
+#include <Foundation/Foundation.h>
+
+#include "base/mac/foundation_util.h"
+
 @implementation ElementAppleScript
 
 @synthesize uniqueID = _uniqueID;
 @synthesize container = _container;
 @synthesize containerProperty = _containerProperty;
 
-// calling objectSpecifier asks an object to return an object specifier
-// record referring to itself.  You must call setContainer:property: before
+// Calling objectSpecifier asks an object to return an object specifier
+// record referring to itself. You must call setContainer:property: before
 // you can call this method.
 - (NSScriptObjectSpecifier*)objectSpecifier {
-  return [[[NSUniqueIDSpecifier allocWithZone:[self zone]]
-      initWithContainerClassDescription:
-          (NSScriptClassDescription*)[[self container] classDescription]
-                     containerSpecifier:[[self container] objectSpecifier]
-                                    key:[self containerProperty]
-                               uniqueID:[self uniqueID]] autorelease];
+  return [[[NSUniqueIDSpecifier alloc]
+      initWithContainerClassDescription:base::mac::ObjCCast<
+                                            NSScriptClassDescription>(
+                                            self.container.classDescription)
+                     containerSpecifier:self.container.objectSpecifier
+                                    key:self.containerProperty
+                               uniqueID:self.uniqueID] autorelease];
 }
 
-- (void)setContainer:(id)value property:(NSString*)property {
-  [self setContainer:value];
-  [self setContainerProperty:property];
+- (void)setContainer:(NSObject*)value property:(NSString*)property {
+  self.container = value;
+  self.containerProperty = property;
 }
 
 - (void)dealloc {

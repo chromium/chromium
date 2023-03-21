@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #import "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -40,7 +41,7 @@ namespace {
 void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
                                   base::Value result_value) {
   NSAppleEventDescriptor* result_descriptor =
-      chrome::mac::ValueToAppleEventDescriptor(&result_value);
+      chrome::mac::ValueToAppleEventDescriptor(result_value);
 
   NSAppleEventManager* manager = [NSAppleEventManager sharedAppleEventManager];
   NSAppleEventDescriptor* reply_event =
@@ -53,10 +54,18 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }  // namespace
 
 @interface TabAppleScript()
+// Contains the temporary URL when a user creates a new folder/item with the URL
+// specified like:
+//
+//   make new tab with properties {URL:"http://google.com"}
 @property (nonatomic, copy) NSString* tempURL;
 @end
 
-@implementation TabAppleScript
+@implementation TabAppleScript {
+  raw_ptr<content::WebContents> _webContents;  // weak.
+
+  raw_ptr<Profile> _profile;  // weak.
+}
 
 @synthesize tempURL = _tempURL;
 
@@ -140,13 +149,13 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   GURL url(base::SysNSStringToUTF8(aURL));
   if (!chrome::mac::IsJavaScriptEnabledForProfile(_profile) &&
       url.SchemeIs(url::kJavaScriptScheme)) {
-    AppleScript::SetError(AppleScript::errJavaScriptUnsupported);
+    AppleScript::SetError(AppleScript::Error::kJavaScriptUnsupported);
     return;
   }
 
   // check for valid url.
   if (!url.is_empty() && !url.is_valid()) {
-    AppleScript::SetError(AppleScript::errInvalidURL);
+    AppleScript::SetError(AppleScript::Error::kInvalidURL);
     return;
   }
 
@@ -217,8 +226,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 
 - (void)handlesReloadScriptCommand:(NSScriptCommand*)command {
   NavigationController& navigationController = _webContents->GetController();
-  const bool checkForRepost = true;
-  navigationController.Reload(content::ReloadType::NORMAL, checkForRepost);
+  navigationController.Reload(content::ReloadType::NORMAL,
+                              /*check_for_repost=*/true);
 }
 
 - (void)handlesStopScriptCommand:(NSScriptCommand*)command {
@@ -229,7 +238,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   bool initiated = printing::PrintViewManager::FromWebContents(_webContents)
                        ->PrintNow(_webContents->GetPrimaryMainFrame());
   if (!initiated) {
-    AppleScript::SetError(AppleScript::errInitiatePrinting);
+    AppleScript::SetError(AppleScript::Error::kInitiatePrinting);
   }
 }
 
@@ -237,7 +246,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   NSDictionary* dictionary = [command evaluatedArguments];
 
   NSURL* fileURL = dictionary[@"File"];
-  // Scripter has not specifed the location at which to save, so we prompt for
+  // Scripter has not specified the location at which to save, so we prompt for
   // it.
   if (!fileURL) {
     _webContents->OnSavePage();
@@ -260,7 +269,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
     } else if ([saveType isEqualToString:@"complete html"]) {
       savePageType = content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML;
     } else {
-      AppleScript::SetError(AppleScript::errInvalidSaveType);
+      AppleScript::SetError(AppleScript::Error::kInvalidSaveType);
       return;
     }
   }
@@ -286,7 +295,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 
 - (id)handlesExecuteJavascriptScriptCommand:(NSScriptCommand*)command {
   if (!chrome::mac::IsJavaScriptEnabledForProfile(_profile)) {
-    AppleScript::SetError(AppleScript::errJavaScriptUnsupported);
+    AppleScript::SetError(AppleScript::Error::kJavaScriptUnsupported);
     return nil;
   }
 
@@ -303,7 +312,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
       base::BindOnce(&ResumeAppleEventAndSendReply, suspensionID);
 
   std::u16string script =
-      base::SysNSStringToUTF16([command evaluatedArguments][@"javascript"]);
+      base::SysNSStringToUTF16(command.evaluatedArguments[@"javascript"]);
   frame->ExecuteJavaScriptInIsolatedWorld(script, std::move(callback),
                                           ISOLATED_WORLD_ID_APPLESCRIPT);
 

@@ -5,16 +5,14 @@
 #ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_FOLDER_APPLESCRIPT_H_
 #define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BOOKMARK_FOLDER_APPLESCRIPT_H_
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #import "chrome/browser/ui/cocoa/applescript/bookmark_node_applescript.h"
 
 @class BookmarkItemAppleScript;
 
 // Represent a bookmark folder scriptable object in applescript.
-@interface BookmarkFolderAppleScript : BookmarkNodeAppleScript {
-
-}
+@interface BookmarkFolderAppleScript : BookmarkNodeAppleScript
 
 // Bookmark folder manipulation methods.
 // Returns an array of |BookmarkFolderAppleScript*| of all the bookmark folders
@@ -25,12 +23,12 @@
 - (void)insertInBookmarkFolders:(id)aBookmarkFolder;
 
 // Inserts a bookmark folder at some position in the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)insertInBookmarkFolders:(id)aBookmarkFolder atIndex:(size_t)index;
 
 // Remove a bookmark folder from the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)removeFromBookmarkFoldersAtIndex:(size_t)index;
 
@@ -43,13 +41,13 @@
 - (void)insertInBookmarkItems:(BookmarkItemAppleScript*)aBookmarkItem;
 
 // Inserts a bookmark item at some position in the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)insertInBookmarkItems:(BookmarkItemAppleScript*)aBookmarkItem
                       atIndex:(size_t)index;
 
 // Removes a bookmarks folder from the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)removeFromBookmarkItemsAtIndex:(size_t)index;
 

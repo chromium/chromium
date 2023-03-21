@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
-#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
 #include <memory>
 
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
@@ -39,7 +39,10 @@
 - (NSWindow*)nativeHandle;
 @end
 
-@implementation WindowAppleScript
+@implementation WindowAppleScript {
+ @private
+  raw_ptr<Browser> _browser;  // weak.
+}
 
 - (instancetype)init {
   // Check which mode to open a new window.
@@ -51,7 +54,7 @@
   Profile* lastProfile = [appDelegate lastProfile];
 
   if (!lastProfile) {
-    AppleScript::SetError(AppleScript::errGetProfile);
+    AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
   }
 
@@ -63,7 +66,7 @@
     profile = lastProfile;
   } else {
     // Mode cannot be anything else
-    AppleScript::SetError(AppleScript::errInvalidMode);
+    AppleScript::SetError(AppleScript::Error::kInvalidMode);
     return nil;
   }
   // Set the mode to nil, to ensure that it is not set once more.
@@ -104,7 +107,7 @@
 
   if ((self = [super init])) {
     // It is safe to be weak, if a window goes away (eg user closing a window)
-    // the applescript runtime calls appleScriptWindows in
+    // the AppleScript runtime calls appleScriptWindows in
     // BrowserCrApplication and this particular window is never returned.
     _browser = aBrowser;
     base::scoped_nsobject<NSNumber> numID(
@@ -123,7 +126,7 @@
 }
 
 - (NSNumber*)activeTabIndex {
-  // Note: applescript is 1-based, that is lists begin with index 1.
+  // Note: AppleScript is 1-based, that is lists begin with index 1.
   int activeTabIndex = _browser->tab_strip_model()->active_index() + 1;
   if (!activeTabIndex) {
     return nil;
@@ -132,14 +135,14 @@
 }
 
 - (void)setActiveTabIndex:(NSNumber*)anActiveTabIndex {
-  // Note: applescript is 1-based, that is lists begin with index 1.
-  int atIndex = [anActiveTabIndex intValue] - 1;
+  // Note: AppleScript is 1-based, that is lists begin with index 1.
+  int atIndex = anActiveTabIndex.intValue - 1;
   if (atIndex >= 0 && atIndex < _browser->tab_strip_model()->count()) {
     _browser->tab_strip_model()->ActivateTabAt(
         atIndex, TabStripUserGestureDetails(
                      TabStripUserGestureDetails::GestureType::kOther));
   } else
-    AppleScript::SetError(AppleScript::errInvalidTabIndex);
+    AppleScript::SetError(AppleScript::Error::kInvalidTabIndex);
 }
 
 - (NSString*)givenName {
@@ -161,7 +164,7 @@
 - (void)setMode:(NSString*)theMode {
   // cannot set mode after window is created.
   if (theMode) {
-    AppleScript::SetError(AppleScript::errSetMode);
+    AppleScript::SetError(AppleScript::Error::kSetMode);
   }
 }
 
@@ -240,13 +243,13 @@
 }
 
 - (NSNumber*)orderedIndex {
-  return [NSNumber numberWithInt:[[self nativeHandle] orderedIndex]];
+  return @([[self nativeHandle] orderedIndex]);
 }
 
 - (void)setOrderedIndex:(NSNumber*)anIndex {
   int index = [anIndex intValue] - 1;
   if (index < 0 || index >= static_cast<int>(chrome::GetTotalBrowserCount())) {
-    AppleScript::SetError(AppleScript::errWrongIndex);
+    AppleScript::SetError(AppleScript::Error::kWrongIndex);
     return;
   }
   [[self nativeHandle] setOrderedIndex:index];

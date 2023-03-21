@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BROWSERCRAPPLICATION_APPLESCRIPT_H_
 #define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_BROWSERCRAPPLICATION_APPLESCRIPT_H_
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #import "chrome/browser/chrome_browser_application_mac.h"
 
@@ -24,13 +24,13 @@
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow;
 
 // Inserts a window at some position in the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow
                            atIndex:(int)index;
 
 // Removes a window from the list.
-// Called by applescript which takes care of bounds checking, make sure of it
+// Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
 - (void)removeFromAppleScriptWindowsAtIndex:(int)index;
 

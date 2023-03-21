@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_utils_test.h"
+#import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -21,6 +21,8 @@
 #import "testing/gtest_mac.h"
 
 using TabAppleScriptTest = InProcessBrowserTest;
+
+namespace AppleScript {
 
 namespace {
 
@@ -54,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascript) {
 
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, false);
-  EXPECT_EQ(AppleScript::ErrorCode::errJavaScriptUnsupported,
+  EXPECT_EQ(static_cast<int>(Error::kJavaScriptUnsupported),
             ExecuteJavascriptCommand(tab_applescript.get()));
 
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, true);
@@ -62,3 +64,5 @@ IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascript) {
 }
 
 }  // namespace
+
+}  // namespace AppleScript
