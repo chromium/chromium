@@ -27,7 +27,7 @@ import {getTemplate} from './smart_inputs_page.html.js';
 const OsSettingsSmartInputsPageElementBase =
     RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-class OsSettingsSmartInputsPageElement extends
+export class OsSettingsSmartInputsPageElement extends
     OsSettingsSmartInputsPageElementBase {
   static get is() {
     return 'os-settings-smart-inputs-page' as const;

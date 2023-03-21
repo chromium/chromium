@@ -4,21 +4,25 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {OsSettingsSmartInputsPageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-let smartInputsPage;
 
-function createSmartInputsPage() {
-  PolymerTest.clearBody();
-  smartInputsPage = document.createElement('os-settings-smart-inputs-page');
-  document.body.appendChild(smartInputsPage);
-  flush();
-}
+suite('<os-settings-smart-inputs-page>', function() {
+  let smartInputsPage: OsSettingsSmartInputsPageElement;
 
-suite('SmartInputsPage', function() {
+  function createSmartInputsPage() {
+    smartInputsPage = document.createElement('os-settings-smart-inputs-page');
+    document.body.appendChild(smartInputsPage);
+    flush();
+  }
+
   teardown(function() {
     smartInputsPage.remove();
     Router.getInstance().resetRouteForTesting();
@@ -27,13 +31,14 @@ suite('SmartInputsPage', function() {
   test('emojiSuggestAdditionNotNullWhenAllowEmojiSuggestionIsTrue', function() {
     loadTimeData.overrideValues({allowEmojiSuggestion: true});
     createSmartInputsPage();
-    assertTrue(!!smartInputsPage.shadowRoot.querySelector('#emojiSuggestion'));
+    assert(smartInputsPage.shadowRoot!.querySelector('#emojiSuggestion'));
   });
 
   test('emojiSuggestAdditionNullWhenAllowEmojiSuggestionIsFalse', function() {
     loadTimeData.overrideValues({allowEmojiSuggestion: false});
     createSmartInputsPage();
-    assertFalse(!!smartInputsPage.shadowRoot.querySelector('#emojiSuggestion'));
+    assertEquals(
+        null, smartInputsPage.shadowRoot!.querySelector('#emojiSuggestion'));
   });
 
   test('Deep link to emoji suggestion toggle', async () => {
@@ -44,14 +49,14 @@ suite('SmartInputsPage', function() {
 
     const params = new URLSearchParams();
     params.append('settingId', '1203');
-    Router.getInstance().navigateTo(
-        routes.OS_LANGUAGES_SMART_INPUTS, params);
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_SMART_INPUTS, params);
 
     flush();
 
     const deepLinkElement =
-        smartInputsPage.shadowRoot.querySelector('#emojiSuggestion')
-            .shadowRoot.querySelector('cr-toggle');
+        smartInputsPage.shadowRoot!.querySelector('#emojiSuggestion')!
+            .shadowRoot!.querySelector('cr-toggle');
+    assert(deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

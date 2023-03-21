@@ -407,6 +407,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_clear_personalization_data_page_test.js'
  ],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
+ [
+   'OsLanguagesPageSmartInputsPage',
+   'os_languages_page/smart_inputs_page_test.js'
+ ],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
@@ -489,7 +493,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['features::kAccessibilitySelectToSpeakPageMigration']},
  ],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
- ['SmartInputsPage', 'smart_inputs_page_test.js'],
  ['SmbPage', 'smb_shares_page_tests.js'],
  ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.js'],
  [
