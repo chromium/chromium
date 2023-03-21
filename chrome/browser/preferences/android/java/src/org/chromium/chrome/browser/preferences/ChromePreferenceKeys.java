@@ -597,6 +597,16 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE =
             new KeyPrefix("Chrome.OptimizationGuide.PushNotificationCache.*");
 
+    /** The gaia email address Password Protection should protect. */
+    public static final String PASSWORD_PROTECTION_ACCOUNT = "Chrome.PasswordProtection.Account";
+
+    /** The hashed password associated with PASSWORD_PROTECTION_ACCOUNT. */
+    public static final String PASSWORD_PROTECTION_HASHED_PASSWORD =
+            "Chrome.PasswordProtection.HashedPassword";
+
+    /** The salt used to create PASSWORD_PROTECTION_HASHED_PASSWORD. */
+    public static final String PASSWORD_PROTECTION_SALT = "Chrome.PasswordProtection.Salt";
+
     /** The shared preference for the 'save card to device' checkbox status. */
     public static final String PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE = "check_save_card_to_device";
 
@@ -1091,6 +1101,9 @@ public final class ChromePreferenceKeys {
                 OPEN_NEW_TAB_PAGE_COUNT,
                 OPEN_RECENT_TABS_COUNT,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
+                PASSWORD_PROTECTION_ACCOUNT,
+                PASSWORD_PROTECTION_HASHED_PASSWORD,
+                PASSWORD_PROTECTION_SALT,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
