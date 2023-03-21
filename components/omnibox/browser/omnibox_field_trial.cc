@@ -1078,6 +1078,10 @@ const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
 
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
+const base::FeatureParam<bool> kMlRelevanceScoringIncreaseNumCandidates(
+    &omnibox::kMlRelevanceScoring,
+    "MlRelevanceScoringIncreaseNumCandidates",
+    false);
 
 MLConfig::MLConfig() {
   log_url_scoring_signals =
@@ -1087,6 +1091,7 @@ MLConfig::MLConfig() {
       /*default_value=*/false);
   ml_relevance_scoring =
       base::FeatureList::IsEnabled(omnibox::kMlRelevanceScoring);
+  increase_num_candidates = kMlRelevanceScoringIncreaseNumCandidates.Get();
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
 }
 
@@ -1115,6 +1120,10 @@ bool AreScoringSignalsAnnotatorsEnabled() {
 
 bool IsMlRelevanceScoringEnabled() {
   return GetMLConfig().ml_relevance_scoring && IsUrlScoringModelEnabled();
+}
+
+bool IsMlRelevanceScoringIncreaseNumCandidatesEnabled() {
+  return GetMLConfig().increase_num_candidates;
 }
 
 bool IsUrlScoringModelEnabled() {

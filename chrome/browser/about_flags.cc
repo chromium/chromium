@@ -1488,6 +1488,25 @@ const FeatureEntry::FeatureVariation
          kOmniboxRichAutocompletionAggressive4,
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kOmniboxMlRelevanceScoringRescoreFinalSuggestionsOnly[] = {
+        {"MlRelevanceScoringIncreaseNumCandidates", "false"},
+};
+
+const FeatureEntry::FeatureParam
+    kOmniboxMlRelevanceScoringIncreaseNumCandidates[] = {
+        {"MlRelevanceScoringIncreaseNumCandidates", "true"},
+};
+
+const FeatureEntry::FeatureVariation kOmniboxMlRelevanceScoringVariations[] = {
+    {"Re-score final set of suggestions only",
+     kOmniboxMlRelevanceScoringRescoreFinalSuggestionsOnly,
+     std::size(kOmniboxMlRelevanceScoringRescoreFinalSuggestionsOnly), nullptr},
+    {"Re-score with more candidates",
+     kOmniboxMlRelevanceScoringIncreaseNumCandidates,
+     std::size(kOmniboxMlRelevanceScoringIncreaseNumCandidates), nullptr},
+};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
@@ -5536,7 +5555,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-ml-relevance-scoring",
      flag_descriptions::kOmniboxMlRelevanceScoringName,
      flag_descriptions::kOmniboxMlRelevanceScoringDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kMlRelevanceScoring)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlRelevanceScoring,
+                                    kOmniboxMlRelevanceScoringVariations,
+                                    "MlRelevanceScoring")},
     {"omnibox-ml-url-scoring-model",
      flag_descriptions::kOmniboxMlUrlScoringModelName,
      flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsDesktop,
