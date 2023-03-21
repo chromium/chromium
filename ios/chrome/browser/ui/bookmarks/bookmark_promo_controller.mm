@@ -44,7 +44,8 @@
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        delegate:(id<BookmarkPromoControllerDelegate>)delegate
-                      presenter:(id<SigninPresenter>)presenter {
+                      presenter:(id<SigninPresenter>)presenter
+             baseViewController:(UIViewController*)baseViewController {
   DCHECK(browser);
   self = [super init];
   if (self) {
@@ -59,7 +60,6 @@
       _identityManagerObserverBridge.reset(
           new signin::IdentityManagerObserverBridge(
               IdentityManagerFactory::GetForBrowserState(browserState), self));
-      // TODO(crbug.com/1420997): Need to set `baseViewController`.
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
                 initWithBrowser:browser
           accountManagerService:ChromeAccountManagerServiceFactory::
@@ -70,7 +70,7 @@
                     accessPoint:signin_metrics::AccessPoint::
                                     ACCESS_POINT_BOOKMARK_MANAGER
                       presenter:presenter
-             baseViewController:nil];
+             baseViewController:baseViewController];
       _signinPromoViewMediator.consumer = self;
     }
     [self updateShouldShowSigninPromo];

@@ -501,9 +501,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.sharedState.tableView.allowsMultipleSelectionDuringEditing = YES;
 
   // Create the mediator and hook up the table view.
-  self.mediator =
-      [[BookmarksHomeMediator alloc] initWithSharedState:self.sharedState
-                                                 browser:_browser];
+  self.mediator = [[BookmarksHomeMediator alloc]
+      initWithSharedState:self.sharedState
+                  browser:_browser
+       baseViewController:self.navigationController];
   self.mediator.consumer = self;
   [self.mediator startMediating];
 

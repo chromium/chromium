@@ -72,6 +72,8 @@ const int kMaxBookmarksSearchResults = 50;
   base::WeakPtr<Browser> _browser;
   // The sync setup service for this mediator.
   SyncSetupService* _syncSetupService;
+  // Base view controller to present sign-in UI.
+  UIViewController* _baseViewController;
 }
 
 // Shared state between Bookmark home classes.
@@ -89,11 +91,13 @@ const int kMaxBookmarksSearchResults = 50;
 @implementation BookmarksHomeMediator
 
 - (instancetype)initWithSharedState:(BookmarksHomeSharedState*)sharedState
-                            browser:(Browser*)browser {
+                            browser:(Browser*)browser
+                 baseViewController:(UIViewController*)baseViewController {
   if ((self = [super init])) {
     DCHECK(browser);
     _sharedState = sharedState;
     _browser = browser->AsWeakPtr();
+    _baseViewController = baseViewController;
   }
   return self;
 }
@@ -112,7 +116,8 @@ const int kMaxBookmarksSearchResults = 50;
   _bookmarkPromoController =
       [[BookmarkPromoController alloc] initWithBrowser:_browser.get()
                                               delegate:self
-                                             presenter:self];
+                                             presenter:self
+                                    baseViewController:_baseViewController];
 
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(browserState->GetPrefs());

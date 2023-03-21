@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_HOME_BOOKMARKS_HOME_MEDIATOR_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-class Browser;
 @protocol BookmarksHomeConsumer;
 @class BookmarksHomeSharedState;
+class Browser;
 
 // BookmarksHomeMediator manages model interactions for the
 // BookmarksHomeViewController.
@@ -17,8 +17,15 @@ class Browser;
 
 @property(nonatomic, weak) id<BookmarksHomeConsumer> consumer;
 
+// Designated initializer.
+// `baseViewController` view controller used to present sign-in UI.
+// TODO(crbug.com/1402758): `browser` and `baseViewController` need to be
+// removed from `BookmarksHomeMediator`. A mediator should not be aware of
+// those classes.
 - (instancetype)initWithSharedState:(BookmarksHomeSharedState*)sharedState
-                            browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+                            browser:(Browser*)browser
+                 baseViewController:(UIViewController*)baseViewController
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts this mediator. Populates the table view model with current data and
