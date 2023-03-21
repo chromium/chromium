@@ -1103,9 +1103,6 @@ external/wpt/css/css-animations/animation-timing-function-012-manual.html [ Skip
 external/wpt/css/css-animations/animationstart-and-animationend-events-manual.html [ Skip ]
 external/wpt/css/css-counter-styles/counter-style-at-rule/speak-as-manual.html [ Skip ]
 external/wpt/css/css-text/text-transform/text-transform-copy-paste-001-manual.html [ Skip ]
-# Sheriff added this line to skip newly added test.
-# TODO(https://crbug.com/1423788): Move this to appropriate file or remove this comment.
-crbug.com/1423788 external/wpt/css/css-transitions/all-with-discrete.tentative.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-000-manual.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-002-manual.html [ Skip ]
 external/wpt/css/css-transitions/transition-delay-003-manual.html [ Skip ]
