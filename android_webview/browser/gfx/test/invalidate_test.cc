@@ -4,7 +4,7 @@
 
 #include "android_webview/browser/gfx/begin_frame_source_webview.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
-#include "android_webview/browser/gfx/hardware_renderer_viz.h"
+#include "android_webview/browser/gfx/hardware_renderer.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "android_webview/browser/gfx/root_frame_sink_proxy.h"

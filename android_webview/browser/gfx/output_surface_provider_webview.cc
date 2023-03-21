@@ -72,7 +72,7 @@ void OnContextLost(std::unique_ptr<bool> expect_loss, bool synthetic_loss) {
   if (expect_loss && *expect_loss)
     return;
   // TODO(https://crbug.com/1112841): Debugging contexts losts. WebView will
-  // intentionally crash in HardwareRendererViz::OnViz::DisplayOutputSurface
+  // intentionally crash in HardwareRenderer::OnViz::DisplayOutputSurface
   // that will happen after this callback. That crash happens on viz thread and
   // doesn't have any useful information. Crash here on RenderThread to
   // understand the reason of context losts.

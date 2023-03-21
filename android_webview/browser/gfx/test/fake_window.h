@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "android_webview/browser/gfx/hardware_renderer_viz.h"
+#include "android_webview/browser/gfx/hardware_renderer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
