@@ -291,6 +291,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
 
+  // Annotates the final set of suggestions (open tab match, pedals, keyword
+  // info, etc.) and fires notifications that the result and potentially the
+  // default match has changed.
+  void AnnotateResultAndNotifyChanged(
+      absl::optional<AutocompleteMatch>& last_default_match,
+      std::u16string& last_default_associated_keyword,
+      bool force_notify_default_match_changed);
+
   // Updates ML scoring signals of suggestions in the autocomplete result.
   void UpdateScoringSignals();
 

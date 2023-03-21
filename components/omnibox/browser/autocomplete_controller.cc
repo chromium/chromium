@@ -1000,7 +1000,15 @@ void AutocompleteController::UpdateResult(
   result_.Validate();
 #endif  // DCHECK_IS_ON()
 
-  // Below are all annotations after the match list is ready.
+  AnnotateResultAndNotifyChanged(last_default_match,
+                                 last_default_associated_keyword,
+                                 force_notify_default_match_changed);
+}
+
+void AutocompleteController::AnnotateResultAndNotifyChanged(
+    absl::optional<AutocompleteMatch>& last_default_match,
+    std::u16string& last_default_associated_keyword,
+    bool force_notify_default_match_changed) {
   if (!input_.IsZeroSuggest()) {
     bool perform_tab_match = true;
 #if BUILDFLAG(IS_ANDROID)
