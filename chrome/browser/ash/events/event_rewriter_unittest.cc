@@ -5361,7 +5361,9 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
  private:
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
-  bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
+  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
+    return true;
+  }
 
   absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
@@ -5802,6 +5804,7 @@ TEST_F(EventRewriterSettingsSplitTest, TopRowAreFKeys) {
       .WillRepeatedly(testing::Return(&settings));
 
   settings.top_row_are_fkeys = false;
+  settings.suppress_meta_fkey_rewrites = false;
   TestExternalGenericKeyboard(
       {{ui::ET_KEY_PRESSED,
         {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
@@ -5813,6 +5816,26 @@ TEST_F(EventRewriterSettingsSplitTest, TopRowAreFKeys) {
       {{ui::ET_KEY_PRESSED,
         {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1},
         {ui::VKEY_F1, ui::DomCode::F1, ui::EF_NONE, ui::DomKey::F1}}});
+}
+
+TEST_F(EventRewriterSettingsSplitTest, RewriteMetaTopRowKeyComboEvents) {
+  mojom::KeyboardSettings settings;
+  settings.top_row_are_fkeys = true;
+  EXPECT_CALL(*mock_controller_, GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+
+  settings.suppress_meta_fkey_rewrites = false;
+  TestExternalGenericKeyboard(
+      {{ui::ET_KEY_PRESSED,
+        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
+        {ui::VKEY_BROWSER_BACK, ui::DomCode::BROWSER_BACK, ui::EF_NONE,
+         ui::DomKey::BROWSER_BACK}}});
+
+  settings.suppress_meta_fkey_rewrites = true;
+  TestExternalGenericKeyboard(
+      {{ui::ET_KEY_PRESSED,
+        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1},
+        {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN, ui::DomKey::F1}}});
 }
 
 TEST_F(EventRewriterSettingsSplitTest, ModifierRemapping) {

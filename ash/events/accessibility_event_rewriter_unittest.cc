@@ -176,7 +176,9 @@ class ChromeVoxAccessibilityEventRewriterTest
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
   void SuppressModifierKeyRewrites(bool should_suppress) override {}
-  bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
+  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
+    return true;
+  }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
 
   absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
@@ -572,7 +574,9 @@ class SwitchAccessAccessibilityEventRewriterTest
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override { return true; }
   void SuppressModifierKeyRewrites(bool should_suppress) override {}
-  bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
+  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
+    return true;
+  }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
 
   absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(

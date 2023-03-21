@@ -577,7 +577,9 @@ class TestEventRewriterChromeOSDelegate
   }
 
   // Not used, only to satisfy interface.
-  bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
+  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {
+    return true;
+  }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
   absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,

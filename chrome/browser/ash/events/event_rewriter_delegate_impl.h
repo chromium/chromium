@@ -35,7 +35,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterChromeOS::Delegate {
 
   // ui::EventRewriterChromeOS::Delegate:
   bool RewriteModifierKeys() override;
-  bool RewriteMetaTopRowKeyComboEvents() const override;
+  bool RewriteMetaTopRowKeyComboEvents(int device_id) const override;
   absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
       int device_id,
       ui::mojom::ModifierKey modifier_key,

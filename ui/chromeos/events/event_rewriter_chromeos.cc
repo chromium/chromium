@@ -308,8 +308,9 @@ const ModifierRemapping* GetSearchRemappedKey(
 }
 
 bool ShouldRewriteMetaTopRowKeyComboEvents(
-    EventRewriterChromeOS::Delegate* delegate) {
-  return delegate && delegate->RewriteMetaTopRowKeyComboEvents();
+    EventRewriterChromeOS::Delegate* delegate,
+    int device_id) {
+  return delegate && delegate->RewriteMetaTopRowKeyComboEvents(device_id);
 }
 
 bool IsISOLevel5ShiftUsedByCurrentInputMethod() {
@@ -1873,8 +1874,9 @@ void EventRewriterChromeOS::RewriteFunctionKeys(const KeyEvent& key_event,
   }
 
   const bool search_is_pressed = (state->flags & EF_COMMAND_DOWN) != 0;
-  const bool flip_remapping =
-      ShouldRewriteMetaTopRowKeyComboEvents(delegate_) && search_is_pressed;
+  const bool flip_remapping = ShouldRewriteMetaTopRowKeyComboEvents(
+                                  delegate_, last_keyboard_device_id_) &&
+                              search_is_pressed;
   if (layout ==
       KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom) {
     if (RewriteTopRowKeysForCustomLayout(key_event.source_device_id(),
@@ -2282,8 +2284,9 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForCustomLayout(
     return true;
   }
 
-  const bool flip_remapping =
-      ShouldRewriteMetaTopRowKeyComboEvents(delegate_) && search_is_pressed;
+  const bool flip_remapping = ShouldRewriteMetaTopRowKeyComboEvents(
+                                  delegate_, last_keyboard_device_id_) &&
+                              search_is_pressed;
 
   const auto& scan_code_map_iter = top_row_scan_code_map_.find(device_id);
   if (scan_code_map_iter == top_row_scan_code_map_.end()) {
@@ -2415,8 +2418,9 @@ bool EventRewriterChromeOS::RewriteTopRowKeysForLayoutWilco(
       {{EF_NONE, VKEY_PRIVACY_SCREEN_TOGGLE},
        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
   };
-  const bool flip_remapping =
-      ShouldRewriteMetaTopRowKeyComboEvents(delegate_) && search_is_pressed;
+  const bool flip_remapping = ShouldRewriteMetaTopRowKeyComboEvents(
+                                  delegate_, last_keyboard_device_id_) &&
+                              search_is_pressed;
   MutableKeyState incoming_with_command_removed_if_neccessary = *state;
   if (flip_remapping) {
     incoming_with_command_removed_if_neccessary.flags &= ~EF_COMMAND_DOWN;

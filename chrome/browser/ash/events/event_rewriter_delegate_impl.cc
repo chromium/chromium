@@ -152,8 +152,17 @@ bool EventRewriterDelegateImpl::IsSearchKeyAcceleratorReserved() const {
          active_window->GetProperty(kSearchKeyAcceleratorReservedKey);
 }
 
-bool EventRewriterDelegateImpl::RewriteMetaTopRowKeyComboEvents() const {
-  return !suppress_meta_top_row_key_rewrites_;
+bool EventRewriterDelegateImpl::RewriteMetaTopRowKeyComboEvents(
+    int device_id) const {
+  // When the flag is disabled, `device_id` is unused.
+  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    return !suppress_meta_top_row_key_rewrites_;
+  }
+
+  const mojom::KeyboardSettings* settings =
+      input_device_settings_controller_->GetKeyboardSettings(device_id);
+  // TODO(dpad): Add metric for when settings are not able to be found.
+  return !(settings && settings->suppress_meta_fkey_rewrites);
 }
 
 void EventRewriterDelegateImpl::SuppressMetaTopRowKeyComboRewrites(

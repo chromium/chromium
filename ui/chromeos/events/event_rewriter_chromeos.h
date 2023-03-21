@@ -88,8 +88,9 @@ class EventRewriterChromeOS : public EventRewriter {
 
     // Returns whether or not Meta + Top Row Keys should be rewritten. Should
     // return correctly with respect to the values set in
-    // |SuppressMetaTopRowKeyRewrites|.
-    virtual bool RewriteMetaTopRowKeyComboEvents() const = 0;
+    // |SuppressMetaTopRowKeyRewrites|. If per-device settings are enabled, it
+    // should instead return the correct setting for the given `device_id`.
+    virtual bool RewriteMetaTopRowKeyComboEvents(int device_id) const = 0;
 
     // Set whether or not Meta + Top Row Keys key events should be rewritten.
     virtual void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) = 0;
