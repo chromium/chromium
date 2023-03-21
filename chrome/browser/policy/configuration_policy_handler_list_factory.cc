@@ -1431,10 +1431,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     { key::kScreensaverLockScreenImageDisplayIntervalSeconds,
     ash::ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
     base::Value::Type::INTEGER },
+  { key::kScreensaverLockScreenImages,
+    ash::ambient::prefs::kAmbientModeManagedScreensaverImages,
+    base::Value::Type::LIST },
   { key::kUserAvatarCustomizationSelectorsEnabled,
     ash::user_image::prefs::kUserAvatarCustomizationSelectorsEnabled,
     base::Value::Type::BOOLEAN },
-
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

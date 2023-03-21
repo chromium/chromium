@@ -22457,7 +22457,53 @@
     ]
   },
   "ScreensaverLockScreenImages" : {
-    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "user_profile",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenImages": [
+            "https://example.com/1.jpg",
+            "https://example.com/2.jpg"
+          ]
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "user_profile",
+            "value": [
+              "https://example.com/1.jpg",
+              "https://example.com/2.jpg"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ScreensaverLockScreenImages": [
+            "https://example.com/1.jpg"
+          ]
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "user_profile",
+            "value": [
+              "https://example.com/1.jpg"
+            ]
+          }
+        }
+      }
+    ]
   },
   "DeviceScreensaverLoginScreenEnabled" : {
     "os": [
@@ -22555,7 +22601,53 @@
     ]
   },
   "DeviceScreensaverLoginScreenImages" : {
-    "reason_for_missing_test": "TODO(b/175142676): Feature not yet implemented"
+    "os": [
+      "chromeos_ash"
+    ],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "signin_profile",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceScreensaverLoginScreenImages": [
+            "https://example.com/1.jpg",
+            "https://example.com/2.jpg"
+          ]
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "signin_profile",
+            "value": [
+              "https://example.com/1.jpg",
+              "https://example.com/2.jpg"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceScreensaverLoginScreenImages": [
+            "https://example.com/1.jpg"
+          ]
+        },
+        "prefs": {
+          "ash.ambient.managed_screensaver.images": {
+            "location": "signin_profile",
+            "value": [
+              "https://example.com/1.jpg"
+            ]
+          }
+        }
+      }
+    ]
   },
   "MixedContentAutoupgradeEnabled": {
     "reason_for_missing_test": "Policy only available on iOS"

@@ -56,6 +56,9 @@ constexpr char kAmbientModeManagedScreensaverIdleTimeoutSeconds[] =
 constexpr char kAmbientModeManagedScreensaverImageDisplayIntervalSeconds[] =
     "ash.ambient.managed_screensaver.image_display_interval_seconds";
 
+constexpr char kAmbientModeManagedScreensaverImages[] =
+    "ash.ambient.managed_screensaver.images";
+
 void MigrateDeprecatedPrefs(PrefService& pref_service) {
   // The largest |AmbientTheme| value possible with the old pref
   // |kAmbientTheme|.

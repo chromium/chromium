@@ -83,6 +83,13 @@ ASH_PUBLIC_EXPORT extern const char
 ASH_PUBLIC_EXPORT extern const char
     kAmbientModeManagedScreensaverImageDisplayIntervalSeconds[];
 
+// List policy to pref mapping for the list of external images sources to
+// display in the managed screensaver has multiple images to display.
+// This pref takes the value from the ScreensaverLockScreenImages policy
+// for user profiles, and from the DeviceScreensaverLoginScreenImages policy
+// for the sign-in profile.
+ASH_PUBLIC_EXPORT extern const char kAmbientModeManagedScreensaverImages[];
+
 // Migrates from the legacy |ambient::prefs::kAmbientTheme| to the new
 // |ambient::prefs::kAmbientUiSettings|.
 ASH_PUBLIC_EXPORT void MigrateDeprecatedPrefs(PrefService& pref_service);

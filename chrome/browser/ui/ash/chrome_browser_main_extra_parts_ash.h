@@ -24,6 +24,7 @@ class GameModeController;
 
 namespace policy {
 class DisplaySettingsHandler;
+class ScreensaverImagesPolicyHandler;
 }
 
 class AccessibilityControllerClient;
@@ -135,6 +136,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AppAccessNotifier> app_access_notifier_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
   std::unique_ptr<AshWebViewFactoryImpl> ash_web_view_factory_;
+  std::unique_ptr<policy::ScreensaverImagesPolicyHandler>
+      screensaver_images_policy_handler_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
