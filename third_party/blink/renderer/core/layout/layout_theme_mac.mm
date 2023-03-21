@@ -104,7 +104,7 @@ bool LayoutThemeMac::IsAccentColorCustomized(
   return true;
 }
 
-Color LayoutThemeMac::GetSystemAccentColor(
+Color LayoutThemeMac::GetAccentColor(
     mojom::blink::ColorScheme color_scheme) const {
   if (@available(macOS 10.14, *)) {
     return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);

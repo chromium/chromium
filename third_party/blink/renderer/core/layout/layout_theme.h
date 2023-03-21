@@ -185,18 +185,9 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
       mojom::blink::ColorScheme color_scheme) const {
     return false;
   }
-  // GetSystemAccentColor returns transparent unless there is a special value
-  // from the OS color scheme.
-  virtual Color GetSystemAccentColor(
-      mojom::blink::ColorScheme color_scheme) const {
+  virtual Color GetAccentColor(mojom::blink::ColorScheme color_scheme) const {
     return Color();
   }
-  // GetAccentColorOrDefault will return GetAccentColor if there is a value from
-  // the OS, otherwise it will return the default accent color.
-  Color GetAccentColorOrDefault(mojom::blink::ColorScheme color_scheme) const;
-  // GetAccentColorText returns black or white depending on which can be
-  // rendered with enough contrast on the result of GetAccentColorOrDefault.
-  Color GetAccentColorText(mojom::blink::ColorScheme color_scheme) const;
 
   bool InForcedColorsMode() const { return in_forced_colors_mode_; }
 
