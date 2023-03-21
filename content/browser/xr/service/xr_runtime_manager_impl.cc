@@ -227,15 +227,23 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetRuntimeForOptions(
 
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
 #if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_CARDBOARD)
+  auto* cardboard = GetRuntime(device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID);
+  if (cardboard) {
+    return cardboard;
+  }
+#endif
   auto* gvr = GetRuntime(device::mojom::XRDeviceId::GVR_DEVICE_ID);
-  if (gvr)
+  if (gvr) {
     return gvr;
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
   auto* openxr = GetRuntime(device::mojom::XRDeviceId::OPENXR_DEVICE_ID);
-  if (openxr)
+  if (openxr) {
     return openxr;
+  }
 #endif
 
   return nullptr;

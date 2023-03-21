@@ -702,13 +702,24 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
   runtime_options->optional_features.assign(request.optional_features.begin(),
                                             request.optional_features.end());
 
-#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARCORE)
-  if (request.runtime_id == device::mojom::XRDeviceId::ARCORE_DEVICE_ID) {
-    runtime_options->render_process_id =
-        render_frame_host_->GetProcess()->GetID();
-    runtime_options->render_frame_id = render_frame_host_->GetRoutingID();
-  }
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    bool send_renderer_information = false;
+#if BUILDFLAG(ENABLE_ARCORE)
+    send_renderer_information =
+        send_renderer_information ||
+        request.runtime_id == device::mojom::XRDeviceId::ARCORE_DEVICE_ID;
 #endif
+#if BUILDFLAG(ENABLE_CARDBOARD)
+    send_renderer_information =
+        send_renderer_information ||
+        request.runtime_id == device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID;
+#endif
+    if (send_renderer_information) {
+      runtime_options->render_process_id =
+          render_frame_host_->GetProcess()->GetID();
+      runtime_options->render_frame_id = render_frame_host_->GetRoutingID();
+    }
+  }
 
   bool use_dom_overlay =
       base::Contains(runtime_options->required_features,
