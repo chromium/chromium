@@ -740,7 +740,6 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   using ash::file_system_provider::ProviderId;
-  using ash::file_system_provider::ProvidingExtensionInfo;
   using ash::file_system_provider::Service;
   Service* const service = Service::Get(browser_context());
 

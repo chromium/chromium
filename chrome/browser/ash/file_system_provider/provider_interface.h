@@ -26,20 +26,6 @@ class ProviderId;
 typedef base::OnceCallback<void(base::File::Error result)> RequestMountCallback;
 
 struct Capabilities {
-  Capabilities(bool configurable,
-               bool watchable,
-               bool multiple_mounts,
-               extensions::FileSystemProviderSource source)
-      : configurable(configurable),
-        watchable(watchable),
-        multiple_mounts(multiple_mounts),
-        source(source) {}
-  Capabilities()
-      : configurable(false),
-        watchable(false),
-        multiple_mounts(false),
-        source(extensions::SOURCE_NETWORK) {}
-
   bool configurable;
   bool watchable;
   bool multiple_mounts;

@@ -27,22 +27,9 @@ namespace file_system_provider {
 
 class RequestDispatcher;
 
-// Holds information for a providing extension.
-struct ProvidingExtensionInfo {
-  ProvidingExtensionInfo();
-  ~ProvidingExtensionInfo();
-
-  extensions::ExtensionId extension_id;
-  std::string name;
-  extensions::FileSystemProviderCapabilities capabilities;
-};
-
 class ExtensionProvider : public ProviderInterface,
                           public apps::AppRegistryCache::Observer {
  public:
-  ExtensionProvider(Profile* profile,
-                    const extensions::ExtensionId& extension_id,
-                    const ProvidingExtensionInfo& info);
   ExtensionProvider(Profile* profile,
                     ProviderId id,
                     Capabilities capabilities,

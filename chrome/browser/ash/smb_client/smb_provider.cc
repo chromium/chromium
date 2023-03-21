@@ -22,10 +22,10 @@ namespace smb_client {
 
 SmbProvider::SmbProvider()
     : provider_id_(file_system_provider::ProviderId::CreateFromNativeId("smb")),
-      capabilities_(false /* configurable */,
-                    false /* watchable */,
-                    true /* multiple_mounts */,
-                    extensions::SOURCE_NETWORK),
+      capabilities_{.configurable = false,
+                    .watchable = false,
+                    .multiple_mounts = true,
+                    .source = extensions::SOURCE_NETWORK},
       name_(l10n_util::GetStringUTF8(IDS_SMB_SHARES_ADD_SERVICE_MENU_OPTION)) {}
 
 SmbProvider::~SmbProvider() = default;
