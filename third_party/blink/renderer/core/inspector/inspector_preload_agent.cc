@@ -210,12 +210,8 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
         BuildProtocolPreloadingAttemptSource(it.key, *(it.value), document));
   }
 
-  // TODO(crbug.com/1384419): This will currently only notify the frontend of
-  // preloading attempt sources for a single document. We should either
-  // explicitly add specify a loaderId as part of the event, or include (and
-  // resend) any attempts we have previously seen from other documents in this
-  // target.
   GetFrontend()->preloadingAttemptSourcesUpdated(
+      IdentifiersFactory::LoaderId(document.Loader()),
       std::move(preloading_attempt_sources));
 }
 

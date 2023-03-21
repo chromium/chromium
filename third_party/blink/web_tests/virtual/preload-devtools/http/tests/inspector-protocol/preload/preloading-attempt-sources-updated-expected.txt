@@ -215,3 +215,45 @@ Preloading attempts (after DOM mutation): [
     }
 ]
 
+Running test: loaderId
+Tests that Preload.preloadingAttemptSourcesUpdated uses the correct loaderId.
+preloadingAttemptSourcesUpdated: {
+    loaderId : <loader-1>
+    preloadingAttemptSources : [
+        [0] : {
+            key : {
+                action : Prefetch
+                loaderId : <loader-1>
+                url : http://127.0.0.1:8000/next.html
+            }
+            nodeIds : [
+            ]
+            ruleSetIds : [
+                [0] : <rule-set-1>
+            ]
+        }
+    ]
+}
+preloadingAttemptSourcesUpdated: {
+    loaderId : <loader-2>
+    preloadingAttemptSources : [
+        [0] : {
+            key : {
+                action : Prefetch
+                loaderId : <loader-2>
+                url : http://127.0.0.1:8000/prev.html
+            }
+            nodeIds : [
+            ]
+            ruleSetIds : [
+                [0] : <rule-set-2>
+            ]
+        }
+    ]
+}
+preloadingAttemptSourcesUpdated: {
+    loaderId : <loader-2>
+    preloadingAttemptSources : [
+    ]
+}
+

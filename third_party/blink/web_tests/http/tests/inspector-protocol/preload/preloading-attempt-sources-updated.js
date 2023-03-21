@@ -13,19 +13,42 @@
     return a.key.targetHint < b.key.targetHint ? -1: 1;
   }
 
+  function formatLoaderId(loaderId, validLoaderIds) {
+    const index = validLoaderIds.indexOf(loaderId);
+    return index === -1 ? `<invalid-loader>` : `<loader-${index + 1}>`;
+  }
+
+  async function formatPreloadingAttemptSourcesUpdatedEventParams(
+      dp, params, validRuleSetIds, validNodeIds, validLoaderIds) {
+    if (validLoaderIds) {
+      params.loaderId = formatLoaderId(params.loaderId, validLoaderIds);
+    }
+    params.preloadingAttemptSources = await formatPreloadingAttemptSources(
+      dp, params.preloadingAttemptSources, validRuleSetIds, validNodeIds,validLoaderIds);
+    return params;
+  }
+
   // Formats |preloadingAttemptSources| for logging by doing the following:
   // 1) Sorts the attempts based on the preloading attempt key (see
   //    compareAttempts above).
-  // 2) Converts raw ruleSetIds into stable identifiers after verifying that
+  // 2) Converts raw loaderIds into stable identifiers after verifying that
+  //    that they are in |validLoaderIds| (if |validLoaderIds| is defined and
+  //    not empty).
+  // 3) Converts raw ruleSetIds into stable identifiers after verifying that
   //    they are in |validRuleSetIds|.
-  // 3) Does the same with nodeIds and |validNodeIds|.
-  // 4) Sorts ruleSetIds and nodeIds (after transforming them).
+  // 4) Does the same with nodeIds and |validNodeIds|.
+  // 5) Sorts ruleSetIds and nodeIds (after transforming them).
   async function formatPreloadingAttemptSources(dp,
                                                 preloadingAttemptSources,
                                                 validRuleSetIds,
-                                                validNodeIds) {
+                                                validNodeIds,
+                                                validLoaderIds) {
     preloadingAttemptSources.sort(compareAttempts);
     for (const attempt of preloadingAttemptSources) {
+      if (validLoaderIds) {
+        attempt.key.loaderId = formatLoaderId(attempt.key.loaderId, validLoaderIds);
+      }
+
       attempt.ruleSetIds = attempt.ruleSetIds.map(ruleSetId => {
         const index = validRuleSetIds.indexOf(ruleSetId);
         return index === -1 ? "<invalid-rule-set>" : `<rule-set-${index + 1}>`;
@@ -264,11 +287,98 @@
                    ["ruleSetIds", "nodeIds", "loaderId"]);
   }
 
+  async function loaderId() {
+    const { dp, session, page } = await testRunner.startBlank(
+      `Tests that Preload.preloadingAttemptSourcesUpdated uses the correct loaderId.`);
+    await dp.Preload.enable();
+
+    await page.loadHTML(`
+      <html>
+        <head>
+        </head>
+        <body>
+            <iframe></iframe>
+        </body>
+      </html>
+    `);
+
+    const frameTree = (await dp.Page.getFrameTree()).result.frameTree;
+    const mainFrameLoaderId = frameTree.frame.loaderId;
+    const iframeLoaderId = frameTree.childFrames[0].frame.loaderId;
+    const knownLoaderIds = [mainFrameLoaderId, iframeLoaderId];
+    const knownRuleSetIds = [];
+
+    session.evaluate(() => {
+      const script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.innerText = JSON.stringify({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["/next.html"]
+        }]
+      });
+      document.head.appendChild(script);
+    });
+
+    const [preloadingAttemptSourcesUpdated1, ruleSet1] = await Promise.all([
+      dp.Preload.oncePreloadingAttemptSourcesUpdated(),
+      dp.Preload.onceRuleSetUpdated()
+    ]);
+    knownRuleSetIds.push(ruleSet1.params.ruleSet.id);
+    testRunner.log(
+      await formatPreloadingAttemptSourcesUpdatedEventParams(
+        dp, preloadingAttemptSourcesUpdated1.params, knownRuleSetIds, [], knownLoaderIds),
+      "preloadingAttemptSourcesUpdated: ",
+      []);
+
+    session.evaluate(() => {
+      const iframeDoc = document.querySelector('iframe').contentDocument;
+      const script = iframeDoc.createElement('script');
+      script.type = 'speculationrules';
+      script.innerText = JSON.stringify({
+        "prefetch": [{
+          "source": "list",
+          "urls": ["/prev.html"]
+        }]
+      });
+      iframeDoc.head.appendChild(script);
+    });
+
+    const [preloadingAttemptSourcesUpdated2, ruleSet2] = await Promise.all([
+      dp.Preload.oncePreloadingAttemptSourcesUpdated(),
+      dp.Preload.onceRuleSetUpdated()
+    ]);
+    knownRuleSetIds.push(ruleSet2.params.ruleSet.id);
+    testRunner.log(
+      await formatPreloadingAttemptSourcesUpdatedEventParams(
+        dp, preloadingAttemptSourcesUpdated2.params, knownRuleSetIds, [], knownLoaderIds),
+      "preloadingAttemptSourcesUpdated: ",
+      []);
+
+    session.evaluate(() => {
+      const iframeDoc = document.querySelector('iframe').contentDocument;
+      const script = iframeDoc.querySelector('script');
+      script.remove();
+    });
+
+    const [preloadingAttemptSourcesUpdated3, _] = await Promise.all([
+      dp.Preload.oncePreloadingAttemptSourcesUpdated(),
+      dp.Preload.onceRuleSetRemoved()
+    ]);
+    ({params} = preloadingAttemptSourcesUpdated3);
+    testRunner.log(
+      await formatPreloadingAttemptSourcesUpdatedEventParams(
+        dp, preloadingAttemptSourcesUpdated3.params, knownRuleSetIds, [], knownLoaderIds),
+      "preloadingAttemptSourcesUpdated: ",
+      []);
+  }
+
   testRunner.runTestSuite([
     basicTest,
     multipleRuleSetsWithDuplicates,
     documentRules,
     duplicateRuleSets,
     dynamicUpdate,
+    loaderId
   ]);
 });
