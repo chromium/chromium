@@ -77,8 +77,8 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
 
   std::vector<base::ScopedCFTypeRef<SecCertificateRef>> intermediates;
 
-  // TODO(crbug.com/1418068): Remove after minimum version required is >=
-  // iOS 15.
+  // TODO(crbug.com/1418068): Remove available and compile guard after minimum
+  // version required is >= iOS 15.
   if (@available(iOS 15.0, *)) {
     base::ScopedCFTypeRef<CFArrayRef> certificateChain(
         SecTrustCopyCertificateChain(trust));
@@ -108,6 +108,12 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust) {
             base::scoped_policy::RETAIN),
         intermediates);
   }
+#else
+  // TODO(crbug.com/1418068): Added to make the compiler happy and should be
+  // removed when compile and available guards are cleaned up.
+  NOTREACHED();
+  return net::x509_util::CreateX509CertificateFromSecCertificate(
+      base::ScopedCFTypeRef<SecCertificateRef>(nullptr), intermediates);
 #endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
 }
 
