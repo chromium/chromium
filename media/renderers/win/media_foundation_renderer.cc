@@ -376,6 +376,18 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
   UINT device_reset_token;
   RETURN_IF_FAILED(
       MFLockDXGIDeviceManager(&device_reset_token, &dxgi_device_manager_));
+  // `dxgi_device_manager_` returned is a singleton object, thus all
+  // MediaFoundationRenderer instances will all receive the
+  // `dxgi_device_manager_` pointing to the same object. Therefore we only need
+  // to and can only call `ResetDevice()` once, If it's called more than once,
+  // all open device handles become invalid, even when it is the same device as
+  // before. This will cause an existing instance attempting to use the invalid
+  // handle to error out.
+  // https://learn.microsoft.com/en-us/windows/win32/api/mfobjects/nf-mfobjects-imfdxgidevicemanager-resetdevice
+  DXGIDeviceScopedHandle dxgi_device_handle(dxgi_device_manager_.Get());
+  if (dxgi_device_handle.GetDevice()) {
+    return S_OK;
+  }
 
   ComPtr<ID3D11Device> d3d11_device;
   UINT creation_flags =
@@ -390,6 +402,9 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
   RETURN_IF_FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)));
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> adapter_to_use;
+  // TODO(crbug.com/1426249): Need to handle the case when Adapter LUID is
+  // specific per instance of the video playback. This will now allow all
+  // instances to use the default DXGI device manager.
   if (gpu_process_adapter_luid_.LowPart || gpu_process_adapter_luid_.HighPart) {
     Microsoft::WRL::ComPtr<IDXGIAdapter> temp_adapter;
     for (UINT i = 0; SUCCEEDED(factory->EnumAdapters(i, &temp_adapter)); i++) {
