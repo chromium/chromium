@@ -30,8 +30,8 @@
     {
       protocol: [
         "fuchsia.buildinfo.Provider",
-        "fuchsia.intl.PropertyProvider",
         "fuchsia.hwinfo.Product",
+        "fuchsia.intl.PropertyProvider",
         "fuchsia.media.ProfileProvider",
         "fuchsia.process.Launcher",
         "fuchsia.sys.Loader",

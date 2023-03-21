@@ -193,8 +193,11 @@ class InstanceBuilder {
   // Returns the capability and directory name for `directory`.
   static base::StringPiece GetDirectoryName(OptionalDirectory directory);
 
-  // Serves `directory` as `offer` in the instance's subtree as a read-only or
-  // a read-write (if `writeable`) directory.
+  // Serves `fs_directory` as `directory`. `fs_directory` may be specific to
+  // this instance (e.g., persistent data storage) or required only in
+  // particular configurations (e.g., CDM data storage), to the instance. Most
+  // common read-only directories (e.g., "root-ssl-certificates") should instead
+  // be offered statically to the `web_instances` collection.
   void ServeOptionalDirectory(
       OptionalDirectory directory,
       std::unique_ptr<vfs::internal::Directory> fs_directory,
@@ -208,9 +211,6 @@ class InstanceBuilder {
   void ServeDirectory(base::StringPiece name,
                       std::unique_ptr<vfs::internal::Directory> fs_directory,
                       bool writeable);
-
-  // Offers the read-only directory capability named `name` from the parent.
-  void OfferDirectoryFromParent(base::StringPiece name);
 
   const raw_ref<sys::OutgoingDirectory> outgoing_directory_;
   const raw_ref<fuchsia::component::Realm> realm_;
@@ -294,11 +294,6 @@ void InstanceBuilder::ServeServiceDirectory(
   ServeDirectory("svc",
                  std::make_unique<vfs::RemoteDir>(std::move(service_directory)),
                  /*writeable=*/true);
-}
-
-void InstanceBuilder::ServeRootSslCertificates() {
-  DCHECK(instance_dir_);
-  OfferDirectoryFromParent("root-ssl-certificates");
 }
 
 void InstanceBuilder::ServeDataDirectory(
@@ -503,30 +498,6 @@ void InstanceBuilder::ServeDirectory(
                     .set_availability(fcdecl::Availability::REQUIRED))));
 }
 
-void InstanceBuilder::OfferDirectoryFromParent(base::StringPiece name) {
-  DCHECK(instance_dir_);
-  dynamic_offers_.push_back(fcdecl::Offer::WithDirectory(
-      std::move(fcdecl::OfferDirectory()
-                    .set_source(fcdecl::Ref::WithParent({}))
-                    .set_source_name(std::string(name))
-                    .set_target_name(std::string(name))
-                    .set_rights(::fuchsia::io::R_STAR_DIR)
-                    .set_dependency_type(fcdecl::DependencyType::STRONG)
-                    .set_availability(fcdecl::Availability::SAME_AS_TARGET))));
-}
-
-// Route `root-ssl-certificates` from parent if networking is requested.
-void HandleRootSslCertificates(InstanceBuilder& builder,
-                               fuchsia::web::CreateContextParams& params) {
-  if (!params.has_features() ||
-      (params.features() & fuchsia::web::ContextFeatureFlags::NETWORK) !=
-          fuchsia::web::ContextFeatureFlags::NETWORK) {
-    return;
-  }
-
-  builder.ServeRootSslCertificates();
-}
-
 void HandleCdmDataDirectoryParam(InstanceBuilder& builder,
                                  fuchsia::web::CreateContextParams& params) {
   if (!params.has_cdm_data_directory()) {
@@ -639,7 +610,9 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     builder->AppendOffersForServices(services);
   }
 
-  HandleRootSslCertificates(*builder, params);
+  // The `config-data` directory is statically offered to all instances.
+  // The `root-ssl-certificates` directory is statically offered to all
+  // instances regardless of whether networking is requested.
 
   HandleCdmDataDirectoryParam(*builder, params);
 
