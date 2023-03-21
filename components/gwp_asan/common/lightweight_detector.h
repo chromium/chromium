@@ -22,7 +22,7 @@ class LightweightDetector {
   //  - Bits 48 - 63 are set to 0xEDED so that access at the address always
   //    results in a memory access error, and the address can be recognized by
   //    the crash handler.
-  static constexpr uint64_t kMetadataIdMarker = 0xEDED000000000000;
+  static constexpr uint64_t kMetadataIdMarker = 0xEFED000000000000;
   static constexpr uint64_t kMetadataIdMarkerMask = 0xFFFF000000000000;
   static constexpr uint64_t kMetadataIdShift = 16;
   static constexpr uint64_t kMetadataIdOffset = 0x8000;

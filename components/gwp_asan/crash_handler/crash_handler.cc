@@ -69,6 +69,8 @@ const char* ErrorToString(Crash_ErrorType type) {
       return "unknown";
     case Crash::FREE_INVALID_ADDRESS:
       return "free-invalid-address";
+    case Crash::LIGHTWEIGHT_USE_AFTER_FREE:
+      return "lightweight-heap-use-after-free";
     default:
       return "unexpected error type";
   }
