@@ -592,6 +592,7 @@ class Driver(object):
             # See http://trac.webkit.org/changeset/65537.
             self._crashed_process_name = self._server_process.name()
             self._crashed_pid = self._server_process.pid()
+            self.error_from_test += error_line.encode('utf-8')
         elif (error_line.startswith('#CRASHED - ')
               or error_line.startswith('#PROCESS UNRESPONSIVE - ')):
             # WebKitTestRunner uses this to report that the WebProcess subprocess crashed.
@@ -609,8 +610,7 @@ class Driver(object):
                 self._subprocess_was_unresponsive = True
                 self._port.sample_process(self._crashed_process_name,
                                           self._crashed_pid)
-                # We want to show this since it's not a regular crash and probably we don't have a crash log.
-                self.error_from_test += error_line.encode('utf-8')
+            self.error_from_test += error_line.encode('utf-8')
             return True
         return self.has_crashed()
 
