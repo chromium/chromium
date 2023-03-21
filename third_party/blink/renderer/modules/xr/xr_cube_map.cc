@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 
+#include <cstring>
+
 #include "base/cxx17_backports.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
@@ -19,7 +21,8 @@ bool IsPowerOfTwo(uint32_t value) {
 // This is an inversion of FloatToHalfFloat in ui/gfx/half_float.cc
 float HalfFloatToFloat(const uint16_t input) {
   uint32_t tmp = (input & 0x7fff) << 13 | (input & 0x8000) << 16;
-  float tmp2 = *reinterpret_cast<float*>(&tmp);
+  float tmp2;
+  std::memcpy(&tmp2, &tmp, 4);
   return tmp2 / 1.9259299444e-34f;
 }
 

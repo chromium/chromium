@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
 
+#include <cstring>
 #include <limits>
 #include <memory>
 
@@ -416,7 +417,8 @@ const unsigned char g_shift_table[512] = {
     24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 13};
 
 uint16_t ConvertFloatToHalfFloat(float f) {
-  unsigned temp = *(reinterpret_cast<unsigned*>(&f));
+  unsigned temp;
+  std::memcpy(&temp, &f, 4);
   uint16_t signexp = (temp >> 23) & 0x1ff;
   return g_base_table[signexp] +
          ((temp & 0x007fffff) >> g_shift_table[signexp]);
@@ -834,7 +836,9 @@ float ConvertHalfFloatToFloat(uint16_t half) {
   uint32_t temp =
       g_mantissa_table[g_offset_table[half >> 10] + (half & 0x3ff)] +
       g_exponent_table[half >> 10];
-  return *(reinterpret_cast<float*>(&temp));
+  float ret;
+  std::memcpy(&ret, &temp, 4);
+  return ret;
 }
 
 /* BEGIN CODE SHARED WITH MOZILLA FIREFOX */
