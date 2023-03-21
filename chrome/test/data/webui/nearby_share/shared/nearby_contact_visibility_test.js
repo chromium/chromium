@@ -4,6 +4,7 @@
 
 import 'chrome://nearby/strings.m.js';
 import 'chrome://nearby/shared/nearby_contact_visibility.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
 import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';

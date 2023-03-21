@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// So that mojo is defined.
 import 'chrome://nearby/nearby_confirmation_page.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {NearbyConfirmationPageElement} from 'chrome://nearby/nearby_confirmation_page.js';
 import {ShareTarget, TransferStatus} from 'chrome://nearby/shared/mojo/nearby_share.mojom-webui.js';
