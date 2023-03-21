@@ -482,6 +482,23 @@ TEST_F(NetworkEventsObserverConnectionStateTest, MultipleEvents) {
   VerifyConnectionState(result_metric_data, kWifiGuid, CONNECTING);
 }
 
+TEST_F(NetworkEventsObserverConnectionStateTest, InvalidGuid) {
+  SetFeatureEnabled(true);
+
+  NetworkEventsObserver network_events_observer;
+  bool event_reported = false;
+  auto cb =
+      base::BindLambdaForTesting([&](MetricData) { event_reported = true; });
+
+  network_events_observer.SetOnEventObservedCallback(std::move(cb));
+  network_events_observer.SetReportingEnabled(/*is_enabled=*/true);
+  network_events_observer.OnConnectionStateChanged("invalid_guid",
+                                                   NetworkState::kOnline);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(event_reported);
+}
+
 TEST_P(NetworkEventsObserverConnectionStateTest, Default) {
   SetFeatureEnabled(true);
 

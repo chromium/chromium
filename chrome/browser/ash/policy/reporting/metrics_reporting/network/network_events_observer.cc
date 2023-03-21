@@ -64,6 +64,9 @@ void NetworkEventsObserver::OnConnectionStateChanged(
   const auto* network_state = ::ash::NetworkHandler::Get()
                                   ->network_state_handler()
                                   ->GetNetworkStateFromGuid(guid);
+  if (!network_state) {
+    return;
+  }
   const auto network_type =
       ::ash::NetworkTypePattern::Primitive(network_state->type());
   if (!network_type.MatchesPattern(ash::NetworkTypePattern::Physical())) {
