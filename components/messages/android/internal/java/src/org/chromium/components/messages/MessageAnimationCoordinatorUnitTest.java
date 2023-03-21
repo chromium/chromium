@@ -235,12 +235,13 @@ public class MessageAnimationCoordinatorUnitTest {
                         .expectIntRecord("Android.Messages.Stacking",
                                 MessagesMetrics.StackingAnimationType.SHOW_ALL)
                         .expectIntRecord("Android.Messages.Stacking.InsertAtFront", 1)
-                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack", 2)
+                        .expectIntRecord("Android.Messages.Stacking.InsertAtBack",
+                                MessageIdentifier.COUNT - 1)
                         .build();
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
         MessageState m2 = buildMessageState();
-        setMessageIdentifier(m2, 2);
+        setMessageIdentifier(m2, MessageIdentifier.COUNT - 1);
         mAnimationCoordinator.updateWithStacking(Arrays.asList(m1, m2), false, () -> {});
 
         verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);

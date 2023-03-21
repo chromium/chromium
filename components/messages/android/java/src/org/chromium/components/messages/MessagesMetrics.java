@@ -123,7 +123,7 @@ public class MessagesMetrics {
             @StackingAnimationAction int action, @MessageIdentifier int messageIdentifier) {
         String suffix = stackingAnimationActionToHistogramSuffix(action);
         RecordHistogram.recordEnumeratedHistogram(STACKING_ACTION_HISTOGRAM_PREFIX + suffix,
-                messageIdentifier, StackingAnimationType.MAX_VALUE);
+                messageIdentifier, MessageIdentifier.COUNT);
     }
 
     static void recordThreeStackedScenario(@ThreeStackedScenario int scenario) {
