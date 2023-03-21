@@ -38,55 +38,24 @@ class MediaColorTest : public MediaBrowserTest {
 
 // Android doesn't support Theora.
 #if !BUILDFLAG(IS_ANDROID)
-
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv420pTheora DISABLED_Yuv420pTheora
-#else
-#define MAYBE_Yuv420pTheora Yuv420pTheora
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pTheora) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pTheora) {
   RunColorTest("yuv420p.ogv");
 }
 
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv422pTheora DISABLED_Yuv422pTheora
-#else
-#define MAYBE_Yuv422pTheora Yuv422pTheora
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv422pTheora) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pTheora) {
   RunColorTest("yuv422p.ogv");
 }
 
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv444pTheora DISABLED_Yuv444pTheora
-#else
-#define MAYBE_Yuv444pTheora Yuv444pTheora
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv444pTheora) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pTheora) {
   RunColorTest("yuv444p.ogv");
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv420pVp8 DISABLED_Yuv420pVp8
-#else
-#define MAYBE_Yuv420pVp8 Yuv420pVp8
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pVp8) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pVp8) {
   RunColorTest("yuv420p.webm");
 }
 
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv444pVp9 DISABLED_Yuv444pVp9
-#else
-#define MAYBE_Yuv444pVp9 Yuv444pVp9
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv444pVp9) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pVp9) {
   RunColorTest("yuv444p.webm");
 }
 
@@ -94,8 +63,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv444pVp9) {
 
 // This test fails on Android: http://crbug.com/938320
 // It also fails on ChromeOS https://crbug.com/938618
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Yuv420pH264 DISABLED_Yuv420pH264
 #else
 #define MAYBE_Yuv420pH264 Yuv420pH264
@@ -105,8 +73,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pH264) {
 }
 
 // This test fails on Android: http://crbug.com/647818
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Yuvj420pH264 DISABLED_Yuvj420pH264
 #else
 #define MAYBE_Yuvj420pH264 Yuvj420pH264
@@ -117,8 +84,7 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuvj420pH264) {
 
 // This fails on ChromeOS: http://crbug.com/647400,
 // This fails on Android: http://crbug.com/938320,
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Yuv420pRec709H264 DISABLED_Yuv420pRec709H264
 #else
 #define MAYBE_Yuv420pRec709H264 Yuv420pRec709H264
@@ -140,23 +106,11 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv420pHighBitDepth) {
 
 // Android devices usually only support baseline, main and high.
 #if !BUILDFLAG(IS_ANDROID)
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv422pH264 DISABLED_Yuv422pH264
-#else
-#define MAYBE_Yuv422pH264 Yuv422pH264
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv422pH264) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv422pH264) {
   RunColorTest("yuv422p.mp4");
 }
 
-// See https://crbug.com/1336588; several Yuv* tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Yuv444pH264 DISABLED_Yuv444pH264
-#else
-#define MAYBE_Yuv444pH264 Yuv444pH264
-#endif
-IN_PROC_BROWSER_TEST_F(MediaColorTest, MAYBE_Yuv444pH264) {
+IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pH264) {
   RunColorTest("yuv444p.mp4");
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
