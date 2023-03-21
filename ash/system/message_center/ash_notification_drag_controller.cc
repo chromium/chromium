@@ -19,6 +19,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -62,17 +63,18 @@ void AshNotificationDragController::WriteDragDataForView(
     views::View* sender,
     const gfx::Point& press_pt,
     ui::OSExchangeData* data) {
+  // Sets the image to show during drag.
   AshNotificationView* notification_view =
       static_cast<AshNotificationView*>(sender);
-  const absl::optional<gfx::Rect> drag_area =
-      notification_view->GetDragAreaBounds();
-  DCHECK(drag_area);
-
-  // Set the image to show during drag.
   const absl::optional<gfx::ImageSkia> drag_image =
       notification_view->GetDragImage();
   DCHECK(drag_image);
-  data->provider().SetDragImage(*drag_image, press_pt - drag_area->origin());
+
+  // The drag point is at the top left corner, or top right corner under RTL.
+  data->provider().SetDragImage(
+      *drag_image, base::i18n::IsRTL()
+                       ? gfx::Vector2d(drag_image->size().width(), /*y=*/0)
+                       : gfx::Vector2d());
 
   notification_view->AttachDropData(data);
 }
