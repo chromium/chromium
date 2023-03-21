@@ -566,6 +566,15 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   if (spatial_layer_resolutions.empty())
     return false;
 
+  // Create reconstructed surfaces.
+  reconstructed_surfaces->reserve(spatial_layer_resolutions.size());
+  for (const auto& encode_size : spatial_layer_resolutions) {
+    reconstructed_surfaces->push_back(CreateEncodeSurface(encode_size));
+    if (!reconstructed_surfaces->back()) {
+      return false;
+    }
+  }
+
   scoped_refptr<VASurface> source_surface;
   {
     TRACE_EVENT0("media,gpu", "VAVEA::ImportGpuMemoryBufferToVASurface");
@@ -586,12 +595,10 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     }
   }
 
-  // Create input and reconstructed surfaces.
+  // Create input surfaces.
   TRACE_EVENT1("media,gpu", "VAVEA::ConstructSurfaces", "layers",
                spatial_layer_resolutions.size());
   input_surfaces->resize(spatial_layer_resolutions.size());
-  reconstructed_surfaces->resize(spatial_layer_resolutions.size());
-
   // Process from uppermost layer, then use immediate upper layer as vpp source
   // surface if applicable.
   auto source_rect = frame.visible_rect();
@@ -613,10 +620,9 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
       input_surfaces->at(i) = source_surface;
     }
 
-    reconstructed_surfaces->at(i) = CreateEncodeSurface(encode_size);
-
-    if (!input_surfaces->at(i) || !reconstructed_surfaces->at(i))
+    if (!input_surfaces->at(i)) {
       return false;
+    }
   }
 
   return true;
@@ -654,6 +660,11 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
   }
 
   const gfx::Size& encode_size = encoder_->GetCodedSize();
+  *reconstructed_surface = CreateEncodeSurface(encode_size);
+  if (!*reconstructed_surface) {
+    return false;
+  }
+
   *input_surface =
       CreateInputSurface(*vaapi_wrapper_, encode_size,
                          {VaapiWrapper::SurfaceUsageHint::kVideoEncoder});
@@ -668,7 +679,6 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
     return false;
   }
 
-  *reconstructed_surface = CreateEncodeSurface(encode_size);
   return !!*reconstructed_surface;
 }
 
