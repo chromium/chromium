@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -61,8 +62,10 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Utilities for requesting desktop sites support.
@@ -99,6 +102,8 @@ public class RequestDesktopUtils {
     static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_MEMORY_LIMIT_THRESHOLD_MB = 0;
     static final String PARAM_SHOW_MESSAGE_ON_GLOBAL_SETTING_DEFAULT_ON =
             "show_message_on_default_on";
+    static final String PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST =
+            "default_on_manufacturer_list";
 
     static final String PARAM_GLOBAL_SETTING_OPT_IN_ENABLED = "show_opt_in_message";
     static final String PARAM_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES =
@@ -114,6 +119,8 @@ public class RequestDesktopUtils {
     static final int DEFAULT_GLOBAL_SETTING_OPT_IN_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
     static final String PARAM_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT = "opt_in_memory_limit";
     static final int DEFAULT_GLOBAL_SETTING_OPT_IN_MEMORY_LIMIT_THRESHOLD_MB = 0;
+
+    static Set<String> sDefaultEnabledManufacturerAllowlist;
 
     // Note: these values must match the UserAgentRequestType enum in enums.xml.
     @IntDef({UserAgentRequestType.REQUEST_DESKTOP, UserAgentRequestType.REQUEST_MOBILE})
@@ -391,6 +398,20 @@ public class RequestDesktopUtils {
                 < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(feature,
                         PARAM_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH,
                         DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP)) {
+            return false;
+        }
+
+        if (sDefaultEnabledManufacturerAllowlist == null) {
+            sDefaultEnabledManufacturerAllowlist = new HashSet<>();
+            String allowListStr = ChromeFeatureList.getFieldTrialParamByFeature(
+                    feature, PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST);
+            if (!TextUtils.isEmpty(allowListStr)) {
+                Collections.addAll(sDefaultEnabledManufacturerAllowlist, allowListStr.split(","));
+            }
+        }
+        if (!sDefaultEnabledManufacturerAllowlist.isEmpty()
+                && !sDefaultEnabledManufacturerAllowlist.contains(
+                        Build.MANUFACTURER.toLowerCase(Locale.US))) {
             return false;
         }
 
