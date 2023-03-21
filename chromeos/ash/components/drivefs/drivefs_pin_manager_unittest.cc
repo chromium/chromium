@@ -42,6 +42,7 @@ using base::test::RunClosure;
 using base::test::RunOnceCallback;
 using base::test::TaskEnvironment;
 using drive::FileError;
+using mojom::FileChange;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
 using mojom::ItemEvent;
@@ -889,8 +890,8 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
   EXPECT_EQ(manager.progress_.stage, Stage::kStopped);
 
   const DriveItem item{.size = 2487};
-  mojom::FileChange event;
-  event.type = mojom::FileChange::Type::kCreate;
+  FileChange event;
+  event.type = FileChange::Type::kCreate;
   event.stable_id = item.stable_id;
   event.path = Path("/root/Path 1");
 
@@ -948,8 +949,8 @@ TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
   const DriveItem item{.size = 2487};
   const Path path("/root/Path 1");
 
-  mojom::FileChange event;
-  event.type = mojom::FileChange::Type::kDelete;
+  FileChange event;
+  event.type = FileChange::Type::kDelete;
   event.stable_id = item.stable_id;
   event.path = path;
 
@@ -962,6 +963,49 @@ TEST_F(DriveFsPinManagerTest, OnFileDeleted) {
       .WillOnce(RunOnceCallback<2>(FileError::FILE_ERROR_ACCESS_DENIED));
 
   manager.OnFileDeleted(std::as_const(event));
+}
+
+// Tests PinManager::OnFilesChanged().
+TEST_F(DriveFsPinManagerTest, OnFilesChanged) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+
+  int64_t id = 101;
+  const Path path("/root/Path 1");
+
+  std::vector<FileChange> events;
+  {
+    FileChange& event = events.emplace_back();
+    event.type = FileChange::Type(-1);
+    event.stable_id = id;
+    event.path = path;
+  }
+  {
+    FileChange& event = events.emplace_back();
+    event.type = FileChange::Type::kCreate;
+    event.stable_id = id;
+    event.path = path;
+  }
+  {
+    FileChange& event = events.emplace_back();
+    event.type = FileChange::Type::kModify;
+    event.stable_id = id;
+    event.path = path;
+  }
+  {
+    FileChange& event = events.emplace_back();
+    event.type = FileChange::Type::kDelete;
+    event.stable_id = id;
+    event.path = path;
+  }
+
+  EXPECT_CALL(drivefs_, GetMetadataByStableId(id, _));
+  EXPECT_CALL(drivefs_, SetPinnedByStableId(id, false, _));
+  manager.OnFilesChanged(std::as_const(events));
+
+  manager.Stop();
 }
 
 // Tests PinManager::OnFilePinned().
@@ -1109,8 +1153,8 @@ TEST_F(DriveFsPinManagerTest, OnFileModified) {
   const DriveItem item{.size = 2487};
   const Id id = Id(item.stable_id);
   const Path path1("/root/Path 1");
-  mojom::FileChange event;
-  event.type = mojom::FileChange::Type::kModify;
+  FileChange event;
+  event.type = FileChange::Type::kModify;
   event.stable_id = item.stable_id;
   event.path = path1;
 

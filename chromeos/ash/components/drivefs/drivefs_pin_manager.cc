@@ -349,9 +349,6 @@ bool Progress::HasEnoughFreeSpace() const {
   return enough;
 }
 
-// TODO(b/261530666): This was chosen arbitrarily, this should be experimented
-// with and potentially made dynamic depending on feedback of the in progress
-// queue.
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
 
 bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
