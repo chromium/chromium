@@ -75,15 +75,16 @@ constexpr base::TimeDelta ResourcePool::kDefaultExpirationDelay;
 constexpr base::TimeDelta ResourcePool::kDefaultMaxFlushDelay;
 
 void ResourcePool::GpuBacking::InitOverlayCandidateAndTextureTarget(
-    const viz::ResourceFormat format,
+    const viz::SharedImageFormat format,
     const gpu::Capabilities& caps,
     bool use_gpu_memory_buffer_resources) {
-  overlay_candidate = use_gpu_memory_buffer_resources &&
-                      caps.supports_scanout_shared_images &&
-                      IsGpuMemoryBufferFormatSupported(format);
+  overlay_candidate =
+      use_gpu_memory_buffer_resources && caps.supports_scanout_shared_images &&
+      IsGpuMemoryBufferFormatSupported(format.resource_format());
   if (overlay_candidate) {
-    texture_target = gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT,
-                                                 BufferFormat(format), caps);
+    texture_target = gpu::GetBufferTextureTarget(
+        gfx::BufferUsage::SCANOUT, BufferFormat(format.resource_format()),
+        caps);
   } else {
     texture_target = GL_TEXTURE_2D;
   }
@@ -129,7 +130,7 @@ ResourcePool::~ResourcePool() {
 
 ResourcePool::PoolResource* ResourcePool::ReuseResource(
     const gfx::Size& size,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::ColorSpace& color_space) {
   // Finding resources in |unused_resources_| from MRU to LRU direction, touches
   // LRU resources only if needed, which increases possibility of expiring more
@@ -139,8 +140,9 @@ ResourcePool::PoolResource* ResourcePool::ReuseResource(
     PoolResource* resource = it->get();
     DCHECK(!resource->resource_id());
 
-    if (resource->format() != format)
+    if (resource->format() != format) {
       continue;
+    }
     if (!ResourceMeetsSizeRequirements(size, resource->size(),
                                        disallow_non_exact_reuse_))
       continue;
@@ -161,9 +163,10 @@ ResourcePool::PoolResource* ResourcePool::ReuseResource(
 
 ResourcePool::PoolResource* ResourcePool::CreateResource(
     const gfx::Size& size,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::ColorSpace& color_space) {
-  DCHECK(viz::ResourceSizes::VerifySizeInBytes<size_t>(size, format));
+  DCHECK(viz::ResourceSizes::VerifySizeInBytes<size_t>(
+      size, format.resource_format()));
 
   auto pool_resource = std::make_unique<PoolResource>(
       this, next_resource_unique_id_++, size, format, color_space);
@@ -181,9 +184,11 @@ ResourcePool::PoolResource* ResourcePool::CreateResource(
 
 ResourcePool::InUsePoolResource ResourcePool::AcquireResource(
     const gfx::Size& size,
-    viz::ResourceFormat format,
+    viz::ResourceFormat resource_format,
     const gfx::ColorSpace& color_space,
     const std::string& debug_name) {
+  viz::SharedImageFormat format =
+      viz::SharedImageFormat::SinglePlane(resource_format);
   PoolResource* resource = ReuseResource(size, format, color_space);
   if (!resource)
     resource = CreateResource(size, format, color_space);
@@ -625,7 +630,7 @@ void ResourcePool::OnMemoryPressure(
 ResourcePool::PoolResource::PoolResource(ResourcePool* resource_pool,
                                          size_t unique_id,
                                          const gfx::Size& size,
-                                         viz::ResourceFormat format,
+                                         viz::SharedImageFormat format,
                                          const gfx::ColorSpace& color_space)
     : resource_pool_(resource_pool),
       unique_id_(unique_id),

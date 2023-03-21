@@ -92,7 +92,8 @@ size_t Tile::GPUMemoryUsageInBytes() const {
     // We can use UncheckedSizeInBytes, since the tile size is determined by the
     // compositor.
     return viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
-        draw_info_.resource_size(), draw_info_.resource_format());
+        draw_info_.resource_size(),
+        draw_info_.resource_shared_image_format().resource_format());
   }
   return 0;
 }

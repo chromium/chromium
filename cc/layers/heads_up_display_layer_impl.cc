@@ -315,10 +315,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       if (backing->overlay_candidate)
         flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       backing->mailbox = sii->CreateSharedImage(
-          viz::SharedImageFormat::SinglePlane(pool_resource.format()),
-          pool_resource.size(), pool_resource.color_space(),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
-          gpu::kNullSurfaceHandle);
+          pool_resource.format(), pool_resource.size(),
+          pool_resource.color_space(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
       if (gpu_raster) {
         auto* ri = raster_context_provider->RasterInterface();
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -351,8 +350,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       backing->layer_tree_frame_sink = layer_tree_frame_sink;
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
       base::MappedReadOnlyRegion shm =
-          viz::bitmap_allocation::AllocateSharedBitmap(pool_resource.size(),
-                                                       pool_resource.format());
+          viz::bitmap_allocation::AllocateSharedBitmap(
+              pool_resource.size(), pool_resource.format().resource_format());
       backing->shared_mapping = std::move(shm.mapping);
 
       layer_tree_frame_sink->DidAllocateSharedBitmap(std::move(shm.region),
@@ -426,7 +425,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
         mailbox_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
     gl->BindTexture(backing->texture_target, mailbox_texture_id);
-    DCHECK(GLSupportsFormat(pool_resource.format()));
+    DCHECK(GLSupportsFormat(pool_resource.format().resource_format()));
     // We should use gl compatible format for skia SW rasterization.
     constexpr GLenum format = SK_B32_SHIFT ? GL_RGBA : GL_BGRA_EXT;
     constexpr GLenum type = GL_UNSIGNED_BYTE;

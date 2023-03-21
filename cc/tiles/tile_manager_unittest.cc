@@ -3787,10 +3787,13 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     ASSERT_FALSE(
         host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
 
-    auto expected_format = output_cs.IsHDR() ? viz::RGBA_F16 : viz::RGBA_8888;
+    auto expected_format = output_cs.IsHDR()
+                               ? viz::SinglePlaneFormat::kRGBA_F16
+                               : viz::SinglePlaneFormat::kRGBA_8888;
     auto all_tiles = host_impl()->tile_manager()->AllTilesForTesting();
     for (const auto* tile : all_tiles)
-      EXPECT_EQ(expected_format, tile->draw_info().resource_format());
+      EXPECT_EQ(expected_format,
+                tile->draw_info().resource_shared_image_format());
   }
 };
 

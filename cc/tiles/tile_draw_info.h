@@ -59,7 +59,7 @@ class CC_EXPORT TileDrawInfo {
     return resource_.size();
   }
 
-  const viz::ResourceFormat& resource_format() const {
+  const viz::SharedImageFormat& resource_shared_image_format() const {
     DCHECK(mode_ == RESOURCE_MODE);
     DCHECK(resource_);
     return resource_.format();

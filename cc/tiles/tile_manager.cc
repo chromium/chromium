@@ -1227,7 +1227,7 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   bool partial_tile_decode = false;
   if (resource) {
     resource_content_id = tile->invalidated_id();
-    DCHECK_EQ(format.resource_format(), resource.format());
+    DCHECK_EQ(format, resource.format());
     partial_tile_decode = true;
   } else {
     const std::string& debug_name =

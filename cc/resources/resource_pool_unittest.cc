@@ -83,10 +83,10 @@ class ResourcePoolTest : public testing::Test {
 
 TEST_F(ResourcePoolTest, AcquireRelease) {
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  ResourcePool::InUsePoolResource resource =
-      resource_pool_->AcquireResource(size, format, color_space);
+  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
+      size, format.resource_format(), color_space);
   EXPECT_EQ(size, resource.size());
   EXPECT_EQ(format, resource.format());
   EXPECT_EQ(color_space, resource.color_space());
@@ -461,12 +461,12 @@ TEST_F(ResourcePoolTest, LargeInvalidatedRect) {
 }
 
 TEST_F(ResourcePoolTest, ReuseResource) {
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
   // Create unused resource with size 100x100.
-  ResourcePool::InUsePoolResource original =
-      resource_pool_->AcquireResource(gfx::Size(100, 100), format, color_space);
+  ResourcePool::InUsePoolResource original = resource_pool_->AcquireResource(
+      gfx::Size(100, 100), format.resource_format(), color_space);
   auto original_id = original.unique_id_for_testing();
   CheckAndReturnResource(std::move(original));
 
@@ -496,15 +496,15 @@ TEST_F(ResourcePoolTest, ReuseResource) {
   // support these.
   if (resource_pool_->AllowsNonExactReUseForTesting()) {
     ResourcePool::InUsePoolResource reused = resource_pool_->AcquireResource(
-        gfx::Size(50, 100), format, color_space);
+        gfx::Size(50, 100), format.resource_format(), color_space);
     EXPECT_EQ(original_id, reused.unique_id_for_testing());
     CheckAndReturnResource(std::move(reused));
-    reused = resource_pool_->AcquireResource(gfx::Size(100, 50), format,
-                                             color_space);
+    reused = resource_pool_->AcquireResource(
+        gfx::Size(100, 50), format.resource_format(), color_space);
     EXPECT_EQ(original_id, reused.unique_id_for_testing());
     CheckAndReturnResource(std::move(reused));
-    reused =
-        resource_pool_->AcquireResource(gfx::Size(71, 71), format, color_space);
+    reused = resource_pool_->AcquireResource(
+        gfx::Size(71, 71), format.resource_format(), color_space);
     EXPECT_EQ(original_id, reused.unique_id_for_testing());
     CheckAndReturnResource(std::move(reused));
   } else {
@@ -518,8 +518,8 @@ TEST_F(ResourcePoolTest, ReuseResource) {
 
   // 100x100 is an exact match and should succeed. A subsequent request for
   // the same size should fail (the resource is already in use).
-  ResourcePool::InUsePoolResource resource =
-      resource_pool_->AcquireResource(gfx::Size(100, 100), format, color_space);
+  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
+      gfx::Size(100, 100), format.resource_format(), color_space);
   EXPECT_EQ(nullptr, resource_pool_->ReuseResource(gfx::Size(100, 100), format,
                                                    color_space));
   CheckAndReturnResource(std::move(resource));
@@ -653,7 +653,7 @@ TEST_F(ResourcePoolTest, InvalidateResources) {
 }
 
 TEST_F(ResourcePoolTest, ExactRequestsRespected) {
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
   resource_pool_ = std::make_unique<ResourcePool>(
@@ -661,8 +661,8 @@ TEST_F(ResourcePoolTest, ExactRequestsRespected) {
       ResourcePool::kDefaultExpirationDelay, true);
 
   // Create unused resource with size 100x100.
-  CheckAndReturnResource(resource_pool_->AcquireResource(gfx::Size(100, 100),
-                                                         format, color_space));
+  CheckAndReturnResource(resource_pool_->AcquireResource(
+      gfx::Size(100, 100), format.resource_format(), color_space));
 
   // Try some cases that are smaller than 100x100, but within 2x area which
   // would typically allow reuse. Reuse should fail.
@@ -675,8 +675,8 @@ TEST_F(ResourcePoolTest, ExactRequestsRespected) {
 
   // 100x100 is an exact match and should succeed. A subsequent request for
   // the same size should fail (the resource is already in use).
-  ResourcePool::InUsePoolResource resource =
-      resource_pool_->AcquireResource(gfx::Size(100, 100), format, color_space);
+  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
+      gfx::Size(100, 100), format.resource_format(), color_space);
   EXPECT_EQ(nullptr, resource_pool_->ReuseResource(gfx::Size(100, 100), format,
                                                    color_space));
   CheckAndReturnResource(std::move(resource));

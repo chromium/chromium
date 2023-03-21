@@ -76,7 +76,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
         int importance) const = 0;
 
     void InitOverlayCandidateAndTextureTarget(
-        const viz::ResourceFormat format,
+        const viz::SharedImageFormat format,
         const gpu::Capabilities& caps,
         bool use_gpu_memory_buffer_resources);
 
@@ -148,7 +148,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     explicit operator bool() const { return !!resource_; }
 
     const gfx::Size& size() const { return resource_->size(); }
-    const viz::ResourceFormat& format() const { return resource_->format(); }
+    const viz::SharedImageFormat& format() const { return resource_->format(); }
     const gfx::ColorSpace& color_space() const {
       return resource_->color_space();
     }
@@ -221,7 +221,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // Tries to reuse a resource. If none are available, makes a new one.
   InUsePoolResource AcquireResource(
       const gfx::Size& size,
-      viz::ResourceFormat format,
+      viz::ResourceFormat resource_format,
       const gfx::ColorSpace& color_space,
       const std::string& debug_name = std::string());
 
@@ -299,13 +299,13 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     PoolResource(ResourcePool* resource_pool,
                  size_t unique_id,
                  const gfx::Size& size,
-                 viz::ResourceFormat format,
+                 viz::SharedImageFormat format,
                  const gfx::ColorSpace& color_space);
     ~PoolResource();
 
     size_t unique_id() const { return unique_id_; }
     const gfx::Size& size() const { return size_; }
-    const viz::ResourceFormat& format() const { return format_; }
+    const viz::SharedImageFormat& format() const { return format_; }
     const gfx::ColorSpace& color_space() const { return color_space_; }
 
     const viz::ResourceId& resource_id() const { return resource_id_; }
@@ -379,8 +379,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       if (!gpu_backing_ && !software_backing_)
         return 0;
 
-      size_t memory_usage =
-          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format());
+      size_t memory_usage = viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
+          size(), format().resource_format());
 
       // Early research found with raw draw, GPU memory usage is reduced to
       // 50%, so we consider a raw draw backing uses 50% of a normal backing
@@ -397,7 +397,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     const raw_ptr<ResourcePool> resource_pool_;
     const size_t unique_id_;
     const gfx::Size size_;
-    const viz::ResourceFormat format_;
+    const viz::SharedImageFormat format_;
     const gfx::ColorSpace color_space_;
 
     uint64_t content_id_ = 0;
@@ -439,12 +439,12 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
 
   // Tries to reuse a resource. Returns |nullptr| if none are available.
   PoolResource* ReuseResource(const gfx::Size& size,
-                              viz::ResourceFormat format,
+                              viz::SharedImageFormat format,
                               const gfx::ColorSpace& color_space);
 
   // Creates a new resource without trying to reuse an old one.
   PoolResource* CreateResource(const gfx::Size& size,
-                               viz::ResourceFormat format,
+                               viz::SharedImageFormat format,
                                const gfx::ColorSpace& color_space);
 
   void DidFinishUsingResource(std::unique_ptr<PoolResource> resource);

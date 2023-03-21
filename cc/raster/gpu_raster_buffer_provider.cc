@@ -88,8 +88,7 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     : client_(client),
       backing_(backing),
       resource_size_(in_use_resource.size()),
-      shared_image_format_(
-          viz::SharedImageFormat::SinglePlane(in_use_resource.format())),
+      shared_image_format_(in_use_resource.format()),
       color_space_(in_use_resource.color_space()),
       resource_has_previous_content_(resource_has_previous_content),
       depends_on_at_raster_decodes_(depends_on_at_raster_decodes),
