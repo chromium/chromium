@@ -283,10 +283,12 @@ class FileMetricsProvider : public MetricsProvider,
   // Returns the number of histograms merged.
   static size_t MergeHistogramDeltasFromSource(SourceInfo* source);
 
-  // Records all histograms from a given source via a snapshot-manager.
+  // Records all histograms from a given source via a snapshot-manager. Only the
+  // histograms that have |required_flags| will be recorded.
   static void RecordHistogramSnapshotsFromSource(
       base::HistogramSnapshotManager* snapshot_manager,
-      SourceInfo* source);
+      SourceInfo* source,
+      base::HistogramBase::Flags required_flags);
 
   // Calls source filter (if any) and returns the desired action.
   static AccessResult HandleFilterSource(SourceInfo* source,

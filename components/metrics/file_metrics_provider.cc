@@ -607,7 +607,8 @@ size_t FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
 // static
 void FileMetricsProvider::RecordHistogramSnapshotsFromSource(
     base::HistogramSnapshotManager* snapshot_manager,
-    SourceInfo* source) {
+    SourceInfo* source,
+    base::HistogramBase::Flags required_flags) {
   DCHECK_NE(SOURCE_HISTOGRAMS_ACTIVE_FILE, source->type);
 
   base::PersistentHistogramAllocator::Iterator histogram_iter(
@@ -618,8 +619,10 @@ void FileMetricsProvider::RecordHistogramSnapshotsFromSource(
     std::unique_ptr<base::HistogramBase> histogram = histogram_iter.GetNext();
     if (!histogram)
       break;
-    snapshot_manager->PrepareFinalDelta(histogram.get());
-    ++histogram_count;
+    if (histogram->HasFlags(required_flags)) {
+      snapshot_manager->PrepareFinalDelta(histogram.get());
+      ++histogram_count;
+    }
   }
 
   source->read_complete = true;
@@ -689,7 +692,9 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
     // contention, and a low amount of extra memory that will never be released.
     source->allocator->SetRangesManager(new base::RangesManager());
     system_profile_proto->mutable_stability()->set_from_previous_run(true);
-    RecordHistogramSnapshotsFromSource(snapshot_manager, source);
+    RecordHistogramSnapshotsFromSource(
+        snapshot_manager, source,
+        /*required_flags=*/base::HistogramBase::kUmaTargetedHistogramFlag);
     return true;
   }
 
@@ -935,8 +940,11 @@ void FileMetricsProvider::RecordInitialHistogramSnapshots(
     DCHECK(!source->read_complete);
     DCHECK(source->allocator);
 
-    // Dump all histograms contained within the source to the snapshot-manager.
-    RecordHistogramSnapshotsFromSource(snapshot_manager, source.get());
+    // Dump all stability histograms contained within the source to the
+    // snapshot-manager.
+    RecordHistogramSnapshotsFromSource(
+        snapshot_manager, source.get(),
+        /*required_flags=*/base::HistogramBase::kUmaStabilityHistogramFlag);
 
     // Update the last-seen time so it isn't read again unless it changes.
     RecordSourceAsRead(source.get());
