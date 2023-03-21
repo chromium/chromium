@@ -1913,21 +1913,6 @@ message Extension {
   optional int32 manifest_version = 14;
 }
 
-// Plugin information.
-message Plugin {
-  // The human friendly name of plugin.
-  optional string name = 1;
-
-  // Currently installed version of the plugin.
-  optional string version = 2;
-
-  // The file name from the path of the plugin.
-  optional string filename = 3;
-
-  // More details of the plugin.
-  optional string description = 4;
-}
-
 // Policy information.
 message Policy {
   // The name of the policy.
