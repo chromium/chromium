@@ -1283,10 +1283,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                                     nil);
   }
   if (IsPinnedTabsEnabled()) {
-    BOOL isTabGridPageRegularTabs =
-        currentPage == TabGridPage::TabGridPageRegularTabs;
-    [self.pinnedTabsViewController
-        pinnedTabsAvailable:isTabGridPageRegularTabs];
+    const BOOL pinnedTabsAvailable =
+        currentPage == TabGridPage::TabGridPageRegularTabs &&
+        self.tabGridMode == TabGridModeNormal;
+    [self.pinnedTabsViewController pinnedTabsAvailable:pinnedTabsAvailable];
   }
   [self updateToolbarsAppearance];
   // Make sure the current page becomes the first responder, so that it can
