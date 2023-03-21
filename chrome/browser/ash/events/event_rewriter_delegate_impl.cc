@@ -16,7 +16,9 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -55,28 +57,49 @@ bool EventRewriterDelegateImpl::RewriteModifierKeys() {
   return !suppress_modifier_key_rewrites_;
 }
 
-bool EventRewriterDelegateImpl::GetKeyboardRemappedPrefValue(
-    const std::string& pref_name,
-    int* value) const {
-  DCHECK(value);
-  // If we're at the login screen, try to get the pref from the global prefs
-  // dictionary.
-  if (LoginDisplayHost::default_host() &&
-      LoginDisplayHost::default_host()->GetKeyboardRemappedPrefValue(pref_name,
-                                                                     value)) {
-    return true;
-  }
-  const PrefService* pref_service = GetPrefService();
-  if (!pref_service)
-    return false;
-  const PrefService::Preference* preference =
-      pref_service->FindPreference(pref_name);
-  if (!preference)
-    return false;
+absl::optional<ui::mojom::ModifierKey>
+EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
+    int device_id,
+    ui::mojom::ModifierKey modifier_key,
+    const std::string& pref_name) const {
+  // `modifier_key` and `device_id` are unused when the flag is disabled.
+  if (!ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    // If we're at the login screen, try to get the pref from the global prefs
+    // dictionary.
+    int value;
+    if (LoginDisplayHost::default_host() &&
+        LoginDisplayHost::default_host()->GetKeyboardRemappedPrefValue(
+            pref_name, &value)) {
+      return static_cast<ui::mojom::ModifierKey>(value);
+    }
+    const PrefService* pref_service = GetPrefService();
+    if (!pref_service) {
+      return absl::nullopt;
+    }
+    const PrefService::Preference* preference =
+        pref_service->FindPreference(pref_name);
+    if (!preference) {
+      return absl::nullopt;
+    }
 
-  DCHECK_EQ(preference->GetType(), base::Value::Type::INTEGER);
-  *value = preference->GetValue()->GetInt();
-  return true;
+    DCHECK_EQ(preference->GetType(), base::Value::Type::INTEGER);
+    return static_cast<ui::mojom::ModifierKey>(
+        preference->GetValue()->GetInt());
+  }
+
+  // `pref_name` is unused when the flag is enabled.
+  const mojom::KeyboardSettings* settings =
+      input_device_settings_controller_->GetKeyboardSettings(device_id);
+  if (!settings) {
+    return modifier_key;
+  }
+
+  auto iter = settings->modifier_remappings.find(modifier_key);
+  if (iter == settings->modifier_remappings.end()) {
+    return modifier_key;
+  }
+
+  return iter->second;
 }
 
 bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys(int device_id) const {

@@ -94,10 +94,16 @@ class EventRewriterChromeOS : public EventRewriter {
     // Set whether or not Meta + Top Row Keys key events should be rewritten.
     virtual void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) = 0;
 
-    // Returns true if get keyboard remapped preference value successfully and
-    // the value will be stored in |value|.
-    virtual bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
-                                              int* value) const = 0;
+    // If per-device settings is disabled, returns the remapped modifier value
+    // from prefs by looking up the given |pref_name|. If per-device settings is
+    // enabled, returns the remapped modifier value for |device_id| and
+    // |modifier_key|.
+    // TODO(dpad): Remove |pref_name| once fully transitioned to per-device
+    // settings.
+    virtual absl::optional<mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+        int device_id,
+        mojom::ModifierKey modifier_key,
+        const std::string& pref_name) const = 0;
 
     // Returns true if the target would prefer to receive raw
     // function keys instead of having them rewritten into back, forward,

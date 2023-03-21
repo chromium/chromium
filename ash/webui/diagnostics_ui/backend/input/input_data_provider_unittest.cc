@@ -47,6 +47,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/chromeos/events/keyboard_capability.h"
@@ -578,9 +579,11 @@ class TestEventRewriterChromeOSDelegate
   // Not used, only to satisfy interface.
   bool RewriteMetaTopRowKeyComboEvents() const override { return true; }
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override {}
-  bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
-                                    int* result) const override {
-    return false;
+  absl::optional<ui::mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+      int device_id,
+      ui::mojom::ModifierKey modifier_key,
+      const std::string& pref_name) const override {
+    return absl::nullopt;
   }
   bool TopRowKeysAreFunctionKeys(int device_id) const override { return false; }
   bool IsExtensionCommandRegistered(ui::KeyboardCode key_code,
