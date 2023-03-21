@@ -201,10 +201,26 @@ class MockObserver : public PinManager::Observer {
 
 class DriveFsPinManagerTest : public testing::Test {
  protected:
+  ~DriveFsPinManagerTest() override {
+    logging::SetMinLogLevel(original_log_level_);
+    logging::SetLogMessageHandler(original_log_handler_);
+  }
+
   DriveFsPinManagerTest() {
+    logging::SetLogMessageHandler(&LogMessageHandler);
     logging::SetMinLogLevel(-3);
     CHECK(temp_dir_.CreateUniqueTempDir());
     gcache_dir_ = temp_dir_.GetPath().Append("GCache");
+  }
+
+  // A no-op log message handler. This is put in place in order to force the
+  // generation of log messages and exercise more code in unit tests.
+  static bool LogMessageHandler([[maybe_unused]] const int severity,
+                                [[maybe_unused]] const char* const file,
+                                [[maybe_unused]] const int line,
+                                [[maybe_unused]] const size_t message_start,
+                                [[maybe_unused]] const std::string& str) {
+    return false;
   }
 
   static SyncingStatusPtr MakeSyncingStatus(
@@ -243,6 +259,9 @@ class DriveFsPinManagerTest : public testing::Test {
                                base::Unretained(&space_getter_));
   }
 
+  const logging::LogMessageHandlerFunction original_log_handler_ =
+      logging::GetLogMessageHandler();
+  const int original_log_level_ = logging::GetMinLogLevel();
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   Path gcache_dir_;
