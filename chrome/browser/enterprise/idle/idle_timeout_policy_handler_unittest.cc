@@ -294,6 +294,7 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
   list.Append("clear_autofill");
   list.Append("clear_site_settings");
   list.Append("clear_hosted_app_data");
+  list.Append("reload_pages");
   SetPolicyValue(policy::key::kIdleTimeoutActions,
                  base::Value(std::move(list)));
 
@@ -324,7 +325,8 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
                   static_cast<int>(ActionType::kClearPasswordSignin),
                   static_cast<int>(ActionType::kClearAutofill),
                   static_cast<int>(ActionType::kClearSiteSettings),
-                  static_cast<int>(ActionType::kClearHostedAppData)));
+                  static_cast<int>(ActionType::kClearHostedAppData),
+                  static_cast<int>(ActionType::kReloadPages)));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

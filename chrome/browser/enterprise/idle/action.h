@@ -37,6 +37,7 @@ enum class ActionType {
   kClearAutofill = 7,
   kClearSiteSettings = 8,
   kClearHostedAppData = 9,
+  kReloadPages = 10,
 };
 
 // A mapping of names to enums, for the ConfigurationPolicyHandler to make

@@ -44,6 +44,7 @@ const char kClearPasswordSigninActionName[] = "clear_password_signin";
 const char kClearAutofillActionName[] = "clear_autofill";
 const char kClearSiteSettingsActionName[] = "clear_site_settings";
 const char kClearHostedAppDataActionName[] = "clear_hosted_app_data";
+const char kReloadPagesActionName[] = "reload_pages";
 
 // If `other_policy_name` is unset, adds an error to `errors` and returns false.
 bool CheckOtherPolicySet(const policy::PolicyMap& policies,
@@ -67,6 +68,7 @@ bool RequiresSyncDisabled(const std::string& name) {
       kClearCookiesAndOtherSiteDataActionName,
       kClearCachedImagesAndFilesActionName,
       kClearSiteSettingsActionName,
+      kReloadPagesActionName,
   };
   return !base::ranges::any_of(
       base::make_span(kActionsAllowedWithSync),
@@ -106,6 +108,9 @@ absl::optional<ActionType> NameToActionType(const std::string& name) {
   }
   if (name == kClearHostedAppDataActionName) {
     return ActionType::kClearHostedAppData;
+  }
+  if (name == kReloadPagesActionName) {
+    return ActionType::kReloadPages;
   }
   return absl::nullopt;
 }

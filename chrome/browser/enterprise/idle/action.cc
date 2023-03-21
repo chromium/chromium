@@ -20,13 +20,17 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/web_contents.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profile_picker.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace enterprise_idle {
 
@@ -237,6 +241,40 @@ class ClearBrowsingDataAction : public Action,
   Continuation continuation_;
 };
 
+class ReloadPagesAction : public Action {
+ public:
+  ReloadPagesAction() : Action(static_cast<int>(ActionType::kReloadPages)) {}
+
+  void Run(Profile* profile, Continuation continuation) override {
+#if BUILDFLAG(IS_ANDROID)
+    // This covers regular tabs, PWAs, and CCTs.
+    for (TabModel* model : TabModelList::models()) {
+#else
+    // This covers regular tabs and PWAs.
+    for (Browser* browser : *BrowserList::GetInstance()) {
+      TabStripModel* model = browser->tab_strip_model();
+#endif  // BUILDFLAG(IS_ANDROID)
+      if (model->GetProfile() != profile) {
+        continue;  // Deliberately ignore incognito.
+      }
+      for (int i = 0; i < model->GetTabCount(); i++) {
+        model->GetWebContentsAt(i)->GetController().Reload(
+            content::ReloadType::NORMAL,
+            /*check_for_repost=*/true);
+      }
+    }
+    std::move(continuation).Run(/*success=*/true);
+  }
+
+  bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
+#if BUILDFLAG(IS_ANDROID)
+    return true;
+#else
+    return profile && ProfileHasBrowsers(profile);
+#endif
+  }
+};
+
 }  // namespace
 
 Action::Action(int priority) : priority_(priority) {}
@@ -284,6 +322,10 @@ ActionFactory::ActionQueue ActionFactory::Build(
       case ActionType::kClearSiteSettings:
       case ActionType::kClearHostedAppData:
         clear_actions.insert(action_type);
+        break;
+
+      case ActionType::kReloadPages:
+        actions.push_back(std::make_unique<ReloadPagesAction>());
         break;
 
       default:

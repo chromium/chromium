@@ -37,6 +37,7 @@ IdleDialog::ActionSet ActionsToActionSet(
       case ActionType::kClearAutofill:
       case ActionType::kClearSiteSettings:
       case ActionType::kClearHostedAppData:
+      case ActionType::kReloadPages:
         action_set.clear = true;
         break;
     }
