@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -379,9 +380,20 @@ namespace {
 AtomicString GetClassLikeNameForEventTarget(EventTarget* event_target) {
   DCHECK(event_target);
   if (Node* node = event_target->ToNode()) {
-    // TODO: maybe use constructor name (e.g. HTMLImgElement) instead of node
-    // name (e.g. IMG)?
-    return AtomicString(node->nodeName());
+    StringBuilder builder;
+    builder.Append(node->nodeName());
+    if (Element* element = DynamicTo<Element>(node)) {
+      if (element->HasID()) {
+        builder.Append("#");
+        builder.Append(element->GetIdAttribute());
+      } else if (element->hasAttribute(html_names::kSrcAttr)) {
+        builder.Append("[src=");
+        builder.Append(element->getAttribute(html_names::kSrcAttr));
+        builder.Append("]");
+      }
+    }
+
+    return builder.ToAtomicString();
   } else {
     return event_target->InterfaceName();
   }
