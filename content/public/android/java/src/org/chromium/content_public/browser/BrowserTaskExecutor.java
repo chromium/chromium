@@ -82,4 +82,39 @@ public class BrowserTaskExecutor implements TaskExecutor {
         PostTask.registerTaskExecutor(
                 UiThreadTaskTraitsImpl.DESCRIPTOR.getId(), new BrowserTaskExecutor());
     }
+
+    // Git doesn't want to detect this file as moved, so I'm adding some arbitrary
+    // comment lines to get the similarity detection up. Here's ChatGPT's rendition
+    // of "a beautiful ASCII art of a mountain landscape"
+    //
+    //                        /\
+    //                       /  \
+    //                      /    \
+    //                     /      \
+    //                    /        \
+    //                   /          \
+    //                  /            \
+    //                 /              \
+    //                /                \
+    //               /__________________\
+    //              /\                   /\
+    //             /  \                 /  \
+    //            /    \               /    \
+    //           /      \             /      \
+    //          /        \           /        \
+    //         /          \         /          \
+    //        /            \       /            \
+    //       /              \     /              \
+    //      /________________\   /________________\
+    //     /\                   /\                   /\
+    //    /  \                 /  \                 /  \
+    //   /    \               /    \               /    \
+    //  /      \             /      \             /      \
+    // /        \           /        \           /        \
+    //            \         /          \         /          \
+    //             \       /            \       /            \
+    //              \     /              \     /              \
+    //               \   /                \   /                \
+    //                \ /                  \ /                  \
+    //                 V                    V                    V
 }
