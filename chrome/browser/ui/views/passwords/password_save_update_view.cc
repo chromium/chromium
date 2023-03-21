@@ -175,13 +175,13 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
   base::EraseIf(usernames, [](const std::u16string& username) {
     return username.empty();
   });
-  bool display_arrow = !usernames.empty();
+  const bool kDisplayArrow = usernames.size() > 1;
   auto combobox = std::make_unique<views::EditableCombobox>(
       std::make_unique<ui::SimpleComboboxModel>(
           std::vector<ui::SimpleComboboxModel::Item>(usernames.begin(),
                                                      usernames.end())),
       /*filter_on_edit=*/false, /*show_on_empty=*/true,
-      views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY, display_arrow);
+      views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY, kDisplayArrow);
   combobox->SetText(form.username_value);
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USERNAME_LABEL));
@@ -204,12 +204,12 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
   base::EraseIf(passwords, [](const std::u16string& password) {
     return password.empty();
   });
-  bool display_arrow = !passwords.empty();
+  const bool kDisplayArrow = passwords.size() > 1;
   auto combobox = std::make_unique<views::EditablePasswordCombobox>(
       std::make_unique<ui::SimpleComboboxModel>(
           std::vector<ui::SimpleComboboxModel::Item>(passwords.begin(),
                                                      passwords.end())),
-      views::style::CONTEXT_BUTTON, STYLE_PRIMARY_MONOSPACED, display_arrow,
+      views::style::CONTEXT_BUTTON, STYLE_PRIMARY_MONOSPACED, kDisplayArrow,
       std::move(reveal_password_callback));
   combobox->SetText(form.password_value);
   combobox->SetPasswordIconTooltips(
