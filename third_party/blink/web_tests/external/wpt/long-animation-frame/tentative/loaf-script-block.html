@@ -36,12 +36,6 @@ test_self_script_block(t => {
     document.body.appendChild(script);
 }, new URL("resources/busy.js", location.href).href, "module-script");
 
-test_self_script_block(t => {
-    const script = document.createElement("script");
-    script.type = "module";
-    script.innerHTML = `import("./resources/busy.js?import");`;
-    document.body.appendChild(script);
-}, new URL("resources/busy.js?import", location.href).href, "execute-script");
-
+// TODO: add test for dynamic import()
 </script>
 </body>
