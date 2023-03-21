@@ -23,11 +23,6 @@
 namespace password_manager {
 
 namespace {
-// Minimum number of characters in a password for finding it as password reuse.
-// It does not make sense to consider short strings for password reuse, since it
-// is quite likely that they are parts of common words.
-constexpr size_t kMinPasswordLengthToCheck = 8;
-
 // Returns true iff |suffix_candidate| is a suffix of |str|.
 bool IsSuffix(const std::u16string& str,
               const std::u16string& suffix_candidate) {

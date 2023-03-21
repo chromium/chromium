@@ -92,4 +92,14 @@ TEST(PasswordManagerMetricsUtil, LogNewlySavedPasswordMetrics) {
       "PasswordManager.NewlySavedPasswordHasEmptyUsername.UserCreated", 0);
 }
 
+TEST(PasswordManagerMetricsUtil, LogIsPasswordProtectedMetric) {
+  base::HistogramTester histogram_tester;
+
+  LogIsPasswordProtected(true);
+  LogIsPasswordProtected(false);
+
+  // Not testing individual bucket counts since we have 10% random noise
+  histogram_tester.ExpectTotalCount("PasswordManager.IsPasswordProtected", 2);
+}
+
 }  // namespace password_manager::metrics_util

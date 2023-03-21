@@ -19,6 +19,11 @@
 
 namespace password_manager {
 
+// Minimum number of characters in a password for finding it as password reuse.
+// It does not make sense to consider short strings for password reuse, since it
+// is quite likely that they are parts of common words.
+constexpr size_t kMinPasswordLengthToCheck = 8;
+
 class PasswordReuseDetectorConsumer;
 
 // Comparator that compares reversed strings.

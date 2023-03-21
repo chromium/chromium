@@ -353,6 +353,15 @@ void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
   }
 }
 
+void LogIsPasswordProtected(bool is_password_protected) {
+  // To preserve privacy of individual data points, add a 10% statistical noise
+  bool log_value = is_password_protected;
+  if (base::RandInt(0, 9) == 0) {
+    log_value = !is_password_protected;
+  }
+  base::UmaHistogramBoolean("PasswordManager.IsPasswordProtected", log_value);
+}
+
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in) {

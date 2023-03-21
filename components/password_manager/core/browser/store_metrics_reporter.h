@@ -74,6 +74,8 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
 
   bool is_opted_in_account_storage_;
 
+  bool is_safe_browsing_enabled_;
+
   // Temporarily holds the credentials stored in the profile and account stores
   // till the actual metric computation starts. They don't have a value until
   // the credentials are loaded from the storage.

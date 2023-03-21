@@ -821,6 +821,10 @@ void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
 void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
                                 bool is_under_advanced_protection);
 
+// Log whether the saved password is protected by Phishguard. To preserve
+// privacy of individual data points, we will log with 10% noise.
+void LogIsPasswordProtected(bool is_password_protected);
+
 // Log the number of Gaia password hashes saved. Currently only called on
 // profile start up.
 void LogProtectedPasswordHashCounts(size_t gaia_hash_count,

@@ -1849,6 +1849,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.IsPasswordProtected" enum="Boolean"
+    expires_after="2024-03-01">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This metric reports whether a saved password is protected by Phishguard. The
+    current minimum password length for protection is 8, so this can help us
+    figure out the proportion of passwords that we are currently not protecting
+    because its length is shorter than 8 characters. This gets recorded 30
+    seconds after PasswordStore is created, which happens once per profile and
+    at most once per day.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.IsSyncPasswordHashSaved"
     enum="IsSyncPasswordHashSaved" expires_after="2023-07-30">
   <owner>vakh@chromium.org</owner>
