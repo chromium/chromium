@@ -65,39 +65,4 @@ public class UiThreadTaskExecutor implements TaskExecutor {
     public boolean canRunTaskImmediately(@TaskTraits int traits) {
         return createSingleThreadTaskRunner(traits).belongsToCurrentThread();
     }
-
-    // Git doesn't want to detect this file as moved, so I'm adding some arbitrary
-    // comment lines to get the similarity detection up. Here's ChatGPT's rendition
-    // of "a beautiful ASCII art of a mountain landscape"
-    //
-    //                        /\
-    //                       /  \
-    //                      /    \
-    //                     /      \
-    //                    /        \
-    //                   /          \
-    //                  /            \
-    //                 /              \
-    //                /                \
-    //               /__________________\
-    //              /\                   /\
-    //             /  \                 /  \
-    //            /    \               /    \
-    //           /      \             /      \
-    //          /        \           /        \
-    //         /          \         /          \
-    //        /            \       /            \
-    //       /              \     /              \
-    //      /________________\   /________________\
-    //     /\                   /\                   /\
-    //    /  \                 /  \                 /  \
-    //   /    \               /    \               /    \
-    //  /      \             /      \             /      \
-    // /        \           /        \           /        \
-    //            \         /          \         /          \
-    //             \       /            \       /            \
-    //              \     /              \     /              \
-    //               \   /                \   /                \
-    //                \ /                  \ /                  \
-    //                 V                    V                    V
 }

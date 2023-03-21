@@ -51,18 +51,4 @@ class ThreadPoolTaskExecutor implements TaskExecutor {
     public boolean canRunTaskImmediately(@TaskTraits int traits) {
         return false;
     }
-
-    // Git doesn't want to detect this file as moved, so I'm adding some arbitrary
-    // comment lines to get the similarity detection up.
-    //
-    // Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-    // labore et dolore magna aliqua. Purus in mollis nunc sed id semper risus in hendrerit. Aliquam
-    // id diam maecenas ultricies mi eget mauris. In eu mi bibendum neque egestas. Habitant morbi
-    // tristique senectus et netus et malesuada fames ac. Non blandit massa enim nec dui nunc
-    // mattis. Ut tristique et egestas quis ipsum. Mauris rhoncus aenean vel elit scelerisque.
-    // Ridiculus mus mauris vitae ultricies leo integer malesuada nunc. Sed arcu non odio euismod.
-    // Vulputate mi sit amet mauris commodo quis. Lobortis scelerisque fermentum dui faucibus. Urna
-    // cursus eget nunc scelerisque viverra. Tempus quam pellentesque nec nam aliquam sem et tortor
-    // consequat. Iaculis eu non diam phasellus vestibulum. Lectus quam id leo in vitae turpis.
-    // Lacinia quis vel eros donec ac odio tempor.
 }
