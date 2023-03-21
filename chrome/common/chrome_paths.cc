@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -155,7 +154,6 @@ bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case chrome::DIR_USER_DATA:
       if (!GetDefaultUserDataDirectory(&cur)) {
-        NOTREACHED();
         return false;
       }
       create_dir = true;
@@ -231,7 +229,6 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case chrome::DIR_ROAMING_USER_DATA:
       if (!GetDefaultRoamingUserDataDirectory(&cur)) {
-        NOTREACHED();
         return false;
       }
       create_dir = true;
