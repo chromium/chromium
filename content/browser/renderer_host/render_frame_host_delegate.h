@@ -594,6 +594,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnCookiesAccessed(RenderFrameHostImpl* render_frame_host,
                                  const CookieAccessDetails& details) {}
 
+  virtual void OnTrustTokensAccessed(RenderFrameHostImpl* render_frame_host,
+                                     const TrustTokenAccessDetails& details) {}
+
   // Notified that the renderer responded after calling GetSavableResourceLinks.
   virtual void SavableResourceLinksResponse(
       RenderFrameHostImpl* source,

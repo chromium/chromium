@@ -32,6 +32,8 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     NavigationURLLoaderDelegate* delegate,
     LoaderType loader_type,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
+    mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
+        trust_token_observer,
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
@@ -68,8 +70,9 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
       browser_context, storage_partition, std::move(request_info),
       std::move(navigation_ui_data), service_worker_handle,
       std::move(prefetched_signed_exchange_cache), delegate,
-      std::move(cookie_observer), std::move(url_loader_network_observer),
-      std::move(devtools_observer), std::move(initial_interceptors));
+      std::move(cookie_observer), std::move(trust_token_observer),
+      std::move(url_loader_network_observer), std::move(devtools_observer),
+      std::move(initial_interceptors));
 }
 
 // static

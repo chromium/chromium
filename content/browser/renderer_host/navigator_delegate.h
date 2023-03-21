@@ -14,6 +14,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/reload_type.h"
+#include "content/public/browser/trust_token_access_details.h"
 
 class GURL;
 
@@ -119,6 +120,12 @@ class NavigatorDelegate {
   // cookie.
   virtual void OnCookiesAccessed(NavigationHandle* navigation,
                                  const CookieAccessDetails& details) = 0;
+
+  // Called when a network request issued by this navigation accesses a Trust
+  // Token.
+  virtual void OnTrustTokensAccessed(
+      NavigationHandle* navigation,
+      const TrustTokenAccessDetails& details) = 0;
 
   // Does a global walk of the session history and all committed/pending-commit
   // origins, and registers origins that match |origin| to their respective

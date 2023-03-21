@@ -137,6 +137,7 @@ class NavigationURLLoaderTest : public testing::Test {
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, delegate,
         NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote(),
+        /* trust_token_observer=*/mojo::NullRemote(),
         /* url_loader_network_observer */ mojo::NullRemote(),
         /*devtools_observer=*/mojo::NullRemote());
   }

@@ -100,8 +100,9 @@ class URLLoaderFactoryParamsHelper {
       const url::Origin& tentative_origin,
       NavigationRequest& navigation_request,
       const network::mojom::EarlyHints& early_hints,
-      mojo::PendingRemote<network::mojom::CookieAccessObserver>
-          cookie_observer);
+      mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
+      mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
+          trust_token_observer);
 
  private:
   // Only static methods.

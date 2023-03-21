@@ -11303,7 +11303,6 @@ void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
   // secure contexts, so we could additionally add a check verifying that the
   // bind request "is coming from a secure context"---but there's currently no
   // direct way to perform such a check in the browser.
-
   GetProcess()->GetStoragePartition()->CreateTrustTokenQueryAnswerer(
       std::move(receiver), ComputeTopFrameOrigin(GetLastCommittedOrigin()));
 }
@@ -12326,6 +12325,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // Continue observing the events for the committed navigation.
     for (auto& receiver : navigation_request->TakeCookieObservers()) {
       cookie_observers_.Add(this, std::move(receiver));
+    }
+
+    // Continue observing the events for the committed navigation.
+    for (auto& receiver : navigation_request->TakeTrustTokenObservers()) {
+      trust_token_observers_.Add(this, std::move(receiver));
     }
 
     // Resets when navigating to a new document. This is needed because
@@ -14595,6 +14599,13 @@ RenderFrameHostImpl::CreateCookieAccessObserver() {
   return remote;
 }
 
+mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
+RenderFrameHostImpl::CreateTrustTokenAccessObserver() {
+  mojo::PendingRemote<network::mojom::TrustTokenAccessObserver> remote;
+  trust_token_observers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
 #if BUILDFLAG(ENABLE_MDNS)
 void RenderFrameHostImpl::CreateMdnsResponder(
     mojo::PendingReceiver<network::mojom::MdnsResponder> receiver) {
@@ -14606,6 +14617,11 @@ void RenderFrameHostImpl::CreateMdnsResponder(
 void RenderFrameHostImpl::Clone(
     mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
   cookie_observers_.Add(this, std::move(observer));
+}
+
+void RenderFrameHostImpl::Clone(
+    mojo::PendingReceiver<network::mojom::TrustTokenAccessObserver> observer) {
+  trust_token_observers_.Add(this, std::move(observer));
 }
 
 void RenderFrameHostImpl::OnCookiesAccessed(
@@ -14623,6 +14639,11 @@ void RenderFrameHostImpl::OnCookiesAccessed(
       delegate_->OnCookiesAccessed(this, blocked);
     }
   }
+}
+
+void RenderFrameHostImpl::OnTrustTokensAccessed(
+    network::mojom::TrustTokenAccessDetailsPtr details) {
+  delegate_->OnTrustTokensAccessed(this, TrustTokenAccessDetails(details));
 }
 
 void RenderFrameHostImpl::SetEmbeddingToken(

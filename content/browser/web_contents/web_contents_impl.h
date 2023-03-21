@@ -716,6 +716,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       blink::mojom::ResourceLoadInfoPtr resource_load_information) override;
   void OnCookiesAccessed(RenderFrameHostImpl*,
                          const CookieAccessDetails& details) override;
+  void OnTrustTokensAccessed(RenderFrameHostImpl*,
+                             const TrustTokenAccessDetails& details) override;
 
   // Called when WebAudio starts or stops playing audible audio in an
   // AudioContext.
@@ -892,6 +894,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                AllowServiceWorkerResult allowed) override;
   void OnCookiesAccessed(NavigationHandle*,
                          const CookieAccessDetails& details) override;
+  void OnTrustTokensAccessed(NavigationHandle*,
+                             const TrustTokenAccessDetails& details) override;
   void RegisterExistingOriginAsHavingDefaultIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) override;

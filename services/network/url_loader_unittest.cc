@@ -3902,10 +3902,32 @@ class MockTrustTokenObserver : public network::mojom::TrustTokenAccessObserver {
   ~MockTrustTokenObserver() override = default;
 
   struct TrustTokenDetails {
-    explicit TrustTokenDetails(const mojom::TrustTokenAccessDetailsPtr& details)
-        : origin(details->origin), blocked(details->blocked) {}
+    explicit TrustTokenDetails(
+        const mojom::TrustTokenAccessDetailsPtr& details) {
+      switch (details->which()) {
+        case mojom::TrustTokenAccessDetails::Tag::kIssuance:
+          type = mojom::TrustTokenOperationType::kIssuance;
+          origin = details->get_issuance()->origin;
+          issuer = details->get_issuance()->issuer;
+          blocked = details->get_issuance()->blocked;
+          break;
+        case mojom::TrustTokenAccessDetails::Tag::kRedemption:
+          type = mojom::TrustTokenOperationType::kRedemption;
+          origin = details->get_redemption()->origin;
+          issuer = details->get_redemption()->issuer;
+          blocked = details->get_redemption()->blocked;
+          break;
+        case mojom::TrustTokenAccessDetails::Tag::kSigning:
+          type = mojom::TrustTokenOperationType::kSigning;
+          origin = details->get_signing()->origin;
+          blocked = details->get_signing()->blocked;
+          break;
+      }
+    }
 
     url::Origin origin;
+    mojom::TrustTokenOperationType type;
+    absl::optional<url::Origin> issuer;
     bool blocked;
   };
 
@@ -3950,11 +3972,13 @@ class MockTrustTokenObserver : public network::mojom::TrustTokenAccessObserver {
   mojo::ReceiverSet<mojom::TrustTokenAccessObserver> receivers_;
 };
 
-MATCHER_P2(MatchesTrustTokenDetails, origin, blocked, "") {
+MATCHER_P3(MatchesTrustTokenDetails, origin, issuer, blocked, "") {
   return testing::ExplainMatchResult(
       testing::AllOf(
           testing::Field(&MockTrustTokenObserver::TrustTokenDetails::origin,
                          origin),
+          testing::Field(&MockTrustTokenObserver::TrustTokenDetails::issuer,
+                         issuer),
           testing::Field(&MockTrustTokenObserver::TrustTokenDetails::blocked,
                          blocked)),
       arg, result_listener);
@@ -6143,9 +6167,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   EXPECT_FALSE(client()->response_head()->headers->raw_headers().empty());
 
   trust_token_observer.WaitForTrustTokens(1u);
-  EXPECT_THAT(trust_token_observer.observed_tokens(),
-              testing::ElementsAre(
-                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
+  EXPECT_THAT(
+      trust_token_observer.observed_tokens(),
+      testing::ElementsAre(MatchesTrustTokenDetails(
+          test_server()->GetOrigin(), test_server()->GetOrigin(), false)));
 }
 
 // A request with an associated Trust Tokens operation whose Begin step returns
@@ -6195,9 +6220,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   EXPECT_FALSE(client()->response_body().is_valid());
 
   trust_token_observer.WaitForTrustTokens(1u);
-  EXPECT_THAT(trust_token_observer.observed_tokens(),
-              testing::ElementsAre(
-                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
+  EXPECT_THAT(
+      trust_token_observer.observed_tokens(),
+      testing::ElementsAre(MatchesTrustTokenDetails(
+          test_server()->GetOrigin(), test_server()->GetOrigin(), false)));
 }
 
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
@@ -6289,9 +6315,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
   EXPECT_FALSE(client()->response_body().is_valid());
 
   trust_token_observer.WaitForTrustTokens(1u);
-  EXPECT_THAT(trust_token_observer.observed_tokens(),
-              testing::ElementsAre(
-                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
+  EXPECT_THAT(
+      trust_token_observer.observed_tokens(),
+      testing::ElementsAre(MatchesTrustTokenDetails(
+          test_server()->GetOrigin(), test_server()->GetOrigin(), false)));
 }
 
 // When a request's associated Trust Tokens operation's Begin step succeeds but
@@ -6333,9 +6360,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
             mojom::TrustTokenOperationStatus::kBadResponse);
 
   trust_token_observer.WaitForTrustTokens(1u);
-  EXPECT_THAT(trust_token_observer.observed_tokens(),
-              testing::ElementsAre(
-                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
+  EXPECT_THAT(
+      trust_token_observer.observed_tokens(),
+      testing::ElementsAre(MatchesTrustTokenDetails(
+          test_server()->GetOrigin(), test_server()->GetOrigin(), false)));
 }
 
 // When URLLoader receives a  request parameterized to perform a Trust Tokens
@@ -6378,9 +6406,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
             mojom::TrustTokenOperationStatus::kInternalError);
 
   trust_token_observer.WaitForTrustTokens(1u);
-  EXPECT_THAT(trust_token_observer.observed_tokens(),
-              testing::ElementsAre(
-                  MatchesTrustTokenDetails(test_server()->GetOrigin(), false)));
+  EXPECT_THAT(
+      trust_token_observer.observed_tokens(),
+      testing::ElementsAre(MatchesTrustTokenDetails(
+          test_server()->GetOrigin(), test_server()->GetOrigin(), false)));
 }
 
 // When URLLoader receives a request that is blocked by policy, the request
@@ -6421,9 +6450,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
             mojom::TrustTokenOperationStatus::kUnauthorized);
 
   trust_token_observer.WaitForTrustTokens(1u);
-  EXPECT_THAT(trust_token_observer.observed_tokens(),
-              testing::ElementsAre(
-                  MatchesTrustTokenDetails(test_server()->GetOrigin(), true)));
+  EXPECT_THAT(
+      trust_token_observer.observed_tokens(),
+      testing::ElementsAre(MatchesTrustTokenDetails(
+          test_server()->GetOrigin(), test_server()->GetOrigin(), true)));
 }
 
 TEST_F(URLLoaderTest, HandlesTriggerAttestationRequest) {

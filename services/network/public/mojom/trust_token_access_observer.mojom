@@ -5,9 +5,46 @@
 module network.mojom;
 
 import "sandbox/policy/mojom/context.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
 import "url/mojom/origin.mojom";
 
-struct TrustTokenAccessDetails {
+union TrustTokenAccessDetails {
+  TrustTokenIssuanceDetails issuance;
+  TrustTokenRedemptionDetails redemption;
+  TrustTokenSigningDetails signing;
+};
+
+struct TrustTokenIssuanceDetails {
+  // This is the origin that is triggering a Trust Token access. If the access
+  // is triggered from a resource request, `origin` is the origin of the
+  // top-level frame of the initial request; if they're being triggered by a
+  // script, it's the origin of the window or service worker.
+  url.mojom.Origin origin;
+
+  // This is the origin of the issuer being used by this Trust Token operation
+  // if applicable.
+  url.mojom.Origin? issuer;
+
+  // Whether the Trust Token operation was blocked.
+  bool blocked = false;
+};
+
+struct TrustTokenRedemptionDetails {
+  // This is the origin that is triggering a Trust Token access. If the access
+  // is triggered from a resource request, `origin` is the origin of the
+  // top-level frame of the initial request; if they're being triggered by a
+  // script, it's the origin of the window or service worker.
+  url.mojom.Origin origin;
+
+  // This is the origin of the issuer being used by this Trust Token operation
+  // if applicable.
+  url.mojom.Origin? issuer;
+
+  // Whether the Trust Token operation was blocked.
+  bool blocked = false;
+};
+
+struct TrustTokenSigningDetails {
   // This is the origin that is triggering a Trust Token access. If the access
   // is triggered from a resource request, `origin` is the origin of the
   // request; if they're being triggered by a script, it's the origin of the

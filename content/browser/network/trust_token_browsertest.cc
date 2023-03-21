@@ -115,6 +115,8 @@ void TrustTokenBrowsertest::SetUpOnMainThread() {
 
   network::test::RegisterTrustTokenTestHandlers(&server_, &request_handler_);
 
+  TrustTokenBrowsertest::Observe(shell()->web_contents());
+
   ASSERT_TRUE(server_.Start());
 }
 
@@ -152,6 +154,18 @@ std::string TrustTokenBrowsertest::IssuanceOriginFromHost(
   return ret;
 }
 
+void TrustTokenBrowsertest::OnTrustTokensAccessed(
+    RenderFrameHost* render_frame_host,
+    const TrustTokenAccessDetails& details) {
+  access_count_++;
+}
+
+void TrustTokenBrowsertest::OnTrustTokensAccessed(
+    NavigationHandle* navigation_handle,
+    const TrustTokenAccessDetails& details) {
+  access_count_++;
+}
+
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
@@ -183,6 +197,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
       Optional(AllOf(
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+
+  // Expect three accesses, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
@@ -247,6 +264,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
       Optional(AllOf(
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+
+  // Expect three accesses, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
@@ -294,6 +314,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeSendRedemptionRecord) {
       Optional(AllOf(
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+
+  // Expect three accesses, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
@@ -342,6 +365,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   })();)",
                       IssuanceOriginFromHost("a.test"));
   EXPECT_EQ(false, EvalJs(shell(), command));
+
+  // Expect zero accesses.
+  EXPECT_EQ(0, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, HasTrustTokenAfterIssuance) {
@@ -365,6 +391,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, HasTrustTokenAfterIssuance) {
   // Note: EvalJs's EXPECT_EQ type-conversion magic only supports the
   // "Yoda-style" EXPECT_EQ(expected, actual).
   EXPECT_EQ(true, EvalJs(shell(), command));
+
+  // Expect one access for issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
@@ -392,6 +421,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_THAT(request_handler_.last_incoming_signed_request(),
               Optional(ReflectsSigningFailure()));
+
+  // Expect one access for sign.
+  EXPECT_EQ(1, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
@@ -432,6 +464,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
       Optional(AllOf(
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+
+  // Expect three accesses, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
@@ -505,6 +540,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
         "Net.TrustTokens.NetErrorForTrustTokenOperation.Success." + op, net::OK,
         1);
   }
+
+  // Expect three accesses, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
@@ -575,6 +613,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
   histograms.ExpectUniqueSample(
       "Net.TrustTokens.NetErrorForTrustTokenOperation.Failure.Redemption",
       net::ERR_TRUST_TOKEN_OPERATION_FAILED, 1);
+
+  // Expect three accesses, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
@@ -647,6 +688,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
       "Net.TrustTokens.NetErrorForFetchFailure.Issuance",
       net::ERR_BLOCKED_BY_RESPONSE,
       /*expected_count=*/1);
+
+  // Expect three accesses, two for issue and one for redeem.
+  EXPECT_EQ(3, access_count_);
 }
 
 // Trust Tokens should require that their executing contexts be secure.
@@ -688,6 +732,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OperationsRequireSecureContext) {
   EXPECT_THAT(monitor.GetRequestInfo(issuance_url),
               Optional(Field(&network::ResourceRequest::trust_token_params,
                              IsFalse())));
+
+  // Expect zero accesses.
+  EXPECT_EQ(0, access_count_);
 }
 
 // Issuance should fail if we don't have keys for the issuer at hand.
@@ -707,6 +754,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IssuanceRequiresKeys) {
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
   // resolve.
   EXPECT_EQ("InvalidStateError", EvalJs(shell(), command));
+
+  // Expect one access of issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 // When the server rejects issuance, the client-side issuance operation should
@@ -727,6 +777,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
         { privateToken: { type: 'private-state-token',
                         version: 1, operation: 'token-request' } })
         .then(()=>'Success').catch(err => err.name); )"));
+
+  // Expect one access of issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossOriginIssuanceWorks) {
@@ -745,6 +798,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossOriginIssuanceWorks) {
                                       operation: 'token-request' } })
             .then(()=>'Success'); )",
                                 server_.GetURL("sub1.b.test", "/issue"))));
+
+  // Expect one access of issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossSiteIssuanceWorks) {
@@ -762,6 +818,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, CrossSiteIssuanceWorks) {
                                       operation: 'token-request' } })
             .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/issue"))));
+
+  // Expect one access of issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 // Issuance should succeed only if the number of issuers associated with the
@@ -795,6 +854,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                                             version: 1,
                                             operation: 'token-request' } })
             .then(() => 'Success').catch(error => error.name); )"));
+
+  // Expect one access for issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 // When an issuance request is made in cors mode, a cross-origin redirect from
@@ -835,6 +897,9 @@ IN_PROC_BROWSER_TEST_F(
       EvalJs(shell(),
              JsReplace("document.hasPrivateToken($1, 'private-state-token');",
                        IssuanceOriginFromHost("a.test"))));
+
+  // Expect two accesses for issues.
+  EXPECT_EQ(2, access_count_);
 }
 
 // When an issuance request is made in no-cors mode, a cross-origin redirect
@@ -876,6 +941,9 @@ IN_PROC_BROWSER_TEST_F(
       EvalJs(shell(),
              JsReplace("document.hasPrivateToken($1, 'private-state-token');",
                        IssuanceOriginFromHost("b.test"))));
+
+  // Expect one access for issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 // Issuance from a context with a secure-but-non-HTTP/S top frame origin
@@ -906,6 +974,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
       EvalJs(shell(),
              JsReplace("document.hasPrivateToken($1, 'private-state-token');",
                        url::Origin::Create(server_.base_url()).Serialize())));
+
+  // Expect one access for issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 // Redemption from a secure-but-non-HTTP(S) top frame origin should fail.
@@ -939,6 +1010,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ(
       "InvalidStateError",
       EvalJs(shell(), JsReplace(command, server_.GetURL("a.test", "/redeem"))));
+
+  // Expect two accesses, one for issue and one for redemption.
+  EXPECT_EQ(2, access_count_);
 }
 
 // hasPrivateToken from a context with a secure-but-non-HTTP/S top frame
@@ -955,6 +1029,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
           shell(),
           R"(document.hasPrivateToken('https://issuer.example', 'private-state-token')
                               .catch(error => error.name);)"));
+
+  EXPECT_EQ(0, access_count_);
 }
 
 // A hasPrivateToken call initiated from a secure context should succeed
@@ -975,6 +1051,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
           root->child_at(0)->current_frame_host(),
           R"(document.hasPrivateToken('https://davids.website', 'private-state-token')
                               .then(()=>'Success');)"));
+
+  EXPECT_EQ(0, access_count_);
 }
 
 // An operation initiated from a secure context should succeed even if the
@@ -1000,6 +1078,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                                              operation: 'token-request'}
                                          }).then(()=>'Success');)",
                                         server_.GetURL("a.test", "/issue"))));
+
+  // Expect one access for issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 // If a server issues with a key not present in the client's collection of key
@@ -1024,6 +1105,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IssuanceWithAbsentKeyFails) {
   EXPECT_EQ(
       "OperationError",
       EvalJs(shell(), JsReplace(command, server_.GetURL("a.test", "/issue"))));
+
+  // Expect one access for issue.
+  EXPECT_EQ(1, access_count_);
 }
 
 // This regression test for crbug.com/1111735 ensures it's possible to execute
@@ -1063,6 +1147,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                                              ]}
                                          }).then(()=>'Success');)",
                                         server_.GetURL("a.test", "/issue"))));
+
+  // Expect one access for sign.
+  EXPECT_EQ(1, access_count_);
 }
 
 // Redemption should fail when there are no keys for the issuer.
@@ -1077,6 +1164,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresKeys) {
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
+
+  // Expect one access for redemption.
+  EXPECT_EQ(1, access_count_);
 }
 
 // Redemption should fail when there are no tokens to redeem.
@@ -1093,6 +1183,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresTokens) {
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
+
+  // Expect one access for redemption.
+  EXPECT_EQ(1, access_count_);
 }
 
 // When we have tokens for one issuer A, redemption against a different issuer B
@@ -1119,6 +1212,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("b.test", "/redeem"))));
+
+  // Expect two accesses, one for issuance and one for redemption.
+  EXPECT_EQ(2, access_count_);
 }
 
 // When the server rejects redemption, the client-side redemption operation
@@ -1144,6 +1240,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                         operation: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )"));
+
+  // Expect two accesses, one for issuance and one for redemption.
+  EXPECT_EQ(2, access_count_);
 }
 
 // After a successful issuance and redemption, a subsequent redemption against
@@ -1177,6 +1276,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                         operation: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
+
+  // Expect three accesses, one for issuance and two for redemption.
+  EXPECT_EQ(3, access_count_);
 }
 
 // Redemption with `refresh-policy: 'refresh'` from an issuer context should
@@ -1211,6 +1313,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
+
+  // Expect three accesses, one for issuance and two for redemption.
+  EXPECT_EQ(3, access_count_);
 }
 
 // Redemption with `refresh-policy: 'refresh'` from a non-issuer context should
@@ -1248,6 +1353,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success').catch(err => err.name); )",
                                       server_.GetURL("b.test", "/redeem"))));
+
+  // Expect three accesses, one for issuance and two for redemption.
+  EXPECT_EQ(3, access_count_);
 }
 
 // When a redemption request is made in cors mode, a cross-origin redirect from
@@ -1326,6 +1434,9 @@ IN_PROC_BROWSER_TEST_F(
   // request.
   EXPECT_THAT(request_handler_.last_incoming_signed_request(),
               Optional(ReflectsSigningFailure()));
+
+  // Expect six accesses, four for issuance and two for redemption.
+  EXPECT_EQ(6, access_count_);
 }
 
 // When a redemption request is made in no-cors mode, a cross-origin redirect
@@ -1395,6 +1506,9 @@ IN_PROC_BROWSER_TEST_F(
   // request.
   EXPECT_THAT(request_handler_.last_incoming_signed_request(),
               Optional(ReflectsSigningFailure()));
+
+  // Expect four accesses, two for issuance and two for redemption.
+  EXPECT_EQ(4, access_count_);
 }
 
 // When a redemption request is made in no-cors mode, a cross-origin redirect
@@ -1433,6 +1547,9 @@ IN_PROC_BROWSER_TEST_F(
                         version: 1,
                         operation: 'token-redemption' } })
         .then(()=>'Success'); )"));
+
+  // Expect two accesses, one for issuance and one for redemption.
+  EXPECT_EQ(2, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
@@ -1474,6 +1591,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_THAT(request_handler_.last_incoming_signed_request(),
               Optional(ReflectsSigningFailure()));
+
+  // Expect three access, one for issue, redeem, and sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndWithServiceWorker) {
@@ -1517,6 +1637,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndWithServiceWorker) {
       Optional(AllOf(
           HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           HasHeader(network::kTrustTokensSecTrustTokenVersionHeader))));
+
+  // Expect three accesses, one for issue and one for redeem and one for sign.
+  EXPECT_EQ(3, access_count_);
 }
 
 // Test redemption limit. Make three refreshing redemption calls back to back
@@ -1567,6 +1690,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionLimit) {
         .then(()=>'Success')
         .catch(()=>'Error'); )",
                                       server_.GetURL("a.test", "/redeem"))));
+
+  // Expect four accesses, one for issuance, one for redemption, and two for
+  // sign.
+  EXPECT_EQ(4, access_count_);
 }
 
 // Check whether depreciated fetch API where 'type' refers to operation

@@ -69,6 +69,7 @@ struct LoadCommittedDetails;
 struct MediaPlayerId;
 struct PrunedDetails;
 struct Referrer;
+struct TrustTokenAccessDetails;
 
 // Note: before adding a new `WebContentsObserver` subclass, consider if simpler
 // helpers will suffice:
@@ -469,6 +470,19 @@ class CONTENT_EXPORT WebContentsObserver {
   // it will be attributed to the RenderFrameHost created by the navigation.
   virtual void OnCookiesAccessed(NavigationHandle* navigation_handle,
                                  const CookieAccessDetails& details) {}
+
+  // Called when document accesses a Trust Token (via document.hasTrustToken or
+  // issuing a network request).
+  // Trust Token accesses for a dedicated worker are attributed to the
+  // RenderFrameHost which created it.
+  virtual void OnTrustTokensAccessed(RenderFrameHost* render_frame_host,
+                                     const TrustTokenAccessDetails& details) {}
+
+  // Called when a network request issued by the navigation accesses a Trust
+  // Token. If a notification is received after the navigation has committed, it
+  // will be attributed to the RenderFrameHost created by the navigation.
+  virtual void OnTrustTokensAccessed(NavigationHandle* navigation_handle,
+                                     const TrustTokenAccessDetails& details) {}
 
   // This method is invoked when a new non-pending navigation entry is created.
   // This corresponds to one NavigationController entry being created

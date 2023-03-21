@@ -976,9 +976,28 @@ void URLLoader::OnDoneConstructingTrustTokenHelper(
     bool token_operation_unauthorized =
         status_or_helper.status() ==
         mojom::TrustTokenOperationStatus::kUnauthorized;
-    trust_token_observer_->OnTrustTokensAccessed(
-        mojom::TrustTokenAccessDetails::New(top_frame_origin,
-                                            token_operation_unauthorized));
+    switch (operation) {
+      case mojom::TrustTokenOperationType::kIssuance:
+        trust_token_observer_->OnTrustTokensAccessed(
+            mojom::TrustTokenAccessDetails::NewIssuance(
+                mojom::TrustTokenIssuanceDetails::New(
+                    top_frame_origin, url::Origin::Create(url_request_->url()),
+                    token_operation_unauthorized)));
+        break;
+      case mojom::TrustTokenOperationType::kRedemption:
+        trust_token_observer_->OnTrustTokensAccessed(
+            mojom::TrustTokenAccessDetails::NewRedemption(
+                mojom::TrustTokenRedemptionDetails::New(
+                    top_frame_origin, url::Origin::Create(url_request_->url()),
+                    token_operation_unauthorized)));
+        break;
+      case mojom::TrustTokenOperationType::kSigning:
+        trust_token_observer_->OnTrustTokensAccessed(
+            mojom::TrustTokenAccessDetails::NewSigning(
+                mojom::TrustTokenSigningDetails::New(
+                    top_frame_origin, token_operation_unauthorized)));
+        break;
+    }
   }
 
   if (!status_or_helper.ok()) {

@@ -404,6 +404,8 @@ source_set("browser_sources") {
     "tracing_delegate.cc",
     "tracing_delegate.h",
     "tracing_service.h",
+    "trust_token_access_details.cc",
+    "trust_token_access_details.h",
     "tts_controller.h",
     "tts_platform.h",
     "tts_utterance.h",

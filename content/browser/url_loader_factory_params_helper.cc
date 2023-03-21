@@ -54,6 +54,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     bool allow_universal_access_from_file_urls,
     bool is_for_isolated_world,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
+    mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
+        trust_token_observer,
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
@@ -109,6 +111,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
       params.get());
 
   params->cookie_observer = std::move(cookie_observer);
+  params->trust_token_observer = std::move(trust_token_observer);
   params->url_loader_network_observer = std::move(url_loader_network_observer);
   params->devtools_observer = std::move(devtools_observer);
 
@@ -144,6 +147,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       false,  // is_for_isolated_world
       frame->CreateCookieAccessObserver(),
+      frame->CreateTrustTokenAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       trust_token_redemption_policy, cookie_setting_overrides, debug_tag);
@@ -170,6 +174,7 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       true,  // is_for_isolated_world
       frame->CreateCookieAccessObserver(),
+      frame->CreateTrustTokenAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       trust_token_redemption_policy, cookie_setting_overrides,
@@ -197,6 +202,7 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       frame->GetOrCreateWebPreferences().allow_universal_access_from_file_urls,
       false,  // is_for_isolated_world
       frame->CreateCookieAccessObserver(),
+      frame->CreateTrustTokenAccessObserver(),
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       network::mojom::TrustTokenRedemptionPolicy::kForbid,
@@ -232,6 +238,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       false,  // is_for_isolated_world
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
           ->CreateCookieAccessObserverForServiceWorker(),
+      static_cast<StoragePartitionImpl*>(process->GetStoragePartition())
+          ->CreateTrustTokenAccessObserverForServiceWorker(),
       std::move(url_loader_network_observer), std::move(devtools_observer),
       // Trust Token redemption and signing operations require the Permissions
       // Policy. It seems Permissions Policy in worker contexts
@@ -250,7 +258,9 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
     const url::Origin& tentative_origin,
     NavigationRequest& navigation_request,
     const network::mojom::EarlyHints& early_hints,
-    mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer) {
+    mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
+    mojo::PendingRemote<network::mojom::TrustTokenAccessObserver>
+        trust_token_observer) {
   // TODO(crbug.com/1225556): Consider not using the speculative
   // RenderFrameHostImpl to create URLLoaderNetworkServiceObserver.
   // In general we should avoid using speculative RenderFrameHostImpl
@@ -283,7 +293,7 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       /*coep_reporter=*/mojo::NullRemote(),
       /*allow_universal_access_from_file_urls=*/false,
       /*is_for_isolated_world=*/false, std::move(cookie_observer),
-      std::move(url_loader_network_observer),
+      std::move(trust_token_observer), std::move(url_loader_network_observer),
       /*devtools_observer=*/mojo::NullRemote(),
       network::mojom::TrustTokenRedemptionPolicy::kForbid,
       net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload");

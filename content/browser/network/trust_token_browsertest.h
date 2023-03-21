@@ -32,7 +32,8 @@ using network::test::TrustTokenRequestHandler;
 // diamond inheriting from ContentBrowserTest directly, needs to do so
 // virtually. Otherwise DevtoolsTrustTokenBrowsertest would contain multiple
 // copies of ContentBrowserTest's members.
-class TrustTokenBrowsertest : virtual public ContentBrowserTest {
+class TrustTokenBrowsertest : virtual public ContentBrowserTest,
+                              public WebContentsObserver {
  public:
   TrustTokenBrowsertest();
 
@@ -44,6 +45,12 @@ class TrustTokenBrowsertest : virtual public ContentBrowserTest {
   // data is correctly structured and that the provided Sec-Signature header's
   // verification key was previously bound to a successful token redemption.
   void SetUpOnMainThread() override;
+
+  void OnTrustTokensAccessed(RenderFrameHost* render_frame_host,
+                             const TrustTokenAccessDetails& details) override;
+
+  void OnTrustTokensAccessed(NavigationHandle* navigation_handle,
+                             const TrustTokenAccessDetails& details) override;
 
  protected:
   // Provides the network service key commitments from the internal
@@ -65,6 +72,9 @@ class TrustTokenBrowsertest : virtual public ContentBrowserTest {
   TrustTokenRequestHandler request_handler_;
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+  // Number of accesses reported by the Trust Token observer.
+  int access_count_ = 0;
 };
 
 }  // namespace content
