@@ -16,10 +16,10 @@ class FakeAutocompleteController : public AutocompleteController {
             0) {}
 
   using AutocompleteController::done_;
-  using AutocompleteController::in_start_;
   using AutocompleteController::input_;
   using AutocompleteController::metrics_;
   using AutocompleteController::providers_;
+  using AutocompleteController::sync_pass_done_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_CONTROLLER_H_

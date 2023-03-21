@@ -162,7 +162,8 @@ void RecordMatchDeletion(const AutocompleteMatch& match) {
 }
 
 // Return if the default suggestion should be preserved.
-bool ShouldPreserveDefault(bool in_start, const AutocompleteInput& input) {
+bool ShouldPreserveDefault(bool sync_pass_done,
+                           const AutocompleteInput& input) {
   // Don't preserve default in keyword mode to avoid e.g. the 'google.com'
   // suggestion being preserved and kicking the user out of keyword mode when
   // they type 'google.com  '.
@@ -173,7 +174,7 @@ bool ShouldPreserveDefault(bool in_start, const AutocompleteInput& input) {
     return false;
 
   // Check if preservation is enabled for sync/async updates.
-  if (in_start) {
+  if (!sync_pass_done) {
     static const int min_input_length =
         OmniboxFieldTrial::
             kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength
@@ -345,8 +346,6 @@ AutocompleteController::AutocompleteController(
               kAutocompleteStabilityUpdateResultDebounceFromLastRun.Get(),
           OmniboxFieldTrial::kAutocompleteStabilityUpdateResultDebounceDelay
               .Get()),
-      done_(true),
-      in_start_(false),
       is_cros_launcher_(is_cros_launcher),
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()) {
@@ -476,7 +475,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   stop_timer_.Stop();
 
   // Start the new query.
-  in_start_ = true;
+  sync_pass_done_ = false;
   // Use `start_time` rather than `metrics.start_time_` for
   // 'Omnibox.QueryTime2.*'. They differ by 3 μs, which though too small to be
   // distinguished in the ms-scale buckets, is large enough to move the
@@ -560,7 +559,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // need the edit model to update the display.
   UpdateResult(false, true);
 
-  in_start_ = false;
+  sync_pass_done_ = true;
 
   // If the input looks like a query, send a signal predicting that the user is
   // going to issue a search (either to the default search engine or to a
@@ -656,9 +655,9 @@ void AutocompleteController::OnProviderUpdate(
     bool updated_matches,
     const AutocompleteProvider* provider) {
   TRACE_EVENT0("omnibox", "AutocompleteController::OnProviderUpdate");
-  // Should be called even if `in_start_` is true in order to include early
-  // exited async providers. If the provider is done, will log how long the
-  // provider took.
+  // Should be called even if `sync_pass_done_` is false in order to include
+  // early exited async providers. If the provider is done, will log how long
+  // the provider took.
   if (provider)
     metrics_.OnProviderUpdate(*provider);
 
@@ -669,8 +668,9 @@ void AutocompleteController::OnProviderUpdate(
   // This is not a DCHECK, because in the unusual case that a provider calls an
   // asynchronous method, and that method early exits by calling the callback
   // immediately, it's not necessarily a programmer error. We should just no-op.
-  if (in_start_)
+  if (!sync_pass_done_) {
     return;
+  }
 
   CheckIfDone();
 
@@ -963,8 +963,9 @@ void AutocompleteController::UpdateResult(
 
   // Conditionally preserve the default match.
   const AutocompleteMatch* preserve_default_match = nullptr;
-  if (last_default_match && ShouldPreserveDefault(in_start_, input_))
+  if (last_default_match && ShouldPreserveDefault(sync_pass_done_, input_)) {
     preserve_default_match = &last_default_match.value();
+  }
 
   if (!done_) {
     // Conditionally skip the first call to `SortAndCull()` before the old and
@@ -1306,7 +1307,7 @@ void AutocompleteController::NotifyChanged() {
 void AutocompleteController::DelayedNotifyChanged(bool notify_default_match) {
   if (notify_default_match)
     notify_changed_default_match_ = true;
-  if (done_ || in_start_) {
+  if (done_ || !sync_pass_done_) {
     notify_changed_debouncer_.ResetTimeLastRun();
     NotifyChanged();
   } else {

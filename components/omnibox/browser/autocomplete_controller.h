@@ -205,7 +205,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // See also AutocompleteResult::GroupSuggestionsBySearchVsURL()
   void GroupSuggestionsBySearchVsURL(size_t begin, size_t end);
   bool done() const { return done_; }
-  bool in_start() const { return in_start_; }
+  bool sync_pass_done() const { return sync_pass_done_; }
   // TODO(manukh): Once we have a smarter `expire_timer_` that early runs when
   //  the controller is done, `expire_timer_done()` will be unnecessary. Until
   //  then, neither, either, or both `done()` and `expire_timer_done()` can be
@@ -475,13 +475,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `NotifyChanged()` couldn't know of the former.
   bool notify_changed_default_match_ = false;
 
-  // True if a query is not currently running.
-  bool done_;
+  // True if a query is not currently running - i.e., the synchronous pass is
+  // done and all providers have provided their async updates.
+  bool done_ = true;
 
-  // Are we in Start()? This is used to avoid updating |result_| and sending
-  // notifications until Start() has been invoked on all providers. When this
-  // boolean is true, we are definitely within the synchronous pass.
-  bool in_start_;
+  // True, if the synchronous pass is done. Used to avoid updating `result_` and
+  // sending notifications until the the synchronous pass is done on all
+  // providers.
+  bool sync_pass_done_ = true;
 
   // True if this instance of AutocompleteController is owned by the CrOS
   // launcher. This is currently used to determine whether to enable the Open

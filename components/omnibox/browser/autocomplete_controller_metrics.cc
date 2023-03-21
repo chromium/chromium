@@ -102,7 +102,7 @@ void AutocompleteControllerMetrics::OnStop() {
   // Done providers should already be logged by `OnProviderUpdate()`.
   for (const auto& provider : controller_->providers()) {
     if (!provider->done()) {
-      DCHECK(!controller_->done() || controller_->in_start());
+      DCHECK(!controller_->done() || !controller_->sync_pass_done());
       LogProviderTimeMetrics(*provider);
     }
   }
@@ -162,10 +162,11 @@ void AutocompleteControllerMetrics::LogSuggestionChangeIndexMetrics(
   size_t max = AutocompleteResult::kMaxAutocompletePositionValue;
   // These metrics are logged up to about 50 times per omnibox keystroke, so use
   // UMA macros for efficiency.
-  if (controller_->in_start())
+  if (!controller_->sync_pass_done()) {
     UMA_HISTOGRAM_EXACT_LINEAR(name + ".CrossInput", change_index, max);
-  else
+  } else {
     UMA_HISTOGRAM_EXACT_LINEAR(name + ".Async", change_index, max);
+  }
   UMA_HISTOGRAM_EXACT_LINEAR(name, change_index, max);
 }
 
@@ -174,9 +175,10 @@ void AutocompleteControllerMetrics::LogSuggestionChangeInAnyPositionMetrics(
   std::string name = "Omnibox.MatchStability2.MatchChangeInAnyPosition";
   // These metrics are logged up to about 5 times per omnibox keystroke, so
   // use UMA macros for efficiency.
-  if (controller_->in_start())
+  if (!controller_->sync_pass_done()) {
     UMA_HISTOGRAM_BOOLEAN(name + ".CrossInput", changed);
-  else
+  } else {
     UMA_HISTOGRAM_BOOLEAN(name + ".Async", changed);
+  }
   UMA_HISTOGRAM_BOOLEAN(name, changed);
 }

@@ -55,11 +55,11 @@ class AutocompleteControllerMetricsTest : public testing::Test {
       std::vector<AutocompleteResult::MatchDedupComparator> old_results,
       std::vector<AutocompleteResult::MatchDedupComparator> sync_results) {
     metrics_->OnStart();
-    controller_.in_start_ = true;
+    controller_.sync_pass_done_ = false;
     controller_.done_ = sync_results_only;
     task_environment_.FastForwardBy(base::Milliseconds(sync_milliseconds));
     metrics_->OnNotifyChanged(old_results, sync_results);
-    controller_.in_start_ = false;
+    controller_.sync_pass_done_ = true;
   }
 
   // Convenience function to be called before/after EXPECT'ing histograms to
@@ -342,13 +342,13 @@ TEST_F(AutocompleteControllerMetricsTest, Provider_SyncAndAsyncCompletion) {
 
   // Sync update with `async_provider_done_sync` completing.
   metrics_->OnStart();
-  controller_.in_start_ = true;
+  controller_.sync_pass_done_ = false;
   task_environment_.FastForwardBy(base::Milliseconds(1));
   metrics_->OnProviderUpdate(*async_provider_done_sync);
   ExpectProviderMetrics(async_provider_done_sync->GetName(), 1, true);
   controller_.done_ = false;
   metrics_->OnNotifyChanged({{}}, {{}});
-  controller_.in_start_ = false;
+  controller_.sync_pass_done_ = true;
   ExpectNoSuggestionFinalizationMetrics();
   ResetHistogramTester();
 
@@ -381,13 +381,13 @@ TEST_F(AutocompleteControllerMetricsTest,
 
   // Sync update without completion.
   metrics_->OnStart();
-  controller_.in_start_ = true;
+  controller_.sync_pass_done_ = false;
   provider->done_ = false;
   metrics_->OnProviderUpdate(*provider);
   controller_.done_ = false;
   task_environment_.FastForwardBy(base::Milliseconds(1));
   metrics_->OnNotifyChanged({{}}, {{}});
-  controller_.in_start_ = false;
+  controller_.sync_pass_done_ = true;
 
   // 1st async update without completion.
   task_environment_.FastForwardBy(base::Milliseconds(1));
@@ -451,7 +451,7 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
   const auto third_result = create_result({10, 1, 11, 10, 2});
 
   // Verify logging to the Async* histograms.
-  controller_.in_start_ = false;
+  controller_.sync_pass_done_ = true;
   metrics_->OnNotifyChanged(first_result, second_result);
   // Expect the default match, third match, and last two matches to be logged
   // as changed, and nothing else.
@@ -482,7 +482,7 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
   ResetHistogramTester();
 
   // Verify logging to the CrossInput* histograms.
-  controller_.in_start_ = true;
+  controller_.sync_pass_done_ = false;
   metrics_->OnNotifyChanged(first_result, second_result);
   // Expect the default match, third match, and last two matches to be logged
   // as changed, and nothing else.
@@ -514,9 +514,9 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
   ResetHistogramTester();
 
   // Verify no logging when appending matches.
-  controller_.in_start_ = false;
+  controller_.sync_pass_done_ = true;
   metrics_->OnNotifyChanged(second_result, third_result);
-  controller_.in_start_ = true;
+  controller_.sync_pass_done_ = false;
   metrics_->OnNotifyChanged(second_result, third_result);
   // Expect no changes logged; expect 1 false logged to
   // *MatchChangedInAnyPosition.
