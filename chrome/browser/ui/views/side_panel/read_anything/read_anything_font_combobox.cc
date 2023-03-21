@@ -69,6 +69,13 @@ gfx::Size ReadAnythingFontCombobox::GetMinimumSize() const {
   return gfx::Size(kMinimumComboboxWidth, CalculatePreferredSize().height());
 }
 
+void ReadAnythingFontCombobox::SetDropdownColors(
+    absl::optional<ui::ColorId> background_color,
+    absl::optional<ui::ColorId> foreground_color) {
+  delegate_->GetFontComboboxModel()->SetForegroundColor(foreground_color);
+  delegate_->GetFontComboboxModel()->SetBackgroundColor(background_color);
+}
+
 BEGIN_METADATA(ReadAnythingFontCombobox, views::Combobox)
 END_METADATA
 

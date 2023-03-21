@@ -86,7 +86,7 @@ class ReadAnythingToolbarView : public views::View,
 
   std::unique_ptr<views::View> Separator();
 
-  raw_ptr<views::Combobox> font_combobox_;
+  raw_ptr<ReadAnythingFontCombobox> font_combobox_;
   raw_ptr<ReadAnythingButtonView> decrease_text_size_button_;
   raw_ptr<ReadAnythingButtonView> increase_text_size_button_;
   raw_ptr<ReadAnythingMenuButton> colors_button_;

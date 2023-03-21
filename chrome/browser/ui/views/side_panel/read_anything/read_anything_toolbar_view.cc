@@ -200,7 +200,13 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_button_->SetIcon(kLetterSpacingIcon, kIconSize,
                                   foreground_color_id);
 
-  // TODO(1266555): Pass the dropdown color to the combobox and menu models.
+  // Update the background colors for the dropdowns.
+  colors_button_->SetDropdownColors(dropdown_color_id, foreground_color_id);
+  letter_spacing_button_->SetDropdownColors(dropdown_color_id,
+                                            foreground_color_id);
+  line_spacing_button_->SetDropdownColors(dropdown_color_id,
+                                          foreground_color_id);
+  font_combobox_->SetDropdownColors(dropdown_color_id, foreground_color_id);
 
   for (views::Separator* separator : separators_) {
     separator->SetColorId(separator_color_id);

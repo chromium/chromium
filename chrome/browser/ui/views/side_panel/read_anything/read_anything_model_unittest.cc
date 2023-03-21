@@ -263,4 +263,22 @@ TEST_F(ReadAnythingModelTest, DefaultIndexSetOnSetSelectedFontByIndex) {
   EXPECT_EQ(testIndex, GetFontModel()->GetDefaultIndexForTesting().value());
 }
 
+TEST_F(ReadAnythingModelTest, FontModelHasDefaultNullOptColors) {
+  EXPECT_FALSE(GetFontModel()->GetDropdownForegroundColorAt(0).has_value());
+  EXPECT_FALSE(GetFontModel()->GetDropdownBackgroundColorAt(0).has_value());
+}
+
+TEST_F(ReadAnythingModelTest, FontModelSetsDropdownAndForegroundColors) {
+  ReadAnythingColorsModel* color_model = model_->GetColorsModel();
+  ReadAnythingColorsModel::ColorInfo color_info = color_model->GetColorsAt(2);
+
+  GetFontModel()->SetForegroundColor(color_info.foreground_color_id);
+  GetFontModel()->SetBackgroundColor(color_info.dropdown_color_id);
+
+  EXPECT_EQ(color_info.foreground_color_id,
+            GetFontModel()->GetDropdownForegroundColorAt(0).value());
+  EXPECT_EQ(color_info.dropdown_color_id,
+            GetFontModel()->GetDropdownBackgroundColorAt(0).value());
+}
+
 #endif  // !defined(ADDRESS_SANITIZER)

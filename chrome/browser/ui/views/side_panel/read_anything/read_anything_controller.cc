@@ -53,7 +53,7 @@ void ReadAnythingController::OnFontChoiceChanged(int new_index) {
       model_->GetFontModel()->GetFontNameAt(new_index));
 }
 
-ui::ComboboxModel* ReadAnythingController::GetFontComboboxModel() {
+ReadAnythingFontModel* ReadAnythingController::GetFontComboboxModel() {
   return model_->GetFontModel();
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MENU_MODEL_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,9 +30,22 @@ class ReadAnythingMenuModel : public ui::SimpleMenuModel,
   absl::optional<size_t> GetSelectedIndex() const { return selected_index_; }
   void SetCallback(base::RepeatingCallback<void()> callback);
 
+  absl::optional<ui::ColorId> GetForegroundColor(size_t index) override;
+  absl::optional<ui::ColorId> GetSubmenuBackgroundColor(size_t index) override;
+
+  void SetForegroundColor(absl::optional<ui::ColorId> foreground_color) {
+    foreground_color_id_ = foreground_color;
+  }
+
+  void SetSubmenuBackgroundColor(absl::optional<ui::ColorId> background_color) {
+    submenu_background_color_id_ = background_color;
+  }
+
  private:
   absl::optional<size_t> selected_index_ = absl::nullopt;
   base::RepeatingClosure callback_;
+  absl::optional<ui::ColorId> foreground_color_id_;
+  absl::optional<ui::ColorId> submenu_background_color_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_MENU_MODEL_H_

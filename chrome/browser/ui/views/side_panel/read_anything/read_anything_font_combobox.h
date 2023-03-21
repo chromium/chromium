@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
@@ -18,7 +19,7 @@ class ReadAnythingFontCombobox : public views::Combobox {
   class Delegate {
    public:
     virtual void OnFontChoiceChanged(int new_index) = 0;
-    virtual ui::ComboboxModel* GetFontComboboxModel() = 0;
+    virtual ReadAnythingFontModel* GetFontComboboxModel() = 0;
   };
 
   explicit ReadAnythingFontCombobox(
@@ -26,6 +27,9 @@ class ReadAnythingFontCombobox : public views::Combobox {
   ReadAnythingFontCombobox(const ReadAnythingFontCombobox&) = delete;
   ReadAnythingFontCombobox& operator=(const ReadAnythingFontCombobox&) = delete;
   ~ReadAnythingFontCombobox() override;
+
+  void SetDropdownColors(absl::optional<ui::ColorId> foreground_color,
+                         absl::optional<ui::ColorId> background_color);
 
   // views::Combobox:
   gfx::Size GetMinimumSize() const override;

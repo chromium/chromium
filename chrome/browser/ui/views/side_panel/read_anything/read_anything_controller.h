@@ -62,7 +62,7 @@ class ReadAnythingController : public ui::AXActionHandlerObserver,
 
   // ReadAnythingFontCombobox::Delegate:
   void OnFontChoiceChanged(int new_index) override;
-  ui::ComboboxModel* GetFontComboboxModel() override;
+  ReadAnythingFontModel* GetFontComboboxModel() override;
 
   // ReadAnythingToolbarView::Delegate:
   void OnFontSizeChanged(bool increase) override;

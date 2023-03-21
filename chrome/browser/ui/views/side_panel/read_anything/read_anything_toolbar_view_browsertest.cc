@@ -34,7 +34,7 @@ class MockReadAnythingFontComboboxDelegate
     : public ReadAnythingFontCombobox::Delegate {
  public:
   MOCK_METHOD(void, OnFontChoiceChanged, (int new_index), (override));
-  MOCK_METHOD(ui::ComboboxModel*, GetFontComboboxModel, (), (override));
+  MOCK_METHOD(ReadAnythingFontModel*, GetFontComboboxModel, (), (override));
 };
 
 class MockReadAnythingCoordinator : public ReadAnythingCoordinator {

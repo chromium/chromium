@@ -35,3 +35,13 @@ void ReadAnythingMenuModel::SetSelectedIndex(size_t index) {
 bool ReadAnythingMenuModel::IsValidIndex(size_t index) {
   return false;
 }
+
+absl::optional<ui::ColorId> ReadAnythingMenuModel::GetForegroundColor(
+    size_t index) {
+  return foreground_color_id_;
+}
+
+absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSubmenuBackgroundColor(
+    size_t index) {
+  return submenu_background_color_id_;
+}
