@@ -634,3 +634,110 @@ TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(PrimaryAccountManagerTest,
+       RecordExistingPreviousSyncAccountIfCurrentlySignedOut) {
+  user_prefs_.SetString(prefs::kGoogleServicesLastGaiaId, "previous_gaia_id");
+  CreatePrimaryAccountManager();
+  ASSERT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+}
+
+TEST_F(PrimaryAccountManagerTest,
+       RecordExistingPreviousSyncAccountIfCurrentlyUnconsented) {
+  user_prefs_.SetString(prefs::kGoogleServicesLastGaiaId, "previous_gaia_id");
+  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+  CreatePrimaryAccountManager();
+  ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  // If a signed in primary account exists but sync is off, only one of the
+  // metrics should be recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
+      /*expected_count=*/0);
+}
+
+TEST_F(PrimaryAccountManagerTest,
+       DoNotRecordExistingPreviousSyncAccountIfCurrentlyConsented) {
+  user_prefs_.SetString(prefs::kGoogleServicesLastGaiaId, "previous_gaia_id");
+  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+  CreatePrimaryAccountManager();
+  ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  // If sync is currently on, none of the metrics should be recorded.
+  histogram_tester_.ExpectTotalCount(
+      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
+      /*expected_count=*/0);
+}
+
+TEST_F(PrimaryAccountManagerTest,
+       RecordAbsenceOfPreviousSyncAccountIfCurrentlySignedOut) {
+  // Leave `prefs::kGoogleServicesLastGaiaId` unset so there is no previous sync
+  // account.
+  CreatePrimaryAccountManager();
+  ASSERT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
+      /*sample=*/false, /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
+      /*sample=*/false, /*expected_bucket_count=*/1);
+}
+
+TEST_F(PrimaryAccountManagerTest,
+       RecordAbsenceOfPreviousSyncAccountIfCurrentlyUnconsented) {
+  // Leave `prefs::kGoogleServicesLastGaiaId` unset so there is no previous sync
+  // account.
+  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+  CreatePrimaryAccountManager();
+  ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+  ASSERT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  // If a signed in primary account exists but sync is off, only one of the
+  // metrics should be recorded.
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
+      /*sample=*/false, /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
+      /*expected_count=*/0);
+}
+
+TEST_F(PrimaryAccountManagerTest,
+       DoNotRecordAbsenceOfPreviousSyncAccountIfCurrentlyConsented) {
+  // Leave `prefs::kGoogleServicesLastGaiaId` unset so there is no previous sync
+  // account.
+  CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+  CreatePrimaryAccountManager();
+  ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+
+  // If sync is currently on, none of the metrics should be recorded.
+  histogram_tester_.ExpectTotalCount(
+      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
+      /*expected_count=*/0);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
+      /*expected_count=*/0);
+}

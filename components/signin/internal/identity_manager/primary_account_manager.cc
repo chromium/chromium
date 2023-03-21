@@ -217,6 +217,10 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
     SetPrimaryAccountInternal(account_info, consented, scoped_pref_commit);
   }
 
+  // Instrument metrics to know what fraction of users without a primary
+  // account previously did have one, with sync enabled.
+  RecordHadPreviousSyncAccount();
+
   // It is important to only load credentials after starting to observe the
   // token service.
   token_service_->AddObserver(this);
@@ -325,6 +329,29 @@ void PrimaryAccountManager::SetPrimaryAccountInternal(
     scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, account_id);
     scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync,
                                   consented_to_sync);
+  }
+}
+
+void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
+  if (HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    // If sync is on currently, do not record anything.
+    return;
+  }
+
+  const std::string& last_gaia_id_with_sync_enabled =
+      client_->GetPrefs()->GetString(prefs::kGoogleServicesLastGaiaId);
+  const bool existed_primary_account_with_sync =
+      !last_gaia_id_with_sync_enabled.empty();
+
+  base::UmaHistogramBoolean(
+      "Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad",
+      existed_primary_account_with_sync);
+
+  if (!HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The user is currently signed out (no primary account exists).
+    base::UmaHistogramBoolean(
+        "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
+        existed_primary_account_with_sync);
   }
 }
 

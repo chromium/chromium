@@ -505,6 +505,31 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad"
+    enum="BooleanHadSyncAccount" expires_after="2024-04-10">
+  <owner>mastiz@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether sync was turned on/consented on a profile at least once.
+    This histogram is recorded upon profile load, and only for the case where
+    the user is fully signed out.
+  </summary>
+</histogram>
+
+<histogram name="Signin.HadPreviousSyncAccount.SyncOffOnProfileLoad"
+    enum="BooleanHadSyncAccount" expires_after="2024-04-10">
+  <owner>mastiz@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether sync was turned on/consented on a profile at least once.
+    This histogram is recorded upon profile load, and only if sync is off
+    (either the user is fully signed out, or the user is signed in without
+    turning sync on).
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.AccountInfoFetchDuration" units="ms"
     expires_after="2023-06-04">
   <owner>alexilin@chromium.org</owner>

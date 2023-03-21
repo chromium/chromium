@@ -12524,29 +12524,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="gt;= 200MB"/>
 </enum>
 
-<enum name="BooleanHadAddress">
-  <int value="0" label="Did not have address."/>
-  <int value="1" label="Had address."/>
-</enum>
-
 <enum name="BooleanHadBlankText">
   <int value="0" label="Did not have blank text"/>
   <int value="1" label="Had blank text"/>
-</enum>
-
-<enum name="BooleanHadEmail">
-  <int value="0" label="Did not have email."/>
-  <int value="1" label="Had email."/>
-</enum>
-
-<enum name="BooleanHadName">
-  <int value="0" label="Did not have name."/>
-  <int value="1" label="Had name."/>
-</enum>
-
-<enum name="BooleanHadPhoneNumber">
-  <int value="0" label="Did not have phone number."/>
-  <int value="1" label="Had phone number."/>
 </enum>
 
 <enum name="BooleanHadPredictions">
@@ -12557,6 +12537,11 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanHadSuggestions">
   <int value="0" label="No Suggestions"/>
   <int value="1" label="Had Suggestions"/>
+</enum>
+
+<enum name="BooleanHadSyncAccount">
+  <int value="0" label="Did not have a sync-enabled account before"/>
+  <int value="1" label="Had at least one sync-enabled account before"/>
 </enum>
 
 <enum name="BooleanHandshakeConfirmed">
