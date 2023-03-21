@@ -114,7 +114,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | maybe_close_pwa |  |  | 143 | Implemented | Close the current app window if there is one open. |  |
 | open_app_settings | Site | open_app_settings_from_chrome_apps($1) & open_app_settings_from_app_menu($1) | 95 | Parameterized | Launch chrome://app-settings/<app-id> page | phillis@ |
 | open_app_settings_from_app_menu | Site |  | 97 | Implemented |  | phillis@ |
-| open_app_settings_from_chrome_apps | Site |  | 96 | Implemented |  | phillis@ |
 | open_in_chrome |  |  | 71 | Implemented | Click on the 'open in chrome' link in the 3-dot menu of the app window | cliffordcheng@, P1 |
 | set_open_in_tab | Site | set_open_in_tab_from_app_settings($1) & set_open_in_tab_from_app_home($1) | 148 | Parameterized | All methods to toggle an app to open in a tab in the same window. | dibyapal@ |
 | set_open_in_tab_from_app_settings | Site |  | 149 | Implemented | Toggle the "open in window"  option in the chrome://app-settings/<app-id> page to disable an app from opening in a separate window, so that the app opens in a tab in the same window. | dibyapal@ |
@@ -122,7 +121,6 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | set_open_in_window_from_app_settings | Site |  | 150 | Implemented | Toggle the "open in window" option in the chrome://app-settings/<app-id> page to enable an app to launch in a separate window. | dibyapal@ |
 | check_window_color_correct | Site |  | 77 | Not Implemented | The color of the window is correct. | P3 |
 | check_window_icon_correct | Site |  | 78 | Not Implemented |  | P3 |
-| create_shortcuts_from_list | Site |  | 72 | Implemented | "create shortcuts" in chrome://apps. Win/Mac/Linux only. | P2 |
 | delete_platform_shortcut | Site |  | 74 | Implemented | Delete the shortcut that lives on the operating system. Win/Mac/Linux only. | P2 |
 | delete_profile |  |  | 83 | Not Implemented | Delete the user profile. | P4 |
 | # Launching |
@@ -188,3 +186,5 @@ Actions that the user can take by going to chrome://apps and either left clickin
 | check_user_cannot_set_run_on_os_login_app_home | Site | | 157 | Implemented | Checks that the user cannot set the `launch at startup` checkbox from the chrome://apps context menu by right clicking an app icon. | dibyapal@ |
 | install_locally | Site |  | 46 | Implemented | Find the app in the app list (chrome://apps) and install it by right-clicking on the app and selecting the 'install' option. Win/Mac/Linux only. |  |
 | uninstall_from_list | Site |  | 10 | Implemented | Uninstall the webapp from wherever apps are listed by chrome. On WML, this is from chrome://apps, and on ChromeOS, this is from the 'launcher' |  |
+| create_shortcuts_from_list | Site |  | 72 | Implemented | "create shortcuts" in chrome://apps. Win/Mac/Linux only. | P2 |
+| open_app_settings_from_chrome_apps | Site |  | 96 | Implemented |  | phillis@ |

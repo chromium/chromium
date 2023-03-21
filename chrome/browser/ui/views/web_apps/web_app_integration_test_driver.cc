@@ -70,7 +70,6 @@
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
@@ -419,20 +418,6 @@ SiteConfig GetSiteConfigurationFromAppName(const std::string& app_name) {
   CHECK(is_app_found) << "Could not find " << app_name;
   return config;
 }
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-class TestAppLauncherHandler : public AppLauncherHandler {
- public:
-  TestAppLauncherHandler(extensions::ExtensionService* extension_service,
-                         WebAppProvider* provider,
-                         content::TestWebUI* test_web_ui)
-      : AppLauncherHandler(extension_service, provider) {
-    DCHECK(test_web_ui->GetWebContents());
-    DCHECK(test_web_ui->GetWebContents()->GetBrowserContext());
-    set_web_ui(test_web_ui);
-  }
-};
 #endif
 
 class BrowserAddedWaiter final : public BrowserListObserver {
@@ -1668,20 +1653,17 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  ;
 
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   DCHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
-  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
-                                 &test_web_ui);
-  base::Value::List web_app_ids;
-  web_app_ids.Append(app_id);
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler(&test_web_ui);
   content::WebContentsAddedObserver nav_observer;
-  handler.HandleShowAppInfo(web_app_ids);
-  // Wait for new web content to be created.
+  app_home_page_handler.ShowAppSettings(app_id);
+  // Wait for new web contents to be created.
   nav_observer.GetWebContents();
   AfterStateChangeAction();
 #endif
@@ -1690,7 +1672,7 @@ void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(Site site) {
 void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED_NORETURN() << "Not implemented on Chrome OS.";
-#else
+#else  // !BUILDFLAG(IS_CHROMEOS)
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -1702,25 +1684,25 @@ void WebAppIntegrationTestDriver::CreateShortcutsFromList(Site site) {
       browser()->tab_strip_model()->GetWebContentsAt(0);
   DCHECK(web_contents);
   test_web_ui.set_web_contents(web_contents);
-  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
-                                 &test_web_ui);
-  base::Value::List web_app_ids;
-  web_app_ids.Append(app_id);
+  webapps::AppHomePageHandler app_home_page_handler =
+      GetTestAppHomePageHandler(&test_web_ui);
+  base::test::TestFuture<void> shortcuts_future;
 #if BUILDFLAG(IS_MAC)
-  base::RunLoop loop;
-  handler.HandleCreateAppShortcut(loop.QuitClosure(), web_app_ids);
-  loop.Run();
-#else
+  app_home_page_handler.CreateAppShortcut(app_id,
+                                          shortcuts_future.GetCallback());
+#else   // !BUILDFLAG(IS_MAC)
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "CreateChromeApplicationShortcutView");
-  handler.HandleCreateAppShortcut(base::DoNothing(), web_app_ids);
+  app_home_page_handler.CreateAppShortcut(app_id,
+                                          shortcuts_future.GetCallback());
   FlushShortcutTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(widget != nullptr);
   views::test::AcceptDialog(widget);
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(shortcuts_future.Wait());
   AfterStateChangeAction();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebAppIntegrationTestDriver::DeletePlatformShortcut(Site site) {
