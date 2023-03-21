@@ -146,7 +146,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
     // request_is_internal_only indicates that this request can only be serviced
     // by internal authenticators (e.g. due to the attachment setting).
+    // See also `make_credential_attachment`.
     bool request_is_internal_only = false;
+
+    // make_credential_attachment contains the attachment preference for
+    // makeCredential requests. See also `request_is_internal_only`, which isn't
+    // specific to makeCredential requests.
+    absl::optional<AuthenticatorAttachment> make_credential_attachment;
   };
 
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer {

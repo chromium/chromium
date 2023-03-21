@@ -1349,7 +1349,13 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
         device::ResidentKeyRequirement::kDiscouraged;
     if (base::FeatureList::IsEnabled(device::kWebAuthPasskeysUI)) {
       if (is_passkey_request) {
-        if (paired_phone_names().empty()) {
+        // If attachment=any, then don't jump to suggesting a phone.
+        // TODO(crbug.com/1426628): makeCredential requests should always have
+        // `make_credential_attachment` set. Stop being hesitant.
+        if ((!transport_availability_.make_credential_attachment ||
+             *transport_availability_.make_credential_attachment !=
+                 device::AuthenticatorAttachment::kAny) &&
+            paired_phone_names().empty()) {
           priority_list.emplace_back(Mechanism::AddPhone());
         }
       } else {

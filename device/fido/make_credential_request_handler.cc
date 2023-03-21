@@ -429,6 +429,8 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       options_.resident_key;
   transport_availability_info().request_is_internal_only =
       options_.authenticator_attachment == AuthenticatorAttachment::kPlatform;
+  transport_availability_info().make_credential_attachment =
+      options_.authenticator_attachment;
 
   base::flat_set<FidoTransportProtocol> allowed_transports =
       GetTransportsAllowedByRP(options.authenticator_attachment);
