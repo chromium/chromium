@@ -37,7 +37,8 @@ class PersonalizationAppBrowserTestFixture : public MojoWebUIBrowserTest {
   void SetUpOnMainThread() override;
 
  private:
-  raw_ptr<TestWallpaperImageDownloader> test_wallpaper_image_downloader_;
+  raw_ptr<TestWallpaperImageDownloader, DanglingUntriaged>
+      test_wallpaper_image_downloader_;
   TestChromeWebUIControllerFactory test_factory_;
   TestPersonalizationAppWebUIProvider test_web_ui_provider_;
   content::ScopedWebUIControllerFactoryRegistration

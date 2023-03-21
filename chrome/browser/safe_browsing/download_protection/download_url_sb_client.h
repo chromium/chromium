@@ -79,7 +79,7 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
   const SBStatsType total_type_;
   const SBStatsType dangerous_type_;
 
-  raw_ptr<DownloadProtectionService> service_;
+  raw_ptr<DownloadProtectionService, DanglingUntriaged> service_;
   CheckDownloadCallback callback_;
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   base::TimeTicks start_time_;

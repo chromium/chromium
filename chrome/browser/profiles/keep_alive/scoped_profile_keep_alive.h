@@ -40,7 +40,7 @@ class ScopedProfileKeepAlive {
   static void RemoveKeepAliveOnUIThread(const Profile* profile,
                                         ProfileKeepAliveOrigin origin);
 
-  const raw_ptr<const Profile> profile_;
+  const raw_ptr<const Profile, DanglingUntriaged> profile_;
   const ProfileKeepAliveOrigin origin_;
 };
 

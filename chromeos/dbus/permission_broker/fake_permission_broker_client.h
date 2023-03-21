@@ -170,7 +170,7 @@ class COMPONENT_EXPORT(PERMISSION_BROKER) FakePermissionBrokerClient
 
   std::map<std::string, UsbInterfaces> clients_;
 
-  raw_ptr<Delegate> delegate_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
   base::WeakPtrFactory<FakePermissionBrokerClient> weak_factory_{this};
 };
