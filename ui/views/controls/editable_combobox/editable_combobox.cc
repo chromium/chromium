@@ -68,15 +68,23 @@ namespace views {
 
 namespace {
 
+int kEditableComboboxButtonSize = 24;
+int kEditableComboboxControlsContainerInsets = 6;
+
 class Arrow : public Button {
  public:
   METADATA_HEADER(Arrow);
 
   explicit Arrow(PressedCallback callback) : Button(std::move(callback)) {
-    SetPreferredSize(gfx::Size(GetComboboxArrowContainerWidthAndMargins(),
-                               ComboboxArrowSize().height()));
-    // Similar to Combobox's TransparentButton.
-    SetFocusBehavior(FocusBehavior::NEVER);
+    if (features::IsChromeRefresh2023()) {
+      SetPreferredSize(
+          gfx::Size(kEditableComboboxButtonSize, kEditableComboboxButtonSize));
+    } else {
+      SetPreferredSize(gfx::Size(GetComboboxArrowContainerWidthAndMargins(),
+                                 ComboboxArrowSize().height()));
+      SetFocusBehavior(FocusBehavior::NEVER);
+    }
+
     button_controller()->set_notify_action(
         ButtonController::NotifyAction::kOnPress);
 
@@ -370,11 +378,12 @@ EditableCombobox::EditableCombobox(
   AddChildView(textfield_.get());
 
   control_elements_container_ = AddChildView(std::make_unique<BoxLayoutView>());
-  control_elements_container_->SetInsideBorderInsets(
-      gfx::Insets::TLBR(0, 0, 0,
-                        GetComboboxArrowContainerWidthAndMargins() -
-                            GetComboboxArrowContainerWidth()));
-
+  if (features::IsChromeRefresh2023()) {
+    control_elements_container_->SetInsideBorderInsets(
+        gfx::Insets::TLBR(kEditableComboboxControlsContainerInsets, 0,
+                          kEditableComboboxControlsContainerInsets,
+                          kEditableComboboxControlsContainerInsets));
+  }
   if (display_arrow) {
     arrow_ = AddControlElement(std::make_unique<Arrow>(base::BindRepeating(
         &EditableCombobox::ArrowButtonPressed, base::Unretained(this))));
@@ -498,7 +507,16 @@ void EditableCombobox::OnLayoutIsAnimatingChanged(
   }
 }
 
+bool EditableCombobox::ShouldApplyInkDropEffects() {
+  return features::IsChromeRefresh2023() && arrow_ && InkDrop::Get(arrow_) &&
+         GetWidget();
+}
+
 void EditableCombobox::CloseMenu() {
+  if (ShouldApplyInkDropEffects()) {
+    InkDrop::Get(arrow_)->AnimateToState(InkDropState::DEACTIVATED, nullptr);
+    InkDrop::Get(arrow_)->GetInkDrop()->SetHovered(arrow_->IsMouseHovered());
+  }
   menu_runner_.reset();
   pre_target_handler_.reset();
 }
@@ -531,6 +549,9 @@ void EditableCombobox::HandleNewContent(const std::u16string& new_content) {
 
 void EditableCombobox::ArrowButtonPressed(const ui::Event& event) {
   textfield_->RequestFocus();
+  if (ShouldApplyInkDropEffects()) {
+    InkDrop::Get(arrow_)->AnimateToState(InkDropState::ACTIVATED, nullptr);
+  }
   if (menu_runner_ && menu_runner_->IsRunning()) {
     CloseMenu();
   } else {

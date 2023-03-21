@@ -20,6 +20,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/combobox/combobox_util.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -49,6 +50,7 @@ std::unique_ptr<ToggleImageButton> CreateEye(
   SetToggledImageFromVectorIconWithColorId(
       button.get(), kEyeCrossedIcon, ui::kColorIcon, ui::kColorIconDisabled);
 
+  ConfigureComboboxButtonInkDrop(button.get());
   return button;
 }
 

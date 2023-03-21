@@ -71,8 +71,16 @@ void PaintComboboxArrow(SkColor color,
 void ConfigureComboboxButtonInkDrop(Button* host_view) {
   InkDrop::Get(host_view)->SetMode(views::InkDropHost::InkDropMode::ON);
   host_view->SetHasInkDropActionOnClick(true);
-  InkDrop::UseInkDropForSquareRipple(InkDrop::Get(host_view),
-                                     /*highlight_on_hover=*/false);
+  if (features::IsChromeRefresh2023()) {
+    // We must use UseInkDropForFloodFillRipple here because
+    // UseInkDropForSquareRipple hides the InkDrop when the ripple effect is
+    // active instead of layering underneath it causing flashing.
+    InkDrop::UseInkDropForFloodFillRipple(InkDrop::Get(host_view),
+                                          /*highlight_on_hover=*/true);
+  } else {
+    InkDrop::UseInkDropForSquareRipple(InkDrop::Get(host_view),
+                                       /*highlight_on_hover=*/false);
+  }
   views::InkDrop::Get(host_view)->SetBaseColorCallback(base::BindRepeating(
       [](Button* host) {
         // Use the same foreground base color as a label button.

@@ -132,6 +132,8 @@ class VIEWS_EXPORT EditableCombobox
 
   Textfield& GetTextfield() { return *textfield_; }
 
+  Button* GetArrowButtonForTesting() { return arrow_; }
+
  private:
   friend class EditableComboboxTest;
   friend class EditablePasswordComboboxTest;
@@ -185,6 +187,8 @@ class VIEWS_EXPORT EditableCombobox
   // Overridden from views::AnimatingLayoutManager::Observer:
   void OnLayoutIsAnimatingChanged(views::AnimatingLayoutManager* source,
                                   bool is_animating) override;
+
+  bool ShouldApplyInkDropEffects();
 
   raw_ptr<Textfield> textfield_;
   raw_ptr<BoxLayoutView> control_elements_container_ = nullptr;
