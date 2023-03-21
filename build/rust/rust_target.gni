@@ -118,6 +118,7 @@ template("rust_target") {
                              "//build/rust:edition_",
                              _edition,
                            ]) ]
+  _test_configs = []
   if (invoker.target_type == "executable") {
     if (defined(invoker.executable_configs)) {
       _configs += invoker.executable_configs
@@ -125,6 +126,7 @@ template("rust_target") {
   } else if (invoker.target_type == "rust_proc_macro") {
     if (defined(invoker.proc_macro_configs)) {
       _configs += invoker.proc_macro_configs
+      _test_configs += [ "//build/rust:proc_macro_extern" ]
     }
   } else {
     if (defined(invoker.library_configs)) {
@@ -385,7 +387,10 @@ template("rust_target") {
         if (defined(invoker.executable_configs)) {
           configs = []
           configs = invoker.executable_configs
+        } else if (!defined(configs)) {
+          configs = []
         }
+        configs += _test_configs
         rustenv = _rustenv
 
         if (!_allow_unsafe) {
@@ -397,6 +402,7 @@ template("rust_target") {
                    "_crate_root",
                    "_crate_name",
                    "_metadata",
+                   "_test_configs",
                  ])
     }
   }
