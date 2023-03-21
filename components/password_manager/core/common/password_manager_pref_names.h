@@ -234,6 +234,12 @@ extern const char kPasswordsGroupingInfoRequested[];
 extern const char kAccountStorageNoticeShown[];
 #endif  // BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// A list of available promo cards with related information which are displayed
+// in the Password Manager UI.
+extern const char kPasswordManagerPromoCardsList[];
+#endif
+
 }  // namespace prefs
 }  // namespace password_manager
 

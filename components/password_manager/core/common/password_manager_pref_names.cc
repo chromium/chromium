@@ -129,5 +129,10 @@ const char kAccountStorageNoticeShown[] =
     "password_manager.account_storage_notice_shown";
 #endif  // BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+const char kPasswordManagerPromoCardsList[] =
+    "password_manager.password_promo_cards_list";
+#endif
+
 }  // namespace prefs
 }  // namespace password_manager

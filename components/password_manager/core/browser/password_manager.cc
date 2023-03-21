@@ -344,6 +344,9 @@ void PasswordManager::RegisterProfilePrefs(
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kAccountStorageNoticeShown, false);
 #endif
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+  registry->RegisterListPref(prefs::kPasswordManagerPromoCardsList);
+#endif
 }
 
 // static

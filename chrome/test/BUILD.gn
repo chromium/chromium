@@ -7119,6 +7119,8 @@ test("unit_tests") {
       "../browser/ui/webui/metrics_reporter/mock_metrics_reporter.cc",
       "../browser/ui/webui/metrics_reporter/mock_metrics_reporter.h",
       "../browser/ui/webui/new_tab_page/new_tab_page_handler_unittest.cc",
+      "../browser/ui/webui/password_manager/promo_card_unittest.cc",
+      "../browser/ui/webui/password_manager/promo_cards_handler_unittest.cc",
       "../browser/ui/webui/password_manager/sync_handler_unittest.cc",
       "../browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler_unittest.cc",
       "../browser/ui/webui/realbox/realbox_handler_unittest.cc",
