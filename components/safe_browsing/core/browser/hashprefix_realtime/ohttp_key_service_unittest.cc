@@ -49,7 +49,8 @@ class OhttpKeyServiceTest : public ::testing::Test {
                                           kTestOhttpKey);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<OhttpKeyService> ohttp_key_service_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -63,6 +64,12 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
 
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
+
+  absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+      ohttp_key_service_->get_ohttp_key_for_testing();
+  EXPECT_TRUE(ohttp_key.has_value());
+  EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(30));
+  EXPECT_EQ(ohttp_key.value().key, kTestOhttpKey);
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
@@ -73,6 +80,11 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Failure) {
 
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
+
+  absl::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
+      ohttp_key_service_->get_ohttp_key_for_testing();
+  // The key should not be cached if key fetch fails.
+  EXPECT_FALSE(ohttp_key.has_value());
 }
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_MultipleRequests) {
@@ -91,6 +103,42 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_MultipleRequests) {
   task_environment_.RunUntilIdle();
   // url_loader should only send one request
   EXPECT_EQ(test_url_loader_factory_->total_requests(), 1u);
+}
+
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithValidCache) {
+  SetupSuccessResponse();
+  ohttp_key_service_->set_ohttp_key_for_testing(
+      {"OldOhttpKey", base::Time::Now() + base::Hours(1)});
+
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  // Should return the old key because it has not expired.
+  EXPECT_CALL(response_callback, Run(Optional(std::string("OldOhttpKey"))))
+      .Times(1);
+  ohttp_key_service_->GetOhttpKey(response_callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithExpiredCache) {
+  SetupSuccessResponse();
+  ohttp_key_service_->set_ohttp_key_for_testing(
+      {"OldOhttpKey", base::Time::Now() - base::Hours(1)});
+
+  base::MockCallback<OhttpKeyService::Callback> response_callback1;
+  // The new key should be fetched because the old key has expired.
+  EXPECT_CALL(response_callback1, Run(Optional(std::string(kTestOhttpKey))))
+      .Times(1);
+  ohttp_key_service_->GetOhttpKey(response_callback1.Get());
+  task_environment_.RunUntilIdle();
+
+  test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+                                        "NewOhttpKey");
+  task_environment_.FastForwardBy(base::Days(20));
+  base::MockCallback<OhttpKeyService::Callback> response_callback2;
+  // The new key should not be fetched because the old key has not expired.
+  EXPECT_CALL(response_callback2, Run(Optional(std::string(kTestOhttpKey))))
+      .Times(1);
+  ohttp_key_service_->GetOhttpKey(response_callback2.Get());
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(OhttpKeyServiceTest, Shutdown) {

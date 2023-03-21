@@ -17,6 +17,8 @@ constexpr base::TimeDelta kKeyFetchTimeout = base::Seconds(3);
 // TODO(crbug.com/1407283): Update the endpoint when it is finalized.
 constexpr char kKeyFetchServerUrl[] =
     "https://safebrowsingohttpgateway.googleapis.com/key";
+// Key older than 30 days is considered expired and should be refetched.
+constexpr base::TimeDelta kKeyExpirationDuration = base::Days(30);
 
 constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_ohttp_key_fetch",
@@ -73,6 +75,12 @@ OhttpKeyService::OhttpKeyService(
 OhttpKeyService::~OhttpKeyService() = default;
 
 void OhttpKeyService::GetOhttpKey(Callback callback) {
+  // If there is a valid key in memory, use it directly.
+  if (ohttp_key_ && ohttp_key_->expiration > base::Time::Now()) {
+    std::move(callback).Run(ohttp_key_->key);
+    return;
+  }
+
   pending_callbacks_.AddUnsafe(std::move(callback));
   // If url_loader_ is not null, that means a request is already in progress.
   // Will notify the callback when it is completed.
@@ -104,6 +112,9 @@ void OhttpKeyService::OnURLLoaderComplete(
                                  response_code == net::HTTP_OK;
 
   url_loader_.reset();
+  if (is_key_fetch_successful) {
+    ohttp_key_ = {*response_body, base::Time::Now() + kKeyExpirationDuration};
+  }
   pending_callbacks_.Notify(is_key_fetch_successful
                                 ? absl::optional<std::string>(*response_body)
                                 : absl::nullopt);
@@ -112,6 +123,16 @@ void OhttpKeyService::OnURLLoaderComplete(
 void OhttpKeyService::Shutdown() {
   url_loader_.reset();
   pending_callbacks_.Notify(absl::nullopt);
+}
+
+void OhttpKeyService::set_ohttp_key_for_testing(
+    OhttpKeyAndExpiration ohttp_key) {
+  ohttp_key_ = ohttp_key;
+}
+
+absl::optional<OhttpKeyService::OhttpKeyAndExpiration>
+OhttpKeyService::get_ohttp_key_for_testing() {
+  return ohttp_key_;
 }
 
 }  // namespace safe_browsing

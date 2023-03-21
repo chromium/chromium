@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,6 +25,13 @@ class OhttpKeyService : public KeyedService {
  public:
   using Callback =
       base::OnceCallback<void(absl::optional<std::string> ohttp_key)>;
+
+  struct OhttpKeyAndExpiration {
+    // The OHTTP key in this struct is formatted as described in
+    // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-02.html#name-key-configuration-encoding
+    std::string key;
+    base::Time expiration;
+  };
 
   explicit OhttpKeyService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -46,6 +54,9 @@ class OhttpKeyService : public KeyedService {
   // Called before the actual deletion of the object.
   void Shutdown() override;
 
+  void set_ohttp_key_for_testing(OhttpKeyAndExpiration ohttp_key);
+  absl::optional<OhttpKeyAndExpiration> get_ohttp_key_for_testing();
+
  private:
   // Called when the response from the Safe Browsing key hosting endpoint is
   // received.
@@ -59,6 +70,9 @@ class OhttpKeyService : public KeyedService {
   // All callbacks that have requested an OHTTP key but haven't received a
   // response yet.
   base::OnceCallbackList<Callback::RunType> pending_callbacks_;
+
+  // The key cached in memory.
+  absl::optional<OhttpKeyAndExpiration> ohttp_key_;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };
