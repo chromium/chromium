@@ -9,6 +9,10 @@
     min-height: 32px;
   }
 
+  #noAlbumText {
+    display: inline;
+  }
+
   #descriptionPlaceholder {
     height: 20px;
     width: 50%;
@@ -56,7 +60,7 @@
 
     <!-- Only Google Photos may not have albums -->
     <template is="dom-if" if="[[showNoGoogleAlbums_(topicSource, albums)]]">
-      <localized-link class="cr-row first"
+      <localized-link id="noAlbumText" class="cr-row first"
           localized-string=
               "[[i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosNoAlbum')]]">
       </localized-link>
