@@ -1,0 +1,60 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,
+      minimum-scale=1,width=device-width">
+  <title>$i18n{incognitoBlockedPageTitle}</title>
+  <link rel="stylesheet" href="incognito_blocked.css">
+  </link>
+  <script src="incognito_blocked.js"></script>
+</head>
+<body>
+  <div class="frame-blocked">
+    <div class="information-container">
+      <div class="enterprise-icon"></div>
+      <div id="main-message">
+        <div id="container-blocking-extensions" hidden>
+          <h1 id="heading">
+            $i18n{incognitoBlockedPageTitle}
+          </h1>
+          <p>
+            $i18n{incognitoBlockedMessage}
+          </p>
+          <ul id="blocking-extensions">
+          </ul>
+          <p>
+            $i18n{incognitoBlockedInstructions}
+          </p>
+          <ol>
+            <li>
+              $i18nRaw{incognitoBlockedInstructionsStep1}
+            </li>
+            <li>
+              $i18nRaw{incognitoBlockedInstructionsStep2}
+            </li>
+            <li>
+              $i18nRaw{incognitoBlockedInstructionsStep3}
+            </li>
+            <li>
+              $i18nRaw{incognitoBlockedInstructionsStep4}
+            </li>
+          </ol>
+        </div>
+        <div id="container-missing-extensions" hidden>
+          <h1>
+            $i18n{incognitoBlockedMissingExtensionsTitle}
+          </h1>
+          <p>
+            $i18nRaw{incognitoBlockedMissingExtensionsMessagePart1}
+          </p>
+          <ul id="mising-extensions"></ul>
+          <span>
+            $i18nRaw{incognitoBlockedMissingExtensionsMessagePart2}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

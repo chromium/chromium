@@ -1907,6 +1907,46 @@
         Missing 'Subject alternative name match' or 'Domain suffix match' to validate the authentication server identity
       </message>
 
+       <!-- Strings shown on the Incognito navigation blocked page when policy-configured mandatory extensions are not allowed by the user to run in Incognito -->
+      <message name="IDS_INCOGNITO_NAVIGATION_BLOCKED_PAGE_TITLE" desc="Title of the page shown when Incognito navigation is blocked">
+              {COUNT, plural,
+              =1 {To use Incognito, your organization requires an extension}
+              other {To use Incognito, your organization requires some extensions}}
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_MESSAGE" desc="Informational message shown when Incognito navigation is blocked">
+                    {COUNT, plural,
+              =1 {Turn on the following extension in Incognito:}
+              other {Turn on the following extensions in Incognito:}}
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS" desc="Instructions shown on the blocked navigation page on how to enable an extension">
+        Turn on an extension in Incognito:
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_1" desc="First step from the instruction to enable an extension in Incognito mode">
+        Type <ph name="BEGIN_BOLD">&lt;b&gt;</ph>chrome://extensions<ph name="END_BOLD">&lt;/b&gt;</ph> into your browser
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_2" desc="Second step from the instruction to enable an extension in Incognito mode">
+        Find the extension above
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_3" desc="Third step from the instruction to enable an extension in Incognito mode">
+        Click <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Details<ph name="END_BOLD">&lt;/b&gt;</ph>
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_4" desc="Forth step from the instruction to enable an extension in Incognito mode">
+        Turn on <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Allow in Incognito<ph name="END_BOLD">&lt;/b&gt;</ph>
+      </message>
+        <message name="IDS_INCOGNITO_NAVIGATION_MISSING_TITLE" desc="Message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
+        {COUNT, plural,
+              =1 {Can’t find extension}
+              other {Can’t find extensions}}
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS_PART_1" desc="First part of the message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
+        {COUNT, plural,
+              =1 {An extension with the ID}
+              other {Extensions with the IDs}}
+      </message>
+      <message name="IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS_PART_2" desc="Second part of the message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
+        can’t be located. Contact your administrator.
+      </message>
+
       <!-- Settings strings -->
       <message name="IDS_SETTINGS_INTERNET_MOBILE_SEARCH" desc="Settings > Internet > Message in Mobile section when searching for mobile networks.">
         Searching for mobile networks

@@ -1,0 +1,39 @@
+/* Copyright 2023 The Chromium Authors
+* Use of this source code is governed by a BSD-style license that can be
+* found in the LICENSE file. */
+
+body {
+  --header-color: var(--cr-primary-text-color);
+  --paragraph-color: var(--cr-secondary-text-color);
+  font-family: sans-serif;
+  padding: 24px 24px 20px 24px;
+}
+
+h1 {
+  color: var(--header-color);
+  font-size: 30px;
+  font-weight: normal;
+  margin-bottom: 16px;
+}
+
+.frame-blocked {
+  margin: 100px auto 0;
+  text-align: center;
+}
+
+.information-container {
+  display: inline-block;
+  font-size: 125%;
+  letter-spacing: -0.35px;
+  text-align: start;
+}
+
+#main-message {
+  margin-top: 36px;
+}
+
+.enterprise-icon {
+  background-image: url(images/enterprise_icon.svg);
+  height: 48px;
+  width: 48px;
+}

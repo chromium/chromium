@@ -459,6 +459,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/debug/leak_annotations.h"
+#include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
@@ -5170,6 +5171,14 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
         &throttles);
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (profile && profile->IsIncognitoProfile()) {
+    MaybeAddThrottle(
+        chromeos::IncognitoNavigationThrottle::MaybeCreateThrottleFor(handle),
+        &throttles);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return throttles;
 }
