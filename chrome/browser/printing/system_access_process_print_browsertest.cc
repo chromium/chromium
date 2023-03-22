@@ -711,6 +711,19 @@ class SystemAccessProcessPrintBrowserTestBase
   int print_job_destruction_count_ = 0;
 };
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+
+// Values for parameterized testing.
+enum class PrintBackendFeatureVariation {
+  // `PrintBackend` calls occur from browser process.
+  kInBrowserProcess,
+  // Use OOP `PrintBackend`.  Attempt to have `PrintBackendService` be
+  // sandboxed.
+  kOopSandboxedService,
+  // Use OOP `PrintBackend`.  Always use `PrintBackendService` unsandboxed.
+  kOopUnsandboxedService,
+};
+
 class SystemAccessProcessSandboxedServicePrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase {
  public:
@@ -721,22 +734,24 @@ class SystemAccessProcessSandboxedServicePrintBrowserTest
   bool SandboxService() override { return true; }
 };
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-
 class SystemAccessProcessServicePrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<PrintBackendFeatureVariation> {
  public:
   SystemAccessProcessServicePrintBrowserTest() = default;
   ~SystemAccessProcessServicePrintBrowserTest() override = default;
 
   bool UseService() override { return true; }
-  bool SandboxService() override { return GetParam(); }
+  bool SandboxService() override {
+    return GetParam() == PrintBackendFeatureVariation::kOopSandboxedService;
+  }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SystemAccessProcessServicePrintBrowserTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemAccessProcessServicePrintBrowserTest,
+    testing::Values(PrintBackendFeatureVariation::kOopSandboxedService,
+                    PrintBackendFeatureVariation::kOopUnsandboxedService));
 
 #endif
 
@@ -748,16 +763,6 @@ class SystemAccessProcessInBrowserPrintBrowserTest
 
   bool UseService() override { return false; }
   bool SandboxService() override { return false; }
-};
-
-enum class PrintBackendFeatureVariation {
-  // `PrintBackend` calls occur from browser process.
-  kInBrowserProcess,
-  // Use OOP `PrintBackend`.  Attempt to have `PrintBackendService` be
-  // sandboxed.
-  kOopSandboxedService,
-  // Use OOP `PrintBackend`.  Always use `PrintBackendService` unsandboxed.
-  kOopUnsandboxedService,
 };
 
 class SystemAccessProcessPrintBrowserTest
