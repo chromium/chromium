@@ -1170,7 +1170,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
-      r'/^\s*(import|export|module)\b',
+      r'/^\s*(export\s|import\s+["<:\w]|module(;|\s+[:\w]))',
       (
         'Modules are disallowed for now due to lack of toolchain support.',
       ),
