@@ -31,6 +31,7 @@ class V8CompileHints : public GarbageCollected<V8CompileHints> {
                     ScriptState* script_state);
 
   void GenerateData();
+  void DisableDataCollection() { state_ = State::kDisabled; }
 
   void Trace(Visitor* visitor) const;
 
@@ -48,7 +49,10 @@ class V8CompileHints : public GarbageCollected<V8CompileHints> {
     // We've tried once to send the data to UKM (but we didn't necessarily send
     // it successfully; e.g., because of throttling or because we didn't have
     // enough data).
-    kDataGenerationFinished
+    kDataGenerationFinished,
+
+    // This V8CompileHints shouldn't even try to generate data.
+    kDisabled
   };
   State state_ = State::kInitial;
 
@@ -79,6 +83,7 @@ class V8CompileHints : public GarbageCollected<V8CompileHints> {
   V8CompileHints& operator=(const V8CompileHints&) = delete;
 
   void GenerateData() {}
+  void DisableDataCollection() {}
 
   void Trace(Visitor* visitor) const {}
 };

@@ -555,17 +555,21 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       }
 
 #if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
-      if (compile_options == v8::ScriptCompiler::kProduceCompileHints &&
-          frame != nullptr) {
-        // TODO(chromium:1406506): Add a compile hints solution for workers.
-        // TODO(chromium:1406506): Add a compile hints solution for fenced
-        // frames.
-        // TODO(chromium:1406506): Add a compile hints solution for
-        // out-of-process iframes.
-        Page* page = frame->GetPage();
-        if (page != nullptr) {
+      Page* page;
+      if (frame != nullptr && (page = frame->GetPage()) != nullptr) {
+        if (compile_options == v8::ScriptCompiler::kProduceCompileHints) {
+          // TODO(chromium:1406506): Add a compile hints solution for workers.
+          // TODO(chromium:1406506): Add a compile hints solution for fenced
+          // frames.
+          // TODO(chromium:1406506): Add a compile hints solution for
+          // out-of-process iframes.
           page->GetV8CompileHints().RecordScript(frame, execution_context,
                                                  script, script_state);
+        } else if (compile_options == v8::ScriptCompiler::kConsumeCodeCache) {
+          // Don't collect data if some scripts are cached; they decrease the
+          // data quality, because we won't be able to produce compile hints for
+          // cached scripts.
+          page->GetV8CompileHints().DisableDataCollection();
         }
       }
 #endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)

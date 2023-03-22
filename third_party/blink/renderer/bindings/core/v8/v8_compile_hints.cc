@@ -34,9 +34,9 @@ void V8CompileHints::RecordScript(Frame* frame,
                                   ExecutionContext* execution_context,
                                   const v8::Local<v8::Script> script,
                                   ScriptState* script_state) {
-  if (state_ == State::kDataGenerationFinished) {
-    // We've already generated data for this V8CompileHints. Don't record any
-    // script compilations happening after it.
+  if (state_ == State::kDataGenerationFinished || state_ == State::kDisabled) {
+    // We've already generated data for this V8CompileHints, or data generation
+    // is disabled. Don't record any script compilations happening after it.
     return;
   }
   if (data_generated_for_this_process_) {
@@ -86,7 +86,7 @@ void V8CompileHints::GenerateData() {
   }
 
   // Guard against this function getting called repeatedly.
-  if (state_ == State::kDataGenerationFinished) {
+  if (state_ == State::kDataGenerationFinished || state_ == State::kDisabled) {
     return;
   }
 
