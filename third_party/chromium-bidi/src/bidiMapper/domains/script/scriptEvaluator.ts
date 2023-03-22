@@ -26,242 +26,31 @@ const CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
 const EVALUATE_STACKTRACE_LINE_OFFSET = 0;
 export const SHARED_ID_DIVIDER = '_element_';
 
-function cdpRemoteObjectToCallArgument(
-  cdpRemoteObject: Protocol.Runtime.RemoteObject
-): Protocol.Runtime.CallArgument {
-  if (cdpRemoteObject.objectId !== undefined) {
-    return {objectId: cdpRemoteObject.objectId};
-  }
-  if (cdpRemoteObject.unserializableValue !== undefined) {
-    return {unserializableValue: cdpRemoteObject.unserializableValue};
-  }
-  return {value: cdpRemoteObject.value};
-}
-
-/**
- * Gets the string representation of an object. This is equivalent to
- * calling toString() on the object value.
- * @param cdpObject CDP remote object representing an object.
- * @param realm
- * @return string The stringified object.
- */
-export async function stringifyObject(
-  cdpObject: Protocol.Runtime.RemoteObject,
-  realm: Realm
-): Promise<string> {
-  const stringifyResult = await realm.cdpClient.sendCommand(
-    'Runtime.callFunctionOn',
-    {
-      functionDeclaration: String((obj: Protocol.Runtime.RemoteObject) => {
-        return String(obj);
-      }),
-      awaitPromise: false,
-      arguments: [cdpObject],
-      returnByValue: true,
-      executionContextId: realm.executionContextId,
-    }
-  );
-  return stringifyResult.result.value;
-}
-
 export class ScriptEvaluator {
-  async deserializeToCdpArg(
-    argumentValue: Script.ArgumentValue,
+  /**
+   * Gets the string representation of an object. This is equivalent to
+   * calling toString() on the object value.
+   * @param cdpObject CDP remote object representing an object.
+   * @param realm
+   * @return string The stringified object.
+   */
+  static async stringifyObject(
+    cdpObject: Protocol.Runtime.RemoteObject,
     realm: Realm
-  ): Promise<Protocol.Runtime.CallArgument> {
-    if ('sharedId' in argumentValue) {
-      const [navigableId, rawBackendNodeId] =
-        argumentValue.sharedId.split(SHARED_ID_DIVIDER);
-
-      const backendNodeId = parseInt(rawBackendNodeId ?? '');
-      if (
-        isNaN(backendNodeId) ||
-        backendNodeId === undefined ||
-        navigableId === undefined
-      ) {
-        throw new Message.InvalidArgumentException(
-          `SharedId "${argumentValue.sharedId}" should have format "{navigableId}${SHARED_ID_DIVIDER}{backendNodeId}".`
-        );
+  ): Promise<string> {
+    const stringifyResult = await realm.cdpClient.sendCommand(
+      'Runtime.callFunctionOn',
+      {
+        functionDeclaration: String((obj: Protocol.Runtime.RemoteObject) => {
+          return String(obj);
+        }),
+        awaitPromise: false,
+        arguments: [cdpObject],
+        returnByValue: true,
+        executionContextId: realm.executionContextId,
       }
-
-      if (realm.navigableId !== navigableId) {
-        throw new Message.NoSuchNodeException(
-          `SharedId "${argumentValue.sharedId}" belongs to different document. Current document is ${realm.navigableId}.`
-        );
-      }
-
-      try {
-        const obj = await realm.cdpClient.sendCommand('DOM.resolveNode', {
-          backendNodeId,
-          executionContextId: realm.executionContextId,
-        });
-        // TODO(#375): release `obj.object.objectId` after using.
-        return {objectId: obj.object.objectId};
-      } catch (e: any) {
-        // Heuristic to detect "no such node" exception. Based on the  specific
-        // CDP implementation.
-        if (e.code === -32000 && e.message === 'No node with given id found') {
-          throw new Message.NoSuchNodeException(
-            `SharedId "${argumentValue.sharedId}" was not found.`
-          );
-        }
-        throw e;
-      }
-    }
-    if ('handle' in argumentValue) {
-      return {objectId: argumentValue.handle};
-    }
-    switch (argumentValue.type) {
-      // Primitive Protocol Value
-      // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
-      case 'undefined':
-        return {unserializableValue: 'undefined'};
-      case 'null':
-        return {unserializableValue: 'null'};
-      case 'string':
-        return {value: argumentValue.value};
-      case 'number':
-        if (argumentValue.value === 'NaN') {
-          return {unserializableValue: 'NaN'};
-        } else if (argumentValue.value === '-0') {
-          return {unserializableValue: '-0'};
-        } else if (argumentValue.value === 'Infinity') {
-          return {unserializableValue: 'Infinity'};
-        } else if (argumentValue.value === '-Infinity') {
-          return {unserializableValue: '-Infinity'};
-        }
-        return {
-          value: argumentValue.value,
-        };
-      case 'boolean':
-        return {value: Boolean(argumentValue.value)};
-      case 'bigint':
-        return {
-          unserializableValue: `BigInt(${JSON.stringify(argumentValue.value)})`,
-        };
-      case 'date':
-        return {
-          unserializableValue: `new Date(Date.parse(${JSON.stringify(
-            argumentValue.value
-          )}))`,
-        };
-      case 'regexp':
-        return {
-          unserializableValue: `new RegExp(${JSON.stringify(
-            argumentValue.value.pattern
-          )}, ${JSON.stringify(argumentValue.value.flags)})`,
-        };
-      case 'map': {
-        // TODO(sadym): if non of the nested keys and values has remote
-        // reference, serialize to `unserializableValue` without CDP roundtrip.
-        const keyValueArray = await this.#flattenKeyValuePairs(
-          argumentValue.value,
-          realm
-        );
-        const argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(
-              (...args: Protocol.Runtime.CallArgument[]) => {
-                const result = new Map();
-                for (let i = 0; i < args.length; i += 2) {
-                  result.set(args[i], args[i + 1]);
-                }
-                return result;
-              }
-            ),
-            awaitPromise: false,
-            arguments: keyValueArray,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO(#375): release `argEvalResult.result.objectId` after using.
-        return {objectId: argEvalResult.result.objectId};
-      }
-      case 'object': {
-        // TODO(sadym): if non of the nested keys and values has remote
-        //  reference, serialize to `unserializableValue` without CDP roundtrip.
-        const keyValueArray = await this.#flattenKeyValuePairs(
-          argumentValue.value,
-          realm
-        );
-
-        const argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(
-              (...args: Protocol.Runtime.CallArgument[]) => {
-                const result: Record<
-                  string | number | symbol,
-                  Protocol.Runtime.CallArgument
-                > = {};
-
-                for (let i = 0; i < args.length; i += 2) {
-                  // Key should be either `string`, `number`, or `symbol`.
-                  const key = args[i] as string | number | symbol;
-                  result[key] = args[i + 1]!;
-                }
-                return result;
-              }
-            ),
-            awaitPromise: false,
-            arguments: keyValueArray,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO(#375): release `argEvalResult.result.objectId` after using.
-        return {objectId: argEvalResult.result.objectId};
-      }
-      case 'array': {
-        // TODO(sadym): if non of the nested items has remote reference,
-        //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(argumentValue.value, realm);
-
-        const argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String((...args: unknown[]) => {
-              return args;
-            }),
-            awaitPromise: false,
-            arguments: args,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO (#375): release `argEvalResult.result.objectId` after using.
-        return {objectId: argEvalResult.result.objectId};
-      }
-      case 'set': {
-        // TODO(sadym): if none of the nested items has a remote reference,
-        // serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(argumentValue.value, realm);
-
-        const argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String((...args: unknown[]) => {
-              return new Set(args);
-            }),
-            awaitPromise: false,
-            arguments: args,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO (#375): release `argEvalResult.result.objectId` after using.
-        return {objectId: argEvalResult.result.objectId};
-      }
-
-      // TODO(#375): dispose of nested objects.
-
-      default:
-        throw new Error(
-          `Value ${JSON.stringify(argumentValue)} is not deserializable.`
-        );
-    }
+    );
+    return stringifyResult.result.value;
   }
 
   /**
@@ -276,7 +65,7 @@ export class ScriptEvaluator {
     resultOwnership: Script.ResultOwnership,
     realm: Realm
   ): Promise<CommonDataTypes.RemoteValue> {
-    const arg = cdpRemoteObjectToCallArgument(cdpRemoteObject);
+    const arg = ScriptEvaluator.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
 
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
@@ -341,11 +130,13 @@ export class ScriptEvaluator {
         return f.apply(deserializedThis, deserializedArgs);
       }}`;
 
-    const thisAndArgumentsList = [await this.deserializeToCdpArg(_this, realm)];
+    const thisAndArgumentsList = [
+      await this.#deserializeToCdpArg(_this, realm),
+    ];
     thisAndArgumentsList.push(
       ...(await Promise.all(
         _arguments.map(async (a) => {
-          return this.deserializeToCdpArg(a, realm);
+          return this.#deserializeToCdpArg(a, realm);
         })
       ))
     );
@@ -401,6 +192,217 @@ export class ScriptEvaluator {
     };
   }
 
+  static #cdpRemoteObjectToCallArgument(
+    cdpRemoteObject: Protocol.Runtime.RemoteObject
+  ): Protocol.Runtime.CallArgument {
+    if (cdpRemoteObject.objectId !== undefined) {
+      return {objectId: cdpRemoteObject.objectId};
+    }
+    if (cdpRemoteObject.unserializableValue !== undefined) {
+      return {unserializableValue: cdpRemoteObject.unserializableValue};
+    }
+    return {value: cdpRemoteObject.value};
+  }
+
+  async #deserializeToCdpArg(
+    argumentValue: Script.ArgumentValue,
+    realm: Realm
+  ): Promise<Protocol.Runtime.CallArgument> {
+    if ('sharedId' in argumentValue) {
+      const [navigableId, rawBackendNodeId] =
+        argumentValue.sharedId.split(SHARED_ID_DIVIDER);
+
+      const backendNodeId = parseInt(rawBackendNodeId ?? '');
+      if (
+        isNaN(backendNodeId) ||
+        backendNodeId === undefined ||
+        navigableId === undefined
+      ) {
+        throw new Message.InvalidArgumentException(
+          `SharedId "${argumentValue.sharedId}" should have format "{navigableId}${SHARED_ID_DIVIDER}{backendNodeId}".`
+        );
+      }
+
+      if (realm.navigableId !== navigableId) {
+        throw new Message.NoSuchNodeException(
+          `SharedId "${argumentValue.sharedId}" belongs to different document. Current document is ${realm.navigableId}.`
+        );
+      }
+
+      try {
+        const obj = await realm.cdpClient.sendCommand('DOM.resolveNode', {
+          backendNodeId,
+          executionContextId: realm.executionContextId,
+        });
+        // TODO(#375): Release `obj.object.objectId` after using.
+        return {objectId: obj.object.objectId};
+      } catch (e: any) {
+        // Heuristic to detect "no such node" exception. Based on the  specific
+        // CDP implementation.
+        if (e.code === -32000 && e.message === 'No node with given id found') {
+          throw new Message.NoSuchNodeException(
+            `SharedId "${argumentValue.sharedId}" was not found.`
+          );
+        }
+        throw e;
+      }
+    }
+    if ('handle' in argumentValue) {
+      return {objectId: argumentValue.handle};
+    }
+    switch (argumentValue.type) {
+      // Primitive Protocol Value
+      // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
+      case 'undefined':
+        return {unserializableValue: 'undefined'};
+      case 'null':
+        return {unserializableValue: 'null'};
+      case 'string':
+        return {value: argumentValue.value};
+      case 'number':
+        if (argumentValue.value === 'NaN') {
+          return {unserializableValue: 'NaN'};
+        } else if (argumentValue.value === '-0') {
+          return {unserializableValue: '-0'};
+        } else if (argumentValue.value === 'Infinity') {
+          return {unserializableValue: 'Infinity'};
+        } else if (argumentValue.value === '-Infinity') {
+          return {unserializableValue: '-Infinity'};
+        }
+        return {
+          value: argumentValue.value,
+        };
+      case 'boolean':
+        return {value: Boolean(argumentValue.value)};
+      case 'bigint':
+        return {
+          unserializableValue: `BigInt(${JSON.stringify(argumentValue.value)})`,
+        };
+      case 'date':
+        return {
+          unserializableValue: `new Date(Date.parse(${JSON.stringify(
+            argumentValue.value
+          )}))`,
+        };
+      case 'regexp':
+        return {
+          unserializableValue: `new RegExp(${JSON.stringify(
+            argumentValue.value.pattern
+          )}, ${JSON.stringify(argumentValue.value.flags)})`,
+        };
+      case 'map': {
+        // TODO(sadym): If none of the nested keys and values has a remote
+        // reference, serialize to `unserializableValue` without CDP roundtrip.
+        const keyValueArray = await this.#flattenKeyValuePairs(
+          argumentValue.value,
+          realm
+        );
+        const argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String(
+              (...args: Protocol.Runtime.CallArgument[]) => {
+                const result = new Map();
+                for (let i = 0; i < args.length; i += 2) {
+                  result.set(args[i], args[i + 1]);
+                }
+                return result;
+              }
+            ),
+            awaitPromise: false,
+            arguments: keyValueArray,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
+        // TODO(#375): Release `argEvalResult.result.objectId` after using.
+        return {objectId: argEvalResult.result.objectId};
+      }
+      case 'object': {
+        // TODO(sadym): If none of the nested keys and values has a remote
+        //  reference, serialize to `unserializableValue` without CDP roundtrip.
+        const keyValueArray = await this.#flattenKeyValuePairs(
+          argumentValue.value,
+          realm
+        );
+
+        const argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String(
+              (...args: Protocol.Runtime.CallArgument[]) => {
+                const result: Record<
+                  string | number | symbol,
+                  Protocol.Runtime.CallArgument
+                > = {};
+
+                for (let i = 0; i < args.length; i += 2) {
+                  // Key should be either `string`, `number`, or `symbol`.
+                  const key = args[i] as string | number | symbol;
+                  result[key] = args[i + 1]!;
+                }
+                return result;
+              }
+            ),
+            awaitPromise: false,
+            arguments: keyValueArray,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
+        // TODO(#375): Release `argEvalResult.result.objectId` after using.
+        return {objectId: argEvalResult.result.objectId};
+      }
+      case 'array': {
+        // TODO(sadym): If none of the nested items has a remote reference,
+        // serialize to `unserializableValue` without CDP roundtrip.
+        const args = await this.#flattenValueList(argumentValue.value, realm);
+
+        const argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String((...args: unknown[]) => {
+              return args;
+            }),
+            awaitPromise: false,
+            arguments: args,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
+        // TODO(#375): Release `argEvalResult.result.objectId` after using.
+        return {objectId: argEvalResult.result.objectId};
+      }
+      case 'set': {
+        // TODO(sadym): if none of the nested items has a remote reference,
+        // serialize to `unserializableValue` without CDP roundtrip.
+        const args = await this.#flattenValueList(argumentValue.value, realm);
+
+        const argEvalResult = await realm.cdpClient.sendCommand(
+          'Runtime.callFunctionOn',
+          {
+            functionDeclaration: String((...args: unknown[]) => {
+              return new Set(args);
+            }),
+            awaitPromise: false,
+            arguments: args,
+            returnByValue: false,
+            executionContextId: realm.executionContextId,
+          }
+        );
+        // TODO(#375): Release `argEvalResult.result.objectId` after using.
+        return {objectId: argEvalResult.result.objectId};
+      }
+
+      // TODO(#375): Dispose of nested objects.
+
+      default:
+        throw new Error(
+          `Value ${JSON.stringify(argumentValue)} is not deserializable.`
+        );
+    }
+  }
+
   async #flattenKeyValuePairs(
     value: CommonDataTypes.MappingLocalValue,
     realm: Realm
@@ -416,10 +418,10 @@ export class ScriptEvaluator {
         keyArg = {value: key};
       } else {
         // Key is a serialized value.
-        keyArg = await this.deserializeToCdpArg(key, realm);
+        keyArg = await this.#deserializeToCdpArg(key, realm);
       }
 
-      const valueArg = await this.deserializeToCdpArg(value, realm);
+      const valueArg = await this.#deserializeToCdpArg(value, realm);
 
       keyValueArray.push(keyArg);
       keyValueArray.push(valueArg);
@@ -434,7 +436,7 @@ export class ScriptEvaluator {
     const result: Protocol.Runtime.CallArgument[] = [];
 
     for (const value of list) {
-      result.push(await this.deserializeToCdpArg(value, realm));
+      result.push(await this.#deserializeToCdpArg(value, realm));
     }
 
     return result;
@@ -464,7 +466,10 @@ export class ScriptEvaluator {
       realm
     );
 
-    const text = await stringifyObject(cdpExceptionDetails.exception!, realm);
+    const text = await ScriptEvaluator.stringifyObject(
+      cdpExceptionDetails.exception!,
+      realm
+    );
 
     return {
       exception,

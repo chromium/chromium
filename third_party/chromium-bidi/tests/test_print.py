@@ -19,7 +19,7 @@ from test_helpers import goto_url, read_JSON_message, send_JSON_command
 
 
 @pytest.mark.asyncio
-async def test_print_happy_path(websocket, context_id):
+async def test_print(websocket, context_id):
     await goto_url(websocket, context_id, 'about:blank')
 
     await send_JSON_command(

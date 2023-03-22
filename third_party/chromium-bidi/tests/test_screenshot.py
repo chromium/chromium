@@ -30,7 +30,7 @@ GRADIENT_HTML = 'data:image/png;base64,' + IMAGE_BASE_64
 
 
 @pytest.mark.asyncio
-async def test_screenshot_happy_path(websocket, context_id):
+async def test_screenshot(websocket, context_id):
     await goto_url(websocket, context_id, GRADIENT_HTML)
 
     command_result = await execute_command(websocket, {

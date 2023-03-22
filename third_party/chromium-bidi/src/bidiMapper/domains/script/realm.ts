@@ -21,16 +21,10 @@ import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 
-import {
-  SHARED_ID_DIVIDER,
-  ScriptEvaluator,
-  stringifyObject,
-} from './scriptEvaluator.js';
+import {SHARED_ID_DIVIDER, ScriptEvaluator} from './scriptEvaluator.js';
 import {RealmStorage} from './realmStorage.js';
 
 export type RealmType = Script.RealmType;
-
-const scriptEvaluator = new ScriptEvaluator();
 
 export class Realm {
   readonly #realmStorage: RealmStorage;
@@ -41,6 +35,7 @@ export class Realm {
   readonly #origin: string;
   readonly #type: RealmType;
   readonly #cdpClient: CdpClient;
+  readonly #scriptEvaluator: ScriptEvaluator;
 
   readonly sandbox?: string;
   readonly cdpSessionId: string;
@@ -67,6 +62,7 @@ export class Realm {
     this.#cdpClient = cdpClient;
     this.#realmStorage = realmStorage;
     this.#browsingContextStorage = browsingContextStorage;
+    this.#scriptEvaluator = new ScriptEvaluator();
 
     this.#realmStorage.realmMap.set(this.#realmId, this);
   }
@@ -213,7 +209,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await scriptEvaluator.callFunction(
+      result: await this.#scriptEvaluator.callFunction(
         this,
         functionDeclaration,
         _this,
@@ -235,7 +231,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await scriptEvaluator.scriptEvaluate(
+      result: await this.#scriptEvaluator.scriptEvaluate(
         this,
         expression,
         awaitPromise,
@@ -254,7 +250,11 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.ResultOwnership
   ): Promise<CommonDataTypes.RemoteValue> {
-    return scriptEvaluator.serializeCdpObject(cdpObject, resultOwnership, this);
+    return this.#scriptEvaluator.serializeCdpObject(
+      cdpObject,
+      resultOwnership,
+      this
+    );
   }
 
   /**
@@ -266,6 +266,6 @@ export class Realm {
   async stringifyObject(
     cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<string> {
-    return stringifyObject(cdpObject, this);
+    return ScriptEvaluator.stringifyObject(cdpObject, this);
   }
 }
