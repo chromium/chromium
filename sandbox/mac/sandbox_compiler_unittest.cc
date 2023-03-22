@@ -10,6 +10,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "sandbox/mac/sandbox_compiler.h"
+#include "sandbox/mac/sandbox_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -32,7 +33,7 @@ SandboxCompiler::Target GetParamInChild() {
 }  // namespace
 
 class SandboxCompilerTest
-    : public base::MultiProcessTest,
+    : public SandboxTest,
       public testing::WithParamInterface<SandboxCompiler::Target> {
  protected:
   base::CommandLine MakeCmdLine(const std::string& procname) override {

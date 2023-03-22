@@ -7,12 +7,13 @@
 #include "base/process/kill.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "sandbox/mac/sandbox_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
 namespace sandbox {
 
-class SeatbeltExecTest : public base::MultiProcessTest {};
+class SeatbeltExecTest : public SandboxTest {};
 
 MULTIPROCESS_TEST_MAIN(ServerTest) {
   std::string profile =

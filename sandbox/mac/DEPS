@@ -13,4 +13,9 @@ specific_include_rules = {
   "sandbox_logging\.(h|cc)": _sandbox_mac_non_base,
   "seatbelt\.(h|cc)": _sandbox_mac_non_base,
   "seatbelt_exec\.(h|cc)": _sandbox_mac_non_base,
+
+  # Test only dependencies.
+  "sandbox_test\.cc": [
+    "+mojo/core",
+  ],
 }

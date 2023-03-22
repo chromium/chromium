@@ -10,4 +10,8 @@ namespace test_switches {
 // honored for test runners using MojoTestSuiteBase.
 const char kMojoIsBroker[] = "mojo-is-broker";
 
+// Disables Mojo initialization completely in the process. Only applies to
+// test child processes. See base::MultiprocessTest.
+const char kNoMojo[] = "no-mojo";
+
 }  // namespace test_switches

@@ -12,9 +12,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "sandbox/mac/sandbox_compiler.h"
+#include "sandbox/mac/sandbox_test.h"
 #include "sandbox/mac/seatbelt_extension_token.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -34,7 +36,7 @@ const char kTestData[] = "hello world";
 const char kSwitchFile[] = "test-file";
 const char kSwitchExtension[] = "test-extension";
 
-class SeatbeltExtensionTest : public base::MultiProcessTest {
+class SeatbeltExtensionTest : public SandboxTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -44,6 +46,23 @@ class SeatbeltExtensionTest : public base::MultiProcessTest {
   }
 
   base::FilePath file_path() { return file_path_; }
+
+  base::Process SpawnChildForPathWithToken(
+      const std::string& procname,
+      const base::FilePath& path,
+      const SeatbeltExtensionToken& token) {
+    // Ensure any symlinks in the path are canonicalized.
+    const base::FilePath canonicalized_path = base::MakeAbsoluteFilePath(path);
+    const std::string token_value = token.token();
+    CHECK(!canonicalized_path.empty());
+    CHECK(!token_value.empty());
+    return SpawnChild(
+        procname,
+        base::BindLambdaForTesting([&](base::CommandLine& command_line) {
+          command_line.AppendSwitchPath(kSwitchFile, canonicalized_path);
+          command_line.AppendSwitchASCII(kSwitchExtension, token_value);
+        }));
+  }
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -58,16 +77,8 @@ TEST_F(SeatbeltExtensionTest, FileReadAccess) {
       sandbox::SeatbeltExtension::FILE_READ, file_path().value());
   ASSERT_TRUE(token.get());
 
-  // Ensure any symlinks in the path are canonicalized.
-  base::FilePath path = base::MakeAbsoluteFilePath(file_path());
-  ASSERT_FALSE(path.empty());
-
-  command_line.AppendSwitchPath(kSwitchFile, path);
-  command_line.AppendSwitchASCII(kSwitchExtension, token->token());
-
-  base::Process test_child = base::SpawnMultiProcessTestChild(
-      "FileReadAccess", command_line, base::LaunchOptions());
-
+  base::Process test_child =
+      SpawnChildForPathWithToken("FileReadAccess", file_path(), *token);
   int exit_code = 42;
   test_child.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
                                     &exit_code);
@@ -147,16 +158,8 @@ TEST_F(SeatbeltExtensionTest, DirReadWriteAccess) {
       file_path().DirName().value());
   ASSERT_TRUE(token.get());
 
-  // Ensure any symlinks in the path are canonicalized.
-  base::FilePath path = base::MakeAbsoluteFilePath(file_path());
-  ASSERT_FALSE(path.empty());
-
-  command_line.AppendSwitchPath(kSwitchFile, path);
-  command_line.AppendSwitchASCII(kSwitchExtension, token->token());
-
-  base::Process test_child = base::SpawnMultiProcessTestChild(
-      "DirReadWriteAccess", command_line, base::LaunchOptions());
-
+  base::Process test_child =
+      SpawnChildForPathWithToken("DirReadWriteAccess", file_path(), *token);
   int exit_code = 42;
   test_child.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
                                     &exit_code);

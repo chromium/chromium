@@ -8,6 +8,7 @@
 namespace test_switches {
 
 extern const char kMojoIsBroker[];
+extern const char kNoMojo[];
 
 }  // namespace test_switches
 

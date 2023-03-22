@@ -19,13 +19,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "sandbox/mac/sandbox_test.h"
 #include "sandbox/mac/seatbelt.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
 namespace sandbox {
 
-using SeatbeltTest = base::MultiProcessTest;
+using SeatbeltTest = SandboxTest;
 
 MULTIPROCESS_TEST_MAIN(SandboxCheckTestProcess) {
   CHECK(!Seatbelt::IsSandboxed());

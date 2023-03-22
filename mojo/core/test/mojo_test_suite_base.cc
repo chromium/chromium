@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "mojo/core/test/scoped_mojo_support.h"
+#include "mojo/core/test/test_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo::core::test {
@@ -108,7 +109,9 @@ void MojoTestSuiteBase::MaybeInitializeChildProcessEnvironment() {
   child_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   child_feature_list_->InitFromCommandLine(enabled, disabled);
 
-  child_mojo_support_ = std::make_unique<ScopedMojoSupport>();
+  if (!command_line.HasSwitch(test_switches::kNoMojo)) {
+    child_mojo_support_ = std::make_unique<ScopedMojoSupport>();
+  }
 }
 
 }  // namespace mojo::core::test
