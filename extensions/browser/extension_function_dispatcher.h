@@ -141,7 +141,8 @@ class ExtensionFunctionDispatcher {
       const GURL* rfh_url,
       const ProcessMap& process_map,
       ExtensionAPI* api,
-      ExtensionFunction::ResponseCallback callback);
+      ExtensionFunction::ResponseCallback callback,
+      content::RenderFrameHost* render_frame_host);
 
   void DispatchWithCallbackInternal(
       const mojom::RequestParams& params,

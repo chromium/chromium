@@ -491,16 +491,11 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
       params, extension, render_process_id, is_worker_request, rfh_url,
-      *process_map, ExtensionAPI::GetSharedInstance(), std::move(callback));
+      *process_map, ExtensionAPI::GetSharedInstance(), std::move(callback),
+      render_frame_host);
   if (!function.get())
     return;
 
-  function->set_worker_thread_id(params.worker_thread_id);
-  if (is_worker_request) {
-    function->set_service_worker_version_id(params.service_worker_version_id);
-  } else {
-    function->SetRenderFrameHost(render_frame_host);
-  }
   function->SetDispatcher(weak_ptr_factory_.GetWeakPtr());
   if (extension &&
       ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(
@@ -665,7 +660,8 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     const GURL* rfh_url,
     const ProcessMap& process_map,
     ExtensionAPI* api,
-    ExtensionFunction::ResponseCallback callback) {
+    ExtensionFunction::ResponseCallback callback,
+    content::RenderFrameHost* render_frame_host) {
   constexpr char kCreationFailed[] = "Access to extension API denied.";
 
   scoped_refptr<ExtensionFunction> function =
@@ -703,6 +699,12 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   function->set_response_callback(std::move(callback));
   function->set_source_context_type(context_type);
   function->set_source_process_id(requesting_process_id);
+  function->set_worker_thread_id(params.worker_thread_id);
+  if (is_worker_request) {
+    function->set_service_worker_version_id(params.service_worker_version_id);
+  } else {
+    function->SetRenderFrameHost(render_frame_host);
+  }
 
   if (!function->HasPermission()) {
     LOG(ERROR) << "Permission denied for " << params.name;
