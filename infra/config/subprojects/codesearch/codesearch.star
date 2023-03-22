@@ -74,6 +74,18 @@ try_.builder(
 )
 
 try_.builder(
+    name = "gen-ios-try",
+    os = os.MAC_13,
+    cpu = cpu.ARM64,
+    properties = {
+        "recipe_properties": {
+            "build_config": "ios",
+            "platform": "ios",
+        },
+    },
+)
+
+try_.builder(
     name = "gen-lacros-try",
     properties = {
         "recipe_properties": {

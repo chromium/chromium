@@ -588,6 +588,7 @@
       'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot',
       'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot',
       'codesearch-gen-chromium-fuchsia': 'codesearch_gen_chromium_fuchsia_bot',
+      'codesearch-gen-chromium-ios': 'codesearch_gen_chromium_ios_bot',
       'codesearch-gen-chromium-lacros': 'codesearch_gen_chromium_lacros_bot',
       'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot',
       'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot',
@@ -1145,6 +1146,7 @@
       'gen-android-try': 'codesearch_gen_chromium_android_bot',
       'gen-chromiumos-try': 'codesearch_gen_chromium_chromiumos_bot',
       'gen-fuchsia-try': 'codesearch_gen_chromium_fuchsia_bot',
+      'gen-ios-try': 'codesearch_gen_chromium_ios_bot',
       'gen-lacros-try': 'codesearch_gen_chromium_lacros_bot',
       'gen-linux-try': 'codesearch_gen_chromium_bot',
       'gen-mac-try': 'codesearch_gen_chromium_mac_bot',
@@ -2442,6 +2444,10 @@
 
     'codesearch_gen_chromium_fuchsia_bot': [
       'codesearch_release', 'fuchsia',
+    ],
+
+    'codesearch_gen_chromium_ios_bot': [
+      'codesearch', 'ios',
     ],
 
     # Lacros uses different gn args to build for chromeOS device vs. Linux. For
