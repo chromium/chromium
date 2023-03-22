@@ -409,7 +409,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
                                ToCoreString(script_url),
                                script->GetUnboundScript()->GetId());
 
-  recordreplay::UserEventProbe replayEvent;
+    recordreplay::UserEventProbe replayEvent;
 
     result = script->Run(isolate->GetCurrentContext(), host_defined_options);
   }
