@@ -26,6 +26,8 @@ enum class VcEffectId;
 // in turn a collection of values the user can set. It is intended to be
 // flexible enough to accommodate a range of effect-hosting scenarios, from a
 // single togglable effect to multiple togglable and integer set-value effects.
+// TODO(b/274179052): Split the delegate into two separate classes for togglable
+// and set-value effects.
 class ASH_EXPORT VcEffectsDelegate {
  public:
   VcEffectsDelegate();
@@ -61,6 +63,14 @@ class ASH_EXPORT VcEffectsDelegate {
   // being set, an integer value otherwise.
   virtual void OnEffectControlActivated(VcEffectId effect_id,
                                         absl::optional<int> state) = 0;
+
+  // This function will only be used for set-value effects, not for togglable
+  // effects. Invoked when the user chooses a new value for the set-value effect
+  // to record metrics. Note that for togglable effects, we are already
+  // recording metrics in `ToggleEffectsView`, so no need further metrics
+  // collection needed for them.
+  virtual void RecordMetricsForSetValueEffect(VcEffectId effect_id,
+                                              int state_value) const {}
 
  private:
   // Effects are created by `VcEffectsDelegate` subclasses.

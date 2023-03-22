@@ -132,15 +132,15 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
   SimulateUserLogin("testuser@gmail.com");
 
   // Activate the possible values of
-  // `CameraEffectsController::BackgroundBlurEffectState`, verify that the pref
+  // `CameraEffectsController::BackgroundBlurPrefValue`, verify that the pref
   //  and internal state are all set properly.
   for (const auto state :
-       {CameraEffectsController::BackgroundBlurEffectState::kOff,
-        CameraEffectsController::BackgroundBlurEffectState::kLowest,
-        CameraEffectsController::BackgroundBlurEffectState::kLight,
-        CameraEffectsController::BackgroundBlurEffectState::kMedium,
-        CameraEffectsController::BackgroundBlurEffectState::kHeavy,
-        CameraEffectsController::BackgroundBlurEffectState::kMaximum}) {
+       {CameraEffectsController::BackgroundBlurPrefValue::kOff,
+        CameraEffectsController::BackgroundBlurPrefValue::kLowest,
+        CameraEffectsController::BackgroundBlurPrefValue::kLight,
+        CameraEffectsController::BackgroundBlurPrefValue::kMedium,
+        CameraEffectsController::BackgroundBlurPrefValue::kHeavy,
+        CameraEffectsController::BackgroundBlurPrefValue::kMaximum}) {
     SetBackgroundBlurEffectState(state);
     EXPECT_EQ(GetBackgroundBlurPref(), state);
     EXPECT_EQ(GetBackgroundBlurEffectState(), state);
@@ -149,23 +149,23 @@ TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
   // Invalid background blur effect state should set the state to kOff.
   SetBackgroundBlurEffectState(
       static_cast<int>(
-          CameraEffectsController::BackgroundBlurEffectState::kMaximum) +
+          CameraEffectsController::BackgroundBlurPrefValue::kMaximum) +
       1);
   EXPECT_EQ(GetBackgroundBlurPref(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
 
   // Set the background blur state to be kMaximum.
   SetBackgroundBlurEffectState(
-      CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+      CameraEffectsController::BackgroundBlurPrefValue::kMaximum);
   // Setting the background blur state to null will reset the effects as
   // kOff.
   SetBackgroundBlurEffectState(absl::nullopt);
   EXPECT_EQ(GetBackgroundBlurPref(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
 }
 
 TEST_F(CameraEffectsControllerTest,
@@ -197,9 +197,9 @@ TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
 
   // Initial state should be "off".
   EXPECT_EQ(GetBackgroundBlurPref(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_FALSE(GetPortraitRelightingEffectState());
   EXPECT_FALSE(GetPortraitRelightingPref());
 
@@ -213,9 +213,9 @@ TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
 
   // State should be "on".
   EXPECT_EQ(GetBackgroundBlurPref(),
-            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+            CameraEffectsController::BackgroundBlurPrefValue::kMaximum);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
-            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+            CameraEffectsController::BackgroundBlurPrefValue::kMaximum);
   EXPECT_TRUE(GetPortraitRelightingEffectState());
   EXPECT_TRUE(GetPortraitRelightingPref());
 
@@ -225,9 +225,9 @@ TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
 
   // State should be "on".
   EXPECT_EQ(GetBackgroundBlurPref(),
-            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+            CameraEffectsController::BackgroundBlurPrefValue::kMaximum);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
-            CameraEffectsController::BackgroundBlurEffectState::kMaximum);
+            CameraEffectsController::BackgroundBlurPrefValue::kMaximum);
   EXPECT_TRUE(GetPortraitRelightingEffectState());
   EXPECT_TRUE(GetPortraitRelightingPref());
 
@@ -238,9 +238,9 @@ TEST_F(CameraEffectsControllerTest, PrefOnCameraEffectChanged) {
 
   // State should be "off".
   EXPECT_EQ(GetBackgroundBlurPref(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_EQ(GetBackgroundBlurEffectState(),
-            CameraEffectsController::BackgroundBlurEffectState::kOff);
+            CameraEffectsController::BackgroundBlurPrefValue::kOff);
   EXPECT_FALSE(GetPortraitRelightingEffectState());
   EXPECT_FALSE(GetPortraitRelightingPref());
 }
@@ -259,6 +259,17 @@ TEST_F(CameraEffectsControllerTest, ResourceDependencyFlags) {
   EXPECT_EQ(VcHostedEffect::ResourceDependency::kCamera,
             portrait_relight->dependency_flags());
 }
+
+TEST_F(CameraEffectsControllerTest, BackgroundBlurEnums) {
+  // This test makes sure that `BackgroundBlurState` and
+  // `BackgroundBlurPrefValue` is in sync with each other.
+  EXPECT_EQ(
+      static_cast<int>(CameraEffectsController::BackgroundBlurState::kMaximum),
+      CameraEffectsController::BackgroundBlurPrefValue::kMaximum + 1);
+}
+
+// TODO(b/274506848): Add unit test for background blur metrics record after the
+// refactor.
 
 }  // namespace
 }  // namespace ash

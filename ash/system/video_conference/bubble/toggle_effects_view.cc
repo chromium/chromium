@@ -13,6 +13,7 @@
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_utils.h"
 #include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -36,41 +37,10 @@ namespace ash {
 
 namespace {
 
-constexpr char kTestEffectHistogramName[] = "TestEffect";
-constexpr char kPortraitRelightingHistogramName[] = "PortraitRelighting";
-constexpr char kNoiseCancellationHistogramName[] = "NoiseCancellation";
-constexpr char kLiveCaptionHistogramName[] = "LiveCaption";
-constexpr char kVideoConferenceHistogramPrefix[] = "Ash.VideoConferenceTray";
-
 constexpr int kButtonCornerRadius = 16;
 constexpr int kIconSize = 20;
 constexpr int kButtonHeight = 64;
 constexpr int kButtonSpacing = 8;
-
-// Gets the histogram name for the effect, based on `effect_id`.
-std::string GetEffectHistogramName(VcEffectId effect_id) {
-  std::string effect_name;
-  switch (effect_id) {
-    case ash::VcEffectId::kTestEffect:
-      effect_name = kTestEffectHistogramName;
-      break;
-    case ash::VcEffectId::kPortraitRelighting:
-      effect_name = kPortraitRelightingHistogramName;
-      break;
-    case ash::VcEffectId::kNoiseCancellation:
-      effect_name = kNoiseCancellationHistogramName;
-      break;
-    case ash::VcEffectId::kLiveCaption:
-      effect_name = kLiveCaptionHistogramName;
-      break;
-    case ash::VcEffectId::kBackgroundBlur:
-      // No toggle button for background blur effect.
-      return std::string();
-  }
-  return base::JoinString(
-      {kVideoConferenceHistogramPrefix, effect_name, "Click"},
-      /*separator=*/".");
-}
 
 // A single toggle button for a video conference effect, combined with a text
 // label. WARNING: `callback` provided must not destroy the button or the bubble
@@ -139,7 +109,8 @@ class ButtonContainer : public views::Button {
     // Sets the toggled state.
     toggled_ = !toggled_;
 
-    base::UmaHistogramBoolean(GetEffectHistogramName(effect_id_), toggled_);
+    base::UmaHistogramBoolean(
+        video_conference_utils::GetEffectHistogramName(effect_id_), toggled_);
 
     haptics_util::PlayHapticToggleEffect(
         !toggled_, ui::HapticTouchpadEffectStrength::kMedium);

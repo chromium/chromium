@@ -10408,6 +10408,15 @@ others/histograms.xml -->
   <int value="4" label="Swiping back on others app"/>
 </enum>
 
+<enum name="BackgroundBlurState">
+  <int value="0" label="Off"/>
+  <int value="1" label="Lowest"/>
+  <int value="2" label="Light"/>
+  <int value="3" label="Medium"/>
+  <int value="4" label="Heavy"/>
+  <int value="5" label="Maximum"/>
+</enum>
+
 <enum name="BackgroundedRendererTransition">
   <int value="0" label="Backgrounded"/>
   <int value="1" label="Stopped after a delay"/>

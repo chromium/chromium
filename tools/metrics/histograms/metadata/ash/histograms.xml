@@ -5918,6 +5918,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.VideoConferenceTray.BackgroundBlur.Click"
+    enum="BackgroundBlurState" expires_after="2024-03-16">
+  <owner>leandre@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the background blur state that users want to switch to when they
+    choose a different value for background blur effect in the tab slider of the
+    video conference panel.
+  </summary>
+</histogram>
+
 <histogram name="Ash.VideoConferenceTray.StopScreenSharingButton.Click"
     enum="BooleanClicked" expires_after="2024-03-16">
   <owner>leandre@google.com</owner>

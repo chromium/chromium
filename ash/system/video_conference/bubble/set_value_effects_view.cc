@@ -7,8 +7,10 @@
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_utils.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -66,12 +68,24 @@ class ValueButtonContainer : public views::View {
                                 "the bubble will need to be wider.";
     for (int i = 0; i < num_states; ++i) {
       const VcEffectState* state = effect->GetState(/*index=*/i);
+      DCHECK(state->state_value());
       auto* slider_button =
           tab_slider->AddButton(std::make_unique<IconLabelSliderButton>(
-              state->button_callback(), state->icon(), state->label_text()));
+              base::BindRepeating(
+                  [](const VcHostedEffect* effect, const VcEffectState* state,
+                     const ui::Event& event) {
+                    auto callback = state->button_callback();
+                    callback.Run(event);
 
-      DCHECK(state->state().has_value());
-      slider_button->SetSelected(state->state().value() == current_state);
+                    if (effect->delegate()) {
+                      effect->delegate()->RecordMetricsForSetValueEffect(
+                          effect->id(), state->state_value().value());
+                    }
+                  },
+                  base::Unretained(effect), base::Unretained(state)),
+              state->icon(), state->label_text()));
+
+      slider_button->SetSelected(state->state_value().value() == current_state);
 
       // See comments above `kSetValueButton*` in `BubbleViewID` for details
       // on how the IDs of these buttons are set.
