@@ -217,13 +217,15 @@
   }
 
   #removeConfirmationButton {
-    --active-shadow-action-rgb: var(--google-red-500-rgb);
-    --bg-action: var(--google-red-600);
-    --focus-shadow-color: rgba(var(--google-red-600-rgb), .4);
-    --hover-bg-action: rgba(var(--google-red-600-rgb), .9);
-    --hover-shadow-action-rgb: var(--google-red-500-rgb);
-    --hover-border-color: var(--google-red-100);
-    --hover-shadow-action-rgb: var(--google-red-500-rgb);
+    --active-shadow-action-rgb: var(--cros-color-alert-rgb);
+    --bg-action: var(--cros-color-alert);
+    --focus-shadow-color: var(--cros-highlight-color-error);
+    --hover-bg-action: rgba(var(--cros-color-alert-rgb), .9);
+    --hover-shadow-action-rgb: var(--cros-color-alert-rgb);
+  }
+
+  :host-context(body.jelly-enabled) #removeConfirmationButton {
+    --hover-bg-action: var(--cros-sys-hover_on_prominent);
   }
 </style>
 <!-- Account management description -->
@@ -378,7 +380,6 @@
     </template>
   </cr-action-menu>
 </div>
-<div class="settings-box"></div>
 <cr-dialog id="removeConfirmationDialog">
   <div slot="title" class="key-text">
     $i18n{removeLacrosAccountDialogTitle}
