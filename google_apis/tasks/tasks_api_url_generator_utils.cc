@@ -20,6 +20,7 @@ namespace {
 constexpr char kFieldsParameterName[] = "fields";
 constexpr char kMaxResultsParameterName[] = "maxResults";
 constexpr char kPageTokenParameterName[] = "pageToken";
+constexpr char kShowCompletedParameterName[] = "showCompleted";
 
 constexpr char kTaskListsListUrl[] = "tasks/v1/users/@me/lists";
 constexpr char kTaskListsListRequestedFields[] = "kind,items(id,title,updated)";
@@ -52,6 +53,7 @@ GURL GetListTaskListsUrl(absl::optional<int> max_results,
 }
 
 GURL GetListTasksUrl(const std::string& task_list_id,
+                     bool include_completed,
                      absl::optional<int> max_results,
                      const std::string& page_token) {
   DCHECK(!task_list_id.empty());
@@ -59,6 +61,8 @@ GURL GetListTasksUrl(const std::string& task_list_id,
       kTasksListUrlTemplate, {task_list_id}, nullptr));
   url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
                                            kTasksListRequestedFields);
+  url = net::AppendOrReplaceQueryParameter(
+      url, kShowCompletedParameterName, include_completed ? "true" : "false");
   if (max_results.has_value()) {
     url = net::AppendOrReplaceQueryParameter(
         url, kMaxResultsParameterName,

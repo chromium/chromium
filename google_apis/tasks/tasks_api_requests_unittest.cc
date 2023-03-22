@@ -163,7 +163,8 @@ TEST_F(TasksApiRequestsTest, ListTasksRequest) {
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
   EXPECT_EQ(last_request().GetURL(),
-            GetListTasksUrl(kTaskListId, /*max_results=*/100,
+            GetListTasksUrl(kTaskListId, /*include_completed=*/false,
+                            /*max_results=*/100,
                             /*page_token=*/""));
   EXPECT_TRUE(future.Get().value());
   EXPECT_EQ(future.Get().value()->items().size(), 2u);
@@ -183,7 +184,8 @@ TEST_F(TasksApiRequestsTest, ListTasksWithOptionalArgsRequest) {
   EXPECT_TRUE(future.Get().has_value());
   EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
   EXPECT_EQ(last_request().GetURL(),
-            GetListTasksUrl(kTaskListId, /*max_results=*/100,
+            GetListTasksUrl(kTaskListId, /*include_completed=*/false,
+                            /*max_results=*/100,
                             /*page_token=*/"qwerty"));
   EXPECT_TRUE(future.Get().value());
   EXPECT_EQ(future.Get().value()->items().size(), 2u);

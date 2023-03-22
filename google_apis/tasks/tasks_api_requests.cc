@@ -110,7 +110,8 @@ ListTasksRequest::ListTasksRequest(RequestSender* sender,
 ListTasksRequest::~ListTasksRequest() = default;
 
 GURL ListTasksRequest::GetURL() const {
-  return GetListTasksUrl(task_list_id_, kMaxAllowedMaxResults, page_token_);
+  return GetListTasksUrl(task_list_id_, /*include_completed=*/false,
+                         kMaxAllowedMaxResults, page_token_);
 }
 
 ApiErrorCode ListTasksRequest::MapReasonToError(ApiErrorCode code,

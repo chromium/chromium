@@ -29,19 +29,23 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTaskListsUrlWithOptionalArgs) {
 }
 
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrl) {
-  EXPECT_EQ(GetListTasksUrl("task-id", /*max_results=*/absl::nullopt,
+  EXPECT_EQ(GetListTasksUrl("task-id", /*include_completed=*/false,
+                            /*max_results=*/absl::nullopt,
                             /*page_token=*/"")
                 .spec(),
             "https://www.googleapis.com/tasks/v1/lists/task-id/tasks"
-            "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent)");
+            "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent)"
+            "&showCompleted=false");
 }
 
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrlWithOptionalArgs) {
-  EXPECT_EQ(GetListTasksUrl("task-id", /*max_results=*/100,
+  EXPECT_EQ(GetListTasksUrl("task-id", /*include_completed=*/true,
+                            /*max_results=*/100,
                             /*page_token=*/"qwerty")
                 .spec(),
             "https://www.googleapis.com/tasks/v1/lists/task-id/tasks"
             "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent)"
+            "&showCompleted=true"
             "&maxResults=100"
             "&pageToken=qwerty");
 }
