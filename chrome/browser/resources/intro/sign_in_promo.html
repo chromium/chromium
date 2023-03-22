@@ -29,8 +29,6 @@
     <if expr="_google_chrome">
     --security-icon-path: url(images/gshield.svg);
     </if>
-    --scrollbar-background: var(--google-grey-100);
-    --scrollbar-width: 4px;
     color: var(--cr-primary-text-color);
     font-family: 'Google Sans', arial, sans-serif;
   }
@@ -45,7 +43,6 @@
       --disclaimer-color: var(--google-grey-100);
       --left-background-image-url: url(images/left_illustration_dark.svg);
       --right-background-image-url: url(images/right_illustration_dark.svg);
-      --scrollbar-background: var(--google-grey-800);
     }
   }
 
@@ -199,19 +196,6 @@
     margin: 0 0 32px;
   }
 
-  .custom-scrollbar::-webkit-scrollbar {
-    width: var(--scrollbar-width);
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-track {
-    border-radius: var(--scrollbar-width);
-  }
-
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-background);
-    border-radius: var(--scrollbar-width);
-  }
-
   .tangible-sync-style-left-banner {
     animation-name: left-background-slide-animation, fade-in-animation;
     content: var(--left-background-image-url);
@@ -316,7 +300,7 @@
 <img class="tangible-sync-style-left-banner" alt="">
 <img class="tangible-sync-style-right-banner" alt="">
 
-<div id="safeZone" class="tangible-sync-style custom-scrollbar">
+<div id="safeZone" class="tangible-sync-style">
   <div id="contentArea">
     <img id="product-logo" src="images/product-logo.svg"
         alt="$i18n{productLogoAltText}">
