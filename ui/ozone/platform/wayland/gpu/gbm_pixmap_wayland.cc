@@ -189,11 +189,8 @@ bool GbmPixmapWayland::ScheduleOverlayPlane(
 
 gfx::NativePixmapHandle GbmPixmapWayland::ExportHandle() {
   gfx::NativePixmapHandle handle;
-  gfx::BufferFormat format = GetBufferFormat();
 
-  // TODO(dcastagna): Use gbm_bo_get_plane_count once all the formats we use are
-  // supported by gbm.
-  const size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
+  const size_t num_planes = gbm_bo_->GetNumPlanes();
   std::vector<base::ScopedFD> scoped_fds(num_planes);
   for (size_t i = 0; i < num_planes; ++i) {
     scoped_fds[i] = base::ScopedFD(HANDLE_EINTR(dup(GetDmaBufFd(i))));
