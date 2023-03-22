@@ -214,6 +214,28 @@ public class MainActivity
                 Log.w(TAG,
                         "onGreatestScrollPercentageIncreased: scrollPercentage = "
                                 + args.getInt("scrollPercentage"));
+                // CustomTabsConnection#ON_RESIZED_CALLBACK
+            } else if (callbackName.equals("onResized")) {
+                // CustomTabsConnection#ON_RESIZED_SIZE_EXTRA
+                Log.w(TAG, "onResized: size = " + args.getInt("size"));
+                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_CALLBACK
+            } else if (callbackName.equals("onActivityLayout")) {
+                Log.w(TAG,
+                        "onActivityLayout:"
+                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_LEFT_EXTRA
+                                + " left = "
+                                + args.getInt("left")
+                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_TOP_EXTRA
+                                + " top = "
+                                + args.getInt("top")
+                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_RIGHT_EXTRA
+                                + " right = "
+                                + args.getInt("right")
+                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA
+                                + " bottom = "
+                                + args.getInt("bottom")
+                                // CustomTabsConnection#ON_ACTIVITY_LAYOUT_STATE_EXTRA
+                                + " state = " + args.getInt("state"));
             }
         }
     }

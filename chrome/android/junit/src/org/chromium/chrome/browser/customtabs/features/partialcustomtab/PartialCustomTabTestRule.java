@@ -71,6 +71,7 @@ public class PartialCustomTabTestRule implements TestRule {
     static final int NAVBAR_HEIGHT = 160;
     static final int STATUS_BAR_HEIGHT = 68;
     static final int FULL_HEIGHT = DEVICE_HEIGHT - NAVBAR_HEIGHT;
+    static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
 
     @Mock
     Activity mActivity;
@@ -91,6 +92,8 @@ public class PartialCustomTabTestRule implements TestRule {
     Display mDisplay;
     @Mock
     CustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
+    @Mock
+    CustomTabHeightStrategy.OnActivityLayoutCallback mOnActivityLayoutCallback;
     @Mock
     ViewGroup mCoordinatorLayout;
     @Mock
@@ -260,6 +263,21 @@ public class PartialCustomTabTestRule implements TestRule {
 
     public WindowManager.LayoutParams getWindowAttributes() {
         return mAttributeResults.get(mAttributeResults.size() - 1);
+    }
+
+    public void setupDisplayMetricsInMultiWindowMode() {
+        mMetrics = new DisplayMetrics();
+        mMetrics.widthPixels = DEVICE_WIDTH;
+        mMetrics.heightPixels = MULTIWINDOW_HEIGHT;
+        doAnswer(invocation -> {
+            DisplayMetrics displayMetrics = invocation.getArgument(0);
+            displayMetrics.setTo(mMetrics);
+            return null;
+        })
+                .when(mDisplay)
+                .getMetrics(any(DisplayMetrics.class));
+        mDisplaySize.y = MULTIWINDOW_HEIGHT;
+        when(mContentFrame.getHeight()).thenReturn(MULTIWINDOW_HEIGHT);
     }
 
     @Override

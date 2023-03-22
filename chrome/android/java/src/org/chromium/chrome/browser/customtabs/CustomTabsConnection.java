@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreManager;
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreManagerImpl;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -170,6 +171,19 @@ public class CustomTabsConnection {
 
     private static final String ON_RESIZED_CALLBACK = "onResized";
     private static final String ON_RESIZED_SIZE_EXTRA = "size";
+
+    @VisibleForTesting
+    static final String ON_ACTIVITY_LAYOUT_CALLBACK = "onActivityLayout";
+    @VisibleForTesting
+    static final String ON_ACTIVITY_LAYOUT_LEFT_EXTRA = "left";
+    @VisibleForTesting
+    static final String ON_ACTIVITY_LAYOUT_TOP_EXTRA = "top";
+    @VisibleForTesting
+    static final String ON_ACTIVITY_LAYOUT_RIGHT_EXTRA = "right";
+    @VisibleForTesting
+    static final String ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA = "bottom";
+    @VisibleForTesting
+    static final String ON_ACTIVITY_LAYOUT_STATE_EXTRA = "state";
 
     private static final String ON_VERTICAL_SCROLL_EVENT_CALLBACK = "onVerticalScrollEvent";
     private static final String ON_VERTICAL_SCROLL_EVENT_IS_DIRECTION_UP_EXTRA = "isDirectionUp";
@@ -1235,6 +1249,28 @@ public class CustomTabsConnection {
             return;
         }
         logCallback("onActivityResized()", "(" + height + "x" + width + ")");
+    }
+
+    /**
+     * Called when the Custom Tab's layout has changed.
+     * @param left The left coordinate of the custom tab window in pixels
+     * @param top The top coordinate of the custom tab window in pixels
+     * @param right The right coordinate of the custom tab window in pixels
+     * @param bottom The bottom coordinate of the custom tab window in pixels
+     * @param state The current layout state in which the Custom Tab is displayed.
+     */
+    public void onActivityLayout(@Nullable CustomTabsSessionToken session, int left, int top,
+            int right, int bottom, @ActivityLayoutState int state) {
+        Bundle args = new Bundle();
+        args.putInt(ON_ACTIVITY_LAYOUT_LEFT_EXTRA, left);
+        args.putInt(ON_ACTIVITY_LAYOUT_TOP_EXTRA, top);
+        args.putInt(ON_ACTIVITY_LAYOUT_RIGHT_EXTRA, right);
+        args.putInt(ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA, bottom);
+        args.putInt(ON_ACTIVITY_LAYOUT_STATE_EXTRA, state);
+
+        if (safeExtraCallback(session, ON_ACTIVITY_LAYOUT_CALLBACK, args) && mLogRequests) {
+            logCallback("extraCallback(" + ON_ACTIVITY_LAYOUT_CALLBACK + ")", args);
+        }
     }
 
     /**

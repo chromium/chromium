@@ -138,6 +138,37 @@ public abstract class BrowserServicesIntentDataProvider {
     public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER = 3;
     public static final int ACTIVITY_SIDE_SHEET_DECORATION_TYPE_MAX = 3;
 
+    @IntDef({ACTIVITY_LAYOUT_STATE_NONE, ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET,
+            ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED, ACTIVITY_LAYOUT_STATE_SIDE_SHEET,
+            ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED, ACTIVITY_LAYOUT_STATE_FULL_SCREEN})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActivityLayoutState {}
+    /**
+     * The activity's layout state is unknown.
+     */
+    public static final int ACTIVITY_LAYOUT_STATE_NONE = 0;
+    /**
+     * The activity is being displayed as a bottom-sheet at its initial height.
+     */
+    public static final int ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET = 1;
+    /**
+     * The activity is being displayed as a bottom-sheet at its maximized height.
+     */
+    public static final int ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED = 2;
+    /**
+     * The activity is being displayed as a side-sheet at its initial width.
+     */
+    public static final int ACTIVITY_LAYOUT_STATE_SIDE_SHEET = 3;
+    /**
+     * The activity is being displayed as a side-sheet at its maximized width.
+     */
+    public static final int ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED = 4;
+    /**
+     * The activity is being displayed over the whole window.
+     */
+    public static final int ACTIVITY_LAYOUT_STATE_FULL_SCREEN = 5;
+    public static final int ACTIVITY_LAYOUT_STATE_MAX = 5;
+
     /**
      * @return The type of the Activity;
      */

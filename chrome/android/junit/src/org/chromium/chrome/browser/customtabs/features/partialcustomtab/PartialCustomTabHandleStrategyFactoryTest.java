@@ -47,4 +47,12 @@ public class PartialCustomTabHandleStrategyFactoryTest {
 
         assertNotNull("The handle strategy for bottom-sheet should not be null", handleStrategy);
     }
+
+    @Test
+    public void create_PartialCustomTabHandleStrategyForFullSize() {
+        PartialCustomTabHandleStrategyFactory factory = new PartialCustomTabHandleStrategyFactory();
+        var handleStrategy = factory.create(PartialCustomTabType.FULL_SIZE, null, null, null, null);
+
+        assertNull("The handle strategy for full-size should be null", handleStrategy);
+    }
 }

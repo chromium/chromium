@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
@@ -15,6 +17,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.Px;
 
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 
@@ -25,10 +28,11 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrategy {
     public PartialCustomTabFullSizeStrategy(Activity activity,
             CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
+            CustomTabHeightStrategy.OnActivityLayoutCallback onActivityLayoutCallback,
             FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
-        super(activity, onResizedCallback, fullscreenManager, isTablet, interactWithBackground,
-                handleStrategyFactory);
+        super(activity, onResizedCallback, onActivityLayoutCallback, fullscreenManager, isTablet,
+                interactWithBackground, handleStrategyFactory);
 
         mPositionUpdater = this::updatePosition;
 
@@ -57,7 +61,7 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
 
         initializeSize();
         updateShadowOffset();
-        // TODO(crbug.com/1406107): Check if we should invoke the resize callback
+        maybeInvokeResizeCallback();
     }
 
     @Override
@@ -84,6 +88,12 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
     @Override
     protected void cleanupImeStateCallback() {
         mVersionCompat.setImeStateCallback(null);
+    }
+
+    @Override
+    @ActivityLayoutState
+    protected int getActivityLayoutState() {
+        return ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
     }
 
     @Override

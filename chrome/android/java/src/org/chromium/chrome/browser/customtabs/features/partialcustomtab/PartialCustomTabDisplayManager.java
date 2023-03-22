@@ -45,6 +45,7 @@ public class PartialCustomTabDisplayManager
     private final @Px int mUnclampedInitialWidth;
     private final boolean mIsFixedHeight;
     private final OnResizedCallback mOnResizedCallback;
+    private final OnActivityLayoutCallback mOnActivityLayoutCallback;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final FullscreenManager mFullscreenManager;
     private final boolean mIsTablet;
@@ -72,16 +73,17 @@ public class PartialCustomTabDisplayManager
 
     public PartialCustomTabDisplayManager(Activity activity, @Px int initialHeight,
             @Px int initialWidth, int breakPointDp, boolean isFixedHeight,
-            OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher,
-            FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
-            boolean showMaximizeButton, int decorationType, int sideSheetPosition,
-            int sideSheetAnimation) {
+            OnResizedCallback onResizedCallback, OnActivityLayoutCallback onActivityLayoutCallback,
+            ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
+            boolean isTablet, boolean interactWithBackground, boolean showMaximizeButton,
+            int decorationType, int sideSheetPosition, int sideSheetAnimation) {
         mActivity = activity;
         mUnclampedInitialHeight = initialHeight;
         mUnclampedInitialWidth = initialWidth;
         mBreakPointDp = breakPointDp;
         mIsFixedHeight = isFixedHeight;
         mOnResizedCallback = onResizedCallback;
+        mOnActivityLayoutCallback = onActivityLayoutCallback;
         mFullscreenManager = fullscreenManager;
         mIsTablet = isTablet;
         mInteractWithBackground = interactWithBackground;
@@ -287,20 +289,21 @@ public class PartialCustomTabDisplayManager
         switch (type) {
             case PartialCustomTabType.BOTTOM_SHEET: {
                 return new PartialCustomTabBottomSheetStrategy(mActivity, mUnclampedInitialHeight,
-                        mIsFixedHeight, mOnResizedCallback, mActivityLifecycleDispatcher,
-                        mFullscreenManager, mIsTablet, mInteractWithBackground, maximized,
-                        mHandleStrategyFactory);
+                        mIsFixedHeight, mOnResizedCallback, mOnActivityLayoutCallback,
+                        mActivityLifecycleDispatcher, mFullscreenManager, mIsTablet,
+                        mInteractWithBackground, maximized, mHandleStrategyFactory);
             }
             case PartialCustomTabType.SIDE_SHEET: {
                 return new PartialCustomTabSideSheetStrategy(mActivity, mUnclampedInitialWidth,
-                        mOnResizedCallback, mFullscreenManager, mIsTablet, mInteractWithBackground,
-                        mShowMaximizeButton, maximized, sideSheetPosition, sideSheetAnimation,
-                        mHandleStrategyFactory, mDecorationType);
+                        mOnResizedCallback, mOnActivityLayoutCallback, mFullscreenManager,
+                        mIsTablet, mInteractWithBackground, mShowMaximizeButton, maximized,
+                        sideSheetPosition, sideSheetAnimation, mHandleStrategyFactory,
+                        mDecorationType);
             }
             case PartialCustomTabType.FULL_SIZE: {
                 return new PartialCustomTabFullSizeStrategy(mActivity, mOnResizedCallback,
-                        mFullscreenManager, mIsTablet, mInteractWithBackground,
-                        mHandleStrategyFactory);
+                        mOnActivityLayoutCallback, mFullscreenManager, mIsTablet,
+                        mInteractWithBackground, mHandleStrategyFactory);
             }
             default: {
                 assert false : "Partial Custom Tab type not supported: " + type;

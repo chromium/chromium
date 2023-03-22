@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
@@ -26,6 +27,13 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
     interface OnResizedCallback {
         /** The Custom Tab has been resized. */
         void onResized(int height, int width);
+    }
+
+    /** A callback to be called once the Custom Tab's layout has changed. */
+    interface OnActivityLayoutCallback {
+        /** The Custom Tab's layout has changed. */
+        void onActivityLayout(
+                int left, int top, int right, int bottom, @ActivityLayoutState int state);
     }
 
     public static CustomTabHeightStrategy createStrategy(Activity activity, @Px int initialHeight,
@@ -44,6 +52,9 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                     breakPointDp, isPartialCustomTabFixedHeight,
                     (height, width)
                             -> connection.onResized(session, height, width),
+                    (left, top, right, bottom, state)
+                            -> connection.onActivityLayout(
+                                    session, left, top, right, bottom, state),
                     lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground,
                     showMaximizeButton, decorationType, sideSheetPosition, sideSheetAnimation);
         } else {
@@ -51,6 +62,9 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                     isPartialCustomTabFixedHeight,
                     (height, width)
                             -> connection.onResized(session, height, width),
+                    (left, top, right, bottom, state)
+                            -> connection.onActivityLayout(
+                                    session, left, top, right, bottom, state),
                     lifecycleDispatcher, fullscreenManager, isTablet, interactWithBackground, false,
                     new PartialCustomTabHandleStrategyFactory());
         }

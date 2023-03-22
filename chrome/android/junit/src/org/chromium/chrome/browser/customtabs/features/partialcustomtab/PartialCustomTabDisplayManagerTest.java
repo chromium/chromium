@@ -7,8 +7,17 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 
@@ -64,9 +73,10 @@ public class PartialCustomTabDisplayManagerTest {
             @Px int heightPx, @Px int widthPx, int breakPointDp) {
         PartialCustomTabDisplayManager displayManager = new PartialCustomTabDisplayManager(
                 mPCCTTestRule.mActivity, heightPx, widthPx, breakPointDp, false,
-                mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mActivityLifecycleDispatcher,
-                mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizeButton=*/true, 0,
-                ACTIVITY_SIDE_SHEET_POSITION_END, ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
+                mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mOnActivityLayoutCallback,
+                mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
+                true, /*showMaximizeButton=*/true, 0, ACTIVITY_SIDE_SHEET_POSITION_END,
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
         var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
         SizeStrategyCreator testSizeStrategyCreator =
                 (type, maximized, sideSheetPosition, sideSheetAnimation) -> {
@@ -151,6 +161,10 @@ public class PartialCustomTabDisplayManagerTest {
     public void transitionFromBottomSheetToSideSheetWhenOrientationChangedToLandscape() {
         mPCCTTestRule.configPortraitMode();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
@@ -161,6 +175,11 @@ public class PartialCustomTabDisplayManagerTest {
 
         assertEquals("Side-Sheet should be the active strategy", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
+
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
@@ -172,6 +191,10 @@ public class PartialCustomTabDisplayManagerTest {
 
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         mPCCTTestRule.configLandscapeMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
 
@@ -182,6 +205,10 @@ public class PartialCustomTabDisplayManagerTest {
                 (int) (mPCCTTestRule.getWindowAttributes().width));
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
@@ -192,6 +219,10 @@ public class PartialCustomTabDisplayManagerTest {
 
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         mPCCTTestRule.configLandscapeMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
 
@@ -202,6 +233,10 @@ public class PartialCustomTabDisplayManagerTest {
                 (int) (mPCCTTestRule.getWindowAttributes().width));
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
@@ -211,6 +246,10 @@ public class PartialCustomTabDisplayManagerTest {
 
         assertEquals("Side-Sheet should be the active strategy", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         mPCCTTestRule.configPortraitMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
 
@@ -218,6 +257,10 @@ public class PartialCustomTabDisplayManagerTest {
 
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
@@ -227,15 +270,26 @@ public class PartialCustomTabDisplayManagerTest {
 
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback, never())
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
     }
 
     @Test
     public void rotateInFullscreenMode() {
         mPCCTTestRule.configLandscapeMode();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
         var attrs = mPCCTTestRule.getWindowAttributes();
@@ -243,7 +297,15 @@ public class PartialCustomTabDisplayManagerTest {
         int width = attrs.width;
 
         mFullscreen = true;
+        displayManager.getSizeStrategyForTesting().setFullscreenSupplierForTesting(
+                () -> mFullscreen);
+
         displayManager.getSizeStrategyForTesting().onEnterFullscreen(null, null);
+        assertTrue(mPCCTTestRule.getWindowAttributes().isFullscreen());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         mPCCTTestRule.configPortraitMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
@@ -267,12 +329,20 @@ public class PartialCustomTabDisplayManagerTest {
         assertFalse("Should not be in fulllscreen.", attrs.isFullscreen());
         assertEquals("Height should be restored.", height, attrs.height);
         assertEquals("Width should be restored.", width, attrs.width);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
     public void rotateInMaximizeMode() {
         mPCCTTestRule.configLandscapeMode();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         var attrs = mPCCTTestRule.getWindowAttributes();
         int height = attrs.height;
@@ -280,8 +350,13 @@ public class PartialCustomTabDisplayManagerTest {
 
         var sideSheetStrategy = displayManager.getSizeStrategyForTesting();
         ((PartialCustomTabSideSheetStrategy) sideSheetStrategy).toggleMaximize(true);
-
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTrue("Should be in maximized state.", sideSheetStrategy.isMaximized());
+
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         mPCCTTestRule.configPortraitMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
@@ -292,6 +367,10 @@ public class PartialCustomTabDisplayManagerTest {
         var bottomSheetStrategy = displayManager.getSizeStrategyForTesting();
         assertFalse(
                 "Bottom sheet must start in initial height.", bottomSheetStrategy.isMaximized());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         mPCCTTestRule.configLandscapeMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
@@ -300,6 +379,10 @@ public class PartialCustomTabDisplayManagerTest {
 
         // When coming back to SideSheet strategy, the last state should be restored.
         assertTrue("Side sheet must start in minimized state.", sideSheetStrategy.isMaximized());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         ((PartialCustomTabSideSheetStrategy) sideSheetStrategy).toggleMaximize(true);
         PartialCustomTabTestRule.waitForAnimationToFinish();
@@ -308,6 +391,10 @@ public class PartialCustomTabDisplayManagerTest {
         assertFalse("Should not be in maximized state.", sideSheetStrategy.isMaximized());
         assertEquals("Height should be restored.", height, attrs.height);
         assertEquals("Width should be restored.", width, attrs.width);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test

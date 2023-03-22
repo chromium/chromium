@@ -8,11 +8,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE;
@@ -25,6 +29,7 @@ import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.P
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.FULL_HEIGHT;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.NAVBAR_HEIGHT;
 
 import android.os.Build;
 import android.view.View;
@@ -85,11 +90,12 @@ public class PartialCustomTabSideSheetStrategyTest {
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
             @Px int widthPx, int position, int decorationType) {
-        PartialCustomTabSideSheetStrategy pcct = new PartialCustomTabSideSheetStrategy(
-                mPCCTTestRule.mActivity, widthPx, mPCCTTestRule.mOnResizedCallback,
-                mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizedButton=*/true,
-                /*startMaximized=*/false, position, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
-                mPCCTTestRule.mHandleStrategyFactory, decorationType);
+        PartialCustomTabSideSheetStrategy pcct =
+                new PartialCustomTabSideSheetStrategy(mPCCTTestRule.mActivity, widthPx,
+                        mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mOnActivityLayoutCallback,
+                        mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizedButton=*/true,
+                        /*startMaximized=*/false, position, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT,
+                        mPCCTTestRule.mHandleStrategyFactory, decorationType);
         pcct.setMockViewForTesting(mPCCTTestRule.mCoordinatorLayout, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator);
         return pcct;
@@ -314,6 +320,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                 .when(mPCCTTestRule.mResources)
                 .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
         var strategy = createPcctSideSheetStrategy(1000);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
@@ -327,6 +337,10 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertEquals("Shadow should be removed.", 0, mPCCTTestRule.mLayoutParams.leftMargin);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         mFullscreen = false;
         strategy.onExitFullscreen(null);
@@ -336,11 +350,20 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertEquals(width, getWindowAttributes().width);
         assertNotEquals("Shadow should be restored.", 0, mPCCTTestRule.mLayoutParams.leftMargin);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(DEVICE_WIDTH - width), eq(0), eq(DEVICE_WIDTH),
+                        eq(DEVICE_HEIGHT - NAVBAR_HEIGHT), eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
     public void enterAndExitMaximizeMode() {
         var strategy = createPcctSideSheetStrategy(700);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
@@ -349,21 +372,40 @@ public class PartialCustomTabSideSheetStrategyTest {
         PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         strategy.toggleMaximize(true);
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(DEVICE_WIDTH - width), eq(0), eq(DEVICE_WIDTH),
+                        eq(DEVICE_HEIGHT - NAVBAR_HEIGHT), eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
     public void toggleMaximizeNoAnimation() {
         var strategy = createPcctSideSheetStrategy(700);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
         strategy.toggleMaximize(/*animation=*/false);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         strategy.toggleMaximize(/*animation=*/false);
         // Even without animation, we still need to wait for task to be idle, since we post
@@ -372,23 +414,37 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(DEVICE_WIDTH - width), eq(0), eq(DEVICE_WIDTH),
+                        eq(DEVICE_HEIGHT - NAVBAR_HEIGHT), eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
     public void maximizeAndFullscreen() {
         // Ensure maximize -> fullscreen enter/exit -> comes back to maximize mode
         var strategy = createPcctSideSheetStrategy(700);
-        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
-        int height = getWindowAttributes().height;
-        int width = getWindowAttributes().width;
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
+        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
         strategy.toggleMaximize(true);
+
         PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
+
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         mFullscreen = true;
         strategy.onEnterFullscreen(null, null);
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         // Verify we get a single resize callback invocation when exiting fullscreen and restoring
         // maximize mode.
@@ -396,6 +452,11 @@ public class PartialCustomTabSideSheetStrategyTest {
         strategy.onExitFullscreen(null);
         PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test

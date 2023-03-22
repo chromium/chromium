@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -36,6 +40,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -129,11 +134,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     public PartialCustomTabBottomSheetStrategy(Activity activity, @Px int initialHeight,
             boolean isFixedHeight, OnResizedCallback onResizedCallback,
+            OnActivityLayoutCallback onActivityLayoutCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
             boolean isTablet, boolean interactWithBackground, boolean startMaximized,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
-        super(activity, onResizedCallback, fullscreenManager, isTablet, interactWithBackground,
-                handleStrategyFactory);
+        super(activity, onResizedCallback, onActivityLayoutCallback, fullscreenManager, isTablet,
+                interactWithBackground, handleStrategyFactory);
 
         int animTime = mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime);
         mTabAnimator = new TabAnimator(this, animTime, this::onMoveEnd);
@@ -291,6 +297,18 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     }
 
     @Override
+    @ActivityLayoutState
+    protected int getActivityLayoutState() {
+        if (isFullscreen()) {
+            return ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
+        } else if (isMaximized()) {
+            return ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED;
+        } else {
+            return ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET;
+        }
+    }
+
+    @Override
     protected void adjustCornerRadius(GradientDrawable d, int radius) {
         d.mutate();
         d.setCornerRadii(new float[] {radius, radius, radius, radius, 0, 0, 0, 0});
@@ -397,10 +415,19 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         int density = (int) (mActivity.getResources().getDisplayMetrics().density);
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        if (isLandscapeMaxWidth(width)) {
-            width = BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE * density;
+        if (isFullHeight() || isFullscreen()) {
+            attrs.width = MATCH_PARENT;
+            attrs.x = 0;
+        } else {
+            int x = 0;
+            if (isLandscapeMaxWidth(width)) {
+                width = BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE * density;
+                x = (mDisplayWidth - width) / 2;
+            }
+            attrs.width = width;
+            attrs.x = x;
         }
-        attrs.width = width;
+
         mActivity.getWindow().setAttributes(attrs);
     }
 
@@ -415,9 +442,11 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         }
 
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            attrs.x = 0;
+            attrs.gravity = Gravity.TOP | Gravity.START;
+        } else {
+            attrs.gravity = Gravity.TOP;
         }
-        attrs.gravity = Gravity.TOP;
+
         mActivity.getWindow().setAttributes(attrs);
     }
 
@@ -787,6 +816,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         // Enter fullscreen i.e. (x, y, height, width) = (0, 0, MATCH_PARENT, MATCH_PARENT)
         assert isFullscreen() : "Fullscreen mode should be on";
         positionAtHeight(/*height=*/0); // |height| is not used
+        positionAtWidth(/*width=*/0); // |width| is not used
         setTopMargins(0, 0);
         maybeInvokeResizeCallback();
     }
@@ -817,6 +847,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     // Restore the window upon exiting fullscreen.
     private void restoreWindow() {
         initializeHeight();
+        positionAtWidth(mVersionCompat.getDisplayWidth());
         updateShadowOffset();
         maybeInvokeResizeCallback();
 

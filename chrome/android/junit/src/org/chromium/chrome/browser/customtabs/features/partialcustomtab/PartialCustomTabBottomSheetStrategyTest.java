@@ -19,6 +19,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED;
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy.BOTTOM_SHEET_MAX_WIDTH_DP_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
@@ -33,7 +36,6 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
@@ -79,7 +81,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private static final int INITIAL_HEIGHT = DEVICE_HEIGHT / 2 - NAVBAR_HEIGHT;
-    private static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
 
     private static final int FIND_TOOLBAR_COLOR = 3755;
     private static final int PCCT_TOOLBAR_COLOR = 12111;
@@ -89,8 +90,9 @@ public class PartialCustomTabBottomSheetStrategyTest {
     private PartialCustomTabBottomSheetStrategy createPcctBackgroundDisabled() {
         PartialCustomTabBottomSheetStrategy pcct = new PartialCustomTabBottomSheetStrategy(
                 mPCCTTestRule.mActivity, 500, false, mPCCTTestRule.mOnResizedCallback,
-                mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
-                false, /*startMaximized=*/false, mPCCTTestRule.mHandleStrategyFactory);
+                mPCCTTestRule.mOnActivityLayoutCallback, mPCCTTestRule.mActivityLifecycleDispatcher,
+                mPCCTTestRule.mFullscreenManager, false, false, /*startMaximized=*/false,
+                mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mNavbar, mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);
@@ -105,8 +107,9 @@ public class PartialCustomTabBottomSheetStrategyTest {
             int heightPx, boolean isFixedHeight) {
         PartialCustomTabBottomSheetStrategy pcct = new PartialCustomTabBottomSheetStrategy(
                 mPCCTTestRule.mActivity, heightPx, isFixedHeight, mPCCTTestRule.mOnResizedCallback,
-                mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
-                true, /*startMaxmized=*/false, mPCCTTestRule.mHandleStrategyFactory);
+                mPCCTTestRule.mOnActivityLayoutCallback, mPCCTTestRule.mActivityLifecycleDispatcher,
+                mPCCTTestRule.mFullscreenManager, false, true, /*startMaxmized=*/false,
+                mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mNavbar, mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);
@@ -597,9 +600,14 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void expandToFullHeightOnShowingKeyboard() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
-        assertEquals(1, mPCCTTestRule.mAttributeResults.size());
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
         int expected = PartialCustomTabBottomSheetStrategy.ResizeType.AUTO_EXPANSION;
         var histogramExpansion =
@@ -617,6 +625,11 @@ public class PartialCustomTabBottomSheetStrategyTest {
         histogramExpansion.assertExpected("ResizeType.AUTO_EXPANSION should be recorded once.");
         PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), anyInt());
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
@@ -830,6 +843,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void callbackWhenHeightResized() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
@@ -869,18 +883,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     @Test
     public void verifyNavigationBarHeightInMultiWindowMode() {
-        mPCCTTestRule.mMetrics = new DisplayMetrics();
-        mPCCTTestRule.mMetrics.widthPixels = DEVICE_WIDTH;
-        mPCCTTestRule.mMetrics.heightPixels = MULTIWINDOW_HEIGHT;
-        doAnswer(invocation -> {
-            DisplayMetrics displayMetrics = invocation.getArgument(0);
-            displayMetrics.setTo(mPCCTTestRule.mMetrics);
-            return null;
-        })
-                .when(mPCCTTestRule.mDisplay)
-                .getMetrics(any(DisplayMetrics.class));
-        mPCCTTestRule.mDisplaySize.y = MULTIWINDOW_HEIGHT;
-        when(mPCCTTestRule.mContentFrame.getHeight()).thenReturn(MULTIWINDOW_HEIGHT);
+        mPCCTTestRule.setupDisplayMetricsInMultiWindowMode();
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
         assertEquals(0, strategy.getNavbarHeightForTesting());
@@ -905,8 +908,14 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void enterAndExitHtmlFullscreen() {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+
         assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
         doReturn(47)
@@ -917,10 +926,15 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
         mFullscreen = true;
         strategy.onEnterFullscreen(null, null);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTrue(getWindowAttributes().isFullscreen());
         assertEquals("Shadow should be removed.", 0, strategy.getShadowOffsetForTesting());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_FULL_SCREEN));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         mFullscreen = false;
         strategy.onExitFullscreen(null);
@@ -929,6 +943,12 @@ public class PartialCustomTabBottomSheetStrategyTest {
         assertEquals(height, getWindowAttributes().height);
         assertNotEquals("Shadow should be restored.", 0, strategy.getShadowOffsetForTesting());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), anyInt());
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(DEVICE_HEIGHT - INITIAL_HEIGHT - NAVBAR_HEIGHT),
+                        eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 
     @Test
@@ -1130,8 +1150,14 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void expandToFullHeightOnFindInPage() {
+        mPCCTTestRule.configPortraitMode();
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(800);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
         doReturn(mPCCTTestRule.mDragBarBackground).when(mPCCTTestRule.mDragBar).getBackground();
         int expected = PartialCustomTabBottomSheetStrategy.ResizeType.AUTO_EXPANSION;
         var histogramExpansion =
@@ -1143,6 +1169,10 @@ public class PartialCustomTabBottomSheetStrategyTest {
         histogramExpansion.assertExpected("ResizeType.AUTO_EXPANSION should be recorded once.");
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), anyInt());
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(0), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         expected = PartialCustomTabBottomSheetStrategy.ResizeType.AUTO_MINIMIZATION;
         var histogramMinimization =
@@ -1154,5 +1184,11 @@ public class PartialCustomTabBottomSheetStrategyTest {
         histogramMinimization.assertExpected(
                 "ResizeType.AUTO_MINIMIZATION should be recorded once.");
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(INITIAL_HEIGHT), anyInt());
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(eq(0), eq(DEVICE_HEIGHT - INITIAL_HEIGHT - NAVBAR_HEIGHT),
+                        eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
     }
 }

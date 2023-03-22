@@ -7,15 +7,27 @@ package org.chromium.chrome.browser.customtabs;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
+
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET;
+import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA;
+import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACTIVITY_LAYOUT_CALLBACK;
+import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACTIVITY_LAYOUT_LEFT_EXTRA;
+import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACTIVITY_LAYOUT_RIGHT_EXTRA;
+import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACTIVITY_LAYOUT_STATE_EXTRA;
+import static org.chromium.chrome.browser.customtabs.CustomTabsConnection.ON_ACTIVITY_LAYOUT_TOP_EXTRA;
 
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Process;
 
+import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.After;
@@ -26,9 +38,11 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
@@ -56,11 +70,14 @@ public class CustomTabsConnectionUnitTest {
     private SessionHandler mSessionHandler;
     @Mock
     private CustomTabsSessionToken mSession;
+    @Mock
+    private CustomTabsCallback mCallback;
 
     private static final ArrayList<String> REALTIME_SIGNALS_AND_BRANDING =
             new ArrayList<String>(List.of(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS,
                     ChromeFeatureList.CCT_BRAND_TRANSPARENCY));
     private CustomTabsConnection mConnection;
+    private int mUid = Process.myUid();
 
     @Implements(UmaSessionStats.class)
     public static class ShadowUmaSessionStats {
@@ -234,6 +251,34 @@ public class CustomTabsConnectionUnitTest {
         mConnection.updateVisuals(mSession, bundle);
         verify(mSessionHandler, never())
                 .updateSecondaryToolbarSwipeUpPendingIntent(eq(pendingIntent));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
+    public void onActivityLayout_CallbackIsCalledForNamedMethod() {
+        int uid = 123;
+        int left = 0;
+        int top = 0;
+        int right = 100;
+        int bottom = 200;
+
+        when(mSession.getCallback()).thenReturn(mCallback);
+        ShadowProcess.setUid(uid);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(ON_ACTIVITY_LAYOUT_LEFT_EXTRA, left);
+        bundle.putInt(ON_ACTIVITY_LAYOUT_TOP_EXTRA, top);
+        bundle.putInt(ON_ACTIVITY_LAYOUT_RIGHT_EXTRA, right);
+        bundle.putInt(ON_ACTIVITY_LAYOUT_BOTTOM_EXTRA, bottom);
+        bundle.putInt(ON_ACTIVITY_LAYOUT_STATE_EXTRA, ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET);
+
+        shadowOf(RuntimeEnvironment.getApplication().getApplicationContext().getPackageManager())
+                .setPackagesForUid(uid, "test.package.name");
+        mConnection.mClientManager.newSession(mSession, uid, null, null, null);
+        mConnection.onActivityLayout(
+                mSession, left, top, right, bottom, ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET);
+
+        verify(mCallback).extraCallback(eq(ON_ACTIVITY_LAYOUT_CALLBACK), refEq(bundle));
     }
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.
