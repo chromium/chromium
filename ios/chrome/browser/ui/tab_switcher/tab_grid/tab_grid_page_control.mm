@@ -68,19 +68,12 @@ namespace {
 
 // Height and width of the slider.
 const CGFloat kSliderHeight = 40.0;
-const CGFloat kLegacySliderWidth = 78.0;
 const CGFloat kSliderWidth = 65.0;
 
 // Height and width of each segment.
-const CGFloat kLegacySegmentHeight = 36.0;
-const CGFloat kLegacySegmentWidth = 64.0;
 const CGFloat kSegmentHeight = 44.0;
 const CGFloat kSegmentWidth = 65.0;
 
-// Points that the slider overhangs a segment on each side, or 0 if the slider
-// is narrower than a segment.
-const CGFloat kLegacySliderOverhang =
-    std::max((kLegacySliderWidth - kLegacySegmentWidth) / 2.0, 0.0);
 // Margin between the slider and the leading/trailing segments.
 const CGFloat kSliderMargin = 2.0;
 
@@ -92,19 +85,9 @@ const CGFloat kSliderVerticalMargin =
 const CGFloat kSeparatorWidth = 1.0;
 const CGFloat kSeparatorHeight = 22.0;
 
-// Width of the background -- three segments plus two separators.
-const CGFloat kLegacyBackgroundWidth =
-    3 * kLegacySegmentWidth + 2 * kSeparatorWidth;
-
 // Overall height of the control -- the larger of the slider and segment
 // heights.
-const CGFloat kLegacyOverallHeight =
-    std::max(kSliderHeight, kLegacySegmentHeight);
 const CGFloat kOverallHeight = std::max(kSliderHeight, kSegmentHeight);
-// Overall width of the control -- the background width plus twice the slider
-// overhang.
-const CGFloat kLegacyOverallWidth =
-    kLegacyBackgroundWidth + 2 * kLegacySliderOverhang;
 // Overall width -- three segments plus two separators plus two margins between
 // leading/trailing segments and the slider.
 const CGFloat kOverallWidth =
@@ -113,7 +96,6 @@ const CGFloat kOverallWidth =
 // Radius used to draw the background and the slider.
 const CGFloat kSliderCornerRadius = 13.0;
 const CGFloat kBackgroundCornerRadius = 15.0;
-const CGFloat kLegacyBackgroundCornerRadius = 13.0;
 
 // Sizes for the labels and their selected counterparts.
 const CGFloat kLabelSize = 20.0;
@@ -123,14 +105,9 @@ const CGFloat kLabelSizeToFontSize = 0.6;
 // Maximum duration of slider motion animation.
 const NSTimeInterval kSliderMoveDuration = 0.2;
 
-// Color for the slider
-const int kLegacySliderColor = 0xF8F9FA;
 // Alpha for the background view.
-const CGFloat kLegacyBackgroundAlpha = 0.3;
 const CGFloat kBackgroundAlpha = 0.15;
 const CGFloat kScrolledToTopBackgroundAlpha = 0.25;
-// Color for the regular tab count label and icons.
-const CGFloat kLegacySelectedColor = 0x3C4043;
 
 // The sizes of the symbol images.
 const CGFloat kUnselectedSymbolSize = 22.;
@@ -141,26 +118,6 @@ CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 }
 
-// Image names for the different icon state.
-NSString* kImagePageControlRegularSelected =
-    @"page_control_regular_tabs_selected";
-NSString* kImagePageControlRegularNotSelected = @"page_control_regular_tabs";
-NSString* kImagePageControlIncognitoSelected =
-    @"page_control_incognito_tabs_selected";
-NSString* kImagePageControlIncognitoNotSelected =
-    @"page_control_incognito_tabs";
-NSString* kImagePageControlRemoteSelected =
-    @"page_control_remote_tabs_selected";
-NSString* kImagePageControlRemoteNotSelected = @"page_control_remote_tabs";
-
-// Returns an UIImageView for the given imgageName.
-UIImageView* ImageViewForImageNamed(NSString* imageName) {
-  return [[UIImageView alloc]
-      initWithImage:
-          [[UIImage imageNamed:imageName]
-              imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
-}
-
 // Returns an UIImageView for the given `symbolName` and `selected` state.
 UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   CGFloat size = selected ? kSelectedSymbolSize : kUnselectedSymbolSize;
@@ -169,11 +126,6 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 }
 
 }  // namespace
-
-// View class used for the background of this control; it draws the grey
-// rectangles with clear separators.
-@interface TabGridPageControlBackground : UIView
-@end
 
 @interface TabGridPageControl () <UIGestureRecognizerDelegate,
                                   UIPointerInteractionDelegate> {
@@ -246,12 +198,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 }
 
 - (instancetype)init {
-  CGRect frame;
-  if (UseSymbols()) {
-    frame = CGRectMake(0, 0, kOverallWidth, kOverallHeight);
-  } else {
-    frame = CGRectMake(0, 0, kLegacyOverallWidth, kLegacyOverallHeight);
-  }
+  CGRect frame = CGRectMake(0, 0, kOverallWidth, kOverallHeight);
   if (self = [super initWithFrame:frame]) {
     // Default to the regular tab page as the selected page.
     _selectedPage = TabGridPageRegularTabs;
@@ -298,8 +245,9 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 }
 
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge {
-  if (!UseSymbols() || _scrolledToEdge == scrolledToEdge)
+  if (_scrolledToEdge == scrolledToEdge) {
     return;
+  }
 
   _scrolledToEdge = scrolledToEdge;
 
@@ -457,10 +405,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
-  if (UseSymbols()) {
-    return CGSizeMake(kOverallWidth, kOverallHeight);
-  }
-  return CGSizeMake(kLegacyOverallWidth, kLegacyOverallHeight);
+  return CGSizeMake(kOverallWidth, kOverallHeight);
 }
 
 - (void)willMoveToSuperview:(UIView*)newSuperview {
@@ -563,54 +508,30 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   UIImageView* iconNotSelected;
   switch (tab) {
     case TabGridPageRegularTabs: {
-      if (UseSymbols()) {
-        iconSelected = ImageViewForSymbol(kSquareNumberSymbol, true);
-        iconNotSelected = ImageViewForSymbol(kSquareNumberSymbol, false);
-      } else {
-        iconSelected = ImageViewForImageNamed(kImagePageControlRegularSelected);
-        iconNotSelected =
-            ImageViewForImageNamed(kImagePageControlRegularNotSelected);
-      }
+      iconSelected = ImageViewForSymbol(kSquareNumberSymbol, true);
+      iconNotSelected = ImageViewForSymbol(kSquareNumberSymbol, false);
       self.regularSelectedIcon = iconSelected;
       self.regularNotSelectedIcon = iconNotSelected;
       break;
     }
     case TabGridPageIncognitoTabs: {
-      if (UseSymbols()) {
-        iconSelected = ImageViewForSymbol(kIncognitoSymbol, true);
-        iconNotSelected = ImageViewForSymbol(kIncognitoSymbol, false);
-      } else {
-        iconSelected =
-            ImageViewForImageNamed(kImagePageControlIncognitoSelected);
-        iconNotSelected =
-            ImageViewForImageNamed(kImagePageControlIncognitoNotSelected);
-      }
+      iconSelected = ImageViewForSymbol(kIncognitoSymbol, true);
+      iconNotSelected = ImageViewForSymbol(kIncognitoSymbol, false);
       self.incognitoSelectedIcon = iconSelected;
       self.incognitoNotSelectedIcon = iconNotSelected;
       break;
     }
     case TabGridPageRemoteTabs: {
-      if (UseSymbols()) {
-        iconSelected = ImageViewForSymbol(kRecentTabsSymbol, true);
-        iconNotSelected = ImageViewForSymbol(kRecentTabsSymbol, false);
-      } else {
-        iconSelected = ImageViewForImageNamed(kImagePageControlRemoteSelected);
-        iconNotSelected =
-            ImageViewForImageNamed(kImagePageControlRemoteNotSelected);
-      }
+      iconSelected = ImageViewForSymbol(kRecentTabsSymbol, true);
+      iconNotSelected = ImageViewForSymbol(kRecentTabsSymbol, false);
       self.remoteSelectedIcon = iconSelected;
       self.remoteNotSelectedIcon = iconNotSelected;
       break;
     }
   }
 
-  if (UseSymbols()) {
-    iconNotSelected.tintColor = [UIColor colorNamed:kStaticGrey300Color];
-    iconSelected.tintColor = UIColor.blackColor;
-  } else {
-    iconNotSelected.tintColor = UIColorFromRGB(kLegacySliderColor);
-    iconSelected.tintColor = UIColorFromRGB(kLegacySelectedColor);
-  }
+  iconNotSelected.tintColor = [UIColor colorNamed:kStaticGrey300Color];
+  iconSelected.tintColor = UIColor.blackColor;
 
   [self insertSubview:iconNotSelected belowSubview:self.sliderView];
   [self.selectedImageView addSubview:iconSelected];
@@ -619,33 +540,18 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // Sets up all of the subviews for this control, as well as the layout guides
 // used to position the section content.
 - (void)setupViews {
-  UIView* backgroundView = nil;
-  if (UseSymbols()) {
-    self.scrolledToEdge = YES;
+  self.scrolledToEdge = YES;
 
-    backgroundView = [[UIView alloc]
-        initWithFrame:CGRectMake(0, 0, kOverallWidth, kSegmentHeight)];
-    backgroundView.backgroundColor =
-        [UIColor colorWithWhite:1 alpha:kScrolledToTopBackgroundAlpha];
-
-  } else {
-    backgroundView = [[TabGridPageControlBackground alloc] init];
-  }
+  UIView* backgroundView = [[UIView alloc]
+      initWithFrame:CGRectMake(0, 0, kOverallWidth, kSegmentHeight)];
+  backgroundView.backgroundColor =
+      [UIColor colorWithWhite:1 alpha:kScrolledToTopBackgroundAlpha];
   backgroundView.userInteractionEnabled = NO;
-  if (UseSymbols()) {
-    backgroundView.layer.cornerRadius = kBackgroundCornerRadius;
-  } else {
-    backgroundView.layer.cornerRadius = kLegacyBackgroundCornerRadius;
-  }
+  backgroundView.layer.cornerRadius = kBackgroundCornerRadius;
   backgroundView.layer.masksToBounds = YES;
   [self addSubview:backgroundView];
-  if (UseSymbols()) {
-    backgroundView.center =
-        CGPointMake(kOverallWidth / 2.0, kOverallHeight / 2.0);
-  } else {
-    backgroundView.center =
-        CGPointMake(kLegacyOverallWidth / 2.0, kLegacyOverallHeight / 2.0);
-  }
+  backgroundView.center =
+      CGPointMake(kOverallWidth / 2.0, kOverallHeight / 2.0);
   self.background = backgroundView;
 
   // Set up the layout guides for the segments.
@@ -662,93 +568,51 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   // All of the guides are of the same height, and vertically centered in the
   // control.
   for (UILayoutGuide* guide in @[ incognitoGuide, regularGuide, remoteGuide ]) {
-    if (UseSymbols()) {
-      [guide.heightAnchor constraintEqualToConstant:kOverallHeight].active =
-          YES;
-      // Guides are all the same width. The regular guide is centered in the
-      // control, and the incognito and remote guides are on the leading and
-      // trailing sides of it, with separators in between.
-      [guide.widthAnchor constraintEqualToConstant:kSegmentWidth].active = YES;
-    } else {
-      [guide.heightAnchor constraintEqualToConstant:kLegacyOverallHeight]
-          .active = YES;
-    }
+    [guide.heightAnchor constraintEqualToConstant:kOverallHeight].active = YES;
+    // Guides are all the same width. The regular guide is centered in the
+    // control, and the incognito and remote guides are on the leading and
+    // trailing sides of it, with separators in between.
+    [guide.widthAnchor constraintEqualToConstant:kSegmentWidth].active = YES;
     [guide.centerYAnchor constraintEqualToAnchor:self.centerYAnchor].active =
         YES;
   }
 
-  if (UseSymbols()) {
-    UIView* firstSeparator = [self newSeparator];
-    [self addSubview:firstSeparator];
-    self.firstSeparator = firstSeparator;
-    UIView* secondSeparator = [self newSeparator];
-    [self addSubview:secondSeparator];
-    self.secondSeparator = secondSeparator;
+  UIView* firstSeparator = [self newSeparator];
+  [self addSubview:firstSeparator];
+  self.firstSeparator = firstSeparator;
+  UIView* secondSeparator = [self newSeparator];
+  [self addSubview:secondSeparator];
+  self.secondSeparator = secondSeparator;
 
-    [NSLayoutConstraint activateConstraints:@[
-      [incognitoGuide.trailingAnchor
-          constraintEqualToAnchor:firstSeparator.leadingAnchor],
-      [firstSeparator.trailingAnchor
-          constraintEqualToAnchor:regularGuide.leadingAnchor],
-      [regularGuide.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-      [regularGuide.trailingAnchor
-          constraintEqualToAnchor:secondSeparator.leadingAnchor],
-      [secondSeparator.trailingAnchor
-          constraintEqualToAnchor:remoteGuide.leadingAnchor],
+  [NSLayoutConstraint activateConstraints:@[
+    [incognitoGuide.trailingAnchor
+        constraintEqualToAnchor:firstSeparator.leadingAnchor],
+    [firstSeparator.trailingAnchor
+        constraintEqualToAnchor:regularGuide.leadingAnchor],
+    [regularGuide.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+    [regularGuide.trailingAnchor
+        constraintEqualToAnchor:secondSeparator.leadingAnchor],
+    [secondSeparator.trailingAnchor
+        constraintEqualToAnchor:remoteGuide.leadingAnchor],
 
-      [firstSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-      [secondSeparator.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
-    ]];
-
-  } else {
-    // Guides are all the same width (except the regular guide is wider to
-    // include the separators on either side of it). The regular guide is
-    // centered in the control, and the incognito and remote guides are on the
-    // leading and trailing sides of it.
-    [NSLayoutConstraint activateConstraints:@[
-      [incognitoGuide.widthAnchor
-          constraintEqualToConstant:kLegacySegmentWidth],
-      [regularGuide.widthAnchor
-          constraintEqualToConstant:kLegacySegmentWidth + 2 * kSeparatorWidth],
-      [remoteGuide.widthAnchor constraintEqualToConstant:kLegacySegmentWidth],
-      [regularGuide.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-      [incognitoGuide.trailingAnchor
-          constraintEqualToAnchor:regularGuide.leadingAnchor],
-      [remoteGuide.leadingAnchor
-          constraintEqualToAnchor:regularGuide.trailingAnchor]
-    ]];
-  }
+    [firstSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+    [secondSeparator.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+  ]];
 
   // Add the slider above the section images and labels.
-  CGRect sliderFrame;
-  if (UseSymbols()) {
-    sliderFrame =
-        CGRectMake(0, kSliderVerticalMargin, kSliderWidth, kSliderHeight);
-  } else {
-    sliderFrame = CGRectMake(0, 0, kLegacySliderWidth, kSliderHeight);
-  }
+  CGRect sliderFrame =
+      CGRectMake(0, kSliderVerticalMargin, kSliderWidth, kSliderHeight);
   UIView* slider = [[UIView alloc] initWithFrame:sliderFrame];
   slider.layer.cornerRadius = kSliderCornerRadius;
   slider.layer.masksToBounds = YES;
-  if (UseSymbols()) {
-    slider.backgroundColor = UIColor.whiteColor;
-  } else {
-    slider.backgroundColor = UIColorFromRGB(kLegacySliderColor);
-  }
+  slider.backgroundColor = UIColor.whiteColor;
 
   [self addSubview:slider];
   self.sliderView = slider;
 
   // Selected images and labels are added to the selected image view so they
   // will be clipped by the slider.
-  CGRect selectedImageFrame;
-  if (UseSymbols()) {
-    selectedImageFrame = CGRectMake(0, 0, kOverallWidth, kOverallHeight);
-  } else {
-    selectedImageFrame =
-        CGRectMake(0, 0, kLegacyOverallWidth, kLegacyOverallHeight);
-  }
+  CGRect selectedImageFrame = CGRectMake(0, 0, kOverallWidth, kOverallHeight);
   UIView* selectedImageView = [[UIView alloc] initWithFrame:selectedImageFrame];
   selectedImageView.userInteractionEnabled = NO;
   [self.sliderView addSubview:selectedImageView];
@@ -765,12 +629,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   [self.selectedImageView addSubview:regularSelectedLabel];
   self.regularSelectedLabel = regularSelectedLabel;
 
-  CGRect segmentRect;
-  if (UseSymbols()) {
-    segmentRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
-  } else {
-    segmentRect = CGRectMake(0, 0, kLegacySegmentWidth, kLegacyOverallHeight);
-  }
+  CGRect segmentRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
   UIView* incognitoHoverView = [[UIView alloc] initWithFrame:segmentRect];
   UIView* regularHoverView = [[UIView alloc] initWithFrame:segmentRect];
   UIView* remoteHoverView = [[UIView alloc] initWithFrame:segmentRect];
@@ -822,18 +681,11 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 // Selected labels use a different size and are black.
 - (UILabel*)labelSelected:(BOOL)selected {
   CGFloat size = selected ? kSelectedLabelSize : kLabelSize;
-  UIColor* color;
-  if (UseSymbols()) {
-    color = selected ? UIColor.blackColor
-                     : [UIColor colorNamed:kStaticGrey300Color];
-  } else {
-    color = selected ? UIColorFromRGB(kLegacySelectedColor)
-                     : UIColorFromRGB(kLegacySliderColor);
-  }
   UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, size, size)];
   label.backgroundColor = UIColor.clearColor;
   label.textAlignment = NSTextAlignmentCenter;
-  label.textColor = color;
+  label.textColor =
+      selected ? UIColor.blackColor : [UIColor colorNamed:kStaticGrey300Color];
   return label;
 }
 
@@ -907,37 +759,6 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
       [UIPointerShape shapeWithRoundedRect:interaction.view.frame
                               cornerRadius:kSliderCornerRadius];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
-}
-
-@end
-
-@implementation TabGridPageControlBackground
-
-- (instancetype)init {
-  DCHECK(!UseSymbols());
-  CGRect frame = CGRectMake(0, 0, kLegacyBackgroundWidth, kLegacySegmentHeight);
-  self = [super initWithFrame:frame];
-  if (self) {
-    self.backgroundColor = UIColor.clearColor;
-  }
-  return self;
-}
-
-- (CGSize)intrinsicContentsSize {
-  return CGSizeMake(kLegacyBackgroundWidth, kLegacySegmentHeight);
-}
-
-- (void)drawRect:(CGRect)rect {
-  CGContextRef drawing = UIGraphicsGetCurrentContext();
-  UIColor* backgroundColor = [UIColor colorWithWhite:1
-                                               alpha:kLegacyBackgroundAlpha];
-  CGContextSetFillColorWithColor(drawing, backgroundColor.CGColor);
-  CGRect fillRect = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
-  CGContextFillRect(drawing, fillRect);
-  fillRect.origin.x += kSegmentWidth + kSeparatorWidth;
-  CGContextFillRect(drawing, fillRect);
-  fillRect.origin.x += kSegmentWidth + kSeparatorWidth;
-  CGContextFillRect(drawing, fillRect);
 }
 
 @end

@@ -86,11 +86,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.tableView setTableHeaderView:[[UIView alloc] initWithFrame:frame]];
   [self.tableView setTableFooterView:[[UIView alloc] initWithFrame:frame]];
 
-  if (UseSymbols()) {
-    self.tableView.layer.cornerRadius = kGridCellCornerRadius;
-  } else {
-    self.tableView.layer.cornerRadius = kLegacyGridCellCornerRadius;
-  }
+  self.tableView.layer.cornerRadius = kGridCellCornerRadius;
   [self loadModel];
   [self.tableView reloadData];
   [self.tableView layoutIfNeeded];

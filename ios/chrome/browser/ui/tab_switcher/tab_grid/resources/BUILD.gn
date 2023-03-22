@@ -8,94 +8,6 @@ colorset("grid_background_color") {
   sources = [ "grid_background_color.colorset/Contents.json" ]
 }
 
-imageset("new_tab_floating_button") {
-  sources = [
-    "new_tab_floating_button.imageset/Contents.json",
-    "new_tab_floating_button.imageset/new_tab_floating_button@2x.png",
-    "new_tab_floating_button.imageset/new_tab_floating_button@3x.png",
-  ]
-}
-
-imageset("new_tab_floating_button_incognito") {
-  sources = [
-    "new_tab_floating_button_incognito.imageset/Contents.json",
-    "new_tab_floating_button_incognito.imageset/new_tab_floating_button_incognito@2x.png",
-    "new_tab_floating_button_incognito.imageset/new_tab_floating_button_incognito@3x.png",
-  ]
-}
-
-imageset("new_tab_toolbar_button") {
-  sources = [
-    "new_tab_toolbar_button.imageset/Contents.json",
-    "new_tab_toolbar_button.imageset/new_tab_toolbar_button@2x.png",
-    "new_tab_toolbar_button.imageset/new_tab_toolbar_button@3x.png",
-  ]
-}
-
-imageset("new_tab_toolbar_button_incognito") {
-  sources = [
-    "new_tab_toolbar_button_incognito.imageset/Contents.json",
-    "new_tab_toolbar_button_incognito.imageset/new_tab_toolbar_button_incognito@2x.png",
-    "new_tab_toolbar_button_incognito.imageset/new_tab_toolbar_button_incognito@3x.png",
-  ]
-}
-
-imageset("page_control_incognito_tabs") {
-  sources = [
-    "page_control_incognito_tabs.imageset/Contents.json",
-    "page_control_incognito_tabs.imageset/page_control_incognito_tabs@2x.png",
-    "page_control_incognito_tabs.imageset/page_control_incognito_tabs@3x.png",
-  ]
-}
-
-imageset("page_control_incognito_tabs_selected") {
-  sources = [
-    "page_control_incognito_tabs_selected.imageset/Contents.json",
-    "page_control_incognito_tabs_selected.imageset/page_control_incognito_tabs_selected@2x.png",
-    "page_control_incognito_tabs_selected.imageset/page_control_incognito_tabs_selected@3x.png",
-  ]
-}
-
-imageset("page_control_regular_tabs") {
-  sources = [
-    "page_control_regular_tabs.imageset/Contents.json",
-    "page_control_regular_tabs.imageset/page_control_regular_tabs@2x.png",
-    "page_control_regular_tabs.imageset/page_control_regular_tabs@3x.png",
-  ]
-}
-
-imageset("page_control_regular_tabs_selected") {
-  sources = [
-    "page_control_regular_tabs_selected.imageset/Contents.json",
-    "page_control_regular_tabs_selected.imageset/page_control_regular_tabs_selected@2x.png",
-    "page_control_regular_tabs_selected.imageset/page_control_regular_tabs_selected@3x.png",
-  ]
-}
-
-imageset("page_control_remote_tabs") {
-  sources = [
-    "page_control_remote_tabs.imageset/Contents.json",
-    "page_control_remote_tabs.imageset/page_control_remote_tabs@2x.png",
-    "page_control_remote_tabs.imageset/page_control_remote_tabs@3x.png",
-  ]
-}
-
-imageset("page_control_remote_tabs_selected") {
-  sources = [
-    "page_control_remote_tabs_selected.imageset/Contents.json",
-    "page_control_remote_tabs_selected.imageset/page_control_remote_tabs_selected@2x.png",
-    "page_control_remote_tabs_selected.imageset/page_control_remote_tabs_selected@3x.png",
-  ]
-}
-
-imageset("select_tabs_toolbar_button") {
-  sources = [
-    "select_tabs_toolbar_button.imageset/Contents.json",
-    "select_tabs_toolbar_button.imageset/select_tabs_toolbar_button@2x.png",
-    "select_tabs_toolbar_button.imageset/select_tabs_toolbar_button@3x.png",
-  ]
-}
-
 imageset("tab_grid_incognito_tabs_empty") {
   sources = [
     "tab_grid_incognito_tabs_empty.imageset/Contents.json",
@@ -107,16 +19,5 @@ imageset("tab_grid_regular_tabs_empty") {
   sources = [
     "tab_grid_regular_tabs_empty.imageset/Contents.json",
     "tab_grid_regular_tabs_empty.imageset/tab_grid_regular_tabs_empty.pdf",
-  ]
-}
-
-group("page_control_assets") {
-  public_deps = [
-    ":page_control_incognito_tabs",
-    ":page_control_incognito_tabs_selected",
-    ":page_control_regular_tabs",
-    ":page_control_regular_tabs_selected",
-    ":page_control_remote_tabs",
-    ":page_control_remote_tabs_selected",
   ]
 }

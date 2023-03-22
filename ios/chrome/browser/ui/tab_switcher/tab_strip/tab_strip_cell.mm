@@ -44,11 +44,7 @@ const CGFloat kFontSize = 14.0;
     ]];
 
     UIImage* close =
-        UseSymbols()
-            ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
-                                                 kXmarkSymbolPointSize)
-            : [[UIImage imageNamed:@"grid_cell_close_button"]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [_closeButton setImage:close forState:UIControlStateNormal];
     [self.contentView addSubview:_closeButton];

@@ -26,11 +26,7 @@
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    if (UseSymbols()) {
-      self.layer.cornerRadius = kGridCellCornerRadius;
-    } else {
-      self.layer.cornerRadius = kLegacyGridCellCornerRadius;
-    }
+    self.layer.cornerRadius = kGridCellCornerRadius;
     self.layer.masksToBounds = YES;
     UIImageView* plusSignView = [[UIImageView alloc]
         initWithImage:[UIImage imageNamed:@"grid_cell_plus_sign"]];

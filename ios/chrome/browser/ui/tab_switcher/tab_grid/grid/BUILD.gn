@@ -38,9 +38,7 @@ source_set("grid_ui") {
 
   deps = [
     ":grid_ui_constants",
-    "resources:grid_cell_close_button",
     "resources:grid_cell_plus_sign",
-    "resources:grid_theme_selection_tint_color",
     "resources:plus_sign_grid_cell_background_color",
     "//base",
     "//components/bookmarks/common",

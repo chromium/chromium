@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_view_layout.h"
@@ -32,6 +33,9 @@ const CGFloat kNewTabButtonWidth = 44;
 // Default image insets for the new tab button.
 const CGFloat kNewTabButtonLeadingImageInset = -10.0;
 const CGFloat kNewTabButtonBottomImageInset = -2.0;
+
+const CGFloat kSymbolSize = 18;
+
 }  // namespace
 
 @interface TabStripViewController () <TabStripCellDelegate>
@@ -72,8 +76,8 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   self.buttonNewTab = [[UIButton alloc] init];
   self.buttonNewTab.translatesAutoresizingMaskIntoConstraints = NO;
   self.buttonNewTab.imageView.contentMode = UIViewContentModeCenter;
-  UIImage* buttonNewTabImage = [[UIImage imageNamed:@"tabstrip_new_tab"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImage* buttonNewTabImage =
+      DefaultSymbolWithPointSize(kPlusSymbol, kSymbolSize);
   [self.buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
   [self.buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
 

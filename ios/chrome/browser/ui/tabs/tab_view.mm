@@ -323,11 +323,7 @@ UIImage* DefaultFaviconImage() {
   }
 
   UIImage* closeButton =
-      UseSymbols()
-          ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
-                                               kXmarkSymbolPointSize)
-          : [[UIImage imageNamed:@"grid_cell_close_button"]
-                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kXmarkSymbolPointSize);
   [_closeButton setImage:closeButton forState:UIControlStateNormal];
   [_closeButton setAccessibilityLabel:l10n_util::GetNSString(
                                           IDS_IOS_TOOLS_MENU_CLOSE_TAB)];

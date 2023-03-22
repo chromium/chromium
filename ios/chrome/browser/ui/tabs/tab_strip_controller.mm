@@ -540,14 +540,8 @@ const CGFloat kSymbolSize = 18;
                                       UIViewAutoresizingFlexibleBottomMargin);
     _buttonNewTab.imageView.contentMode = UIViewContentModeCenter;
 
-    UIImage* buttonNewTabImage;
-    if (UseSymbols()) {
-      buttonNewTabImage = DefaultSymbolWithPointSize(kPlusSymbol, kSymbolSize);
-    } else {
-      buttonNewTabImage = [UIImage imageNamed:@"tabstrip_new_tab"];
-      buttonNewTabImage = [buttonNewTabImage
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    }
+    UIImage* buttonNewTabImage =
+        DefaultSymbolWithPointSize(kPlusSymbol, kSymbolSize);
 
     // TODO(crbug.com/1418068): Simplify after minimum version required is >=
     // iOS 15.

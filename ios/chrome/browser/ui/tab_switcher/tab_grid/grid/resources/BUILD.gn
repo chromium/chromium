@@ -4,24 +4,12 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("grid_cell_close_button") {
-  sources = [
-    "grid_cell_close_button.imageset/Contents.json",
-    "grid_cell_close_button.imageset/grid_cell_close_button@2x.png",
-    "grid_cell_close_button.imageset/grid_cell_close_button@3x.png",
-  ]
-}
-
 imageset("grid_cell_plus_sign") {
   sources = [
     "grid_cell_plus_sign.imageset/Contents.json",
     "grid_cell_plus_sign.imageset/grid_cell_plus_sign@2x.png",
     "grid_cell_plus_sign.imageset/grid_cell_plus_sign@3x.png",
   ]
-}
-
-colorset("grid_theme_selection_tint_color") {
-  sources = [ "grid_theme_selection_tint_color.colorset/Contents.json" ]
 }
 
 colorset("plus_sign_grid_cell_background_color") {
