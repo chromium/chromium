@@ -5,17 +5,20 @@
 package org.chromium.android_webview.js_sandbox.service;
 
 import android.content.res.AssetFileDescriptor;
-import android.os.RemoteException;
+
+import androidx.javascriptengine.common.Utils;
 
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
-import org.chromium.base.Log;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateSyncCallback;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
 import javax.annotation.concurrent.GuardedBy;
 
-/** Service that provides methods for Javascript execution. */
+/**
+ * Service that provides methods for Javascript execution.
+ */
 @JNINamespace("android_webview")
 public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     private static final String TAG = "JsSandboxIsolate";
@@ -39,25 +42,22 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                 throw new IllegalStateException("evaluateJavascript() called after close()");
             }
             JsSandboxIsolateJni.get().evaluateJavascript(
-                    mJsSandboxIsolate, this, code, new JsSandboxIsolateCallback() {
-                        @Override
-                        public void onResult(String result) {
-                            try {
-                                callback.reportResult(result);
-                            } catch (RemoteException e) {
-                                Log.e(TAG, "reporting result failed", e);
-                            }
-                        }
+                    mJsSandboxIsolate, this, code, new JsSandboxIsolateCallback(callback));
+        }
+    }
 
-                        @Override
-                        public void onError(int errorType, String error) {
-                            try {
-                                callback.reportError(errorType, error);
-                            } catch (RemoteException e) {
-                                Log.e(TAG, "reporting error failed", e);
-                            }
-                        }
-                    });
+    @Override
+    public void evaluateJavascriptWithFd(
+            AssetFileDescriptor afd, IJsSandboxIsolateSyncCallback callback) {
+        synchronized (mLock) {
+            String code;
+            Utils.checkAssetFileDescriptor(afd, Integer.MAX_VALUE);
+            if (mJsSandboxIsolate == 0) {
+                throw new IllegalStateException("evaluateJavascript() called after close()");
+            }
+            JsSandboxIsolateJni.get().evaluateJavascriptWithFd(mJsSandboxIsolate, this,
+                    afd.getParcelFileDescriptor().detachFd(), (int) afd.getLength(),
+                    new JsSandboxIsolateFdCallback(callback));
         }
     }
 
@@ -79,18 +79,7 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                 throw new IllegalStateException(
                         "provideNamedData(String, AssetFileDescriptor) called after close()");
             }
-            if (afd.getStartOffset() != 0) {
-                throw new UnsupportedOperationException(
-                        "AssetFileDescriptor.getStartOffset() != 0");
-            }
-            if (afd.getLength() < 0) {
-                throw new UnsupportedOperationException(
-                        "AssetFileDescriptor.getLength() should be >=0");
-            }
-            if (afd.getLength() > Integer.MAX_VALUE) {
-                throw new IllegalArgumentException(
-                        "AssetFileDescriptor.getLength() should be < 2^31");
-            }
+            Utils.checkAssetFileDescriptor(afd, Integer.MAX_VALUE);
             boolean nativeReturn = JsSandboxIsolateJni.get().provideNamedData(mJsSandboxIsolate,
                     this, name, afd.getParcelFileDescriptor().detachFd(), (int) afd.getLength());
             return nativeReturn;
@@ -112,6 +101,9 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
 
         boolean evaluateJavascript(long nativeJsSandboxIsolate, JsSandboxIsolate caller,
                 String script, JsSandboxIsolateCallback callback);
+
+        boolean evaluateJavascriptWithFd(long nativeJsSandboxIsolate, JsSandboxIsolate caller,
+                int fd, int length, JsSandboxIsolateFdCallback callback);
 
         boolean provideNamedData(long nativeJsSandboxIsolate, JsSandboxIsolate caller, String name,
                 int fd, int length);

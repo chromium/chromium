@@ -189,7 +189,30 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
   std::string code = ConvertJavaStringToUTF8(env, jcode);
   scoped_refptr<JsSandboxIsolateCallback> callback =
       base::MakeRefCounted<JsSandboxIsolateCallback>(
-          base::android::ScopedJavaGlobalRef(j_callback));
+          base::android::ScopedJavaGlobalRef(j_callback), false);
+  control_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&JsSandboxIsolate::PostEvaluationToIsolateThread,
+                     base::Unretained(this), std::move(code),
+                     std::move(callback)));
+  return true;
+}
+
+// Called from Binder thread.
+// Refer to comment above EvaluateJavascript method.
+jboolean JsSandboxIsolate::EvaluateJavascriptWithFd(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const jint fd,
+    const jint length,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  base::ScopedFD scoped_fd(fd);
+  std::string code;
+  code.resize(length);
+  CHECK(base::ReadFromFD(scoped_fd.get(), &code[0], length));
+  scoped_refptr<JsSandboxIsolateCallback> callback =
+      base::MakeRefCounted<JsSandboxIsolateCallback>(
+          base::android::ScopedJavaGlobalRef(j_callback), true);
   control_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::PostEvaluationToIsolateThread,

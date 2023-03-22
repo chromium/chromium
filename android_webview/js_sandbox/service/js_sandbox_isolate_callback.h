@@ -22,7 +22,8 @@ class JsSandboxIsolateCallback final
   };
 
   explicit JsSandboxIsolateCallback(
-      base::android::ScopedJavaGlobalRef<jobject>&& callback);
+      base::android::ScopedJavaGlobalRef<jobject>&& callback,
+      bool use_fd);
   JsSandboxIsolateCallback(const JsSandboxIsolateCallback&) = delete;
   JsSandboxIsolateCallback& operator=(const JsSandboxIsolateCallback&) = delete;
 
@@ -50,6 +51,9 @@ class JsSandboxIsolateCallback final
   // Access this via UseCallback() to ensure the callback isn't used multiple
   // times. This value with be reset (null) when it is used.
   base::android::ScopedJavaGlobalRef<jobject> callback_;
+  // If true, |callback_| is of Java type JsSandboxIsolateFdCallback.
+  // If false, |callback_| is of Java type JsSandboxIsolateCallback.
+  bool use_fd;
 };
 
 }  // namespace android_webview

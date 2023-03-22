@@ -8,6 +8,7 @@ generate_jni("js_sandbox_jni_headers") {
   sources = [
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java",
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolateCallback.java",
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolateFdCallback.java",
   ]
 }
 
@@ -15,6 +16,7 @@ android_library("js_sandbox_service_java") {
   sources = [
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolate.java",
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolateCallback.java",
+    "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxIsolateFdCallback.java",
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxService.java",
     "java/src/org/chromium/android_webview/js_sandbox/service/JsSandboxService0.java",
   ]
@@ -25,6 +27,7 @@ android_library("js_sandbox_service_java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx_javascriptengine:javascriptengine_common_java",
     "//third_party/androidx_javascriptengine:js_sandbox_aidl_java",
   ]
 

@@ -15,6 +15,7 @@ android_aidl("js_sandbox_aidl") {
   sources = [
     "src/main/aidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolate.aidl",
     "src/main/aidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateCallback.aidl",
+    "src/main/aidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxIsolateSyncCallback.aidl",
     "src/main/aidl/org/chromium/android_webview/js_sandbox/common/IJsSandboxService.aidl",
   ]
 }
@@ -23,10 +24,17 @@ android_library("js_sandbox_aidl_java") {
   srcjar_deps = [ ":js_sandbox_aidl" ]
 }
 
+android_library("javascriptengine_common_java") {
+  sources = [ "src/main/java/androidx/javascriptengine/common/Utils.java" ]
+
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+}
+
 android_library("javascriptengine_java") {
   sources = [
     "src/main/java/androidx/javascriptengine/CloseGuardHelper.java",
     "src/main/java/androidx/javascriptengine/EvaluationFailedException.java",
+    "src/main/java/androidx/javascriptengine/EvaluationResultSizeLimitExceededException.java",
     "src/main/java/androidx/javascriptengine/ExecutionErrorTypes.java",
     "src/main/java/androidx/javascriptengine/IsolateStartupParameters.java",
     "src/main/java/androidx/javascriptengine/IsolateTerminatedException.java",
@@ -39,6 +47,7 @@ android_library("javascriptengine_java") {
   ]
 
   deps = [
+    ":javascriptengine_common_java",
     ":js_sandbox_aidl_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",

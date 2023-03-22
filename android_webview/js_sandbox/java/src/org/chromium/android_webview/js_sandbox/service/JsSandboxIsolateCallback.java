@@ -4,6 +4,10 @@
 
 package org.chromium.android_webview.js_sandbox.service;
 
+import android.os.RemoteException;
+
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -11,22 +15,43 @@ import org.chromium.base.annotations.JNINamespace;
  * Callback interface for the native code to report a JavaScript evaluation outcome.
  */
 @JNINamespace("android_webview")
-public interface JsSandboxIsolateCallback {
+public class JsSandboxIsolateCallback {
+    private static final String TAG = "JsSandboxIsolateCallback";
+
+    private final IJsSandboxIsolateCallback mCallback;
+
+    JsSandboxIsolateCallback(IJsSandboxIsolateCallback callback) {
+        mCallback = callback;
+    }
+
     /**
      * Called when an evaluation succeeds immediately or after its promise resolves.
      *
      * @param result The string result of the evaluation or resolved evaluation promise.
      */
     @CalledByNative
-    void onResult(String result);
+    public void onResult(String result) {
+        try {
+            mCallback.reportResult(result);
+        } catch (RemoteException e) {
+            Log.e(TAG, "reporting result failed", e);
+        }
+    }
+
     /**
      * Called in the event of an error.
      *
      * @param errorType See
-     *        {@link org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback} for
-     *        error types.
-     * @param error String description of the error.
+     *                  {@link
+     * org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback} for error types.
+     * @param error     String description of the error.
      */
     @CalledByNative
-    void onError(int errorType, String error);
+    public void onError(int errorType, String error) {
+        try {
+            mCallback.reportError(errorType, error);
+        } catch (RemoteException e) {
+            Log.e(TAG, "reporting error failed", e);
+        }
+    }
 }

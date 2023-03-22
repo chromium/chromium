@@ -51,6 +51,12 @@ class JsSandboxIsolate {
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jcode,
       const base::android::JavaParamRef<jobject>& j_callback);
+  jboolean EvaluateJavascriptWithFd(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const jint fd,
+      const jint length,
+      const base::android::JavaParamRef<jobject>& j_callback);
   void DestroyNative(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
   jboolean ProvideNamedData(JNIEnv* env,
