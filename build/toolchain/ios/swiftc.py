@@ -242,12 +242,8 @@ def compile_module(module, sources, settings, extras, tmpdir):
           path = os.path.relpath(path, out_dir)
         depfile_content[key].add(path)
 
-  if not settings.depfile_filter:
-    keys = depfile_content.keys()
-  else:
-    keys = (key for key in settings.depfile_filter if key in depfile_content)
-
   with open(settings.depfile, 'w') as depfile:
+    keys = sorted(depfile_content.keys())
     for key in sorted(keys):
       depfile.write('%s : %s\n' % (key, ' '.join(sorted(depfile_content[key]))))
 
@@ -279,9 +275,6 @@ def main(args):
   parser.add_argument('-depfile', help='path to the generated depfile')
   parser.add_argument('-swift-version',
                       help='version of Swift language to support')
-  parser.add_argument('-depfile-filter',
-                      action='append',
-                      help='limit depfile to those files')
   parser.add_argument('-target',
                       action='store',
                       help='generate code for the given target <triple>')

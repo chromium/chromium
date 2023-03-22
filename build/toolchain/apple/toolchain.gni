@@ -684,7 +684,6 @@ template("single_apple_toolchain") {
             "-module-path {{target_gen_dir}}/{{module_name}}.swiftmodule " +
             "-header-path {{target_gen_dir}}/{{target_output_name}}.h " +
             "-depfile {{target_out_dir}}/{{module_name}}.d " +
-            "-depfile-filter {{target_gen_dir}}/{{module_name}}.swiftmodule " +
             "-bridge-header {{bridge_header}} $_extra_flags " +
             "{{swiftflags}} {{include_dirs}} {{module_dirs}} {{inputs}}"
       }
