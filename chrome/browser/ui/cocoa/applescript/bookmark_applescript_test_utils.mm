@@ -4,36 +4,37 @@
 
 #import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h"
 
+#include "base/mac/scoped_objc_class_swizzler.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Represents the current fake command that is executing.
-static FakeScriptCommand* kFakeCurrentCommand;
+static FakeScriptCommand* gFakeCurrentCommand;
 
-@implementation FakeScriptCommand
+@implementation FakeScriptCommand {
+  absl::optional<base::mac::ScopedObjCClassSwizzler> swizzler;
+}
 
 - (instancetype)init {
   if ((self = [super init])) {
-    _originalMethod = class_getClassMethod([NSScriptCommand class],
-                                           @selector(currentCommand));
-    _alternateMethod =
-        class_getClassMethod([self class], @selector(currentCommand));
-    method_exchangeImplementations(_originalMethod, _alternateMethod);
-    kFakeCurrentCommand = self;
+    swizzler.emplace([NSScriptCommand class], [FakeScriptCommand class],
+                     @selector(currentCommand));
+    gFakeCurrentCommand = self;
   }
   return self;
 }
 
 + (NSScriptCommand*)currentCommand {
-  return kFakeCurrentCommand;
+  return gFakeCurrentCommand;
 }
 
 - (void)dealloc {
-  method_exchangeImplementations(_originalMethod, _alternateMethod);
-  kFakeCurrentCommand = nil;
+  swizzler.reset();
+  gFakeCurrentCommand = nil;
   [super dealloc];
 }
 
