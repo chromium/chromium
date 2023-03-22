@@ -527,10 +527,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (media::IsChromeWideEchoCancellationEnabled()) {
     LogToCircularBuffer(base::StrCat(
-        {"ChromeWideEchoCancellation : Enabled", ", processing_fifo_size = ",
-         NumberToString(
-             media::kChromeWideEchoCancellationProcessingFifoSize.Get()),
-         ", minimize_resampling = ",
+        {"ChromeWideEchoCancellation : Enabled", ", minimize_resampling = ",
          media::kChromeWideEchoCancellationMinimizeResampling.Get() ? "true"
                                                                     : "false",
          ", allow_all_sample_rates = ",
@@ -539,6 +536,14 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
              : "false"}));
   } else {
     LogToCircularBuffer("ChromeWideEchoCancellation : Disabled");
+  }
+
+  if (base::FeatureList::IsEnabled(media::kDecreaseProcessingAudioFifoSize)) {
+    LogToCircularBuffer(base::StrCat(
+        {"DecreaseProcessingAudioFifoSize : Enabled", ", fifo_size = ",
+         base::NumberToString(media::GetProcessingAudioFifoSize())}));
+  } else {
+    LogToCircularBuffer("DecreaseProcessingAudioFifoSize : Disabled");
   }
 #endif
 

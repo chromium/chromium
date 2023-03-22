@@ -74,6 +74,8 @@ class ProcessingAudioFifo {
   void AttachOnProcessedCallbackForTesting(
       base::RepeatingClosure on_processed_callback);
 
+  int fifo_size() const { return fifo_size_; }
+
  private:
   friend class ProcessingAudioFifoTest;
 

@@ -264,10 +264,7 @@ void InputController::MaybeSetUpAudioProcessing(
     return;
   }
 
-  int fifo_size =
-      media::IsChromeWideEchoCancellationEnabled()
-          ? media::kChromeWideEchoCancellationProcessingFifoSize.Get()
-          : 0;
+  int fifo_size = media::GetProcessingAudioFifoSize();
 
   // Only use the FIFO/new thread if its size is explicitly set.
   if (fifo_size) {
