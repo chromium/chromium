@@ -34,6 +34,8 @@
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/search/ntp_features.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_util.h"
@@ -203,18 +205,55 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
     GetClusterCallback callback,
     std::vector<history::Cluster> clusters,
     history_clusters::QueryClustersContinuationParams continuation_params) {
-  std::set<GURL> seen_urls = {};
-  history_clusters::CullNonProminentOrDuplicateClusters("", clusters,
-                                                        &seen_urls);
-  // Cull clusters that do not have the minimum number of visits to be eligible
-  // for display.
+  const TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  if (!template_url_service) {
+    return;
+  }
+
+  // Cull clusters that do not have the minimum number of visits with and
+  // without images to be eligible for display.
   base::EraseIf(clusters, [&](auto& cluster) {
+    // Cull non prominent clusters.
+    if (!cluster.should_show_on_prominent_ui_surfaces) {
+      return true;
+    }
+
+    // Cull clusters whose visits don't have at least one SRP.
+    const TemplateURL* default_search_provider =
+        template_url_service->GetDefaultSearchProvider();
+    auto srp_visits_it = std::find_if(
+        cluster.visits.begin(), cluster.visits.end(), [&](auto& visit) {
+          return default_search_provider->IsSearchURL(
+              visit.normalized_url, template_url_service->search_terms_data());
+        });
+    if (srp_visits_it == cluster.visits.end()) {
+      return true;
+    }
+
+    // Ensure visits contains at most one SRP visit and its the first one in the
+    // list.
+    history::ClusterVisit first_srp_visit = *srp_visits_it;
+    base::EraseIf(cluster.visits, [&](auto& visit) {
+      return default_search_provider->IsSearchURL(
+          visit.normalized_url, template_url_service->search_terms_data());
+    });
+    cluster.visits.insert(cluster.visits.begin(), first_srp_visit);
+
     // Cull visits that have a zero relevance score.
     base::EraseIf(cluster.visits,
                   [&](auto& visit) { return visit.score == 0.0; });
 
-    return cluster.visits.size() < kMinRequiredVisits;
+    int visits_with_images = std::accumulate(
+        cluster.visits.begin(), cluster.visits.end(), 0,
+        [](const auto& i, const auto& v) {
+          return i +
+                 int(v.annotated_visit.content_annotations.has_url_keyed_image);
+        });
+    return cluster.visits.size() < kMinRequiredVisits ||
+           visits_with_images < GetMinImagesToShow();
   });
+
   history_clusters::CoalesceRelatedSearches(clusters);
   // Cull clusters that do not have the minimum required number of related
   // searches to be eligible for display.
@@ -238,8 +277,8 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
                               clusters.front().related_searches.size());
 
   history::Cluster top_cluster = clusters.front();
-  auto cluster_mojom = history_clusters::ClusterToMojom(
-      TemplateURLServiceFactory::GetForProfile(profile_), top_cluster);
+  auto cluster_mojom =
+      history_clusters::ClusterToMojom(template_url_service, top_cluster);
   std::move(callback).Run(std::move(cluster_mojom));
 
   if (!IsCartModuleEnabled() || !cart_service_) {

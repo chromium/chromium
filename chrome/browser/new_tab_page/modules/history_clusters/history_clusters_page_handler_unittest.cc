@@ -16,6 +16,7 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -82,6 +83,10 @@ class MockCartService : public CartService {
   MOCK_METHOD2(HasActiveCartForURL,
                void(const GURL& url, base::OnceCallback<void(bool)> callback));
 };
+
+constexpr char kSampleNonSearchUrl[] = "https://www.foo.com/";
+constexpr char kSampleSearchUrl[] = "https://www.google.com/search?q=foo";
+
 }  // namespace
 
 class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
@@ -142,6 +147,8 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
                                      -> std::unique_ptr<KeyedService> {
                return std::make_unique<MockHistoryService>();
              })},
+            {TemplateURLServiceFactory::GetInstance(),
+             base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)},
             {CartServiceFactory::GetInstance(),
              base::BindRepeating([](content::BrowserContext* context)
                                      -> std::unique_ptr<KeyedService> {
@@ -179,11 +186,18 @@ history::ClusterVisit SampleVisitForURL(GURL url) {
   return sample_visit;
 }
 
-history::Cluster SampleCluster() {
-  history::ClusterVisit sample_visit =
-      SampleVisitForURL(GURL("https://www.google.com"));
+history::Cluster SampleCluster(int srp_visits, int non_srp_visits) {
+  history::ClusterVisit sample_srp_visit =
+      SampleVisitForURL(GURL(kSampleSearchUrl));
+  history::ClusterVisit sample_non_srp_visit =
+      SampleVisitForURL(GURL(kSampleNonSearchUrl));
+
+  std::vector<history::ClusterVisit> visits;
+  visits.insert(visits.end(), srp_visits, sample_srp_visit);
+  visits.insert(visits.end(), non_srp_visits, sample_non_srp_visit);
+
   std::string kSampleLabel = "LabelOne";
-  return history::Cluster(1, {3, sample_visit},
+  return history::Cluster(1, std::move(visits),
                           {{u"apples", history::ClusterKeywordData()},
                            {u"Red Oranges", history::ClusterKeywordData()}},
                           /*should_show_on_prominent_ui_surfaces=*/true,
@@ -196,7 +210,8 @@ history::Cluster SampleCluster() {
 TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
   base::HistogramTester histogram_tester;
 
-  const history::Cluster kSampleCluster = SampleCluster();
+  const history::Cluster kSampleCluster =
+      SampleCluster(/*srp_visits=*/1, /*non_srp_visits=*/2);
   const std::vector<history::Cluster> kSampleClusters = {kSampleCluster};
   test_history_clusters_service().SetClustersToReturn(kSampleClusters);
 
@@ -222,6 +237,43 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumClusterCandidates", 1, 1);
   histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 3,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
+}
+
+TEST_F(HistoryClustersPageHandlerTest, ClusterVisitsCulled) {
+  base::HistogramTester histogram_tester;
+
+  const history::Cluster kSampleCluster =
+      SampleCluster(/*srp_visits=*/3, /*non_srp_visits=*/3);
+  const std::vector<history::Cluster> kSampleClusters = {kSampleCluster};
+  test_history_clusters_service().SetClustersToReturn(kSampleClusters);
+
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  base::MockCallback<HistoryClustersPageHandler::GetClusterCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cluster_mojom](history_clusters::mojom::ClusterPtr cluster_arg) {
+            cluster_mojom = std::move(cluster_arg);
+          }));
+  handler().GetCluster(callback.Get());
+  ASSERT_TRUE(cluster_mojom);
+  ASSERT_EQ(1u, cluster_mojom->id);
+  ASSERT_EQ(base::UTF16ToUTF8(kSampleCluster.label.value()),
+            cluster_mojom->label);
+  ASSERT_EQ(4u, cluster_mojom->visits.size());
+  ASSERT_EQ(kSampleSearchUrl, cluster_mojom->visits[0]->url_for_display);
+  for (size_t i = 1; i < cluster_mojom->visits.size(); i++) {
+    ASSERT_EQ(kSampleNonSearchUrl, cluster_mojom->visits[i]->url_for_display);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.NumClusterCandidates", 1, 1);
+  histogram_tester.ExpectUniqueSample("NewTabPage.HistoryClusters.NumVisits", 4,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
@@ -258,7 +310,8 @@ TEST_F(HistoryClustersPageHandlerTest, GetFakeCluster) {
 TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
   base::HistogramTester histogram_tester;
 
-  const history::Cluster kSampleCluster = SampleCluster();
+  const history::Cluster kSampleCluster =
+      SampleCluster(/*srp_visits=*/1, /*non_srp_visits=*/2);
   const std::vector<history::Cluster> kSampleClusters = {kSampleCluster,
                                                          kSampleCluster};
   test_history_clusters_service().SetClustersToReturn(kSampleClusters);
@@ -300,7 +353,8 @@ TEST_F(HistoryClustersPageHandlerTest,
       },
       {});
 
-  const history::Cluster kSampleCluster = SampleCluster();
+  const history::Cluster kSampleCluster =
+      SampleCluster(/*srp_visits=*/1, /*non_srp_visits=*/2);
   test_history_clusters_service().SetClustersToReturn({kSampleCluster});
   history_clusters::mojom::ClusterPtr cluster_mojom;
   base::MockCallback<HistoryClustersPageHandler::GetClusterCallback> callback;
@@ -404,14 +458,14 @@ TEST_F(HistoryClustersPageHandlerCartTest, CheckClusterHasCart) {
   const GURL url_C = GURL("https://www.baz.com");
   MockCartService& cart_service = mock_cart_service();
 
-  const history::Cluster cluster =
-      history::Cluster(1,
-                       {SampleVisitForURL(url_A), SampleVisitForURL(url_B),
-                        SampleVisitForURL(url_C)},
-                       {{u"apples", history::ClusterKeywordData()},
-                        {u"Red Oranges", history::ClusterKeywordData()}},
-                       /*should_show_on_prominent_ui_surfaces=*/true,
-                       /*label=*/base::UTF8ToUTF16(kSampleLabel));
+  const history::Cluster cluster = history::Cluster(
+      1,
+      {SampleVisitForURL(GURL(kSampleSearchUrl)), SampleVisitForURL(url_A),
+       SampleVisitForURL(url_B), SampleVisitForURL(url_C)},
+      {{u"apples", history::ClusterKeywordData()},
+       {u"Red Oranges", history::ClusterKeywordData()}},
+      /*should_show_on_prominent_ui_surfaces=*/true,
+      /*label=*/base::UTF8ToUTF16(kSampleLabel));
   test_history_clusters_service().SetClustersToReturn({cluster});
 
   // Vectors to capture mocked method args.
