@@ -256,40 +256,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
     switch (iter->form_factor) {
       case syncer::DeviceInfo::FormFactor::kTablet:
-        if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize));
-        } else {
-          deviceItem.iconImage =
-              [UIImage imageNamed:@"send_tab_to_self_tablet"];
-        }
+        deviceItem.iconImage = MakeSymbolMonochrome(
+            DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize));
         break;
       case syncer::DeviceInfo::FormFactor::kPhone:
-        if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize));
-        } else {
-          deviceItem.iconImage =
-              [UIImage imageNamed:@"send_tab_to_self_smartphone"];
-        }
+        deviceItem.iconImage = MakeSymbolMonochrome(
+            DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize));
         break;
       case syncer::DeviceInfo::FormFactor::kDesktop:
-        if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
-        } else {
-          deviceItem.iconImage =
-              [UIImage imageNamed:@"send_tab_to_self_laptop"];
-        }
+        deviceItem.iconImage = MakeSymbolMonochrome(
+            DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
         break;
       default:
-        if (UseSymbols()) {
-          deviceItem.iconImage = MakeSymbolMonochrome(
-              DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
-        } else {
-          deviceItem.iconImage =
-              [UIImage imageNamed:@"send_tab_to_self_devices"];
-        }
+        deviceItem.iconImage = MakeSymbolMonochrome(
+            DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
+        break;
     }
 
     if (iter == _targetDeviceList.begin()) {

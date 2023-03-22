@@ -30,9 +30,7 @@
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
-  if (UseSymbols()) {
-    [cell setImageViewTintColor:[UIColor colorNamed:kGrey400Color]];
-  }
+  [cell setImageViewTintColor:[UIColor colorNamed:kGrey400Color]];
   DCHECK(self.iconImage);
   cell.image = self.iconImage;
   if (self.selected) {

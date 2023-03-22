@@ -46,10 +46,6 @@ source_set("send_tab_to_self_ui") {
     "send_tab_to_self_table_view_controller.mm",
   ]
   deps = [
-    "resources:send_tab_to_self_devices",
-    "resources:send_tab_to_self_laptop",
-    "resources:send_tab_to_self_smartphone",
-    "resources:send_tab_to_self_tablet",
     "//base",
     "//components/send_tab_to_self",
     "//components/sync_device_info",
