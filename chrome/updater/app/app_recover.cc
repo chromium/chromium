@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
@@ -92,7 +93,7 @@ std::vector<RegistrationRequest> AppRecover::RecordRegisteredApps() const {
   std::vector<RegistrationRequest> apps;
   bool found_browser_registration = false;
   for (const std::string& app : data->GetAppIds()) {
-    if (app == kUpdaterAppId) {
+    if (base::EqualsCaseInsensitiveASCII(app, kUpdaterAppId)) {
       continue;
     }
     RegistrationRequest registration;

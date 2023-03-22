@@ -131,7 +131,7 @@ std::string GetUpdateResponse(const std::string& app_id,
       R"(    })"
       R"(  ])"
       R"(}})",
-      app_id.c_str(),
+      base::ToLowerASCII(app_id).c_str(),
       !install_data_index.empty()
           ? base::StringPrintf(
                 R"(     "data":[{ "status":"ok", "name":"install", )"
@@ -624,7 +624,10 @@ void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
 
 bool RequestMatcherRegex(const std::string& request_body_regex,
                          const std::string& request_body) {
-  if (!re2::RE2::PartialMatch(request_body, request_body_regex)) {
+  re2::RE2::Options opt;
+  opt.set_case_sensitive(false);
+  if (!re2::RE2::PartialMatch(request_body,
+                              re2::RE2(request_body_regex, opt))) {
     VLOG(0) << "Request match failed.";
     ADD_FAILURE() << "Request with body: " << request_body
                   << " did not match expected regex " << request_body_regex;

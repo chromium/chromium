@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chrome/updater/check_for_updates_task.h"
@@ -105,7 +106,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
         config_, GetUpdaterScope(),
         base::BindOnce(&UpdateServiceImpl::Update,
                        base::MakeRefCounted<UpdateServiceImpl>(config_),
-                       kQualificationAppId, "",
+                       base::ToLowerASCII(kQualificationAppId), "",
                        UpdateService::Priority::kBackground,
                        UpdateService::PolicySameVersionUpdate::kNotAllowed,
                        base::DoNothing()))

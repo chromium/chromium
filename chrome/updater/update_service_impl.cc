@@ -246,7 +246,7 @@ void UpdateServiceImpl::RegisterApp(const RegistrationRequest& request,
                                     base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (request.app_id != kUpdaterAppId) {
+  if (!base::EqualsCaseInsensitiveASCII(request.app_id, kUpdaterAppId)) {
     persisted_data_->SetHadApps();
   }
   persisted_data_->RegisterApp(request);
@@ -283,7 +283,10 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
 
   // The installer should make an updater registration, but in case it halts
   // before it does, synthesize a registration if necessary here.
-  if (!base::Contains(persisted_data_->GetAppIds(), kUpdaterAppId)) {
+  if (!base::Contains(persisted_data_->GetAppIds(),
+                      base::ToLowerASCII(kUpdaterAppId),
+                      static_cast<std::string (*)(base::StringPiece)>(
+                          &base::ToLowerASCII))) {
     RegistrationRequest updater_request;
     updater_request.app_id = kUpdaterAppId;
     updater_request.version = base::Version(kUpdaterVersion);
@@ -449,7 +452,9 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto app_ids = persisted_data_->GetAppIds();
-  CHECK(base::Contains(app_ids, kUpdaterAppId));
+  CHECK(base::Contains(
+      app_ids, base::ToLowerASCII(kUpdaterAppId),
+      static_cast<std::string (*)(base::StringPiece)>(&base::ToLowerASCII)));
 
   const Priority priority = Priority::kBackground;
   ShouldBlockUpdateForMeteredNetwork(
@@ -486,7 +491,7 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
                                  state_update, std::move(callback));
     return;
   }
-  if (registration.app_id != kUpdaterAppId) {
+  if (!base::EqualsCaseInsensitiveASCII(registration.app_id, kUpdaterAppId)) {
     persisted_data_->SetHadApps();
   }
   if (!persisted_data_->GetProductVersion(registration.app_id).IsValid()) {

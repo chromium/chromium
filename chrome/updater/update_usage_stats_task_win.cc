@@ -20,7 +20,7 @@ namespace updater {
 bool UpdateUsageStatsTask::UsageStatsAllowed(
     const std::vector<std::string>& app_ids) const {
   for (auto app_id : app_ids) {
-    if (app_id == kUpdaterAppId) {
+    if (base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId)) {
       continue;
     }
     std::wstring app_id_u16;

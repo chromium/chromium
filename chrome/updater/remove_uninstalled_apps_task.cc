@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "chrome/updater/configurator.h"
@@ -55,9 +56,10 @@ std::vector<AppInfo> GetRegisteredApps(
     scoped_refptr<updater::PersistedData> persisted_data) {
   std::vector<AppInfo> apps;
   for (const std::string& app_id : persisted_data->GetAppIds()) {
-    if (app_id != kUpdaterAppId)
+    if (!base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId)) {
       apps.emplace_back(app_id, persisted_data->GetProductVersion(app_id),
                         persisted_data->GetExistenceCheckerPath(app_id));
+    }
   }
   return apps;
 }
