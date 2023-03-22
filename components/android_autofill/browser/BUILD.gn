@@ -35,6 +35,7 @@ android_library("java") {
     "java/src/org/chromium/components/autofill/AutofillManagerWrapper.java",
     "java/src/org/chromium/components/autofill/AutofillProvider.java",
     "java/src/org/chromium/components/autofill/AutofillProviderUMA.java",
+    "java/src/org/chromium/components/autofill/AutofillRequest.java",
     "java/src/org/chromium/components/autofill/FormData.java",
     "java/src/org/chromium/components/autofill/FormFieldData.java",
     "java/src/org/chromium/components/autofill_public/ViewType.java",
