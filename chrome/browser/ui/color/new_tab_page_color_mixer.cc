@@ -438,7 +438,7 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageIconButtonBackgroundActive] = {
       dark_mode ? gfx::kGoogleGrey300 : gfx::kGoogleGrey700};
   mixer[kColorNewTabPageLink] = {dark_mode ? gfx::kGoogleBlue300
-                                           : SkColorSetRGB(0x06, 0x37, 0x74)};
+                                           : gfx::kGoogleBlue700};
   mixer[kColorNewTabPageMicBorderColor] = {dark_mode ? gfx::kGoogleGrey100
                                                      : gfx::kGoogleGrey300};
   mixer[kColorNewTabPageMicIconColor] = {dark_mode ? gfx::kGoogleGrey100
