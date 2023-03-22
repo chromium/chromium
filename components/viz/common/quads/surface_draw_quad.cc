@@ -53,7 +53,7 @@ void SurfaceDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 }
 
 const SurfaceDrawQuad* SurfaceDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK_EQ(quad->material, DrawQuad::Material::kSurfaceContent);
+  CHECK_EQ(quad->material, DrawQuad::Material::kSurfaceContent);
   return static_cast<const SurfaceDrawQuad*>(quad);
 }
 

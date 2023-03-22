@@ -120,7 +120,7 @@ void AggregatedRenderPassDrawQuad::SetAll(
 
 const AggregatedRenderPassDrawQuad* AggregatedRenderPassDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK_EQ(quad->material, DrawQuad::Material::kAggregatedRenderPass);
+  CHECK_EQ(quad->material, DrawQuad::Material::kAggregatedRenderPass);
   return static_cast<const AggregatedRenderPassDrawQuad*>(quad);
 }
 

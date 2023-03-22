@@ -42,7 +42,7 @@ void SharedElementDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 
 const SharedElementDrawQuad* SharedElementDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK_EQ(quad->material, DrawQuad::Material::kSharedElement);
+  CHECK_EQ(quad->material, DrawQuad::Material::kSharedElement);
   return static_cast<const SharedElementDrawQuad*>(quad);
 }
 

@@ -4,6 +4,8 @@
 
 #include "components/viz/common/quads/picture_draw_quad.h"
 
+#include <utility>
+
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
@@ -64,7 +66,7 @@ void PictureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 }
 
 const PictureDrawQuad* PictureDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::Material::kPictureContent);
+  CHECK_EQ(quad->material, DrawQuad::Material::kPictureContent);
   return static_cast<const PictureDrawQuad*>(quad);
 }
 

@@ -51,7 +51,7 @@ void TileDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 }
 
 const TileDrawQuad* TileDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::Material::kTiledContent);
+  CHECK_EQ(quad->material, DrawQuad::Material::kTiledContent);
   return static_cast<const TileDrawQuad*>(quad);
 }
 

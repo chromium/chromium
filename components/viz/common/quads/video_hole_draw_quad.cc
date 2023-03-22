@@ -37,7 +37,7 @@ void VideoHoleDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 }
 
 const VideoHoleDrawQuad* VideoHoleDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::Material::kVideoHole);
+  CHECK_EQ(quad->material, DrawQuad::Material::kVideoHole);
   return static_cast<const VideoHoleDrawQuad*>(quad);
 }
 

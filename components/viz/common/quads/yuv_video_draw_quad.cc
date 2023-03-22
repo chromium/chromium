@@ -86,7 +86,7 @@ void YUVVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 }
 
 const YUVVideoDrawQuad* YUVVideoDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::Material::kYuvVideoContent);
+  CHECK_EQ(quad->material, DrawQuad::Material::kYuvVideoContent);
   return static_cast<const YUVVideoDrawQuad*>(quad);
 }
 

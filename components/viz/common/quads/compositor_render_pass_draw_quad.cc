@@ -76,7 +76,7 @@ void CompositorRenderPassDrawQuad::SetAll(
 
 const CompositorRenderPassDrawQuad* CompositorRenderPassDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK_EQ(quad->material, DrawQuad::Material::kCompositorRenderPass);
+  CHECK_EQ(quad->material, DrawQuad::Material::kCompositorRenderPass);
   return static_cast<const CompositorRenderPassDrawQuad*>(quad);
 }
 

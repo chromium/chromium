@@ -99,7 +99,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 }
 
 const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::Material::kTextureContent);
+  CHECK_EQ(quad->material, DrawQuad::Material::kTextureContent);
   return static_cast<const TextureDrawQuad*>(quad);
 }
 

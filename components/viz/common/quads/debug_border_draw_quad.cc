@@ -38,7 +38,7 @@ void DebugBorderDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 
 const DebugBorderDrawQuad* DebugBorderDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::Material::kDebugBorder);
+  CHECK_EQ(quad->material, DrawQuad::Material::kDebugBorder);
   return static_cast<const DebugBorderDrawQuad*>(quad);
 }
 
