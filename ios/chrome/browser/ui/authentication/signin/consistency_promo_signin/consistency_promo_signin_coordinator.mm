@@ -201,19 +201,12 @@
   DCHECK(completionInfo);
   [self.consistencyPromoSigninMediator
       systemIdentityAdded:completionInfo.identity];
+  self.defaultAccountCoordinator.selectedIdentity = completionInfo.identity;
 
   if (!startSignin) {
     return;
   }
-  AuthenticationFlow* authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:completionInfo.identity
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
-                         presentingViewController:self.navigationController];
-  authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-  [self.consistencyPromoSigninMediator
-      signinWithAuthenticationFlow:authenticationFlow];
+  [self startSignIn];
 }
 
 // Opens an AddAccountSigninCoordinator to add an account to the device. If
@@ -265,6 +258,19 @@
   self.consistencyPromoSigninMediator = nil;
   [self runCompletionCallbackWithSigninResult:signinResult
                                completionInfo:completionInfo];
+}
+
+// Starts the sign-in flow.
+- (void)startSignIn {
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.selectedIdentity
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.navigationController];
+  authenticationFlow.dispatcher = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+  [self.consistencyPromoSigninMediator
+      signinWithAuthenticationFlow:authenticationFlow];
 }
 
 #pragma mark - ConsistencyAccountChooserCoordinatorDelegate
@@ -333,15 +339,7 @@
 - (void)consistencyDefaultAccountCoordinatorSignin:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   DCHECK_EQ(coordinator, self.defaultAccountCoordinator);
-  AuthenticationFlow* authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:self.selectedIdentity
-                                 postSignInAction:POST_SIGNIN_ACTION_NONE
-                         presentingViewController:self.navigationController];
-  authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-  [self.consistencyPromoSigninMediator
-      signinWithAuthenticationFlow:authenticationFlow];
+  [self startSignIn];
 }
 
 - (void)consistencyDefaultAccountCoordinatorOpenAddAccount:
