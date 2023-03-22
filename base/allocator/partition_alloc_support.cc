@@ -835,6 +835,117 @@ void PartitionAllocSupport::ReconfigureForTests() {
   called_for_tests_ = true;
 }
 
+// static
+PartitionAllocSupport::BrpConfiguration
+PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
+  // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
+  CHECK(base::FeatureList::GetInstance());
+
+  bool enable_brp = false;
+  bool enable_brp_zapping = false;
+  bool split_main_partition = false;
+  bool use_dedicated_aligned_partition = false;
+  bool add_dummy_ref_count = false;
+  bool process_affected_by_brp_flag = false;
+
+#if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
+     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
+    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocBackupRefPtr)) {
+    // No specified process type means this is the Browser process.
+    switch (base::features::kBackupRefPtrEnabledProcessesParam.Get()) {
+      case base::features::BackupRefPtrEnabledProcesses::kBrowserOnly:
+        process_affected_by_brp_flag = process_type.empty();
+        break;
+      case base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer:
+        process_affected_by_brp_flag =
+            process_type.empty() ||
+            (process_type == switches::kRendererProcess);
+        break;
+      case base::features::BackupRefPtrEnabledProcesses::kNonRenderer:
+        process_affected_by_brp_flag =
+            (process_type != switches::kRendererProcess);
+        break;
+      case base::features::BackupRefPtrEnabledProcesses::kAllProcesses:
+        process_affected_by_brp_flag = true;
+        break;
+    }
+  }
+#endif  // (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
+        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  if (process_affected_by_brp_flag) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(
+            base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),
+        base::EnableExtractionCheck(
+            base::features::kBackupRefPtrAsanEnableExtractionCheckParam.Get()),
+        base::EnableInstantiationCheck(
+            base::features::kBackupRefPtrAsanEnableInstantiationCheckParam
+                .Get()));
+  } else {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(false), base::EnableExtractionCheck(false),
+        base::EnableInstantiationCheck(false));
+  }
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (process_affected_by_brp_flag) {
+    switch (base::features::kBackupRefPtrModeParam.Get()) {
+      case base::features::BackupRefPtrMode::kDisabled:
+        // Do nothing. Equivalent to !IsEnabled(kPartitionAllocBackupRefPtr).
+        break;
+
+      case base::features::BackupRefPtrMode::kEnabled:
+        enable_brp_zapping = true;
+        ABSL_FALLTHROUGH_INTENDED;
+      case base::features::BackupRefPtrMode::kEnabledWithoutZapping:
+        enable_brp = true;
+        split_main_partition = true;
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        // AlignedAlloc relies on natural alignment offered by the allocator
+        // (see the comment inside PartitionRoot::AlignedAllocFlags). Any extras
+        // in front of the allocation will mess up that alignment. Such extras
+        // are used when BackupRefPtr is on, in which case, we need a separate
+        // partition, dedicated to handle only aligned allocations, where those
+        // extras are disabled. However, if the "previous slot" variant is used,
+        // no dedicated partition is needed, as the extras won't interfere with
+        // the alignment requirements.
+        use_dedicated_aligned_partition = true;
+#endif
+        break;
+
+      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
+        split_main_partition = true;
+        break;
+
+      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
+        split_main_partition = true;
+        use_dedicated_aligned_partition = true;
+        break;
+
+      case base::features::BackupRefPtrMode::kDisabledButAddDummyRefCount:
+        split_main_partition = true;
+        add_dummy_ref_count = true;
+#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        use_dedicated_aligned_partition = true;
+#endif
+        break;
+    }
+  }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+
+  return {enable_brp,           enable_brp_zapping,
+          split_main_partition, use_dedicated_aligned_partition,
+          add_dummy_ref_count,  process_affected_by_brp_flag};
+}
+
 void PartitionAllocSupport::ReconfigureEarlyish(
     const std::string& process_type) {
   {
@@ -932,117 +1043,17 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   }
 
   DCHECK_NE(process_type, switches::kZygoteProcess);
-  // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
-  CHECK(base::FeatureList::GetInstance());
-
-  [[maybe_unused]] bool enable_brp = false;
-  [[maybe_unused]] bool enable_brp_zapping = false;
-  [[maybe_unused]] bool split_main_partition = false;
-  [[maybe_unused]] bool use_dedicated_aligned_partition = false;
-  [[maybe_unused]] bool add_dummy_ref_count = false;
-  [[maybe_unused]] bool process_affected_by_brp_flag = false;
-
-#if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
-     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
-    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocBackupRefPtr)) {
-    // No specified process type means this is the Browser process.
-    switch (base::features::kBackupRefPtrEnabledProcessesParam.Get()) {
-      case base::features::BackupRefPtrEnabledProcesses::kBrowserOnly:
-        process_affected_by_brp_flag = process_type.empty();
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer:
-        process_affected_by_brp_flag =
-            process_type.empty() ||
-            (process_type == switches::kRendererProcess);
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kNonRenderer:
-        process_affected_by_brp_flag =
-            (process_type != switches::kRendererProcess);
-        break;
-      case base::features::BackupRefPtrEnabledProcesses::kAllProcesses:
-        process_affected_by_brp_flag = true;
-        break;
-    }
-  }
-#endif  // (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
-        // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  if (process_affected_by_brp_flag) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(
-            base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),
-        base::EnableExtractionCheck(
-            base::features::kBackupRefPtrAsanEnableExtractionCheckParam.Get()),
-        base::EnableInstantiationCheck(
-            base::features::kBackupRefPtrAsanEnableInstantiationCheckParam
-                .Get()));
-  } else {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(false), base::EnableExtractionCheck(false),
-        base::EnableInstantiationCheck(false));
-  }
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  if (process_affected_by_brp_flag) {
-    switch (base::features::kBackupRefPtrModeParam.Get()) {
-      case base::features::BackupRefPtrMode::kDisabled:
-        // Do nothing. Equivalent to !IsEnabled(kPartitionAllocBackupRefPtr).
-        break;
-
-      case base::features::BackupRefPtrMode::kEnabled:
-        enable_brp_zapping = true;
-        ABSL_FALLTHROUGH_INTENDED;
-      case base::features::BackupRefPtrMode::kEnabledWithoutZapping:
-        enable_brp = true;
-        split_main_partition = true;
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        // AlignedAlloc relies on natural alignment offered by the allocator
-        // (see the comment inside PartitionRoot::AlignedAllocFlags). Any extras
-        // in front of the allocation will mess up that alignment. Such extras
-        // are used when BackupRefPtr is on, in which case, we need a separate
-        // partition, dedicated to handle only aligned allocations, where those
-        // extras are disabled. However, if the "previous slot" variant is used,
-        // no dedicated partition is needed, as the extras won't interfere with
-        // the alignment requirements.
-        use_dedicated_aligned_partition = true;
-#endif
-        break;
-
-      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
-        split_main_partition = true;
-        break;
-
-      case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
-        split_main_partition = true;
-        use_dedicated_aligned_partition = true;
-        break;
-
-      case base::features::BackupRefPtrMode::kDisabledButAddDummyRefCount:
-        split_main_partition = true;
-        add_dummy_ref_count = true;
-#if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        use_dedicated_aligned_partition = true;
-#endif
-        break;
-    }
-  }
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  [[maybe_unused]] BrpConfiguration brp_config =
+      GetBrpConfiguration(process_type);
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   allocator_shim::ConfigurePartitions(
-      allocator_shim::EnableBrp(enable_brp),
-      allocator_shim::EnableBrpZapping(enable_brp_zapping),
-      allocator_shim::SplitMainPartition(split_main_partition),
+      allocator_shim::EnableBrp(brp_config.enable_brp),
+      allocator_shim::EnableBrpZapping(brp_config.enable_brp_zapping),
+      allocator_shim::SplitMainPartition(brp_config.split_main_partition),
       allocator_shim::UseDedicatedAlignedPartition(
-          use_dedicated_aligned_partition),
-      allocator_shim::AddDummyRefCount(add_dummy_ref_count),
+          brp_config.use_dedicated_aligned_partition),
+      allocator_shim::AddDummyRefCount(brp_config.add_dummy_ref_count),
       allocator_shim::AlternateBucketDistribution(
           base::features::kPartitionAllocAlternateBucketDistributionParam
               .Get()));
@@ -1051,7 +1062,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   // If BRP is not enabled, check if any of PCScan flags is enabled.
   [[maybe_unused]] bool scan_enabled = false;
 #if BUILDFLAG(USE_STARSCAN)
-  if (!enable_brp) {
+  if (!brp_config.enable_brp) {
     scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
     // No specified process type means this is the Browser process.
     if (process_type.empty()) {
