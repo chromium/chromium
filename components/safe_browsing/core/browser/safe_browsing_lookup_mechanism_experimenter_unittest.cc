@@ -291,7 +291,7 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         url_real_time_result, hash_database_result, hash_real_time_result);
   }
 
-  ExperimentThreatType GetExperimentDetailsThreatType(
+  absl::optional<ExperimentThreatType> GetExperimentDetailsThreatType(
       absl::optional<SBThreatType> threat_type) {
     return Experimenter::GetExperimentDetailsThreatType(threat_type);
   }
@@ -1047,24 +1047,38 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
               urt_hpd_hprt_url_level_validation_details[0]
                   .value()
                   .matched_high_confidence_allowlist);
-    EXPECT_EQ(experiment_details.url_realtime_details()
-                  .locally_cached_results_threat_type(),
-              GetExperimentDetailsThreatType(
-                  urt_hpd_hprt_url_level_validation_details[0]
-                      .value()
-                      .locally_cached_results_threat_type));
+    if (urt_hpd_hprt_url_level_validation_details[0]
+            .value()
+            .locally_cached_results_threat_type.has_value()) {
+      EXPECT_EQ(experiment_details.url_realtime_details()
+                    .locally_cached_results_threat_type(),
+                GetExperimentDetailsThreatType(
+                    urt_hpd_hprt_url_level_validation_details[0]
+                        .value()
+                        .locally_cached_results_threat_type));
+    } else {
+      EXPECT_FALSE(experiment_details.url_realtime_details()
+                       .has_locally_cached_results_threat_type());
+    }
     EXPECT_EQ(experiment_details.hash_realtime_details().threat_type(),
               GetExperimentDetailsThreatType(urt_hpd_hprt_threat_types[2]));
     EXPECT_EQ(experiment_details.hash_realtime_details().matched_global_cache(),
               urt_hpd_hprt_url_level_validation_details[2]
                   .value()
                   .matched_high_confidence_allowlist);
-    EXPECT_EQ(experiment_details.hash_realtime_details()
-                  .locally_cached_results_threat_type(),
-              GetExperimentDetailsThreatType(
-                  urt_hpd_hprt_url_level_validation_details[2]
-                      .value()
-                      .locally_cached_results_threat_type));
+    if (urt_hpd_hprt_url_level_validation_details[2]
+            .value()
+            .locally_cached_results_threat_type.has_value()) {
+      EXPECT_EQ(experiment_details.hash_realtime_details()
+                    .locally_cached_results_threat_type(),
+                GetExperimentDetailsThreatType(
+                    urt_hpd_hprt_url_level_validation_details[2]
+                        .value()
+                        .locally_cached_results_threat_type));
+    } else {
+      EXPECT_FALSE(experiment_details.hash_realtime_details()
+                       .has_locally_cached_results_threat_type());
+    }
     ping_manager_->ClearReport();
   }
 
@@ -1170,7 +1184,7 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestUrlLevelValidation) {
     std::vector<absl::optional<UrlLevelValidationDetails>>
         urt_hpd_hprt_url_level_validation_details = {
             UrlLevelValidationDetails(
-                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_BILLING,
+                /*locally_cached_results_threat_type=*/absl::nullopt,
                 /*real_time_request_failed=*/false,
                 /*matched_high_confidence_allowlist=*/true),
             UrlLevelValidationDetails(
@@ -1201,7 +1215,7 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestUrlLevelValidation) {
                 /*real_time_request_failed=*/false,
                 /*matched_high_confidence_allowlist=*/absl::nullopt),
             UrlLevelValidationDetails(
-                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+                /*locally_cached_results_threat_type=*/absl::nullopt,
                 /*real_time_request_failed=*/false,
                 /*matched_high_confidence_allowlist=*/true)};
     RunUrlLevelValidationTest(
@@ -1218,7 +1232,7 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestUrlLevelValidation) {
             UrlLevelValidationDetails(
                 /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
                 /*real_time_request_failed=*/false,
-                /*matched_high_confidence_allowlist=*/true),
+                /*matched_high_confidence_allowlist=*/false),
             UrlLevelValidationDetails(
                 /*locally_cached_results_threat_type=*/absl::nullopt,
                 /*real_time_request_failed=*/false,
@@ -1226,7 +1240,7 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestUrlLevelValidation) {
             UrlLevelValidationDetails(
                 /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_BILLING,
                 /*real_time_request_failed=*/false,
-                /*matched_high_confidence_allowlist=*/true)};
+                /*matched_high_confidence_allowlist=*/false)};
     RunUrlLevelValidationTest(
         urt_hpd_hprt_threat_types, urt_hpd_hprt_url_level_validation_details,
         /*urt_hpd_hprt_time_out=*/no_time_outs, /*expect_report_sent=*/true);
@@ -1346,10 +1360,9 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest,
        TestGetExperimentDetailsThreatType) {
   struct TestCase {
     absl::optional<SBThreatType> threat_type;
-    ExperimentThreatType expected_experiment_threat_type;
+    absl::optional<ExperimentThreatType> expected_experiment_threat_type;
   } test_cases[] = {
-      {absl::nullopt, ClientSafeBrowsingReportRequest::
-                          HashRealTimeExperimentDetails::SAFE_OR_OTHER},
+      {absl::nullopt, absl::nullopt},
       {SB_THREAT_TYPE_URL_PHISHING,
        ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
            PHISHING},

@@ -511,11 +511,12 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeLogUrlLevelResults() const {
   using ExperimentThreatType = ClientSafeBrowsingReportRequest::
       HashRealTimeExperimentDetails::ExperimentThreatType;
   ExperimentThreatType hash_database_threat_type =
-      GetExperimentDetailsThreatType(hash_database_results.threat_type);
+      GetExperimentDetailsThreatType(hash_database_results.threat_type).value();
   ExperimentThreatType url_realtime_threat_type =
-      GetExperimentDetailsThreatType(url_real_time_results.threat_type);
+      GetExperimentDetailsThreatType(url_real_time_results.threat_type).value();
   ExperimentThreatType hash_realtime_threat_type =
-      GetExperimentDetailsThreatType(hash_real_time_results.threat_type);
+      GetExperimentDetailsThreatType(hash_real_time_results.threat_type)
+          .value();
   if (hash_database_threat_type == url_realtime_threat_type &&
       url_realtime_threat_type == hash_realtime_threat_type) {
     // If all 3 mechanisms agree on the response threat type, there is nothing
@@ -539,9 +540,14 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeLogUrlLevelResults() const {
   url_realtime_details.set_threat_type(url_realtime_threat_type);
   url_realtime_details.set_matched_global_cache(
       check->url_real_time_details.matched_global_cache.value());
-  url_realtime_details.set_locally_cached_results_threat_type(
-      GetExperimentDetailsThreatType(
-          url_real_time_results.locally_cached_results_threat_type));
+  absl::optional<ExperimentThreatType>
+      url_realtime_locally_cached_results_threat_type =
+          GetExperimentDetailsThreatType(
+              url_real_time_results.locally_cached_results_threat_type);
+  if (url_realtime_locally_cached_results_threat_type.has_value()) {
+    url_realtime_details.set_locally_cached_results_threat_type(
+        url_realtime_locally_cached_results_threat_type.value());
+  }
   *experiment_details.mutable_url_realtime_details() = url_realtime_details;
   // 4. Gather hash real-time details.
   ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
@@ -549,9 +555,14 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeLogUrlLevelResults() const {
   hash_realtime_details.set_threat_type(hash_realtime_threat_type);
   hash_realtime_details.set_matched_global_cache(
       check->hash_real_time_details.matched_global_cache.value());
-  hash_realtime_details.set_locally_cached_results_threat_type(
-      GetExperimentDetailsThreatType(
-          hash_real_time_results.locally_cached_results_threat_type));
+  absl::optional<ExperimentThreatType>
+      hash_realtime_locally_cached_results_threat_type =
+          GetExperimentDetailsThreatType(
+              hash_real_time_results.locally_cached_results_threat_type);
+  if (hash_realtime_locally_cached_results_threat_type.has_value()) {
+    hash_realtime_details.set_locally_cached_results_threat_type(
+        hash_realtime_locally_cached_results_threat_type.value());
+  }
   *experiment_details.mutable_hash_realtime_details() = hash_realtime_details;
   // 5. Fill in experiment details.
   *report->mutable_hash_real_time_experiment_details() = experiment_details;
@@ -563,13 +574,12 @@ void SafeBrowsingLookupMechanismExperimenter::MaybeLogUrlLevelResults() const {
                                 std::move(report), ping_manager_on_ui_));
 }
 // static:
-ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-    ExperimentThreatType
-    SafeBrowsingLookupMechanismExperimenter::GetExperimentDetailsThreatType(
-        absl::optional<SBThreatType> threat_type) {
+absl::optional<ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
+                   ExperimentThreatType>
+SafeBrowsingLookupMechanismExperimenter::GetExperimentDetailsThreatType(
+    absl::optional<SBThreatType> threat_type) {
   if (!threat_type.has_value()) {
-    return ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-        SAFE_OR_OTHER;
+    return absl::nullopt;
   }
   switch (threat_type.value()) {
     case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:

@@ -312,9 +312,9 @@ class SafeBrowsingLookupMechanismExperimenter
       bool hash_real_time_result);
   // Converts a |SBThreatType| to the one used for the hash real-time experiment
   // CSBRR.
-  static ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
-      ExperimentThreatType
-      GetExperimentDetailsThreatType(absl::optional<SBThreatType> threat_type);
+  static absl::optional<ClientSafeBrowsingReportRequest::
+                            HashRealTimeExperimentDetails::ExperimentThreatType>
+  GetExperimentDetailsThreatType(absl::optional<SBThreatType> threat_type);
   // Returns details on whether the result caused a delay, and if so, by how
   // much.
   DelayInformation GetDelayInformation(MechanismResults& results) const;
