@@ -149,8 +149,9 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
     return;
   }
 
-  // check for valid url.
-  if (!url.is_empty() && !url.is_valid()) {
+  // Check if the URL is valid; if not, then attempting to open it will trip
+  // a fatal check in navigation.
+  if (!url.is_valid()) {
     AppleScript::SetError(AppleScript::Error::kInvalidURL);
     return;
   }
@@ -160,11 +161,9 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
     return;
   }
 
-  const GURL& previousURL = entry->GetVirtualURL();
-  _webContents->OpenURL(OpenURLParams(
-      url,
-      content::Referrer(previousURL, network::mojom::ReferrerPolicy::kDefault),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+  _webContents->OpenURL(OpenURLParams(url, content::Referrer(),
+                                      WindowOpenDisposition::CURRENT_TAB,
+                                      ui::PAGE_TRANSITION_TYPED, false));
 }
 
 - (NSString*)title {
