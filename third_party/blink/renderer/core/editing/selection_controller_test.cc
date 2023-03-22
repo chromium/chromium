@@ -520,4 +520,54 @@ TEST_F(SelectionControllerTest, Scroll) {
   EXPECT_EQ(line8_node->textContent(), "x");
 }
 
+// http://crbug.com/1372847
+TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithInput) {
+  SetBodyContent(R"HTML(
+    <div style="user-select: none;">
+      <div id="one" style="user-select: text;">11</div>
+      <input type="text" value="input"/>
+    </div>
+    <div id="two">22</div>)HTML");
+
+  Element* one = GetDocument().getElementById("one");
+  Element* input = GetDocument().QuerySelector("input");
+
+  const SelectionInFlatTree& selection =
+      ExpandWithGranularity(SelectionInFlatTree::Builder()
+                                .Collapse(PositionInFlatTree(one, 0))
+                                .Build(),
+                            TextGranularity::kParagraph);
+  SelectionInFlatTree adjust_selection =
+      AdjustSelectionByUserSelect(one, selection);
+  EXPECT_EQ(adjust_selection.Base(),
+            PositionInFlatTree::FirstPositionInNode(*one));
+  EXPECT_EQ(adjust_selection.Extent(), PositionInFlatTree::BeforeNode(*input));
+}
+
+// http://crbug.com/1410448
+TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithSpan) {
+  SetBodyContent(R"HTML(
+    <div id="div" style="user-select:none">
+      <span id="one" style="user-select:text">
+        <span style="user-select:text">Hel</span>lo
+      </span>
+      <span style="user-select:text"> lo </span>
+      <span id="two" style="user-select:text">there</span></div>)HTML");
+
+  Element* div = GetDocument().getElementById("div");
+  Element* one = GetDocument().getElementById("one");
+  Element* two = GetDocument().getElementById("two");
+
+  const SelectionInFlatTree& selection =
+      ExpandWithGranularity(SelectionInFlatTree::Builder()
+                                .Collapse(PositionInFlatTree(one, 0))
+                                .Build(),
+                            TextGranularity::kParagraph);
+  SelectionInFlatTree adjust_selection =
+      AdjustSelectionByUserSelect(one, selection);
+  EXPECT_EQ(adjust_selection.Base(), PositionInFlatTree(div, 0));
+  EXPECT_EQ(adjust_selection.Extent(),
+            PositionInFlatTree::LastPositionInNode(*two->firstChild()));
+}
+
 }  // namespace blink

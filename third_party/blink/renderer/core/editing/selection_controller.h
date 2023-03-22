@@ -150,6 +150,8 @@ bool IsSelectionOverLink(const MouseEventWithHitTestResults&);
 bool IsExtendingSelection(const MouseEventWithHitTestResults&);
 CORE_EXPORT SelectionInFlatTree
 AdjustSelectionWithTrailingWhitespace(const SelectionInFlatTree&);
+CORE_EXPORT SelectionInFlatTree
+AdjustSelectionByUserSelect(Node*, const SelectionInFlatTree&);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SELECTION_CONTROLLER_H_
