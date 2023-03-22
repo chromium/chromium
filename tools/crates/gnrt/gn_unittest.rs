@@ -396,15 +396,8 @@ fn test() {
 
 #[gtest(GnTest, StringEscaping)]
 fn test() {
-    fn escaped(s: &str) -> String {
-        use std::fmt::Write;
-        let mut out = String::new();
-        write!(Escaper::new_for_testing(&mut out), "{s}").unwrap();
-        out
-    }
-
-    expect_eq!("foo bar", escaped("foo bar"));
-    expect_eq!("foo bar ", escaped("foo\nbar\n"));
-    expect_eq!(r#"foo \"bar\""#, escaped(r#"foo "bar""#));
-    expect_eq!("foo 'bar'", escaped("foo 'bar'"));
+    expect_eq!("foo bar", format!("{}", escaped_for_testing("foo bar")));
+    expect_eq!("foo bar ", format!("{}", escaped_for_testing("foo\nbar\n")));
+    expect_eq!(r#"foo \"bar\""#, format!("{}", escaped_for_testing(r#"foo "bar""#)));
+    expect_eq!("foo 'bar'", format!("{}", escaped_for_testing("foo 'bar'")));
 }

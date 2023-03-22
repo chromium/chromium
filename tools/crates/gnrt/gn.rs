@@ -13,7 +13,7 @@ use crate::platforms;
 
 use std::collections::HashMap;
 use std::convert::From;
-use std::fmt::{self, Write};
+use std::fmt::{self, Display, Write};
 use std::path::Path;
 
 /// Describes a BUILD.gn file for a single crate epoch. Each file may have
@@ -529,19 +529,14 @@ fn write_concrete<W: Write>(
     writeln!(writer, "edition = \"{}\"", details.edition)?;
     writeln!(writer, "cargo_pkg_version = \"{}\"", details.cargo_pkg_version)?;
     if let Some(authors) = &details.cargo_pkg_authors {
-        write!(writer, "cargo_pkg_authors = \"")?;
-        write!(Escaper(&mut writer), "{authors}")?;
-        writeln!(writer, "\"")?;
+        writeln!(writer, "cargo_pkg_authors = \"{}\"", escaped(authors))?;
     }
     writeln!(writer, "cargo_pkg_name = \"{}\"", details.cargo_pkg_name)?;
     if let Some(description) = &details.cargo_pkg_description {
-        // Remove the trailing newline, which unattractively comes out as a
-        // trailing space. Escaper can't do this because, as a Write
-        // implementation, it does not know where the end of input will be.
-        let description = description.trim_end();
-        write!(writer, "cargo_pkg_description = \"")?;
-        write!(Escaper(&mut writer), "{description}")?;
-        writeln!(writer, "\"")?;
+        // Use trim_end() to remove the trailing newline, which unattractively
+        // comes out as a space. escaped() can't do this because its internal
+        // Write implementation does not know where the end of input will be.
+        writeln!(writer, "cargo_pkg_description = \"{}\"", escaped(description.trim_end()))?;
     }
     writeln!(writer, "library_configs -= [ \"//build/config/compiler:chromium_code\" ]")?;
     writeln!(writer, "library_configs += [ \"//build/config/compiler:no_chromium_code\" ]")?;
@@ -652,9 +647,7 @@ fn write_list<W: Write, T: fmt::Display, I: IntoIterator<Item = T>>(
 ) -> fmt::Result {
     writeln!(writer, "[")?;
     for item in items.into_iter() {
-        write!(writer, "\"")?;
-        write!(Escaper(&mut writer), "{item}")?;
-        writeln!(writer, "\",")?;
+        writeln!(writer, r#""{}","#, escaped(item))?;
     }
     writeln!(writer, "]")
 }
@@ -665,28 +658,38 @@ fn write_set<W: Write, T: fmt::Display, U: fmt::Display, I: IntoIterator<Item = 
 ) -> fmt::Result {
     writeln!(writer, "{{")?;
     for (left, right) in items.into_iter() {
-        write!(writer, "{left} = \"")?;
-        write!(Escaper(&mut writer), "{right}")?;
-        writeln!(writer, "\"")?;
+        writeln!(writer, r#"{left} = "{}""#, escaped(right))?;
     }
     writeln!(writer, "}}")
 }
 
-/// Wraps a `Write` and escapes special characters when written to. Suitable for
-/// outputting GN strings. Note that it does not escape '$', since we want to
-/// use GN "$var" syntax in some cases. Also due to an apparent bug in GN's
-/// output to Ninja files, we skip newlines.
+/// Wraps a `Display`-able type with another `Display` implementation that
+/// escapes all characters according to GN string rules.
+///
+/// Note that it does not escape '$', since we want to use GN "$var" syntax in
+/// some cases. Also due to an apparent bug in GN's output to Ninja files, we
+/// replace newlines with spaces.
 ///
 /// See https://gn.googlesource.com/gn/+/refs/heads/main/docs/language.md#Strings
-pub struct Escaper<W>(W);
+fn escaped<T: Display>(x: T) -> impl Display {
+    Escaped(x)
+}
 
-impl<W: Write> Escaper<W> {
-    pub fn new_for_testing(writer: W) -> Self {
-        Escaper(writer)
+pub fn escaped_for_testing<T: Display>(x: T) -> impl Display {
+    escaped(x)
+}
+
+struct Escaped<T>(T);
+
+impl<T: Display> Display for Escaped<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(EscapedWriter(f), "{}", self.0)
     }
 }
 
-impl<W: Write> Write for Escaper<W> {
+struct EscapedWriter<W>(W);
+
+impl<W: Write> Write for EscapedWriter<W> {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         s.chars().try_for_each(|c| self.write_char(c))
     }
