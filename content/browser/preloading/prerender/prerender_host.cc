@@ -69,6 +69,16 @@ bool AreHttpRequestHeadersCompatible(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // Remove the viewport headers as the viewport size of the initiator page can
+  // be changed during prerendering. See also https://crbug.com/1401244.
+  prerender_headers.RemoveHeader("viewport-width");
+  potential_activation_headers.RemoveHeader("viewport-width");
+  prerender_headers.RemoveHeader("sec-ch-viewport-width");
+  potential_activation_headers.RemoveHeader("sec-ch-viewport-width");
+  // Don't need to handle "viewport-height" as it is not defined in the specs.
+  prerender_headers.RemoveHeader("sec-ch-viewport-height");
+  potential_activation_headers.RemoveHeader("sec-ch-viewport-height");
+
   // Compare headers in serialized strings. The spec doesn't require serialized
   // string matches, but practically Chrome generates headers in a decisive way,
   // i.e. in the same order and cases. So we can expect serialized string
