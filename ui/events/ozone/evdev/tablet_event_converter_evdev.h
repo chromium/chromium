@@ -83,8 +83,9 @@ class COMPONENT_EXPORT(EVDEV) TabletEventConverterEvdev
   float pressure_ = 0.0f;
   int pressure_max_;
 
-  // BTN_TOOL_ code for the active device
-  int stylus_ = 0;
+  // Bitfield of currently active tools, with BTN_TOOL_PEN in the least
+  // significant bit up to BTN_TOOL_LENS in the most significant bit.
+  uint8_t active_tools_ = 0;
 
   // Whether we need to move the cursor
   bool abs_value_dirty_ = false;
