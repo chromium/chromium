@@ -1,0 +1,5 @@
+# Allow people to add CrOS-specific feature flags without needing CrOS owners
+# oversight. It is preferable to add CrOS-specific feature flags here instead
+# of in chrome_features.{cc,h}
+per-file chromeos_features.cc=*
+per-file chromeos_features.h=*
