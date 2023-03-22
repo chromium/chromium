@@ -49,6 +49,8 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER = 27;
   // Target for segmentation: Adaptive toolbar.
   OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR = 28;
+  // Target for segmentation: Determine users who are tabletproductivity users.
+  OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER = 29;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not

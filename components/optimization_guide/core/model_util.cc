@@ -94,6 +94,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationDeviceSwitcher";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR:
       return "SegmentationAdaptiveToolbar";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER:
+      return "SegmentationTabletProductivityUser";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

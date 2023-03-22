@@ -72,6 +72,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ResumeHeavyUser"/>
   <variant name="SearchUser"/>
   <variant name="ShoppingUser"/>
+  <variant name="TabletProductivityUser"/>
 </variants>
 
 <variants name="SegmentationModel">
@@ -93,6 +94,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SearchUserSegment"/>
   <variant name="Share"/>
   <variant name="ShoppingUser"/>
+  <variant name="TabletProductivityUserSegment"/>
   <variant name="Unknown"/>
   <variant name="Voice"/>
 </variants>

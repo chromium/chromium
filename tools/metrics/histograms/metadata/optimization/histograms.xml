@@ -64,6 +64,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SegmentationShare" summary="Segmentation: Share user"/>
   <variant name="SegmentationShoppingUser"
       summary="Segmentation: Shopping user"/>
+  <variant name="SegmentationTabletProductivityUser"
+      summary="Segmentation: Tablet Productivity user"/>
   <variant name="SegmentationVoice" summary="Segmentation: Voice user"/>
   <variant name="TextClassifier" summary="Smart text selection"/>
 </variants>

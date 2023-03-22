@@ -78,6 +78,11 @@ const char kResumeHeavyUserUmaName[] = "ResumeHeavyUser";
 const char kDeviceSwitcherKey[] = "device_switcher";
 const char kDeviceSwitcherUmaName[] = "DeviceSwitcher";
 
+// The key is used to decide whether the user is categorised as tablet
+// productivity or not.
+const char kTabletProductivityUserKey[] = "tablet_productivity_user";
+const char kTabletProductivityUserUmaName[] = "TabletProductivityUser";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =
