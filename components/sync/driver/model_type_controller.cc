@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
@@ -176,7 +177,7 @@ void ModelTypeController::Stop(ShutdownReason reason, StopCallback callback) {
       metadata_fate = CLEAR_METADATA;
       break;
     case ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
-      break;
+      NOTREACHED_NORETURN();
   }
 
   switch (state()) {

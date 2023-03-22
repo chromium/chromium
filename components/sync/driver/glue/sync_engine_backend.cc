@@ -316,7 +316,11 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
     DCHECK(nigori_controller_);
 
     sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
-    nigori_controller_->Stop(reason, base::DoNothing());
+
+    if (reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
+      nigori_controller_->Stop(reason, base::DoNothing());
+    }
+
     nigori_controller_.reset();
 
     sync_manager_->RemoveObserver(this);
