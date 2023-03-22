@@ -1769,7 +1769,7 @@
   {
     "name": "enable-accessibility-service",
     "owners": [ "katie", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 140
   },
   {
     "name": "enable-android-gamepad-vibration",
@@ -2263,11 +2263,6 @@
     "name": "enable-dns-proxy",
     "owners": [ "garrick", "jasongustaman", "cros-networking@google.com" ],
     "expiry_milestone": 111
-  },
-  {
-    "name": "enable-docked-magnifier-resizing",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
   },
   {
     "name": "enable-download-service-foreground-session",
