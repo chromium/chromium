@@ -116,10 +116,11 @@ constexpr CGFloat kContentSpacing = 16.;
 
   NSString* skipButtonTitle;
   if (self.accessPoint ==
-          signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO ||
-      self.accessPoint ==
-          signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
+      signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
     skipButtonTitle = l10n_util::GetNSString(IDS_CANCEL);
+  } else if (self.accessPoint == signin_metrics::AccessPoint::
+                                     ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
+    skipButtonTitle = l10n_util::GetNSString(IDS_CLOSE);
   } else {
     skipButtonTitle = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SKIP);
   }
