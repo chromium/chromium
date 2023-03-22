@@ -65,12 +65,14 @@ class WptReportUploader(object):
                     initial_report, _, _ = body.partition(b'\n')
                     reports.append(json.loads(initial_report))
             merged_report = self.merge_reports(reports)
-
-            with tempfile.TemporaryDirectory() as tmpdir:
-                path = os.path.join(tmpdir, "reports.json.gz")
-                with gzip.open(path, 'wt', encoding="utf-8") as zipfile:
-                    json.dump(merged_report, zipfile)
-                rv = rv | self.upload_report(path)
+            if merged_report is None:
+                _log.error("No result to upload, skip...")
+            else:
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    path = os.path.join(tmpdir, "reports.json.gz")
+                    with gzip.open(path, 'wt', encoding="utf-8") as zipfile:
+                        json.dump(merged_report, zipfile)
+                    rv = rv | self.upload_report(path)
             _log.info(" ")
 
         return rv
@@ -164,7 +166,7 @@ class WptReportUploader(object):
 
     def merge_reports(self, reports):
         if not reports:
-            return {}
+            return None
 
         merged_report = {}
         merged_report['run_info'] = reports[0]['run_info']
@@ -177,6 +179,8 @@ class WptReportUploader(object):
             merged_report['results'].extend(report['results'])
             merged_report['time_end'] = max(merged_report['time_end'],
                                             report['time_end'])
+        if not merged_report['results']:
+            return None
         return merged_report
 
     def parse_args(self, argv):
