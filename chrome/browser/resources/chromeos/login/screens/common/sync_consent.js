@@ -8,7 +8,7 @@
  */
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 // <if expr="_google_chrome">
 import '//oobe/sync-consent-icons.m.js';
 // </if>
@@ -20,15 +20,13 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
-import {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
+import {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-
-
 import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manager_types.js';
 
 
@@ -37,9 +35,34 @@ import {OOBE_UI_STATE, SCREEN_GAIA_SIGNIN} from '../../components/display_manage
  * @enum {string}
  */
 const SyncUIState = {
-  ASHSYNC: 'ash-sync',
+  ASH_SYNC: 'ash-sync',
   LOADING: 'loading',
+  LACROS_OVERVIEW: 'lacros-overview',
+  LACROS_CUSTOMIZE: 'lacros-customize',
 };
+
+
+/**
+ * Available user actions.
+ * @enum {string}
+ */
+const UserAction = {
+  CONTINUE: 'continue',
+  SYNC_EVERYTHING: 'sync-everything',
+  SYNC_CUSTOM: 'sync-custom',
+};
+
+
+/**
+ *  A set of flags of sync options for ChromeOS OOBE.
+ * @typedef {{
+ *   osApps: boolean,
+ *   osPreferences: boolean,
+ *   osWifiConfigurations: boolean,
+ *   osWallpaper: boolean,
+ * }}
+ */
+export let OsSyncItems;
 
 /**
  * @constructor
@@ -58,6 +81,9 @@ const SyncConsentScreenElementBase = mixinBehaviors(
  */
 SyncConsentScreenElementBase.$;
 
+/**
+ * @polymer
+ */
 class SyncConsentScreen extends SyncConsentScreenElementBase {
   static get is() {
     return 'sync-consent-element';
@@ -69,6 +95,15 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
 
   static get properties() {
     return {
+      /**
+       * OS Sync options status.
+       * @type {!OsSyncItems}
+       */
+      osSyncItemsStatus: {
+        type: Object,
+        notify: true,
+      },
+
       /**
        * Indicates whether user is minor mode user (e.g. under age of 18).
        * @private
@@ -100,6 +135,12 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
 
     this.isMinorMode_ = false;
     this.isArcRestricted_ = false;
+    this.osSyncItemsStatus = {
+      osApps: true,
+      osPreferences: true,
+      osWifiConfigurations: true,
+      osWallpaper: true,
+    };
   }
 
   get EXTERNAL_API() {
@@ -135,6 +176,17 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     }
   }
 
+
+  /**
+   * Wallpaper sync is a special case; its implementation relies upon
+   * OS Settings to be synced. Thus, the wallpaper label and toggle are
+   * only enabled when the Settings sync toggle is on.
+   */
+  onSettingsSyncedChanged_() {
+    this.set(
+        'osSyncItemsStatus.osWallpaper', this.osSyncItemsStatus.osPreferences);
+  }
+
   /**
    * Reacts to changes in loadTimeData.
    */
@@ -142,11 +194,38 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.i18nUpdateLocale();
   }
 
+
   /**
    * This is called when SyncScreenBehavior becomes Shown.
+   * @param {boolean} isSyncLacros
    */
-  showLoadedStep() {
-    this.setUIStep(SyncUIState.ASHSYNC);
+  showLoadedStep(isSyncLacros) {
+    if (isSyncLacros) {
+      this.showLacrosOverview();
+    } else {
+      this.showAshSync();
+    }
+  }
+
+  /**
+   * This is called to set ash-sync step.
+   */
+  showAshSync() {
+    this.setUIStep(SyncUIState.ASH_SYNC);
+  }
+
+  /**
+   * This is called to set lacros-overview step.
+   */
+  showLacrosOverview() {
+    this.setUIStep(SyncUIState.LACROS_OVERVIEW);
+  }
+
+  /**
+   * This is called to set lacros-customize step.
+   */
+  showLacrosCustomize() {
+    this.setUIStep(SyncUIState.LACROS_CUSTOMIZE);
   }
 
   /**
@@ -165,7 +244,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   onSettingsSaveAndContinue_(e, opted_in) {
     assert(e.composedPath());
     this.userActed([
-      'continue',
+      UserAction.CONTINUE,
       opted_in,
       this.$.reviewSettingsBox.checked,
       this.getConsentDescription_(),
@@ -238,6 +317,36 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
   getOptInButtonTextKey_(isMinorMode) {
     return isMinorMode ? 'syncConsentTurnOnSync' :
                          'syncConsentAcceptAndContinue';
+  }
+
+  onSyncEverything_() {
+    // will be updated to recordConsent TODO(b/274093410).
+    this.userActed(UserAction.SYNC_EVERYTHING);
+  }
+
+  onManageClicked_() {
+    // will be updated to recordConsent TODO(b/274093410).
+    this.showLacrosCustomize();
+  }
+
+  onBackClicked_() {
+    this.showLacrosOverview();
+  }
+
+  onNextClicked_() {
+    // will be updated to recordConsent TODO(b/274093410).
+    this.userActed([UserAction.SYNC_CUSTOM, this.osSyncItemsStatus]);
+  }
+
+  getAriaLabeltooltip_(locale) {
+    return this.i18nDynamic(locale, 'syncConsentScreenOsSyncAppsTooltipText') +
+        this.i18nDynamic(
+            locale, 'syncConsentScreenOsSyncAppsTooltipAdditionalText');
+  }
+
+  getAriaLabelToggleButtons_(locale, title, subtitle) {
+    return this.i18nDynamic(locale, title) + '. ' +
+        this.i18nDynamic(locale, subtitle);
   }
 }
 

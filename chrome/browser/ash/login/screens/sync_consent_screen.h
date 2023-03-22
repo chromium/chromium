@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/user_manager/user.h"
@@ -165,6 +166,9 @@ class SyncConsentScreen : public BaseScreen,
 
   // Returns true if profile sync has finished initialization.
   bool IsProfileSyncEngineInitialized() const;
+
+  // Check if OSSyncRevamp and Lacros are enabled.
+  bool IsOsSyncLacros();
 
   // This function does two things based on account capability: turn on "sync
   // everything" toggle for non-minor users; pass the minor mode signal to

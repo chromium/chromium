@@ -970,7 +970,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'sync-consent',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'ash-sync',
+      handledSteps: 'ash-sync,lacros-overview',
       states: [
         {
           id: 'ash-sync',
@@ -980,7 +980,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
           trigger: (screen) => {
             screen.setIsMinorMode(false);
-            screen.showLoadedStep();
+            screen.showLoadedStep(/*os_sync_lacros=*/ false);
           },
         },
         {
@@ -991,7 +991,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
           trigger: (screen) => {
             screen.setIsMinorMode(true);
-            screen.showLoadedStep();
+            screen.showLoadedStep(/*os_sync_lacros=*/ false);
           },
         },
         {
@@ -1002,7 +1002,29 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
           trigger: (screen) => {
             screen.setIsMinorMode(false);
-            screen.showLoadedStep();
+            screen.showLoadedStep(/*os_sync_lacros=*/ false);
+          },
+        },
+        {
+          id: 'lacros-overview',
+          data: {
+            isChildAccount: false,
+            isArcRestricted: false,
+          },
+          trigger: (screen) => {
+            screen.setIsMinorMode(false);
+            screen.showLoadedStep(/*os_sync_lacros=*/ true);
+          },
+        },
+        {
+          id: 'lacros-overview-minor',
+          data: {
+            isChildAccount: true,
+            isArcRestricted: false,
+          },
+          trigger: (screen) => {
+            screen.setIsMinorMode(true);
+            screen.showLoadedStep(/*os_sync_lacros=*/ true);
           },
         },
       ],

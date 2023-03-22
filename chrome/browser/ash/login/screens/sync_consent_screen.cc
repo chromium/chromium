@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/pref_names.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -50,6 +51,27 @@
 namespace {
 
 constexpr char kUserActionContinue[] = "continue";
+constexpr char kUserActionLacrosSync[] = "sync-everything";
+constexpr char kUserActionLacrosCustom[] = "sync-custom";
+// OS Sync type options
+constexpr char kOsApps[] = "osApps";
+constexpr char kOsPreferences[] = "osPreferences";
+constexpr char kOsWifiConfigurations[] = "osWifiConfigurations";
+constexpr char kOsWallpaper[] = "osWallpaper";
+
+// This helper function to convert user selected items to UserSelectableOsType.
+void GetUserSelectedSyncOsType(const base::Value::Dict& os_sync_items,
+                               syncer::UserSelectableOsTypeSet& os_sync_set) {
+  if (os_sync_items.FindBool(kOsApps).value()) {
+    os_sync_set.Put(syncer::UserSelectableOsType::kOsApps);
+  }
+  if (os_sync_items.FindBool(kOsPreferences).value()) {
+    os_sync_set.Put(syncer::UserSelectableOsType::kOsPreferences);
+  }
+  if (os_sync_items.FindBool(kOsWifiConfigurations).value()) {
+    os_sync_set.Put(syncer::UserSelectableOsType::kOsWifiConfigurations);
+  }
+}
 
 }  // namespace
 
@@ -221,7 +243,7 @@ void SyncConsentScreen::ShowImpl() {
     start_time_ = base::TimeTicks::Now();
   } else {
     PrepareScreenBasedOnCapability();
-    view_->ShowLoadedStep();
+    view_->ShowLoadedStep(IsOsSyncLacros());
   }
 
   bool is_arc_restricted =
@@ -360,8 +382,9 @@ void SyncConsentScreen::UpdateScreen(const WizardContext& context) {
 
   if (behavior_ == SyncScreenBehavior::kShow) {
     PrepareScreenBasedOnCapability();
+
     if (view_) {
-      view_->ShowLoadedStep();
+      view_->ShowLoadedStep(IsOsSyncLacros());
     }
     GetSyncService(profile_)->RemoveObserver(this);
     timeout_waiter_.AbandonAndStop();
@@ -426,11 +449,20 @@ void SyncConsentScreen::PrepareScreenBasedOnCapability() {
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.IsMinorUser",
                             is_minor_mode);
   // Turn on "sync everything" toggle for non-minor users; turn off all data
-  // types for minor users.
-  SetSyncEverythingEnabled(!is_minor_mode);
+  // types for minor users for the ash sync.
+  if (!IsOsSyncLacros()) {
+    SetSyncEverythingEnabled(!is_minor_mode);
+  }
+
   if (view_) {
     view_->SetIsMinorMode(is_minor_mode);
   }
+}
+
+// Check if OSSyncRevamp and Lacros are enabled.
+bool SyncConsentScreen::IsOsSyncLacros() {
+  return AccountAppsAvailability::IsArcAccountRestrictionsEnabled() &&
+         features::IsOsSyncConsentRevampEnabled();
 }
 
 void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {
@@ -494,7 +526,42 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
                    consent_confirmation);
     return;
   }
+  if (action_id == kUserActionLacrosSync) {
+    // will be updated to recordConsent TODO(b/274093410).
+    CHECK_EQ(args.size(), 1u);
+
+    syncer::SyncService* sync_service = GetSyncService(profile_);
+    syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+    syncer::UserSelectableOsTypeSet os_empty_set;
+    sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
+    exit_callback_.Run(Result::NEXT);
+    return;
+  }
+  if (action_id == kUserActionLacrosCustom) {
+    // will be updated to recordConsent TODO(b/274093410).
+    CHECK_EQ(args.size(), 2u);
+    const base::Value::Dict& osSyncItemsStatus = args[1].GetDict();
+    syncer::UserSelectableOsTypeSet os_sync_set;
+
+    GetUserSelectedSyncOsType(osSyncItemsStatus, os_sync_set);
+
+    syncer::SyncService* sync_service = GetSyncService(profile_);
+    syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
+
+    sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, os_sync_set);
+
+    bool wallpaper_synced = osSyncItemsStatus.FindBool(kOsWallpaper).value();
+
+    if (wallpaper_synced) {
+      DCHECK(osSyncItemsStatus.FindBool(kOsPreferences).value());
+    }
+    profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
+                                     wallpaper_synced);
+
+    exit_callback_.Run(Result::NEXT);
+    return;
+  }
   BaseScreen::OnUserAction(args);
 }
-
 }  // namespace ash
