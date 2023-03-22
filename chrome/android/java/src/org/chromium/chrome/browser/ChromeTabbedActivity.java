@@ -27,6 +27,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -452,6 +453,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(),
                 getModalDialogManagerSupplier(), this);
         StartSurfaceUserData.reset();
+        mBackPressManager.setFallbackOnBackPressed(
+                () -> { minimizeAppAndCloseTabOnBackPress(getActivityTab()); });
     }
 
     @Override
@@ -2304,7 +2307,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             nativePage.notifyHidingWithBack();
         }
 
+        if (minimizeAppAndCloseTabOnBackPress(currentTab)) return true;
+
+        assert false : "The back button should have already been handled by this point";
+        return false;
+    }
+
+    private boolean minimizeAppAndCloseTabOnBackPress(@NonNull Tab currentTab) {
         final boolean shouldCloseTab = backShouldCloseTab(currentTab);
+        final WebContents webContents = currentTab.getWebContents();
 
         // Minimize the app if either:
         // - we decided not to close the tab
@@ -2333,8 +2344,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (webContents != null) webContents.dispatchBeforeUnload(false);
             return true;
         }
-
-        assert false : "The back button should have already been handled by this point";
         return false;
     }
 

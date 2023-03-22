@@ -161,7 +161,8 @@ public class BackPressManagerTest {
     @SmallTest
     public void testFallbackCallback() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        BackPressManager manager = new BackPressManager(callbackHelper::notifyCalled);
+        BackPressManager manager = new BackPressManager();
+        manager.setFallbackOnBackPressed(callbackHelper::notifyCalled);
         var vrFailedHandler =
                 TestThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
         TestThreadUtils.runOnUiThreadBlocking(() -> {

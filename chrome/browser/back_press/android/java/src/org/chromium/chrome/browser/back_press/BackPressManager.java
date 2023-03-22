@@ -74,7 +74,7 @@ public class BackPressManager implements Destroyable {
 
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private final boolean[] mStates = new boolean[Type.NUM_TYPES];
-    private final Runnable mFallbackOnBackPressed;
+    private Runnable mFallbackOnBackPressed;
     private int mEnabledCount;
     private int mLastCalledHandlerForTesting = -1;
 
@@ -107,14 +107,6 @@ public class BackPressManager implements Destroyable {
 
     public BackPressManager() {
         mFallbackOnBackPressed = () -> {};
-    }
-
-    /**
-     * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press
-     *         but no handler succeeds.
-     */
-    public BackPressManager(Runnable fallbackOnBackPressed) {
-        mFallbackOnBackPressed = fallbackOnBackPressed;
     }
 
     /**
@@ -174,6 +166,13 @@ public class BackPressManager implements Destroyable {
     public OnBackPressedCallback getCallback() {
         return mCallback;
     }
+    /*
+     * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press
+     *         but no handler succeeds.
+     */
+    public void setFallbackOnBackPressed(Runnable runnable) {
+        mFallbackOnBackPressed = runnable;
+    }
 
     private void backPressStateChanged(@Type int type) {
         Boolean enabled = mHandlers[type].getHandleBackPressChangedSupplier().get();
@@ -206,7 +205,7 @@ public class BackPressManager implements Destroyable {
                 }
             }
         }
-        mFallbackOnBackPressed.run();
+        if (mFallbackOnBackPressed != null) mFallbackOnBackPressed.run();
         assertListOfFailedHandlers(failed, -1);
         assert false : "Callback is enabled but no handler consumed back gesture.";
     }
