@@ -61165,6 +61165,8 @@ from previous Chrome versions.
   <int value="-632030508" label="NativeWindowNavButtons:disabled"/>
   <int value="-631740127" label="inert-visual-viewport"/>
   <int value="-631614101" label="CameraSystemWebApp:enabled"/>
+  <int value="-631136107"
+      label="PageContentAnnotationsPersistSalientImageMetadata:disabled"/>
   <int value="-630256330" label="EnableDrDc:enabled"/>
   <int value="-629084845" label="UseToastManager:disabled"/>
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
@@ -61796,6 +61798,8 @@ from previous Chrome versions.
       label="MaintainShelfStateWhenEnteringOverview:disabled"/>
   <int value="-273570157" label="EnableBloom:enabled"/>
   <int value="-273534119" label="LacrosAuraCapture:enabled"/>
+  <int value="-272668067"
+      label="PageContentAnnotationsPersistSalientImageMetadata:enabled"/>
   <int value="-272544597"
       label="AccessibilitySelectToSpeakContextMenuOption:enabled"/>
   <int value="-272266925" label="ForceStartupSigninPromo:enabled"/>
