@@ -115,7 +115,7 @@ test suites to the CQ builders is to:
    resource request. Depending on resources, the resource owners may not approve
    of the request. In which case, see step #5.
    1. Calculate the amount of machine resources needed for the tests. Googlers
-      can use [this dashboard](http://shortn/_nyyTPgDJtF) to determine the
+      can use [this dashboard](http://shortn/_X75IFjffFk) to determine the
       amount of bots required by comparing it to a similar suite on the same
       builder. Do this for each CQ builder and each suite that's being added.
    2. File a [resource request](http://go/file-chrome-resource-bug) for the
@@ -130,8 +130,8 @@ test suites to the CQ builders is to:
    explaining why. This can be revisited if things change.
 
 If your change doesn't affect the CQ but is expected to increase utilization in
-the testing pools by any more than 5 VMs or 50 CPU cores, it will still need to
-be approved via a resource request. Consult the
+the testing pools by any more than 5 VMs or 50 CPU cores per hour, it will still
+need to be approved via a resource request. Consult the
 [dashboard](http://shortn/_nyyTPgDJtF) linked above to calculate the resource
 usage of a test change. See http://go/i-need-hw for the steps involved in
 getting the approval.
