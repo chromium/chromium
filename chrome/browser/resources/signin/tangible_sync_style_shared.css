@@ -43,6 +43,15 @@
   width: var(--tangible-sync-style-banner-width);
 }
 
+.tangible-sync-style-dialog-illustration {
+  height: 68px;
+  left: 50%;
+  position: absolute;
+  top: 40px;
+  transform: translateX(-50%);
+  width: 328px;
+}
+
 .tangible-sync-style .work-badge {
   --badge-width: 22px;
   --badge-offset: -4px;
@@ -74,11 +83,27 @@
   margin: 24px 0 16px;
 }
 
+.tangible-sync-style.dialog .title {
+  font-size: 1.25rem;
+  line-height: 24px;
+  margin: 16px 0 12px;
+}
+
 .tangible-sync-style .subtitle {
   color: var(--cr-secondary-text-color);
   font-size: 1.25rem;
   font-weight: 400;
   line-height: 24px;
+}
+
+.tangible-sync-style.dialog .subtitle {
+  font-size: 0.94rem;
+  line-height: 24px;
+}
+
+.tangible-sync-style.dialog cr-button {
+  --cr-button-height: 32px;
+  min-width: 111px;
 }
 
 @media screen and ((max-width: 780px) or (max-height: 600px)) {

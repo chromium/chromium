@@ -16,6 +16,8 @@ build_webui("build") {
     # The shared images are used on the first run experience, sync confirmation
     # and the profile picker.
     "enterprise_profile_welcome/images/enterprise_profile_welcome_illustration.svg",
+    "images/shared_dialog_illustration.svg",
+    "images/shared_dialog_illustration_dark.svg",
     "images/shared_left_banner.svg",
     "images/shared_left_banner_dark.svg",
     "images/shared_right_banner.svg",
@@ -31,8 +33,6 @@ build_webui("build") {
     "sync_confirmation/images/sync_confirmation_refreshed_illustration.svg",
     "sync_confirmation/images/sync_confirmation_signin_intercept_illustration.svg",
     "sync_confirmation/images/sync_confirmation_signin_intercept_illustration_dark.svg",
-    "sync_confirmation/images/tangible_sync_dialog_illustration.svg",
-    "sync_confirmation/images/tangible_sync_dialog_illustration_dark.svg",
   ]
   if (!is_chromeos_ash) {
     static_files += [

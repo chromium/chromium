@@ -273,10 +273,9 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
     illustration_dark_path =
         "images/tangible_sync_dialog_illustration_dark.svg";
 
-    illustration_id =
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_DIALOG_ILLUSTRATION_SVG;
+    illustration_id = IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_SVG;
     illustration_dark_id =
-        IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_DIALOG_ILLUSTRATION_DARK_SVG;
+        IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_DARK_SVG;
 
     source->AddResourcePath("images/tangible_sync_window_left_illustration.svg",
                             IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);

@@ -94,7 +94,8 @@ const EnterpriseWelcomeTestParam kDialogTestParams[] = {
      .use_tangible_sync_style = true},
     {.pixel_test_param =
          {.test_suffix = "EnterpriseWelcomeFreWithProfileCreationRequired"},
-     .profile_creation_required_by_policy = true},
+     .profile_creation_required_by_policy = true,
+     .use_tangible_sync_style = true},
     {.pixel_test_param = {.test_suffix = "EnterpriseWelcomeFreDarkTheme",
                           .use_dark_theme = true},
      .show_link_data_checkbox = true,

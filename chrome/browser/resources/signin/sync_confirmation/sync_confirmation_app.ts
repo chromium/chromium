@@ -86,6 +86,11 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
           return JSON.parse(loadTimeData.getString('syncBenefitsList'));
         },
       },
+
+      tangibleSyncStyleClass: {
+        type: String,
+        computed: 'getTangibleSyncStyleClass_(isTangibleSync_, isModalDialog_)',
+      },
     };
   }
 
@@ -160,15 +165,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
   }
 
-  private getMainContainerClass_() {
-    return this.isModalDialog_ ? 'dialog-main-container' :
-                                 'window-main-container';
-  }
-
-  private getButtonContainerClass_() {
-    return this.isModalDialog_ ? 'dialog-button-container' :
-                                 'window-button-container';
-  }
 
   private getSigninInterceptDesignClass_(isSigninInterceptFre: boolean):
       string {
@@ -185,6 +181,14 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
 
   private isWindowVersionWithoutTangibleSync_(): boolean {
     return !this.isModalDialog_ && !this.isTangibleSync_;
+  }
+
+  private getTangibleSyncStyleClass_() {
+    if (!this.isTangibleSync_) {
+      return '';
+    }
+    return this.isModalDialog_ ? 'tangible-sync-style dialog' :
+                                 'tangible-sync-style';
   }
 }
 

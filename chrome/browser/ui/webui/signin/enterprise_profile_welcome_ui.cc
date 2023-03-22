@@ -62,6 +62,11 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
   source->AddResourcePath("images/right-banner-dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+  source->AddResourcePath("images/tangible_sync_style_dialog_illustration.svg",
+                          IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_SVG);
+  source->AddResourcePath(
+      "images/tangible_sync_style_dialog_illustration_dark.svg",
+      IDR_SIGNIN_IMAGES_SHARED_DIALOG_ILLUSTRATION_DARK_SVG);
   source->AddLocalizedString("enterpriseProfileWelcomeTitle",
                              IDS_ENTERPRISE_PROFILE_WELCOME_TITLE);
   source->AddLocalizedString("cancelLabel", IDS_CANCEL);

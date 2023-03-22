@@ -163,7 +163,7 @@ export class EnterpriseProfileWelcomeAppElement extends
 
   private setProfileInfo_(info: EnterpriseProfileInfo) {
     // <if expr="not chromeos_lacros">
-    if (this.isModalDialog_ || !this.isTangibleSyncStyleEnabled_) {
+    if (!this.isTangibleSyncStyleEnabled_) {
       this.style.setProperty('--header-background-color', info.backgroundColor);
     }
     // </if>
@@ -178,11 +178,12 @@ export class EnterpriseProfileWelcomeAppElement extends
     this.linkData_ = info.checkLinkDataCheckboxByDefault;
   }
 
-  // TODO: Enable tangible sync style for dialog view.
   private getTangibleSyncStyleClass_() {
-    return this.isTangibleSyncStyleEnabled_ && !this.isModalDialog_ ?
-        'tangible-sync-style' :
-        '';
+    if (!this.isTangibleSyncStyleEnabled_) {
+      return '';
+    }
+    return this.isModalDialog_ ? 'tangible-sync-style dialog' :
+                                 'tangible-sync-style';
   }
 }
 
