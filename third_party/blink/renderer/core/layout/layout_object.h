@@ -510,7 +510,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     if (NeedsLayout() && !ChildLayoutBlockedByDisplayLock())
       ShowLayoutTreeForThis();
-    SECURITY_DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
+    DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
   }
 
   void AssertSubtreeIsLaidOut() const {
