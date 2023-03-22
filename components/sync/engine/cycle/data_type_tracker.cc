@@ -107,6 +107,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case NIGORI:
     case PROXY_TABS:
     case POWER_BOOKMARK:
+    case WEBAUTHN_CREDENTIAL:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED();
@@ -167,6 +168,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case SAVED_TAB_GROUP:
     case POWER_BOOKMARK:
     case PROXY_TABS:
+    case WEBAUTHN_CREDENTIAL:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

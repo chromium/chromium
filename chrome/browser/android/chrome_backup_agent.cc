@@ -20,7 +20,7 @@ namespace {
 
 // TODO(crbug.com/1305213): The data type toggles shouldn't be individually
 // listed here.
-static_assert(45 == syncer::GetNumModelTypes(),
+static_assert(46 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it here");
 const char* backed_up_preferences_[] = {
     autofill::prefs::kAutofillWalletImportEnabled,

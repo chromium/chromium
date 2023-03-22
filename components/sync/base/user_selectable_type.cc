@@ -37,7 +37,7 @@ constexpr char kWifiConfigurationsTypeName[] = "wifiConfigurations";
 constexpr char kSavedTabGroupsTypeName[] = "savedTabGroups";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(45 == syncer::GetNumModelTypes(),
+  static_assert(46 == syncer::GetNumModelTypes(),
                 "Almost always when adding a new ModelType, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -56,7 +56,9 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES, SEARCH_ENGINES,
                SEGMENTATION}};
     case UserSelectableType::kPasswords:
-      return {kPasswordsTypeName, PASSWORDS, {PASSWORDS}};
+      // TODO(crbug.com/1223853): Revisit whether WEBAUTHN_CREDENTIAL should be
+      // its own UserSelectableType before launch.
+      return {kPasswordsTypeName, PASSWORDS, {PASSWORDS, WEBAUTHN_CREDENTIAL}};
     case UserSelectableType::kAutofill:
       return {kAutofillTypeName,
               AUTOFILL,

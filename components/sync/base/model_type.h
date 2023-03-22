@@ -130,10 +130,6 @@ enum ModelType {
   SHARING_MESSAGE,
   // A workspace desk saved by user. Chrome OS only.
   WORKSPACE_DESK,
-  // WebAuthn credentials. Commented out because this type is currently only
-  // used by the server and Play Services, not Chrome itself.
-  // (crbug.com/1223853)
-  // WEBAUTHN_CREDENTIAL,
   // Synced history. An entity roughly corresponds to a navigation.
   HISTORY,
   // Trusted Authorization Servers for printers. ChromeOS only.
@@ -147,6 +143,9 @@ enum ModelType {
   // Power bookmarks are features associated with bookmarks(i.e. notes, price
   // tracking). Their life cycle are synced with bookmarks.
   POWER_BOOKMARK,
+
+  // WebAuthn credentials, more commonly known as passkeys.
+  WEBAUTHN_CREDENTIAL,
 
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
@@ -250,7 +249,8 @@ enum class ModelTypeForHistograms {
   kSegmentation = 55,
   kSavedTabGroups = 56,
   kPowerBookmark = 57,
-  kMaxValue = kPowerBookmark
+  kWebAuthnCredentials = 58,
+  kMaxValue = kWebAuthnCredentials,
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -274,7 +274,7 @@ constexpr ModelTypeSet ProtocolTypes() {
       USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF, SECURITY_EVENTS,
       WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
       SHARING_MESSAGE, WORKSPACE_DESK, HISTORY, PRINTERS_AUTHORIZATION_SERVERS,
-      CONTACT_INFO, SAVED_TAB_GROUP, POWER_BOOKMARK);
+      CONTACT_INFO, SAVED_TAB_GROUP, POWER_BOOKMARK, WEBAUTHN_CREDENTIAL);
 }
 
 // These are the normal user-controlled types. This is to distinguish from
