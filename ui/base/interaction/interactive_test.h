@@ -396,6 +396,11 @@ class InteractiveTestApi {
     return *private_test_impl_;
   }
 
+  // Adds a step or steps to the end of an existing MultiStep. Shorthand for
+  // making one or more calls to `std::vector::emplace_back`.
+  static void AddStep(MultiStep& dest, StepBuilder src);
+  static void AddStep(MultiStep& dest, MultiStep src);
+
  private:
   // Implementation for RunTestSequenceInContext().
   bool RunTestSequenceImpl(ElementContext context,
@@ -405,9 +410,6 @@ class InteractiveTestApi {
   static void AddStep(InteractionSequence::Builder& builder, MultiStep steps);
   template <typename T>
   static void AddStep(InteractionSequence::Builder& builder, T&& step);
-
-  static void AddStep(MultiStep& dest, StepBuilder src);
-  static void AddStep(MultiStep& dest, MultiStep src);
 
   std::unique_ptr<internal::InteractiveTestPrivate> private_test_impl_;
 };
