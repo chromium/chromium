@@ -193,23 +193,8 @@ crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanv
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
-# finder:group-start crbug.com/1382796 failures happen in many tests, so can be classified as stale for one specific test
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_2DCanvasWebGL [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Canvas2DRedBox [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Canvas2DTabSwitch [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Video_VP9_DXVA [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_Video_MP4_Rounded_Corner [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_WebGLDisplayP3 [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_WebGLGreenTriangle_* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] TraceTest_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
-# finder:group-end
 
-# WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23, nexus-5x or
 # Lacros FYI x64 Release (Intel) yet.
-crbug.com/1230619 [ android android-sm-a235m ] TraceTest_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-nexus-5x passthrough ] TraceTest_WebGLFloat [ Failure ]
 
 crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
