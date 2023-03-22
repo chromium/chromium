@@ -7,6 +7,8 @@
 
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
+#include "services/network/public/mojom/trust_tokens.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {

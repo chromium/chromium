@@ -4,6 +4,8 @@
 
 #include "content/public/browser/trust_token_access_details.h"
 
+#include "services/network/public/mojom/trust_tokens.mojom.h"
+
 namespace content {
 
 TrustTokenAccessDetails::TrustTokenAccessDetails() = default;

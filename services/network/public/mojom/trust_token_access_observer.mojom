@@ -4,8 +4,6 @@
 
 module network.mojom;
 
-import "sandbox/policy/mojom/context.mojom";
-import "services/network/public/mojom/trust_tokens.mojom";
 import "url/mojom/origin.mojom";
 
 union TrustTokenAccessDetails {
