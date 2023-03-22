@@ -1,0 +1,17 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  resource_path_prefix = "css"
+
+  files = [
+    "color_provider_css_colors_test.ts",
+    "text_defaults_test.ts",
+  ]
+  if (is_chromeos_ash) {
+    files += [ "color_provider_css_colors_test_chromeos.ts" ]
+  }
+}

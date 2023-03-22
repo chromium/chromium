@@ -10,11 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 template("build_webui_tests") {
   not_needed([ "target_name" ])
 
-  forward_variables_from(invoker,
-                         [
-                           "files",
-                           "ts_deps",
-                         ])
+  forward_variables_from(invoker, [ "files" ])
 
   preprocess_dir = "${target_gen_dir}/preprocessed"
   tsc_dir = "${target_gen_dir}/tsc"
@@ -85,7 +81,10 @@ template("build_webui_tests") {
     if (defined(invoker.ts_definitions)) {
       definitions = invoker.ts_definitions
     }
-    deps = [ "//chrome/test/data/webui:build_ts" ] + ts_deps
+    deps = [ "//chrome/test/data/webui:build_ts" ]
+    if (defined(invoker.ts_deps)) {
+      deps += invoker.ts_deps
+    }
     extra_deps = [ ":preprocess" ]
 
     if (defined(invoker.mojo_files)) {

@@ -90,10 +90,10 @@ if (include_js_tests) {
       "async_gen.js",
       "bookmarks/bookmarks_browsertest.js",
       "chrome_timeticks_browsertest.js",
-      "color_provider_css_colors_browsertest.js",
       "commander/commander_browsertest.js",
       "cr_components/cr_components_browsertest.js",
       "cr_elements/cr_elements_browsertest.js",
+      "css/css_browsertest.js",
       "histograms/histograms_internals_ui_browsertest.js",
       "history/history_browsertest.js",
       "invalidations/about_invalidations_browsertest.js",
@@ -112,7 +112,6 @@ if (include_js_tests) {
       "settings/cr_settings_browsertest.js",
       "settings/privacy_sandbox_browsertest.js",
       "settings/settings_idle_load_browsertest.js",
-      "text_defaults_browsertest.js",
       "whats_new/whats_new_browsertest.js",
     ]
 
@@ -381,8 +380,6 @@ ts_library("build_ts") {
   in_files = [
     "chai_assert.ts",
     "chrome_timeticks_test.ts",
-    "color_provider_css_colors_test_chromeos.ts",
-    "color_provider_css_colors_test.ts",
     "fake_chrome_event.ts",
     "invalidations/invalidations_test.ts",
     "metrics_test_support.ts",
@@ -397,7 +394,6 @@ ts_library("build_ts") {
     "test_plural_string_proxy.ts",
     "test_store_ts.ts",
     "test_util.ts",
-    "text_defaults_test.ts",
     "trusted_html.ts",
 
     # TODO(dpapad): Migrate the files below to TypeScript and remove allowJs
@@ -448,6 +444,7 @@ generate_grd("build_grd") {
     "commander:build_grdp",
     "cr_components:build_grdp",
     "cr_elements:build_grdp",
+    "css:build_grdp",
     "discards:build_grdp",
     "downloads:build_grdp",
     "history:build_grdp",
@@ -475,6 +472,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/commander/resources.grdp",
     "$target_gen_dir/cr_components/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
+    "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/discards/resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
