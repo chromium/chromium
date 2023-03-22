@@ -6,11 +6,25 @@
 #define CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_KEYED_SERVICE_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
+
+namespace google_apis {
+class RequestSender;
+}  // namespace google_apis
+
+namespace net {
+struct NetworkTrafficAnnotationTag;
+}  // namespace net
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace ash {
 
@@ -19,6 +33,12 @@ class GlanceablesTasksClientImpl;
 // Browser context keyed service that owns implementations of interfaces from
 // ash/ needed to communicate with different Google services as part of
 // Glanceables project.
+//
+// As of March 2023, this service is created only for primary profiles (see
+// `chrome/browser/ash/login/session/user_session_initializer.cc`) and does not
+// support multi-user sign-in.
+// TODO(b/269750741): Confirm timelines and revisit whether multi-user sign-in
+// support is needed.
 class GlanceablesKeyedService : public KeyedService {
  public:
   explicit GlanceablesKeyedService(Profile* profile);
@@ -30,11 +50,26 @@ class GlanceablesKeyedService : public KeyedService {
   void Shutdown() override;
 
  private:
+  // Helper method that creates a `google_apis::RequestSender` instance.
+  // `scopes` - OAuth 2 scopes needed for a client.
+  // `traffic_annotation_tag` - describes requests issued by a client (for more
+  // details see docs/network_traffic_annotations.md and
+  // chrome/browser/privacy/traffic_annotation.proto).
+  std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
+      const std::vector<std::string>& scopes,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) const;
+
   // Creates clients needed to communicate with different Google services.
   void CreateClients();
 
   // Notifies `ash/` about created clients for `account_id_`.
   void UpdateRegistrationInAsh() const;
+
+  // The profile for which this keyed service was created.
+  Profile* const profile_;
+
+  // Identity manager associated with `profile_`.
+  signin::IdentityManager* const identity_manager_;
 
   // Account id associated with the primary profile.
   const AccountId account_id_;
