@@ -48,6 +48,7 @@ namespace {
 PWAConfirmationBubbleView* g_bubble_ = nullptr;
 
 bool g_auto_accept_pwa_for_testing = false;
+bool g_dont_close_on_deactivate = false;
 
 // Returns an ImageView containing the app icon.
 std::unique_ptr<views::ImageView> CreateIconView(
@@ -147,6 +148,10 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
   }
 
   SetHighlightedButton(highlight_icon_button_);
+
+  if (g_dont_close_on_deactivate) {
+    set_close_on_deactivate(false);
+  }
 }
 
 PWAConfirmationBubbleView::~PWAConfirmationBubbleView() = default;
@@ -203,6 +208,11 @@ bool PWAConfirmationBubbleView::Accept() {
   }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
+}
+
+base::AutoReset<bool>
+PWAConfirmationBubbleView::SetDontCloseOnDeactivateForTesting() {
+  return base::AutoReset<bool>(&g_dont_close_on_deactivate, true);
 }
 
 void PWAConfirmationBubbleView::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,

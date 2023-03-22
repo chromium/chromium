@@ -51,6 +51,8 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   void WindowClosing() override;
   bool Accept() override;
 
+  static base::AutoReset<bool> SetDontCloseOnDeactivateForTesting();
+
  protected:
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;

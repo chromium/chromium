@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
+#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -1115,6 +1116,8 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   BrowserAddedWaiter browser_added_waiter;
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
+  auto dont_close_bubble_on_deactivate =
+      PWAConfirmationBubbleView::SetDontCloseOnDeactivateForTesting();
 
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
@@ -1128,7 +1131,6 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
   ActivateBrowserAndWait(app_browser_);
-  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
   AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
@@ -1177,6 +1179,9 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
         run_loop.Quit();
       }));
 
+  auto dont_close_bubble_on_deactivate =
+      PWAConfirmationBubbleView::SetDontCloseOnDeactivateForTesting();
+
   BrowserAddedWaiter browser_added_waiter;
   ASSERT_TRUE(pwa_install_view()->GetVisible());
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
@@ -1192,7 +1197,6 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   active_app_id_ = install_observer.Wait();
   DCHECK_EQ(app_id, active_app_id_);
   ActivateBrowserAndWait(app_browser_);
-  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
