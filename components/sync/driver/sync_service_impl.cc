@@ -499,7 +499,8 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
     }
     // If enabled, call controller's Stop() to inform them to clear the
     // metadata.
-    if (base::FeatureList::IsEnabled(
+    if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA &&
+        base::FeatureList::IsEnabled(
             kSyncAllowClearingMetadataWhenDataTypeIsStopped)) {
       for (auto& [type, controller] : data_type_controllers_) {
         controller->Stop(shutdown_reason, base::DoNothing());
