@@ -330,6 +330,11 @@ crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/r
 
 # Seems to do enough JavaScript work that heartbeats are not reliably sent.
 crbug.com/1426593 conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/misc/uninitialized-test-2.html [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/oes-texture-half-float-linear.html [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/reading/read-pixels-test.html [ Slow ]
+crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
 
 ###################
 # Failures/Flakes #
