@@ -13,15 +13,6 @@ imageset("infobar_warning") {
   ]
 }
 
-imageset("infobar_downloading") {
-  sources = [
-    "infobar_downloading.imageset/Contents.json",
-    "infobar_downloading.imageset/infobar_downloading.png",
-    "infobar_downloading.imageset/infobar_downloading@2x.png",
-    "infobar_downloading.imageset/infobar_downloading@3x.png",
-  ]
-}
-
 imageset("infobar_reveal_password_icon") {
   sources = [
     "infobar_reveal_password_icon.imageset/Contents.json",
@@ -35,46 +26,5 @@ imageset("infobar_hide_password_icon") {
     "infobar_hide_password_icon.imageset/Contents.json",
     "infobar_hide_password_icon.imageset/infobar_hide_password_icon@2x.png",
     "infobar_hide_password_icon.imageset/infobar_hide_password_icon@3x.png",
-  ]
-}
-
-imageset("infobar_settings_icon") {
-  sources = [
-    "infobar_settings_icon.imageset/Contents.json",
-    "infobar_settings_icon.imageset/infobar_settings_icon.png",
-    "infobar_settings_icon.imageset/infobar_settings_icon@2x.png",
-    "infobar_settings_icon.imageset/infobar_settings_icon@3x.png",
-  ]
-}
-
-imageset("infobar_autofill_address_icon") {
-  sources = [
-    "infobar_autofill_address_icon.imageset/Contents.json",
-    "infobar_autofill_address_icon.imageset/infobar_autofill_address_icon@2x.png",
-    "infobar_autofill_address_icon.imageset/infobar_autofill_address_icon@3x.png",
-  ]
-}
-
-imageset("infobar_email_icon") {
-  sources = [
-    "infobar_email_icon.imageset/Contents.json",
-    "infobar_email_icon.imageset/infobar_email_icon@2x.png",
-    "infobar_email_icon.imageset/infobar_email_icon@3x.png",
-  ]
-}
-
-imageset("infobar_phone_icon") {
-  sources = [
-    "infobar_phone_icon.imageset/Contents.json",
-    "infobar_phone_icon.imageset/infobar_phone_icon@2x.png",
-    "infobar_phone_icon.imageset/infobar_phone_icon@3x.png",
-  ]
-}
-
-imageset("infobar_profile_icon") {
-  sources = [
-    "infobar_profile_icon.imageset/Contents.json",
-    "infobar_profile_icon.imageset/infobar_profile_icon@2x.png",
-    "infobar_profile_icon.imageset/infobar_profile_icon@3x.png",
   ]
 }

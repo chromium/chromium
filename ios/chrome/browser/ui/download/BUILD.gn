@@ -19,8 +19,6 @@ source_set("download") {
     "download_manager_state_view.mm",
     "download_manager_view_controller.h",
     "download_manager_view_controller.mm",
-    "legacy_download_manager_state_view.h",
-    "legacy_download_manager_state_view.mm",
     "pass_kit_coordinator.h",
     "pass_kit_coordinator.mm",
     "radial_progress_view.h",
@@ -33,9 +31,6 @@ source_set("download") {
   deps = [
     "resources:background_compact",
     "resources:background_regular",
-    "resources:done_badge",
-    "resources:download_close",
-    "resources:error_badge",
     "//base",
     "//components/infobars/core",
     "//components/strings",

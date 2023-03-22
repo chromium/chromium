@@ -9,9 +9,9 @@
 
 #import "ios/chrome/browser/ui/download/download_manager_consumer.h"
 
+@class DownloadManagerStateView;
 @class DownloadManagerViewController;
 @class LayoutGuideCenter;
-@class LegacyDownloadManagerStateView;
 @class RadialProgressView;
 
 @protocol DownloadManagerViewControllerDelegate<NSObject>
@@ -53,9 +53,6 @@
 // Button to dismiss the download toolbar.
 @property(nonatomic, readonly) UIButton* closeButton;
 
-// Icon that represents the current download status.
-@property(nonatomic, readonly) LegacyDownloadManagerStateView* legacyStateIcon;
-
 // Label that describes the current download status.
 @property(nonatomic, readonly) UILabel* statusLabel;
 
@@ -78,6 +75,11 @@
 // View that represents download progress.
 @property(nonatomic, readonly) RadialProgressView* progressView;
 
+@end
+
+// Method exposed for testing only.
+@interface DownloadManagerViewController (Testing)
+- (DownloadManagerStateView*)stateSymbol;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_VIEW_CONTROLLER_H_

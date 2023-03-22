@@ -34,9 +34,6 @@ class SaveAddressProfileBannerRequestConfig
   // The description.
   std::u16string description() const { return description_; }
 
-  // The name of the icon image.
-  NSString* icon_image_name() const { return icon_image_name_; }
-
   // The banner type.
   BOOL is_update_banner() const { return is_update_banner_; }
 

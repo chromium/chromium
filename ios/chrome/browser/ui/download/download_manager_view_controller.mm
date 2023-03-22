@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
-#import "ios/chrome/browser/ui/download/legacy_download_manager_state_view.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -49,7 +48,6 @@ NSString* GetSizeString(long long size_in_bytes) {
 
 @interface DownloadManagerViewController () {
   UIButton* _closeButton;
-  LegacyDownloadManagerStateView* _legacyStateIcon;
   UILabel* _statusLabel;
   UIButton* _actionButton;
   UIButton* _installDriveButton;
@@ -143,11 +141,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   [self.view addSubview:self.downloadControlsRow];
   [self.view addSubview:self.installDriveControlsRow];
   [self.downloadControlsRow addSubview:self.closeButton];
-  if (UseSymbols()) {
-    [self.downloadControlsRow addSubview:self.stateSymbol];
-  } else {
-    [self.downloadControlsRow addSubview:self.legacyStateIcon];
-  }
+  [self.downloadControlsRow addSubview:self.stateSymbol];
   [self.downloadControlsRow addSubview:self.statusLabel];
   [self.downloadControlsRow addSubview:self.progressView];
   [self.downloadControlsRow addSubview:self.actionButton];
@@ -234,7 +228,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   ]];
 
   // state symbol constraints.
-  UIView* stateSymbol = UseSymbols() ? self.stateSymbol : self.legacyStateIcon;
+  UIView* stateSymbol = self.stateSymbol;
   [NSLayoutConstraint activateConstraints:@[
     [stateSymbol.centerYAnchor
         constraintEqualToAnchor:downloadRow.centerYAnchor],
@@ -365,7 +359,7 @@ NSString* GetSizeString(long long size_in_bytes) {
   if (_state != state) {
     _state = state;
 
-    UseSymbols() ? [self updateStateSymbol] : [self updatelegacyStateIcon];
+    [self updateStateSymbol];
     [self updateStatusLabel];
     [self updateActionButton];
     [self updateProgressView];
@@ -423,12 +417,8 @@ NSString* GetSizeString(long long size_in_bytes) {
     _closeButton.exclusiveTouch = YES;
     _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
 
-    UIImage* image =
-        UseSymbols()
-            ? DefaultSymbolTemplateWithPointSize(
-                  kXMarkSymbol, kSymbolDownloadInfobarPointSize)
-            : [[UIImage imageNamed:@"download_close"]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* image = DefaultSymbolTemplateWithPointSize(
+        kXMarkSymbol, kSymbolDownloadInfobarPointSize);
     [_closeButton setImage:image forState:UIControlStateNormal];
     _closeButton.tintColor = [UIColor colorNamed:kToolbarButtonColor];
 
@@ -439,18 +429,6 @@ NSString* GetSizeString(long long size_in_bytes) {
     _closeButton.pointerInteractionEnabled = YES;
   }
   return _closeButton;
-}
-
-- (LegacyDownloadManagerStateView*)legacyStateIcon {
-  if (!_legacyStateIcon) {
-    _legacyStateIcon =
-        [[LegacyDownloadManagerStateView alloc] initWithFrame:CGRectZero];
-    _legacyStateIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    _legacyStateIcon.downloadColor = [UIColor colorNamed:kBlueColor];
-    _legacyStateIcon.documentColor = [UIColor colorNamed:kGrey400Color];
-    [self updatelegacyStateIcon];
-  }
-  return _legacyStateIcon;
 }
 
 - (DownloadManagerStateView*)stateSymbol {
@@ -705,11 +683,6 @@ NSString* GetSizeString(long long size_in_bytes) {
                                constant:-kCloseButtonLeftMargin];
 
   self.statusLabelTrailingConstraint.active = YES;
-}
-
-// Updates state icon depending.
-- (void)updatelegacyStateIcon {
-  [self.legacyStateIcon setState:_state animated:YES];
 }
 
 // Updates state symbol depending on the current download state.

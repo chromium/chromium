@@ -24,28 +24,3 @@ imageset("background_regular") {
     "background_regular.imageset/background_regular_dark@3x.png",
   ]
 }
-imageset("done_badge") {
-  sources = [
-    "done_badge.imageset/Contents.json",
-    "done_badge.imageset/done_badge@2x.png",
-    "done_badge.imageset/done_badge@3x.png",
-    "done_badge.imageset/done_badge_dark@2x.png",
-    "done_badge.imageset/done_badge_dark@3x.png",
-  ]
-}
-imageset("download_close") {
-  sources = [
-    "download_close.imageset/Contents.json",
-    "download_close.imageset/download_close@2x.png",
-    "download_close.imageset/download_close@3x.png",
-  ]
-}
-imageset("error_badge") {
-  sources = [
-    "error_badge.imageset/Contents.json",
-    "error_badge.imageset/error_badge@2x.png",
-    "error_badge.imageset/error_badge@3x.png",
-    "error_badge.imageset/error_badge_dark@2x.png",
-    "error_badge.imageset/error_badge_dark@3x.png",
-  ]
-}

@@ -78,7 +78,6 @@ source_set("badges") {
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/icons:symbols",
-    "//ios/chrome/browser/ui/infobars/resources:infobar_settings_icon",
     "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web_state_list",

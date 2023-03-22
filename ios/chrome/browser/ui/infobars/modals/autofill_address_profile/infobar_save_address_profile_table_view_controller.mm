@@ -304,26 +304,14 @@ const CGFloat kSymbolSize = 16;
 
   for (NSNumber* type in self.profileDataDiff) {
     if ([self.profileDataDiff[type][0] length] > 0) {
-      SettingsImageDetailTextItem* newItem;
-      if (UseSymbols()) {
-        newItem = [self
-              detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                           (AutofillUIType)[type intValue]
-                                                               update:YES
-                                                                  old:NO]
-                            text:self.profileDataDiff[type][0]
-                          symbol:[self symbolForAutofillInputTypeNumber:type]
-            imageTintColorIsGrey:NO];
-      } else {
-        newItem =
-            [self detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                               (AutofillUIType)[type intValue]
-                                                                   update:YES
-                                                                      old:NO]
-                                text:self.profileDataDiff[type][0]
-                       iconImageName:[self iconForAutofillInputTypeNumber:type]
-                imageTintColorIsGrey:NO];
-      }
+      SettingsImageDetailTextItem* newItem =
+          [self detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                             (AutofillUIType)[type intValue]
+                                                                 update:YES
+                                                                    old:NO]
+                              text:self.profileDataDiff[type][0]
+                            symbol:[self symbolForAutofillInputTypeNumber:type]
+              imageTintColorIsGrey:NO];
       lastAddedItem = newItem;
       [model addItem:newItem
           toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
@@ -339,26 +327,14 @@ const CGFloat kSymbolSize = 16;
         toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
     for (NSNumber* type in self.profileDataDiff) {
       if ([self.profileDataDiff[type][1] length] > 0) {
-        SettingsImageDetailTextItem* oldItem;
-        if (UseSymbols()) {
-          oldItem = [self
-                detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                             (AutofillUIType)[type intValue]
-                                                                 update:YES
-                                                                    old:YES]
-                              text:self.profileDataDiff[type][1]
-                            symbol:[self symbolForAutofillInputTypeNumber:type]
-              imageTintColorIsGrey:YES];
-        } else {
-          oldItem = [self
-                detailItemWithType:[self modalItemTypeForAutofillUIType:
-                                             (AutofillUIType)[type intValue]
-                                                                 update:YES
-                                                                    old:YES]
-                              text:self.profileDataDiff[type][1]
-                     iconImageName:[self iconForAutofillInputTypeNumber:type]
-              imageTintColorIsGrey:YES];
-        }
+        SettingsImageDetailTextItem* oldItem = [self
+              detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                           (AutofillUIType)[type intValue]
+                                                               update:YES
+                                                                  old:YES]
+                            text:self.profileDataDiff[type][1]
+                          symbol:[self symbolForAutofillInputTypeNumber:type]
+            imageTintColorIsGrey:YES];
         lastAddedItem = oldItem;
         [model addItem:oldItem
             toSectionWithIdentifier:SectionIdentifierUpdateModalFields];
@@ -450,7 +426,6 @@ const CGFloat kSymbolSize = 16;
 }
 
 - (UIImage*)symbolForAutofillUIType:(AutofillUIType)type {
-  DCHECK(UseSymbols());
   switch (type) {
     case AutofillUITypeNameFullWithHonorificPrefix:
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
@@ -470,29 +445,6 @@ const CGFloat kSymbolSize = 16;
 
 - (UIImage*)symbolForAutofillInputTypeNumber:(NSNumber*)val {
   return [self symbolForAutofillUIType:(AutofillUIType)[val intValue]];
-}
-
-- (NSString*)iconForAutofillUIType:(AutofillUIType)type {
-  DCHECK(!UseSymbols());
-  switch (type) {
-    case AutofillUITypeNameFullWithHonorificPrefix:
-      return @"infobar_profile_icon";
-    case AutofillUITypeAddressHomeAddress:
-    case AutofillUITypeProfileHomeAddressStreet:
-      return @"infobar_autofill_address_icon";
-    case AutofillUITypeProfileEmailAddress:
-      return @"infobar_email_icon";
-    case AutofillUITypeProfileHomePhoneWholeNumber:
-      return @"infobar_phone_icon";
-    default:
-      NOTREACHED();
-      return @"";
-  }
-}
-
-- (NSString*)iconForAutofillInputTypeNumber:(NSNumber*)val {
-  DCHECK(!UseSymbols());
-  return [self iconForAutofillUIType:(AutofillUIType)[val intValue]];
 }
 
 // Determines the itemType for the row based on `autofillUIType`, whether the
@@ -551,21 +503,12 @@ const CGFloat kSymbolSize = 16;
 - (SettingsImageDetailTextItem*)
     detailItemForSaveModalWithText:(NSString*)text
                     autofillUIType:(AutofillUIType)autofillUIType {
-  if (UseSymbols()) {
-    return [self
-          detailItemWithType:[self modalItemTypeForAutofillUIType:autofillUIType
-                                                           update:NO
-                                                              old:NO]
-                        text:text
-                      symbol:[self symbolForAutofillUIType:autofillUIType]
-        imageTintColorIsGrey:YES];
-  }
   return [self
         detailItemWithType:[self modalItemTypeForAutofillUIType:autofillUIType
                                                          update:NO
                                                             old:NO]
                       text:text
-             iconImageName:[self iconForAutofillUIType:autofillUIType]
+                    symbol:[self symbolForAutofillUIType:autofillUIType]
       imageTintColorIsGrey:YES];
 }
 
@@ -573,7 +516,6 @@ const CGFloat kSymbolSize = 16;
                                               text:(NSString*)text
                                             symbol:(UIImage*)symbol
                               imageTintColorIsGrey:(BOOL)imageTintColorIsGrey {
-  DCHECK(UseSymbols());
   SettingsImageDetailTextItem* detailItem =
       [[SettingsImageDetailTextItem alloc] initWithType:type];
 
@@ -581,30 +523,6 @@ const CGFloat kSymbolSize = 16;
   detailItem.alignImageWithFirstLineOfText = YES;
   if (symbol) {
     detailItem.image = symbol;
-    detailItem.useCustomSeparator = YES;
-    if (imageTintColorIsGrey) {
-      detailItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];
-    } else {
-      detailItem.imageViewTintColor = [UIColor colorNamed:kBlueColor];
-    }
-  }
-
-  return detailItem;
-}
-
-- (SettingsImageDetailTextItem*)detailItemWithType:(NSInteger)type
-                                              text:(NSString*)text
-                                     iconImageName:(NSString*)iconImageName
-                              imageTintColorIsGrey:(BOOL)imageTintColorIsGrey {
-  DCHECK(!UseSymbols());
-  SettingsImageDetailTextItem* detailItem =
-      [[SettingsImageDetailTextItem alloc] initWithType:type];
-
-  detailItem.text = text;
-  detailItem.alignImageWithFirstLineOfText = YES;
-  if ([iconImageName length]) {
-    detailItem.image = [[UIImage imageNamed:iconImageName]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     detailItem.useCustomSeparator = YES;
     if (imageTintColorIsGrey) {
       detailItem.imageViewTintColor = [UIColor colorNamed:kGrey400Color];

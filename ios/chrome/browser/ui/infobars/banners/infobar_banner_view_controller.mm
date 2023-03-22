@@ -268,12 +268,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   [containerStack addArrangedSubview:labelsStackView];
     // Open Modal Button setup.
   self.openModalButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  UIImage* gearImage = UseSymbols()
-                           ? DefaultSymbolWithPointSize(kSettingsFilledSymbol,
-                                                        kInfobarSymbolPointSize)
-                           : [UIImage imageNamed:@"infobar_settings_icon"];
-  gearImage =
-      [gearImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImage* gearImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol,
+                                                  kInfobarSymbolPointSize);
 
   [self.openModalButton setImage:gearImage forState:UIControlStateNormal];
   self.openModalButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
