@@ -114,6 +114,10 @@ void StatusAreaWidget::Initialize() {
   // Create the child views, left to right.
   overflow_button_tray_ =
       AddTrayButton(std::make_unique<StatusAreaOverflowButtonTray>(shelf_));
+  if (features::IsVideoConferenceEnabled()) {
+    video_conference_tray_ =
+        AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
+  }
   holding_space_tray_ =
       AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
   logout_button_tray_ =
@@ -125,11 +129,6 @@ void StatusAreaWidget::Initialize() {
   ime_menu_tray_ = AddTrayButton(std::make_unique<ImeMenuTray>(shelf_));
   virtual_keyboard_tray_ = AddTrayButton(std::make_unique<VirtualKeyboardTray>(
       shelf_, TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea));
-
-  if (features::IsVideoConferenceEnabled()) {
-    video_conference_tray_ =
-        AddTrayButton(std::make_unique<VideoConferenceTray>(shelf_));
-  }
 
   stop_recording_button_tray_ =
       AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
