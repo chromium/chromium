@@ -12,7 +12,7 @@ the thumbnail rendering of the fourth page of `variable_page_sizes.pdf` with a
 device to pixel ratio of 2.0.
 
 Also some PNG file names contain extra renderer type and device information.
-For example, the file "variable_page_sizes_mac_arm64_expected_skia.pdf.3.png"
+For example, the file "variable_page_sizes_arm64_expected_skia.pdf.3.png"
 is generated with Skia renderer on a macOS device with ARM64 CPU. If the
 renderer type and the device information are not included, by default the PNG
 files are generated with AGG renderer using a device with non-ARM64 CPU.

@@ -913,9 +913,9 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnail) {
       {6, 2, {46, 1399}},  // Super tall
   };
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if defined(ARCH_CPU_ARM64)
   std::string file_name =
-      GetParam() ? "variable_page_sizes_mac_arm64" : "variable_page_sizes";
+      GetParam() ? "variable_page_sizes_arm64" : "variable_page_sizes";
 #else
   std::string file_name = "variable_page_sizes";
 #endif
