@@ -868,6 +868,10 @@ enum class ToolbarKind {
       IdentityManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
+  _viewControllerDependencies.secondaryToolbarContainerCoordinator =
+      [[ToolbarContainerCoordinator alloc]
+          initWithBrowser:self.browser
+                     type:ToolbarContainerType::kSecondary];
 }
 
 - (void)updateViewControllerDependencies {
@@ -928,6 +932,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.readingModel = nil;
   _viewControllerDependencies.identityManager = nil;
   _viewControllerDependencies.voiceSearchController = nil;
+  _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

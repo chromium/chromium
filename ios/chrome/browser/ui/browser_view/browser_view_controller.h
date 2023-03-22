@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
+#import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -65,6 +66,7 @@ class TabUsageRecorderBrowserAgent;
 @protocol TextZoomCommands;
 @class ToolbarAccessoryPresenter;
 @protocol ToolbarCommands;
+@class ToolbarContainerCoordinator;
 @protocol IncognitoReauthCommands;
 @class LayoutGuideCenter;
 @protocol LoadQueryCommands;
@@ -113,6 +115,7 @@ typedef struct {
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
   WebNavigationBrowserAgent* webNavigationBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
+  ToolbarContainerCoordinator* secondaryToolbarContainerCoordinator;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

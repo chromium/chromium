@@ -281,6 +281,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         browser_.get()->GetBrowserState());
     dependencies.identityManager = IdentityManagerFactory::GetForBrowserState(
         browser_.get()->GetBrowserState());
+    dependencies.secondaryToolbarContainerCoordinator =
+        [[ToolbarContainerCoordinator alloc]
+            initWithBrowser:browser_.get()
+                       type:ToolbarContainerType::kSecondary];
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_

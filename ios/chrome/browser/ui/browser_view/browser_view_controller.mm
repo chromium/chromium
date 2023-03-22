@@ -504,6 +504,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _readingModel = dependencies.readingModel;
     _identityManager = dependencies.identityManager;
     _voiceSearchController = dependencies.voiceSearchController;
+    self.secondaryToolbarContainerCoordinator =
+        dependencies.secondaryToolbarContainerCoordinator;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -1512,10 +1514,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/880672): Finish ToolbarContainer work.
   if (base::FeatureList::IsEnabled(
           toolbar_container::kToolbarContainerEnabled)) {
-    self.secondaryToolbarContainerCoordinator =
-        [[ToolbarContainerCoordinator alloc]
-            initWithBrowser:self.browser
-                       type:ToolbarContainerType::kSecondary];
     self.secondaryToolbarContainerCoordinator.toolbarCoordinators =
         @[ self.secondaryToolbarCoordinator ];
     [self.secondaryToolbarContainerCoordinator start];
