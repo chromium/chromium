@@ -10,6 +10,7 @@
 #include "cc/slim/features.h"
 #include "cc/slim/frame_sink_cc_wrapper.h"
 #include "cc/slim/frame_sink_impl.h"
+#include "cc/slim/simple_scheduler.h"
 
 namespace cc::slim {
 
@@ -31,10 +32,11 @@ std::unique_ptr<FrameSink> FrameSink::Create(
         std::move(client_receiver), std::move(context_provider),
         gpu_memory_buffer_manager, io_thread_id));
   }
-  return base::WrapUnique<FrameSink>(new FrameSinkImpl(
-      std::move(task_runner),
-      std::move(compositor_frame_sink_associated_remote),
-      std::move(client_receiver), std::move(context_provider), io_thread_id));
+  return base::WrapUnique<FrameSink>(
+      new FrameSinkImpl(std::move(task_runner),
+                        std::move(compositor_frame_sink_associated_remote),
+                        std::move(client_receiver), std::move(context_provider),
+                        io_thread_id, std::make_unique<SimpleScheduler>()));
 }
 
 }  // namespace cc::slim

@@ -10,6 +10,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "cc/slim/simple_scheduler.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/test/test_context_provider.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -103,7 +104,8 @@ TestFrameSinkImpl::TestFrameSinkImpl(
                     std::move(compositor_frame_sink_associated_remote),
                     std::move(client_receiver),
                     std::move(context_provider),
-                    base::kInvalidThreadId),
+                    base::kInvalidThreadId,
+                    std::make_unique<SimpleScheduler>()),
       mojo_sink_(std::make_unique<TestMojoCompositorFrameSink>()) {}
 
 TestFrameSinkImpl::~TestFrameSinkImpl() = default;

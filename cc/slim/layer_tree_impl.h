@@ -193,7 +193,6 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // this reaches `num_unneeded_begin_frame_before_stop_`.
   uint32_t num_begin_frames_with_no_draw_ =
       num_unneeded_begin_frame_before_stop_;
-  uint32_t num_unacked_frames_ = 0u;
 
   gfx::Rect device_viewport_rect_;
   float device_scale_factor_ = 1.0f;

@@ -295,6 +295,35 @@ TEST_F(SlimLayerTreeTest, MaxPendingFrame) {
   EXPECT_FALSE(weak_frame_sink->GetDidNotProduceFrameAndReset());
 }
 
+TEST_F(SlimLayerTreeTest, MaxPendingResetWithFrameSink) {
+  auto weak_frame_sink = SetupLayerTreeForDraw();
+  ASSERT_TRUE(weak_frame_sink);
+
+  BeginFrame(weak_frame_sink);
+  EXPECT_TRUE(weak_frame_sink->GetDidSubmitAndReset());
+  EXPECT_FALSE(weak_frame_sink->GetDidNotProduceFrameAndReset());
+
+  layer_tree_->SetNeedsRedraw();
+  BeginFrame(weak_frame_sink);
+  EXPECT_FALSE(weak_frame_sink->GetDidSubmitAndReset());
+  EXPECT_TRUE(weak_frame_sink->GetDidNotProduceFrameAndReset());
+
+  // Release sink without ack-ing the previous frame.
+  layer_tree_->SetVisible(false);
+  layer_tree_->ReleaseLayerTreeFrameSink();
+  EXPECT_FALSE(weak_frame_sink);
+
+  layer_tree_->SetVisible(true);
+  auto frame_sink = TestFrameSinkImpl::Create();
+  weak_frame_sink = frame_sink->GetWeakPtr();
+  layer_tree_->SetFrameSink(std::move(frame_sink));
+
+  // Should allow producing frames with new sink.
+  BeginFrame(weak_frame_sink);
+  EXPECT_TRUE(weak_frame_sink->GetDidSubmitAndReset());
+  EXPECT_FALSE(weak_frame_sink->GetDidNotProduceFrameAndReset());
+}
+
 TEST_F(SlimLayerTreeTest, ReferencedSurfaceRange) {
   scoped_refptr<SurfaceLayer> layer = SurfaceLayer::Create();
   base::UnguessableToken token = base::UnguessableToken::Create();

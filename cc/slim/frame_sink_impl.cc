@@ -47,13 +47,17 @@ FrameSinkImpl::FrameSinkImpl(
     mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
         client_receiver,
     scoped_refptr<viz::ContextProvider> context_provider,
-    base::PlatformThreadId io_thread_id)
+    base::PlatformThreadId io_thread_id,
+    std::unique_ptr<Scheduler> scheduler)
     : task_runner_(std::move(task_runner)),
+      scheduler_(std::move(scheduler)),
       pending_compositor_frame_sink_associated_remote_(
           std::move(compositor_frame_sink_associated_remote)),
       pending_client_receiver_(std::move(client_receiver)),
       context_provider_(std::move(context_provider)),
-      io_thread_id_(io_thread_id) {}
+      io_thread_id_(io_thread_id) {
+  scheduler_->Initialize(this);
+}
 
 FrameSinkImpl::~FrameSinkImpl() {
   // Iterate a copy of `uploaded_resources_` since it might be modified
@@ -223,7 +227,14 @@ int FrameSinkImpl::GetMaxTextureSize() const {
 void FrameSinkImpl::DidReceiveCompositorFrameAck(
     std::vector<viz::ReturnedResource> resources) {
   ReclaimResources(std::move(resources));
+  DCHECK_GT(num_unacked_frames_, 0u);
+  num_unacked_frames_--;
   client_->DidReceiveCompositorFrameAck();
+}
+
+void FrameSinkImpl::ReclaimResources(
+    std::vector<viz::ReturnedResource> resources) {
+  resource_provider_.ReceiveReturnsFromParent(std::move(resources));
 }
 
 void FrameSinkImpl::OnBeginFrame(
@@ -246,10 +257,16 @@ void FrameSinkImpl::OnBeginFrame(
     client_->DidPresentCompositorFrame(pair.first, pair.second);
   }
 
+  scheduler_->OnBeginFrameFromViz(begin_frame_args);
+}
+
+bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
+  if (num_unacked_frames_) {
+    return false;
+  }
+
   if (!local_surface_id_.is_valid()) {
-    frame_sink_->DidNotProduceFrame(
-        viz::BeginFrameAck(begin_frame_args, false));
-    return;
+    return false;
   }
 
   viz::CompositorFrame frame;
@@ -257,9 +274,7 @@ void FrameSinkImpl::OnBeginFrame(
   viz::HitTestRegionList hit_test_region_list;
   if (!client_->BeginFrame(begin_frame_args, frame, viz_resource_ids,
                            hit_test_region_list)) {
-    frame_sink_->DidNotProduceFrame(
-        viz::BeginFrameAck(begin_frame_args, false));
-    return;
+    return false;
   }
 
   if (local_surface_id_ == last_submitted_local_surface_id_) {
@@ -289,12 +304,14 @@ void FrameSinkImpl::OnBeginFrame(
         send_new_hit_test_region_list ? hit_test_region_list_ : absl::nullopt,
         0);
   }
+  num_unacked_frames_++;
   client_->DidSubmitCompositorFrame();
+  return true;
 }
 
-void FrameSinkImpl::ReclaimResources(
-    std::vector<viz::ReturnedResource> resources) {
-  resource_provider_.ReceiveReturnsFromParent(std::move(resources));
+void FrameSinkImpl::SendDidNotProduceFrame(
+    const viz::BeginFrameArgs& begin_frame_args) {
+  frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(begin_frame_args, false));
 }
 
 }  // namespace cc::slim

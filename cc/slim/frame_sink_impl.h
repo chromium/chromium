@@ -17,6 +17,7 @@
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
 #include "cc/slim/frame_sink.h"
+#include "cc/slim/scheduler.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details_map.h"
@@ -36,6 +37,7 @@
 namespace cc::slim {
 
 class FrameSinkImplClient;
+class Scheduler;
 class TestFrameSinkImpl;
 
 // Slim implementation of FrameSink.
@@ -46,6 +48,7 @@ class TestFrameSinkImpl;
 // * Manage uploading UIResource.
 class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
     : public FrameSink,
+      public SchedulerClient,
       public viz::ContextLostObserver,
       public viz::mojom::CompositorFrameSinkClient {
  public:
@@ -76,14 +79,19 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   // mojom::CompositorFrameSinkClient implementation:
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override;
-  void OnBeginFrame(const viz::BeginFrameArgs& begin_frame_args,
-                    const viz::FrameTimingDetailsMap& timing_details,
-                    bool frame_ack,
-                    std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
+  void OnBeginFrame(const viz::BeginFrameArgs& begin_frame_args,
+                    const viz::FrameTimingDetailsMap& timing_details,
+                    bool frame_ack,
+                    std::vector<viz::ReturnedResource> resources) override;
+
+  // SchedulerClient:
+  bool DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) override;
+  void SendDidNotProduceFrame(
+      const viz::BeginFrameArgs& begin_frame_args) override;
 
  private:
   friend class FrameSink;
@@ -107,7 +115,8 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
                 mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
                     client_receiver,
                 scoped_refptr<viz::ContextProvider> context_provider,
-                base::PlatformThreadId io_thread_id);
+                base::PlatformThreadId io_thread_id,
+                std::unique_ptr<Scheduler> scheduler);
 
   using UploadedResourceMap =
       base::flat_map<cc::UIResourceId, UploadedUIResource>;
@@ -116,6 +125,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
                           bool is_lost);
 
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  const std::unique_ptr<Scheduler> scheduler_;
 
   mojo::PendingAssociatedRemote<viz::mojom::CompositorFrameSink>
       pending_compositor_frame_sink_associated_remote_;
@@ -140,6 +150,7 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   float last_submitted_device_scale_factor_ = 1.f;
   gfx::Size last_submitted_size_in_pixels_;
 
+  uint32_t num_unacked_frames_ = 0u;
   bool needs_begin_frame_ = false;
 };
 

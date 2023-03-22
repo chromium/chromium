@@ -225,10 +225,6 @@ bool LayerTreeImpl::BeginFrame(
   }
   num_begin_frames_with_no_draw_ = 0u;
 
-  if (num_unacked_frames_) {
-    return false;
-  }
-
   // Unset `client_needs_one_begin_frame_` before BeginFrame. If client
   // requests more frames from inside the BeginFrame call, it's for the next
   // frame.
@@ -254,13 +250,10 @@ bool LayerTreeImpl::BeginFrame(
 }
 
 void LayerTreeImpl::DidReceiveCompositorFrameAck() {
-  DCHECK_GT(num_unacked_frames_, 0u);
-  num_unacked_frames_--;
   client_->DidReceiveCompositorFrameAck();
 }
 
 void LayerTreeImpl::DidSubmitCompositorFrame() {
-  num_unacked_frames_++;
   client_->DidSubmitCompositorFrame();
 }
 
