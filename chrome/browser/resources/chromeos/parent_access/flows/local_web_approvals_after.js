@@ -28,6 +28,34 @@ export class LocalWebApprovalsAfterElement extends LocalWebApprovalsAfterBase {
     return html`{__html_template__}`;
   }
 
+  static get properties() {
+    return {
+      childName: {type: String},
+      url: {type: String},
+      favicon: {type: String},
+    };
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * Display name for the supervised user requesting website access.
+     * @protected {string}
+     */
+    this.childName = '';
+    /**
+     * URL that access is being requested for.
+     * @protected {string}
+     */
+    this.url = '';
+    /**
+     * Favicon for the website, encoded as a Base64 encoded string.
+     * @protected {string}
+     */
+    this.favicon = '';
+  }
+
   /** @override */
   ready() {
     super.ready();
@@ -51,17 +79,11 @@ export class LocalWebApprovalsAfterElement extends LocalWebApprovalsAfterBase {
    * @private
    */
   renderDetails_(params) {
-    const childName = this.decodeMojoString16_(params.childDisplayName);
-    const url = params.url.url;
+    this.childName = this.decodeMojoString16_(params.childDisplayName);
+    this.url = params.url.url;
     // Convert the PNG bytes to a Base64 encoded string.
     const favicon = btoa(String.fromCharCode(...params.faviconPngBytes));
-
-    this.shadowRoot.querySelector('.subtitle').innerText =
-        this.i18n('localWebApprovalsAfterSubtitle', childName);
-    this.shadowRoot.querySelector('.details-text').innerText =
-        this.i18n('localWebApprovalsAfterDetails', url);
-    this.shadowRoot.querySelector('.favicon').src =
-        'data:image/png;base64,' + favicon;
+    this.favicon = 'data:image/png;base64,' + favicon;
   }
 
   /**
