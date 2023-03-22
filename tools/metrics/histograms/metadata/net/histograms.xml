@@ -2279,11 +2279,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicActiveSessions" units="units"
-    expires_after="2022-09-11">
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of active QUIC sessions before we activate a new QUIC session.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2518,12 +2521,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicHandshakeNotConfirmedNumPacketsReceived" units="units"
-    expires_after="2022-09-11">
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of QUIC packets received by a QUIC connection whose handshake was
     not confirmed when that connection is closed.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2710,12 +2716,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AsyncRead" enum="Boolean"
-    expires_after="2022-09-11">
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     True if the result of reading a packet from the network was ERR_IO_PENDING.
     Recorded for each packet when Read() returns.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2897,11 +2906,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionClose.NumOpenStreams.HandshakeTimedOut"
-    units="units" expires_after="2022-09-11">
+    units="units" expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The number of streams open when a QUIC session crypto handshake timed out.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3018,12 +3030,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGoogle"
-    enum="QuicTransportErrorCodes" expires_after="2022-09-11">
+    enum="QuicTransportErrorCodes" expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The QUIC application transport error code in a CONNECTION_CLOSE frame
     received from a Google server.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3204,13 +3219,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.FinchConfigIsValid" enum="Boolean"
-    expires_after="2022-09-11">
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Logged every time we parse a QUIC Finch config, and logs whether the config
     was valid. Invalid configs are most likely to be obsolete configs. Note that
     this is still logged (as true) when no variations config is present.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3308,29 +3326,38 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.HeaderCompressionRatioHpackReceived" units="%"
-    expires_after="2022-09-11">
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Header compression ratio as percentage for received headers using HPACK.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.QuicSession.HeaderCompressionRatioHpackSent" units="%"
-    expires_after="2022-09-11">
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Header compression ratio as percentage for sent headers using HPACK.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.QuicSession.HeaderCompressionRatioQpackReceived" units="%"
-    expires_after="2022-09-11">
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Header compression ratio as percentage for received headers using QPACK.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3923,12 +3950,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ReceivedSettings.MaxTableCapacity2"
-    units="bytes" expires_after="2022-09-11">
+    units="bytes" expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The value of the SETTINGS_QPACK_MAX_TABLE_CAPACITY parameter received on an
     HTTP/3 connection, if any.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4291,15 +4321,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.VerifyProofTime" units="ms"
-    expires_after="2022-09-11">
+<histogram name="Net.QuicSession.VerifyProofTime{Type}" units="ms"
+    expires_after="2024-03-22">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Time spent verifying the signature and certificate chain. This is logged
     whenever QUIC verifies the certificate chain and signature during crypto
     handshake.
+
+    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
+    be missing.
   </summary>
+  <token key="Type">
+    <variant name="" summary="Verification time for a server."/>
+    <variant name=".CachedServerConfig"
+        summary="Verification time for a server when server config from cache
+                 is used."/>
+    <variant name=".google"
+        summary="Verification time for www.google.com server."/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.WriteError" enum="NetErrorCodes"

@@ -4825,15 +4825,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.Connect"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="QuicSessionVerifyProofTime" separator=".">
-  <suffix name="" label="Verification time for a server."/>
-  <suffix name="CachedServerConfig"
-      label="Verification time for a server when server config from cache is
-             used."/>
-  <suffix name="google" label="Verification time for www.google.com server."/>
-  <affected-histogram name="Net.QuicSession.VerifyProofTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="RasterTaskSchedulingDelayNoAtRasterDecodesType"
     separator=".">
   <suffix name="All"
