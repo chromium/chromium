@@ -146,7 +146,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   // kIncognitoModeAvailability must be disabled for all supervised users.
   EXPECT_THAT(
       fixture.changed_prefs()->FindIntByDottedPath(
-          policy::policy_prefs::kIncognitoModeAvailability),
+          prefs::kIncognitoModeAvailability),
       Optional(static_cast<int>(IncognitoModePrefs::Availability::kDisabled)));
 
   // kSupervisedModeManualHosts does not have a hardcoded value.

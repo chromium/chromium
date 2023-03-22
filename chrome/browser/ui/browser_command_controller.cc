@@ -58,7 +58,6 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -201,7 +200,7 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
           &BrowserCommandController::UpdateCommandsForBookmarkBar,
           base::Unretained(this)));
   profile_pref_registrar_.Add(
-      policy::policy_prefs::kIncognitoModeAvailability,
+      prefs::kIncognitoModeAvailability,
       base::BindRepeating(
           &BrowserCommandController::UpdateCommandsForIncognitoAvailability,
           base::Unretained(this)));

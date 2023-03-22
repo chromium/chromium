@@ -121,7 +121,6 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//components/handoff",
-    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/prefs/ios",

@@ -52,7 +52,6 @@ extern const char kForceEnablePepperVideoDecoderDevAPI[];
 extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
 extern const char kHideWebStoreIcon[];
-extern const char kIncognitoModeAvailability[];
 
 }  // namespace policy_prefs
 }  // namespace policy

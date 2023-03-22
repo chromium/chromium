@@ -68,6 +68,12 @@ const char kHttpServerProperties[] = "net.http_server_properties";
 // * Otherwise: Default value driven by Finch config.
 const char kInactiveTabsTimeThreshold[] = "ios.inactive_tabs.time_threshold";
 
+// Integer that specifies whether Incognito mode is:
+// 0 - Enabled. Default behaviour. Default mode is available on demand.
+// 1 - Disabled. User cannot browse pages in Incognito mode.
+// 2 - Forced. All pages/sessions are forced into Incognito.
+const char kIncognitoModeAvailability[] = "incognito.mode_availability";
+
 // Boolean that is true when the Incognito interstitial for third-party intents
 // is enabled.
 const char kIncognitoInterstitialEnabled[] =

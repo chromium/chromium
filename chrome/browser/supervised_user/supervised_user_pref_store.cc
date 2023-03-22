@@ -151,7 +151,7 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
       // First-party sites use signed-in cookies to ensure that parental
       // restrictions are applied for Unicorn accounts.
       prefs_->SetInteger(
-          policy::policy_prefs::kIncognitoModeAvailability,
+          prefs::kIncognitoModeAvailability,
           static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
     }
 
