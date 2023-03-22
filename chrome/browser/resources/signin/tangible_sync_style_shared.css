@@ -23,7 +23,6 @@
 }
 
 .tangible-sync-style cr-button {
-  font-family: 'Google Sans', arial, sans-serif;
   font-size: 0.75rem;
   min-width: 133px;
 }
@@ -69,7 +68,6 @@
 }
 
 .tangible-sync-style .title {
-  font-family: 'Google Sans', arial, sans-serif;
   font-size: 2.25rem;
   font-weight: 500;
   line-height: 44px;
@@ -78,7 +76,6 @@
 
 .tangible-sync-style .subtitle {
   color: var(--cr-secondary-text-color);
-  font-family: Roboto, arial, sans-serif;
   font-size: 1.25rem;
   font-weight: 400;
   line-height: 24px;

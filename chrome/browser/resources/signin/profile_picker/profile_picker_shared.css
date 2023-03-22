@@ -20,10 +20,6 @@
   --profile-item-width: 162px;
 }
 
-html {
-  font-family: roboto;
-}
-
 .title {
   color: var(--cr-primary-text-color);
   font-size: 1.85em;
@@ -115,10 +111,6 @@ html {
   position: absolute;
   top: 0;
   width: 17vw;
-}
-
-.tangible-sync-style .title {
-  font-family: 'Google Sans', arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
