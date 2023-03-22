@@ -866,7 +866,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
       return image.dedupKey ? image.dedupKey : image.id;
     }
     if (isWallpaperImage(image)) {
-      return image.assetId.toString();
+      return image.unitId.toString();
     }
     if (isFilePath(image)) {
       return image.path;

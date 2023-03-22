@@ -36,9 +36,9 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 /**
  * If |current| is set and is an online wallpaper (include daily refresh
- * wallpaper), return the assetId of that image. Otherwise returns null.
+ * wallpaper), return the unitId of that image. Otherwise returns null.
  */
-function getAssetId(current: CurrentWallpaper|null): bigint|null {
+function getUnitId(current: CurrentWallpaper|null): bigint|null {
   if (current == null) {
     return null;
   }
@@ -136,7 +136,7 @@ export class WallpaperImages extends WithPersonalizationStore {
        */
       imagesLoading_: Object,
 
-      selectedAssetId_: {
+      selectedUnitId_: {
         type: BigInt,
         value: null,
       },
@@ -144,7 +144,7 @@ export class WallpaperImages extends WithPersonalizationStore {
       /**
        * The pending selected image.
        */
-      pendingSelectedAssetId_: {
+      pendingSelectedUnitId_: {
         type: BigInt,
         value: null,
       },
@@ -177,8 +177,8 @@ export class WallpaperImages extends WithPersonalizationStore {
   private collectionsLoading_: boolean;
   private images_: Record<string, WallpaperImage[]|null>;
   private imagesLoading_: Record<string, boolean>;
-  private selectedAssetId_: bigint|null;
-  private pendingSelectedAssetId_: bigint|null;
+  private selectedUnitId_: bigint|null;
+  private pendingSelectedUnitId_: bigint|null;
   private hasError_: boolean;
   private tiles_: ImageTile[];
   private pendingTimeOfDayWallpaper_: WallpaperImage|null;
@@ -196,13 +196,12 @@ export class WallpaperImages extends WithPersonalizationStore {
         'collections_', state => state.wallpaper.backdrop.collections);
     this.watch<WallpaperImages['collectionsLoading_']>(
         'collectionsLoading_', state => state.wallpaper.loading.collections);
-    this.watch<WallpaperImages['selectedAssetId_']>(
-        'selectedAssetId_',
-        state => getAssetId(state.wallpaper.currentSelected));
-    this.watch<WallpaperImages['pendingSelectedAssetId_']>(
-        'pendingSelectedAssetId_',
+    this.watch<WallpaperImages['selectedUnitId_']>(
+        'selectedUnitId_', state => getUnitId(state.wallpaper.currentSelected));
+    this.watch<WallpaperImages['pendingSelectedUnitId_']>(
+        'pendingSelectedUnitId_',
         state => isWallpaperImage(state.wallpaper.pendingSelected) ?
-            state.wallpaper.pendingSelected.assetId :
+            state.wallpaper.pendingSelected.unitId :
             null);
     this.watch<WallpaperImages['colorModeAutoScheduleEnabled_']>(
         'colorModeAutoScheduleEnabled_',
@@ -298,14 +297,14 @@ export class WallpaperImages extends WithPersonalizationStore {
   }
 
   private isTileSelected_(
-      tile: ImageTile, selectedAssetId: bigint|null,
-      pendingSelectedAssetId: bigint|null): boolean {
+      tile: ImageTile, selectedUnitId: bigint|null,
+      pendingSelectedUnitId: bigint|null): boolean {
     // Make sure that both are bigint (not undefined) and equal.
     return (
-        typeof selectedAssetId === 'bigint' && !!tile &&
-            tile.assetId === selectedAssetId && !pendingSelectedAssetId ||
-        typeof pendingSelectedAssetId === 'bigint' && !!tile &&
-            tile.assetId === pendingSelectedAssetId);
+        typeof selectedUnitId === 'bigint' && !!tile &&
+            tile.unitId === selectedUnitId && !pendingSelectedUnitId ||
+        typeof pendingSelectedUnitId === 'bigint' && !!tile &&
+            tile.unitId === pendingSelectedUnitId);
   }
 
   private isTimeOfDayWallpaper_(tile: number|ImageTile): boolean {
@@ -314,11 +313,11 @@ export class WallpaperImages extends WithPersonalizationStore {
 
   private onImageSelected_(e: WallpaperGridItemSelectedEvent&
                            {model: {item: ImageTile}}) {
-    const assetId = e.model.item.assetId;
-    assert(assetId && typeof assetId === 'bigint', 'assetId not found');
+    const unitId = e.model.item.unitId;
+    assert(unitId && typeof unitId === 'bigint', 'unitId not found');
     const images = this.images_[this.collectionId]!;
     assert(isNonEmptyArray(images));
-    const selectedImage = images.find(choice => choice.assetId === assetId);
+    const selectedImage = images.find(choice => choice.unitId === unitId);
     assert(selectedImage, 'could not find selected image');
     if (this.shouldShowTimeOfDayWallpaperDialog_(e.model.item)) {
       this.pendingTimeOfDayWallpaper_ = selectedImage;

@@ -9,7 +9,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {CurrentWallpaper, DailyRefreshType, GooglePhotosSharedAlbumDialog, Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -114,10 +114,10 @@ suite('WallpaperSelectedTest', function() {
     await waitAfterNextRender(wallpaperSelectedElement);
 
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
-    assertEquals(
+    assertStringContains(
+        img!.src,
         `chrome://personalization/wallpaper.jpg?key=${
-            wallpaperProvider.currentWallpaper.key}`,
-        img!.src, 'sets current wallpaper key appended to url');
+            wallpaperProvider.currentWallpaper.key}`);
 
     const textContainerElements =
         wallpaperSelectedElement.shadowRoot!.querySelectorAll(
@@ -167,10 +167,10 @@ suite('WallpaperSelectedTest', function() {
 
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img') as
         HTMLImageElement;
-    assertEquals(
+    assertStringContains(
+        img!.src,
         `chrome://personalization/wallpaper.jpg?key=${
-            wallpaperProvider.currentWallpaper.key}`,
-        img!.src, 'sets current wallpaper key appended to url');
+            wallpaperProvider.currentWallpaper.key}`);
 
 
     personalizationStore.data.wallpaper.currentSelected = {
@@ -180,9 +180,8 @@ suite('WallpaperSelectedTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertEquals(
-        `chrome://personalization/wallpaper.jpg?key=new_key`, img.src,
-        'updates wallpaper key query parameter');
+    assertStringContains(
+        img.src, `chrome://personalization/wallpaper.jpg?key=new_key`);
   });
 
   test('shows placeholders when image fails to load', async () => {

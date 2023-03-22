@@ -13,7 +13,7 @@ import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
-  return !!obj && typeof obj.assetId === 'bigint';
+  return !!obj && typeof obj.unitId === 'bigint';
 }
 
 export function isFilePath(obj: any): obj is FilePath {
@@ -33,7 +33,7 @@ export function isGooglePhotosPhoto(obj: any): obj is GooglePhotosPhoto {
 export function isImageAMatchForKey(
     image: DisplayableImage, key: string|DefaultImageSymbol): boolean {
   if (isWallpaperImage(image)) {
-    return key === image.assetId.toString();
+    return key === image.unitId.toString();
   }
   if (isDefaultImage(image)) {
     return key === kDefaultImageSymbol;
@@ -134,8 +134,14 @@ export function getWallpaperSrc(image: CurrentWallpaper|null): string|null {
     console.warn('Invalid image key received');
     return null;
   }
-  // Add a key query parameter to cache bust when the image changes.
-  return `/wallpaper.jpg?key=${encodeURIComponent(image.key)}`;
+  /**
+   * Add a key query parameter to cache bust when the image changes.
+   *
+   * TODO(b/274473526): UnitId is used as the key for online wallpaper images so
+   * we need to bust the cache to show the correct variant when it changes.
+   * Remove &timestamp param after b/273615271 is implemented.
+   */
+  return `/wallpaper.jpg?key=${encodeURIComponent(image.key)}&${Date.now()}`;
 }
 
 /**

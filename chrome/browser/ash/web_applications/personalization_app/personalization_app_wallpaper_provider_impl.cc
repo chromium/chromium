@@ -101,12 +101,11 @@ const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
       image, skia::ImageOperations::RESIZE_BEST, gfx::Size(width, height));
 }
 
-// Return the online wallpaper key. Use |info.asset_id| if available so we might
+// Return the online wallpaper key. Use |info.unit_id| if available so we might
 // be able to fallback to the cached attribution.
 const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
-  return info.asset_id.has_value()
-             ? base::NumberToString(info.asset_id.value())
-             : base::UnguessableToken::Create().ToString();
+  return info.unit_id.has_value() ? base::NumberToString(info.unit_id.value())
+                                  : base::UnguessableToken::Create().ToString();
 }
 
 scoped_refptr<base::RefCountedMemory> ResizeAndEncodeWallpaperImage(
@@ -1063,7 +1062,7 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
     NotifyWallpaperChanged(
         ash::personalization_app::mojom::CurrentWallpaper::New(
             attributions, info.layout, info.type,
-            /*key=*/base::NumberToString(backend_image->asset_id()),
+            /*key=*/base::NumberToString(backend_image->unit_id()),
             backend_image->description()));
     wallpaper_attribution_info_fetcher_.reset();
     return;

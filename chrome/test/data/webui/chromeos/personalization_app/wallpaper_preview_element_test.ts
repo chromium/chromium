@@ -8,7 +8,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperPreview, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -86,11 +86,10 @@ suite('WallpaperPreviewTest', function() {
     await waitAfterNextRender(wallpaperPreviewElement);
 
     const img = wallpaperPreviewElement.shadowRoot!.querySelector('img');
-    assertEquals(
-        `chrome://personalization/wallpaper.jpg?key=${
-            wallpaperProvider.currentWallpaper.key}`,
+    assertStringContains(
         img!.src,
-        'current wallpaper key is appended to url as query parameter');
+        `chrome://personalization/wallpaper.jpg?key=${
+            wallpaperProvider.currentWallpaper.key}`);
   });
 
   test('shows placeholders when image fails to load', async () => {
