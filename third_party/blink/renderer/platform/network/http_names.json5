@@ -10,6 +10,7 @@
     "POST",
     "OPTIONS",
     "PUT",
+    "CONNECT",
     "Accept",
     "Accept-CH",
     "Accept-Language",
