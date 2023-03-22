@@ -18,6 +18,9 @@ bool IsDisallowedHttpResponseCode(int response_code);
 // Returns true if target_url is in the same site as origin.
 bool IsSameSite(const GURL& target_url, const url::Origin& origin);
 
+// Returns true if target_url is not in the same site as origin.
+bool IsCrossSite(const GURL& target_url, const url::Origin& origin);
+
 }  // namespace content::prerender_navigation_utils
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_NAVIGATION_UTILS_H_
