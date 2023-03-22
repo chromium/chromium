@@ -151,6 +151,10 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [1380],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/remote_maintenance_curtain/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [1381],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/supervision/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [1383],
