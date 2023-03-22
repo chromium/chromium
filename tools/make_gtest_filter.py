@@ -243,6 +243,7 @@ def main():
     # Note: Test names have the following structures:
     #  * FixtureName.TestName
     #  * InstantiationName/FixtureName.TestName/##
+    #  * FixtureName.TestName/##
     # Since this script doesn't parse instantiations, we generate filters to
     # match either regular tests or instantiated tests.
     if args.wildcard_compress:
@@ -251,10 +252,12 @@ def main():
     elif args.class_only:
       fixtures = set([t.split('.')[0] for t in tests])
       test_filters = [c + '.*' for c in fixtures] + \
-          ['*/' + c + '.*/*' for c in fixtures]
+          ['*/' + c + '.*/*' for c in fixtures] + \
+          [c + '.*/*' for c in fixtures]
     else:
       test_filters = [c for c in tests] + \
-          ['*/' + c + '/*' for c in tests]
+          ['*/' + c + '/*' for c in tests] + \
+          [c + '/*' for c in tests]
 
   if args.as_exclusions:
     test_filters = ['-' + x for x in test_filters]
