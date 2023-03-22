@@ -50745,7 +50745,6 @@
     { "name": "iwantexchange.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "jackassofalltrades.org", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "jamesclark.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "janelauhomes.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "jclynne.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "jeffrhinelander.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "jennierobinson.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
