@@ -28,12 +28,10 @@ namespace {
 // the microphone toggle button tooltip.
 int GetMuteStateTooltipTextResourceId(bool is_muted,
                                       bool is_muted_by_mute_switch) {
-  if (is_muted_by_mute_switch) {
+  if (is_muted_by_mute_switch)
     return IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED_BY_HW_SWITCH;
-  }
-  if (is_muted) {
+  if (is_muted)
     return IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED;
-  }
   return IDS_ASH_STATUS_TRAY_MIC_STATE_ON;
 }
 
@@ -177,7 +175,13 @@ void MicGainSliderView::Update(bool by_user) {
                                            : IDS_ASH_STATUS_AREA_TOAST_MIC_ON));
   }
 
-  if (button()) {
+  if (!features::IsQsRevampEnabled()) {
+    // To indicate that the volume is muted, set the volume slider to the
+    // minimal visual style.
+    slider()->SetRenderingStyle(
+        is_muted ? views::Slider::RenderingStyle::kMinimalStyle
+                 : views::Slider::RenderingStyle::kDefaultStyle);
+
     // The button should be gray when muted and colored otherwise.
     button()->SetToggled(!is_muted);
     button()->SetEnabled(!is_muted_by_mute_switch);
@@ -187,14 +191,6 @@ void MicGainSliderView::Update(bool by_user) {
         GetMuteStateTooltipTextResourceId(is_muted, is_muted_by_mute_switch));
     button()->SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_MIC_GAIN, state_tooltip_text));
-  }
-
-  if (!features::IsQsRevampEnabled()) {
-    // To indicate that the volume is muted, set the volume slider to the
-    // minimal visual style.
-    slider()->SetRenderingStyle(
-        is_muted ? views::Slider::RenderingStyle::kMinimalStyle
-                 : views::Slider::RenderingStyle::kDefaultStyle);
   } else {
     // For active internal mic stub, `show_internal_stub` indicates whether it's
     // showing and `device_id_` doesn't match with `active_device_id`.

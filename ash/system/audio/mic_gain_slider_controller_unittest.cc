@@ -4,12 +4,9 @@
 
 #include "ash/system/audio/mic_gain_slider_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -17,29 +14,16 @@
 
 namespace ash {
 
-class MicGainSliderControllerTest : public AshTestBase,
-                                    public testing::WithParamInterface<bool> {
+class MicGainSliderControllerTest : public AshTestBase {
  public:
   MicGainSliderControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   MicGainSliderControllerTest(const MicGainSliderControllerTest&) = delete;
   MicGainSliderControllerTest& operator=(const MicGainSliderControllerTest&) =
       delete;
 
   ~MicGainSliderControllerTest() override = default;
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
-
-  views::View* GetMuteToastView() {
-    return mic_gain_slider_controller_.CreateView();
-  }
 
  protected:
   void UpdateSliderValue(float new_value) {
@@ -51,16 +35,11 @@ class MicGainSliderControllerTest : public AshTestBase,
   base::HistogramTester histogram_tester_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   MicGainSliderController mic_gain_slider_controller_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         MicGainSliderControllerTest,
-                         testing::Bool());
-
 // Verify moving the slider and changing the gain is recorded to metrics.
-TEST_P(MicGainSliderControllerTest, RecordInputGainChangedSource) {
+TEST_F(MicGainSliderControllerTest, RecordInputGainChangedSource) {
   // Move the slider 3 times. Move the slider at half of the delay interval
   // time so each change shouldn't be recorded.
   UpdateSliderValue(/*new_value=*/10);
@@ -95,22 +74,6 @@ TEST_P(MicGainSliderControllerTest, RecordInputGainChangedSource) {
   histogram_tester_.ExpectBucketCount(
       CrasAudioHandler::kInputGainChangedSourceHistogramName,
       CrasAudioHandler::AudioSettingsChangeSource::kSystemTray, 2);
-}
-
-TEST_P(MicGainSliderControllerTest, CreateMuteToastView) {
-  MicGainSliderView* toast_view =
-      static_cast<MicGainSliderView*>(GetMuteToastView());
-  if (IsQsRevampEnabled()) {
-    // Hide the slider icon and show the mic button in the mute toast view.
-    EXPECT_FALSE(toast_view->children()[0]->GetVisible());
-    EXPECT_EQ(
-        u"Toggle Mic. Mic is on, toggling will mute input.",
-        static_cast<IconButton*>(toast_view->children()[1])->GetTooltipText());
-  } else {
-    EXPECT_EQ(
-        u"Toggle Mic. Mic is on, toggling will mute input.",
-        static_cast<IconButton*>(toast_view->children()[0])->GetTooltipText());
-  }
 }
 
 }  // namespace ash
