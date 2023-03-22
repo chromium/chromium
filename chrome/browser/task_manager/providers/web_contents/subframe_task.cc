@@ -64,6 +64,15 @@ void SubframeTask::Activate() {
 std::u16string SubframeTask::GetTitle() {
   DCHECK(site_instance_);
 
+  // Subframe rows display the UrlIdentity of the SiteInstance URL.
+  //
+  // By default, subframe rows display the site, like this:
+  //     "Subframe: http://example.com/"
+  // For Extensions, subframe rows display extension name:
+  //     "Subframe: Example Extension"
+  // For Isolated Web Apps, subframe rows display IWA name:
+  //     "Subframe: Example Isolated Web App"
+
   const GURL& site_url = site_instance_->GetSiteURL();
   Profile* profile =
       Profile::FromBrowserContext(site_instance_->GetBrowserContext());
