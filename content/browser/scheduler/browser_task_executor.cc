@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
+#include "base/android/task_scheduler/task_runner_android.h"
 #endif
 
 using QueueType = content::BrowserTaskQueues::QueueType;
@@ -223,6 +224,10 @@ void BrowserTaskExecutor::CreateInternal(
       ->EnableAllExceptBestEffortQueues();
 
 #if BUILDFLAG(IS_ANDROID)
+  // In Android Java, UI thread is a base/ concept, but needs to know how that
+  // maps onto the BrowserThread::UI in C++.
+  base::TaskRunnerAndroid::SetUiThreadExtension(
+      {BrowserTaskTraitsExtension::kExtensionId, {}});
   base::PostTaskAndroid::SignalNativeSchedulerReady();
 #endif
 }

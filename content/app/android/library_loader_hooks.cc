@@ -5,7 +5,6 @@
 #include "content/app/android/library_loader_hooks.h"
 
 #include "base/android/reached_code_profiler.h"
-#include "base/android/task_scheduler/task_runner_android.h"
 #include "base/logging.h"
 #include "base/process/current_process.h"
 #include "base/trace_event/trace_event.h"
@@ -55,11 +54,6 @@ bool LibraryLoaded(JNIEnv* env,
     VLOG(0) << "Chromium logging enabled: level = " << logging::GetMinLogLevel()
             << ", default verbosity = " << logging::GetVlogVerbosity();
   }
-
-  // In Android Java, UI thread is a base/ concept, but needs to know how that
-  // maps onto the BrowserThread::UI in C++.
-  base::TaskRunnerAndroid::SetUiThreadExtension(
-      {BrowserTaskTraitsExtension::kExtensionId, {}});
 
   // Content Schemes need to be registered as early as possible after the
   // CommandLine has been initialized to allow java and tests to use GURL before
