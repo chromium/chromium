@@ -2980,7 +2980,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.OfferNotificationBubblePromoCodeButtonClicked.{BubbleType}"
-    enum="BooleanClicked" expires_after="2023-05-01">
+    enum="BooleanClicked" expires_after="2024-04-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3007,7 +3007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OfferNotificationBubbleSuppressed.{BubbleType}"
-    enum="BooleanSuppressed" expires_after="2023-05-01">
+    enum="BooleanSuppressed" expires_after="2024-04-01">
   <owner>jsaul@google.com</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
@@ -3570,7 +3570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveCardCardholderNamePrefilled" enum="Boolean"
-    expires_after="2023-05-01">
+    expires_after="2024-04-01">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3581,7 +3581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.SaveCardCardholderNameWasEdited" enum="Boolean"
-    expires_after="2023-05-01">
+    expires_after="2024-04-01">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
