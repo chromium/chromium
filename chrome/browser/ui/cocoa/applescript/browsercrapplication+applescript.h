@@ -18,7 +18,7 @@
 // Application window manipulation methods.
 // Returns an array of |WindowAppleScript*| of all windows present in the
 // application.
-- (NSArray*)appleScriptWindows;
+@property(readonly) NSArray* appleScriptWindows;
 
 // Inserts a window at the beginning.
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow;
@@ -35,23 +35,23 @@
 - (void)removeFromAppleScriptWindowsAtIndex:(int)index;
 
 // Always returns nil to indicate that it is the root container object.
-- (NSScriptObjectSpecifier*)objectSpecifier;
+@property(readonly) NSScriptObjectSpecifier* objectSpecifier;
 
 // Returns the other bookmarks bookmark folder,
 // returns nil if there is an error.
-- (BookmarkFolderAppleScript*)otherBookmarks;
+@property(readonly) BookmarkFolderAppleScript* otherBookmarks;
 
 // Returns the bookmarks bar bookmark folder, return nil if there is an error.
-- (BookmarkFolderAppleScript*)bookmarksBar;
+@property(readonly) BookmarkFolderAppleScript* bookmarksBar;
 
-// Returns the Bookmarks Bar and Other Bookmarks Folders, each is of type
-// |BookmarkFolderAppleScript*|.
-- (NSArray*)bookmarkFolders;
+// Returns the Bookmarks Bar and Other Bookmarks Folders.
+@property(readonly) NSArray<BookmarkFolderAppleScript*>* bookmarkFolders;
 
 // Required functions, even though bookmarkFolders is declared as
 // read-only, cocoa scripting does not currently prevent writing.
-- (void)insertInBookmarksFolders:(id)aBookmarkFolder;
-- (void)insertInBookmarksFolders:(id)aBookmarkFolder atIndex:(int)index;
+- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder;
+- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder
+                         atIndex:(int)index;
 - (void)removeFromBookmarksFoldersAtIndex:(int)index;
 
 @end

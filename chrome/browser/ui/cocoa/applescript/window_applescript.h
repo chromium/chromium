@@ -25,27 +25,25 @@ class Profile;
 // Does not create a new window but uses an existing one.
 - (instancetype)initWithBrowser:(Browser*)aBrowser;
 
-// Sets and gets the index of the currently selected tab.
-- (NSNumber*)activeTabIndex;
-- (void)setActiveTabIndex:(NSNumber*)anActiveTabIndex;
+// Sets and gets the index of the currently selected tab. 1-based because
+// this is intended for use by AppleScript.
+@property(copy) NSNumber* activeTabIndex;
 
 // Sets and get the given name of a window.
-- (NSString*)givenName;
-- (void)setGivenName:(NSString*)name;
+@property(copy) NSString* givenName;
 
 // Mode refers to whether a window is a normal window or an incognito window
 // it can be set only once while creating the window.
-- (NSString*)mode;
-- (void)setMode:(NSString*)theMode;
+@property(copy) NSString* mode;
 
 // Returns the currently selected tab.
-- (TabAppleScript*)activeTab;
+@property(readonly) TabAppleScript* activeTab;
 
 // Tab manipulation functions.
 // The tabs inside the window.
 // Returns |TabAppleScript*| of all the tabs contained
 // within this particular folder.
-- (NSArray*)tabs;
+@property(readonly) NSArray<TabAppleScript*>* tabs;
 
 // Insert a tab at the end.
 - (void)insertInTabs:(TabAppleScript*)aTab;
@@ -61,8 +59,7 @@ class Profile;
 - (void)removeFromTabsAtIndex:(int)index;
 
 // The index of the window, windows are ordered front to back.
-- (NSNumber*)orderedIndex;
-- (void)setOrderedIndex:(NSNumber*)anIndex;
+@property(copy) NSNumber* orderedIndex;
 
 // For standard window functions like zoomable, bounds etc, we dont handle it
 // but instead pass it onto the NSWindow associated with the window.

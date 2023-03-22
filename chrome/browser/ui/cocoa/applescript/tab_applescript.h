@@ -27,17 +27,14 @@ class WebContents;
 // Assigns a tab, sets its unique ID and also copies temporary values.
 - (void)setWebContents:(content::WebContents*)webContents;
 
-// Return the URL currently visible to the user in the location bar.
-- (NSString*)URL;
-
-// Sets the URL, returns an error if it is invalid.
-- (void)setURL:(NSString*)aURL;
+// Returns/sets the URL currently visible to the user in the location bar.
+@property(copy) NSString* URL;
 
 // The title of the tab.
-- (NSString*)title;
+@property(readonly) NSString* title;
 
 // Is the tab loading any resource?
-- (NSNumber*)loading;
+@property(readonly) NSNumber* loading;
 
 // Standard user commands.
 - (void)handlesUndoScriptCommand:(NSScriptCommand*)command;

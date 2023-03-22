@@ -27,8 +27,8 @@ using WindowAppleScriptTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, DefaultCreation) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] init]);
-  EXPECT_TRUE(window.get());
-  NSString* mode = [window.get() mode];
+  EXPECT_TRUE(window);
+  NSString* mode = window.get().mode;
   EXPECT_NSEQ(AppleScript::kNormalWindowMode, mode);
 }
 
@@ -36,44 +36,44 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, DefaultCreation) {
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithNoProfile) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithProfile:nullptr]);
-  EXPECT_FALSE(window.get());
+  EXPECT_FALSE(window);
 }
 
 // Create a window with a particular profile.
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithProfile) {
   AppController* appController =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  Profile* lastProfile = [appController lastProfile];
+      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
+  Profile* lastProfile = appController.lastProfile;
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithProfile:lastProfile]);
-  EXPECT_TRUE(window.get());
-  EXPECT_TRUE([window.get() uniqueID]);
+  EXPECT_TRUE(window);
+  EXPECT_TRUE(window.get().uniqueID);
 }
 
 // Create a window with no |Browser*|.
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithNoBrowser) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:nullptr]);
-  EXPECT_FALSE(window.get());
+  EXPECT_FALSE(window);
 }
 
 // Create a window with |Browser*| already present.
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, CreationWithBrowser) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
-  EXPECT_TRUE(window.get());
-  EXPECT_TRUE([window.get() uniqueID]);
+  EXPECT_TRUE(window);
+  EXPECT_TRUE(window.get().uniqueID);
 }
 
 // Tabs within the window.
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, Tabs) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
-  NSArray* tabs = [window.get() tabs];
-  EXPECT_EQ(1U, [tabs count]);
+  NSArray* tabs = window.get().tabs;
+  EXPECT_EQ(1U, tabs.count);
   TabAppleScript* tab1 = tabs[0];
-  EXPECT_EQ([tab1 container], window.get());
-  EXPECT_NSEQ(AppleScript::kTabsProperty, [tab1 containerProperty]);
+  EXPECT_EQ(tab1.container, window.get());
+  EXPECT_NSEQ(AppleScript::kTabsProperty, tab1.containerProperty);
 }
 
 // Insert a new tab.
@@ -83,19 +83,18 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTab) {
   //
   //   set var to make new tab with properties {URL:"http://google.com"}
   base::scoped_nsobject<TabAppleScript> aTab([[TabAppleScript alloc] init]);
-  base::scoped_nsobject<NSString> var([[aTab.get() uniqueID] copy]);
-  [aTab.get() setURL:@"http://google.com"];
+  base::scoped_nsobject<NSString> unique_id([aTab.get().uniqueID copy]);
+  aTab.get().URL = @"http://google.com";
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
   [window.get() insertInTabs:aTab.get()];
 
   // Represents the tab after it is inserted.
-  TabAppleScript* tab = [window.get() tabs][1];
-  EXPECT_EQ(GURL("http://google.com"),
-            GURL(base::SysNSStringToUTF8([tab URL])));
-  EXPECT_EQ([tab container], window.get());
-  EXPECT_NSEQ(AppleScript::kTabsProperty, [tab containerProperty]);
-  EXPECT_NSEQ(var.get(), [tab uniqueID]);
+  TabAppleScript* tab = window.get().tabs[1];
+  EXPECT_EQ(GURL("http://google.com"), GURL(base::SysNSStringToUTF8(tab.URL)));
+  EXPECT_EQ(tab.container, window.get());
+  EXPECT_NSEQ(AppleScript::kTabsProperty, tab.containerProperty);
+  EXPECT_NSEQ(unique_id, tab.uniqueID);
 }
 
 // Insert a new tab at a particular position
@@ -106,19 +105,18 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTabAtPosition) {
   //   set var to make new tab with properties
   //       {URL:"http://google.com"} at before tab 1
   base::scoped_nsobject<TabAppleScript> aTab([[TabAppleScript alloc] init]);
-  base::scoped_nsobject<NSString> var([[aTab.get() uniqueID] copy]);
-  [aTab.get() setURL:@"http://google.com"];
+  base::scoped_nsobject<NSString> unique_id([aTab.get().uniqueID copy]);
+  aTab.get().URL = @"http://google.com";
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
   [window.get() insertInTabs:aTab.get() atIndex:0];
 
   // Represents the tab after it is inserted.
-  TabAppleScript* tab = [window.get() tabs][0];
-  EXPECT_EQ(GURL("http://google.com"),
-            GURL(base::SysNSStringToUTF8([tab URL])));
-  EXPECT_EQ([tab container], window.get());
-  EXPECT_NSEQ(AppleScript::kTabsProperty, [tab containerProperty]);
-  EXPECT_NSEQ(var.get(), [tab uniqueID]);
+  TabAppleScript* tab = window.get().tabs[0];
+  EXPECT_EQ(GURL("http://google.com"), GURL(base::SysNSStringToUTF8(tab.URL)));
+  EXPECT_EQ(tab.container, window.get());
+  EXPECT_NSEQ(AppleScript::kTabsProperty, tab.containerProperty);
+  EXPECT_NSEQ(unique_id, tab.uniqueID);
 }
 
 // Inserting and deleting tabs.
@@ -126,23 +124,23 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertAndDeleteTabs) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
   base::scoped_nsobject<TabAppleScript> aTab;
-  int count;
-  for (int i = 0; i < 5; ++i) {
-    for (int j = 0; j < 3; ++j) {
+  NSUInteger count;
+  for (NSUInteger i = 0; i < 5; ++i) {
+    for (NSUInteger j = 0; j < 3; ++j) {
       aTab.reset([[TabAppleScript alloc] init]);
       [window.get() insertInTabs:aTab.get()];
     }
     count = 3 * i + 4;
-    EXPECT_EQ((int)[[window.get() tabs] count], count);
+    EXPECT_EQ(window.get().tabs.count, count);
   }
 
-  count = (int)[[window.get() tabs] count];
-  for (int i = 0; i < 5; ++i) {
-    for (int j = 0; j < 3; ++j) {
+  count = window.get().tabs.count;
+  for (NSUInteger i = 0; i < 5; ++i) {
+    for (NSUInteger j = 0; j < 3; ++j) {
       [window.get() removeFromTabsAtIndex:0];
     }
     count = count - 3;
-    EXPECT_EQ((int)[[window.get() tabs] count], count);
+    EXPECT_EQ(window.get().tabs.count, count);
   }
 }
 
@@ -161,9 +159,9 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTab) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
   base::scoped_nsobject<TabAppleScript> aTab([[TabAppleScript alloc] init]);
-  [window.get() insertInTabs:aTab.get()];
-  [window.get() setActiveTabIndex:@2];
-  EXPECT_EQ(2, [[window.get() activeTabIndex] intValue]);
-  TabAppleScript* tab2 = [window.get() tabs][1];
-  EXPECT_NSEQ([[window.get() activeTab] uniqueID], [tab2 uniqueID]);
+  [window insertInTabs:aTab];
+  [window setActiveTabIndex:@2];
+  EXPECT_EQ(2, window.get().activeTabIndex.intValue);
+  TabAppleScript* tab2 = window.get().tabs[1];
+  EXPECT_NSEQ(window.get().activeTab.uniqueID, tab2.uniqueID);
 }

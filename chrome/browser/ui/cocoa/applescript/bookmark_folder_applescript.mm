@@ -20,11 +20,13 @@ using bookmarks::BookmarkNode;
 
 - (NSArray*)bookmarkFolders {
   NSMutableArray* bookmarkFolders =
-      [NSMutableArray arrayWithCapacity:[self bookmarkNode]->children().size()];
+      [NSMutableArray arrayWithCapacity:self.bookmarkNode->children().size()];
 
-  for (const auto& node : [self bookmarkNode]->children()) {
-    if (!node->is_folder())
+  for (const auto& node : self.bookmarkNode->children()) {
+    if (!node->is_folder()) {
       continue;
+    }
+
     base::scoped_nsobject<BookmarkFolderAppleScript> bookmarkFolder(
         [[BookmarkFolderAppleScript alloc] initWithBookmarkNode:node.get()]);
     [bookmarkFolder setContainer:self
@@ -35,65 +37,71 @@ using bookmarks::BookmarkNode;
   return bookmarkFolders;
 }
 
-- (void)insertInBookmarkFolders:(id)aBookmarkFolder {
+- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)aBookmarkFolder {
   // This method gets called when a new bookmark folder is created so
   // the container and property are set here.
   [aBookmarkFolder setContainer:self
                        property:AppleScript::kBookmarkFoldersProperty];
-  BookmarkModel* model = [self bookmarkModel];
-  if (!model)
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
     return;
+  }
 
-  const BookmarkNode* node = model->AddFolder(
-      [self bookmarkNode], [self bookmarkNode]->children().size(),
-      std::u16string());
+  const BookmarkNode* node =
+      model->AddFolder(self.bookmarkNode, self.bookmarkNode->children().size(),
+                       std::u16string());
   if (!node) {
     AppleScript::SetError(AppleScript::Error::kCreateBookmarkFolder);
     return;
   }
 
-  [aBookmarkFolder setBookmarkNode:node];
+  aBookmarkFolder.bookmarkNode = node;
 }
 
-- (void)insertInBookmarkFolders:(id)aBookmarkFolder atIndex:(size_t)index {
+- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)aBookmarkFolder
+                        atIndex:(size_t)index {
   // This method gets called when a new bookmark folder is created so
   // the container and property are set here.
   [aBookmarkFolder setContainer:self
                        property:AppleScript::kBookmarkFoldersProperty];
   size_t position = [self calculatePositionOfBookmarkFolderAt:index];
 
-  BookmarkModel* model = [self bookmarkModel];
-  if (!model)
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
     return;
+  }
 
   const BookmarkNode* node =
-      model->AddFolder([self bookmarkNode], position, std::u16string());
+      model->AddFolder(self.bookmarkNode, position, std::u16string());
   if (!node) {
     AppleScript::SetError(AppleScript::Error::kCreateBookmarkFolder);
     return;
   }
 
-  [aBookmarkFolder setBookmarkNode:node];
+  aBookmarkFolder.bookmarkNode = node;
 }
 
 - (void)removeFromBookmarkFoldersAtIndex:(size_t)index {
   size_t position = [self calculatePositionOfBookmarkFolderAt:index];
 
-  BookmarkModel* model = [self bookmarkModel];
-  if (!model)
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
     return;
+  }
 
-  model->Remove([self bookmarkNode]->children()[position].get(),
+  model->Remove(self.bookmarkNode->children()[position].get(),
                 bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
 - (NSArray*)bookmarkItems {
   NSMutableArray* bookmarkItems =
-      [NSMutableArray arrayWithCapacity:[self bookmarkNode]->children().size()];
+      [NSMutableArray arrayWithCapacity:self.bookmarkNode->children().size()];
 
-  for (const auto& node : [self bookmarkNode]->children()) {
-    if (!node->is_url())
+  for (const auto& node : self.bookmarkNode->children()) {
+    if (!node->is_url()) {
       continue;
+    }
+
     base::scoped_nsobject<BookmarkItemAppleScript> bookmarkItem(
         [[BookmarkItemAppleScript alloc] initWithBookmarkNode:node.get()]);
     [bookmarkItem setContainer:self
@@ -110,25 +118,26 @@ using bookmarks::BookmarkNode;
   [aBookmarkItem setContainer:self
                      property:AppleScript::kBookmarkItemsProperty];
 
-  BookmarkModel* model = [self bookmarkModel];
-  if (!model)
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
     return;
+  }
 
-  GURL url = GURL(base::SysNSStringToUTF8([aBookmarkItem URL]));
+  GURL url = GURL(base::SysNSStringToUTF8(aBookmarkItem.URL));
   if (!url.is_valid()) {
     AppleScript::SetError(AppleScript::Error::kInvalidURL);
     return;
   }
 
-  const BookmarkNode* node = model->AddNewURL(
-      [self bookmarkNode], [self bookmarkNode]->children().size(),
-      std::u16string(), url);
+  const BookmarkNode* node =
+      model->AddNewURL(self.bookmarkNode, self.bookmarkNode->children().size(),
+                       std::u16string(), url);
   if (!node) {
     AppleScript::SetError(AppleScript::Error::kCreateBookmarkItem);
     return;
   }
 
-  [aBookmarkItem setBookmarkNode:node];
+  aBookmarkItem.bookmarkNode = node;
 }
 
 - (void)insertInBookmarkItems:(BookmarkItemAppleScript*)aBookmarkItem
@@ -139,34 +148,36 @@ using bookmarks::BookmarkNode;
                      property:AppleScript::kBookmarkItemsProperty];
   size_t position = [self calculatePositionOfBookmarkItemAt:index];
 
-  BookmarkModel* model = [self bookmarkModel];
-  if (!model)
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
     return;
+  }
 
-  GURL url(base::SysNSStringToUTF8([aBookmarkItem URL]));
+  GURL url(base::SysNSStringToUTF8(aBookmarkItem.URL));
   if (!url.is_valid()) {
     AppleScript::SetError(AppleScript::Error::kInvalidURL);
     return;
   }
 
   const BookmarkNode* node =
-      model->AddNewURL([self bookmarkNode], position, std::u16string(), url);
+      model->AddNewURL(self.bookmarkNode, position, std::u16string(), url);
   if (!node) {
     AppleScript::SetError(AppleScript::Error::kCreateBookmarkItem);
     return;
   }
 
-  [aBookmarkItem setBookmarkNode:node];
+  aBookmarkItem.bookmarkNode = node;
 }
 
 - (void)removeFromBookmarkItemsAtIndex:(size_t)index {
   size_t position = [self calculatePositionOfBookmarkItemAt:index];
 
-  BookmarkModel* model = [self bookmarkModel];
-  if (!model)
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
     return;
+  }
 
-  model->Remove([self bookmarkNode]->children()[position].get(),
+  model->Remove(self.bookmarkNode->children()[position].get(),
                 bookmarks::metrics::BookmarkEditSource::kUser);
 }
 
@@ -177,7 +188,7 @@ using bookmarks::BookmarkNode;
   ++index;
   size_t count = 0;
   while (index) {
-    if ([self bookmarkNode]->children()[count++] -> is_folder()) {
+    if (self.bookmarkNode->children()[count++]->is_folder()) {
       --index;
     }
   }
@@ -191,7 +202,7 @@ using bookmarks::BookmarkNode;
   ++index;
   size_t count = 0;
   while (index) {
-    if ([self bookmarkNode]->children()[count++] -> is_url()) {
+    if (self.bookmarkNode->children()[count++]->is_url()) {
       --index;
     }
   }

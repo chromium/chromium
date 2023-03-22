@@ -68,11 +68,11 @@ using bookmarks::BookmarkModel;
   [aWindow setContainer:self property:AppleScript::kWindowsProperty];
   // Note: AppleScript is 1-based.
   index--;
-  [aWindow setOrderedIndex:@(index)];
+  aWindow.orderedIndex = @(index);
 }
 
 - (void)removeFromAppleScriptWindowsAtIndex:(int)index {
-  [[self appleScriptWindows][index] handlesCloseScriptCommand:nil];
+  [self.appleScriptWindows[index] handlesCloseScriptCommand:nil];
 }
 
 - (NSScriptObjectSpecifier*)objectSpecifier {
@@ -81,9 +81,9 @@ using bookmarks::BookmarkModel;
 
 - (BookmarkFolderAppleScript*)otherBookmarks {
   AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
 
-  Profile* lastProfile = [appDelegate lastProfile];
+  Profile* lastProfile = appDelegate.lastProfile;
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
@@ -106,9 +106,9 @@ using bookmarks::BookmarkModel;
 
 - (BookmarkFolderAppleScript*)bookmarksBar {
   AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
 
-  Profile* lastProfile = [appDelegate lastProfile];
+  Profile* lastProfile = appDelegate.lastProfile;
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nil;
@@ -121,26 +121,23 @@ using bookmarks::BookmarkModel;
     return nullptr;
   }
 
-  BookmarkFolderAppleScript* bookmarksBar =
-      [[[BookmarkFolderAppleScript alloc]
-          initWithBookmarkNode:model->bookmark_bar_node()] autorelease];
+  BookmarkFolderAppleScript* bookmarksBar = [[[BookmarkFolderAppleScript alloc]
+      initWithBookmarkNode:model->bookmark_bar_node()] autorelease];
   [bookmarksBar setContainer:self
                     property:AppleScript::kBookmarkFoldersProperty];
   return bookmarksBar;
 }
 
-- (NSArray*)bookmarkFolders {
-  BookmarkFolderAppleScript* otherBookmarks = [self otherBookmarks];
-  BookmarkFolderAppleScript* bookmarksBar = [self bookmarksBar];
-  NSArray* folderArray = @[ otherBookmarks, bookmarksBar ];
-  return folderArray;
+- (NSArray<BookmarkFolderAppleScript*>*)bookmarkFolders {
+  return @[ self.otherBookmarks, self.bookmarksBar ];
 }
 
-- (void)insertInBookmarksFolders:(id)aBookmarkFolder {
+- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder {
   NOTIMPLEMENTED();
 }
 
-- (void)insertInBookmarksFolders:(id)aBookmarkFolder atIndex:(int)index {
+- (void)insertInBookmarksFolders:(BookmarkFolderAppleScript*)aBookmarkFolder
+                         atIndex:(int)index {
   NOTIMPLEMENTED();
 }
 

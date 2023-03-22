@@ -15,12 +15,8 @@
 // Assigns a node, sets its unique ID and also copies temporary values.
 - (void)setBookmarkNode:(const bookmarks::BookmarkNode*)aBookmarkNode;
 
-// Returns the URL that the bookmark item holds.
-- (NSString*)URL;
-
-// Sets the URL of the bookmark item, displays error in AppleScript console
-// if URL is invalid.
-- (void)setURL:(NSString*)aURL;
+// Returns/sets the URL that the bookmark item holds.
+@property(copy) NSString* URL;
 
 @end
 

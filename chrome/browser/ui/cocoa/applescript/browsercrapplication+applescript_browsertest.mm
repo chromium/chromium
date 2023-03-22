@@ -33,10 +33,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
       "Test", /*trusted_source=*/true, gfx::Rect(), profile,
       /*user_gesture=*/true));
 
-  EXPECT_EQ(3U, [[NSApp appleScriptWindows] count]);
+  EXPECT_EQ(3U, [NSApp appleScriptWindows].count);
   for (WindowAppleScript* window in [NSApp appleScriptWindows]) {
-    EXPECT_NSEQ(AppleScript::kWindowsProperty, [window containerProperty]);
-    EXPECT_NSEQ(NSApp, [window container]);
+    EXPECT_NSEQ(AppleScript::kWindowsProperty, window.containerProperty);
+    EXPECT_NSEQ(NSApp, window.container);
   }
 
   // Close the additional browsers.
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   //   set var to make new window with properties {visible:false}|.
   base::scoped_nsobject<WindowAppleScript> aWindow(
       [[WindowAppleScript alloc] init]);
-  base::scoped_nsobject<NSString> var([[aWindow.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> unique_id([aWindow.get().uniqueID copy]);
   [aWindow.get() setValue:@YES forKey:@"visible"];
 
   [NSApp insertInAppleScriptWindows:aWindow.get()];
@@ -62,34 +62,34 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   // Represents the window after it is added.
   WindowAppleScript* window = [NSApp appleScriptWindows][0];
   EXPECT_NSEQ(@YES, [aWindow.get() valueForKey:@"visible"]);
-  EXPECT_EQ([window container], NSApp);
-  EXPECT_NSEQ(AppleScript::kWindowsProperty, [window containerProperty]);
-  EXPECT_NSEQ(var, [window uniqueID]);
+  EXPECT_EQ(window.container, NSApp);
+  EXPECT_NSEQ(AppleScript::kWindowsProperty, window.containerProperty);
+  EXPECT_NSEQ(unique_id, window.uniqueID);
 }
 
 // Inserting and deleting windows.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
                        InsertAndDeleteWindows) {
   base::scoped_nsobject<WindowAppleScript> aWindow;
-  int count;
+  NSUInteger count;
   // Create a bunch of windows.
-  for (int i = 0; i < 5; ++i) {
-    for (int j = 0; j < 3; ++j) {
+  for (NSUInteger i = 0; i < 5; ++i) {
+    for (NSUInteger j = 0; j < 3; ++j) {
       aWindow.reset([[WindowAppleScript alloc] init]);
       [NSApp insertInAppleScriptWindows:aWindow.get()];
     }
     count = 3 * i + 4;
-    EXPECT_EQ(count, (int)[[NSApp appleScriptWindows] count]);
+    EXPECT_EQ(count, [NSApp appleScriptWindows].count);
   }
 
   // Remove all the windows, just created.
-  count = (int)[[NSApp appleScriptWindows] count];
-  for (int i = 0; i < 5; ++i) {
-    for (int j = 0; j < 3; ++j) {
+  count = [NSApp appleScriptWindows].count;
+  for (NSUInteger i = 0; i < 5; ++i) {
+    for (NSUInteger j = 0; j < 3; ++j) {
       [NSApp removeFromAppleScriptWindowsAtIndex:0];
     }
     count = count - 3;
-    EXPECT_EQ(count, (int)[[NSApp appleScriptWindows] count]);
+    EXPECT_EQ(count, [NSApp appleScriptWindows].count);
   }
 }
 
@@ -101,19 +101,19 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, ObjectSpecifier) {
 
 // Bookmark folders at the root level.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, BookmarkFolders) {
-  NSArray* bookmarkFolders = [NSApp bookmarkFolders];
-  EXPECT_EQ(2U, [bookmarkFolders count]);
+  NSArray* bookmark_folders = [NSApp bookmarkFolders];
+  EXPECT_EQ(2U, bookmark_folders.count);
 
-  for (BookmarkFolderAppleScript* bookmarkFolder in bookmarkFolders) {
-    EXPECT_EQ(NSApp, [bookmarkFolder container]);
+  for (BookmarkFolderAppleScript* bookmark_folder in bookmark_folders) {
+    EXPECT_EQ(NSApp, bookmark_folder.container);
     EXPECT_NSEQ(AppleScript::kBookmarkFoldersProperty,
-                [bookmarkFolder containerProperty]);
+                bookmark_folder.containerProperty);
   }
 
-  BookmarkFolderAppleScript* otherBookmarks =
+  BookmarkFolderAppleScript* other_bookmarks =
       base::mac::ObjCCast<BookmarkFolderAppleScript>([NSApp otherBookmarks]);
-  EXPECT_NSEQ(@"Other Bookmarks", [otherBookmarks title]);
-  BookmarkFolderAppleScript* bookmarksBar =
+  EXPECT_NSEQ(@"Other Bookmarks", other_bookmarks.title);
+  BookmarkFolderAppleScript* bookmarks_bar =
       base::mac::ObjCCast<BookmarkFolderAppleScript>([NSApp bookmarksBar]);
-  EXPECT_NSEQ(@"Bookmarks Bar", [bookmarksBar title]);
+  EXPECT_NSEQ(@"Bookmarks Bar", bookmarks_bar.title);
 }

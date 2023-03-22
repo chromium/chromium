@@ -17,15 +17,16 @@
 // Bookmark folder manipulation methods.
 // Returns an array of |BookmarkFolderAppleScript*| of all the bookmark folders
 // contained within this particular folder.
-- (NSArray*)bookmarkFolders;
+@property(readonly) NSArray* bookmarkFolders;
 
 // Inserts a bookmark folder at the end.
-- (void)insertInBookmarkFolders:(id)aBookmarkFolder;
+- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)aBookmarkFolder;
 
 // Inserts a bookmark folder at some position in the list.
 // Called by AppleScript which takes care of bounds checking, make sure of it
 // before calling directly.
-- (void)insertInBookmarkFolders:(id)aBookmarkFolder atIndex:(size_t)index;
+- (void)insertInBookmarkFolders:(BookmarkFolderAppleScript*)aBookmarkFolder
+                        atIndex:(size_t)index;
 
 // Remove a bookmark folder from the list.
 // Called by AppleScript which takes care of bounds checking, make sure of it
@@ -35,7 +36,7 @@
 // Bookmark item manipulation methods.
 // Returns an array of |BookmarkItemAppleScript*| of all the bookmark items
 // contained within this particular folder.
-- (NSArray*)bookmarkItems;
+@property(readonly) NSArray* bookmarkItems;
 
 // Inserts a bookmark item at the end.
 - (void)insertInBookmarkItems:(BookmarkItemAppleScript*)aBookmarkItem;

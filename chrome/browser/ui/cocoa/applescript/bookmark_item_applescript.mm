@@ -16,11 +16,13 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 @interface BookmarkItemAppleScript ()
+
 // Contains the temporary URL when a user creates a new item with the URL
 // specified like:
 //
 //   make new bookmarks item with properties {URL:"foo"}
 @property(nonatomic, copy) NSString* tempURL;
+
 @end
 
 @implementation BookmarkItemAppleScript
@@ -40,24 +42,24 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)setBookmarkNode:(const BookmarkNode*)aBookmarkNode {
-  [super setBookmarkNode:aBookmarkNode];
-  [self setURL:self.tempURL];
+  super.bookmarkNode = aBookmarkNode;
+  self.URL = self.tempURL;
 }
 
 - (NSString*)URL {
-  if (![self bookmarkNode]) {
+  if (!self.bookmarkNode) {
     return _tempURL;
   }
 
-  return base::SysUTF8ToNSString([self bookmarkNode]->url().spec());
+  return base::SysUTF8ToNSString(self.bookmarkNode->url().spec());
 }
 
 - (void)setURL:(NSString*)aURL {
   GURL url(base::SysNSStringToUTF8(aURL));
 
   AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
-  if (!chrome::mac::IsJavaScriptEnabledForProfile([appDelegate lastProfile]) &&
+      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
+  if (!chrome::mac::IsJavaScriptEnabledForProfile(appDelegate.lastProfile) &&
       url.SchemeIs(url::kJavaScriptScheme)) {
     AppleScript::SetError(AppleScript::Error::kJavaScriptUnsupported);
     return;
@@ -65,12 +67,12 @@ using bookmarks::BookmarkNode;
 
   // If a scripter sets a URL before the node is added, the URL is saved at a
   // temporary location.
-  if (![self bookmarkNode]) {
-    [self setTempURL:aURL];
+  if (!self.bookmarkNode) {
+    self.tempURL = aURL;
     return;
   }
 
-  BookmarkModel* model = [self bookmarkModel];
+  BookmarkModel* model = self.bookmarkModel;
   if (!model) {
     return;
   }
@@ -80,7 +82,7 @@ using bookmarks::BookmarkNode;
     return;
   }
 
-  model->SetURL([self bookmarkNode], url,
+  model->SetURL(self.bookmarkNode, url,
                 bookmarks::metrics::BookmarkEditSource::kOther);
 }
 

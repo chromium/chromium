@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -53,12 +54,14 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 
 }  // namespace
 
-@interface TabAppleScript()
+@interface TabAppleScript ()
+
 // Contains the temporary URL when a user creates a new folder/item with the URL
 // specified like:
 //
 //   make new tab with properties {URL:"http://google.com"}
 @property (nonatomic, copy) NSString* tempURL;
+
 @end
 
 @implementation TabAppleScript {
@@ -115,8 +118,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   self.uniqueID =
       [NSString stringWithFormat:@"%d", session_tab_helper->session_id().id()];
 
-  if ([self tempURL]) {
-    [self setURL:[self tempURL]];
+  if (self.tempURL) {
+    self.URL = self.tempURL;
   }
 }
 
@@ -138,7 +141,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   // it at a temporary location. Once they're set, -setURL: will be call again
   // with the temporary URL.
   if (!_profile || !_webContents) {
-    [self setTempURL:aURL];
+    self.tempURL = aURL;
     return;
   }
 
@@ -238,7 +241,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }
 
 - (void)handlesSaveScriptCommand:(NSScriptCommand*)command {
-  NSDictionary* dictionary = [command evaluatedArguments];
+  NSDictionary* dictionary = command.evaluatedArguments;
 
   NSURL* fileURL = dictionary[@"File"];
   // Scripter has not specified the location at which to save, so we prompt for
@@ -248,7 +251,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
     return;
   }
 
-  base::FilePath mainFile(base::SysNSStringToUTF8([fileURL path]));
+  base::FilePath mainFile = base::mac::NSURLToFilePath(fileURL);
   // We create a directory path at the folder within which the file exists.
   // Eg.    if main_file = '/Users/Foo/Documents/Google.html'
   // then directory_path = '/Users/Foo/Documents/Google_files/'.

@@ -22,11 +22,13 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 @interface BookmarkNodeAppleScript ()
+
 // Contains the temporary title when a user creates a new item with the title
 // specified like:
 //
 //   make new bookmark folder with properties {title:"foo"}
 @property (nonatomic, copy) NSString* tempTitle;
+
 @end
 
 @implementation BookmarkNodeAppleScript {
@@ -37,7 +39,7 @@ using bookmarks::BookmarkNode;
 
 - (instancetype)init {
   if ((self = [super init])) {
-    BookmarkModel* model = [self bookmarkModel];
+    BookmarkModel* model = self.bookmarkModel;
     if (!model) {
       [self release];
       return nil;
@@ -90,8 +92,9 @@ using bookmarks::BookmarkNode;
 }
 
 - (NSString*)title {
-  if (!_bookmarkNode)
+  if (!_bookmarkNode) {
     return _tempTitle;
+  }
 
   return base::SysUTF16ToNSString(_bookmarkNode->GetTitle());
 }
@@ -103,13 +106,14 @@ using bookmarks::BookmarkNode;
   //
   // the node has not yet been created so title is stored in the temp title.
   if (!_bookmarkNode) {
-    [self setTempTitle:aTitle];
+    self.tempTitle = aTitle;
     return;
   }
 
-  BookmarkModel* model = [self bookmarkModel];
-  if (!model)
+  BookmarkModel* model = self.bookmarkModel;
+  if (!model) {
     return;
+  }
 
   model->SetTitle(_bookmarkNode, base::SysNSStringToUTF16(aTitle),
                   bookmarks::metrics::BookmarkEditSource::kOther);
@@ -126,7 +130,7 @@ using bookmarks::BookmarkNode;
   AppController* appDelegate =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
 
-  Profile* lastProfile = [appDelegate lastProfile];
+  Profile* lastProfile = appDelegate.lastProfile;
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
     return nullptr;

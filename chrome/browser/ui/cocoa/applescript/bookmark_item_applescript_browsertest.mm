@@ -26,24 +26,24 @@ namespace {
 
 // Set and get title.
 IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetTitle) {
-  NSArray* bookmark_items = [bookmark_bar_.get() bookmarkItems];
+  NSArray* bookmark_items = bookmark_bar_.get().bookmarkItems;
   BookmarkItemAppleScript* item1 = bookmark_items[0];
-  [item1 setTitle:@"Foo"];
-  EXPECT_NSEQ(@"Foo", [item1 title]);
+  item1.title = @"Foo";
+  EXPECT_NSEQ(@"Foo", item1.title);
 }
 
 // Set and get URL.
 IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetURL) {
-  NSArray* bookmark_items = [bookmark_bar_.get() bookmarkItems];
+  NSArray* bookmark_items = bookmark_bar_.get().bookmarkItems;
   BookmarkItemAppleScript* item1 = bookmark_items[0];
-  [item1 setURL:@"http://foo-bar.org"];
+  item1.URL = @"http://foo-bar.org";
   EXPECT_EQ(GURL("http://foo-bar.org"),
-            GURL(base::SysNSStringToUTF8([item1 URL])));
+            GURL(base::SysNSStringToUTF8(item1.URL)));
 
   // If scripter enters invalid URL.
   base::scoped_nsobject<FakeScriptCommand> fake_script_command(
       [[FakeScriptCommand alloc] init]);
-  [item1 setURL:@"invalid-url.org"];
+  item1.URL = @"invalid-url.org";
   EXPECT_EQ(static_cast<int>(Error::kInvalidURL),
             fake_script_command.get().scriptErrorNumber);
 }
@@ -53,19 +53,19 @@ IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetJavascriptURL) {
   PrefService* prefs = profile()->GetPrefs();
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, false);
 
-  NSArray* bookmark_items = [bookmark_bar_.get() bookmarkItems];
+  NSArray* bookmark_items = bookmark_bar_.get().bookmarkItems;
   BookmarkItemAppleScript* item1 = bookmark_items[0];
 
   base::scoped_nsobject<FakeScriptCommand> fake_script_command(
       [[FakeScriptCommand alloc] init]);
-  [item1 setURL:@"javascript:alert('hi');"];
+  item1.URL = @"javascript:alert('hi');";
   EXPECT_EQ(static_cast<int>(Error::kJavaScriptUnsupported),
             fake_script_command.get().scriptErrorNumber);
 
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, true);
-  [item1 setURL:@"javascript:alert('hi');"];
+  item1.URL = @"javascript:alert('hi');";
   EXPECT_EQ(GURL("javascript:alert('hi');"),
-            GURL(base::SysNSStringToUTF8([item1 URL])));
+            GURL(base::SysNSStringToUTF8(item1.URL)));
 }
 
 }  // namespace

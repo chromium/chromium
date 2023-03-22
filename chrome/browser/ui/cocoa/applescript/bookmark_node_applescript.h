@@ -27,18 +27,17 @@ class BookmarkNode;
     (const bookmarks::BookmarkNode*)aBookmarkNode;
 
 // Assigns/gets a node, sets its unique ID and also copies temporary values.
-- (void)setBookmarkNode:(const bookmarks::BookmarkNode*)aBookmarkNode;
-- (const bookmarks::BookmarkNode*)bookmarkNode;
+@property(assign) const bookmarks::BookmarkNode* bookmarkNode;
 
 // Get and Set title.
-- (NSString*)title;
-- (void)setTitle:(NSString*)aTitle;
+@property(copy) NSString* title;
 
-// Returns the index with respect to its parent bookmark folder.
-- (NSNumber*)index;
+// Returns the index with respect to its parent bookmark folder. 1-based because
+// this is intended for use by AppleScript.
+@property(readonly) NSNumber* index;
 
-// Returns the bookmark model of the browser, returns NULL if there is an error.
-- (bookmarks::BookmarkModel*)bookmarkModel;
+// Returns the bookmark model of the browser, returns null if there is an error.
+@property(readonly) bookmarks::BookmarkModel* bookmarkModel;
 
 @end
 

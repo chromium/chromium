@@ -34,9 +34,11 @@
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 
-@interface WindowAppleScript(WindowAppleScriptPrivateMethods)
+@interface WindowAppleScript ()
+
 // The NSWindow that corresponds to this window.
-- (NSWindow*)nativeHandle;
+@property(readonly) NSWindow* nativeHandle;
+
 @end
 
 @implementation WindowAppleScript {
@@ -46,11 +48,11 @@
 - (instancetype)init {
   // Check which mode to open a new window.
   NSScriptCommand* command = [NSScriptCommand currentCommand];
-  NSString* mode = [command evaluatedArguments][@"KeyDictionary"][@"mode"];
+  NSString* mode = command.evaluatedArguments[@"KeyDictionary"][@"mode"];
   AppController* appDelegate =
-      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+      base::mac::ObjCCastStrict<AppController>(NSApp.delegate);
 
-  Profile* lastProfile = [appDelegate lastProfile];
+  Profile* lastProfile = appDelegate.lastProfile;
 
   if (!lastProfile) {
     AppleScript::SetError(AppleScript::Error::kGetProfile);
@@ -60,16 +62,15 @@
   Profile* profile;
   if ([mode isEqualToString:AppleScript::kIncognitoWindowMode]) {
     profile = lastProfile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  }
-  else if ([mode isEqualToString:AppleScript::kNormalWindowMode] || !mode) {
+  } else if ([mode isEqualToString:AppleScript::kNormalWindowMode] || !mode) {
     profile = lastProfile;
   } else {
-    // Mode cannot be anything else
+    // Mode cannot be anything else.
     AppleScript::SetError(AppleScript::Error::kInvalidMode);
     return nil;
   }
   // Set the mode to nil, to ensure that it is not set once more.
-  [[command evaluatedArguments][@"KeyDictionary"] setValue:nil forKey:@"mode"];
+  [command.evaluatedArguments[@"KeyDictionary"] setValue:nil forKey:@"mode"];
   return [self initWithProfile:profile];
 }
 
@@ -160,7 +161,7 @@
 }
 
 - (void)setMode:(NSString*)theMode {
-  // cannot set mode after window is created.
+  // Cannot set mode after window is created.
   if (theMode) {
     AppleScript::SetError(AppleScript::Error::kSetMode);
   }
@@ -175,7 +176,7 @@
   return currentTab;
 }
 
-- (NSArray*)tabs {
+- (NSArray<TabAppleScript*>*)tabs {
   TabStripModel* tabStrip = _browser->tab_strip_model();
   NSMutableArray* tabs = [NSMutableArray arrayWithCapacity:tabStrip->count()];
 
@@ -241,29 +242,29 @@
 }
 
 - (NSNumber*)orderedIndex {
-  return @([[self nativeHandle] orderedIndex]);
+  return @(self.nativeHandle.orderedIndex);
 }
 
 - (void)setOrderedIndex:(NSNumber*)anIndex {
-  int index = [anIndex intValue] - 1;
+  int index = anIndex.intValue - 1;
   if (index < 0 || index >= static_cast<int>(chrome::GetTotalBrowserCount())) {
     AppleScript::SetError(AppleScript::Error::kWrongIndex);
     return;
   }
-  [[self nativeHandle] setOrderedIndex:index];
+  self.nativeHandle.orderedIndex = index;
 }
 
 // Get and set values from the associated NSWindow.
 - (id)valueForUndefinedKey:(NSString*)key {
-  return [[self nativeHandle] valueForKey:key];
+  return [self.nativeHandle valueForKey:key];
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString*)key {
-  [[self nativeHandle] setValue:value forKey:key];
+  [self.nativeHandle setValue:value forKey:key];
 }
 
 - (void)handlesCloseScriptCommand:(NSCloseCommand*)command {
-  // window() can be NULL during startup.
+  // window() can be null during startup.
   if (_browser->window()) {
     _browser->window()->Close();
   }
