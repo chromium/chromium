@@ -437,6 +437,6 @@ void NavigationTracker::InitCurrentFrame(LoadingState state) {
 }
 
 void NavigationTracker::ClearFrameStates() {
-  frame_to_state_map_.clear();
   SetCurrentFrameInvalid();
+  frame_to_state_map_.clear();
 }
