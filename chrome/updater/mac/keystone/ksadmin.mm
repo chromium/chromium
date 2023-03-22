@@ -230,6 +230,29 @@ void MaybeInstallUpdater(UpdaterScope scope) {
   }
 }
 
+class UpdateCheckResult : public base::RefCountedThreadSafe<UpdateCheckResult> {
+ public:
+  explicit UpdateCheckResult(const std::string& app_id) : app_id_(app_id) {}
+
+  std::string app_id() const { return app_id_; }
+  std::string next_version() const { return next_version_; }
+
+  void set_next_version(const std::string& next_version) {
+    next_version_ = next_version;
+  }
+
+ protected:
+  virtual ~UpdateCheckResult() = default;
+
+ private:
+  friend class base::RefCountedThreadSafe<UpdateCheckResult>;
+
+  const std::string app_id_;
+
+  // The version that the app can currently upgrade to.
+  std::string next_version_;
+};
+
 class KSAdminApp : public App {
  public:
   explicit KSAdminApp(const std::map<std::string, std::string>& switches)
@@ -242,7 +265,8 @@ class KSAdminApp : public App {
   void FirstTaskRun() override;
 
   // Command handlers; each will eventually call Shutdown.
-  void CheckForUpdates();
+  void UpdateApp();
+  void ListAppUpdate();
   void Register();
   void Delete();
   void PrintTag();
@@ -250,7 +274,8 @@ class KSAdminApp : public App {
   void PrintVersion();
   void PrintTickets();
 
-  void DoCheckForUpdates(UpdaterScope scope);
+  void DoUpdateApp(UpdaterScope scope);
+  void DoListAppUpdate(UpdaterScope scope);
   void DoPrintTag(UpdaterScope scope);
   void DoPrintTickets(UpdaterScope scope);
 
@@ -431,11 +456,11 @@ void KSAdminApp::Register() {
                         base::BindOnce(&KSAdminApp::Shutdown, this)));
 }
 
-void KSAdminApp::CheckForUpdates() {
-  ChooseService(base::BindOnce(&KSAdminApp::DoCheckForUpdates, this));
+void KSAdminApp::UpdateApp() {
+  ChooseService(base::BindOnce(&KSAdminApp::DoUpdateApp, this));
 }
 
-void KSAdminApp::DoCheckForUpdates(UpdaterScope scope) {
+void KSAdminApp::DoUpdateApp(UpdaterScope scope) {
   std::string app_id = SwitchValue(kCommandProductId);
   if (app_id.empty()) {
     PrintUsage("productid missing");
@@ -463,6 +488,60 @@ void KSAdminApp::DoCheckForUpdates(UpdaterScope scope) {
             }
           },
           base::BindOnce(&KSAdminApp::Shutdown, this)));
+}
+
+void KSAdminApp::ListAppUpdate() {
+  ChooseService(base::BindOnce(&KSAdminApp::DoListAppUpdate, this));
+}
+
+void KSAdminApp::DoListAppUpdate(UpdaterScope scope) {
+  std::string app_id = SwitchValue(kCommandProductId);
+  if (app_id.empty()) {
+    PrintUsage("productid missing");
+    return;
+  }
+
+  auto update_check_result = base::MakeRefCounted<UpdateCheckResult>(app_id);
+  ServiceProxy(scope)->CheckForUpdate(
+      app_id,
+      HasSwitch(kCommandUserInitiated) ? UpdateService::Priority::kForeground
+                                       : UpdateService::Priority::kBackground,
+      UpdateService::PolicySameVersionUpdate::kNotAllowed,
+      base::BindRepeating(
+          [](scoped_refptr<UpdateCheckResult> update_check_result,
+             const UpdateService::UpdateState& update_state) {
+            if (update_state.state ==
+                UpdateService::UpdateState::State::kUpdateAvailable) {
+              update_check_result->set_next_version(
+                  update_state.next_version.GetString());
+            }
+          },
+          update_check_result),
+      base::BindOnce(
+          [](scoped_refptr<UpdateCheckResult> update_check_result,
+             base::OnceCallback<void(int)> cb, UpdateService::Result result) {
+            if (result == UpdateService::Result::kSuccess) {
+              // This output format must not be changed, because the Keystone
+              // Registration Framework is expecting the exact format.
+              printf("Available updates: (\n");
+              if (!update_check_result->next_version().empty()) {
+                printf("\t{\n"
+                       "\tkServerProductID = \"%s\";\n"
+                       "\tkServerDisplayVersion = \"%s\";\n"
+                       "\tkServerVersion = \"%s\";\n"
+                       "\t}\n",
+                       update_check_result->app_id().c_str(),
+                       update_check_result->next_version().c_str(),
+                       update_check_result->next_version().c_str());
+              }
+              printf(")\n");
+              std::move(cb).Run(0);
+            } else {
+              LOG(ERROR) << "Error code: " << result;
+              std::move(cb).Run(1);
+            }
+          },
+          update_check_result, base::BindOnce(&KSAdminApp::Shutdown, this)));
 }
 
 bool KSAdminApp::HasSwitch(const std::string& arg) const {
@@ -613,8 +692,8 @@ void KSAdminApp::FirstTaskRun() {
   }
   const std::map<std::string, void (KSAdminApp::*)()> commands = {
       {kCommandDelete, &KSAdminApp::Delete},
-      {kCommandInstall, &KSAdminApp::CheckForUpdates},
-      {kCommandList, &KSAdminApp::CheckForUpdates},
+      {kCommandInstall, &KSAdminApp::UpdateApp},
+      {kCommandList, &KSAdminApp::ListAppUpdate},
       {kCommandKsadminVersion, &KSAdminApp::PrintVersion},
       {kCommandPrintTag, &KSAdminApp::PrintTag},
       {kCommandPrintTickets, &KSAdminApp::PrintTickets},
