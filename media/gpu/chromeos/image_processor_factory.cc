@@ -198,6 +198,7 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
       std::move(error_cb), std::move(client_task_runner));
 }
 
+#if defined(ARCH_CPU_ARM_FAMILY)
 std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
     const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
@@ -228,6 +229,7 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
       output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
       std::move(error_cb), std::move(client_task_runner));
 }
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif
 
 }  // namespace
@@ -280,6 +282,7 @@ ImageProcessorFactory::CreateWithInputCandidates(
   if (processor)
     return processor;
 #elif BUILDFLAG(USE_V4L2_CODEC)
+#if defined(ARCH_CPU_ARM_FAMILY)
   if (base::FeatureList::IsEnabled(media::kPreferGLImageProcessor)) {
     auto processor = CreateGLImageProcessorWithInputCandidates(
         input_candidates, input_visible_rect, output_size, client_task_runner,
@@ -287,6 +290,7 @@ ImageProcessorFactory::CreateWithInputCandidates(
     if (processor)
       return processor;
   }
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
 
     auto processor = CreateLibYUVImageProcessorWithInputCandidates(
         input_candidates, input_visible_rect, output_size, client_task_runner,
