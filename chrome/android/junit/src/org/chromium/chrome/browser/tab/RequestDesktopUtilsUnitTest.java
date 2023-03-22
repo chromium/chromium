@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
+import android.view.Display;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroid;
+import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowDisplayAndroidManager;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
@@ -77,6 +79,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -100,7 +103,8 @@ import java.util.Map.Entry;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowProfile.class,
-                ShadowUmaSessionStats.class, ShadowDisplayAndroid.class})
+                ShadowUmaSessionStats.class, ShadowDisplayAndroid.class,
+                ShadowDisplayAndroidManager.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -172,6 +176,20 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Implements(DisplayAndroidManager.class)
+    static class ShadowDisplayAndroidManager {
+        private static Display sDisplay;
+
+        public static void setDisplay(Display display) {
+            sDisplay = display;
+        }
+
+        @Implementation
+        public static Display getDefaultDisplayForContext(Context context) {
+            return sDisplay;
+        }
+    }
+
     @Mock
     private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
@@ -196,6 +214,8 @@ public class RequestDesktopUtilsUnitTest {
     private ObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock
     private DisplayAndroid mDisplayAndroid;
+    @Mock
+    private Display mDisplay;
 
     private Tab mTab;
     private @ContentSettingValues int mRdsDefaultValue;
@@ -271,6 +291,8 @@ public class RequestDesktopUtilsUnitTest {
         when(mDisplayAndroid.getDisplayHeight()).thenReturn(2560);
         when(mDisplayAndroid.getXdpi()).thenReturn(275.5f);
         when(mDisplayAndroid.getYdpi()).thenReturn(276.5f);
+        ShadowDisplayAndroidManager.setDisplay(mDisplay);
+        when(mDisplay.getDisplayId()).thenReturn(Display.DEFAULT_DISPLAY);
         enableFeatureWithParams(
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING, null, false);
     }
@@ -452,6 +474,27 @@ public class RequestDesktopUtilsUnitTest {
         boolean shouldDefaultEnable =
                 RequestDesktopUtils.shouldDefaultEnableGlobalSetting(11.0, mActivity);
         Assert.assertTrue("Desktop site global setting should be default-enabled on 10\"+ devices.",
+                shouldDefaultEnable);
+    }
+
+    @Test
+    public void testShouldDefaultEnableGlobalSetting_ExternalDisplay() {
+        Map<String, String> params = new HashMap<>();
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        when(mDisplay.getDisplayId()).thenReturn(/*non built-in display*/ 2);
+        boolean shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mActivity);
+        Assert.assertFalse(
+                "Desktop site global setting should not be default-enabled on external display",
+                shouldDefaultEnable);
+
+        when(mDisplay.getDisplayId()).thenReturn(Display.DEFAULT_DISPLAY);
+        shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mActivity);
+        Assert.assertTrue(
+                "Desktop site global setting should be default-enabled on built-in display",
                 shouldDefaultEnable);
     }
 
