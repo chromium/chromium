@@ -24,6 +24,7 @@
 #include "chrome/updater/app/app_install.h"
 #include "chrome/updater/app/app_recover.h"
 #include "chrome/updater/app/app_uninstall.h"
+#include "chrome/updater/app/app_uninstall_self.h"
 #include "chrome/updater/app/app_update.h"
 #include "chrome/updater/app/app_wake.h"
 #include "chrome/updater/app/app_wakeall.h"
@@ -173,9 +174,12 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   }
 
   if (command_line->HasSwitch(kUninstallSwitch) ||
-      command_line->HasSwitch(kUninstallSelfSwitch) ||
       command_line->HasSwitch(kUninstallIfUnusedSwitch)) {
     return MakeAppUninstall()->Run();
+  }
+
+  if (command_line->HasSwitch(kUninstallSelfSwitch)) {
+    return MakeAppUninstallSelf()->Run();
   }
 
   if (command_line->HasSwitch(kRecoverSwitch) ||

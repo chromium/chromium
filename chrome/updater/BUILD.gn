@@ -62,6 +62,8 @@ if (is_win || is_mac || is_linux) {
       "app/app_server.h",
       "app/app_uninstall.cc",
       "app/app_uninstall.h",
+      "app/app_uninstall_self.cc",
+      "app/app_uninstall_self.h",
       "app/app_update.cc",
       "app/app_update.h",
       "app/app_utils.cc",
