@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/android_autofill",
   "+components/autofill/android/java",
   "+components/autofill/android/provider",
   "+components/background_task_scheduler/android/java",

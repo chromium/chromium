@@ -44,7 +44,11 @@ public class AutofillRequest {
     }
 
     private static final String TAG = "AutofillRequest";
-    private static final int INIT_ID = 1; // ID can't be 0 in Android.
+    // The id cannot be 0 in Android.
+    private static final int INIT_ID = 1;
+    // Every node must have an Autofill id. We (arbitrarily, but consistently) choose the
+    // maximum value for the form node.
+    private static final short FORM_NODE_ID = Short.MAX_VALUE;
     private static int sSessionId = INIT_ID;
     public final int sessionId;
     private FormData mFormData;
@@ -70,6 +74,15 @@ public class AutofillRequest {
      * @param structure out parameter, the structure passed to the framework.
      */
     public void fillViewStructure(ViewStructure structure) {
+        // If the experiment is on, then the root node's children correspond to forms and the actual
+        // fields are leaf nodes with depth 2.
+        if (AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER
+                        .isEnabled()) {
+            ViewStructure rootStructure = structure;
+            structure = rootStructure.newChild(rootStructure.addChildCount(1));
+            structure.setAutofillId(
+                    rootStructure.getAutofillId(), toVirtualId(sessionId, FORM_NODE_ID));
+        }
         structure.setWebDomain(mFormData.mHost);
         structure.setHtmlInfo(
                 structure.newHtmlInfoBuilder("form").addAttribute("name", mFormData.mName).build());
