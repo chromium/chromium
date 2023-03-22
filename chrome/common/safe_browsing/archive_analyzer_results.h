@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace base {
@@ -71,8 +72,8 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           bool is_encrypted,
                                           ArchiveAnalyzerResults* results);
 
-// Returns true if the nested archive should be unpacked by an analyzer.
-bool IsArchivePath(base::FilePath path);
+// Returns the `DownloadFileType_InspectionType` of the file path.
+safe_browsing::DownloadFileType_InspectionType GetFileType(base::FilePath path);
 
 // Update the `archived_binary` with the string value path name.
 void SetNameForContainedFile(

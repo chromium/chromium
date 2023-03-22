@@ -7,7 +7,6 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/common/safe_browsing/rar_analyzer.h"
 #include "chrome/common/safe_browsing/seven_zip_analyzer.h"
 #include "chrome/common/safe_browsing/zip_analyzer.h"
 
@@ -58,15 +57,25 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(base::File dmg_file,
 #endif
 }
 
-void SafeArchiveAnalyzer::AnalyzeRarFile(base::File rar_file,
-                                         base::File temporary_file,
-                                         AnalyzeRarFileCallback callback) {
+void SafeArchiveAnalyzer::AnalyzeRarFile(
+    base::File rar_file,
+    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+    AnalyzeRarFileCallback callback) {
   DCHECK(rar_file.IsValid());
-
-  safe_browsing::ArchiveAnalyzerResults results;
-  safe_browsing::rar_analyzer::AnalyzeRarFile(
-      std::move(rar_file), std::move(temporary_file), &results);
-  std::move(callback).Run(results);
+  temp_file_getter_.Bind(std::move(temp_file_getter));
+  callback_ = std::move(callback);
+  AnalysisFinishedCallback analysis_finished_callback =
+      base::BindOnce(&SafeArchiveAnalyzer::AnalysisFinished,
+                     weak_factory_.GetWeakPtr(), base::FilePath());
+  base::RepeatingCallback<void(GetTempFileCallback callback)>
+      temp_file_getter_callback =
+          base::BindRepeating(&SafeArchiveAnalyzer::RequestTemporaryFile,
+                              weak_factory_.GetWeakPtr());
+  timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
+                       &SafeArchiveAnalyzer::Timeout);
+  rar_analyzer_.Init(std::move(rar_file), base::FilePath(),
+                     std::move(analysis_finished_callback),
+                     std::move(temp_file_getter_callback), &results_);
 }
 
 void SafeArchiveAnalyzer::AnalyzeSevenZipFile(

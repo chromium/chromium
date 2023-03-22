@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/common/safe_browsing/rar_analyzer.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -46,7 +47,7 @@ void ZipAnalyzer::Init(base::File zip_file,
 void ZipAnalyzer::FilePreChecks(base::File temp_file) {
   if (!temp_file.IsValid()) {
     results_->success = false;
-    results_->analysis_result = ArchiveAnalysisResult::kUnknown;
+    results_->analysis_result = ArchiveAnalysisResult::kFailedToOpenTempFile;
     std::move(finished_analysis_callback_).Run();
     return;
   }
@@ -92,17 +93,8 @@ void ZipAnalyzer::AnalyzeZipFile() {
       results_->file_count++;
     has_encrypted_ |= entry->is_encrypted;
     has_aes_encrypted_ |= entry->uses_aes_encryption;
-    if (base::FeatureList::IsEnabled(kNestedArchives) &&
-        IsArchivePath(entry->path) && !entry->is_encrypted) {
-      FinishedAnalysisCallback nested_analysis_finished_callback =
-          base::BindOnce(&ZipAnalyzer::NestedAnalysisFinished,
-                         weak_factory_.GetWeakPtr(),
-                         root_zip_path_.Append(entry->path));
-      nested_zip_analyzer_ = std::make_unique<safe_browsing::ZipAnalyzer>();
-      nested_zip_analyzer_->Init(temp_file_.Duplicate(),
-                                 root_zip_path_.Append(entry->path),
-                                 std::move(nested_analysis_finished_callback),
-                                 get_temp_file_callback_, results_);
+    if (base::FeatureList::IsEnabled(kNestedArchives) && !entry->is_encrypted &&
+        AnalyzeNestedArchive(GetFileType(entry->path), entry->path)) {
       return;
     } else {
       UpdateArchiveAnalyzerResultsWithFile(root_zip_path_.Append(entry->path),
@@ -125,6 +117,32 @@ void ZipAnalyzer::AnalyzeZipFile() {
   std::move(finished_analysis_callback_).Run();
 }
 
+bool ZipAnalyzer::AnalyzeNestedArchive(
+    safe_browsing::DownloadFileType_InspectionType file_type,
+    base::FilePath path) {
+  // TODO(crbug.com/1373671): Add support for SevenZip, Rar, and Dmg
+  // archives.
+  FinishedAnalysisCallback nested_analysis_finished_callback =
+      base::BindOnce(&ZipAnalyzer::NestedAnalysisFinished,
+                     weak_factory_.GetWeakPtr(), root_zip_path_.Append(path));
+  if (file_type == DownloadFileType::ZIP) {
+    nested_zip_analyzer_ = std::make_unique<safe_browsing::ZipAnalyzer>();
+    nested_zip_analyzer_->Init(temp_file_.Duplicate(),
+                               root_zip_path_.Append(path),
+                               std::move(nested_analysis_finished_callback),
+                               get_temp_file_callback_, results_);
+    return true;
+  } else if (file_type == DownloadFileType::RAR) {
+    nested_rar_analyzer_ = std::make_unique<safe_browsing::RarAnalyzer>();
+    nested_rar_analyzer_->Init(temp_file_.Duplicate(),
+                               root_zip_path_.Append(path),
+                               std::move(nested_analysis_finished_callback),
+                               get_temp_file_callback_, results_);
+    return true;
+  }
+  return false;
+}
+
 void ZipAnalyzer::NestedAnalysisFinished(base::FilePath path) {
   // `results_->success` will contain the latest analyzer's success
   // status and can be used to determine if the nester archive unpacked
@@ -138,7 +156,7 @@ void ZipAnalyzer::NestedAnalysisFinished(base::FilePath path) {
     archived_archive->set_is_encrypted(false);
     archived_archive->set_is_archive(true);
     SetNameForContainedFile(path, archived_archive);
-    SetLengthAndDigestForContainedFile(&zip_file_, zip_file_.GetLength(),
+    SetLengthAndDigestForContainedFile(&temp_file_, temp_file_.GetLength(),
                                        archived_archive);
   }
   AnalyzeZipFile();

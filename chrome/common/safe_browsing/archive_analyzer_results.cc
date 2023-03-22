@@ -143,15 +143,11 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
   }
 }
 
-bool IsArchivePath(base::FilePath path) {
-  // TODO(crbug.com/1373671): Add support for SevenZip, Rar, and Dmg
-  // archives.
-  if (FileTypePolicies::GetInstance()
-          ->PolicyForFile(path, GURL{}, nullptr)
-          .inspection_type() == DownloadFileType::ZIP) {
-    return true;
-  }
-  return false;
+safe_browsing::DownloadFileType_InspectionType GetFileType(
+    base::FilePath path) {
+  return FileTypePolicies::GetInstance()
+      ->PolicyForFile(path, GURL{}, nullptr)
+      .inspection_type();
 }
 
 void SetNameForContainedFile(

@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_
 
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/common/safe_browsing/rar_analyzer.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -37,9 +38,10 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       AnalyzeZipFileCallback callback) override;
   void AnalyzeDmgFile(base::File dmg_file,
                       AnalyzeDmgFileCallback callback) override;
-  void AnalyzeRarFile(base::File rar_file,
-                      base::File temporary_file,
-                      AnalyzeRarFileCallback callback) override;
+  void AnalyzeRarFile(
+      base::File rar_file,
+      mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+      AnalyzeRarFileCallback callback) override;
   void AnalyzeSevenZipFile(base::File seven_zip_file,
                            base::File temporary_file,
                            base::File temporary_file2,
@@ -57,6 +59,7 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
   void Timeout();
 
   safe_browsing::ZipAnalyzer zip_analyzer_;
+  safe_browsing::RarAnalyzer rar_analyzer_;
 
   // A timer to ensure no archive takes too long to unpack.
   base::OneShotTimer timeout_timer_;

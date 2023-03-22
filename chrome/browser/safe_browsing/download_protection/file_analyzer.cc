@@ -185,7 +185,7 @@ void FileAnalyzer::OnZipAnalysisFinished(
 void FileAnalyzer::StartExtractRarFeatures() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // We give the rar analyzer a weak pointer to this object.  Since the
+  // We give the rar analyzer a weak pointer to this object. Since the
   // analyzer is refcounted, it might outlive the request.
   rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
       tmp_path_,

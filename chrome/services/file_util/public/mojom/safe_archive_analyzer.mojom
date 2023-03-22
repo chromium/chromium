@@ -28,7 +28,7 @@ interface SafeArchiveAnalyzer {
   // download protection. Uses the |temporary_file| to extract files from the
   // |rar_file| archive.
   AnalyzeRarFile(mojo_base.mojom.ReadOnlyFile rar_file,
-                 mojo_base.mojom.File temporary_file)
+                 pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
 
   // Build flag FULL_SAFE_BROWSING: Analyze the |seven_zip_file| for malicious

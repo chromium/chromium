@@ -61,7 +61,7 @@ source_set("file_util") {
     deps += [
       "//chrome/common/safe_browsing",
       "//chrome/common/safe_browsing:archive_analyzer_results",
-      "//chrome/common/safe_browsing:rar_analyzer",
+      "//chrome/common/safe_browsing:safe_browsing",
     ]
 
     if (is_linux || is_win) {

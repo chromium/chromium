@@ -376,7 +376,9 @@ TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
 
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeRarFile(_, _, _))
-      .WillOnce([&](base::File rar_file, base::File temporary_file,
+      .WillOnce([&](base::File rar_file,
+                    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
+                        temp_file_getter,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeRarFileCallback
                         callback) {
         EXPECT_TRUE(base::DeleteFile(temp_path));
