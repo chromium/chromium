@@ -48,6 +48,20 @@ constexpr int kMinRequiredRelatedSearches = 3;
 // visit.
 constexpr int kMinRequiredVisits = 3;
 
+// This enum must match the numbering for NTPHistoryClustersIneligibleReason in
+// enums.xml. Do not reorder or remove items, and update kMaxValue when new
+// items are added.
+enum NTPHistoryClustersIneligibleReason {
+  kNone = 0,
+  kNoClusters = 1,
+  kNonProminent = 2,
+  kNoSRPVisit = 3,
+  kInsufficientVisits = 4,
+  kInsufficientImages = 5,
+  kInsufficientRelatedSearches = 6,
+  kMaxValue = kInsufficientRelatedSearches,
+};
+
 base::flat_set<std::string> GetCategories(const char* feature_param) {
   std::string categories_string = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpHistoryClustersModuleCategories, feature_param);
@@ -211,11 +225,16 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
     return;
   }
 
+  history_clusters::CoalesceRelatedSearches(clusters);
+
   // Cull clusters that do not have the minimum number of visits with and
   // without images to be eligible for display.
+  NTPHistoryClustersIneligibleReason ineligible_reason =
+      clusters.empty() ? kNoClusters : kNone;
   base::EraseIf(clusters, [&](auto& cluster) {
     // Cull non prominent clusters.
     if (!cluster.should_show_on_prominent_ui_surfaces) {
+      ineligible_reason = kNonProminent;
       return true;
     }
 
@@ -228,6 +247,7 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
               visit.normalized_url, template_url_service->search_terms_data());
         });
     if (srp_visits_it == cluster.visits.end()) {
+      ineligible_reason = kNoSRPVisit;
       return true;
     }
 
@@ -247,20 +267,33 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
     int visits_with_images = std::accumulate(
         cluster.visits.begin(), cluster.visits.end(), 0,
         [](const auto& i, const auto& v) {
-          return i +
-                 int(v.annotated_visit.content_annotations.has_url_keyed_image);
+          return i + int(v.annotated_visit.content_annotations
+                             .has_url_keyed_image &&
+                         v.annotated_visit.visit_row.is_known_to_sync);
         });
-    return cluster.visits.size() < kMinRequiredVisits ||
-           visits_with_images < GetMinImagesToShow();
+
+    if (cluster.visits.size() < kMinRequiredVisits) {
+      ineligible_reason = kInsufficientVisits;
+      return true;
+    }
+
+    if (visits_with_images < GetMinImagesToShow()) {
+      ineligible_reason = kInsufficientImages;
+      return true;
+    }
+
+    // Cull clusters that do not have the minimum required number of related
+    // searches to be eligible for display.
+    if (cluster.related_searches.size() < kMinRequiredRelatedSearches) {
+      ineligible_reason = kInsufficientRelatedSearches;
+      return true;
+    }
+
+    return false;
   });
 
-  history_clusters::CoalesceRelatedSearches(clusters);
-  // Cull clusters that do not have the minimum required number of related
-  // searches to be eligible for display.
-  base::EraseIf(clusters, [&](auto& cluster) {
-    return cluster.related_searches.size() < kMinRequiredRelatedSearches;
-  });
-
+  base::UmaHistogramEnumeration("NewTabPage.HistoryClusters.IneligibleReason",
+                                ineligible_reason);
   base::UmaHistogramBoolean("NewTabPage.HistoryClusters.HasClusterToShow",
                             !clusters.empty());
   base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumClusterCandidates",

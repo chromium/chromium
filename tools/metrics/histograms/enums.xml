@@ -74915,6 +74915,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="ShowAll"/>
 </enum>
 
+<enum name="NTPHistoryClustersIneligibleReason">
+  <int value="0" label="None"/>
+  <int value="1" label="No available clusters"/>
+  <int value="2" label="Non prominent"/>
+  <int value="3" label="No SRP visit"/>
+  <int value="4" label="Insufficient visits"/>
+  <int value="5" label="Insufficient images"/>
+  <int value="6" label="Insufficient related searches"/>
+</enum>
+
 <enum name="NTPHistoryClustersModuleDisplayLayout">
   <int value="0" label="Not displayed"/>
   <int value="1" label="Layout 1"/>
