@@ -113,8 +113,8 @@ TEST(Logging, CreatePerformanceLog) {
   capabilities.logging_prefs["performance"] = Log::kInfo;
   capabilities.logging_prefs["browser"] = Log::kInfo;
 
-  std::vector<std::unique_ptr<DevToolsEventListener>> devtools_listeners;
   std::vector<std::unique_ptr<WebDriverLog>> logs;
+  std::vector<std::unique_ptr<DevToolsEventListener>> devtools_listeners;
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
   Status status = CreateLogs(capabilities, &session, &logs, &devtools_listeners,
                              &command_listeners);
@@ -131,8 +131,8 @@ TEST(Logging, IgnoreUnknownLogType) {
   Session session("test");
   capabilities.logging_prefs["gaga"] = Log::kInfo;
 
-  std::vector<std::unique_ptr<DevToolsEventListener>> devtools_listeners;
   std::vector<std::unique_ptr<WebDriverLog>> logs;
+  std::vector<std::unique_ptr<DevToolsEventListener>> devtools_listeners;
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
   Status status = CreateLogs(capabilities, &session, &logs, &devtools_listeners,
                              &command_listeners);
@@ -147,8 +147,8 @@ TEST(Logging, DefaultLogs) {
   Capabilities capabilities;
   Session session("test");
 
-  std::vector<std::unique_ptr<DevToolsEventListener>> devtools_listeners;
   std::vector<std::unique_ptr<WebDriverLog>> logs;
+  std::vector<std::unique_ptr<DevToolsEventListener>> devtools_listeners;
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
   Status status = CreateLogs(capabilities, &session, &logs, &devtools_listeners,
                              &command_listeners);
