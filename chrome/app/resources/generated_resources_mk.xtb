@@ -624,6 +624,7 @@
 <translation id="1542137295869176367">Не може да се ажурираат податоците за најавување</translation>
 <translation id="1542514202066550870">Картичкава прикажува VR-содржини преку слушалки.</translation>
 <translation id="1543284117603151572">Увезенo од Edge</translation>
+<translation id="1543538514740974167">Стигнете тука побрзо</translation>
 <translation id="1544588554445317666">Користете пократко име на датотека или зачувајте во друга папка</translation>
 <translation id="1545177026077493356">Автоматски режим Киоск</translation>
 <translation id="1545749641540134597">Скенирајте QR код</translation>
@@ -797,7 +798,6 @@
 <translation id="1679810534535368772">Дали сте сигурни дека сакате да излезете?</translation>
 <translation id="167983332380191032">Услугата за управување испрати HTTP-грешка.</translation>
 <translation id="167997285881077031">Гласовни поставки за „Од текст во говор“</translation>
-<translation id="1680841347983561661">Обидете се да го стартувате Google Play повторно по неколку секунди.</translation>
 <translation id="1680849702532889074">Дојде до грешка при инсталирањето на вашата апликација за Linux.</translation>
 <translation id="16815041330799488">Не дозволувај им на сајтовите да гледаат текст и слики копирани на привремената меморија</translation>
 <translation id="1682548588986054654">Нов инкогнито прозорец</translation>
@@ -2482,7 +2482,6 @@
 <translation id="3117362587799608430">Приклучокот не е целосно компатибилен</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Неуспешно испраќање <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}one{Неуспешно испраќање <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}other{Неуспешно испраќање <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Помош за <ph name="PRODUCT_NAME" /></translation>
-<translation id="3118654181216384296">Обидете се да го стартувате Linux повторно по неколку секунди.</translation>
 <translation id="3119948370277171654">Какви содржини/URL-адреса емитувавте?</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3122496702278727796">Не успеа да се создаде Директориум со податоци</translation>
@@ -2491,9 +2490,7 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">За да избегнете проблеми со полнењето и изведбата, користете компатибилен адаптер за напојување од Dell или USB-адаптер од типот C.</translation>
 <translation id="3127862849166875294">Промена на големината на дискот за Linux</translation>
-<translation id="3127882968243210659">За да стартувате Google Play, <ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го ресетирате овој Chromebook на фабричките поставки.</translation>
 <translation id="3129173833825111527">Лева маргина</translation>
-<translation id="3129215702932019810">Грешка при стартувањето на апликацијата</translation>
 <translation id="3130528281680948470">Уредот ќе се ресетира и сите кориснички сметки и локални податоци ќе се отстранат. Ова не може да се врати назад.</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
 <translation id="313205617302240621">Ја заборавивте лозинката?</translation>
@@ -4680,6 +4677,7 @@
 <translation id="5127620150973591153">ID на безбедна врска: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Синхронизацијата е исклучена</translation>
 <translation id="5127881134400491887">Управувај со мрежни поврзувања</translation>
+<translation id="5127986747308934633">Администраторот го контролира вашиот уред</translation>
 <translation id="512903556749061217">прикачен</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Не можеше да се преземе профилот. Обидете се повторно подоцна или контактирајте со операторот за помош.</translation>
@@ -5996,7 +5994,6 @@
 <translation id="6331818708794917058">Сајтовите може да прашуваат дали да се поврзат со MIDI-уредите</translation>
 <translation id="6333064448949140209">Датотеката ќе се испрати во Google за да се отстранат грешките</translation>
 <translation id="6333170995003625229">Не можеше да се потврди адресата на е-пошта или лозинката. Обидете се да се најавите повторно.</translation>
-<translation id="6335920438823100346">За да стартувате Linux, <ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го ресетирате овој Chromebook на фабричките поставки.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> го оневозможи отстранувањето грешки на ADB Ова ќе го ресетира вашиот <ph name="DEVICE_TYPE" /> по 24 часа. Направете бекап на датотеките што сакате да ги задржите.</translation>
 <translation id="6338968693068997776">Додајте уред со USB</translation>
 <translation id="6339668969738228384">Создавање нов профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -6081,6 +6078,7 @@
 <translation id="6418160186546245112">Враќање на претходно инсталирана верзија на <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Трајно отстрани пристап за сите апликации</translation>
 <translation id="6418511932144861495">Инсталирајте важно ажурирање</translation>
+<translation id="641867537956679916">Администраторот се најавил за да се обиде да го реши проблемот. Може да продолжите да го користите уредот откако администраторот ќе ја врати контролата во ваши раце.</translation>
 <translation id="641899100123938294">Скенирајте за нови уреди</translation>
 <translation id="6419239627403237650">Од сајтот што го прегледувате</translation>
 <translation id="6419524191360800346">Достапна е надградба на Debian 11 (Bullseye)</translation>
@@ -6636,6 +6634,7 @@
 <translation id="6903022061658753260">Вашите податоци ќе се синхронизираат на сите прелистувачи Chrome каде што сте вклучиле синхронизиција на сметката. За опциите за синхронизација на Chrome OS, одете на <ph name="LINK_BEGIN" />поставките за Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Отвори ги сите (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Вклучи синхронизирање</translation>
+<translation id="6903916726032521638">Пребарајте <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="6904344821472985372">Отповикај пристап до датотека</translation>
 <translation id="6904655473976120856">Притиснете го копчето „Апликација“ за да излезете</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{За да ја задржите безбедноста на лозинките, Google Password Manager се заклучува по 1 минута неактивност}one{За да ја задржите безбедноста на лозинките, Google Password Manager се заклучува по {NUM_MINS} минута неактивност}other{За да ја задржите безбедноста на лозинките, Google Password Manager се заклучува по {NUM_MINS} минути неактивност}}</translation>
@@ -6985,7 +6984,6 @@
 <translation id="7235737137505019098">Вашиот безбедносен клуч нема доволно простор за уште сметки.</translation>
 <translation id="7235873936132740888">Сајтовите може да извршуваат посебни задачи кога ќе кликнете на одредени типови линкови, како на пр., создавање нова порака во клиентот за е-пошта или додавање нови настани во онлајн календарот</translation>
 <translation id="7238609589076576185">Вметнат е надреден знак.</translation>
-<translation id="7238665222668706269">Google Password Manager <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> го откажа преносот</translation>
 <translation id="7240339475467890413">Да се поврзе со нова точка на пристап?</translation>
 <translation id="7241389281993241388">Најавете се на <ph name="TOKEN_NAME" /> за да го увезете клиентскиот сертификат.</translation>
@@ -8713,6 +8711,7 @@
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>
 <translation id="8763927697961133303">USB-уред</translation>
 <translation id="8766796754185931010">Котоери</translation>
+<translation id="8767069439158587614">Прикажи ги сите пребарувања за <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Автоматски ажурирај го Chrome за сите корисници</translation>
 <translation id="8770406935328356739">Основен именик на екстензии</translation>
 <translation id="8771300903067484968">Заднината на почетната страница е ресетирана на стандардната заднина.</translation>
@@ -9213,7 +9212,6 @@
 <translation id="9206889157914079472">Земање белешки со пенкало од заклучен екран</translation>
 <translation id="9209563766569767417">Се проверува поставувањето на контејнерот за Linux</translation>
 <translation id="9209689095351280025">Сајтовите не можe да користат колачиња што ве следат на интернет</translation>
-<translation id="9211177926627870898">Потребно е ажурирање</translation>
 <translation id="9214520840402538427">Упс! Иницијализацијата на атрибутите за време на инсталација истече. Контактирајте со вашиот претставник за поддршка.</translation>
 <translation id="9214695392875603905">Тортичка</translation>
 <translation id="9215293857209265904">Додадена е „<ph name="EXTENSION_NAME" />“</translation>

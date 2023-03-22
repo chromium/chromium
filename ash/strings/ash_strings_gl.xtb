@@ -347,6 +347,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2726420622004325180">O teu teléfono debe ter datos móbiles para ofrecer unha zona wifi</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baixa potencia. É posible que a carga da batería non sexa fiable.</translation>
+<translation id="2740531572673183784">Aceptar</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Ventá activa sen fixar.</translation>
@@ -840,7 +841,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
-<translation id="5127986747308934633">O teu administrador está controlando o dispositivo</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
 <translation id="5150070631291639005">Configuración de privacidade</translation>
@@ -1097,7 +1097,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="639644700271529076">O bloqueo de maiúsculas está desactivado</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
-<translation id="641867537956679916">O administrador iniciou sesión para analizar un problema. Poderás seguir usando o dispositivo despois de que o administrador che devolva o control.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Eliminar todas as notificacións</translation>
 <translation id="643147933154517414">Listo</translation>

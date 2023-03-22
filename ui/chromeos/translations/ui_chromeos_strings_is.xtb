@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Biðminni Google Drive var hreinsað hjá þér.</translation>
 <translation id="2239068707900391003">Einstaklingur með kaffi</translation>
 <translation id="2251368349685848079">Endurheimta úr rusli</translation>
+<translation id="2278133026967558505">Aðgangur að skrám í gegnum öll vefsvæði og vefslóðir</translation>
 <translation id="2282155092769082568">Sjálfvirk stilling vefslóðar:</translation>
 <translation id="2284767815536050991">laus geymsla</translation>
 <translation id="2288278176040912387">Grammófónn</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Vantar „Samsvarandi auknefni viðfangs“ eða „Samsvarandi lénsendingu“ til að staðfesta auðkenni auðkenningarþjóns</translation>
 <translation id="7165320105431587207">Ekki tókst að stilla netið</translation>
 <translation id="7170041865419449892">Utan þjónustusvæðis</translation>
+<translation id="7179579940054351344">Aðgangur að skrám í gegnum öll vefsvæði og vefslóðir nema <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Vista skrá sem</translation>

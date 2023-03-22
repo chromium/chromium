@@ -346,7 +346,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1733064249834771892">fuentes</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Intenta comunicarte con el administrador del sistema.</translation>
-<translation id="1736158756193183352">Cómo <ph name="BEGIN_LINK" />acceder<ph name="END_LINK" /> a la red</translation>
 <translation id="1736420071277903564">Computadora</translation>
 <translation id="1740951997222943430">Ingresa una fecha de vencimiento válida</translation>
 <translation id="1741613555002899862">Esta política debe especificarse y tener una string válida, cuando DnsOverHttpsMode es <ph name="SECURE_DNS_MODE_SECURE" />.</translation>

@@ -4007,21 +4007,6 @@
 เมื่อตั้งค่านโยบายเป็น "ปิดใช้" โปรโมชันส่วนขยายของผู้ให้บริการข้อมูลเข้าสู่ระบบจะไม่แสดงให้ผู้ใช้เห็น</translation>
 <translation id="4768446404233019970">เปิดใช้ชุดการเข้ารหัส 3DES ใน TLS</translation>
 <translation id="4770334626033858263">การกำหนดค่าที่ใช้เพื่อสร้างและยืนยันรหัสการเข้าถึงของผู้ปกครอง</translation>
-<translation id="4771861383714907912">รายการการดำเนินการที่จะเรียกใช้เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" />
-
-      หากไม่ได้ตั้งค่านโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> ไว้ นโยบายนี้จะไม่มีผล
-
-      เมื่อหมดเวลาตามนโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> <ph name="PRODUCT_NAME" /> จะเรียกใช้การดำเนินการที่กำหนดค่าไว้ในนโยบายนี้
-
-      หากนโยบายนี้ว่างเปล่าหรือไม่ได้ตั้งค่า นโยบาย <ph name="IDLE_TIMEOUT_POLICY_NAME" /> จะไม่มีผล
-
-      การดำเนินการที่รองรับ ได้แก่ "<ph name="CLOSE_BROWSERS_ACTION" />": ปิดหน้าต่างเบราว์เซอร์และ PWA ทั้งหมดสำหรับโปรไฟล์นี้ ไม่รองรับใน Android
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": แสดงหน้าต่างเครื่องมือเลือกโปรไฟล์ ไม่รองรับใน Android
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": ล้างข้อมูลการท่องเว็บที่เกี่ยวข้อง ดูรายละเอียดเพิ่มเติมจากนโยบาย <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" และ "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />" กำหนดให้ตั้งค่านโยบาย <ph name="SYNC_DISABLED_POLICY_NAME" /> เป็น "จริง"</translation>
 <translation id="4773997835955617342">เปลี่ยนการกำหนดค่าที่แนะนำของ <ph name="KRB5_CONFIG" /> สำหรับตั๋วใหม่ที่สร้างขึ้นด้วยตนเอง
 
       หากเปิดใช้นโยบายนี้ ระบบจะใช้ค่าของนโยบาย "KerberosCustomPrefilledConfig" เป็นการกำหนดค่าที่แนะนำ และแสดงในส่วน "ขั้นสูง" ของกล่องโต้ตอบการตรวจสอบสิทธิ์ Kerberos

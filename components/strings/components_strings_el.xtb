@@ -346,7 +346,6 @@
 <translation id="1733064249834771892">γραμματοσειρές</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Προσπαθήστε να επικοινωνήσετε με το διαχειριστή συστήματος.</translation>
-<translation id="1736158756193183352"><ph name="BEGIN_LINK" />Σύνδεση<ph name="END_LINK" /> στο δίκτυο</translation>
 <translation id="1736420071277903564">Υπολογιστής</translation>
 <translation id="1740951997222943430">Εισαγάγετε έναν έγκυρο μήνα λήξης</translation>
 <translation id="1741613555002899862">Θα πρέπει να καθοριστεί μια έγκυρη συμβολοσειρά όταν η πολιτική DnsOverHttpsMode είναι <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -810,6 +809,7 @@
 <translation id="2951588413176968965">Το γραμματοκιβώτιό μου</translation>
 <translation id="2952820037279740115">Κλείσιμο όλων των παραθύρων για ανώνυμη περιήγηση</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Πίνακας αποθηκευμένων τρόπων πληρωμής</translation>
 <translation id="295526156371527179">Προειδοποίηση: Αυτή η πολιτική δεν συγχωνεύτηκε ως λεξικό όπως ορίζεται από την πολιτική, επειδή δεν είναι λεξικό.</translation>
 <translation id="2955913368246107853">Κλείσιμο γραμμής εύρεσης</translation>
 <translation id="2958544468932521864">Κρίκετ</translation>
@@ -2782,6 +2782,7 @@
 <translation id="7736959720849233795">Αντιγραφή διεύθυνσης συνδέσμου</translation>
 <translation id="7740996059027112821">Τυπική</translation>
 <translation id="77424286611022110">Αυτός ο ιστότοπος εμφανίζει παρεμβατικές ή παραπλανητικές διαφημίσεις. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Πίνακας αποθηκευμένων διευθύνσεων</translation>
 <translation id="774634243536837715">Το επικίνδυνο περιεχόμενο αποκλείστηκε.</translation>
 <translation id="7751971323486164747">Προσαρμογή μεγεθών γραμματοσειρών και οικογενειών χαρακτήρων στο Chrome</translation>
 <translation id="7752995774971033316">Χωρίς διαχείριση</translation>
@@ -3024,6 +3025,7 @@
 <translation id="8347658365704983341">Εξ αποστάσεως εκπαίδευση</translation>
 <translation id="8349305172487531364">Γραμμή σελιδοδεικτών</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
+<translation id="835203957414790336">Το περιεχόμενο των σελίδων που εκτυπώνετε και οι πληροφορίες σχετικά με τον εκτυπωτή σας αποστέλλονται στο Google Cloud ή σε τρίτα μέρη για ανάλυση. Για παράδειγμα, ενδέχεται να σαρώνεται για ευαίσθητα δεδομένα.</translation>
 <translation id="8355270400102541638">Περιβάλλον τοπικού σφάλματος:</translation>
 <translation id="8363502534493474904">Απενεργοποιήστε τη λειτουργία πτήσης.</translation>
 <translation id="8364627913115013041">Δεν έχει οριστεί.</translation>

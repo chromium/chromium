@@ -346,7 +346,6 @@
 <translation id="1733064249834771892">எழுத்துருக்கள்</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">கணினி நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
-<translation id="1736158756193183352">நெட்வொர்க்கில் <ph name="BEGIN_LINK" />உள்நுழைகிறது<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">கம்ப்யூட்டர்</translation>
 <translation id="1740951997222943430">சரியான காலாவதி மாதத்தை உள்ளிடவும்</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> ஆக இருக்கும்போது குறிப்பிடப்பட வேண்டும். அத்துடன் சரியான சரமாகவும் இருக்க வேண்டும்.</translation>
@@ -683,6 +682,7 @@
 <translation id="259821504105826686">புகைப்படம் &amp; டிஜிட்டல் கலை</translation>
 <translation id="2601150049980261779">ரொமான்ஸ் திரைப்படங்கள்</translation>
 <translation id="2604589665489080024">பாப் இசை</translation>
+<translation id="2606760465469169465">தானியங்குச் சரிபார்ப்பு</translation>
 <translation id="2610561535971892504">கிளிக் செய்து நகலெடுக்கவும்</translation>
 <translation id="2617988307566202237">பின்வரும் தகவல்களை Chrome <ph name="BEGIN_EMPHASIS" />சேமிக்காது<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -1894,6 +1894,7 @@
 <translation id="5606444889871204172"><ph name="BEGIN_BOLD" />நீங்கள் தரவை நிர்வகிக்கும் விதம்:<ph name="END_BOLD" /> 4 வாரங்களுக்கு முந்தைய தளங்களைத் Chrome தானாக நீக்கிவிடும். மீண்டும் நீங்கள் பார்க்கும் தளம் பட்டியலில் மீண்டும் காட்டப்படக்கூடும். எப்போது வேண்டுமானாலும் Chrome அமைப்புகளுக்குச் சென்று, விளம்பரங்களைப் பரிந்துரைக்கும் தளத்தைத் தடுக்கலாம், தளம் பரிந்துரைக்கும் விளம்பரங்களை முடக்கலாம்.</translation>
 <translation id="5610142619324316209">இணைப்பைச் சரிபார்த்தல்</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> கார்டுகளையும் முகவரிகளையும் நிர்வகிக்கலாம்.</translation>
+<translation id="5611398002774823980">கணக்கில் சேமி</translation>
 <translation id="561165882404867731">இந்தப் பக்கத்தை Google Translate மூலம் மொழிபெயர்</translation>
 <translation id="5612720917913232150"><ph name="URL" /> உங்கள் கம்ப்யூட்டரின் இருப்பிடத்தைப் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="561669346091975195">டிவி அறிவியல் புனைவு &amp; கற்பனை நிகழ்ச்சிகள்</translation>
@@ -3179,6 +3180,7 @@
 <translation id="8806285662264631610">குளியல் &amp; உடல் சார்ந்த தயாரிப்புகள்</translation>
 <translation id="8807160976559152894">டிரிம் ஆஃப்டர் ஈச் பேஜ்</translation>
 <translation id="8809203544698246977">தடுக்கப்பட்ட தலைப்புகள் இங்கே காட்டப்படும்</translation>
+<translation id="8811470563853401328">முகவரியைக் கணக்கில் சேமிக்கவா?</translation>
 <translation id="8813277370772331957">பின்னர் நினைவூட்டு</translation>
 <translation id="8814707942599948500">என்வெலப் C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் Chromeமைப் புதுப்பிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
@@ -3272,6 +3274,7 @@
 <translation id="9042617223719777575">அதிகக் கொள்ளளவு</translation>
 <translation id="9044359186343685026">Touch IDயைப் பயன்படுத்து</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9048035366624198823">இந்தச் செயல்களைச் செய்ய <ph name="POLICY_NAME" /> கொள்கை <ph name="POLICY_VALUE" /> என அமைக்கப்பட வேண்டும்: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 இன்ச்</translation>
 <translation id="9049981332609050619">நீங்கள் <ph name="DOMAIN" /> ஐ அடைய முயற்சி செய்தீர்கள், ஆனால் சேவையகம் ஒரு செல்லாத சான்றிதழை வழங்கியது.</translation>
 <translation id="9050666287014529139">கடவுச்சொற்றொடர்</translation>

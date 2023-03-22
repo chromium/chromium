@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1014750484722996375">Работни кътове</translation>
 <translation id="1018219910092211213">Преобразуването от DNS не е възможно</translation>
 <translation id="1018656279737460067">Отказано</translation>
+<translation id="1022433422498218992">Общи контроли</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нишки, <ph name="CPU_MAX_CLOCK_SPEED" /> ГХц)</translation>
 <translation id="1047773237499189053">Налице е нова функция. Използвайте стрелката нагоре, за да научите повече.</translation>
 <translation id="1059913517121127803">Сканирането не бе стартирано</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1664796644829245314">Визуализация на „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
+<translation id="1669047024429367828">Видимост</translation>
 <translation id="1672499492233627739">Видеокартина от уебкамерата</translation>
 <translation id="1676557873873341166">Заснема се видеоклип</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
+<translation id="1710499924611012470">Придвижване чрез функции за достъпност</translation>
 <translation id="1715359911173058521">Има проблем с установяването на връзка със скенера. Проверете връзката с USB или мрежата и опитайте отново.</translation>
 <translation id="1717874160321062422">Управлява се от <ph name="FIRST_MANAGER" /> и <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сървъри за имена</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Тип удостоверяване</translation>
 <translation id="1782199038061388045">превод</translation>
+<translation id="1790209694022261219">Прозорци и работни кътове</translation>
 <translation id="1792647875738159689">Сканирането се отменя</translation>
 <translation id="1801418420130173017">Деактивиране на тъмната тема</translation>
 <translation id="1807246157184219062">Светло</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Още настройки</translation>
 <translation id="2085089206770112532">Намаляване на яркостта на дисплея</translation>
+<translation id="2102231663024125441">Редактиране на текст</translation>
 <translation id="2105810540595158374">Устройството е контролер за игри.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Налице: <ph name="AVAILABLE_MEMORY" /> ГБ от <ph name="TOTAL_MEMORY" /> ГБ</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Критична актуализация</translation>
 <translation id="2860473693272905224">Поставете друга страница върху скенера</translation>
 <translation id="2872961005593481000">Изключване</translation>
+<translation id="2873483161362553159">Придвижване в браузъра</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
 <translation id="2878387241690264070">За <ph name="NUM_SECONDS" /> секунди батерията се разреди с(ъс) <ph name="RATE" />.</translation>
 <translation id="2902312830803030883">Още действия</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Пълно</translation>
 <translation id="4333390807948134856">Клавишът <ph name="KEY_NAME" /> е натиснат</translation>
 <translation id="435692326371619097">Управление на настройките за името на точката за достъп (APN) за мрежата. Чрез APN се установява връзка между мобилна мрежа и интернет. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Нулиране на всички клавишни комбинации</translation>
 <translation id="4378373042927530923">Не е стартирано</translation>
 <translation id="4378551569595875038">Свързване...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">Неуспешни преобразувания от DNS</translation>
 <translation id="6768237774506518020">Голям процент неуспехи при преобразуването от DNS</translation>
 <translation id="6791471867139427246">цвят на осветлението на клавиатурата</translation>
+<translation id="6798678288485555829">Придвижване в текст</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
 <translation id="6838167112108853532">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните прикачени APN са деактивирани или премахнати.</translation>
@@ -800,6 +809,7 @@
 <translation id="8104083085214006426">Използвате отворена и незащитена мрежа</translation>
 <translation id="811820734797650957">(Android) Шлюзът отговаря на команда ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>

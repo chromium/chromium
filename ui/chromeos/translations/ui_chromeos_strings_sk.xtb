@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Vyrovnávacia pamäť Disku Google bola vymazaná.</translation>
 <translation id="2239068707900391003">Osoba s kávou</translation>
 <translation id="2251368349685848079">Obnoviť z koša</translation>
+<translation id="2278133026967558505">Prístup k súborom zo všetkých webov a webových adries</translation>
 <translation id="2282155092769082568">Webová adresa automatickej konfigurácie</translation>
 <translation id="2284767815536050991">vymeniteľné úložisko</translation>
 <translation id="2288278176040912387">Gramofón</translation>
@@ -627,6 +628,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="603895874132768835">Túto sieť budete môcť používať, až keď nastavíte nový PIN</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6055907707645252013">Sieť <ph name="NETWORK_TYPE" /> nie je pripojená</translation>
+<translation id="6073060579181816027">Viaceré umiestnenia súborov</translation>
 <translation id="6074825444536523002">Formulár Google</translation>
 <translation id="6079871810119356840">Maďarská klávesnica s rozložením Qwerty</translation>
 <translation id="6096979789310008754">Text vyhľadávania bol vymazaný, zobrazujú sa všetky súbory a priečinky</translation>
@@ -767,6 +769,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7162080671816799010">Na potvrdenie overenia identity servera chýba položka Zhoda alternatívneho názvu subjektu alebo Zhoda prípony domény.</translation>
 <translation id="7165320105431587207">Sieť sa nepodarilo nakonfigurovať</translation>
 <translation id="7170041865419449892">Mimo rozsah</translation>
+<translation id="7179579940054351344">Prístup k súborom zo všetkých webov a webových adries okrem <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Uložiť súbor ako</translation>

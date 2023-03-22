@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">თქვენი Google Drive-ის ქეში გასუფთავდა.</translation>
 <translation id="2239068707900391003">პიროვნება ყავით</translation>
 <translation id="2251368349685848079">წაშლილებიდან აღდგენა</translation>
+<translation id="2278133026967558505">ფაილებზე წვდომა ყველა ვებსაიტისა და URL-ის მიერ</translation>
 <translation id="2282155092769082568">ავტოკონფიგურაციის URL:</translation>
 <translation id="2284767815536050991">ამოღებადი მეხსიერება</translation>
 <translation id="2288278176040912387">ფლეიერი</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">ავტორიზაციის სერვერის დადასტურებისთვის აკლია „სუბიექტის ალტერნატიული სახელის დამთხვევა“ ან „დომენის სუფიქსის დამთხვევა“</translation>
 <translation id="7165320105431587207">ქსელის კონფიგურაცია ვერ მოხერხდა</translation>
 <translation id="7170041865419449892">დიაპაზონს მიღმა</translation>
+<translation id="7179579940054351344">ფაილებზე წვდომა ყველა ვებსაიტისა და URL-ის მიერ, გარდა შემდეგისა: <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> გბაიტი</translation>
 <translation id="7191454237977785534">ფაილის შენახვა, როგორც</translation>

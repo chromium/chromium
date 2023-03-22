@@ -94,6 +94,7 @@
 <translation id="257931822824936280">Pinalawak - i-click upang i-collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2597457036804169544">Huwag ilapat ang madilim na tema sa mga site</translation>
+<translation id="2606760465469169465">Awtomatikong pag-verify</translation>
 <translation id="2621115761605608342">Payagan ang JavaScript para sa isang partikular na site.</translation>
 <translation id="2653659639078652383">Isumite</translation>
 <translation id="2677748264148917807">Umalis</translation>
@@ -226,6 +227,7 @@
 <translation id="5197729504361054390">Ibabahagi sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ang mga contact na pipiliin mo.</translation>
 <translation id="5216942107514965959">Huling binisita ngayong araw</translation>
 <translation id="5225463052809312700">I-on ang camera</translation>
+<translation id="5229337741799419985">Gumagana ang setting na ito nang hindi ka tinutukoy o pinapayagan ang mga site na makita ang iyong history ng pag-browse</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5264323282659631142">Alisin ang '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">I-drag mula sa itaas at pindutin ang button na bumalik upang lumabas sa full screen.</translation>
@@ -312,6 +314,7 @@
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6689172468748959065">Mga larawan sa profile</translation>
 <translation id="6697925417670533197">Mga aktibong pag-download</translation>
+<translation id="6701547804986694515">Puwedeng mag-save ang site na binibisita mo ng impormasyon sa Chrome na nagva-validate na hindi ka bot. Habang patuloy kang nagba-browse, puwedeng sumangguni ang mga site sa Chrome at i-verify sa unang site na malamang na totoong tao ka.</translation>
 <translation id="6722828510648505498">I-block ang mga prompt sa pag-sign in mula sa mga serbisyo ng pagkakakilanlan.</translation>
 <translation id="6746124502594467657">Ibaba</translation>
 <translation id="6749077623962119521">I-reset ang mga pahintulot?</translation>
@@ -429,6 +432,7 @@
 <translation id="8751914237388039244">Pumili ng larawan</translation>
 <translation id="8801436777607969138">I-block ang JavaScript para sa isang partikular na site.</translation>
 <translation id="8803526663383843427">Kapag naka-on</translation>
+<translation id="8805385115381080995">Mas mabilis ang pag-browse dahil mas maliit ang posibilidad na hilingin sa iyo ng site na i-verify na totoong tao ka</translation>
 <translation id="8816026460808729765">I-block ang mga site sa pag-access sa mga sensor</translation>
 <translation id="8823559166155093873">I-block ang cookies</translation>
 <translation id="8847988622838149491">USB</translation>
@@ -452,5 +456,6 @@
 <translation id="9162462602695099906">Mapanganib ang page na ito</translation>
 <translation id="9201023452444595544">Maki-clear ang anumang offline na data</translation>
 <translation id="930525582205581608">Kalimutan ang site na ito?</translation>
+<translation id="947156494302904893">Magagawa ng mga site na binibisita mo na i-verify na totoong tao ka at hindi ka bot</translation>
 <translation id="967624055006145463">Naka-store na data</translation>
 </translationbundle>

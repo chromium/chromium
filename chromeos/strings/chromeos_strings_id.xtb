@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1014750484722996375">Desktop</translation>
 <translation id="1018219910092211213">Tidak dapat me-resolve DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
+<translation id="1022433422498218992">Kontrol Umum</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Fitur baru tersedia, gunakan tombol Panah atas untuk mempelajari lebih lanjut.</translation>
 <translation id="1059913517121127803">Tidak dapat memulai pemindaian</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1664796644829245314">Pratinjau <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
+<translation id="1669047024429367828">Visibilitas</translation>
 <translation id="1672499492233627739">Feed video webcam</translation>
 <translation id="1676557873873341166">Merekam video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
+<translation id="1710499924611012470">Navigasi aksesibilitas</translation>
 <translation id="1715359911173058521">Terjadi error saat menghubungkan ke pemindai. Periksa koneksi jaringan atau USB, lalu coba lagi.</translation>
 <translation id="1717874160321062422">Dikelola oleh <ph name="FIRST_MANAGER" /> dan <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nama server</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Jenis autentikasi</translation>
 <translation id="1782199038061388045">terjemahan</translation>
+<translation id="1790209694022261219">Jendela dan Desktop</translation>
 <translation id="1792647875738159689">Membatalkan pemindaian</translation>
 <translation id="1801418420130173017">Nonaktifkan tema gelap</translation>
 <translation id="1807246157184219062">Terang</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2085089206770112532">Kurangi kecerahan layar</translation>
+<translation id="2102231663024125441">Pengeditan teks</translation>
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Tersedia <ph name="AVAILABLE_MEMORY" /> GB dari <ph name="TOTAL_MEMORY" /> GB</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Update penting</translation>
 <translation id="2860473693272905224">Letakkan halaman lain pada pemindai</translation>
 <translation id="2872961005593481000">Matikan</translation>
+<translation id="2873483161362553159">Navigasi browser</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="2902312830803030883">Tindakan lainnya</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Reset semua pintasan</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">Resolusi DNS gagal</translation>
 <translation id="6768237774506518020">Tingkat kegagalan resolusi DNS tinggi</translation>
 <translation id="6791471867139427246">warna lampu keyboard</translation>
+<translation id="6798678288485555829">Navigasi teks</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
 <translation id="6838167112108853532">Tidak dapat menonaktifkan atau menghapus APN ini. Pastikan aktifkan APN terlampir dinonaktifkan atau dihapus.</translation>
@@ -800,6 +809,7 @@
 <translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8132480444149501833">Minta Penghitung Traffic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>

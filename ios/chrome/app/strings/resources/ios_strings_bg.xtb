@@ -478,10 +478,12 @@
 <translation id="4454246407045105932">Добавяне на език</translation>
 <translation id="4461286950227634995">Показване на предложение за запазване на паролите</translation>
 <translation id="4462491365653392320">Проследяване на цените в разделите</translation>
+<translation id="4469324811108161144">Бележките могат да съдържат най-много <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="4469418912670346607">Продължаване с настройването</translation>
 <translation id="4474494258097106883">Създаден за вашия iPhone</translation>
 <translation id="4476574785019001431">Настройки</translation>
 <translation id="448433063499977729">Синхронизирането е изключено</translation>
+<translation id="4489536976005181779">{count,plural, =1{Страницата бе добавена към списъка за четене в профила ви {email}}other{Страниците бяха добавени към списъка за четене в профила ви {email}}}</translation>
 <translation id="4496373720959965247">Добавяне на раздели и превключване между страници</translation>
 <translation id="4502566650163919158">Проверка сега</translation>
 <translation id="4505980578794259603">Последна проверка: <ph name="TIME" />.</translation>
@@ -1085,7 +1087,6 @@
 <translation id="8534481786647257214">Публикацията в Google+ е завършена.</translation>
 <translation id="8548878600947630424">Търсене в страницата...</translation>
 <translation id="8558480467877843976">Вече можете да използвате Chrome всеки път, когато преглеждате съобщения, документи и други приложения или докоснете връзки в тях.</translation>
-<translation id="8585679456315406468">Бележките могат да съдържат най-много 1000 знака.</translation>
 <translation id="8588404856427128947">Изключено</translation>
 <translation id="8591976964826315682">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="8605219856220328675">Затваряне на раздела.</translation>

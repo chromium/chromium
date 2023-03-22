@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Votre cache Google Drive a été vidé.</translation>
 <translation id="2239068707900391003">Personne avec un café</translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
+<translation id="2278133026967558505">Accès aux fichiers pour tous les sites Web et URL</translation>
 <translation id="2282155092769082568">URL de configuration automatique :</translation>
 <translation id="2284767815536050991">espace de stockage amovible</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Il manque la valeur "Correspondance de l'autre nom de l'objet" ou "Correspondance du suffixe de domaine" pour valider l'identité du serveur d'authentification</translation>
 <translation id="7165320105431587207">Échec de la configuration du réseau.</translation>
 <translation id="7170041865419449892">Hors limite</translation>
+<translation id="7179579940054351344">Accès aux fichiers pour tous les sites Web et URL, sauf <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> Go</translation>
 <translation id="7191454237977785534">Enregistrer le fichier sous</translation>

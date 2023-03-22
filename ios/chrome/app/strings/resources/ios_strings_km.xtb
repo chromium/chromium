@@ -483,6 +483,7 @@
 <translation id="4454246407045105932">បញ្ចូល​ភាសា</translation>
 <translation id="4461286950227634995">ឱ្យរក្សាទុកពាក្យសម្ងាត់</translation>
 <translation id="4462491365653392320">តាមដាន​តម្លៃនៅក្នុងផ្ទាំង</translation>
+<translation id="4469324811108161144">កំណត់ចំណាំ​អាចមាន​រហូតដល់ <ph name="CHARACTER_LIMIT" /> តួអក្សរ។</translation>
 <translation id="4469418912670346607">បន្តរៀបចំ</translation>
 <translation id="4474494258097106883">បង្កើតឡើង​សម្រាប់ iPhone របស់អ្នក</translation>
 <translation id="4476574785019001431">ការកំណត់</translation>
@@ -1095,7 +1096,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8548878600947630424">ស្វែងរកក្នុងទំព័រ...</translation>
 <translation id="8556590991644167667">{count,plural, =1{អ្នក​បាន​ច្រានចោល​សារប្រុងប្រយ័ត្ន {count}}other{អ្នក​បាន​ច្រានចោល​សារប្រុងប្រយ័ត្ន {count}}}</translation>
 <translation id="8558480467877843976">ឥឡូវនេះ អ្នកអាចប្រើ Chrome រាល់ពេលដែល​អ្នករុករក ឬចុចលើតំណ​នៅក្នុងសារ ឯកសារ និងកម្មវិធី​ផ្សេងទៀត។</translation>
-<translation id="8585679456315406468">កំណត់ចំណាំ​អាចមាន​រហូតដល់ 1000 តួអក្សរ។</translation>
 <translation id="8588404856427128947">បិទ</translation>
 <translation id="8591976964826315682">ទប់ស្កាត់​ខូគី​ភាគីទីបី​ក្នុងមុខងារ​ឯកជន</translation>
 <translation id="8605219856220328675">បិទផ្ទាំង</translation>

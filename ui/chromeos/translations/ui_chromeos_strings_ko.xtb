@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Drive 캐시가 삭제되었습니다.</translation>
 <translation id="2239068707900391003">커피를 마시는 사람</translation>
 <translation id="2251368349685848079">휴지통에서 복원</translation>
+<translation id="2278133026967558505">모든 웹사이트 및 URL에서 파일 액세스</translation>
 <translation id="2282155092769082568">자동설정 URL:</translation>
 <translation id="2284767815536050991">이동식 저장소</translation>
 <translation id="2288278176040912387">레코드 플레이어</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">인증 서버 ID를 확인하기 위한 '제목 보조 이름 일치' 또는 '도메인 서픽스 일치'가 누락되었습니다.</translation>
 <translation id="7165320105431587207">네트워크를 설정하지 못했습니다.</translation>
 <translation id="7170041865419449892">범위를 벗어났습니다.</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" />을(를) 제외한 모든 웹사이트 및 URL에서 파일 액세스</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" />GB</translation>
 <translation id="7191454237977785534">다른 이름으로 저장</translation>

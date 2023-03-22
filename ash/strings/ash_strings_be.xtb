@@ -347,6 +347,7 @@
 <translation id="2726420622004325180">Каб тэлефон мог дзейнічаць як хот-спот, ён павінен выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
+<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Выдаліць"</translation>
 <translation id="2750941250130734256">Актыўнае акно адмацавана.</translation>
@@ -838,7 +839,6 @@
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Паказаць наступны месяц</translation>
 <translation id="5121628974188116412">Перайсці ў ніз старонкі</translation>
-<translation id="5127986747308934633">Вашай прыладай кіруе адміністратар</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
 <translation id="5147567197700016471">Прылада разблакіравана</translation>
 <translation id="5150070631291639005">Налады прыватнасці</translation>
@@ -1094,7 +1094,6 @@
 <translation id="639644700271529076">CAPS LOCK выключаны</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Памочнік Google</translation>
-<translation id="641867537956679916">Адміністратар увайшоў у сістэму, каб разабрацца ў праблеме. Вы зможаце карыстацца прыладай пасля таго, як ён верне вам кантроль над ёй.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Выдаліць усе апавяшчэнні</translation>
 <translation id="643147933154517414">Усё гатова</translation>

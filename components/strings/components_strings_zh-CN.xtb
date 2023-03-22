@@ -346,7 +346,6 @@
 <translation id="1733064249834771892">字体</translation>
 <translation id="1734864079702812349">美国运通卡</translation>
 <translation id="1734878702283171397">请尝试联系系统管理员。</translation>
-<translation id="1736158756193183352"><ph name="BEGIN_LINK" />正在登录<ph name="END_LINK" />网络</translation>
 <translation id="1736420071277903564">计算机</translation>
 <translation id="1740951997222943430">请输入有效的失效月份</translation>
 <translation id="1741613555002899862">当 DnsOverHttpsMode 是“<ph name="SECURE_DNS_MODE_SECURE" />”时，必须将此政策指定为有效字符串。</translation>
@@ -809,6 +808,7 @@
 <translation id="2951588413176968965">我的信箱</translation>
 <translation id="2952820037279740115">关闭所有无痕式窗口</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">“已保存的付款方式”表格</translation>
 <translation id="295526156371527179">警告：系统未按照相关政策中指定的方式对此政策进行字典合并，因为此政策不是字典。</translation>
 <translation id="2955913368246107853">关闭查找栏</translation>
 <translation id="2958544468932521864">板球</translation>
@@ -2770,6 +2770,7 @@
 <translation id="7736959720849233795">复制链接地址</translation>
 <translation id="7740996059027112821">标准</translation>
 <translation id="77424286611022110">此网站展示过侵扰性或误导性广告。<ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">“已保存的地址”表格</translation>
 <translation id="774634243536837715">危险内容已被拦截。</translation>
 <translation id="7751971323486164747">自定义 Chrome 中的字号和字型</translation>
 <translation id="7752995774971033316">非托管</translation>
@@ -3011,6 +3012,7 @@
 <translation id="8347658365704983341">远程教学</translation>
 <translation id="8349305172487531364">书签栏</translation>
 <translation id="8351131234907093545">创建记事</translation>
+<translation id="835203957414790336">您打印的页面内容和您的打印机相关信息会被发送到 Google Cloud 或第三方进行分析。例如，这类内容可能会被扫描，以确定其中是否包含敏感数据。</translation>
 <translation id="8355270400102541638">本机崩溃上下文：</translation>
 <translation id="8363502534493474904">关闭飞行模式</translation>
 <translation id="8364627913115013041">未设置。</translation>

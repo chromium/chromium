@@ -478,10 +478,12 @@
 <translation id="4454246407045105932">ভাষা যোগ কৰক</translation>
 <translation id="4461286950227634995">পাছৱৰ্ড ছেভ কৰাৰ সুবিধা প্ৰদান কৰক</translation>
 <translation id="4462491365653392320">টেবত মূল্য ট্ৰেক কৰক</translation>
+<translation id="4469324811108161144">টোকায়ে <ph name="CHARACTER_LIMIT" /> টা পৰ্যন্ত বৰ্ণ ছেভ কৰিব পাৰে।</translation>
 <translation id="4469418912670346607">ছেটআপ কৰাটো অব্যাহত ৰাখক</translation>
 <translation id="4474494258097106883">আপোনাৰ iPhoneৰ বাবে প্ৰস্তুত কৰা</translation>
 <translation id="4476574785019001431">ছেটিংসমূহ</translation>
 <translation id="448433063499977729">ছিংক অফ কৰা হৈছে</translation>
+<translation id="4489536976005181779">{count,plural, =1{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠা যোগ কৰা হৈছে}one{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ কৰা হৈছে}other{আপোনাৰ একাউণ্ট {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ কৰা হৈছে}}</translation>
 <translation id="4496373720959965247">টেব যোগ কৰক আৰু পৃষ্ঠাবোৰৰ মাজত সালসলনি কৰক</translation>
 <translation id="4502566650163919158">এতিয়াই পৰীক্ষা কৰক</translation>
 <translation id="4505980578794259603">অন্তিমবাৰ <ph name="TIME" /> পূৰ্বে পৰীক্ষা কৰা হৈছিল।</translation>
@@ -1085,7 +1087,6 @@
 <translation id="8534481786647257214">Google+ প’ষ্ট সম্পূৰ্ণ হ’ল৷</translation>
 <translation id="8548878600947630424">পৃষ্ঠাত বিচাৰক...</translation>
 <translation id="8558480467877843976">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংক ব্ৰাউজ কৰিলে অথবা টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
-<translation id="8585679456315406468">টোকাই ১০০০ টা পৰ্যন্ত বৰ্ণ ছেভ কৰিব পাৰে।</translation>
 <translation id="8588404856427128947">অফ আছে</translation>
 <translation id="8591976964826315682">ইনক’গনিট’ত তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰক</translation>
 <translation id="8605219856220328675">টেব বন্ধ কৰক।</translation>

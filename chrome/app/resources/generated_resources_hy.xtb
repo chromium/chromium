@@ -622,6 +622,7 @@
 <translation id="1542137295869176367">Չհաջողվեց թարմացնել ձեր մուտքի տվյալները</translation>
 <translation id="1542514202066550870">Այս ներդիրը VR բովանդակություն է հեռարձակում ակնոցին։</translation>
 <translation id="1543284117603151572">Edge-ից ներմուծված</translation>
+<translation id="1543538514740974167">Արագ հասանելիություն</translation>
 <translation id="1544588554445317666">Ընտրեք ֆայլի ավելի կարճ անվանում կամ փորձեք պահել այլ պանակում</translation>
 <translation id="1545177026077493356">Ավտոմատ Kiosk ռեժիմ</translation>
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
@@ -795,7 +796,6 @@
 <translation id="1679810534535368772">Իսկապե՞ս ուզում եք դուրս գալ</translation>
 <translation id="167983332380191032">Կառավարման ծառայությունն ուղարկել է HTTP-ի սխալ։</translation>
 <translation id="167997285881077031">Տեքստի հնչեցման ձայնի կարգավորումներ</translation>
-<translation id="1680841347983561661">Մի փոքր ուշ նորից փորձեք գործարկել Google Play-ը։</translation>
 <translation id="1680849702532889074">Լինուքսի հավելվածը տեղադրելիս սխալ առաջացավ:</translation>
 <translation id="16815041330799488">Արգելել կայքերին տեսնել սեղմատախտակին պատճենված տեքստերն ու պատկերները</translation>
 <translation id="1682548588986054654">New Incognito Window</translation>
@@ -2468,7 +2468,6 @@
 <translation id="3117362587799608430">Դոկ-կայանն ամբողջությամբ համատեղելի չէ</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Չհաջողվեց <ph name="ATTACHMENTS" /> ուղարկել <ph name="DEVICE_NAME" /> սարքին}one{Չհաջողվեց <ph name="ATTACHMENTS" /> ուղարկել <ph name="DEVICE_NAME" /> սարքին}other{Չհաջողվեց <ph name="ATTACHMENTS" /> ուղարկել <ph name="DEVICE_NAME" /> սարքին}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> Help</translation>
-<translation id="3118654181216384296">Մի քանի րոպեից նորից փորձեք վերագործարկել Լինուքսը։</translation>
 <translation id="3119948370277171654">Ի՞նչ բովանդակություն/URL էիք հեռարձակում։</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Չհաջողվեց ստեղծել տվյալների գրացուցակը</translation>
@@ -2477,9 +2476,7 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Լիցքավորման և աշխատանքի հետ կապված խնդիրներից խուսափելու համար օգտագործեք համատեղելի Dell կամ USB Type-C հոսանքի ադապտեր:</translation>
 <translation id="3127862849166875294">Սկավառակի չափի փոխում Լինուքսում</translation>
-<translation id="3127882968243210659">Google Play-ը գործարկելու համար (կանոնի աղբյուրը՝ <ph name="MANAGER" />) անհրաժեշտ է, որ պահուստավորեք ձեր տվյալներն ու վերակայեք այս Chromebook-ի գործարանային կարգավորումները։</translation>
 <translation id="3129173833825111527">Ձախ լուսանցք</translation>
-<translation id="3129215702932019810">Չհաջողվեց գործարկել հավելվածը</translation>
 <translation id="3130528281680948470">Սարքը կվերականգնվի: Բոլոր օգտատերերի հաշիվները և տեղային տվյալները կհեռացվեն: Գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="3130863904455712965">Պատմություն և այլ տվյալներ</translation>
 <translation id="313205617302240621">Մոռացե՞լ եք գաղտնաբառը:</translation>
@@ -4666,6 +4663,7 @@
 <translation id="5127620150973591153">Անվտանգ միացման կոդ՝ <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Համաժամացումն անջատված է</translation>
 <translation id="5127881134400491887">Կառավարել ցանցի միացումները</translation>
+<translation id="5127986747308934633">Ձեր ադմինիստրատորը վերահսկում է ձեր սարքը</translation>
 <translation id="512903556749061217">կցված</translation>
 <translation id="5130080518784460891">Էտեն</translation>
 <translation id="5130675701626084557">Չհաջողվեց ներբեռնել պրոֆիլը։ Փորձեք մի փոքր ուշ կամ օգնության համար կապվեք օպերատորի հետ։</translation>
@@ -5981,7 +5979,6 @@
 <translation id="6331818708794917058">Կայքերը կարող են MIDI սարքերին միանալու թույլտվություն խնդրել</translation>
 <translation id="6333064448949140209">Վրիպազերծման համար ֆայլը կուղարկվի Google-ին</translation>
 <translation id="6333170995003625229">Չհաջողվեց հաստատել ձեր էլ․ հասցեն կամ գաղտնաբառը։ Նորից մտեք հաշիվ։</translation>
-<translation id="6335920438823100346">Լինուքսը գործարկելու համար (կանոնի աղբյուրը՝ <ph name="MANAGER" />) անհրաժեշտ է, որ պահուստավորեք ձեր տվյալներն ու վերակայեք այս Chromebook-ի գործարանային կարգավորումները։</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> կայքն անջատել է ADB վրիպազերծումը։ 24 ժամ հետո ձեր <ph name="DEVICE_TYPE" /> սարքը կվերակայվի։ Պահուստավորեք ֆայլերը, որոնք ուզում եք պահել։</translation>
 <translation id="6338968693068997776">Ավելացրեք USB սարք</translation>
 <translation id="6339668969738228384">Ստեղծել նոր պրոֆիլ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
@@ -6066,6 +6063,7 @@
 <translation id="6418160186546245112">Վերադարձ <ph name="IDS_SHORT_PRODUCT_NAME" />-ի նախկինում տեղադրված տարբերակի</translation>
 <translation id="6418481728190846787">Մշտապես արգելել բոլոր հավելվածներին</translation>
 <translation id="6418511932144861495">Կարևոր թարմացման տեղադրում</translation>
+<translation id="641867537956679916">Ձեր ադմինիստրատորը մուտք է գործել համակարգ՝ խնդիրը պարզելու համար։ Դուք կկարողանաք շարունակել օգտագործել սարքը, երբ ադմինիստրատորը սարքի վերահսկողությունը նորից ձեզ փոխանցի։</translation>
 <translation id="641899100123938294">Որոնել նոր սարքեր</translation>
 <translation id="6419239627403237650">Կայքից, որը դիտում եք</translation>
 <translation id="6419524191360800346">Հասանելի է Debian 11-ի (Bullseye) նորացում</translation>
@@ -6971,7 +6969,6 @@
 <translation id="7235737137505019098">Անվտանգության բանալու վրա բավարար տարածք չկա ևս մեկ հաշիվ ստեղծելու համար:</translation>
 <translation id="7235873936132740888">Կայքերը կարող են մշակել հատուկ առաջադրանքներ, երբ սեղմում եք որոշակի տեսակի հղումների վրա (օր․՝ փոստային ծրագրում նոր հաղորդագրություն ստեղծելու կամ առցանց օրացույցում նոր միջոցառումներ ավելացնելու համար)</translation>
 <translation id="7238609589076576185">Շեշտի նշանը զետեղվեց։</translation>
-<translation id="7238665222668706269">Google գաղտնաբառերի կառավարիչ <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> սարքը չեղարկել է փոխանցումը</translation>
 <translation id="7240339475467890413">Միանա՞լ նոր թեժ կետին</translation>
 <translation id="7241389281993241388">Սպասառուի վկայագիրը ներմուծելու համար մուտք գործեք <ph name="TOKEN_NAME" />:</translation>
@@ -9194,7 +9191,6 @@
 <translation id="9206889157914079472">Ստիլուսի միջոցով նշումների ստեղծում կողպէկրանից</translation>
 <translation id="9209563766569767417">Լինուքսի կոնտեյների կարգավորումները ստուգվում են</translation>
 <translation id="9209689095351280025">Կայքերը չեն կարող օգտագործել քուքիները, որոնց միջոցով հետագծվում են ձեր գործողությունները համացանցում։</translation>
-<translation id="9211177926627870898">Պահանջվում է թարմացում</translation>
 <translation id="9214520840402538427">Ցավոք, եղադրման ժամանակի հատկանիշների սկզբնավորումը ժամասպառվեց: Կապվեք ձեր աջակցման կենտրոնի ներկայացուցչի հետ:</translation>
 <translation id="9214695392875603905">Կեքս</translation>
 <translation id="9215293857209265904">«<ph name="EXTENSION_NAME" />» ընդլայնումն ավելացվել է</translation>

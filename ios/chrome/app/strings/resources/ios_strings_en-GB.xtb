@@ -483,6 +483,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4454246407045105932">Add language</translation>
 <translation id="4461286950227634995">Offer to save passwords</translation>
 <translation id="4462491365653392320">Track prices on tabs</translation>
+<translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="4469418912670346607">Continue setup</translation>
 <translation id="4474494258097106883">Built for your iPhone</translation>
 <translation id="4476574785019001431">Settings</translation>
@@ -1096,7 +1097,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8548878600947630424">Find in page...</translation>
 <translation id="8556590991644167667">{count,plural, =1{You dismissed {count} warning}other{You dismissed {count} warnings}}</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
-<translation id="8585679456315406468">Notes can save up to 1,000 characters.</translation>
 <translation id="8588404856427128947">Off</translation>
 <translation id="8591976964826315682">Block third-party cookies in Incognito</translation>
 <translation id="8605219856220328675">Close tab.</translation>

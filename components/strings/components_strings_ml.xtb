@@ -346,7 +346,6 @@
 <translation id="1733064249834771892">ഫോണ്ടുകൾ</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">സിസ്റ്റം അഡ്‌മിനെ ബന്ധപ്പെടാൻ ശ്രമിക്കുക.</translation>
-<translation id="1736158756193183352">നെറ്റ്‌വർക്കിലേക്ക് <ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">കമ്പ്യൂട്ടർ</translation>
 <translation id="1740951997222943430">കാലഹരണപ്പെടുന്ന ശരിയായ മാസം നല്‍കുക</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode, <ph name="SECURE_DNS_MODE_SECURE" /> ആയിരിക്കുമ്പോൾ അക്കാര്യം വ്യക്തമാക്കിയിരിക്കണം, കൂടാതെ സാധുവായ സ്ട്രിംഗ് ആയിരിക്കുകയും വേണം.</translation>
@@ -387,6 +386,7 @@
 <translation id="1822540298136254167">നിങ്ങൾ സന്ദർശിക്കുന്ന വെബ്‌സൈറ്റുകളും അവയിൽ ചെലവഴിക്കുന്ന സമയവും</translation>
 <translation id="1824402189105105503">എട്ടാമത്തെ റോൾ</translation>
 <translation id="1826516787628120939">പരിശോധിക്കുന്നു</translation>
+<translation id="1826968372364864056">ഫോം മായ്‌ക്കുക</translation>
 <translation id="1828959155404624835">കാർ വാടകയ്‌ക്ക് നൽകലുകൾ</translation>
 <translation id="1834321415901700177">ഈ സൈറ്റിൽ ദോഷകരമായ പ്രോഗ്രാമുകൾ അടങ്ങിയിരിക്കുന്നു</translation>
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">എന്റെ മെയിൽബോക്സ്</translation>
 <translation id="2952820037279740115">എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കുക</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">സംരക്ഷിച്ച പേയ്‌മെന്റ് രീതികളുടെ പട്ടിക</translation>
 <translation id="295526156371527179">മുന്നറിയിപ്പ്: ഈ നയം ഒരു നിഘണ്ടു അല്ലാത്തതിനാലാണ് നയത്തിൽ വ്യക്തമാക്കിയിരിക്കുന്നത് പോലെ ഇത് ഒരു നിഘണ്ടുവായി ലയിപ്പിക്കാത്തത്.</translation>
 <translation id="2955913368246107853">ഫൈന്‍ഡ് ബാര്‍ അടയ്ക്കുക</translation>
 <translation id="2958544468932521864">ക്രിക്കറ്റ്</translation>
@@ -1967,6 +1968,7 @@
 <translation id="5786044859038896871">നിങ്ങളുടെ കാർഡ് വിവരം പൂരിപ്പിക്കണോ?</translation>
 <translation id="578633867165174378">Chrome, നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. ഈ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ മാറ്റാൻ ഞങ്ങൾ നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു അക്കൗണ്ടിന്റെ സൈൻ ഇൻ ഡാറ്റ}other{# അക്കൗണ്ടുകളുടെ സൈൻ ഇൻ ഡാറ്റ}}</translation>
 <translation id="580241730938216256">അപ്‌ഡേറ്റ് ചെയ്യാൻ ആരംഭിക്കുക</translation>
 <translation id="5803412860119678065">നിങ്ങളുടെ <ph name="CARD_DETAIL" /> പൂരിപ്പിക്കണോ?</translation>
 <translation id="5804241973901381774">അനുമതികൾ</translation>
@@ -2522,6 +2524,7 @@
 <translation id="7201591969684833065">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് ഇവ കാണാനാകും:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കുന്നതിന് 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="7203375778433816396">സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കുക</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു പാസ്‌കീ}other{# പാസ്‌കീകൾ}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, സുരക്ഷാ മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല.</translation>
 <translation id="7210993021468939304">കണ്ടെയ്‌നറിനുള്ളിലെ Linux ആക്‌റ്റിവിറ്റി, കൂടാതെ കണ്ടെയ്‌നറിനുള്ളിൽ Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും റൺ ചെയ്യാനും കഴിയും</translation>
 <translation id="721197778055552897">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതൽ‍ മനസിലാക്കുക<ph name="END_LINK" />.</translation>
@@ -2772,6 +2775,7 @@
 <translation id="7736959720849233795">ലിങ്ക് വിലാസം പകർത്തുക</translation>
 <translation id="7740996059027112821">സാധാരണം</translation>
 <translation id="77424286611022110">ഈ സൈറ്റ് അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങൾ കാണിക്കുന്നു. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">സംരക്ഷിച്ച വിലാസങ്ങളുടെ പട്ടിക</translation>
 <translation id="774634243536837715">അപകടകരമായ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തു.</translation>
 <translation id="7751971323486164747">Chrome-ൽ ഫോണ്ട് വലുപ്പങ്ങളും ടൈപ്പ്ഫേസുകളും ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="7752995774971033316">നിയന്ത്രിക്കാനാകാത്തത്</translation>
@@ -3013,6 +3017,7 @@
 <translation id="8347658365704983341">വിദൂര പഠനം</translation>
 <translation id="8349305172487531364">ബുക്മാര്‍ക്ക് ബാര്‍</translation>
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
+<translation id="835203957414790336">പ്രിന്റ് ചെയ്യുന്ന പേജുകളുടെ ഉള്ളടക്കവും നിങ്ങളുടെ പ്രിന്ററിനെ കുറിച്ചുള്ള വിവരങ്ങളും, വിശകലനം ചെയ്യാൻ Google ക്ലൗഡിനോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കും. ഉദാഹരണത്തിന്, സെൻസിറ്റീവായിട്ടുള്ള വ്യക്തിപരമായ ഡാറ്റ ഉണ്ടോയെന്നറിയാൻ ഇത് സ്‌കാൻ ചെയ്‌തേക്കാം.</translation>
 <translation id="8355270400102541638">ലോക്കൽ ക്രാഷ് സന്ദർഭം:</translation>
 <translation id="8363502534493474904">ഫ്ലൈറ്റ് മോഡ് ഓഫാക്കുന്നു</translation>
 <translation id="8364627913115013041">സജ്ജമാക്കിയിട്ടില്ല.</translation>

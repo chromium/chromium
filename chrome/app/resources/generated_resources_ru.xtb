@@ -624,6 +624,7 @@
 <translation id="1542137295869176367">Не удалось обновить ваши учетные данные.</translation>
 <translation id="1542514202066550870">VR-контент с этой вкладки сейчас транслируется на очки.</translation>
 <translation id="1543284117603151572">Импортированные из Microsoft Edge</translation>
+<translation id="1543538514740974167">Быстрый доступ</translation>
 <translation id="1544588554445317666">Сократите название файла или сохраните его в другую папку.</translation>
 <translation id="1545177026077493356">Автоматическое включение режима киоска</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
@@ -798,7 +799,6 @@
 <translation id="1679810534535368772">Закрыть страницу?</translation>
 <translation id="167983332380191032">От сервиса управления получен недействительный код HTTP.</translation>
 <translation id="167997285881077031">Настройки синтеза речи</translation>
-<translation id="1680841347983561661">Попробуйте запустить Google Play снова через несколько секунд.</translation>
 <translation id="1680849702532889074">В процессе установки приложения для Linux произошла ошибка.</translation>
 <translation id="16815041330799488">Не предоставлять сайтам доступ к тексту и изображениям, скопированным в буфер обмена</translation>
 <translation id="1682548588986054654">Новое окно в режиме инкогнито</translation>
@@ -2474,7 +2474,6 @@
 <translation id="3117362587799608430">Док-станция не полностью совместима с устройством</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}one{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}few{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}many{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}other{Не удалось отправить <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="3118319026408854581">Справка <ph name="PRODUCT_NAME" /></translation>
-<translation id="3118654181216384296">Попробуйте запустить Linux снова через несколько секунд.</translation>
 <translation id="3119948370277171654">Укажите тип транслируемого контента или URL.</translation>
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="3122496702278727796">Не удалось создать каталог данных</translation>
@@ -2483,9 +2482,7 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Чтобы исключить сбои при зарядке и во время работы, используйте совместимый адаптер питания Dell или адаптер USB Type-C.</translation>
 <translation id="3127862849166875294">Изменить размер диска Linux</translation>
-<translation id="3127882968243210659">Для запуска Google Play требуется (источник правила: <ph name="MANAGER" />) выполнить резервное копирование данных и сбросить настройки устройства Chromebook до заводских.</translation>
 <translation id="3129173833825111527">Левое поле</translation>
-<translation id="3129215702932019810">Ошибка при запуске приложения</translation>
 <translation id="3130528281680948470">Настройки устройства будут сброшены, а локальные данные и аккаунты пользователей – удалены. Это действие нельзя отменить.</translation>
 <translation id="3130863904455712965">История и другие данные</translation>
 <translation id="313205617302240621">Забыли пароль?</translation>
@@ -4680,6 +4677,7 @@
 <translation id="5127620150973591153">Код безопасного подключения: <ph name="TOKEN" />.</translation>
 <translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5127881134400491887">Управление сетевыми подключениями</translation>
+<translation id="5127986747308934633">Вашим устройством управляет администратор</translation>
 <translation id="512903556749061217">подключено</translation>
 <translation id="5130080518784460891">Этен</translation>
 <translation id="5130675701626084557">Не удалось скачать профиль. Повторите попытку позже или обратитесь к оператору связи.</translation>
@@ -6000,7 +5998,6 @@
 <translation id="6331818708794917058">Разрешить сайтам отправлять запрос на подключение к MIDI-устройствам</translation>
 <translation id="6333064448949140209">Файл будет отправлен в Google для отладки</translation>
 <translation id="6333170995003625229">Введен недействительный адрес электронной почты или пароль. Повторите попытку.</translation>
-<translation id="6335920438823100346">Для запуска Linux требуется (источник правила: <ph name="MANAGER" />) выполнить резервное копирование данных и сбросить настройки устройства Chromebook до заводских.</translation>
 <translation id="6336038146639916978">Отладка с помощью ADB отключена администратором (<ph name="MANAGER" />). Настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="6338968693068997776">Добавление USB-устройства</translation>
 <translation id="6339668969738228384">Создать профиль для <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -6086,6 +6083,7 @@
 <translation id="6418160186546245112">Возврат к предыдущей версии <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="6418481728190846787">Окончательно запретить доступ всем приложениям</translation>
 <translation id="6418511932144861495">Установка критического обновления</translation>
+<translation id="641867537956679916">Администратор вошел в систему, чтобы изучить проблему. Вы сможете продолжить пользоваться устройством, когда он вернет вам контроль.</translation>
 <translation id="641899100123938294">Искать новые устройства</translation>
 <translation id="6419239627403237650">Просматриваемый сайт</translation>
 <translation id="6419524191360800346">Доступна версия Debian 11 (Bullseye)</translation>
@@ -6647,6 +6645,7 @@
 <translation id="6903022061658753260">Ваши данные будут синхронизированы во всех браузерах Chrome, в которых включена синхронизация для этого аккаунта. Изменить параметры синхронизации Chrome OS можно в <ph name="LINK_BEGIN" />настройках<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Открыть все (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Включить</translation>
+<translation id="6903916726032521638">Поиск по запросу "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="6904344821472985372">Запретить доступ к файлам</translation>
 <translation id="6904655473976120856">Чтобы выйти из полноэкранного режима, нажмите на значок приложения</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Для защиты ваших данных Google Менеджер паролей блокируется после одной минуты бездействия.}one{Для защиты ваших данных Google Менеджер паролей блокируется после {NUM_MINS} минуты бездействия.}few{Для защиты ваших данных Google Менеджер паролей блокируется после {NUM_MINS} минут бездействия.}many{Для защиты ваших данных Google Менеджер паролей блокируется после {NUM_MINS} минут бездействия.}other{Для защиты ваших данных Google Менеджер паролей блокируется после {NUM_MINS} минуты бездействия.}}</translation>
@@ -6998,7 +6997,6 @@
 <translation id="7235737137505019098">На электронном ключе не хватает места для нового аккаунта.</translation>
 <translation id="7235873936132740888">Когда вы нажимаете на определенные типы ссылок, сайты могут выполнять специальные задачи, например создавать новое сообщение в почтовом клиенте или добавлять мероприятие в календарь.</translation>
 <translation id="7238609589076576185">Диакритический знак вставлен.</translation>
-<translation id="7238665222668706269">Google Менеджер паролей <ph name="SEPARATOR" /> <ph name="ACCOUNT" />.</translation>
 <translation id="7239108166256782787">Передача данных с устройства "<ph name="DEVICE_NAME" />" остановлена</translation>
 <translation id="7240339475467890413">Подключиться к новой точке доступа?</translation>
 <translation id="7241389281993241388">Войдите в <ph name="TOKEN_NAME" />, чтобы импортировать сертификат клиента.</translation>
@@ -8729,6 +8727,7 @@
 <translation id="8762886931014513155">Требуется обновить устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">USB-устройство</translation>
 <translation id="8766796754185931010">Котоери</translation>
+<translation id="8767069439158587614">Показать все результаты поиска по запросу "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="8767621466733104912">Обновить Chrome для всех пользователей</translation>
 <translation id="8770406935328356739">Корневой каталог расширения</translation>
 <translation id="8771300903067484968">Фон стартовой страницы изменен на вариант по умолчанию.</translation>
@@ -9234,7 +9233,6 @@
 <translation id="9206889157914079472">Создание заметок на заблокированном экране с помощью стилуса</translation>
 <translation id="9209563766569767417">Проверка настроек контейнера Linux</translation>
 <translation id="9209689095351280025">Сайты не могут использовать файлы cookie, которые отслеживают ваши действия в Интернете.</translation>
-<translation id="9211177926627870898">Требуется обновление</translation>
 <translation id="9214520840402538427">К сожалению, срок инициализации для атрибутов времени установки истек. Обратитесь в службу поддержки.</translation>
 <translation id="9214695392875603905">Кекс</translation>
 <translation id="9215293857209265904">Добавлено расширение или приложение: <ph name="EXTENSION_NAME" /></translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Your Google Drive cache was cleared.</translation>
 <translation id="2239068707900391003">Žmogus su kava</translation>
 <translation id="2251368349685848079">Atkurti iš šiukšliadėžės</translation>
+<translation id="2278133026967558505">Visų svetainių ir URL prieiga prie failų</translation>
 <translation id="2282155092769082568">Automatinės konfigūracijos URL:</translation>
 <translation id="2284767815536050991">pašalinama saugykla</translation>
 <translation id="2288278176040912387">Grotuvas</translation>
@@ -627,6 +628,7 @@
 <translation id="603895874132768835">Negalėsite naudoti šio tinklo, kol nustatysite naują PIN kodą</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6055907707645252013">Tinklas: <ph name="NETWORK_TYPE" />, neprisijungta</translation>
+<translation id="6073060579181816027">Kelios failų vietos</translation>
 <translation id="6074825444536523002">„Google“ forma</translation>
 <translation id="6079871810119356840">Vengrų k. su QWERTY klaviatūra</translation>
 <translation id="6096979789310008754">Paieškos tekstas išvalytas, rodomi visi failai ir aplankai.</translation>
@@ -767,6 +769,7 @@
 <translation id="7162080671816799010">Neužpildytas laukas „Alternatyvaus subjekto pavadinimo atitiktis“ arba „Domeno plėtinio atitiktis“, todėl negalima patvirtinti autentifikavimo serverio tapatybės</translation>
 <translation id="7165320105431587207">Nepavyko sukonfigūruoti tinklo</translation>
 <translation id="7170041865419449892">Nepasiekiama</translation>
+<translation id="7179579940054351344">Visų svetainių ir URL (išskyrus <ph name="NON_RESTRICTED_DESTINATIONS" />) prieiga prie failų</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Išsaugoti failą kaip</translation>

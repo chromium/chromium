@@ -483,6 +483,7 @@
 <translation id="4454246407045105932">Добавление языка</translation>
 <translation id="4461286950227634995">Предлагать сохр. паролей</translation>
 <translation id="4462491365653392320">Отслеживать цены на вкладках</translation>
+<translation id="4469324811108161144">Максимальное количество символов в примечании: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469418912670346607">Продолжить настройку</translation>
 <translation id="4474494258097106883">Создан специально для iPhone</translation>
 <translation id="4476574785019001431">Настройки</translation>
@@ -1096,7 +1097,6 @@
 <translation id="8548878600947630424">Найти на странице…</translation>
 <translation id="8556590991644167667">{count,plural, =1{Вы закрыли {count} предупреждение.}one{Вы закрыли {count} предупреждение.}few{Вы закрыли {count} предупреждения.}many{Вы закрыли {count} предупреждений.}other{Вы закрыли {count} предупреждения.}}</translation>
 <translation id="8558480467877843976">Теперь можно сделать так, что при переходе по ссылкам в сообщениях, документах и других приложениях будет открываться браузер Chrome.</translation>
-<translation id="8585679456315406468">Не более 1000 символов.</translation>
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="8605219856220328675">Закрыть вкладку.</translation>

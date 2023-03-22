@@ -478,10 +478,12 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4454246407045105932">Dil Əlavə Edin</translation>
 <translation id="4461286950227634995">Parolların yadda saxlanılması təklif edilsin</translation>
 <translation id="4462491365653392320">Tablarda Qiymətləri izləyin</translation>
+<translation id="4469324811108161144">Qeydlər maksimum <ph name="CHARACTER_LIMIT" /> simvolu yadda saxlaya bilər.</translation>
 <translation id="4469418912670346607">Quraşdırmağa davam edin</translation>
 <translation id="4474494258097106883">iPhone'unuz üçün hazırlanıb</translation>
 <translation id="4476574785019001431">Ayarlar</translation>
 <translation id="448433063499977729">Sinxronizasiya deaktiv edilib</translation>
+<translation id="4489536976005181779">{count,plural, =1{Səhifə hesabdakı ({email}) oxu siyahısına əlavə edildi}other{Səhifələr hesabdakı ({email}) oxu siyahısına əlavə edildi}}</translation>
 <translation id="4496373720959965247">Tablar əlavə edin və səhifələri dəyişdirin</translation>
 <translation id="4502566650163919158">İndi Yoxlayın</translation>
 <translation id="4505980578794259603">Sonuncu yoxlama: <ph name="TIME" />.</translation>
@@ -1085,7 +1087,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8534481786647257214">Google+ postu tamamladı.</translation>
 <translation id="8548878600947630424">Səhifədə tapın...</translation>
 <translation id="8558480467877843976">İndi istənilən vaxt axtarış edərkən və ya mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chrome'u istifadə edə bilərsiniz.</translation>
-<translation id="8585679456315406468">Qeydlər maksimum 1000 simvolu yadda saxlaya bilər.</translation>
 <translation id="8588404856427128947">Deaktiv</translation>
 <translation id="8591976964826315682">Anonim rejimdə üçüncü tərəf kukilərini bloklayın</translation>
 <translation id="8605219856220328675">Paneli qapadın.</translation>

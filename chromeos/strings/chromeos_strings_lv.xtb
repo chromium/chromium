@@ -102,6 +102,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Autentifikācijas veids</translation>
 <translation id="1782199038061388045">tulkojumu</translation>
+<translation id="1790209694022261219">Logi un darbvietas</translation>
 <translation id="1792647875738159689">Skenēšana tiek atcelta</translation>
 <translation id="1801418420130173017">Atspējot tumšo motīvu</translation>
 <translation id="1807246157184219062">Gaišs</translation>
@@ -368,6 +369,7 @@
 <translation id="4311195029067684288">Pilns</translation>
 <translation id="4333390807948134856">Taustiņš “<ph name="KEY_NAME" />” ir nospiests</translation>
 <translation id="435692326371619097">Pārvaldiet tīkla APN iestatījumus. APN izveido savienojumu starp mobilo tīklu un internetu. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="437294888293595148">Atiestatīt visus īsinājumtaustiņus</translation>
 <translation id="4378373042927530923">Nav veikta izpilde</translation>
 <translation id="4378551569595875038">Pievienojas...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -800,6 +802,7 @@
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
 <translation id="811820734797650957">(Android) Vārteju var ehotestēt</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8132480444149501833">Pieprasīt datplūsmas skaitītājus</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Atlasīt <ph name="TOPIC_SOURCE" /> vienumu <ph name="TOPIC_SOURCE_DESC" /></translation>

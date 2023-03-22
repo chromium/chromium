@@ -478,6 +478,7 @@
 <translation id="4454246407045105932">மொழியைச் சேர்த்தல்</translation>
 <translation id="4461286950227634995">கடவுச்சொற்களைச் சேமிப்பதற்குக் கேள்</translation>
 <translation id="4462491365653392320">உலாவிப் பக்கங்களில் விலைகளைக் கண்காணித்தல்</translation>
+<translation id="4469324811108161144">குறிப்புகளில் அதிகபட்சம் <ph name="CHARACTER_LIMIT" /> எழுத்துகள் இருக்கலாம்.</translation>
 <translation id="4469418912670346607">அமைவைத் தொடர்க</translation>
 <translation id="4474494258097106883">iPhoneனுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="4476574785019001431">அமைப்புகள்</translation>
@@ -1085,7 +1086,6 @@
 <translation id="8534481786647257214">Google+ இடுகை நிறைவுபெற்றது.</translation>
 <translation id="8548878600947630424">பக்கத்தில் கண்டறி</translation>
 <translation id="8558480467877843976">நீங்கள் உலாவும் போது அல்லது மெசேஜ்கள், ஆவணங்கள் அல்லது பிற ஆப்ஸில் உள்ள இணைப்புகளைக் கிளிக் செய்யும்போதெல்லாம் Chromeமை பயன்படுத்தலாம்.</translation>
-<translation id="8585679456315406468">குறிப்புகளில் 1000 எழுத்துகள் வரை சேமிக்கலாம்.</translation>
 <translation id="8588404856427128947">ஆஃப்</translation>
 <translation id="8591976964826315682">மறைநிலையில் மூன்றாம் தரப்பு குக்கீகளைத் தடு</translation>
 <translation id="8605219856220328675">தாவலை மூடு.</translation>
@@ -1140,6 +1140,7 @@
 <translation id="8952559610785099500">கடவுச்சொல்லைச் சேருங்கள்</translation>
 <translation id="8953046091948372197">உங்கள் கடவுச்சொற்களை இங்கே பார்க்கலாம்</translation>
 <translation id="895541991026785598">சிக்கலைப் புகார் செய்க</translation>
+<translation id="8971545611707025079">மீண்டும் சரிபாருங்கள்</translation>
 <translation id="8974714402877957201">1. iPad அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="8976382372951310360">உதவி</translation>
 <translation id="8976414606286374109">கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்படும்.</translation>

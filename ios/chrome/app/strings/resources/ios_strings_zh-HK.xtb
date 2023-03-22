@@ -478,10 +478,12 @@
 <translation id="4454246407045105932">新增語言</translation>
 <translation id="4461286950227634995">顯示儲存密碼的選項</translation>
 <translation id="4462491365653392320">在分頁上追蹤價格</translation>
+<translation id="4469324811108161144">筆記可以儲存最多 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
 <translation id="4469418912670346607">繼續設定</translation>
 <translation id="4474494258097106883">專為 iPhone 而設</translation>
 <translation id="4476574785019001431">設定</translation>
 <translation id="448433063499977729">同步功能已關閉</translation>
+<translation id="4489536976005181779">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將網頁新增至帳戶 {email} 的閱讀清單}}</translation>
 <translation id="4496373720959965247">新增標籤並在網頁之間切換</translation>
 <translation id="4502566650163919158">立即檢查</translation>
 <translation id="4505980578794259603">上次檢查時間：<ph name="TIME" />。</translation>
@@ -1083,7 +1085,6 @@
 <translation id="8534481786647257214">已在 Google+ 上發佈。</translation>
 <translation id="8548878600947630424">從網頁中尋找…</translation>
 <translation id="8558480467877843976">您現在隨時可使用 Chrome 瀏覽或開啟訊息、文件和其他應用程式中的連結。</translation>
-<translation id="8585679456315406468">筆記可以儲存最多 1000 個字元。</translation>
 <translation id="8588404856427128947">閂</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8605219856220328675">關閉分頁</translation>

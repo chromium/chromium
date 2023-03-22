@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Вашиот кеш на Google Drive е исчистен.</translation>
 <translation id="2239068707900391003">Човек со шолја кафе</translation>
 <translation id="2251368349685848079">Врати од корпа</translation>
+<translation id="2278133026967558505">Пристап до датотеки од сите веб-сајтови и URL-адреси</translation>
 <translation id="2282155092769082568">Линк за автоматско конфигурирање:</translation>
 <translation id="2284767815536050991">пренослива меморија</translation>
 <translation id="2288278176040912387">Грамофон</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Недостасува „Совпаѓање на алтернативно име за наслов“ или „Совпаѓање на суфикс на домен“ за да се потврди идентитетот на серверот за автентикација</translation>
 <translation id="7165320105431587207">Не успеа да се конфигурира мрежата</translation>
 <translation id="7170041865419449892">Надвор од опсег</translation>
+<translation id="7179579940054351344">Пристап до датотеки од сите веб-сајтови и URL-адреси, освен <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Сними ја датотеката како</translation>

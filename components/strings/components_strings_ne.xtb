@@ -346,7 +346,6 @@
 <translation id="1733064249834771892">फन्टहरू</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">प्रणालीको प्रशासकलाई सम्पर्क गर्ने प्रयास गर्नुहोस्।</translation>
-<translation id="1736158756193183352">नेटवर्कमा <ph name="BEGIN_LINK" />साइन इन गर्ने तरिका<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">कम्प्युटर</translation>
 <translation id="1740951997222943430">म्याद सकिने मान्य महिना प्रविष्टि गर्नुहोस्</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> हुँदा नीति अनिवार्य रूपमा तोकिएको हुनका साथै उक्त नीति एउटा मान्य स्ट्रिङ हुनु पर्छ।</translation>
@@ -387,6 +386,7 @@
 <translation id="1822540298136254167">तपाईंले भ्रमण गर्नुभएका वेबसाइट र बिताउनुभएको समय</translation>
 <translation id="1824402189105105503">आठौँ रोल</translation>
 <translation id="1826516787628120939">जाँच गर्दै</translation>
+<translation id="1826968372364864056">फाराममा स्वतः भरिएको जानकारी हटाउनुहोस्</translation>
 <translation id="1828959155404624835">कार भाडामा दिने कम्पनी</translation>
 <translation id="1834321415901700177">यस साइटमा हानिकारक प्रोग्रामहरू छन्</translation>
 <translation id="1838374766361614909">खोजी खाली गर्नुहोस्</translation>
@@ -1965,6 +1965,7 @@
 <translation id="5786044859038896871">तपाईं आफ्नो कार्ड सम्बन्धी जानकारी भर्न चाहनुहुन्छ?</translation>
 <translation id="578633867165174378">Chrome ले तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड डेटा चोरीको घटनामा खुलासा गरिएको पत्ता लगायो। हामी तपाईंलाई अहिले नै यो पासवर्ड बदल्न सिफारिस गर्छौँ।</translation>
 <translation id="5789643057113097023">।</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{कुनै पनि खाताको साइनइन डेटा छैन}=1{एउटा खाताको साइनइन डेटा}other{# वटा खाताको साइनइन डेटा}}</translation>
 <translation id="580241730938216256">अपडेट सुरु गर्नुहोस्</translation>
 <translation id="5803412860119678065">तपाईं आफ्नो <ph name="CARD_DETAIL" /> सम्बन्धी जानकारी भर्न चाहनुहुन्छ?</translation>
 <translation id="5804241973901381774">अनुमतिहरू</translation>
@@ -2520,6 +2521,7 @@
 <translation id="7201591969684833065">तपाईंका प्रशासक निम्न कुरा हेर्न सक्नुहुन्छ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने ट्याब की अनि इन्टर की थिचेर नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="7203375778433816396">Chrome लाई सिस्टमको डिफल्ट ब्राउजर बनाउनुहोस्</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{एउटा पनि पासकी छैन}=1{एउटा पासकी}other{# वटा पासकी}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ले सुरक्षा मानहरूको पालना गर्दैन।</translation>
 <translation id="7210993021468939304">कन्टेनर भित्र Linux का क्रियाकलाप हेर्न र कन्टेनरभित्र Linux एपहरू इन्स्टल गर्न र चलाउन सक्छ</translation>
 <translation id="721197778055552897">यो समस्याको बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>

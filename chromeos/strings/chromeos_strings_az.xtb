@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1014750484722996375">Masalar</translation>
 <translation id="1018219910092211213">DNS'i həll etmək olmur</translation>
 <translation id="1018656279737460067">Ləğv edilib</translation>
+<translation id="1022433422498218992">Ümumi nizamlayıcılar</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu, <ph name="CPU_MAX_CLOCK_SPEED" /> GHs)</translation>
 <translation id="1047773237499189053">Yeni funksiya əlçatandır, ətraflı məlumat üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="1059913517121127803">Skanlamanı başlatmaq mümkün olmadı</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
 <translation id="1664796644829245314">Önizləyin: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
+<translation id="1669047024429367828">Görünmə dərəcəsi</translation>
 <translation id="1672499492233627739">Veb kamera video lenti</translation>
 <translation id="1676557873873341166">Video çəkilir</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Həlledicisi Mövcuddur</translation>
+<translation id="1710499924611012470">Əlçatımlıq naviqasiyası</translation>
 <translation id="1715359911173058521">Skanerlə bağlantı yaratmaq olmur. Şəbəkəvə ya USB bağlantısını yoxlayıb yenidən sınayın.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> və <ph name="SECOND_MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="1726100011689679555">Ad serverləri</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Doğrulama növü</translation>
 <translation id="1782199038061388045">tərcümə</translation>
+<translation id="1790209694022261219">Pəncərə və masalar</translation>
 <translation id="1792647875738159689">Skanlama ləğv edilir</translation>
 <translation id="1801418420130173017">Qaranlıq temanı deaktiv edin</translation>
 <translation id="1807246157184219062">Yüngül</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
 <translation id="2085089206770112532">Displey parlaqlığını azaldın</translation>
+<translation id="2102231663024125441">Mətn redaktəsi</translation>
 <translation id="2105810540595158374">Cihaz oyun nizamlayıcısıdır.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" />/<ph name="TOTAL_MEMORY" /> GB əlçatandır</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Önəmli güncəlləmə</translation>
 <translation id="2860473693272905224">Başqa bir səhifəni skanerə yerləşdirin</translation>
 <translation id="2872961005593481000">Qapadın</translation>
+<translation id="2873483161362553159">Brauzer naviqasiyası</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> deşarj edilib.</translation>
 <translation id="2902312830803030883">Daha çox əməliyyatlar</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Tam</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> düyməsi basılıb</translation>
 <translation id="435692326371619097">Şəbəkə APN ayarlarını idarə edin. APN-lər mobil şəbəkə ilə internet arasında əlaqə yaradır. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Qısayolları sıfırlayın</translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
 <translation id="4378551569595875038">Qoşulur...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">DNS həlləri alınmadı</translation>
 <translation id="6768237774506518020">DNS həllinin alınmama faizi yüksəkdir</translation>
 <translation id="6791471867139427246">klaviatura işıq rəngi</translation>
+<translation id="6798678288485555829">Mətn naviqasiyası</translation>
 <translation id="680983167891198932">Açar</translation>
 <translation id="6816797338148849397">Seçiminizlə əlaqəli məlumat əlçatandır. Giriş üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="6838167112108853532">Bu APN'i deaktiv etmək və ya silmək mümkün deyil. Əlavə edilmiş aktiv APN'lərin deaktiv edildiyinə və ya silindiyinə əmin olun.</translation>
@@ -800,6 +809,7 @@
 <translation id="8104083085214006426">Açıq və güvənsiz şəbəkədən istifadə edirsiniz</translation>
 <translation id="811820734797650957">(Android) Giriş test edilə bilər</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seçin</translation>

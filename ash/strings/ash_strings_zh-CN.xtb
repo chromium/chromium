@@ -123,6 +123,7 @@
 <translation id="15373452373711364">大号鼠标光标</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">请让您的管理员在 Google 管理控制台中设置此设备</translation>
+<translation id="1549512626801247439">存储空间管理</translation>
 <translation id="1550406609415860283">有可用设备</translation>
 <translation id="1550523713251050646">点击即可查看更多选项</translation>
 <translation id="1555130319947370107">蓝色</translation>
@@ -245,6 +246,7 @@
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149229036084364364">切换到上一曲</translation>
 <translation id="2161132820593978283">试用相机取景功能，使自己在视频通话过程中位于屏幕中央。您可在“快捷设置”中开启此功能。</translation>
+<translation id="2165966740263283349">存储空间使用情况</translation>
 <translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="2185166372312820725">转到上一个标签页</translation>
 <translation id="219905428774326614">启动器，所有应用</translation>
@@ -279,6 +281,7 @@
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
 <translation id="2359808026110333948">继续</translation>
+<translation id="2360398059912971776">电池</translation>
 <translation id="2367186422933365202">无法登录 Chromebook</translation>
 <translation id="2367972762794486313">显示应用</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
@@ -311,6 +314,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">解锁窗口</translation>
 <translation id="2530896289327917474">开启或关闭光标浏览模式</translation>
+<translation id="2531025035050312891">设备运行缓慢</translation>
 <translation id="2542089167727451762">请点按您的个人资料图片</translation>
 <translation id="255671100581129685">无法在公用自助终端使用 Google 助理。</translation>
 <translation id="256712445991462162">停靠的放大镜</translation>
@@ -322,6 +326,7 @@
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
 <translation id="2598725286293895280">该桌面中含有不受支持的应用</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
+<translation id="2612072250312279703">活动监视器</translation>
 <translation id="2612614436418177118">在应用网格内移动某个应用图标</translation>
 <translation id="2620016719323068571">搜索您的<ph name="CATEGORY" />、文件、应用等内容…</translation>
 <translation id="2620436844016719705">系统</translation>
@@ -347,6 +352,7 @@
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
+<translation id="2740531572673183784">确定</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“删除”</translation>
 <translation id="2750941250130734256">取消停靠活动窗口。</translation>
@@ -448,6 +454,7 @@
 <translation id="3256109297135787951">取消任务栏中某项内容的突出显示状态</translation>
 <translation id="3260969790895726815">系统会在本地处理语音，并支持离线语音输入，但部分语音指令会不起作用。</translation>
 <translation id="3269597722229482060">右键点击</translation>
+<translation id="3289364673986435196">电源菜单</translation>
 <translation id="3289544412142055976">尚不支持 Linux 应用</translation>
 <translation id="3289674678944039601">正在通过适配器充电</translation>
 <translation id="3290356915286466215">无保护</translation>
@@ -458,12 +465,14 @@
 <translation id="3308453408813785101">日后“<ph name="USER_EMAIL_ADDRESS" />”仍能登录。</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
 <translation id="332827762492701193">已隐藏通知</translation>
+<translation id="3338855835380298613">CPU 使用情况</translation>
 <translation id="3339826665088060472">截屏工具栏，包含各种截屏和录屏工具</translation>
 <translation id="3340978935015468852">设置</translation>
 <translation id="3341303451326249809">已截取屏幕</translation>
 <translation id="334252345105450327">截屏</translation>
 <translation id="3349345708646875009">打开任务管理器</translation>
 <translation id="3351879221545518001">您目前正在投放屏幕。</translation>
+<translation id="3354555338129305222">为什么我的设备运行缓慢</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
 <translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
 <translation id="3368922792935385530">已连接</translation>
@@ -565,6 +574,7 @@
 <translation id="3779139509281456663">正在连接“<ph name="NAME" />”</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">锁定</translation>
+<translation id="3796198851576711985">电池运行状况</translation>
 <translation id="3796746699333205839">有一个应用正在使用您的摄像头和麦克风</translation>
 <translation id="3798670284305777884">扬声器（内部）</translation>
 <translation id="3799080171973636491">您按下了全屏放大镜的键盘快捷键。要开启这项功能吗？</translation>
@@ -663,6 +673,7 @@
 <translation id="4269883910223712419">此设备的管理员能够：</translation>
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4279490309300973883">正在镜像</translation>
+<translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，上午好！</translation>
@@ -716,8 +727,10 @@
 <translation id="4527045527269911712">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。</translation>
 <translation id="4533343294786968049">正在减缓电池老化，延长电池寿命。电池电量将在<ph name="FULLY_CHARGE_TIME" /> 之前充满。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 后充满</translation>
+<translation id="4536664881735498710">RAM 使用情况</translation>
 <translation id="4538824937723742295">截取整个屏幕</translation>
 <translation id="4544483149666270818">选择一个窗口即可录制</translation>
+<translation id="454541942614298893">我的设备</translation>
 <translation id="4548482551627849548">将活动窗口移至左侧桌面</translation>
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -831,9 +844,11 @@
 <translation id="5043679421800073804">点击或点按任务栏上的最后一个图标</translation>
 <translation id="504465286040788597">上一个段落</translation>
 <translation id="5045550434625856497">密码不正确</translation>
+<translation id="5062496344832867502">RAM</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="5092436659250499817">开启/关闭键盘背光</translation>
+<translation id="5094577350232361255">简介</translation>
 <translation id="509790653408515442">当您流式传输您手机上的应用时，它们会显示在此处</translation>
 <translation id="5098537242461068432">已重新打开桌面和窗口</translation>
 <translation id="5104236669533825617">无法创建抓屏</translation>
@@ -841,11 +856,11 @@
 <translation id="5111318697104479778"><ph name="DESC" />，<ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5121628974188116412">转到网页底部</translation>
-<translation id="5127986747308934633">您的管理员正在控制您的设备</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
 <translation id="5155897006997040331">朗读速度</translation>
+<translation id="5163434717504750796">电池健康度：<ph name="BATTERY_HEALTH_PERCENTAGE" />% | 充电循环次数：<ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">将桌面另存为模板</translation>
 <translation id="5168181903108465623">有可用的投放设备</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
@@ -932,6 +947,7 @@
 <translation id="557563299383177668">下一个段落</translation>
 <translation id="5577082622442191756">开启/关闭蓝牙。<ph name="STATE_TEXT" />。</translation>
 <translation id="5577281275355252094">请确保在手机上启用蓝牙以便使用 Phone Hub</translation>
+<translation id="5578188167649348993">内存</translation>
 <translation id="5580000943347215299">库</translation>
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
@@ -999,6 +1015,7 @@
 <translation id="589817443623831496">点扫描</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">黄色</translation>
+<translation id="5902162043476810127">随机存取存储器</translation>
 <translation id="5909862606227538307">闲置的桌面。</translation>
 <translation id="5911231045062997865">目前不支持 Lacros 窗口。其他应用会被保存。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1098,13 +1115,13 @@
 <translation id="639644700271529076">CAPS LOCK 已关闭</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google 助理</translation>
-<translation id="641867537956679916">您的管理员已登录，目的是调查一个问题。待管理员将控制权交还给您后，您可以继续使用此设备。</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">清除所有通知</translation>
 <translation id="643147933154517414">大功告成</translation>
 <translation id="6431865393913628856">屏幕录制</translation>
 <translation id="6442259747294754014">设备麦克风使用权限已关闭</translation>
 <translation id="6445835306623867477">正在将“<ph name="ROUTE_TITLE" />”投放至“<ph name="RECEIVER_NAME" />”</translation>
+<translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="6449483711453944360">尚不支持 Linux 应用和无痕式窗口</translation>
 <translation id="6452181791372256707">拒绝</translation>
@@ -1178,6 +1195,7 @@
 <translation id="6752912906630585008">桌面“<ph name="REMOVED_DESK" />”已移除并与桌面“<ph name="RECEIVE_DESK" />”合并</translation>
 <translation id="6753390234084146956">标签页</translation>
 <translation id="6757237461819837179">目前未播放任何媒体</translation>
+<translation id="6768043681523654438">存储空间</translation>
 <translation id="6777216307882431711">正在为已连接的 USB-C 设备充电</translation>
 <translation id="6781002679438061620">桌面 9</translation>
 <translation id="6782182743534150858">桌面 13</translation>
@@ -1302,6 +1320,7 @@
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
 <translation id="7452560014878697800">有一个应用正在使用您的摄像头</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>
@@ -1360,6 +1379,7 @@
 <translation id="7720410380936703141">重试</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 条通知}other{# 条通知}}</translation>
 <translation id="7724603315864178912">剪切</translation>
+<translation id="77365090426890123">内存使用情况</translation>
 <translation id="7742327441377685481">无通知</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="776344839111254542">点击即可查看相关更新的详情</translation>
@@ -1587,6 +1607,8 @@
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8858369206579825206">隐私控制</translation>
+<translation id="8860817004574502558">电池续航时间</translation>
+<translation id="8863602954531760927">已用 <ph name="STORAGE_IN_USE_SIZE" />，共有 <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8875021410787719674">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间移动</translation>
@@ -1650,6 +1672,7 @@
 <translation id="9178475906033259337">显示了 1 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的帐号使用此功能。</translation>
 <translation id="9183456764293710005">全屏放大镜</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | 还能维持 <ph name="TIME" /></translation>
 <translation id="9193626018745640770">正在投放至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户帐号…</translation>
 <translation id="9198992156681343238">“<ph name="DISPLAY_NAME" />”的分辨率已改为 <ph name="RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Кеш Google Диска очищен.</translation>
 <translation id="2239068707900391003">Человек с чашкой кофе</translation>
 <translation id="2251368349685848079">Восстановить из корзины</translation>
+<translation id="2278133026967558505">Доступ к файлу через все сайты и URL.</translation>
 <translation id="2282155092769082568">URL автоматической настройки:</translation>
 <translation id="2284767815536050991">съемный накопитель</translation>
 <translation id="2288278176040912387">Патефон</translation>
@@ -768,6 +769,7 @@
 <translation id="7162080671816799010">Проверка подлинности сервера невозможна, так как отсутствует "Совпадение с альтернативным именем субъекта" или "Совпадение с доменным суффиксом".</translation>
 <translation id="7165320105431587207">Не удалось настроить сеть</translation>
 <translation id="7170041865419449892">Вне зоны доступа</translation>
+<translation id="7179579940054351344">Доступ к файлу через все сайты и URL, кроме <ph name="NON_RESTRICTED_DESTINATIONS" />.</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Сохранить файл как</translation>

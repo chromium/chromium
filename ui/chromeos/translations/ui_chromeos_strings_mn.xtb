@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Таны Google Драйвын завсрын санах ойг арилгасан.</translation>
 <translation id="2239068707900391003">Кофетой хүн</translation>
 <translation id="2251368349685848079">Хогийн савнаас сэргээх</translation>
+<translation id="2278133026967558505">Бүх вебсайт болон URL файлд хандах боломжтой</translation>
 <translation id="2282155092769082568">Автоматаар тохируулах URL:</translation>
 <translation id="2284767815536050991">салгах боломжтой хадгалах сан</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
@@ -764,6 +765,7 @@
 <translation id="7162080671816799010">Баталгаажуулалтын серверийн таниулбарыг баталгаажуулах 'Субъектийн хоёрдогч нэрийн тохирол' эсвэл 'Домэйний дагаврын тохирол' дутуу байна</translation>
 <translation id="7165320105431587207">Сүлжээг тохируулж чадсангүй</translation>
 <translation id="7170041865419449892">Хамрах хүрээнээс гадуур</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" />-с бусад бүх вебсайт болон URL файлд хандах боломжтой</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ГБ</translation>
 <translation id="7191454237977785534">Файлыг ...хэлбэрээр хадгалах</translation>

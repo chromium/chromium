@@ -478,6 +478,7 @@
 <translation id="4454246407045105932">ენის დამატება</translation>
 <translation id="4461286950227634995">პაროლების შენახვის შემოთავაზება</translation>
 <translation id="4462491365653392320">ფასების გაკონტროლება ჩანართებზე</translation>
+<translation id="4469324811108161144">შესაძლებელია მაქსიმუმ <ph name="CHARACTER_LIMIT" /> სიმბოლოს ჩანიშვნა.</translation>
 <translation id="4469418912670346607">დაყენების გაგრძელება</translation>
 <translation id="4474494258097106883">შექმნილია თქვენი iPhone-ისთვის</translation>
 <translation id="4476574785019001431">პარამეტრები</translation>
@@ -1086,7 +1087,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8534481786647257214">Google+ პოსტი დასრულებულია.</translation>
 <translation id="8548878600947630424">ამ გვერდზე ძიება...</translation>
 <translation id="8558480467877843976">ამიერიდან შეგიძლიათ გამოიყენოთ Chrome, როცა ვებს ათვალიერებთ, ან შეტყობინებებში, დოკუმენტებში თუ სხვა აპებში ბმულებს ეხებით.</translation>
-<translation id="8585679456315406468">ჩანიშვნებში შესაძლებელია მაქსიმუმ 1000 სიმბოლოს შენახვა.</translation>
 <translation id="8588404856427128947">გამორთულია</translation>
 <translation id="8591976964826315682">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა ინკოგნიტო რეჟიმში</translation>
 <translation id="8605219856220328675">ჩანართის დახურვა.</translation>

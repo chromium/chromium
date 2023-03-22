@@ -357,6 +357,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2726420622004325180">Aby telefon mógł działać jako punkt dostępu, musi korzystać z mobilnej transmisji danych</translation>
 <translation id="2727175239389218057">Odpowiedz</translation>
 <translation id="2727977024730340865">Podłączono ładowarkę o małej mocy. Ładowanie baterii może być nieprawidłowe.</translation>
+<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Usuń”</translation>
 <translation id="2750941250130734256">Aktywne okno zostało oddokowane.</translation>
@@ -460,6 +461,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3256109297135787951">Anuluj zaznaczenia elementu na półce</translation>
 <translation id="3260969790895726815">Mowa jest przetwarzana lokalnie, a dyktowanie działa offline, ale niektóre polecenia głosowe nie będą działać.</translation>
 <translation id="3269597722229482060">Kliknij prawym</translation>
+<translation id="3289364673986435196">Menu zasilania</translation>
 <translation id="3289544412142055976">Aplikacje na Linuksa nie są obecnie obsługiwane</translation>
 <translation id="3289674678944039601">Ładowanie z zasilacza.</translation>
 <translation id="3290356915286466215">Niezabezpieczona</translation>
@@ -683,6 +685,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4269883910223712419">Administrator tego urządzenia może:</translation>
 <translation id="4274537685965975248">Skrót klawiszowy Ctrl + Alt + strzałka w dół został zmieniony. Aby użyć klawisza End, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w prawo.</translation>
 <translation id="4279490309300973883">Odbicie lustrzane</translation>
+<translation id="4280601795273309128">Dobiegły końca aktualizacje zabezpieczeń. Zmień urządzenie na nowsze.</translation>
 <translation id="4283888303416325161">Dla większego bezpieczeństwa wpisz hasło</translation>
 <translation id="4285498937028063278">Odepnij</translation>
 <translation id="4294319844246081198">Dzień dobry <ph name="GIVEN_NAME" />,</translation>
@@ -865,11 +868,11 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
 <translation id="5121628974188116412">Przejdź na dół strony</translation>
-<translation id="5127986747308934633">Administrator ma kontrolę nad Twoim urządzeniem</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
 <translation id="5147567197700016471">Odblokowano</translation>
 <translation id="5150070631291639005">Ustawienia prywatności</translation>
 <translation id="5155897006997040331">Szybkość czytania</translation>
+<translation id="5163434717504750796">Kondycja baterii <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Liczba cykli: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Zapisz biurko jako szablon</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
@@ -1128,7 +1131,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="639644700271529076">CAPS LOCK jest wyłączony</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asystent Google</translation>
-<translation id="641867537956679916">Administrator zalogował się, aby zbadać problem. Korzystanie z urządzenia będzie możliwe, gdy administrator odda Ci nad nim kontrolę.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Wyczyść wszystkie powiadomienia</translation>
 <translation id="643147933154517414">Wszystko gotowe</translation>
@@ -1340,6 +1342,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="743058460480092004">Aparat i mikrofon są używane.</translation>
 <translation id="7452560014878697800">Aplikacja używa kamery</translation>
 <translation id="7453330308669753048">Wynik historii wyszukiwania został usunięty</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | Pełne naładowanie za <ph name="TIME" /></translation>
 <translation id="7461924472993315131">Przypnij</translation>
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
@@ -1700,6 +1703,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="9178475906033259337">Wyświetlam 1 wynik dla zapytania <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta funkcja umożliwia szybki dostęp do każdego konta zalogowanego użytkownika bez konieczności podawania hasła. Używaj jej tylko w przypadku kont, którym ufasz.</translation>
 <translation id="9183456764293710005">Lupa pełnego ekranu</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Pozostało: <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Przesyłam do nieznanego odbiornika</translation>
 <translation id="9194617393863864469">Zaloguj innego użytkownika...</translation>
 <translation id="9198992156681343238">Rozdzielczość ekranu <ph name="DISPLAY_NAME" /> została zmieniona na <ph name="RESOLUTION" />. Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>

@@ -346,7 +346,6 @@
 <translation id="1733064249834771892">ဖောင့်များ</translation>
 <translation id="1734864079702812349">AmEx</translation>
 <translation id="1734878702283171397">စနစ်စီမံခန့်ခွဲသူကို ဆက်သွယ်ကြည့်ပါ။</translation>
-<translation id="1736158756193183352">ကွန်ရက်သို့ <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" /></translation>
 <translation id="1736420071277903564">ကွန်ပျူတာ</translation>
 <translation id="1740951997222943430">မှန်ကန်သည့် ကုန်ဆုံးမည့်လကို ထည့်ပါ</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode က <ph name="SECURE_DNS_MODE_SECURE" /> ဖြစ်သောအခါ သတ်မှတ်ထားပြီး မှန်ကန်သောလိုင်း ဖြစ်ရမည်။</translation>
@@ -388,6 +387,7 @@
 <translation id="1822540298136254167">သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များနှင့် ကြည့်ထားချိန်</translation>
 <translation id="1824402189105105503">ရှစ်ခုမြောက်အလိပ်</translation>
 <translation id="1826516787628120939">စစ်ကြည့်နေ</translation>
+<translation id="1826968372364864056">ဖောင် ရှင်းရန်</translation>
 <translation id="1828959155404624835">ကားငှားရမ်းခြင်းများ</translation>
 <translation id="1834321415901700177">ဤဆိုက်တွင် အန္တရာယ်ရှိသည့် ပရိုဂရမ်များ ပါဝင်သည်</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
@@ -814,6 +814,7 @@
 <translation id="2951588413176968965">ကျွန်ုပ်၏စာတိုက်ပုံး</translation>
 <translation id="2952820037279740115">ရုပ်ဖျက်ဝင်းဒိုးအားလုံးကို ပိတ်ရန်</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">သိမ်းထားသော ငွေပေးချေနည်းလမ်းဇယား</translation>
 <translation id="295526156371527179">သတိပေးချက်- ဤမူဝါဒသည် အဘိဓာန်တစ်ခုမဟုတ်သဖြင့် မူဝါဒက သတ်မှတ်ထားသည့်အတိုင်း အဘိဓာန်အဖြစ် ၎င်းကို ပေါင်းစည်းမထားပါ။</translation>
 <translation id="2955913368246107853">နောက်ဆုံး ဘားကို ပိတ်ရန်</translation>
 <translation id="2958544468932521864">ခရစ်ကက်</translation>
@@ -1969,6 +1970,7 @@
 <translation id="5786044859038896871">သင့်ကဒ်အချက်အလက်ကို ဖြည့်သွင်းလိုပါသလား။</translation>
 <translation id="578633867165174378">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် Chrome က တွေ့ရှိထားသည်။ ဤစကားဝှက်ကို ယခုပြောင်းရန် အကြံပြုပါသည်။</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{မရှိ}=1{အကောင့် ၁ ခုအတွက် လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာ}other{အကောင့် # ခုအတွက် လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာ}}</translation>
 <translation id="580241730938216256">အပ်ဒိတ်စတင်ရန်</translation>
 <translation id="5803412860119678065">သင့် <ph name="CARD_DETAIL" /> ကို ဖြည့်သွင်းလိုပါသလား။</translation>
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
@@ -2523,6 +2525,7 @@
 <translation id="7201591969684833065">သင့်စီမံခန့်ခွဲသူများက အောက်ပါတို့ကို မြင်နိုင်သည်-</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Tab နှိပ်ပြီး Enter ခလုတ်နှိပ်၍ ရုပ်ဖျက်တဘ်အသစ်တွင် သီးသန့်ကြည့်ရှုနိုင်သည်</translation>
 <translation id="7203375778433816396">Chrome ကို စနစ်၏ မူရင်းဘရောင်ဇာအဖြစ် သတ်မှတ်ရန်</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{မရှိ}=1{လျှို့ဝှက်ကီး ၁ ခု}other{လျှို့ဝှက်ကီး # ခု}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> သည်လုံခြုံရေး စံနှုန်းများကို လိုက်နာမှုမရှိပါ။</translation>
 <translation id="7210993021468939304">ကွန်တိန်နာအတွင်းရှိ Linux လုပ်ဆောင်ချက်ကို ကြည့်နိုင်ပြီး ကွန်တိန်နာအတွင်းတွင် Linux အက်ပ်များကို ထည့်သွင်းနိုင်၊ လုပ်ဆောင်နိုင်သည်</translation>
 <translation id="721197778055552897">ဒီပြဿနာ အကြောင်းကို <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" />။</translation>
@@ -2776,6 +2779,7 @@
 <translation id="7736959720849233795">လင့်ခ်လိပ်စာ မိတ္တူကူးရန်</translation>
 <translation id="7740996059027112821">ပုံမှန်</translation>
 <translation id="77424286611022110">ဤဝဘ်ဆိုက်က စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများကို ပြသည်။ <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">သိမ်းထားသော လိပ်စာဇယား</translation>
 <translation id="774634243536837715">အန္တရာယ်ရှိသည့် အကြောင်းအရာများကို ပိတ်ထားပါသည်</translation>
 <translation id="7751971323486164747">Chrome တွင် ဖောင့် အရွယ်အစားများနှင့် စာလုံးပုံစံများကို စိတ်ကြိုက်လုပ်ပါ</translation>
 <translation id="7752995774971033316">စီမံကွပ်ကဲမထား</translation>
@@ -3018,6 +3022,7 @@
 <translation id="8347658365704983341">အဝေးသင်</translation>
 <translation id="8349305172487531364">စာညှပ် ဘား</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
+<translation id="835203957414790336">သင်ပုံနှိပ်ထုတ်လိုက်သော စာမျက်နှာများ၏အကြောင်းအရာနှင့် သင့်ပရင်တာအကြောင်းကို စိတ်ဖြာလေ့လာရန် Google Cloud (သို့) ပြင်ပအဖွဲ့အစည်းသို့ ပို့လိုက်သည်။ ဥပမာ သတိထားရမည့်ဒေတာ ရှိ၊ မရှိ ၎င်းကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="8355270400102541638">စက်တွင်း ရပ်တန့်သွားမှု အခြေအနေ-</translation>
 <translation id="8363502534493474904">လေယာဉ်ပျံမုဒ်ကို ပိတ်နေသည်</translation>
 <translation id="8364627913115013041">မသတ်မှတ်ရသေး</translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Google Drive önbelleğiniz temizlendi.</translation>
 <translation id="2239068707900391003">Elinde kahve tutan bir kişi</translation>
 <translation id="2251368349685848079">Çöp kutusundan geri yükle</translation>
+<translation id="2278133026967558505">Tüm web siteleri ve URL'ler tarafından dosya erişimi</translation>
 <translation id="2282155092769082568">Otomatik yapılandırma URL'si:</translation>
 <translation id="2284767815536050991">çıkarılabilir depolama alanı</translation>
 <translation id="2288278176040912387">Plak çalar</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Kimlik doğrulama sunucusu kimliğini doğrulamak için "Konu alternatif adı eşleşmesi" veya "Alan adı son eki eşleşmesi" eksik</translation>
 <translation id="7165320105431587207">Ağ yapılandırılamadı</translation>
 <translation id="7170041865419449892">Aralık dışında</translation>
+<translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> dışındaki tüm web siteleri ve URL'ler tarafından dosya erişimi</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Dosyayı farklı kaydet</translation>

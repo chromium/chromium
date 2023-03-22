@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Cliriwyd eich storfa dros dro Google Drive.</translation>
 <translation id="2239068707900391003">Person gyda choffi</translation>
 <translation id="2251368349685848079">Adfer o'r Bin Sbwriel</translation>
+<translation id="2278133026967558505">Mynediad ffeil gan bob gwefan ac URL</translation>
 <translation id="2282155092769082568">URL awtoffurffweddu:</translation>
 <translation id="2284767815536050991">storfa y gellir ei thynnu</translation>
 <translation id="2288278176040912387">Chwaraeydd recordiau</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Mae angen 'Subject alternative name match' neu 'Domain suffix match' er mwyn dilysu hunaniaeth y gweinydd dilysu</translation>
 <translation id="7165320105431587207">Wedi methu â ffurfweddu'r rhwydwaith</translation>
 <translation id="7170041865419449892">Allan o'r ystod</translation>
+<translation id="7179579940054351344">Mynediad ffeil gan bob gwefan ac URL ac eithrio <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Cadw'r ffeil fel</translation>

@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1014750484722996375">Íróasztalok</translation>
 <translation id="1018219910092211213">A DNS nem oldható fel</translation>
 <translation id="1018656279737460067">Megszakítva</translation>
+<translation id="1022433422498218992">Általános vezérlők</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
 <translation id="1059913517121127803">Nem sikerült elindítani a szkennelést</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Leállt – Kifogyott a tinta</translation>
 <translation id="1664796644829245314">Előnézet: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Beépített VPN</translation>
+<translation id="1669047024429367828">Láthatóság</translation>
 <translation id="1672499492233627739">Webkamera videófeedje</translation>
 <translation id="1676557873873341166">Videó készítése…</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-névfeloldó működik</translation>
+<translation id="1710499924611012470">Kisegítő lehetőségekkel való navigáció</translation>
 <translation id="1715359911173058521">Hiba történt a szkennerrel való kommunikáció során. Ellenőrizze a hálózati vagy USB-kapcsolatot, és próbálja újra.</translation>
 <translation id="1717874160321062422">A következők kezelik: <ph name="FIRST_MANAGER" /> és <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Névszerverek</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Hitelesítés típusa</translation>
 <translation id="1782199038061388045">Fordítás</translation>
+<translation id="1790209694022261219">Ablakok és asztalok</translation>
 <translation id="1792647875738159689">Beolvasás megszakítása…</translation>
 <translation id="1801418420130173017">Sötét téma kikapcsolása</translation>
 <translation id="1807246157184219062">Világos</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2085089206770112532">Kijelző fényerejének csökkentése</translation>
+<translation id="2102231663024125441">Szövegszerkesztés</translation>
 <translation id="2105810540595158374">Az eszköz egy kontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> GB áll rendelkezésre.</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Kritikus frissítés</translation>
 <translation id="2860473693272905224">Helyezze az újabb oldalt a szkennerre</translation>
 <translation id="2872961005593481000">Leállítás</translation>
+<translation id="2873483161362553159">Navigáció böngészővel</translation>
 <translation id="2874939134665556319">Előző szám</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> lemerítve <ph name="NUM_SECONDS" /> másodperc alatt.</translation>
 <translation id="2902312830803030883">További műveletek</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Teljes</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="437294888293595148">Összes gyorsparancs visszaállítása</translation>
 <translation id="4378373042927530923">Nem fut</translation>
 <translation id="4378551569595875038">Kapcsolódás…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">Sikertelen DNS-feloldások</translation>
 <translation id="6768237774506518020">Magas hibaarány DNS-feloldásnál</translation>
 <translation id="6791471867139427246">billentyűzetvilágítás színe</translation>
+<translation id="6798678288485555829">Szöveges navigáció</translation>
 <translation id="680983167891198932">Kulcs</translation>
 <translation id="6816797338148849397">Rendelkezésre áll információ a kiválasztott elemmel kapcsolatban. A felfelé nyíllal érheti el.</translation>
 <translation id="6838167112108853532">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett csatlakoztatott APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
@@ -800,6 +809,7 @@
 <translation id="8104083085214006426">Ön nyílt és nem biztonságos hálózatot használ</translation>
 <translation id="811820734797650957">(Android) Az átjáró pingelhető</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8132480444149501833">Forgalomszámlálók kérése</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> kiválasztása</translation>

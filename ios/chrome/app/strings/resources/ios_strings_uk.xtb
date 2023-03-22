@@ -478,6 +478,7 @@
 <translation id="4454246407045105932">Додати мову</translation>
 <translation id="4461286950227634995">Пропонувати зберігати паролі</translation>
 <translation id="4462491365653392320">Відстежувати ціни на вкладках</translation>
+<translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469418912670346607">Продовжити налаштування</translation>
 <translation id="4474494258097106883">Створено для iPhone</translation>
 <translation id="4476574785019001431">Налаштування</translation>
@@ -1085,7 +1086,6 @@
 <translation id="8534481786647257214">Опубліковано в Google+</translation>
 <translation id="8548878600947630424">Знайти на сторінці...</translation>
 <translation id="8558480467877843976">Тепер ви можете переглядати й відкривати в Chrome посилання з повідомлень, документів та інших додатків.</translation>
-<translation id="8585679456315406468">Нотатки можуть містити щонайбільше 1000 символів.</translation>
 <translation id="8588404856427128947">Вимкнено</translation>
 <translation id="8591976964826315682">Блокувати сторонні файли cookie в анонімному режимі</translation>
 <translation id="8605219856220328675">Закрити вкладку.</translation>

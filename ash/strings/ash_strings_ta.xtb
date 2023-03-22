@@ -155,6 +155,7 @@
 <translation id="1715293566947629045">சுயவிவரத்தை முடக்குகிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="1719094688023114093">'உடனடி வசனம்' இயக்கப்பட்டது.</translation>
 <translation id="1720011244392820496">வைஃபை ஒத்திசைவை இயக்குங்கள்</translation>
+<translation id="1720230731642245863">ஹாட்ஸ்பாட் ஆஃப் செய்யப்பட்டுள்ளது</translation>
 <translation id="1731815243805539470">முந்தைய பயனருக்கு மாற்று</translation>
 <translation id="1733996486177697563">டார்க், லைட் ஆகிய தீம்களுக்கு இடையே மாறுதல். டெஸ்க்டாப்பைத் தொட்டுப் பிடித்து 'வால்பேப்பர் &amp; ஸ்டைல்' என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="1736898441010944794">புளூடூத் சாதனங்களுக்கு "<ph name="NAME" />" காட்டப்படும்.</translation>
@@ -346,6 +347,7 @@
 <translation id="2726420622004325180">ஹாட்ஸ்பாட் இணைப்பை வழங்க உங்கள் ஃபோனில் மொபைல் டேட்டா இருக்க வேண்டும்</translation>
 <translation id="2727175239389218057">பதிலளி</translation>
 <translation id="2727977024730340865">குறைந்த சக்தியிலான சார்ஜர் செருகப்பட்டுள்ளது. பேட்டரி சார்ஜிங் நம்பகமானதாக இல்லாமல் இருக்கலாம்.</translation>
+<translation id="2740531572673183784">சரி</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"நீக்கு"</translation>
 <translation id="2750941250130734256">செயலிலுள்ள சாளரம் அன்-டாக் செய்யப்பட்டது.</translation>
@@ -596,6 +598,7 @@
 <translation id="394485226368336402">ஆடியோ அமைப்புகள்</translation>
 <translation id="3945319193631853098">அமைவை நிறைவு செய்யத் தட்டவும்</translation>
 <translation id="3945867833895287237">ஹாட்ஸ்பாட்டுடன் இணைக்கிறது...</translation>
+<translation id="3950272133184491871">இப்போதே வெளியேறவா?</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
 <translation id="3962859241508114581">முந்தைய டிராக்</translation>
 <translation id="3969043077941541451">முடக்கப்பட்டுள்ளது</translation>
@@ -839,7 +842,6 @@
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5121628974188116412">பக்கத்தின் கீழ்ப்பக்கத்திற்குச் செல்லும்</translation>
-<translation id="5127986747308934633">உங்கள் சாதனத்தை நிர்வாகி கட்டுப்படுத்துகிறார்</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
 <translation id="5147567197700016471">அன்லாக் செய்யப்பட்டது</translation>
 <translation id="5150070631291639005">தனியுரிமை அமைப்புகள்</translation>
@@ -1002,6 +1004,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5920710855273935292">மைக் ஒலியடக்கப்பட்டுள்ளது.</translation>
+<translation id="5924855612669061715">ஹாட்ஸ்பாட் ஆன் செய்யப்பட்டுள்ளது</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> இயக்கப்பட்டுள்ளது.</translation>
 <translation id="5947494881799873997">மாற்றியமை</translation>
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>
@@ -1095,7 +1098,6 @@
 <translation id="639644700271529076">CAPS LOCK முடக்கப்பட்டுள்ளது</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
-<translation id="641867537956679916">உங்கள் சாதனத்தில் உள்ள சிக்கலைச் சரிசெய்ய நிர்வாகி உள்நுழைந்துள்ளார். நிர்வாகி உங்களுக்குக் கட்டுப்பாட்டைத் திரும்ப வழங்கியதும் சாதனத்தைத் தொடர்ந்து பயன்படுத்தலாம்.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">எல்லா அறிவிப்புகளையும் அழிக்கும்</translation>
 <translation id="643147933154517414">அனைத்தும் காட்டப்பட்டன</translation>
@@ -1377,6 +1379,7 @@
 <translation id="7848989271541991537">பக்கம் <ph name="PAGE_NUMBER" />, வரிசை <ph name="ROW_NUMBER" />, நெடுவரிசை <ph name="COLUMN_NUMBER" />க்கு நகர்த்தப்பட்டது.</translation>
 <translation id="7851768487828137624">கேனரி</translation>
 <translation id="7860671499921112077">மேலோட்டப் பயன்முறைக்குச் செல்ல, மேல்நோக்கி மூன்று விரல்களால் ஸ்வைப் செய்யவும்</translation>
+<translation id="7862292329216937261">சாதனத்தை விருந்தினராகப் பயன்படுத்த, நீங்கள் வெளியேறிவிட்டு திரையின் கீழ்ப்பகுதியில் உள்ள ‘விருந்தினராக உலாவுங்கள்’ என்பதைத் தேர்ந்தெடுக்க வேண்டும்.</translation>
 <translation id="7866482334467279021">இயக்கப்பட்டுள்ளது</translation>
 <translation id="7868900307798234037">கைரேகை மூலம் திறக்கிறது</translation>
 <translation id="7872195908557044066">நிர்வாகி உங்கள் eSIMமை மீட்டமைக்கிறார். சில நிமிடங்கள் காத்திருக்கவும்.</translation>
@@ -1421,6 +1424,7 @@
 <translation id="8036504271468642248">முந்தைய வாக்கியம்</translation>
 <translation id="8042893070933512245">அணுகல்தன்மை அமைப்புகள் மெனுவைத் திற</translation>
 <translation id="8044457332620420407">கீபோர்டின் பேக்லைட் ஆஃப் செய்யப்பட்டது</translation>
+<translation id="8048077032188362328">உங்கள் நிர்வாகி ஹாட்ஸ்பாட்டை முடக்கியுள்ளார்.</translation>
 <translation id="8048123526339889627">புளூடூத் அமைப்புகள்</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
@@ -1640,6 +1644,7 @@
 <translation id="9098969848082897657">மொபைலை நிசப்தமாக்குதல்</translation>
 <translation id="9100887602489003640">நெட்வொர்க் சுயவிவரத்தைச் சேர்க்கிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="9105450214093926548">Lacros உலாவியைப் பயன்படுத்திக் கொண்டிருக்கும்போது இரண்டாவது பயனராக உள்நுழைய முடியாது. இதற்குப் பதிலாக Lacros உலாவியில் இரண்டாவது உலாவி சுயவிவரத்தைப் பயன்படுத்தவும் அல்லது Lacros உலாவியை மூடிவிட்டு மீண்டும் முயலவும்.</translation>
+<translation id="9120448753905017833">மொபைல் டேட்டா மூலம் ஹாட்ஸ்பாட்டைப் பயன்படுத்த வைஃபையை முடக்கியுள்ளோம். இதற்கு டேட்டா கட்டணங்கள் விதிக்கப்படலாம்.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> அல்லது <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9133335900048457298">பாதுகாக்கப்பட்ட உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="9161053988251441839">பரிந்துரைக்கும் ஆப்ஸ்</translation>

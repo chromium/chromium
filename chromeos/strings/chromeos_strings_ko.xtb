@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1014750484722996375">데스크</translation>
 <translation id="1018219910092211213">DNS를 변환할 수 없습니다.</translation>
 <translation id="1018656279737460067">취소됨</translation>
+<translation id="1022433422498218992">일반 컨트롤</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />(스레드 <ph name="THREAD_COUNT" />개, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">새 기능을 이용할 수 있습니다. 자세히 알아보려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="1059913517121127803">스캔을 시작할 수 없음</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">중지됨 - 잉크 부족</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> 미리보기</translation>
 <translation id="1668469839109562275">기본 제공 VPN</translation>
+<translation id="1669047024429367828">공개 여부</translation>
 <translation id="1672499492233627739">웹캠 동영상 피드</translation>
 <translation id="1676557873873341166">동영상 촬영 중</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 리졸버 존재</translation>
+<translation id="1710499924611012470">접근성 탐색</translation>
 <translation id="1715359911173058521">스캐너와 통신하는 중에 문제가 발생했습니다. 네트워크 또는 USB 연결을 확인한 후 다시 시도해 보세요.</translation>
 <translation id="1717874160321062422">관리자: <ph name="FIRST_MANAGER" /> 및 <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">네임서버</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">인증 유형</translation>
 <translation id="1782199038061388045">번역</translation>
+<translation id="1790209694022261219">창 및 데스크</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
 <translation id="1801418420130173017">어두운 테마 사용 안함</translation>
 <translation id="1807246157184219062">밝게</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
 <translation id="2085089206770112532">디스플레이 밝기 낮추기</translation>
+<translation id="2102231663024125441">텍스트 수정</translation>
 <translation id="2105810540595158374">게임 컨트롤러 기기입니다.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, 버전 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />GB 중 <ph name="AVAILABLE_MEMORY" />GB를 사용할 수 있습니다.</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">중요 업데이트</translation>
 <translation id="2860473693272905224">스캐너에 다른 페이지를 올리세요.</translation>
 <translation id="2872961005593481000">종료</translation>
+<translation id="2873483161362553159">브라우저 탐색</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
 <translation id="2902312830803030883">추가 작업</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">전체화면</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> 키를 눌렀습니다.</translation>
 <translation id="435692326371619097">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">모든 바로가기 재설정</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">DNS 변환 실패함</translation>
 <translation id="6768237774506518020">DNS 변환 실패율 높음</translation>
 <translation id="6791471867139427246">키보드 조명 색상</translation>
+<translation id="6798678288485555829">텍스트 탐색</translation>
 <translation id="680983167891198932">키</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="6838167112108853532">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정 및 연결된 APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
@@ -800,6 +809,7 @@
 <translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
 <translation id="811820734797650957">(Android) 핑할 수 있는 게이트웨이</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8131740175452115882">확인</translation>
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택</translation>

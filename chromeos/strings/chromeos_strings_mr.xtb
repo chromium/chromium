@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1014750484722996375">डेस्क</translation>
 <translation id="1018219910092211213">DNS चे निराकरण करू शकत नाही</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
+<translation id="1022433422498218992">साधारण नियंत्रणे</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">थांबले - शाई संपली आहे</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> चे पूर्वावलोकन करा</translation>
 <translation id="1668469839109562275">बिल्ट-इन VPN</translation>
+<translation id="1669047024429367828">दृश्यमानता</translation>
 <translation id="1672499492233627739">वेबकॅम व्हिडिओ फीड</translation>
 <translation id="1676557873873341166">व्हिडिओ घेत आहे</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिसॉल्व्हर प्रेझेंट</translation>
+<translation id="1710499924611012470">अ‍ॅक्सेसिबिलिटीसंबंधी नेव्हिगेशन</translation>
 <translation id="1715359911173058521">स्कॅनरशी संवाद साधताना एक समस्या आली. नेटवर्क किंवा USB कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> आणि <ph name="SECOND_MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="1726100011689679555">नाव सर्व्हर</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">ऑथेंटिकेशन प्रकार</translation>
 <translation id="1782199038061388045">भाषांतर</translation>
+<translation id="1790209694022261219">विंडो आणि डेस्क</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1801418420130173017">गडद थीम बंद करा</translation>
 <translation id="1807246157184219062">फिकट</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2085089206770112532">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
+<translation id="2102231663024125441">मजकूर संपादन</translation>
 <translation id="2105810540595158374">डिव्हाइस हे गेम नियंत्रक आहे.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB पैकी <ph name="AVAILABLE_MEMORY" /> उपलब्ध आहे</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">महत्त्वाचे अपडेट</translation>
 <translation id="2860473693272905224">स्कॅनरवर दुसरे पेज ठेवा</translation>
 <translation id="2872961005593481000">बंद करा</translation>
+<translation id="2873483161362553159">ब्राउझर नेव्हिगेशन</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंदामध्ये <ph name="RATE" /> डिस्चार्ज झाले.</translation>
 <translation id="2902312830803030883">आणखी क्रिया</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की दाबली</translation>
 <translation id="435692326371619097">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APN हे मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">सर्व शॉर्टकट रीसेट करा</translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
 <translation id="4378551569595875038">कनेक्ट होतय...</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">अयशस्वी DNS रिझोल्युशन</translation>
 <translation id="6768237774506518020">उच्च DNS रिझोल्युशन अयशस्वी रेट</translation>
 <translation id="6791471867139427246">कीबोर्डच्या लाइटचा रंग</translation>
+<translation id="6798678288485555829">मजकुरासंबंधी नेव्हिगेशन</translation>
 <translation id="680983167891198932">की</translation>
 <translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="6838167112108853532">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली अटॅच APN बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
@@ -716,7 +725,7 @@
 <translation id="7308203371573257315">Chromebook मदत फोरममध्ये तज्ञांना विचारा</translation>
 <translation id="7311368985037279727">कीबोर्डचा रंग</translation>
 <translation id="7319430975418800333">A3</translation>
-<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस दाबा.</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Search मध्ये परिणाम पाहण्यासाठी सर्च आणि स्पेस प्रेस करा.</translation>
 <translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
 <translation id="7359657277149375382">फाइल प्रकार</translation>
 <translation id="73631062356239394">निदानासंबंधित डेटा शेअर करा</translation>
@@ -800,6 +809,7 @@
 <translation id="8104083085214006426">तुम्ही खुले आणि असुरक्षित नेटवर्क वापरत आहात</translation>
 <translation id="811820734797650957">(Android) गेटवे ला पिंग केले जाऊ शकते</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° से</translation>
+<translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8132480444149501833">ट्रॅफिक काउंटरची विनंती करा</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> निवडा</translation>

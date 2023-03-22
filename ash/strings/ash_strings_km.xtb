@@ -347,6 +347,7 @@
 <translation id="2726420622004325180">ទូរសព្ទ​របស់អ្នក​ត្រូវតែមាន​ទិន្នន័យទូរសព្ទចល័ត ដើម្បីផ្ដល់​ហតស្ប៉ត</translation>
 <translation id="2727175239389218057">ឆ្លើយតប</translation>
 <translation id="2727977024730340865">បានដោតទៅឆ្នាំងសាកថាមពលខ្សោយ។ ការសាកថ្មប្រហែលជាមិនអាចជឿជាក់បានទេ។</translation>
+<translation id="2740531572673183784">យល់ព្រម</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"លុប"</translation>
 <translation id="2750941250130734256">បានផ្ដាច់វិនដូ​សកម្ម។</translation>
@@ -577,6 +578,7 @@
 <translation id="3846575436967432996">គ្មានព័ត៌មានបណ្តាញទេ</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
 <translation id="385300504083504382">ផ្នែកចាប់ផ្តើម</translation>
+<translation id="3859364108019690">មិន​អាច​ផ្សាយ​កម្មវិធី​បាន​ទេ</translation>
 <translation id="3861651314799684201">ចុច enter ដើម្បីថតអេក្រង់ពេញ</translation>
 <translation id="3871092408932389764">ទាបបំផុត</translation>
 <translation id="3886872229787704059">បានបើក​នៅថ្ងៃនេះ</translation>
@@ -841,7 +843,6 @@
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">បង្ហាញខែបន្ទាប់</translation>
 <translation id="5121628974188116412">ទៅ​កាន់​ផ្នែក​ខាងក្រោម​នៃ​ទំព័រ</translation>
-<translation id="5127986747308934633">អ្នក​គ្រប់គ្រង​របស់​អ្នក​កំពុង​គ្រប់គ្រង​ឧបករណ៍​របស់​អ្នក</translation>
 <translation id="5136175204352732067">បាន​ភ្ជាប់​ក្ដារចុច​ផ្សេង</translation>
 <translation id="5147567197700016471">បានដោះសោ</translation>
 <translation id="5150070631291639005">ការកំណត់​ឯកជនភាព</translation>
@@ -1099,7 +1100,6 @@
 <translation id="639644700271529076">CAPS LOCK ត្រូវបានបិទ</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google ជំនួយការ</translation>
-<translation id="641867537956679916">អ្នក​គ្រប់គ្រង​របស់​អ្នក​បាន​ចូល​គណនី​ដើម្បី​ពិនិត្យមើល​បញ្ហា។ អ្នក​អាច​បន្ត​ប្រើប្រាស់​ឧបករណ៍ បន្ទាប់​ពី​អ្នក​គ្រប់គ្រង​ផ្ដល់​ការគ្រប់គ្រង​ឱ្យ​អ្នក​វិញ។</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">សម្អាត​ការ​ជូន​ដំណឹង​ទាំងអស់</translation>
 <translation id="643147933154517414">រួចរាល់​ទាំងអស់</translation>
@@ -1321,6 +1321,9 @@
 <translation id="7514365320538308">ទាញយក</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">ការរក្សាឱ្យនៅក្នុងកាមេរ៉ា​ត្រូវបាន​បើក។</translation>
+<translation id="7519649142417630956">នៅ​ពេល​បិទរួច អ្នក​គ្រប់គ្រង​នឹង​ត្រូវ​ចេញ​ពី​គណនី ហើយ​នឹង​មិន​អាច​គ្រប់គ្រង​ឧបករណ៍​របស់​អ្នក​បាន​ទេ។
+
+ដើម្បី​បិទ​ឧបករណ៍ សូម​ចុច​ប៊ូតុង​ថាមពល​ឱ្យ​ជាប់​នៅលើ​ឧបករណ៍​ម្ដង​ទៀត។</translation>
 <translation id="7526573455193969409">បណ្ដាញ​អាច​ត្រូវ​បាន​ត្រួតពិនិត្យ</translation>
 <translation id="7536035074519304529">អាសយដ្ឋាន IP ៖ <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">បច្ចុប្បន្ន មិនអាចប្រើ​ផ្ទាំងឯកជន និងកម្មវិធី Linux បានទេ។ កម្មវិធីផ្សេងទៀតនឹងត្រូវបានរក្សាទុក។</translation>
@@ -1675,6 +1678,7 @@
 <translation id="938963181863597773">តើ​មានអ្វី​នៅលើ​ប្រតិទិន​របស់ខ្ញុំ?</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="951991426597076286">បដិសេធ</translation>
+<translation id="953431725143473984">បិទ​ឧបករណ៍​ឬ?</translation>
 <translation id="954052413789300507">មិនមានទំហំផ្ទុកគ្រប់គ្រាន់សម្រាប់ <ph name="FILENAME" /> ទេ។ សូមបង្កើនទំហំផ្ទុក។</translation>
 <translation id="974545358917229949">កំពុង​បង្ហាញ​លទ្ធផល <ph name="RESULT_COUNT" /> សម្រាប់ <ph name="QUERY" /></translation>
 <translation id="98120814841227350">ទៅកាន់​ផ្នែក​បញ្ចប់​នៃ​ឯកសារ</translation>

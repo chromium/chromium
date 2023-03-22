@@ -478,6 +478,7 @@
 <translation id="4454246407045105932">言語の追加</translation>
 <translation id="4461286950227634995">パスワードを保存できるようにする</translation>
 <translation id="4462491365653392320">タブで価格をトラッキング</translation>
+<translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
 <translation id="4469418912670346607">設定を続行</translation>
 <translation id="4474494258097106883">iPhone 向けの設計</translation>
 <translation id="4476574785019001431">設定</translation>
@@ -1085,7 +1086,6 @@
 <translation id="8534481786647257214">Google+への投稿が完了しました。</translation>
 <translation id="8548878600947630424">ページ内を検索...</translation>
 <translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
-<translation id="8585679456315406468">メモは 1,000 文字以下で入力してください。</translation>
 <translation id="8588404856427128947">オフ</translation>
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8605219856220328675">タブを閉じる。</translation>

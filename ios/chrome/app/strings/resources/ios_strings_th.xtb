@@ -478,6 +478,7 @@
 <translation id="4454246407045105932">เพิ่มภาษา</translation>
 <translation id="4461286950227634995">เสนอให้บันทึกรหัสผ่าน</translation>
 <translation id="4462491365653392320">ติดตามราคาในแท็บ</translation>
+<translation id="4469324811108161144">หมายเหตุบักทึกอักขระได้สูงสุด <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="4469418912670346607">ตั้งค่าต่อ</translation>
 <translation id="4474494258097106883">สร้างขึ้นเพื่อ iPhone ของคุณ</translation>
 <translation id="4476574785019001431">การตั้งค่า</translation>
@@ -1086,7 +1087,6 @@
 <translation id="8534481786647257214">โพสต์ใน Google+ แล้ว</translation>
 <translation id="8548878600947630424">ค้นหาในหน้าเว็บ...</translation>
 <translation id="8558480467877843976">ตอนนี้คุณจะใช้ Chrome ทุกครั้งที่เรียกดูหรือแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ ได้</translation>
-<translation id="8585679456315406468">หมายเหตุบันทึกอักขระได้สูงสุด 1,000 ตัว</translation>
 <translation id="8588404856427128947">ปิด</translation>
 <translation id="8591976964826315682">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="8605219856220328675">ปิดแท็บ</translation>

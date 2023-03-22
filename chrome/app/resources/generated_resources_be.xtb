@@ -623,6 +623,7 @@
 <translation id="1542137295869176367">Не ўдалося абнавіць даныя для ўваходу</translation>
 <translation id="1542514202066550870">Гэта ўкладка перадае VR-змесціва на гарнітуру.</translation>
 <translation id="1543284117603151572">Імпартаваныя з Edge</translation>
+<translation id="1543538514740974167">Хуткае адкрыццё старонак</translation>
 <translation id="1544588554445317666">Паспрабуйце выкарыстаць карацейшую назву файла або захаваць яго ў іншую папку</translation>
 <translation id="1545177026077493356">Аўтаматычны рэжым кіёска</translation>
 <translation id="1545749641540134597">Сканіраваць QR-код</translation>
@@ -796,7 +797,6 @@
 <translation id="1679810534535368772">Сапраўды хочаце выйсці?</translation>
 <translation id="167983332380191032">Сэрвіс кіравання адправіў памылку HTTP.</translation>
 <translation id="167997285881077031">Налады голасу для сінтэзу маўлення</translation>
-<translation id="1680841347983561661">Паспрабуйце перазапусціць Google Play праз некалькі секунд.</translation>
 <translation id="1680849702532889074">Адбылася памылка падчас усталявання Linux-праграмы.</translation>
 <translation id="16815041330799488">Не дазваляць сайтам праглядаць тэкст і відарысы, скапіраваныя ў буфер абмену</translation>
 <translation id="1682548588986054654">Новае акно ў рэжыме інкогніта</translation>
@@ -2469,7 +2469,6 @@
 <translation id="3117362587799608430">Док-станцыя не поўнасцю сумяшчальная з прыладай</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}one{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}few{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}many{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}other{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="3118319026408854581">Даведка <ph name="PRODUCT_NAME" /></translation>
-<translation id="3118654181216384296">Перазапусціце Linux праз некалькі секунд.</translation>
 <translation id="3119948370277171654">Якое змесціва вы трансліравалі і які URL-адрас выкарыстоўвалі?</translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3122496702278727796">Не ўдалося стварыць каталог даных</translation>
@@ -2478,9 +2477,7 @@
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127860049873093642">Каб пазбегнуць праблем падчас зарадкі і працы, выкарыстоўвайце сумяшчальны адаптар сілкавання Dell або USB Type-C.</translation>
 <translation id="3127862849166875294">Змяніць памер дыска ў Linux</translation>
-<translation id="3127882968243210659">Для запуску Google Play <ph name="MANAGER" /> патрабуе ад вас стварыць рэзервовую копію даных і скінуць налады Chromebook да заводскіх значэнняў.</translation>
 <translation id="3129173833825111527">Левае поле</translation>
-<translation id="3129215702932019810">Памылка пры запуску праграмы</translation>
 <translation id="3130528281680948470">Налады вашай прылады будуць скінуты, а ўліковыя запісы карыстальнікаў і іх даныя будуць выдалены. Адрабіць гэта дзеянне нельга.</translation>
 <translation id="3130863904455712965">Гісторыя і іншыя даныя</translation>
 <translation id="313205617302240621">Забылі пароль?</translation>
@@ -4664,6 +4661,7 @@
 <translation id="5127620150973591153">Абаронены ідэнтыфікатар падключэння: <ph name="TOKEN" /></translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>
 <translation id="5127881134400491887">Кіраваць падключэннямі да сеткі</translation>
+<translation id="5127986747308934633">Вашай прыладай кіруе адміністратар</translation>
 <translation id="512903556749061217">далучана</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">Не ўдалося спампаваць профіль. Паўтарыце спробу пазней або звярніцеся па дапамогу да аператара.</translation>
@@ -5980,7 +5978,6 @@
 <translation id="6331818708794917058">Сайты могуць запытваць дазвол на падключэнне да прылад MIDI</translation>
 <translation id="6333064448949140209">Файл будзе адпраўлены ў Google на адладку</translation>
 <translation id="6333170995003625229">Адрас электроннай пошты або пароль спраўдзіць не ўдалося. Увайдзіце яшчэ раз.</translation>
-<translation id="6335920438823100346">Для запуску Linux <ph name="MANAGER" /> патрабуе ад вас стварыць рэзервовую копію даных і скінуць налады Chromebook да заводскіх значэнняў.</translation>
 <translation id="6336038146639916978">Сайт <ph name="MANAGER" /> выключыў адладку ADB. Гэта прывядзе да скіду прылады <ph name="DEVICE_TYPE" /> праз 24 гадзіны. Зрабіце рэзервовыя копіі ўсіх файлаў, якія трэба захаваць.</translation>
 <translation id="6338968693068997776">Дадаванне USB-прылады</translation>
 <translation id="6339668969738228384">Стварыць новы профіль для карыстальніка <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -6065,6 +6062,7 @@
 <translation id="6418160186546245112">Версія <ph name="IDS_SHORT_PRODUCT_NAME" /> будзе вернута да папярэдне ўсталяванай</translation>
 <translation id="6418481728190846787">Цалкам забараніць доступ для ўсіх праграм</translation>
 <translation id="6418511932144861495">Усталюйце крытычнае абнаўленне</translation>
+<translation id="641867537956679916">Адміністратар увайшоў у сістэму, каб разабрацца ў праблеме. Вы зможаце карыстацца прыладай пасля таго, як ён верне вам кантроль над ёй.</translation>
 <translation id="641899100123938294">Пошук новых прылад</translation>
 <translation id="6419239627403237650">З сайта, які вы праглядаеце</translation>
 <translation id="6419524191360800346">Даступна абнаўленне да версіі Debian 11 (Bullseye)</translation>
@@ -6624,6 +6622,7 @@
 <translation id="6903022061658753260">Вашы даныя будуць сінхранізаваны ва ўсіх браўзерах Chrome, у якіх для гэтага ўліковага запісу ўключана сінхранізацыя. Параметры сінхранізацыі Chrome OS можна задаць у <ph name="LINK_BEGIN" />наладах Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6903590427234129279">Адкрыць усе (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Уключыць сінхранізацыю</translation>
+<translation id="6903916726032521638">Пошук па запыце "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="6904344821472985372">Адклікаць доступ да файлаў</translation>
 <translation id="6904655473976120856">Каб выйсці, націсніце кнопку праграмы</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Каб абараніць вашы паролі, Менеджар пароляў Google блакіруецца праз 1 хвіліну бяздзейнасці}one{Каб абараніць вашы паролі, Менеджар пароляў Google блакіруецца праз {NUM_MINS} хвіліну бяздзейнасці}few{Каб абараніць вашы паролі, Менеджар пароляў Google блакіруецца праз {NUM_MINS} хвіліны бяздзейнасці}many{Каб абараніць вашы паролі, Менеджар пароляў Google блакіруецца праз {NUM_MINS} хвілін бяздзейнасці}other{Каб абараніць вашы паролі, Менеджар пароляў Google блакіруецца праз {NUM_MINS} хвіліны бяздзейнасці}}</translation>
@@ -6973,7 +6972,6 @@
 <translation id="7235737137505019098">На вашым ключы бяспекі недастаткова месца для стварэння іншых уліковых запісаў.</translation>
 <translation id="7235873936132740888">Пры націсканні пэўных тыпаў спасылак сайты могуць выконваць адмысловыя задачы, напрыклад, ствараць новыя паведамленні ў паштовым кліенце або дадаваць новыя падзеі ў каляндар у інтэрнэце</translation>
 <translation id="7238609589076576185">Дыякрытычны знак устаўлены.</translation>
-<translation id="7238665222668706269">Менеджар пароляў Google <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="7239108166256782787">Прылада "<ph name="DEVICE_NAME" />" скасавала перанос</translation>
 <translation id="7240339475467890413">Падключыцца да новага хот-спота?</translation>
 <translation id="7241389281993241388">Увайдзіце ў <ph name="TOKEN_NAME" />, каб імпартаваць кліенцкі сертыфікат.</translation>
@@ -8698,6 +8696,7 @@
 <translation id="8762886931014513155">Неабходна абнавіць <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">Прылада USB</translation>
 <translation id="8766796754185931010">Катаэры</translation>
+<translation id="8767069439158587614">Паказаць усе вынікі пошуку па запыце "<ph name="QUERY_CLUSTER_NAME" />"</translation>
 <translation id="8767621466733104912">Аўтаматычна абнаўляць Chrome для ўсіх карыстальнікаў</translation>
 <translation id="8770406935328356739">Каранёвы каталог пашырэння</translation>
 <translation id="8771300903067484968">Фон пачатковай старонкі скінуты. Цяпер там стандартны фон.</translation>
@@ -9197,7 +9196,6 @@
 <translation id="9206889157914079472">Стварэнне пяром нататак на экране блакіроўкі</translation>
 <translation id="9209563766569767417">Ідзе праверка налад кантэйнера Linux</translation>
 <translation id="9209689095351280025">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вас у інтэрнэце</translation>
-<translation id="9211177926627870898">Патрабуецца абнаўленне</translation>
 <translation id="9214520840402538427">Памылка!  Была пратэрмінавана ініцыялізацыя атрыбутаў installation-time ("усталяванне-час").  Звярніцеся ў службу падтрымкі.</translation>
 <translation id="9214695392875603905">Кекс</translation>
 <translation id="9215293857209265904">Дададзена пашырэнне "<ph name="EXTENSION_NAME" />"</translation>

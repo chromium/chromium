@@ -4011,23 +4011,6 @@
 Если правило отключено, рекламное сообщение о расширении поставщика учетных данных не будет показываться пользователю.</translation>
 <translation id="4768446404233019970">Включить наборы шифров 3DES в TLS</translation>
 <translation id="4770334626033858263">Конфигурация, позволяющая генерировать и подтверждать родительский код доступа.</translation>
-<translation id="4771861383714907912">Список действий, которые необходимо выполнить, когда истечет период, заданный в правиле <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Это правило не действует, если не настроено правило <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Когда период из правила <ph name="IDLE_TIMEOUT_POLICY_NAME" /> истечет, <ph name="PRODUCT_NAME" /> выполнит указанные действия.
-
-      Если правило не настроено или значение для него не задано, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> работать не будет.
-
-      Поддерживаемые действия:
-
-      <ph name="CLOSE_BROWSERS_ACTION" /> (закрытие всех окон браузеров и PWA в этом профиле). Не поддерживается в Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" /> (показ окна выбора профиля). Не поддерживается в Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> (очистка разных категорий данных о работе в браузере). Подробные сведения об этом можно найти в правиле <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
-
-      Действия <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> и <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> доступны, только если для правила <ph name="SYNC_DISABLED_POLICY_NAME" /> установлено значение True.</translation>
 <translation id="4773997835955617342">Изменяет предлагаемую конфигурацию <ph name="KRB5_CONFIG" /> для новых билетов, созданных вручную.
 
       Если правило включено, значение правила KerberosCustomPrefilledConfig используется в качестве предлагаемой конфигурации и показывается в разделе "Дополнительно" диалогового окна аутентификации Kerberos.

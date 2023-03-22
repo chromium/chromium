@@ -480,6 +480,7 @@
 <translation id="4454246407045105932">إضافة لغة</translation>
 <translation id="4461286950227634995">اقتراح حفظ كلمات المرور</translation>
 <translation id="4462491365653392320">تتبُّع الأسعار في علامات التبويب</translation>
+<translation id="4469324811108161144">الحد الأقصى لعدد الأحرف في الملاحظات هو <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="4469418912670346607">متابعة الإعداد</translation>
 <translation id="4474494258097106883">‏المتصفِّح مصمَّم خصيصًا لهواتف iPhone</translation>
 <translation id="4476574785019001431">الإعدادات</translation>
@@ -1086,7 +1087,6 @@
 <translation id="8534481786647257214">‏اكتمل النشر على Google+‎.</translation>
 <translation id="8548878600947630424">بحث في الصفحة...</translation>
 <translation id="8558480467877843976">‏يمكنك الآن استخدام Chrome في أي وقت تتصفَّح فيه أو تنقر فيه على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
-<translation id="8585679456315406468">الحد الأقصى لعدد الأحرف في الملاحظات هو 1000 حرف.</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8591976964826315682">حظر ملفات تعريف الارتباط التابعة لجهات خارجية في وضع التصفُّح المتخفي</translation>
 <translation id="8605219856220328675">إغلاق علامة التبويب.</translation>
@@ -1141,6 +1141,7 @@
 <translation id="8952559610785099500">إضافة كلمة مرور</translation>
 <translation id="8953046091948372197">ستظهر كلمات المرور هنا.</translation>
 <translation id="895541991026785598">الإبلاغ عن مشكلة</translation>
+<translation id="8971545611707025079">التحقّق مرة أخرى</translation>
 <translation id="8974714402877957201">‏1- فتح iPad Settings (إعدادات iPad)</translation>
 <translation id="8976382372951310360">مساعدة</translation>
 <translation id="8976414606286374109">‏يتم حفظ بطاقات الائتمان في حسابك على Google.</translation>

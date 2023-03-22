@@ -4013,23 +4013,6 @@ WebSQL було вилучено у версії M112.</translation>
 Якщо це правило вимкнути, користувачу не показуватиметься така реклама.</translation>
 <translation id="4768446404233019970">Увімкнути набори шифрів 3DES у TLS</translation>
 <translation id="4770334626033858263">Конфігурація, за допомогою якої створюється й підтверджується батьківський код доступу.</translation>
-<translation id="4771861383714907912">Список дій, які виконуються, коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Якщо правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не налаштовано, це правило не діє.
-
-      Коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> виконує дії, указані в цьому правилі.
-
-      Якщо це правило не налаштувати або не вказати для нього значення, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не діятиме.
-
-      Підтримуються наведені нижче дії.
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: закрити всі вікна веб-переглядача й прогресивні веб-додатки для цього профілю. Не підтримується на пристроях Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: показати вікно засобу вибору профілю. Не підтримується на пристроях Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: очистити всі відповідні дані веб-перегляду. Щоб дізнатися більше, перегляньте правило <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
-
-      Для перелічених далі дій потрібно, щоб правило <ph name="SYNC_DISABLED_POLICY_NAME" /> мало значення "правда": <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> і <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />.</translation>
 <translation id="4773997835955617342">Змінює пропоновану конфігурацію <ph name="KRB5_CONFIG" /> для нових заявок, створених вручну.
 
       Якщо це правило ввімкнено, значення правила KerberosCustomPrefilledConfig застосовується як пропонована конфігурація та показується в розділі "Додатково" вікна автентифікації Kerberos.

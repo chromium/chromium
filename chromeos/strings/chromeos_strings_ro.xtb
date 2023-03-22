@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1014750484722996375">Desktopuri</translation>
 <translation id="1018219910092211213">Nu se poate rezolva solicitarea DNS</translation>
 <translation id="1018656279737460067">Anulat</translation>
+<translation id="1022433422498218992">Comenzi generale</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Oprită – Cerneală epuizată</translation>
 <translation id="1664796644829245314">Previzualizează <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
+<translation id="1669047024429367828">Vizibilitate</translation>
 <translation id="1672499492233627739">Feed video de la camera web</translation>
 <translation id="1676557873873341166">Se înregistrează un videoclip</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Rezolvitor DNS prezent</translation>
+<translation id="1710499924611012470">Navigare pentru accesibilitate</translation>
 <translation id="1715359911173058521">Există o problemă de comunicare cu scanerul. Verifică-ți conexiunea USB sau la rețea și încearcă din nou.</translation>
 <translation id="1717874160321062422">Gestionat de <ph name="FIRST_MANAGER" /> și de <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Servere de nume</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tip de autentificare</translation>
 <translation id="1782199038061388045">traducere</translation>
+<translation id="1790209694022261219">Ferestre și desktopuri</translation>
 <translation id="1792647875738159689">Se anulează scanarea</translation>
 <translation id="1801418420130173017">Dezactivează tema întunecată</translation>
 <translation id="1807246157184219062">Luminos</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2085089206770112532">Reducerea luminozității ecranului</translation>
+<translation id="2102231663024125441">Editarea textului</translation>
 <translation id="2105810540595158374">Dispozitivul este un controler de jocuri.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB din <ph name="TOTAL_MEMORY" /> GB disponibili</translation>
@@ -212,6 +218,7 @@
 <translation id="2859243502336719778">Actualizare esențială</translation>
 <translation id="2860473693272905224">Așază altă pagină pe scaner</translation>
 <translation id="2872961005593481000">Închide</translation>
+<translation id="2873483161362553159">Navigare în browser</translation>
 <translation id="2874939134665556319">Melodia anterioară</translation>
 <translation id="2878387241690264070">S-a descărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="2902312830803030883">Mai multe acțiuni</translation>
@@ -368,6 +375,7 @@
 <translation id="4311195029067684288">Maxim</translation>
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Resetează toate comenzile rapide</translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
 <translation id="4378551569595875038">Se conectează</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +668,7 @@
 <translation id="6766275201586212568">Rezolvări DNS nereușite</translation>
 <translation id="6768237774506518020">Rată de eroare ridicată a rezolvărilor DNS</translation>
 <translation id="6791471867139427246">culoarea iluminării tastaturii</translation>
+<translation id="6798678288485555829">Navigare în text</translation>
 <translation id="680983167891198932">Cheie</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
 <translation id="6838167112108853532">Nu se poate dezactiva sau elimina acest APN. Asigură-te că APN-urile atașate sunt dezactivate sau eliminate.</translation>
@@ -800,6 +809,7 @@
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
 <translation id="811820734797650957">(Android) Gateway-ul acceptă testul de ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8131740175452115882">Confirmați</translation>
 <translation id="8132480444149501833">Solicită contoare de trafic</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selectează <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>

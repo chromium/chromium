@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1014750484722996375">Työpöydät</translation>
 <translation id="1018219910092211213">DNS:ää ei voi selvittää</translation>
 <translation id="1018656279737460067">Peruutettu</translation>
+<translation id="1022433422498218992">Yleiset asetukset</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uusi ominaisuus saatavilla, tutki sitä painamalla ylänuolta.</translation>
 <translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1664796644829245314">Esikatsele: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
+<translation id="1669047024429367828">Näkyvyys</translation>
 <translation id="1672499492233627739">Webkameran videofiidi</translation>
 <translation id="1676557873873341166">Tallennetaan videota</translation>
 <translation id="1703835215927279855">Kirje</translation>
 <translation id="1706391837335750954">DNS-ratkaisija paikalla</translation>
+<translation id="1710499924611012470">Saavutettavuusnavigointi</translation>
 <translation id="1715359911173058521">Skanneriin yhdistämisessä on ongelma. Tarkista verkko- tai USB-yhteys ja yritä uudelleen.</translation>
 <translation id="1717874160321062422">Ylläpitäjät: <ph name="FIRST_MANAGER" /> ja <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nimipalvelimet</translation>
@@ -135,6 +139,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2085089206770112532">Vähennä näytön kirkkautta</translation>
+<translation id="2102231663024125441">Tekstin muokkaaminen</translation>
 <translation id="2105810540595158374">Laite on peliohjain.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versio <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> Gt / <ph name="TOTAL_MEMORY" /> Gt saatavilla</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Tärkeä päivitys</translation>
 <translation id="2860473693272905224">Aseta toinen sivu skanneriin</translation>
 <translation id="2872961005593481000">Sammuta</translation>
+<translation id="2873483161362553159">Selaimessa siirtyminen</translation>
 <translation id="2874939134665556319">Edellinen kappale</translation>
 <translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
 <translation id="2902312830803030883">Lisää toimintoja</translation>
@@ -660,6 +666,7 @@
 <translation id="6766275201586212568">Hylätyt DNS-selvitykset</translation>
 <translation id="6768237774506518020">Suuri DNS-selvitysten hylkäysprosentti</translation>
 <translation id="6791471867139427246">näppäimistön vaaleat värit</translation>
+<translation id="6798678288485555829">Tekstissä siirtyminen</translation>
 <translation id="680983167891198932">Avain</translation>
 <translation id="6816797338148849397">Valintaasi liittyvää tietoa on saatavilla. Paina ylänuolta, niin näet tiedot.</translation>
 <translation id="6838167112108853532">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että liitetyt, käyttöön otetut APN:t on poistettu käytöstä tai kokonaan.</translation>
@@ -800,6 +807,7 @@
 <translation id="8104083085214006426">Käytät avointa ja suojaamatonta verkkoa</translation>
 <translation id="811820734797650957">(Android) Yhdyskäytävää voidaan pingata</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8131740175452115882">Vahvista</translation>
 <translation id="8132480444149501833">Pyydä liikennelaskureita</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Valitse <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>

@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Garbitu egin da Google Drive-ko cachea.</translation>
 <translation id="2239068707900391003">Kafe-kikara bati eusten ari dion pertsona</translation>
 <translation id="2251368349685848079">Leheneratu zaborrontzitik</translation>
+<translation id="2278133026967558505">Webgune eta URL guztiek atzi dezakete fitxategia</translation>
 <translation id="2282155092769082568">Konfigurazio automatikoaren URLa:</translation>
 <translation id="2284767815536050991">memoria aldagarria</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
@@ -766,6 +767,7 @@
 <translation id="7162080671816799010">Autentifikazio-zerbitzariaren identitatea baliozkotzeko, "Gaiaren ordezko izenaren bat-etortzea" edo "Domeinuko atzizkiaren bat-etortzea" falta da</translation>
 <translation id="7165320105431587207">Ezin izan da konfiguratu sarea</translation>
 <translation id="7170041865419449892">Barrutitik kanpo</translation>
+<translation id="7179579940054351344">Webgune eta URL guztiek atzi dezakete fitxategia, <ph name="NON_RESTRICTED_DESTINATIONS" /> izan ezik</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Gorde fitxategia honela</translation>

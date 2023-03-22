@@ -150,6 +150,7 @@
 <translation id="2236732657580416950">Teie Google Drive'i vahemälu tühjendati.</translation>
 <translation id="2239068707900391003">Inimene kohviga</translation>
 <translation id="2251368349685848079">Taasta prügikastist</translation>
+<translation id="2278133026967558505">Failidele pääsevad juurde kõik veebisaidid ja URL-id</translation>
 <translation id="2282155092769082568">Automaatse konfigureerimise URL:</translation>
 <translation id="2284767815536050991">eemaldatav salvestusruum</translation>
 <translation id="2288278176040912387">Grammofon</translation>
@@ -767,6 +768,7 @@
 <translation id="7162080671816799010">Autentimisserveri identiteedi kinnitamiseks puudub „Teema alternatiivse nime vaste“ või „Domeenisufiksi vaste“.</translation>
 <translation id="7165320105431587207">Võrgu seadistamine ebaõnnestus</translation>
 <translation id="7170041865419449892">Vahemikust väljas</translation>
+<translation id="7179579940054351344">Failidele pääsevad juurde kõik veebisaidid ja URL-id, välja arvatud <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Salvesta fail nimega</translation>
