@@ -594,6 +594,10 @@ void PersonalDataManager::SyncStarted(syncer::ModelType model_type) {
 }
 
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
+  for (PersonalDataManagerObserver& observer : observers_) {
+    observer.OnPersonalDataSyncStateChanged();
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableAccountWalletStorage)) {
     // Use the ephemeral account storage when the user didn't enable the sync

@@ -42,8 +42,12 @@ class AutofillPrivateEventRouter :
 
   // PersonalDataManagerObserver implementation.
   void OnPersonalDataChanged() override;
+  void OnPersonalDataSyncStateChanged() override;
 
  private:
+  // Triggers an event on the router with current user's data.
+  void BroadcastCurrentData();
+
   raw_ptr<content::BrowserContext> context_;
 
   raw_ptr<EventRouter> event_router_ = nullptr;

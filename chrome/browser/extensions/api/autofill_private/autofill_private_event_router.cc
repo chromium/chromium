@@ -60,6 +60,14 @@ void AutofillPrivateEventRouter::Shutdown() {
 }
 
 void AutofillPrivateEventRouter::OnPersonalDataChanged() {
+  BroadcastCurrentData();
+}
+
+void AutofillPrivateEventRouter::OnPersonalDataSyncStateChanged() {
+  BroadcastCurrentData();
+}
+
+void AutofillPrivateEventRouter::BroadcastCurrentData() {
   // Ignore any updates before data is loaded. This can happen in tests.
   if (!(personal_data_ && personal_data_->IsDataLoaded()))
     return;
