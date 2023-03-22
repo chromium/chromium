@@ -972,7 +972,7 @@
         <message name="IDS_DIAGNOSTICS_PERCENTAGE_LABEL" desc="The label displaying localized percentage.">
           <ph name="PERCENTAGE_VALUE">$1<ex>50</ex></ph>%
         </message>
-        <message name="IDS_DIAGNOSTICS_CURRENT_NOW_LABEL" desc="The label for a battery's current power consumption represented in milliamps.">
+        <message name="IDS_DIAGNOSTICS_CURRENT_NOW_LABEL" desc="Electrical current as label for a battery's power consumption represented in milliamps." meaning="Electrical current">
           Current
         </message>
         <message name="IDS_DIAGNOSTICS_CURRENT_NOW_TEXT" desc="The text for a battery's current power consumption represented in milliamps.">
