@@ -32,6 +32,10 @@ class StyleIntrinsicLength;
 class StylePropertyShorthand;
 class StyleTimeline;
 
+namespace cssvalue {
+class CSSContentDistributionValue;
+}
+
 enum class CSSValuePhase { kComputedValue, kUsedValue };
 
 class CORE_EXPORT ComputedStyleUtils {
@@ -106,9 +110,9 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForPositionOffset(const ComputedStyle&,
                                           const CSSProperty&,
                                           const LayoutObject*);
-  static CSSValueList* ValueForItemPositionWithOverflowAlignment(
+  static CSSValue* ValueForItemPositionWithOverflowAlignment(
       const StyleSelfAlignmentData&);
-  static CSSValueList*
+  static cssvalue::CSSContentDistributionValue*
   ValueForContentPositionAndDistributionWithOverflowAlignment(
       const StyleContentAlignmentData&);
   static CSSValue* ValueForLineHeight(const ComputedStyle&);

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
 #include "third_party/blink/renderer/core/css/css_bracketed_value_list.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -701,44 +702,54 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   return ZoomAdjustedPixelValueForLength(offset, style);
 }
 
-CSSValueList* ComputedStyleUtils::ValueForItemPositionWithOverflowAlignment(
+CSSValue* ComputedStyleUtils::ValueForItemPositionWithOverflowAlignment(
     const StyleSelfAlignmentData& data) {
-  CSSValueList* result = CSSValueList::CreateSpaceSeparated();
   if (data.PositionType() == ItemPositionType::kLegacy) {
-    result->Append(*CSSIdentifierValue::Create(CSSValueID::kLegacy));
+    // Legacy is only for justify-items and may only be created with the
+    // positions "left", "right", or "center". See
+    // JustifyItems::ParseSingleValue.
+    DCHECK(data.GetPosition() == ItemPosition::kLeft ||
+           data.GetPosition() == ItemPosition::kRight ||
+           data.GetPosition() == ItemPosition::kCenter)
+        << "Unexpected position: " << (unsigned)data.GetPosition();
+    DCHECK_EQ(data.Overflow(), OverflowAlignment::kDefault);
+    return MakeGarbageCollected<CSSValuePair>(
+        CSSIdentifierValue::Create(CSSValueID::kLegacy),
+        CSSIdentifierValue::Create(data.GetPosition()),
+        CSSValuePair::kDropIdenticalValues);
   }
+
   if (data.GetPosition() == ItemPosition::kBaseline) {
-    result->Append(*MakeGarbageCollected<CSSValuePair>(
-        CSSIdentifierValue::Create(CSSValueID::kBaseline),
-        CSSIdentifierValue::Create(CSSValueID::kBaseline),
-        CSSValuePair::kDropIdenticalValues));
+    return CSSIdentifierValue::Create(CSSValueID::kBaseline);
   } else if (data.GetPosition() == ItemPosition::kLastBaseline) {
-    result->Append(*MakeGarbageCollected<CSSValuePair>(
+    return MakeGarbageCollected<CSSValuePair>(
         CSSIdentifierValue::Create(CSSValueID::kLast),
         CSSIdentifierValue::Create(CSSValueID::kBaseline),
-        CSSValuePair::kDropIdenticalValues));
+        CSSValuePair::kDropIdenticalValues);
   } else {
+    auto* position = data.GetPosition() == ItemPosition::kLegacy
+                         ? CSSIdentifierValue::Create(CSSValueID::kNormal)
+                         : CSSIdentifierValue::Create(data.GetPosition());
     if (data.GetPosition() >= ItemPosition::kCenter &&
         data.Overflow() != OverflowAlignment::kDefault) {
-      result->Append(*CSSIdentifierValue::Create(data.Overflow()));
+      return MakeGarbageCollected<CSSValuePair>(
+          CSSIdentifierValue::Create(data.Overflow()), position,
+          CSSValuePair::kDropIdenticalValues);
     }
-    if (data.GetPosition() == ItemPosition::kLegacy) {
-      result->Append(*CSSIdentifierValue::Create(CSSValueID::kNormal));
-    } else {
-      result->Append(*CSSIdentifierValue::Create(data.GetPosition()));
-    }
+    return position;
   }
-  DCHECK_LE(result->length(), 2u);
-  return result;
 }
 
-CSSValueList*
+cssvalue::CSSContentDistributionValue*
 ComputedStyleUtils::ValueForContentPositionAndDistributionWithOverflowAlignment(
     const StyleContentAlignmentData& data) {
-  CSSValueList* result = CSSValueList::CreateSpaceSeparated();
+  CSSValueID distribution = CSSValueID::kInvalid;
+  CSSValueID position = CSSValueID::kInvalid;
+  CSSValueID overflow = CSSValueID::kInvalid;
+
   // Handle content-distribution values
   if (data.Distribution() != ContentDistributionType::kDefault) {
-    result->Append(*CSSIdentifierValue::Create(data.Distribution()));
+    distribution = CSSIdentifierValue(data.Distribution()).GetValueID();
   }
 
   // Handle content-position values (either as fallback or actual value)
@@ -746,28 +757,24 @@ ComputedStyleUtils::ValueForContentPositionAndDistributionWithOverflowAlignment(
     case ContentPosition::kNormal:
       // Handle 'normal' value, not valid as content-distribution fallback.
       if (data.Distribution() == ContentDistributionType::kDefault) {
-        result->Append(*CSSIdentifierValue::Create(CSSValueID::kNormal));
+        position = CSSValueID::kNormal;
       }
       break;
     case ContentPosition::kLastBaseline:
-      result->Append(*MakeGarbageCollected<CSSValuePair>(
-          CSSIdentifierValue::Create(CSSValueID::kLast),
-          CSSIdentifierValue::Create(CSSValueID::kBaseline),
-          CSSValuePair::kDropIdenticalValues));
+      position = CSSValueID::kLastBaseline;
       break;
     default:
       // Handle overflow-alignment (only allowed for content-position values)
       if ((data.GetPosition() >= ContentPosition::kCenter ||
            data.Distribution() != ContentDistributionType::kDefault) &&
           data.Overflow() != OverflowAlignment::kDefault) {
-        result->Append(*CSSIdentifierValue::Create(data.Overflow()));
+        overflow = CSSIdentifierValue::Create(data.Overflow())->GetValueID();
       }
-      result->Append(*CSSIdentifierValue::Create(data.GetPosition()));
+      position = CSSIdentifierValue::Create(data.GetPosition())->GetValueID();
   }
 
-  DCHECK_GT(result->length(), 0u);
-  DCHECK_LE(result->length(), 3u);
-  return result;
+  return MakeGarbageCollected<cssvalue::CSSContentDistributionValue>(
+      distribution, position, overflow);
 }
 
 CSSValue* ComputedStyleUtils::ValueForLineHeight(const ComputedStyle& style) {
