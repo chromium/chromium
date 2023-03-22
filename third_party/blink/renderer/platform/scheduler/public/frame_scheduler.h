@@ -44,6 +44,7 @@ class FrameScheduler : public FrameOrWorkerScheduler {
     virtual void OnTaskCompleted(base::TimeTicks start_time,
                                  base::TimeTicks end_time,
                                  base::TimeTicks desired_execution_time) = 0;
+    virtual void MainFrameInteractive() {}
   };
 
   ~FrameScheduler() override = default;
@@ -128,6 +129,10 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // Tells the scheduler that the first contentful paint has occurred for this
   // frame. Only for main frames.
   virtual void OnFirstContentfulPaintInMainFrame() = 0;
+
+  // Tells the scheduler the Frame's Document is interactive. Only for main
+  // frames.
+  virtual void OnMainFrameInteractive() = 0;
 
   // Tells the scheduler that the first meaningful paint has occurred for this
   // frame.

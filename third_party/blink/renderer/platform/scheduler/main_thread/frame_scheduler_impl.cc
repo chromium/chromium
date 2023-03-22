@@ -831,6 +831,12 @@ void FrameSchedulerImpl::OnFirstContentfulPaintInMainFrame() {
   main_thread_scheduler_->OnMainFramePaint();
 }
 
+void FrameSchedulerImpl::OnMainFrameInteractive() {
+  if (delegate_) {
+    return delegate_->MainFrameInteractive();
+  }
+}
+
 void FrameSchedulerImpl::OnFirstMeaningfulPaint() {
   waiting_for_meaningful_paint_ = false;
 

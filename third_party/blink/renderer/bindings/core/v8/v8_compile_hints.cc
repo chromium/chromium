@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
@@ -26,6 +27,8 @@ constexpr int kBloomFilterInt32Count = 512;
 }
 
 std::atomic<bool> V8CompileHints::data_generated_for_this_process_ = false;
+
+V8CompileHints::V8CompileHints(Page* page) : page_(page) {}
 
 void V8CompileHints::RecordScript(Frame* frame,
                                   ExecutionContext* execution_context,
@@ -72,58 +75,18 @@ void V8CompileHints::RecordScript(Frame* frame,
 
   scripts_.emplace_back(v8::Global<v8::Script>(isolate, script));
   script_name_hashes_.emplace_back(script_name_hash);
-
-  ScheduleDataGenerationIfNeeded(frame, execution_context);
 }
 
-namespace {
-void DelayedDataGenerationTask(Page* page,
-                               ExecutionContext* execution_context) {
-  page->GetV8CompileHints().GenerateData(execution_context);
-}
-}  // namespace
-
-void V8CompileHints::ScheduleDataGenerationIfNeeded(
-    Frame* frame,
-    ExecutionContext* execution_context) {
-  // We need to use the outermost main frame's ExecutionContext for retrieving
-  // the UkmRecorder for sending the data. This means that if the main frame
-  // doesn't run scripts, compile hints from the non-main frames won't be sent.
-  // TODO(chromium:1406506): Relax that restriction.
-  if (!frame->IsOutermostMainFrame()) {
+void V8CompileHints::GenerateData() {
+  // Call FeatureList::IsEnabled only once.
+  static bool compile_hints_enabled =
+      base::FeatureList::IsEnabled(features::kProduceCompileHints);
+  if (!compile_hints_enabled) {
     return;
   }
 
-  DCHECK(state_ == State::kInitial ||
-         state_ == State::kDataGenerationScheduled);
-  if (state_ == State::kDataGenerationScheduled) {
-    return;
-  }
-
-  state_ = State::kDataGenerationScheduled;
-
-  // Schedule a task for moving the data to UKM. For now, we use a simple timer
-  // instead of a more complicated "page loaded" event, but this should be good
-  // enough for our purpose.
-
-  auto delay =
-      base::Milliseconds(features::kProduceCompileHintsOnIdleDelayParam.Get());
-
-  execution_context->GetTaskRunner(TaskType::kIdleTask)
-      ->PostDelayedTask(FROM_HERE,
-                        WTF::BindOnce(&DelayedDataGenerationTask,
-                                      WrapPersistent(frame->GetPage()),
-                                      WrapPersistent(execution_context)),
-                        delay);
-}
-
-void V8CompileHints::GenerateData(ExecutionContext* execution_context) {
+  // Guard against this function getting called repeatedly.
   if (state_ == State::kDataGenerationFinished) {
-    // This only happens when: 1) some other Page generated data 2)
-    // this V8CompileHints object got notified of a script 3) it realized that
-    // some other Page has already generated data 4) the data generation task
-    // which was already scheduled ran.
-    DCHECK(data_generated_for_this_process_);
     return;
   }
 
@@ -131,10 +94,14 @@ void V8CompileHints::GenerateData(ExecutionContext* execution_context) {
   state_ = State::kDataGenerationFinished;
 
   if (!data_generated_for_this_process_) {
-    data_generated_for_this_process_ = SendDataToUkm(execution_context);
+    data_generated_for_this_process_ = SendDataToUkm();
   }
 
   ClearData();
+}
+
+void V8CompileHints::Trace(Visitor* visitor) const {
+  visitor->Trace(page_);
 }
 
 void V8CompileHints::ClearData() {
@@ -142,7 +109,16 @@ void V8CompileHints::ClearData() {
   script_name_hashes_.clear();
 }
 
-bool V8CompileHints::SendDataToUkm(ExecutionContext* execution_context) {
+bool V8CompileHints::SendDataToUkm() {
+  Frame* main_frame = page_->MainFrame();
+  // Because of OOPIF, the main frame is not necessarily a LocalFrame. We cannot
+  // generate good compile hints for those pages, so skip sending them.
+  if (!main_frame->IsLocalFrame()) {
+    return false;
+  }
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(DynamicTo<LocalFrame>(main_frame));
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   v8::Isolate* isolate = execution_context->GetIsolate();
   v8::HandleScope handle_scope(isolate);
   int total_funcs = 0;

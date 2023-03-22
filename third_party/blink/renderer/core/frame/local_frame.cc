@@ -2428,6 +2428,13 @@ void LocalFrame::OnTaskCompleted(base::TimeTicks start_time,
                                     desired_execution_time, this);
   }
 }
+
+void LocalFrame::MainFrameInteractive() {
+  if (Page* page = GetPage()) {
+    page->GetV8CompileHints().GenerateData();
+  }
+}
+
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {
   return mojo_handler_->ReportingService();
 }

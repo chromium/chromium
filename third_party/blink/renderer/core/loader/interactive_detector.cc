@@ -610,6 +610,10 @@ void InteractiveDetector::OnTimeToInteractiveDetected() {
       });
 
   long_tasks_.clear();
+
+  if (frame != nullptr && frame->IsMainFrame() && frame->GetFrameScheduler()) {
+    frame->GetFrameScheduler()->OnMainFrameInteractive();
+  }
 }
 
 base::TimeDelta InteractiveDetector::ComputeTotalBlockingTime() {

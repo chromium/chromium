@@ -416,7 +416,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return fenced_frame_mode_;
   }
 
-  V8CompileHints& GetV8CompileHints() { return v8_compile_hints_; }
+  V8CompileHints& GetV8CompileHints() { return *v8_compile_hints_; }
 
  private:
   friend class ScopedPagePauser;
@@ -568,7 +568,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   WebScopedVirtualTimePauser history_navigation_virtual_time_pauser_;
 
-  V8CompileHints v8_compile_hints_;
+  Member<V8CompileHints> v8_compile_hints_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

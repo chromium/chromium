@@ -121,6 +121,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void OnFirstContentfulPaintInMainFrame() override;
   void OnFirstMeaningfulPaint() override;
   void OnLoad() override;
+  void OnMainFrameInteractive() override;
   bool IsWaitingForContentfulPaint() const;
   bool IsWaitingForMeaningfulPaint() const;
 
