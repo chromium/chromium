@@ -62359,6 +62359,7 @@ from previous Chrome versions.
   <int value="38904620" label="TabSwitcherLongpressMenu:enabled"/>
   <int value="39035791"
       label="AutofillTouchToFillForCreditCardsAndroid:enabled"/>
+  <int value="39822765" label="ShimlessRMADiagnosticPage:disabled"/>
   <int value="41881657" label="MessagesForAndroidAdsBlocked:enabled"/>
   <int value="41990393" label="ContextMenuGoogleLensChip:enabled"/>
   <int value="42098736" label="TranslateAndroidManualTrigger:disabled"/>
@@ -63004,6 +63005,7 @@ from previous Chrome versions.
   <int value="392782890" label="SafeBrowsingTelemetryForApkDownloads:enabled"/>
   <int value="393569083" label="OmniboxMatchToolbarAndStatusBarColor:enabled"/>
   <int value="393704200" label="account-consistency"/>
+  <int value="393869264" label="ShimlessRMADiagnosticPage:enabled"/>
   <int value="394384982" label="GaiaIdCacheInAccountManagerFacade:enabled"/>
   <int value="395148768" label="AutofillFillIbanFields:disabled"/>
   <int value="397275669" label="QuickCommands:disabled"/>

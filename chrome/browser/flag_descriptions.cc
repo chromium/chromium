@@ -6031,6 +6031,12 @@ const char kShimlessRMADisableDarkModeName[] =
 const char kShimlessRMADisableDarkModeDescription[] =
     "Disable dark mode and only allow light mode in Shimless RMA";
 
+const char kShimlessRMADiagnosticPageName[] =
+    "Enable diagnostic page in Shimless RMA";
+const char kShimlessRMADiagnosticPageDescription[] =
+    "Enable the diagnostic page in Shimless RMA for showing detailed device "
+    "information";
+
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

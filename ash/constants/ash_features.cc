@@ -1899,6 +1899,11 @@ BASE_FEATURE(kShimlessRMADisableDarkMode,
              "ShimlessRMADisableDarkMode",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables the diagnostic page in the Shimless RMA flow.
+BASE_FEATURE(kShimlessRMADiagnosticPage,
+             "ShimlessRMADiagnosticPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables a toggle to enable Bluetooth debug logs.
 BASE_FEATURE(kShowBluetoothDebugLogToggle,
              "ShowBluetoothDebugLogToggle",
@@ -3191,6 +3196,10 @@ bool IsShimlessRMAOsUpdateEnabled() {
 
 bool IsShimlessRMADarkModeDisabled() {
   return base::FeatureList::IsEnabled(kShimlessRMADisableDarkMode);
+}
+
+bool IsShimlessRMADiagnosticPageEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMADiagnosticPage);
 }
 
 bool IsSmdsDbusMigrationEnabled() {
