@@ -10,6 +10,13 @@ const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
 
 
 function initialize() {
+  companionProxy.callbackRouter.onInitializePage.addListener(
+      (initialUrl: string) => {
+        const frame = document.body.querySelector('iframe');
+        assert(frame);
+        frame.src = initialUrl;
+      });
+
   // When the url is changed, we update our iframe src to pass new parameters.
   companionProxy.callbackRouter.onURLChanged.addListener((newUrl: string) => {
     const frame = document.body.querySelector('iframe');

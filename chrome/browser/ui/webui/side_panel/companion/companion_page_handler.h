@@ -44,9 +44,14 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
+  // Notifies the companion page of the initial URL it should load if any.
+  // Otherwise, it will load the zero state.
+  void InitializePage();
+
   // Notifies the companion page of the visible URL when the active tab has
   // changed or when the primary page has changed on the active tab.
   void NotifyURLChanged();
+  bool IsMsbbEnabled();
 
   // Returns the companion URL that will be loaded in the side panel with the
   // URL query parameter set to `url_query_param_value` and the origin query
