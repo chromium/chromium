@@ -27,6 +27,13 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+// #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+// #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+// #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+// #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+// #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
@@ -151,7 +158,11 @@ enum class PresentedState {
             _browserState);
     _mediator = [[BookmarkMediator alloc]
         initWithWithBookmarkModel:self.bookmarkModel
-                            prefs:_browserState->GetPrefs()];
+                            prefs:_browserState->GetPrefs()
+            authenticationService:AuthenticationServiceFactory::
+                                      GetForBrowserState(_browserState)
+                 syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
+                                      _browserState)];
     _currentPresentedState = PresentedState::NONE;
     DCHECK(_bookmarkModel);
   }
@@ -163,6 +174,7 @@ enum class PresentedState {
 }
 
 - (void)shutdown {
+  [_mediator disconnect];
   switch (self.currentPresentedState) {
     case PresentedState::BOOKMARK_BROWSER:
       [self bookmarkBrowserDismissed];

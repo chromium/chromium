@@ -80,9 +80,12 @@ source_set("core") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
@@ -136,6 +139,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "bookmark_mediator_unittest.mm",
     "bookmark_path_cache_unittest.mm",
     "bookmark_utils_ios_unittest.mm",
   ]
@@ -144,10 +148,20 @@ source_set("unit_tests") {
     ":core",
     ":utils",
     "//base",
+    "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/sync/driver",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/bookmarks:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/signin:fake_system_identity_manager",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/sync",
     "//testing/gtest",
   ]
 }

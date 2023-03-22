@@ -522,15 +522,25 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BOOKMARK_NEW_ZERO_ITEM_LABEL" desc="Text that indicates that a user has selected zero bookmarks for editing. [Length: 30em.]">
         0 selected
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in an infobar when bookmarks are created. [Length: 30em.]">
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED" desc="Presented in a snackbar when bookmarks are created. [Length: 30em.]">
         {count, plural,
         =1 {Bookmarked}
         other {Bookmarked}}
       </message>
-      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER" desc="Presented in an infobar when  bookmark are created. Specifies in which folder the bookmark was added. [Length: 30em.]">
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER" desc="Presented in a snackbar when  bookmark are created. Specifies in which folder the bookmark was added. [Length: 30em.]">
           {count, plural,
           =1 {Bookmarked to {title}}
           other {Bookmarked to {title}}}
+      </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT" desc="Presented in a snackbar when bookmarks are created in an account. Specifies in which folder the bookmark was added. ">
+          {count, plural,
+          =1 {Bookmark saved in your account, {email}}
+          other {Bookmarks saved in your account, {email}}}
+      </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER" desc="Presented in a snackbar when bookmarks are created in an account.">
+         {count, plural,
+         =1 {Bookmark saved to {title} in your account, {email}}
+         other {Bookmarks saved to {title} in your account, {email}}}
       </message>
       <message name="IDS_IOS_BOOKMARK_URL_FIELD_HEADER" desc="Title shown above URL field on Edit Bookmark screen. [Length: 20em]">
         URL

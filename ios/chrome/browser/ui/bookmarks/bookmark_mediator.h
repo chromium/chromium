@@ -7,6 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+class AuthenticationService;
+class GURL;
+@class MDCSnackbarMessage;
+class PrefService;
+class SyncSetupService;
+@class URLWithTitle;
+
 namespace bookmarks {
 class BookmarkNode;
 class BookmarkModel;
@@ -16,22 +23,22 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-class PrefService;
-class GURL;
-@class MDCSnackbarMessage;
-@class URLWithTitle;
-
 // Mediator for the bookmarks.
 @interface BookmarkMediator : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithWithBookmarkModel:
-                    (bookmarks::BookmarkModel*)bookmarkModel
-                                    prefs:(PrefService*)prefs
+- (instancetype)
+    initWithWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                        prefs:(PrefService*)prefs
+        authenticationService:(AuthenticationService*)authenticationService
+             syncSetupService:(SyncSetupService*)syncSetupService
     NS_DESIGNATED_INITIALIZER;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
+
+// Disconnects the mediator
+- (void)disconnect;
 
 // Adds a bookmark with a `title` and a `URL` and display a snackbar with an
 // `editAction`. Returns a message to be displayed after the Bookmark has been
