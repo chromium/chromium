@@ -894,6 +894,88 @@
       },
     },
 
+    'chromium_dev_android_gtests': {
+      'chrome_public_smoke_test': {},
+    },
+
+    'chromium_dev_desktop_gtests': {
+      'base_unittests': {},
+      'content_browsertests': {},
+      'content_unittests': {},
+      'interactive_ui_tests': {},
+      'net_unittests': {},
+      'unit_tests': {},
+    },
+
+    'chromium_dev_linux_gtests': {
+      'base_unittests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': '8',
+            },
+          ],
+        },
+      },
+      'browser_tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': '8',
+            },
+          ],
+          'shards': 8,
+        },
+      },
+      'content_browsertests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': '8',
+            },
+          ],
+          'shards': 5,
+        },
+      },
+      'content_unittests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': '2',
+            },
+          ],
+        },
+      },
+      'interactive_ui_tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': '8',
+            },
+          ],
+          'shards': 3,
+        },
+      },
+      'net_unittests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': '8',
+            },
+          ],
+        },
+      },
+      'unit_tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cores': '2',
+            },
+          ],
+        },
+      },
+    },
+
     'chromium_gtests': {
       'absl_hardening_tests': {},
       'angle_unittests': {
@@ -1430,88 +1512,6 @@
       },
       'webkit_lint': {
         'script': 'blink_lint_expectations.py',
-      },
-    },
-
-    'chromium_swarm_android_gtests': {
-      'base_unittests': {},
-    },
-
-    'chromium_swarm_desktop_gtests': {
-      'base_unittests': {},
-      'content_browsertests': {},
-      'content_unittests': {},
-      'interactive_ui_tests': {},
-      'net_unittests': {},
-      'unit_tests': {},
-    },
-
-    'chromium_swarm_linux_gtests': {
-      'base_unittests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
-        },
-      },
-      'browser_tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
-          'shards': 8,
-        },
-      },
-      'content_browsertests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
-          'shards': 5,
-        },
-      },
-      'content_unittests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '2',
-            },
-          ],
-        },
-      },
-      'interactive_ui_tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
-          'shards': 3,
-        },
-      },
-      'net_unittests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '8',
-            },
-          ],
-        },
-      },
-      'unit_tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cores': '2',
-            },
-          ],
-        },
       },
     },
 

@@ -13,7 +13,7 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "base_unittests"
+            "chrome_public_smoke_test"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
@@ -45,8 +45,8 @@
           ],
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "base_unittests",
-        "test_id_prefix": "ninja://base:base_unittests/"
+        "test": "chrome_public_smoke_test",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_smoke_test/"
       }
     ]
   },

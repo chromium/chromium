@@ -2584,7 +2584,7 @@
           'walleye',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_swarm_android_gtests',
+           'gtest_tests': 'chromium_dev_android_gtests',
         },
         'swarming': {
           'dimension_sets': [
@@ -2601,7 +2601,7 @@
           'linux-bionic',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_swarm_linux_gtests',
+           'gtest_tests': 'chromium_dev_linux_gtests',
         },
       },
       'linux-ssd-rel-swarming': {
@@ -2614,7 +2614,7 @@
           'mac_12_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_swarm_desktop_gtests',
+           'gtest_tests': 'chromium_dev_desktop_gtests',
         },
       },
       'mac-rel-swarming': {
@@ -2622,12 +2622,12 @@
           'mac_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_swarm_desktop_gtests',
+           'gtest_tests': 'chromium_dev_desktop_gtests',
         },
       },
       'win-rel-swarming': {
         'test_suites': {
-           'gtest_tests': 'chromium_swarm_desktop_gtests',
+           'gtest_tests': 'chromium_dev_desktop_gtests',
         },
       },
       'win11-rel-swarming': {
@@ -2635,7 +2635,7 @@
           'win11',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_swarm_desktop_gtests',
+           'gtest_tests': 'chromium_dev_desktop_gtests',
         },
       },
     },
