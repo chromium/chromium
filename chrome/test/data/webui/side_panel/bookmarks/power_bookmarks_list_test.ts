@@ -160,7 +160,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
       id: '999',
       title: 'New bookmark',
       index: 0,
-      parentId: folders[0]!.id,
+      parentId: folders[1]!.id,
       url: 'http://new/bookmark',
     });
     flush();

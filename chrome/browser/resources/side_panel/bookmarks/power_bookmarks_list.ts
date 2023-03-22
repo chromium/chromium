@@ -364,11 +364,12 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   /**
    * Returns true if the given node is either the current active folder or a
-   * root folder while the all bookmarks list is shown.
+   * root folder that isn't shown itself while the all bookmarks list is shown.
    */
   private visibleParent_(parent: chrome.bookmarks.BookmarkTreeNode): boolean {
     const activeFolder = this.getActiveFolder_();
-    return (!activeFolder && parent.parentId === '0') ||
+    return (!activeFolder && parent.parentId === '0' &&
+            this.visibleIndex_(parent.id) === -1) ||
         parent === activeFolder;
   }
 
