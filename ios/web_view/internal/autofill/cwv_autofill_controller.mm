@@ -10,7 +10,6 @@
 
 #import "base/functional/callback.h"
 #import "base/mac/foundation_util.h"
-#import "base/notreached.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -726,14 +725,6 @@ using UserDecision =
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion {
   // No op.
-}
-
-- (BOOL)shouldShowAccountStorageNotice {
-  return false;
-}
-
-- (void)showAccountStorageNotice:(void (^)())completion {
-  NOTREACHED_NORETURN();
 }
 
 @end

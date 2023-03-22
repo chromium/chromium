@@ -7,9 +7,7 @@
 
 #import <memory>
 
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/password_manager_app_interface.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -25,7 +23,6 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
-#import "net/base/mac/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -84,27 +81,11 @@ BOOL WaitForKeyboardToAppear() {
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-
-  // Prefs aren't reset between tests, crbug.com/1069086. Most tests don't care
-  // about the account storage notice, so suppress it by marking it as shown.
-  [PasswordManagerAppInterface setAccountStorageNoticeShown:YES];
 }
 
 - (void)tearDown {
   [PasswordManagerAppInterface clearCredentials];
   [super tearDown];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self
-          isRunningTest:@selector(testShowAccountStorageNoticeBeforeSaving)] ||
-      [self
-          isRunningTest:@selector(testShowAccountStorageNoticeBeforeFilling)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kEnablePasswordsAccountStorage);
-  }
-  return config;
 }
 
 #pragma mark - Helper methods
@@ -148,57 +129,6 @@ BOOL WaitForKeyboardToAppear() {
 
   int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
   GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
-}
-
-- (void)testShowAccountStorageNoticeBeforeSaving {
-  [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
-  [self loadLoginPage];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId("submit_button")];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityLabel(l10n_util::GetNSString(
-                          IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE))];
-
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityLabel(l10n_util::GetNSStringF(
-                          IDS_IOS_PASSWORD_MANAGER_ON_ACCOUNT_SAVE_SUBTITLE,
-                          base::SysNSStringToUTF16(fakeIdentity.userEmail)))];
-}
-
-- (void)testShowAccountStorageNoticeBeforeFilling {
-  [PasswordManagerAppInterface
-      storeCredentialWithUsername:@"user"
-                         password:@"password"
-                              URL:net::NSURLWithGURL(self.testServer->GetURL(
-                                      "/simple_login_form.html"))];
-  [PasswordManagerAppInterface setAccountStorageNoticeShown:NO];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
-                                enableSync:NO];
-  [self loadLoginPage];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityLabel(l10n_util::GetNSString(
-                          IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE))];
-
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT))]
-      performAction:grey_tap()];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityLabel(
-                                                          @"user ••••••••")];
 }
 
 // Tests that update password prompt is shown on submitting the new password
