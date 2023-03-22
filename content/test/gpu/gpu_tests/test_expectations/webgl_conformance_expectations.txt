@@ -322,6 +322,15 @@ crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 
+###############################
+# Permanent Slow Expectations #
+###############################
+# The "Slow" expectations in this section are expected to stick around, i.e.
+# they are not attributed to some known issue that needs resolving.
+
+# Seems to do enough JavaScript work that heartbeats are not reliably sent.
+crbug.com/1426593 conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -428,7 +437,6 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
 crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
-crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 ####################
 # Mac failures     #
@@ -570,7 +578,6 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBG
 crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1426593 [ android android-pixel-6 no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 crbug.com/1426535 [ android android-pixel-6 ] conformance/state/gl-enable-enum-test.html [ RetryOnFailure ]
 crbug.com/1426535 [ android android-pixel-6 ] conformance/state/gl-get-calls.html [ RetryOnFailure ]
 
