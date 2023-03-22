@@ -570,7 +570,8 @@ export class FileGrid extends Grid {
   getFolderItemHeight_() {
     // Align with CSS value for .thumbnail-item.directory: height + margin +
     // border.
-    return 40 + this.getItemMarginTop_() + 2;
+    const height = util.isJellyEnabled() ? 48 : 40;
+    return height + this.getItemMarginTop_() + 2;
   }
 
   /**
@@ -647,7 +648,8 @@ export class FileGrid extends Grid {
    */
   getItemWidth_() {
     // Align with CSS value for .thumbnail-item: width + margin + border.
-    return 180 + this.getItemMarginLeft_() + 2;
+    const width = util.isJellyEnabled() ? 160 : 180;
+    return width + this.getItemMarginLeft_() + 2;
   }
 
   /**
@@ -1016,7 +1018,7 @@ export class FileGrid extends Grid {
     // resize it to cover the thumbnail box.
     const type = FileType.getType(entry, opt_mimeType);
     if ((type.type === 'image' && type.subtype === 'JPEG') ||
-        width > FileGrid.GridSize || height > FileGrid.GridSize) {
+        width > FileGrid.GridSize() || height > FileGrid.GridSize()) {
       thumbnail.style.backgroundSize = 'cover';
     }
 
@@ -1194,10 +1196,12 @@ export class FileGrid extends Grid {
 }
 
 /**
- * Grid size.
- * @const {number}
+ * Grid size, in "px".
+ * @return {number}
  */
-FileGrid.GridSize = 180;  // px
+FileGrid.GridSize = () => {
+  return util.isJellyEnabled() ? 160 : 180;
+};
 
 FileGrid.Item = class extends ListItem {
   constructor() {
