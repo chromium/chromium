@@ -54,7 +54,6 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
          pref_service_->GetBoolean(
              password_manager::prefs::kBiometricAuthenticationBeforeFilling);
 #else
-  NOTREACHED();
   return false;
 #endif
 }
