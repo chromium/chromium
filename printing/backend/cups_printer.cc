@@ -30,10 +30,20 @@ class CupsPrinterImpl : public CupsPrinter {
     DCHECK(cups_http_);
     DCHECK(destination_);
 
-    printer_uri_ = cupsGetOption(kCUPSOptPrinterUriSupported,
-                                 destination_.get()->num_options,
-                                 destination_.get()->options);
-    resource_path_ = std::string(GURL(printer_uri_).path_piece());
+    const char* printer_uri = cupsGetOption(kCUPSOptPrinterUriSupported,
+                                            destination_.get()->num_options,
+                                            destination_.get()->options);
+
+    // crbug.com/1418564: Every printer *should* have a "printer-uri-supported"
+    // attribute, but make sure Chromium doesn't crash if one doesn't for
+    // whatever reason. The printer in question won't actually work, but
+    // that's a better outcome than crashing here.
+    // TODO(crbug.com/1418564): filter such printers out before reaching this
+    // point
+    if (printer_uri) {
+      printer_uri_ = printer_uri;
+      resource_path_ = std::string(GURL(printer_uri_).path_piece());
+    }
   }
 
   CupsPrinterImpl(const CupsPrinterImpl&) = delete;
