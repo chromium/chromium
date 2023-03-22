@@ -23,16 +23,6 @@ source_set("activities") {
     "send_tab_to_self_activity.mm",
   ]
   deps = [
-    "resources:activity_services_add_bookmark",
-    "resources:activity_services_copy",
-    "resources:activity_services_edit_bookmark",
-    "resources:activity_services_find_in_page",
-    "resources:activity_services_generate_qr_code",
-    "resources:activity_services_print",
-    "resources:activity_services_read_later",
-    "resources:activity_services_request_desktop_site",
-    "resources:activity_services_request_mobile_site",
-    "resources:activity_services_send_tab_to_self",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",

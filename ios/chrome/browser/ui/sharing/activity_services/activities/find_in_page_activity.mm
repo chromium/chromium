@@ -53,11 +53,8 @@ NSString* const kFindInPageActivityType =
 }
 
 - (UIImage*)activityImage {
-  if (UseSymbols()) {
-    return DefaultSymbolWithPointSize(kFindInPageActionSymbol,
-                                      kSymbolActionPointSize);
-  }
-  return [UIImage imageNamed:@"activity_services_find_in_page"];
+  return DefaultSymbolWithPointSize(kFindInPageActionSymbol,
+                                    kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

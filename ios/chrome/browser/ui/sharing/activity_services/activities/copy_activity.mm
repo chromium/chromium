@@ -52,11 +52,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (UIImage*)activityImage {
-  if (UseSymbols()) {
-    return DefaultSymbolWithPointSize(kCopyActionSymbol,
-                                      kSymbolActionPointSize);
-  }
-  return [UIImage imageNamed:@"activity_services_copy"];
+  return DefaultSymbolWithPointSize(kCopyActionSymbol, kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

@@ -60,11 +60,8 @@ NSString* const kReadingListActivityType =
 }
 
 - (UIImage*)activityImage {
-  if (UseSymbols()) {
-    return DefaultSymbolWithPointSize(kReadLaterActionSymbol,
-                                      kSymbolActionPointSize);
-  }
-  return [UIImage imageNamed:@"activity_services_read_later"];
+  return DefaultSymbolWithPointSize(kReadLaterActionSymbol,
+                                    kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

@@ -62,19 +62,11 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 }
 
 - (UIImage*)activityImage {
-  if (UseSymbols()) {
-    if (self.userAgent == web::UserAgentType::MOBILE) {
-      return MakeSymbolMonochrome(
-          DefaultSymbolWithPointSize(kDesktopSymbol, kSymbolActionPointSize));
-    }
-    return MakeSymbolMonochrome(
-        DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolActionPointSize));
-  }
-
-  if (self.userAgent == web::UserAgentType::MOBILE) {
-    return [UIImage imageNamed:@"activity_services_request_desktop_site"];
-  }
-  return [UIImage imageNamed:@"activity_services_request_mobile_site"];
+  NSString* symbolName = self.userAgent == web::UserAgentType::MOBILE
+                             ? kDesktopSymbol
+                             : kIPhoneSymbol;
+  return MakeSymbolMonochrome(
+      DefaultSymbolWithPointSize(symbolName, kSymbolActionPointSize));
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

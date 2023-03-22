@@ -231,9 +231,7 @@ constexpr CGFloat kSymbolSize = 22;
 
   NSMutableArray* regularHeightItems = [[NSMutableArray alloc] init];
   NSMutableArray* compactHeightItems = [[NSMutableArray alloc] init];
-  UIImage* helpImage =
-      UseSymbols() ? DefaultSymbolWithPointSize(kHelpSymbol, kSymbolSize)
-                   : [UIImage imageNamed:@"help_icon"];
+  UIImage* helpImage = DefaultSymbolWithPointSize(kHelpSymbol, kSymbolSize);
   UIBarButtonItem* helpButton =
       [[UIBarButtonItem alloc] initWithImage:helpImage
                                        style:UIBarButtonItemStylePlain

@@ -77,19 +77,9 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (UIImage*)activityImage {
-  if (UseSymbols()) {
-    if (self.bookmarked) {
-      return DefaultSymbolWithPointSize(kEditActionSymbol,
-                                        kSymbolActionPointSize);
-    }
-    return DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
-                                      kSymbolActionPointSize);
-  }
-
-  if (self.bookmarked) {
-    return [UIImage imageNamed:@"activity_services_edit_bookmark"];
-  }
-  return [UIImage imageNamed:@"activity_services_add_bookmark"];
+  NSString* symbolName =
+      self.bookmarked ? kEditActionSymbol : kAddBookmarkActionSymbol;
+  return DefaultSymbolWithPointSize(symbolName, kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
