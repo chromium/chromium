@@ -11247,6 +11247,32 @@
             ]
         }
     ],
+    "ServiceWorkerBypassFetchHandlerForMainResources": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ServiceWorkerBypassFetchHandlerForMainResource_20230322",
+                    "params": {
+                        "bypass_for": "main_resource",
+                        "script_checksum_to_bypass": "144B3D5485B621F5896FD51D6A6FE66A07B6DBC3ACF6404748A833C2D592F900",
+                        "strategy": "allowlist"
+                    },
+                    "enable_features": [
+                        "ServiceWorkerBypassFetchHandler"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServiceWorkerSkipIgnorableFetchHandler": [
         {
             "platforms": [
