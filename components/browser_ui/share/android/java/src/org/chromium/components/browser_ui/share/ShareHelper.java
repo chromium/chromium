@@ -172,7 +172,6 @@ public class ShareHelper {
                 // In case where the receiver is not unregistered correctly, cancel the callback
                 // (to satisfy guarantee that exactly one method of TargetChosenCallback is called).
                 prevReceiver.cancel();
-                prevReceiver.detach();
             }
             TARGET_CHOSEN_RECEIVER_KEY.attachToHost(window.getUnownedUserDataHost(), this);
             mAttachedWindow = new WeakReference<>(window);
@@ -251,10 +250,6 @@ public class ShareHelper {
             if (resultCode == Activity.RESULT_CANCELED) {
                 cancel();
             }
-
-            // Always detach this receiver from the attaching context, since the current sharing
-            // journey is completed.
-            detach();
         }
 
         private boolean isUntrustedIntent(Intent intent) {
@@ -281,6 +276,7 @@ public class ShareHelper {
                 mCallback.onCancel();
                 mCallback = null;
             }
+            detach();
         }
     }
 
