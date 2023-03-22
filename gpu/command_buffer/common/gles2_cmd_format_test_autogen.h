@@ -5495,6 +5495,51 @@ TEST_F(GLES2FormatTest, CopySharedImageINTERNALImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
+TEST_F(GLES2FormatTest, CopySharedImageToTextureINTERNALImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLbyte data[] = {
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 3),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 4),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 5),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 6),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 7),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 8),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 9),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 10),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 11),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 12),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 13),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 14),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 15),
+  };
+  cmds::CopySharedImageToTextureINTERNALImmediate& cmd =
+      *GetBufferAs<cmds::CopySharedImageToTextureINTERNALImmediate>();
+  void* next_cmd = cmd.Set(
+      &cmd, static_cast<GLuint>(11), static_cast<GLenum>(12),
+      static_cast<GLuint>(13), static_cast<GLenum>(14), static_cast<GLint>(15),
+      static_cast<GLint>(16), static_cast<GLsizei>(17),
+      static_cast<GLsizei>(18), static_cast<GLboolean>(19), data);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::CopySharedImageToTextureINTERNALImmediate::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLuint>(11), cmd.texture);
+  EXPECT_EQ(static_cast<GLenum>(12), cmd.target);
+  EXPECT_EQ(static_cast<GLuint>(13), cmd.internal_format);
+  EXPECT_EQ(static_cast<GLenum>(14), cmd.type);
+  EXPECT_EQ(static_cast<GLint>(15), cmd.src_x);
+  EXPECT_EQ(static_cast<GLint>(16), cmd.src_y);
+  EXPECT_EQ(static_cast<GLsizei>(17), cmd.width);
+  EXPECT_EQ(static_cast<GLsizei>(18), cmd.height);
+  EXPECT_EQ(static_cast<GLboolean>(19), cmd.flip_y);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
 TEST_F(GLES2FormatTest, ReadbackARGBImagePixelsINTERNAL) {
   cmds::ReadbackARGBImagePixelsINTERNAL& cmd =
       *GetBufferAs<cmds::ReadbackARGBImagePixelsINTERNAL>();

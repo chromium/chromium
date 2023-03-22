@@ -4071,6 +4071,16 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'trace_level': 2,
   },
+  'CopySharedImageToTextureINTERNAL': {
+    'decoder_func': 'DoCopySharedImageToTextureINTERNAL',
+    'extension': 'CHROMIUM_shared_image',
+    'internal': False,
+    'type': 'PUT',
+    'count': 16, #GL_MAILBOX_SIZE_CHROMIUM
+    'impl_func': True,
+    'unit_test': False,
+    'trace_level': 2,
+  },
   # mailbox_offset refers to the offset in shared memory pointing to shared
   # image mailbox.
   'ReadbackARGBImagePixelsINTERNAL': {

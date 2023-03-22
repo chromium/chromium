@@ -15782,6 +15782,109 @@ static_assert(
     offsetof(CopySharedImageINTERNALImmediate, unpack_flip_y) == 28,
     "offset of CopySharedImageINTERNALImmediate unpack_flip_y should be 28");
 
+struct CopySharedImageToTextureINTERNALImmediate {
+  typedef CopySharedImageToTextureINTERNALImmediate ValueType;
+  static const CommandId kCmdId = kCopySharedImageToTextureINTERNALImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLbyte) * 16);
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLuint _texture,
+            GLenum _target,
+            GLuint _internal_format,
+            GLenum _type,
+            GLint _src_x,
+            GLint _src_y,
+            GLsizei _width,
+            GLsizei _height,
+            GLboolean _flip_y,
+            const GLbyte* _src_mailbox) {
+    SetHeader();
+    texture = _texture;
+    target = _target;
+    internal_format = _internal_format;
+    type = _type;
+    src_x = _src_x;
+    src_y = _src_y;
+    width = _width;
+    height = _height;
+    flip_y = _flip_y;
+    memcpy(ImmediateDataAddress(this), _src_mailbox, ComputeDataSize());
+  }
+
+  void* Set(void* cmd,
+            GLuint _texture,
+            GLenum _target,
+            GLuint _internal_format,
+            GLenum _type,
+            GLint _src_x,
+            GLint _src_y,
+            GLsizei _width,
+            GLsizei _height,
+            GLboolean _flip_y,
+            const GLbyte* _src_mailbox) {
+    static_cast<ValueType*>(cmd)->Init(_texture, _target, _internal_format,
+                                       _type, _src_x, _src_y, _width, _height,
+                                       _flip_y, _src_mailbox);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t texture;
+  uint32_t target;
+  uint32_t internal_format;
+  uint32_t type;
+  int32_t src_x;
+  int32_t src_y;
+  int32_t width;
+  int32_t height;
+  uint32_t flip_y;
+};
+
+static_assert(sizeof(CopySharedImageToTextureINTERNALImmediate) == 40,
+              "size of CopySharedImageToTextureINTERNALImmediate should be 40");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, header) == 0,
+    "offset of CopySharedImageToTextureINTERNALImmediate header should be 0");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, texture) == 4,
+    "offset of CopySharedImageToTextureINTERNALImmediate texture should be 4");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, target) == 8,
+    "offset of CopySharedImageToTextureINTERNALImmediate target should be 8");
+static_assert(offsetof(CopySharedImageToTextureINTERNALImmediate,
+                       internal_format) == 12,
+              "offset of CopySharedImageToTextureINTERNALImmediate "
+              "internal_format should be 12");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, type) == 16,
+    "offset of CopySharedImageToTextureINTERNALImmediate type should be 16");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, src_x) == 20,
+    "offset of CopySharedImageToTextureINTERNALImmediate src_x should be 20");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, src_y) == 24,
+    "offset of CopySharedImageToTextureINTERNALImmediate src_y should be 24");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, width) == 28,
+    "offset of CopySharedImageToTextureINTERNALImmediate width should be 28");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, height) == 32,
+    "offset of CopySharedImageToTextureINTERNALImmediate height should be 32");
+static_assert(
+    offsetof(CopySharedImageToTextureINTERNALImmediate, flip_y) == 36,
+    "offset of CopySharedImageToTextureINTERNALImmediate flip_y should be 36");
+
 struct ReadbackARGBImagePixelsINTERNAL {
   typedef ReadbackARGBImagePixelsINTERNAL ValueType;
   static const CommandId kCmdId = kReadbackARGBImagePixelsINTERNAL;

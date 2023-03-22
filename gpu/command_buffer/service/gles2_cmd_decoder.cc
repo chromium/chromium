@@ -1265,6 +1265,16 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                  GLsizei height,
                                  GLboolean unpack_flip_y,
                                  const volatile GLbyte* mailboxes);
+  void DoCopySharedImageToTextureINTERNAL(GLuint texture,
+                                          GLenum target,
+                                          GLuint internal_format,
+                                          GLenum type,
+                                          GLint src_x,
+                                          GLint src_y,
+                                          GLsizei width,
+                                          GLsizei height,
+                                          GLboolean flip_y,
+                                          const volatile GLbyte* src_mailbox);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
@@ -18605,6 +18615,20 @@ void GLES2DecoderImpl::DoCopySharedImageINTERNAL(
     GLsizei height,
     GLboolean unpack_flip_y,
     const volatile GLbyte* mailboxes) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void GLES2DecoderImpl::DoCopySharedImageToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    const volatile GLbyte* src_mailbox) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

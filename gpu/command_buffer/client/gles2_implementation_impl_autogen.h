@@ -3563,6 +3563,44 @@ void GLES2Implementation::CopySharedImageINTERNAL(GLint xoffset,
   CheckGLError();
 }
 
+void GLES2Implementation::CopySharedImageToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    const GLbyte* src_mailbox) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix() << "] glCopySharedImageToTextureINTERNAL("
+          << texture << ", " << GLES2Util::GetStringEnum(target) << ", "
+          << internal_format << ", " << GLES2Util::GetStringEnum(type) << ", "
+          << src_x << ", " << src_y << ", " << width << ", " << height << ", "
+          << GLES2Util::GetStringBool(flip_y) << ", "
+          << static_cast<const void*>(src_mailbox) << ")");
+  uint32_t count = 16;
+  for (uint32_t ii = 0; ii < count; ++ii)
+    GPU_CLIENT_LOG("value[" << ii << "]: " << src_mailbox[ii]);
+  if (width < 0) {
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImageToTextureINTERNAL",
+               "width < 0");
+    return;
+  }
+  if (height < 0) {
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImageToTextureINTERNAL",
+               "height < 0");
+    return;
+  }
+  helper_->CopySharedImageToTextureINTERNALImmediate(
+      texture, target, internal_format, type, src_x, src_y, width, height,
+      flip_y, src_mailbox);
+  CheckGLError();
+}
+
 void GLES2Implementation::BlendEquationiOES(GLuint buf, GLenum mode) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBlendEquationiOES(" << buf

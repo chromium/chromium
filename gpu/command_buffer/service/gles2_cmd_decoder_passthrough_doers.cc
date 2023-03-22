@@ -5184,6 +5184,21 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    const volatile GLbyte* src_mailbox) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::DoEnableiOES(GLenum target,
                                                        GLuint index) {
   api()->glEnableiOESFn(target, index);

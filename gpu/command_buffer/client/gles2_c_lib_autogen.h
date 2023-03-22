@@ -1682,6 +1682,21 @@ void GL_APIENTRY GLES2CopySharedImageINTERNAL(GLint xoffset,
       xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
 }
 void GL_APIENTRY
+GLES2CopySharedImageToTextureINTERNAL(GLuint texture,
+                                      GLenum target,
+                                      GLuint internal_format,
+                                      GLenum type,
+                                      GLint src_x,
+                                      GLint src_y,
+                                      GLsizei width,
+                                      GLsizei height,
+                                      GLboolean flip_y,
+                                      const GLbyte* src_mailbox) {
+  gles2::GetGLContext()->CopySharedImageToTextureINTERNAL(
+      texture, target, internal_format, type, src_x, src_y, width, height,
+      flip_y, src_mailbox);
+}
+void GL_APIENTRY
 GLES2ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                      const void* dst_color_space,
                                      GLuint dst_color_space_size,
@@ -3142,6 +3157,11 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glCopySharedImageINTERNAL",
         reinterpret_cast<GLES2FunctionPointer>(glCopySharedImageINTERNAL),
+    },
+    {
+        "glCopySharedImageToTextureINTERNAL",
+        reinterpret_cast<GLES2FunctionPointer>(
+            glCopySharedImageToTextureINTERNAL),
     },
     {
         "glReadbackARGBImagePixelsINTERNAL",

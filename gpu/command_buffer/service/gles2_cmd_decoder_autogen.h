@@ -5392,6 +5392,50 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageINTERNALImmediate(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderImpl::HandleCopySharedImageToTextureINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CopySharedImageToTextureINTERNALImmediate& c =
+      *static_cast<const volatile gles2::cmds::
+                       CopySharedImageToTextureINTERNALImmediate*>(cmd_data);
+  GLuint texture = static_cast<GLuint>(c.texture);
+  GLenum target = static_cast<GLenum>(c.target);
+  GLuint internal_format = static_cast<GLuint>(c.internal_format);
+  GLenum type = static_cast<GLenum>(c.type);
+  GLint src_x = static_cast<GLint>(c.src_x);
+  GLint src_y = static_cast<GLint>(c.src_y);
+  GLsizei width = static_cast<GLsizei>(c.width);
+  GLsizei height = static_cast<GLsizei>(c.height);
+  GLboolean flip_y = static_cast<GLboolean>(c.flip_y);
+  uint32_t src_mailbox_size;
+  if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &src_mailbox_size)) {
+    return error::kOutOfBounds;
+  }
+  if (src_mailbox_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLbyte* src_mailbox =
+      GetImmediateDataAs<volatile const GLbyte*>(c, src_mailbox_size,
+                                                 immediate_data_size);
+  if (width < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageToTextureINTERNAL",
+                       "width < 0");
+    return error::kNoError;
+  }
+  if (height < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySharedImageToTextureINTERNAL",
+                       "height < 0");
+    return error::kNoError;
+  }
+  if (src_mailbox == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoCopySharedImageToTextureINTERNAL(texture, target, internal_format, type,
+                                     src_x, src_y, width, height, flip_y,
+                                     src_mailbox);
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderImpl::HandleEnableiOES(uint32_t immediate_data_size,
                                                 const volatile void* cmd_data) {
   const volatile gles2::cmds::EnableiOES& c =

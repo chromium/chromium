@@ -3210,6 +3210,27 @@ void CopySharedImageINTERNALImmediate(GLint xoffset,
   }
 }
 
+void CopySharedImageToTextureINTERNALImmediate(GLuint texture,
+                                               GLenum target,
+                                               GLuint internal_format,
+                                               GLenum type,
+                                               GLint src_x,
+                                               GLint src_y,
+                                               GLsizei width,
+                                               GLsizei height,
+                                               GLboolean flip_y,
+                                               const GLbyte* src_mailbox) {
+  const uint32_t size =
+      gles2::cmds::CopySharedImageToTextureINTERNALImmediate::ComputeSize();
+  gles2::cmds::CopySharedImageToTextureINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          gles2::cmds::CopySharedImageToTextureINTERNALImmediate>(size);
+  if (c) {
+    c->Init(texture, target, internal_format, type, src_x, src_y, width, height,
+            flip_y, src_mailbox);
+  }
+}
+
 void ReadbackARGBImagePixelsINTERNAL(GLint src_x,
                                      GLint src_y,
                                      GLint plane_index,

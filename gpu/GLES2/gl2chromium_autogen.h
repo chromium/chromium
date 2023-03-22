@@ -375,6 +375,8 @@
 #define glConvertYUVAMailboxesToRGBINTERNAL \
   GLES2_GET_FUN(ConvertYUVAMailboxesToRGBINTERNAL)
 #define glCopySharedImageINTERNAL GLES2_GET_FUN(CopySharedImageINTERNAL)
+#define glCopySharedImageToTextureINTERNAL \
+  GLES2_GET_FUN(CopySharedImageToTextureINTERNAL)
 #define glReadbackARGBImagePixelsINTERNAL \
   GLES2_GET_FUN(ReadbackARGBImagePixelsINTERNAL)
 #define glEnableiOES GLES2_GET_FUN(EnableiOES)
