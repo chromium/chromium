@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fetchGooglePhotosAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertGT, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -27,6 +28,17 @@ suite('GooglePhotosAlbumsTest', function() {
     const matches =
         googlePhotosAlbumsElement!.shadowRoot!.querySelectorAll(selector);
     return matches ? [...matches] : null;
+  }
+
+  function getAlbumAriaLabel(album: GooglePhotosAlbum|undefined): string {
+    if (!album) {
+      return '';
+    }
+    const primaryText = album.title;
+    const secondaryText = album.isShared ?
+        loadTimeData.getString('googlePhotosAlbumShared') :
+        getCountText(album.photoCount);
+    return `${primaryText} ${secondaryText}`;
   }
 
   /** Scrolls the window to the bottom. */
@@ -243,7 +255,8 @@ suite('GooglePhotosAlbumsTest', function() {
 
     // Albums should be aria-labeled.
     albumEls!.forEach((albumEl, i) => {
-      assertEquals(albumEl.getAttribute('aria-label'), albums[i]!.title);
+      assertEquals(
+          albumEl.getAttribute('aria-label'), getAlbumAriaLabel(albums[i]));
       assertEquals(albumEl.getAttribute('aria-posinset'), (i + 1).toString());
     });
 

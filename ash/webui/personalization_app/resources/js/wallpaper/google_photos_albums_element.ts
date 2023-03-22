@@ -301,8 +301,9 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   /** Returns the aria label for the specified |album|. */
   private getAlbumAriaLabel_(album: GooglePhotosAlbum|null): string|undefined {
     if (album) {
-      return album.id === PLACEHOLDER_ID ? this.i18n('ariaLabelLoading') :
-                                           album.title;
+      return album.id === PLACEHOLDER_ID ?
+          this.i18n('ariaLabelLoading') :
+          `${album.title} ${this.getSecondaryText_(album)}`;
     }
     return undefined;
   }
