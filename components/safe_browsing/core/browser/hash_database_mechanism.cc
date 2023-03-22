@@ -37,7 +37,8 @@ HashDatabaseMechanism::StartCheckInternal() {
   bool safe_synchronously = can_check_db_ ? CallCheckBrowseUrl() : true;
   return StartCheckResult(
       /*is_safe_synchronously=*/safe_synchronously,
-      /*did_check_url_real_time_allowlist=*/false);
+      /*did_check_url_real_time_allowlist=*/false,
+      /*matched_high_confidence_allowlist=*/absl::nullopt);
 }
 
 bool HashDatabaseMechanism::CallCheckBrowseUrl() {
@@ -58,7 +59,9 @@ void HashDatabaseMechanism::OnCheckBrowseUrlResult(
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url, threat_type, metadata,
       /*is_from_url_real_time_check=*/false,
-      /*url_real_time_lookup_response=*/nullptr));
+      /*url_real_time_lookup_response=*/nullptr,
+      /*locally_cached_results_threat_type=*/absl::nullopt,
+      /*real_time_request_failed=*/false));
 }
 
 }  // namespace safe_browsing

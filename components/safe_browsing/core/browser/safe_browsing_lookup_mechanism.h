@@ -22,9 +22,14 @@ class SafeBrowsingLookupMechanism {
  public:
   struct StartCheckResult {
     StartCheckResult(bool is_safe_synchronously,
-                     bool did_check_url_real_time_allowlist);
+                     bool did_check_url_real_time_allowlist,
+                     absl::optional<bool> matched_high_confidence_allowlist);
     bool is_safe_synchronously;
     bool did_check_url_real_time_allowlist;
+    // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
+    // This can be absl::nullopt if the allowlist check is irrelevant to the
+    // mechanism.
+    absl::optional<bool> matched_high_confidence_allowlist;
   };
 
   // This is used by individual lookup mechanisms as the input for the
@@ -36,13 +41,19 @@ class SafeBrowsingLookupMechanism {
         SBThreatType threat_type,
         const ThreatMetadata& metadata,
         bool is_from_url_real_time_check,
-        std::unique_ptr<RTLookupResponse> url_real_time_lookup_response);
+        std::unique_ptr<RTLookupResponse> url_real_time_lookup_response,
+        absl::optional<SBThreatType> locally_cached_results_threat_type,
+        bool real_time_request_failed);
     ~CompleteCheckResult();
     GURL url;
     SBThreatType threat_type;
     ThreatMetadata metadata;
     bool is_from_url_real_time_check;
     std::unique_ptr<RTLookupResponse> url_real_time_lookup_response;
+
+    // TODO(crbug.com/1410253): Deprecate these once the experiment is complete.
+    absl::optional<SBThreatType> locally_cached_results_threat_type;
+    bool real_time_request_failed;
   };
   using CompleteCheckResultCallback =
       base::OnceCallback<void(std::unique_ptr<CompleteCheckResult> result)>;

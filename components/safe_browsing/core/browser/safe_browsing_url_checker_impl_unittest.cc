@@ -405,7 +405,8 @@ class MockHashRealTimeService : public HashRealTimeService {
         base::BindOnce(
             std::move(response_callback),
             /*is_lookup_successful=*/!url_details_[url].should_fail_lookup,
-            /*threat_type=*/url_details_[url].threat_type));
+            /*threat_type=*/url_details_[url].threat_type,
+            /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE));
   }
 
  private:

@@ -59,20 +59,29 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // response body is successfully parsed.
   // |threat_type| will not be populated if the lookup was unsuccessful, but
   // will otherwise always be populated with the result of the lookup.
+  // |locally_cached_results_threat_type| is the threat type based on locally
+  // cached results only. This is only used for logging purposes.
   void OnLookupResponse(bool is_lookup_successful,
-                        absl::optional<SBThreatType> threat_type);
+                        absl::optional<SBThreatType> threat_type,
+                        SBThreatType locally_cached_results_threat_type);
 
   // Perform the hash-based database check for the url.
-  void PerformHashBasedCheck(const GURL& url);
+  // |real_time_request_failed| specifies whether this was triggered due to the
+  // real-time request having failed (e.g. due to backoff, network errors, other
+  // service unavailability).
+  void PerformHashBasedCheck(const GURL& url, bool real_time_request_failed);
 
   // The hash-prefix real-time check can sometimes default back to the
   // hash-based database check. In these cases, this function is called once the
   // check has completed, which reports back the final results to the caller.
+  // |real_time_request_failed| specifies whether the real-time request failed
+  // (e.g. due to backoff, network errors, other service unavailability).
   void OnHashDatabaseCompleteCheckResult(
+      bool real_time_request_failed,
       std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result);
-  void OnHashDatabaseCompleteCheckResultInternal(
-      SBThreatType threat_type,
-      const ThreatMetadata& metadata);
+  void OnHashDatabaseCompleteCheckResultInternal(SBThreatType threat_type,
+                                                 const ThreatMetadata& metadata,
+                                                 bool real_time_request_failed);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

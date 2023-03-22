@@ -22,21 +22,27 @@ SafeBrowsingLookupMechanism::~SafeBrowsingLookupMechanism() = default;
 
 SafeBrowsingLookupMechanism::StartCheckResult::StartCheckResult(
     bool is_safe_synchronously,
-    bool did_check_url_real_time_allowlist)
+    bool did_check_url_real_time_allowlist,
+    absl::optional<bool> matched_high_confidence_allowlist)
     : is_safe_synchronously(is_safe_synchronously),
-      did_check_url_real_time_allowlist(did_check_url_real_time_allowlist) {}
+      did_check_url_real_time_allowlist(did_check_url_real_time_allowlist),
+      matched_high_confidence_allowlist(matched_high_confidence_allowlist) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
     bool is_from_url_real_time_check,
-    std::unique_ptr<RTLookupResponse> url_real_time_lookup_response)
+    std::unique_ptr<RTLookupResponse> url_real_time_lookup_response,
+    absl::optional<SBThreatType> locally_cached_results_threat_type,
+    bool real_time_request_failed)
     : url(url),
       threat_type(threat_type),
       metadata(metadata),
       is_from_url_real_time_check(is_from_url_real_time_check),
-      url_real_time_lookup_response(std::move(url_real_time_lookup_response)) {}
+      url_real_time_lookup_response(std::move(url_real_time_lookup_response)),
+      locally_cached_results_threat_type(locally_cached_results_threat_type),
+      real_time_request_failed(real_time_request_failed) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::~CompleteCheckResult() =
     default;

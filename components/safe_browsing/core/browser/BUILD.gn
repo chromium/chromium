@@ -80,6 +80,7 @@ source_set("safe_browsing_url_checker_unittest") {
   sources = [
     "hash_realtime_mechanism_unittest.cc",
     "safe_browsing_url_checker_impl_unittest.cc",
+    "url_realtime_mechanism_unittest.cc",
   ]
   deps = [
     ":browser",
