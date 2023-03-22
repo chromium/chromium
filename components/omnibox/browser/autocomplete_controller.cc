@@ -988,19 +988,17 @@ void AutocompleteController::UpdateResult(
         preserve_default_after_transfer ? preserve_default_match : nullptr);
   } else {
     // The async ml scoring is only run once all the providers are done.
-    if (MaybeRunUrlScoringModel()) {
-      // TODO(crbug.com/1405555): Do the rest once all matches are scored in
-      // `OnUrlScoringModelDoneForAllMatches()`.
+    if (MaybeRunUrlScoringModel(last_default_match,
+                                last_default_associated_keyword,
+                                force_notify_default_match_changed)) {
+      // When the ML Scoring model is run, sorting and processing of the result
+      // happens once all matches are scored in
+      // `OnUrlScoringModelDoneForAllMatches()`, so we can skip it here.
       return;
     }
     // Sort the matches and trim them to a small number of "best" matches.
     result_.SortAndCull(input_, template_url_service_, preserve_default_match);
   }
-
-#if DCHECK_IS_ON()
-  result_.Validate();
-#endif  // DCHECK_IS_ON()
-
   AnnotateResultAndNotifyChanged(last_default_match,
                                  last_default_associated_keyword,
                                  force_notify_default_match_changed);
@@ -1010,6 +1008,10 @@ void AutocompleteController::AnnotateResultAndNotifyChanged(
     absl::optional<AutocompleteMatch>& last_default_match,
     std::u16string& last_default_associated_keyword,
     bool force_notify_default_match_changed) {
+#if DCHECK_IS_ON()
+  result_.Validate();
+#endif  // DCHECK_IS_ON()
+
   if (!input_.IsZeroSuggest()) {
     bool perform_tab_match = true;
 #if BUILDFLAG(IS_ANDROID)
@@ -1474,24 +1476,41 @@ void AutocompleteController::OnUrlScoringModelDone(
     base::OnceCallback<void(AutocompleteMatch)> callback,
     AutocompleteMatch match,
     absl::optional<float> relevance) {
-  // TODO(crbug/1405555): Populate this callback.  This callback should process
-  //  `output` from the scoring model, updates the relevance score in the copy
-  //  of the AutocompleteMatch, and passes that the final callback.
+  // Update the relevance scores for any URL match that has a valid output from
+  // the model. This callback is called with nullopt output for non-URL
+  // suggestions.
+  if (relevance.has_value()) {
+    match.relevance = relevance.value();
+  }
+
   std::move(callback).Run(match);
 }
 
 void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
+    AutocompleteInput input,
+    absl::optional<AutocompleteMatch> last_default_match,
+    std::u16string last_default_associated_keyword,
+    bool force_notify_default_match_changed,
     const std::vector<AutocompleteMatch>& matches) {
-  // TODO(crbug/1405555): Populate this callback. This callback receives a list
-  // of matches with the updated relevance scores from the scoring model.  This
-  // should do any necessary (re-)processing of the matches, e.g. determining
-  // which match should be default, and then swaps out the matches in the final
-  // autocomplete result.
-
+  // This callback receives a list of matches with the updated relevance scores
+  // from the scoring model.  This swaps out the set of matches in the
+  // AutocompleteResult with updated scores, re-sorts them, and notifies
+  // observers.
+  // TODO(crbug.com/1405555): It's possible that these results are stale, i.e.
+  //  input may have changed since the ml scoring was kicked off. The scoring
+  //  tasks should be cancelled when the controller is stopped/re-started.
   result_.matches_ = matches;
+  result_.SortAndCull(input, template_url_service_);
+
+  AnnotateResultAndNotifyChanged(last_default_match,
+                                 last_default_associated_keyword,
+                                 force_notify_default_match_changed);
 }
 
-bool AutocompleteController::MaybeRunUrlScoringModel() {
+bool AutocompleteController::MaybeRunUrlScoringModel(
+    absl::optional<AutocompleteMatch>& last_default_match,
+    std::u16string& last_default_associated_keyword,
+    bool force_notify_default_match_changed) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!OmniboxFieldTrial::IsMlRelevanceScoringEnabled()) {
     return false;
@@ -1507,7 +1526,8 @@ bool AutocompleteController::MaybeRunUrlScoringModel() {
       result_.size(),
       base::BindOnce(
           &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), input_, last_default_match,
+          last_default_associated_keyword, force_notify_default_match_changed));
 
   for (const auto& match : result_.matches_) {
     // The ML scoring model only supports URL matches - bookmarks, history, etc.

@@ -369,6 +369,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `results_.matches_`. Re-processes the result with the updated relevance
   // scores from the model, and updates the final set of matches in `results_`.
   void OnUrlScoringModelDoneForAllMatches(
+      AutocompleteInput input,
+      absl::optional<AutocompleteMatch> last_default_match,
+      std::u16string last_default_associated_keyword,
+      bool force_notify_default_match_changed,
       const std::vector<AutocompleteMatch>& matches);
 
   // If ML Relevance Scoring is enabled, runs the model for all the supported
@@ -376,7 +380,10 @@ class AutocompleteController : public AutocompleteProviderListener,
   // callback is expected to be called for every match and
   // `OnUrlScoringModelDoneForAllMatches()` callback is expected to be called
   // once the scoring is done for ALL matches, whether successfully or not.
-  bool MaybeRunUrlScoringModel();
+  bool MaybeRunUrlScoringModel(
+      absl::optional<AutocompleteMatch>& last_default_match,
+      std::u16string& last_default_associated_keyword,
+      bool force_notify_default_match_changed);
 
   base::ObserverList<Observer> observers_;
 
