@@ -157,6 +157,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/public/web/web_security_policy.h"
+#include "third_party/blink/public/web/web_user_level_memory_pressure_signal_generator.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -1895,6 +1896,18 @@ void RenderThreadImpl::SetPrivateMemoryFootprint(
     uint64_t private_memory_footprint_bytes) {
   GetRendererHost()->SetPrivateMemoryFootprint(private_memory_footprint_bytes);
 }
+
+void RenderThreadImpl::OnMemoryPressureFromBrowserReceived(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  // To avoid that the browser process requests a signal while a renderer
+  // is creating and blink has not been initialized yet, check
+  // |blink_platform_impl_| here.
+  if (!blink_platform_impl_) {
+    return;
+  }
+  blink::RequestUserLevelMemoryPressureSignal();
+}
+
 #endif
 
 }  // namespace content

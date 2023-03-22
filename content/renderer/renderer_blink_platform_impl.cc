@@ -17,6 +17,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/pattern.h"
@@ -38,6 +39,7 @@
 #include "content/child/child_process.h"
 #include "content/common/android/sync_compositor_statics.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -104,6 +106,7 @@
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
+#include "third_party/blink/public/web/web_user_level_memory_pressure_signal_generator.h"
 #include "third_party/sqlite/sqlite3.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gl/buildflags.h"
@@ -1026,6 +1029,95 @@ void RendererBlinkPlatformImpl::SetPrivateMemoryFootprint(
   CHECK(render_thread);
   render_thread->SetPrivateMemoryFootprint(private_memory_footprint_bytes);
 }
-#endif
+
+namespace {
+// Negative inert interval disables delayed memory pressure signals
+// This is intended to keep the old behavior.
+base::TimeDelta kDefaultInertInterval = base::TimeDelta::Min();
+
+bool IsFeatureEnabledWithoutActivation(const base::Feature& feature) {
+  base::FieldTrial* trial = base::FeatureList::GetFieldTrial(feature);
+  // If --enable-features is specified with no study names, no group names, and
+  // no field trial parameters, no trial will be associated.
+  // e.g. --enable-features=UserLevelMemoryPressureSignalOn6GbDevices
+  if (!trial) {
+    // Since no trial is associated, base::FeatureList::IsEnabled() doesn't
+    // activate any trials.
+    return base::FeatureList::IsEnabled(feature);
+  }
+
+  // If no --enable-features or --enable-features is specified with a study
+  // name and a group name, a field trial is created and associated with
+  // the feature.
+  // In the case, see if there exists an activate group of the field trial.
+  // If there are no active groups, the condition of physcal memory didn't
+  // match and no base::FeatureList::IsEnable() was invoked.
+  // (e.g. amount of physcal_memory < 3.2GB)
+  if (!base::FieldTrialList::IsTrialActive(trial->trial_name())) {
+    // See the default value if there are no active groups.
+    return feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+
+  // Since the field trial has been already activated, we can use IsEnabled().
+  return base::FeatureList::IsEnabled(feature);
+}
+
+bool IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation() {
+  return IsFeatureEnabledWithoutActivation(
+      kUserLevelMemoryPressureSignalOn4GbDevices);
+}
+
+bool IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation() {
+  return IsFeatureEnabledWithoutActivation(
+      kUserLevelMemoryPressureSignalOn6GbDevices);
+}
+
+base::TimeDelta InertIntervalFor4GbDevices() {
+  static const base::FeatureParam<base::TimeDelta> kInertInterval{
+      &kUserLevelMemoryPressureSignalOn4GbDevices,
+      "inert_interval_after_loading", kDefaultInertInterval};
+  return kInertInterval.Get();
+}
+
+base::TimeDelta InertIntervalFor6GbDevices() {
+  static const base::FeatureParam<base::TimeDelta> kInertInterval{
+      &kUserLevelMemoryPressureSignalOn6GbDevices,
+      "inert_interval_after_loading", kDefaultInertInterval};
+  return kInertInterval.Get();
+}
+}  // namespace
+
+bool RendererBlinkPlatformImpl::IsUserLevelMemoryPressureSignalEnabled() {
+  return IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation() ||
+         IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation();
+}
+
+base::TimeDelta
+RendererBlinkPlatformImpl::InertIntervalOfUserLevelMemoryPressureSignal() {
+  if (IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation()) {
+    return InertIntervalFor4GbDevices();
+  }
+
+  if (IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation()) {
+    return InertIntervalFor6GbDevices();
+  }
+
+  return base::TimeDelta();
+}
+
+base::TimeDelta
+RendererBlinkPlatformImpl::MinimumIntervalOfUserLevelMemoryPressureSignal() {
+  if (IsUserLevelMemoryPressureSignalOn4GbDevicesEnabledWithoutActivation()) {
+    return MinimumIntervalOfUserLevelMemoryPressureSignalOn4GbDevices();
+  }
+
+  if (IsUserLevelMemoryPressureSignalOn6GbDevicesEnabledWithoutActivation()) {
+    return MinimumIntervalOfUserLevelMemoryPressureSignalOn6GbDevices();
+  }
+
+  return base::TimeDelta();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

@@ -160,7 +160,7 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   g_end_of_task_runner = new EndOfTaskRunner;
   Thread::Current()->AddTaskObserver(g_end_of_task_runner);
 
-  GetBlinkInitializer().RegisterMemoryWatchers();
+  GetBlinkInitializer().RegisterMemoryWatchers(platform);
 
   // Initialize performance manager.
   RendererResourceCoordinatorImpl::MaybeInitialize();
@@ -254,20 +254,23 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
       main_thread_task_runner);
 }
 
-void BlinkInitializer::RegisterMemoryWatchers() {
+void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
       Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
 #if BUILDFLAG(IS_ANDROID)
   // Initialize CrashMemoryMetricsReporterImpl in order to assure that memory
   // allocation does not happen in OnOOMCallback.
   CrashMemoryMetricsReporterImpl::Instance();
+
+  // Initialize UserLevelMemoryPressureSignalGenerator so it starts monitoring.
+  if (platform->IsUserLevelMemoryPressureSignalEnabled()) {
+    UserLevelMemoryPressureSignalGenerator::Initialize(platform,
+                                                       main_thread_task_runner);
+  }
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // Initialize UserLevelMemoryPressureSignalGenerator so it starts monitoring.
-  UserLevelMemoryPressureSignalGenerator::Initialize(main_thread_task_runner);
-
   // Start reporting the highest private memory footprint after the first
   // navigation.
   HighestPmfReporter::Initialize(main_thread_task_runner);

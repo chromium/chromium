@@ -28,6 +28,7 @@
 #include "base/time/time.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/child_process_data.h"
 
@@ -39,63 +40,37 @@ constexpr uint64_t k1MB = 1024ull * 1024;
 
 #if !defined(ARCH_CPU_64_BITS)
 
-namespace features {
-
-BASE_FEATURE(kUserLevelMemoryPressureSignalOn4GbDevices,
-             "UserLevelMemoryPressureSignalOn4GbDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices,
-             "UserLevelMemoryPressureSignalOn6GbDevices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}  // namespace features
-
 namespace {
 
 constexpr base::TimeDelta kDefaultMeasurementInterval = base::Seconds(1);
-constexpr base::TimeDelta kDefaultMinimumInterval = base::Minutes(10);
 
 // Time interval between measuring total private memory footprint.
 base::TimeDelta MeasurementIntervalFor4GbDevices() {
   static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
-      &features::kUserLevelMemoryPressureSignalOn4GbDevices,
+      &content::kUserLevelMemoryPressureSignalOn4GbDevices,
       "measurement_interval", kDefaultMeasurementInterval};
   return kMeasurementInterval.Get();
 }
 
 base::TimeDelta MeasurementIntervalFor6GbDevices() {
   static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
-      &features::kUserLevelMemoryPressureSignalOn6GbDevices,
+      &content::kUserLevelMemoryPressureSignalOn6GbDevices,
       "measurement_interval", kDefaultMeasurementInterval};
   return kMeasurementInterval.Get();
-}
-
-// Minimum time interval between generated memory pressure signals.
-base::TimeDelta MinimumIntervalFor4GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kMinimumInterval{
-      &features::kUserLevelMemoryPressureSignalOn4GbDevices, "minimum_interval",
-      kDefaultMinimumInterval};
-  return kMinimumInterval.Get();
-}
-
-base::TimeDelta MinimumIntervalFor6GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kMinimumInterval{
-      &features::kUserLevelMemoryPressureSignalOn6GbDevices, "minimum_interval",
-      kDefaultMinimumInterval};
-  return kMinimumInterval.Get();
 }
 
 constexpr size_t kDefaultMemoryThresholdMB = 485;
 
 uint64_t MemoryThresholdParamFor4GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
-      &features::kUserLevelMemoryPressureSignalOn4GbDevices,
+      &content::kUserLevelMemoryPressureSignalOn4GbDevices,
       "memory_threshold_mb", kDefaultMemoryThresholdMB};
   return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
 
 uint64_t MemoryThresholdParamFor6GbDevices() {
   static const base::FeatureParam<int> kMemoryThresholdParam{
-      &features::kUserLevelMemoryPressureSignalOn6GbDevices,
+      &content::kUserLevelMemoryPressureSignalOn6GbDevices,
       "memory_threshold_mb", kDefaultMemoryThresholdMB};
   return base::as_unsigned(kMemoryThresholdParam.Get()) * k1MB;
 }
@@ -119,19 +94,25 @@ void UserLevelMemoryPressureSignalGenerator::Initialize() {
 
   if (physical_memory <= 4 * k1GB) {
     if (base::FeatureList::IsEnabled(
-            features::kUserLevelMemoryPressureSignalOn4GbDevices))
+            content::kUserLevelMemoryPressureSignalOn4GbDevices)) {
       UserLevelMemoryPressureSignalGenerator::Get().Start(
           MemoryThresholdParamFor4GbDevices(),
-          MeasurementIntervalFor4GbDevices(), MinimumIntervalFor4GbDevices());
+          MeasurementIntervalFor4GbDevices(),
+          content::
+              MinimumIntervalOfUserLevelMemoryPressureSignalOn4GbDevices());
+    }
     return;
   }
 
   if (physical_memory <= 6 * k1GB) {
     if (base::FeatureList::IsEnabled(
-            features::kUserLevelMemoryPressureSignalOn6GbDevices))
+            content::kUserLevelMemoryPressureSignalOn6GbDevices)) {
       UserLevelMemoryPressureSignalGenerator::Get().Start(
           MemoryThresholdParamFor6GbDevices(),
-          MeasurementIntervalFor6GbDevices(), MinimumIntervalFor6GbDevices());
+          MeasurementIntervalFor6GbDevices(),
+          content::
+              MinimumIntervalOfUserLevelMemoryPressureSignalOn6GbDevices());
+    }
     return;
   }
 

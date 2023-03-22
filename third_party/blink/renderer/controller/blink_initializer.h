@@ -9,6 +9,8 @@
 
 namespace blink {
 
+class Platform;
+
 class BlinkInitializer : public ModulesInitializer {
  public:
   void RegisterInterfaces(mojo::BinderMap&) override;
@@ -17,7 +19,7 @@ class BlinkInitializer : public ModulesInitializer {
   void InitLocalFrame(LocalFrame&) const override;
 
   void InitServiceWorkerGlobalScope(ServiceWorkerGlobalScope&) const override;
-  void RegisterMemoryWatchers();
+  void RegisterMemoryWatchers(Platform*);
 };
 
 }  // namespace blink

@@ -106,6 +106,10 @@ component("controller") {
     sources += [
       "highest_pmf_reporter.cc",
       "highest_pmf_reporter.h",
+    ]
+  }
+  if (is_android) {
+    sources += [
       "user_level_memory_pressure_signal_generator.cc",
       "user_level_memory_pressure_signal_generator.h",
     ]

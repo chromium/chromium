@@ -783,6 +783,14 @@ class BLINK_PLATFORM_EXPORT Platform {
   // User Level Memory Pressure Signal Generator ------------------
   virtual void SetPrivateMemoryFootprint(
       uint64_t private_memory_footprint_bytes) {}
+
+  virtual bool IsUserLevelMemoryPressureSignalEnabled() { return false; }
+  virtual base::TimeDelta InertIntervalOfUserLevelMemoryPressureSignal() {
+    return base::TimeDelta();
+  }
+  virtual base::TimeDelta MinimumIntervalOfUserLevelMemoryPressureSignal() {
+    return base::TimeDelta();
+  }
 #endif
 
  private:

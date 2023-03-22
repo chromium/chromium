@@ -391,6 +391,7 @@ source_set("blink_headers") {
     "web/web_text_checking_completion.h",
     "web/web_text_checking_result.h",
     "web/web_text_decoration_type.h",
+    "web/web_user_level_memory_pressure_signal_generator.h",
     "web/web_v8_context_snapshot.h",
     "web/web_v8_features.h",
     "web/web_view.h",

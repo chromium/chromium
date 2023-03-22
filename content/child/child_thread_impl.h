@@ -161,6 +161,12 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
 
   bool IsInBrowserProcess() const;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Received memory pressure signal sent by the browser process.
+  virtual void OnMemoryPressureFromBrowserReceived(
+      base::MemoryPressureListener::MemoryPressureLevel level);
+#endif
+
  private:
   // TODO(crbug.com/1111231): This class is a friend so that it can call our
   // private mojo implementation methods, acting as a pass-through. This is only
