@@ -55,6 +55,10 @@ class AmbientAshTestBase : public AshTestBase {
   // Enables/disables ambient mode for the currently active user session.
   void SetAmbientModeEnabled(bool enabled);
 
+  // Enables/disabled the managed ambient mode for the currently active user
+  // session.
+  void SetAmbientModeManagedScreensaverEnabled(bool enabled);
+
   // Sets the |AmbientUiSettings| to use when ShowAmbientScreen() is called.
   // To reflect real world usage, the incoming settings do not take effect
   // immediately if the test is currently displaying the ambient screen. In that
@@ -224,10 +228,11 @@ class AmbientAshTestBase : public AshTestBase {
                                size_t height,
                                SkColor color);
 
+  void SetUpPhotoControllerForTesting();
+
  private:
   void SpinWaitForAmbientViewAvailable(
       const base::RepeatingClosure& quit_closure);
-  void SetUpPhotoControllerForTesting();
 
   TestAshWebViewFactory web_view_factory_;
   std::unique_ptr<views::Widget> widget_;

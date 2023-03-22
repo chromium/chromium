@@ -28,6 +28,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -48,6 +49,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -126,13 +128,33 @@ PrefService* GetPrimaryUserPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
-bool IsAmbientModeEnabled() {
-  if (!AmbientClient::Get()->IsAmbientModeAllowed())
+bool IsUserAmbientModeEnabled() {
+  if (!AmbientClient::Get()->IsAmbientModeAllowed()) {
     return false;
+  }
 
   auto* pref_service = GetPrimaryUserPrefService();
   return pref_service &&
          pref_service->GetBoolean(ambient::prefs::kAmbientModeEnabled);
+}
+
+bool IsAmbientModeAllowed() {
+  return ash::features::IsAmbientModeManagedScreensaverEnabled() ||
+         AmbientClient::Get()->IsAmbientModeAllowed();
+}
+
+bool IsAmbientModeManagedScreensaverEnabled() {
+  // TODO(fahadmansoor): Consider adding additional client side checks to
+  // keep behavior consistent with the consumer ambient mode.
+  auto* pref_service = GetPrimaryUserPrefService();
+  return ash::features::IsAmbientModeManagedScreensaverEnabled() &&
+         pref_service &&
+         pref_service->GetBoolean(
+             ambient::prefs::kAmbientModeManagedScreensaverEnabled);
+}
+
+bool IsAmbientModeEnabled() {
+  return IsUserAmbientModeEnabled() || IsAmbientModeManagedScreensaverEnabled();
 }
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {
@@ -374,8 +396,7 @@ void AmbientController::OnLockStateChanged(bool locked) {
 
 void AmbientController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  if (!AmbientClient::Get()->IsAmbientModeAllowed() ||
-      GetPrimaryUserPrefService() != pref_service) {
+  if (!IsAmbientModeAllowed() || GetPrimaryUserPrefService() != pref_service) {
     return;
   }
 
@@ -393,6 +414,16 @@ void AmbientController::OnActiveUserPrefServiceChanged(
                           weak_ptr_factory_.GetWeakPtr()));
 
   OnEnabledPrefChanged();
+
+  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModeManagedScreensaverEnabled,
+        base::BindRepeating(
+            &AmbientController::OnManagedScreensaverEnabledPrefChanged,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    OnManagedScreensaverEnabledPrefChanged();
+  }
 }
 
 void AmbientController::OnPowerStatusChanged() {
@@ -662,47 +693,115 @@ void AmbientController::CloseAllWidgets(bool immediately) {
   }
 }
 
+void AmbientController::AddManagedScreensaverPolicyPrefObservers() {
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
+      base::BindRepeating(
+          &AmbientController::
+              OnManagedScreensaverLockScreenIdleTimeoutPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
+      base::BindRepeating(
+          &AmbientController::
+              OnManagedScreensaverPhotoRefreshIntervalPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  OnManagedScreensaverLockScreenIdleTimeoutPrefChanged();
+  OnManagedScreensaverPhotoRefreshIntervalPrefChanged();
+}
+
+void AmbientController::RemoveAmbientModeSettingsPrefObservers() {
+  for (const auto* pref_name :
+       {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
+        ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
+        ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
+        ambient::prefs::kAmbientUiSettings,
+        ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
+        ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
+        ambient::prefs::
+            kAmbientModeManagedScreensaverImageDisplayIntervalSeconds}) {
+    if (pref_change_registrar_->IsObserved(pref_name)) {
+      pref_change_registrar_->Remove(pref_name);
+    }
+  }
+}
+
+void AmbientController::OnManagedScreensaverLockScreenIdleTimeoutPrefChanged() {
+  DCHECK(GetPrimaryUserPrefService());
+  ambient_ui_model_.SetLockScreenInactivityTimeout(
+      base::Seconds(GetPrimaryUserPrefService()->GetInteger(
+          ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds)));
+}
+
+void AmbientController::OnManagedScreensaverPhotoRefreshIntervalPrefChanged() {
+  DCHECK(GetPrimaryUserPrefService());
+  ambient_ui_model_.SetPhotoRefreshInterval(
+      base::Seconds(GetPrimaryUserPrefService()->GetInteger(
+          ambient::prefs::
+              kAmbientModeManagedScreensaverImageDisplayIntervalSeconds)));
+}
+
+void AmbientController::OnManagedScreensaverEnabledPrefChanged() {
+  ResetAmbientControllerResources();
+  OnEnabledPrefChanged();
+
+  if (IsAmbientModeManagedScreensaverEnabled()) {
+    RemoveAmbientModeSettingsPrefObservers();
+    AddManagedScreensaverPolicyPrefObservers();
+    return;
+  }
+}
+
+void AmbientController::AddAmbientModeUserSettingsPolicyPrefObservers() {
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
+      base::BindRepeating(
+          &AmbientController::OnLockScreenInactivityTimeoutPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
+      base::BindRepeating(
+          &AmbientController::OnLockScreenBackgroundTimeoutPrefChanged,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
+      base::BindRepeating(&AmbientController::OnPhotoRefreshIntervalPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientUiSettings,
+      base::BindRepeating(&AmbientController::OnAmbientUiSettingsChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
+      base::BindRepeating(&AmbientController::OnAnimationPlaybackSpeedChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  // Trigger the callbacks manually the first time to init AmbientUiModel.
+  OnLockScreenInactivityTimeoutPrefChanged();
+  OnLockScreenBackgroundTimeoutPrefChanged();
+  OnPhotoRefreshIntervalPrefChanged();
+  OnAnimationPlaybackSpeedChanged();
+}
+
 void AmbientController::OnEnabledPrefChanged() {
   if (IsAmbientModeEnabled()) {
+    if (is_initialized_) {
+      LOG(WARNING) << "Ambient mode is already enabled";
+      return;
+    }
     DVLOG(1) << "Ambient mode enabled";
     // TODO(b/274165045): Remove this temporary way of circulating the video
     // theme throughout the system once the hub supports the video theme. This
     // is just for experimentation purposes until then.
     SetUiSettingsForExperimentation();
 
-    pref_change_registrar_->Add(
-        ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
-        base::BindRepeating(
-            &AmbientController::OnLockScreenInactivityTimeoutPrefChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-
-    pref_change_registrar_->Add(
-        ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
-        base::BindRepeating(
-            &AmbientController::OnLockScreenBackgroundTimeoutPrefChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-
-    pref_change_registrar_->Add(
-        ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
-        base::BindRepeating(
-            &AmbientController::OnPhotoRefreshIntervalPrefChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-
-    pref_change_registrar_->Add(
-        ambient::prefs::kAmbientUiSettings,
-        base::BindRepeating(&AmbientController::OnAmbientUiSettingsChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-
-    pref_change_registrar_->Add(
-        ambient::prefs::kAmbientModeAnimationPlaybackSpeed,
-        base::BindRepeating(&AmbientController::OnAnimationPlaybackSpeedChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-
-    // Trigger the callbacks manually the first time to init AmbientUiModel.
-    OnLockScreenInactivityTimeoutPrefChanged();
-    OnLockScreenBackgroundTimeoutPrefChanged();
-    OnPhotoRefreshIntervalPrefChanged();
-    OnAnimationPlaybackSpeedChanged();
+    AddAmbientModeUserSettingsPolicyPrefObservers();
 
     CreateUiLauncher();
 
@@ -716,31 +815,30 @@ void AmbientController::OnEnabledPrefChanged() {
 
     ambient_animation_progress_tracker_ =
         std::make_unique<AmbientAnimationProgressTracker>();
+
+    is_initialized_ = true;
   } else {
     DVLOG(1) << "Ambient mode disabled";
-
-    CloseUi();
-
-    ambient_animation_progress_tracker_.reset();
-
-    for (const auto* pref_name :
-         {ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
-          ambient::prefs::kAmbientModeLockScreenInactivityTimeoutSeconds,
-          ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
-          ambient::prefs::kAmbientUiSettings,
-          ambient::prefs::kAmbientModeAnimationPlaybackSpeed}) {
-      if (pref_change_registrar_->IsObserved(pref_name))
-        pref_change_registrar_->Remove(pref_name);
-    }
-
-    ambient_ui_model_observer_.Reset();
-    power_manager_client_observer_.Reset();
-
-    DestroyUiLauncher();
-
-    if (fingerprint_observer_receiver_.is_bound())
-      fingerprint_observer_receiver_.reset();
+    ResetAmbientControllerResources();
   }
+}
+
+void AmbientController::ResetAmbientControllerResources() {
+  CloseUi();
+
+  ambient_animation_progress_tracker_.reset();
+
+  RemoveAmbientModeSettingsPrefObservers();
+
+  ambient_ui_model_observer_.Reset();
+  power_manager_client_observer_.Reset();
+
+  DestroyUiLauncher();
+
+  if (fingerprint_observer_receiver_.is_bound()) {
+    fingerprint_observer_receiver_.reset();
+  }
+  is_initialized_ = false;
 }
 
 void AmbientController::OnLockScreenInactivityTimeoutPrefChanged() {
@@ -814,6 +912,14 @@ void AmbientController::OnAnimationPlaybackSpeedChanged() {
 void AmbientController::RequestAccessToken(
     AmbientAccessTokenController::AccessTokenCallback callback,
     bool may_refresh_token_on_lock) {
+  // Do not request access tokens when the ambient mode is in the managed mode
+  // as we do not want to rely on any user information .
+  if (IsAmbientModeManagedScreensaverEnabled()) {
+    // Consume the callback to be resilient against dependencies on the callback
+    // in the future.
+    std::move(callback).Run("", "");
+    return;
+  }
   access_token_controller_.RequestAccessToken(std::move(callback),
                                               may_refresh_token_on_lock);
 }
@@ -1053,8 +1159,7 @@ void AmbientController::CreateUiLauncher() {
 
   DestroyUiLauncher();
 
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    // TODO (b/269576509) : Integrate with managed screensaver policy
+  if (IsAmbientModeManagedScreensaverEnabled()) {
     ambient_ui_launcher_ =
         std::make_unique<AmbientManagedSlideshowUiLauncher>(&delegate_);
   } else if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {

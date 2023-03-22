@@ -217,14 +217,6 @@ void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       ambient::prefs::kAmbientModeEnabled, enabled);
 
-  // TODO (b/269576509) : Integrate with managed screensaver policy
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    // We early return in case the managed screensaver is enabled, as
-    // the photo controller will not exist when the managed screensaver
-    // code path is being used.
-    return;
-  }
-
   if (enabled) {
     SetUpPhotoControllerForTesting();
   }
@@ -247,6 +239,11 @@ void AmbientAshTestBase::SetUpPhotoControllerForTesting() {
   photo_controller()->set_backup_photo_cache_for_testing(
       std::make_unique<TestAmbientPhotoCacheImpl>());
   photo_controller()->backup_photo_refresh_timer_for_testing().Stop();
+}
+
+void AmbientAshTestBase::SetAmbientModeManagedScreensaverEnabled(bool enabled) {
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      ambient::prefs::kAmbientModeManagedScreensaverEnabled, enabled);
 }
 
 void AmbientAshTestBase::SetAmbientTheme(AmbientTheme theme) {

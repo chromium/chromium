@@ -212,6 +212,13 @@ class ASH_EXPORT AmbientController
 
   void CloseAllWidgets(bool immediately);
 
+  // Removes any and all ambient mode ui model related settings pref observers
+  void RemoveAmbientModeSettingsPrefObservers();
+
+  // Adds/Removes managed pref observers
+  void AddManagedScreensaverPolicyPrefObservers();
+  void AddAmbientModeUserSettingsPolicyPrefObservers();
+
   // Invoked when the Ambient mode prefs state changes.
   void OnEnabledPrefChanged();
   void OnLockScreenInactivityTimeoutPrefChanged();
@@ -219,6 +226,14 @@ class ASH_EXPORT AmbientController
   void OnPhotoRefreshIntervalPrefChanged();
   void OnAmbientUiSettingsChanged();
   void OnAnimationPlaybackSpeedChanged();
+
+  // Resets the resources allocated by the ambient controller.
+  void ResetAmbientControllerResources();
+
+  // Invoked when preferences change via policy updates.
+  void OnManagedScreensaverEnabledPrefChanged();
+  void OnManagedScreensaverLockScreenIdleTimeoutPrefChanged();
+  void OnManagedScreensaverPhotoRefreshIntervalPrefChanged();
 
   void CreateUiLauncher();
   void DestroyUiLauncher();
@@ -293,6 +308,10 @@ class ASH_EXPORT AmbientController
   // to keep track of the last event and identify a true mouse move event.
   // TODO(safarli): Remove this workaround when b/266234711 is fixed.
   bool last_mouse_event_was_move_ = false;
+
+  // Flag used to prevent multiple calls to OnEnabledPrefChanged initializing
+  // the controller.
+  bool is_initialized_ = false;
 
   std::unique_ptr<AmbientMultiScreenMetricsRecorder>
       multi_screen_metrics_recorder_;

@@ -1598,6 +1598,7 @@ class AmbientControllerForManagedScreensaver : public AmbientAshTestBase {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
     AmbientAshTestBase::SetUp();
+
     GetSessionControllerClient()->set_show_lock_screen_views(true);
     CreateTestData();
   }
@@ -1615,6 +1616,13 @@ class AmbientControllerForManagedScreensaver : public AmbientAshTestBase {
     image_file_paths_.push_back(image_1);
     image_file_paths_.push_back(image_2);
   }
+
+  void SimulateScreensaverStart() {
+    LockScreen();
+    FastForwardToLockScreenTimeout();
+    FastForwardTiny();
+    EXPECT_TRUE(ambient_controller()->IsShown());
+  }
   base::test::ScopedFeatureList scoped_feature_list_;
   InProcessImageDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
@@ -1623,12 +1631,10 @@ class AmbientControllerForManagedScreensaver : public AmbientAshTestBase {
 
 TEST_F(AmbientControllerForManagedScreensaver,
        ScreensaverIsShownWithEnoughImages) {
-  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
-  LockScreen();
-  FastForwardToLockScreenTimeout();
-  FastForwardTiny();
+  SetAmbientModeManagedScreensaverEnabled(true);
 
-  EXPECT_TRUE(ambient_controller()->IsShown());
+  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  SimulateScreensaverStart();
 
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
@@ -1645,6 +1651,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
 
 TEST_F(AmbientControllerForManagedScreensaver,
        ScreensaverIsNotShownWithoutImages) {
+  SetAmbientModeManagedScreensaverEnabled(true);
   LockScreen();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
@@ -1653,6 +1660,86 @@ TEST_F(AmbientControllerForManagedScreensaver,
   ASSERT_FALSE(GetContainerView());
   UnlockScreen();
   EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaver,
+       UiLauncherIsNullWhenManagedAmbientModeIsDisabled) {
+  SetAmbientModeEnabled(false);
+  SetAmbientModeManagedScreensaverEnabled(false);
+
+  ASSERT_FALSE(ambient_controller()->ambient_ui_launcher());
+
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaver,
+       DisablingManagedAmbientModeFallsbackToUserAmbientModeIfEnabled) {
+  SetAmbientModeEnabled(true);
+  SetAmbientModeManagedScreensaverEnabled(true);
+  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+  SimulateScreensaverStart();
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  SetAmbientModeManagedScreensaverEnabled(false);
+  SetUpPhotoControllerForTesting();
+  UnlockScreen();
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+  EXPECT_TRUE(ambient_controller()->IsShown());
+  ASSERT_TRUE(GetContainerView());
+  EXPECT_TRUE(
+      GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
+  UnlockScreen();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaver,
+       LaunchingManagedAmbientModeAfterAmbientModeWorksAsExpected) {
+  SetAmbientModeEnabled(/*enabled=*/true);
+  ASSERT_FALSE(ambient_controller()->ambient_ui_launcher());
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  ASSERT_TRUE(ambient_controller()->ambient_ui_launcher());
+
+  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+
+  SimulateScreensaverStart();
+  UnlockScreen();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaver,
+       LaunchingAmbientModeAfterManagedAmbientModeWorksAsExpected) {
+  SetAmbientModeEnabled(/*enabled=*/false);
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  SetAmbientModeEnabled(/*enabled=*/true);
+
+  managed_photo_controller()->UpdateImageFilePaths(image_file_paths_);
+
+  SimulateScreensaverStart();
+  UnlockScreen();
+  EXPECT_FALSE(ambient_controller()->IsShown());
+}
+
+TEST_F(AmbientControllerForManagedScreensaver, PrefObserverUpdatesUiModel) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  ASSERT_TRUE(ambient_controller()->ambient_ui_launcher());
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  AmbientUiModel* ui_model = ambient_controller()->ambient_ui_model();
+  constexpr size_t kExpectedIdleTimeout = 55;
+  constexpr size_t kExpectedPhotoRefreshInterval = 77;
+  pref_service->SetInteger(
+      ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds,
+      kExpectedIdleTimeout);
+  EXPECT_EQ(base::Seconds(kExpectedIdleTimeout),
+            ui_model->lock_screen_inactivity_timeout());
+  pref_service->SetInteger(
+      ambient::prefs::kAmbientModeManagedScreensaverImageDisplayIntervalSeconds,
+      kExpectedPhotoRefreshInterval);
+  EXPECT_EQ(base::Seconds(kExpectedPhotoRefreshInterval),
+            ui_model->photo_refresh_interval());
 }
 
 TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
