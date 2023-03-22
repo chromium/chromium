@@ -103,13 +103,6 @@ class CrashAnalyzer {
                                  size_t stack_trace_offset,
                                  const SlotMetadata::AllocationInfo& slot_info,
                                  gwp_asan::Crash_AllocationInfo* proto_info);
-
-  // This method analyzes the AllocatorState of the crashing process. If the
-  // exception is related to the Lightweight UAF Detector it fills out the
-  // |proto| parameter and returns true.
-  static bool AnalyzeLightweightDetectorCrash(
-      const crashpad::ProcessSnapshot& process_snapshot,
-      gwp_asan::Crash* proto);
 };
 
 }  // namespace internal

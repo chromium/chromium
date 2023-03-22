@@ -261,12 +261,11 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   std::atomic<LightweightDetector::MetadataId> next_lightweight_metadata_id_{0};
 
   friend class BaseGpaTest;
-  friend class BaseCrashAnalyzerTest;
+  friend class CrashAnalyzerTest;
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, InternalError);
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, StackTraceCollection);
   FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAllocatorTest, PoisonAlloc);
   FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAllocatorTest, SlotReuse);
-  FRIEND_TEST_ALL_PREFIXES(LightweightDetectorAnalyzerTest, InternalError);
 };
 
 }  // namespace internal
