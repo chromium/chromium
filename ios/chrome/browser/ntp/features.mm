@@ -79,6 +79,8 @@ const char kEnableFeedAppCloseForegroundRefresh[] =
     "EnableFeedAppCloseForegroundRefresh";
 const char kEnableFeedAppCloseBackgroundRefresh[] =
     "EnableFeedAppCloseBackgroundRefresh";
+const char kFeedRefreshEngagementCriteriaType[] =
+    "FeedRefreshEngagementCriteriaType";
 const char kAppCloseBackgroundRefreshIntervalInSeconds[] =
     "AppCloseBackgroundRefreshIntervalInSeconds";
 const char kFeedRefreshTimerTimeoutInSeconds[] =
@@ -224,6 +226,15 @@ bool IsFeedAppCloseBackgroundRefreshEnabled() {
       kEnableFeedInvisibleForegroundRefresh,
       kEnableFeedAppCloseBackgroundRefresh,
       /*default=*/false);
+}
+
+FeedRefreshEngagementCriteriaType GetFeedRefreshEngagementCriteriaType() {
+  return (FeedRefreshEngagementCriteriaType)
+      base::GetFieldTrialParamByFeatureAsInt(
+          kEnableFeedInvisibleForegroundRefresh,
+          kFeedRefreshEngagementCriteriaType,
+          /*default_value=*/
+          (int)FeedRefreshEngagementCriteriaType::kSimpleEngagement);
 }
 
 double GetAppCloseBackgroundRefreshIntervalInSeconds() {

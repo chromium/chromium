@@ -9,6 +9,17 @@
 
 #include "base/feature_list.h"
 
+// Engagement criteria type for a feed refresh.
+enum class FeedRefreshEngagementCriteriaType {
+  // Any scroll or interaction.
+  kSimpleEngagement = 0,
+  // Meets minimum scroll criteria or any interaction.
+  kEngagement = 1,
+  // Meets good visit criteria.
+  kGoodVisit = 2,
+  kMaxValue = kGoodVisit,
+};
+
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
@@ -75,6 +86,10 @@ extern const char kEnableFeedAppCloseForegroundRefresh[];
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
 // soon after the app is backgrounded.
 extern const char kEnableFeedAppCloseBackgroundRefresh[];
+
+// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
+// engagement criteria type to refresh the feed.
+extern const char kFeedRefreshEngagementCriteriaType[];
 
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
 // background refresh interval in seconds.
@@ -161,6 +176,9 @@ bool IsFeedAppCloseForegroundRefreshEnabled();
 // Whether feed is refreshed in the background soon after the app is
 // backgrounded.
 bool IsFeedAppCloseBackgroundRefreshEnabled();
+
+// Returns the engagement criteria type for a feed refresh.
+FeedRefreshEngagementCriteriaType GetFeedRefreshEngagementCriteriaType();
 
 // The earliest interval to refresh in the background after app enters the
 // background in app close background refresh.

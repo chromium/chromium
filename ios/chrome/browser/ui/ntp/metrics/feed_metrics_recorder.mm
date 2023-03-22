@@ -893,7 +893,10 @@ using feed::FeedUserActionType;
   // Chrome run.
   if (scrollDistance > 0 || interacted) {
     [self recordEngagedSimple];
-    self.engagedWithLatestRefreshedContent = YES;
+    if (GetFeedRefreshEngagementCriteriaType() ==
+        FeedRefreshEngagementCriteriaType::kSimpleEngagement) {
+      self.engagedWithLatestRefreshedContent = YES;
+    }
   }
 
   // Report the user as engaged if they have scrolled more than the threshold or
@@ -901,14 +904,18 @@ using feed::FeedUserActionType;
   // Chrome run.
   if (scrollDistance > kMinScrollThreshold || interacted) {
     [self recordEngaged];
+    if (GetFeedRefreshEngagementCriteriaType() ==
+        FeedRefreshEngagementCriteriaType::kEngagement) {
+      self.engagedWithLatestRefreshedContent = YES;
+    }
   }
 
   [self.sessionRecorder recordUserInteractionOrScrolling];
 
-  // This must be called after memoizing if the current session has met
-  // engagement criteria. For example, setting `engagedSimpleReportedDiscover`
-  // must happen before this call.
-  if (IsFeedSessionCloseForegroundRefreshEnabled()) {
+  // This must be called after setting `engagedWithLatestRefreshedContent`
+  // properly after scrolling or interactions.
+  if (IsFeedSessionCloseForegroundRefreshEnabled() &&
+      [self hasEngagedWithLatestRefreshedContent]) {
     [self setOrExtendRefreshTimer];
   }
 }
@@ -1095,6 +1102,10 @@ using feed::FeedUserActionType;
     UMA_HISTOGRAM_ENUMERATION(kDiscoverFeedEngagementTypeHistogram,
                               FeedEngagementType::kGoodVisit);
     self.goodVisitReportedDiscover = YES;
+    if (GetFeedRefreshEngagementCriteriaType() ==
+        FeedRefreshEngagementCriteriaType::kGoodVisit) {
+      self.engagedWithLatestRefreshedContent = YES;
+    }
   }
 
   // Log interaction for Following feed.
