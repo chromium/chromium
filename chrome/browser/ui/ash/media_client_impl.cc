@@ -671,10 +671,6 @@ std::string MediaClientImpl::GetNameOfAppAccessingCamera(
 void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
                                                 const std::string& device_name,
                                                 const bool resurface) {
-  if (ash::features::IsPrivacyIndicatorsEnabled() ||
-      ash::features::IsVideoConferenceEnabled()) {
-    return;
-  }
   auto it = device_id_to_camera_privacy_switch_state_.find(device_id);
   if (it == device_id_to_camera_privacy_switch_state_.end() ||
       it->second != cros::mojom::CameraPrivacySwitchState::ON ||
