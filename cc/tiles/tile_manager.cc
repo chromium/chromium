@@ -1898,12 +1898,10 @@ TileManager::MemoryUsage::MemoryUsage(size_t memory_bytes,
 TileManager::MemoryUsage TileManager::MemoryUsage::FromConfig(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
-  // We can use UncheckedSizeInBytes here since this is used with a tile
+  // We don't need to validate the computed size since this is used with a tile
   // size which is determined by the compositor (it's at most max texture
   // size).
-  return MemoryUsage(viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
-                         size, format.resource_format()),
-                     1);
+  return MemoryUsage(format.EstimatedSizeInBytes(size), 1);
 }
 
 // static

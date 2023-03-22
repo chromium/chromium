@@ -89,11 +89,10 @@ bool Tile::HasMissingLCPCandidateImages() const {
 
 size_t Tile::GPUMemoryUsageInBytes() const {
   if (draw_info_.resource_) {
-    // We can use UncheckedSizeInBytes, since the tile size is determined by the
-    // compositor.
-    return viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
-        draw_info_.resource_size(),
-        draw_info_.resource_shared_image_format().resource_format());
+    // We don't need to validate the computed size, since the tile size is
+    // determined by the compositor.
+    return draw_info_.resource_shared_image_format().EstimatedSizeInBytes(
+        draw_info_.resource_size());
   }
   return 0;
 }

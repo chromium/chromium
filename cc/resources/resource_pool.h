@@ -379,8 +379,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       if (!gpu_backing_ && !software_backing_)
         return 0;
 
-      size_t memory_usage = viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
-          size(), format().resource_format());
+      size_t memory_usage = format().EstimatedSizeInBytes(size());
 
       // Early research found with raw draw, GPU memory usage is reduced to
       // 50%, so we consider a raw draw backing uses 50% of a normal backing

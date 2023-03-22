@@ -164,8 +164,7 @@ TEST_F(ResourcePoolTest, AccountingSingleResource) {
   gfx::Size size(100, 100);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  size_t resource_bytes = viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
-      size, format.resource_format());
+  size_t resource_bytes = format.EstimatedSizeInBytes(size);
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
   SetBackingOnResource(resource);
