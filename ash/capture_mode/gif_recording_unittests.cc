@@ -401,12 +401,51 @@ TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
       /*expected_bucket_count=*/1);
 
   // Since getting the file size is an async operation, we have to run a loop
-  // until that task the records the file size is done.
+  // until the task that records the file size is done.
   base::RunLoop().RunUntilIdle();
   histogram_tester_.ExpectTotalCount(
       "Ash.CaptureModeController.GIFRecordingFileSize.ClamshellMode",
       /*expected_count=*/1);
 }
+
+TEST_F(GifRecordingTest, RegionToScreenRatioHistogram) {
+  UpdateDisplay("900x600");
+
+  // Contains 3 test cases where the user region areas are different percentages
+  // of the full screen area.
+  struct {
+    const char* const scope_title;
+    gfx::Rect user_region_bounds;
+    int expected_percent_ratio;
+  } kTestCases[] = {
+      {"With region 450x300", gfx::Rect(450, 300), 25},   // 25%.
+      {"With region 900x300", gfx::Rect(900, 300), 50},   // 50%.
+      {"With region 900x600", gfx::Rect(900, 600), 100},  // 100%.
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_title);
+    auto* controller = CaptureModeController::Get();
+    controller->SetUserCaptureRegion(test_case.user_region_bounds,
+                                     /*by_user=*/true);
+    controller->SetRecordingType(RecordingType::kGif);
+
+    StartRegionVideoCapture();
+    StartVideoRecordingImmediately();
+
+    histogram_tester_.ExpectBucketCount(
+        "Ash.CaptureModeController.GIFRecordingRegionToScreenRatio."
+        "ClamshellMode",
+        /*sample=*/test_case.expected_percent_ratio,
+        /*expected_count=*/1);
+
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+    WaitForCaptureFileToBeSaved();
+  }
+}
+
+// -----------------------------------------------------------------------------
+// ProjectorGifRecordingTest:
 
 class ProjectorGifRecordingTest : public GifRecordingTest {
  public:

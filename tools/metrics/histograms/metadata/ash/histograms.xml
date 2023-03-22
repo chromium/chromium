@@ -1397,6 +1397,19 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.GIFRecordingRegionToScreenRatio.{TabletOrClamshell}"
+    units="% of fullscreen area" expires_after="2024-03-20">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the percent ratio between the area of the user selected region for
+    GIF recording to the area of the full screen in {TabletOrClamshell}. Emitted
+    only when GIF recording is about to start.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
     units="connected cameras" expires_after="2023-07-23">
   <owner>conniekxu@chromium.org</owner>

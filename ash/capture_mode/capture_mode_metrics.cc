@@ -30,6 +30,8 @@ constexpr char kRecordTimeHistogramPrefix[] =
     "Ash.CaptureModeController.ScreenRecordingLength";
 constexpr char kGifRecordingTimeHistogramPrefix[] =
     "Ash.CaptureModeController.GIFRecordingLength";
+constexpr char kGifRecordingRegionToScreenRatioHistogramPrefix[] =
+    "Ash.CaptureModeController.GIFRecordingRegionToScreenRatio";
 constexpr char kSaveToLocationHistogramPrefix[] =
     "Ash.CaptureModeController.SaveLocation";
 constexpr char kSwitchToDefaultFolderReasonHistogramPrefix[] =
@@ -110,6 +112,13 @@ void RecordCaptureModeConfiguration(CaptureModeType type,
     base::UmaHistogramBoolean(
         GetCaptureModeHistogramName(kCaptureAudioOnHistogramPrefix), audio_on);
   }
+}
+
+void RecordGifRegionToScreenRatio(float ratio_percent) {
+  base::UmaHistogramPercentage(
+      GetCaptureModeHistogramName(
+          kGifRecordingRegionToScreenRatioHistogramPrefix),
+      ratio_percent);
 }
 
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {

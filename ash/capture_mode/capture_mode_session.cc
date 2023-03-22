@@ -18,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_window_observer.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
@@ -906,16 +907,26 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown, bool by_key_event) {
 }
 
 void CaptureModeSession::ReportSessionHistograms() {
-  if (controller_->source() == CaptureModeSource::kRegion) {
+  const CaptureModeSource source = controller_->source();
+  const RecordingType recording_type = controller_->recording_type();
+
+  if (source == CaptureModeSource::kRegion) {
     RecordNumberOfCaptureRegionAdjustments(num_capture_region_adjusted_,
                                            is_in_projector_mode_);
+    const auto region_in_root = controller_->user_capture_region();
+    if (is_stopping_to_start_video_recording_ &&
+        recording_type == RecordingType::kGif && !region_in_root.IsEmpty()) {
+      RecordGifRegionToScreenRatio(100.0f * region_in_root.size().GetArea() /
+                                   current_root_->bounds().size().GetArea());
+    }
   }
+
   num_capture_region_adjusted_ = 0;
 
   RecordCaptureModeSwitchesFromInitialMode(capture_source_changed_);
-  RecordCaptureModeConfiguration(
-      controller_->type(), controller_->source(), controller_->recording_type(),
-      controller_->GetAudioRecordingEnabled(), is_in_projector_mode_);
+  RecordCaptureModeConfiguration(controller_->type(), source, recording_type,
+                                 controller_->GetAudioRecordingEnabled(),
+                                 is_in_projector_mode_);
 }
 
 void CaptureModeSession::StartCountDown(

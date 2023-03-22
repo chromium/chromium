@@ -137,6 +137,10 @@ void RecordCaptureModeConfiguration(CaptureModeType type,
                                     bool audio_on,
                                     bool is_in_projector_mode);
 
+// Records the percent ratio between the area of the user selected region to be
+// recorded as GIF to the area of the entire screen.
+void RecordGifRegionToScreenRatio(float ratio_percent);
+
 // Records the method the user enters capture mode given by |entry_type|.
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);
 
