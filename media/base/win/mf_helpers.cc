@@ -15,7 +15,7 @@ namespace media {
 
 namespace {
 
-// ID3D11DeviceChild, IDXGIObject and ID3D11Device implement SetPrivateData with
+// ID3D11DeviceChild and ID3D11Device implement SetPrivateData with
 // the exact same parameters.
 template <typename T>
 HRESULT SetDebugNameInternal(T* d3d11_object, const char* debug_string) {
@@ -90,10 +90,6 @@ HRESULT SetDebugName(ID3D11DeviceChild* d3d11_device_child,
 
 HRESULT SetDebugName(ID3D11Device* d3d11_device, const char* debug_string) {
   return SetDebugNameInternal(d3d11_device, debug_string);
-}
-
-HRESULT SetDebugName(IDXGIObject* dxgi_object, const char* debug_string) {
-  return SetDebugNameInternal(dxgi_object, debug_string);
 }
 
 ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config) {

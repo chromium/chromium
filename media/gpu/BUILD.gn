@@ -272,7 +272,6 @@ component("gpu") {
       "//third_party/khronos:khronos_headers",
       "//third_party/libvpx:libvpx_config",
     ]
-    public_deps += [ "//media/base/win:media_foundation_util" ]
     deps += [
       "//gpu/ipc/common:common",
       "//media/parsers",

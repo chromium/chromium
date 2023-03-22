@@ -11,11 +11,10 @@
 
 #include "base/logging.h"
 #include "media/base/channel_layout.h"
-#include "media/base/win/mf_util_export.h"
+#include "media/base/media_export.h"
 
 struct ID3D11DeviceChild;
 struct ID3D11Device;
-struct IDXGIObject;
 
 namespace media {
 
@@ -54,13 +53,13 @@ const auto PrintHr = logging::SystemErrorCodeToString;
 
 // Creates a Media Foundation sample with one buffer of length |buffer_length|
 // on a |align|-byte boundary. Alignment must be a perfect power of 2 or 0.
-MF_UTIL_EXPORT Microsoft::WRL::ComPtr<IMFSample> CreateEmptySampleWithBuffer(
+MEDIA_EXPORT Microsoft::WRL::ComPtr<IMFSample> CreateEmptySampleWithBuffer(
     uint32_t buffer_length,
     int align);
 
 // Provides scoped access to the underlying buffer in an IMFMediaBuffer
 // instance.
-class MF_UTIL_EXPORT MediaBufferScopedPointer {
+class MEDIA_EXPORT MediaBufferScopedPointer {
  public:
   explicit MediaBufferScopedPointer(IMFMediaBuffer* media_buffer);
 
@@ -81,17 +80,15 @@ class MF_UTIL_EXPORT MediaBufferScopedPointer {
 };
 
 // Copies |in_string| to |out_string| that is allocated with CoTaskMemAlloc().
-MF_UTIL_EXPORT HRESULT CopyCoTaskMemWideString(LPCWSTR in_string,
-                                               LPWSTR* out_string);
+MEDIA_EXPORT HRESULT CopyCoTaskMemWideString(LPCWSTR in_string,
+                                             LPWSTR* out_string);
 
 // Set the debug name of a D3D11 resource for use with ETW debugging tools.
 // D3D11 retains the string passed to this function.
-MF_UTIL_EXPORT HRESULT SetDebugName(ID3D11DeviceChild* d3d11_device_child,
-                                    const char* debug_string);
-MF_UTIL_EXPORT HRESULT SetDebugName(ID3D11Device* d3d11_device,
-                                    const char* debug_string);
-MF_UTIL_EXPORT HRESULT SetDebugName(IDXGIObject* dxgi_object,
-                                    const char* debug_string);
+MEDIA_EXPORT HRESULT SetDebugName(ID3D11DeviceChild* d3d11_device_child,
+                                  const char* debug_string);
+MEDIA_EXPORT HRESULT SetDebugName(ID3D11Device* d3d11_device,
+                                  const char* debug_string);
 
 // Represents audio channel configuration constants as understood by Windows.
 // E.g. KSAUDIO_SPEAKER_MONO.  For a list of possible values see:
@@ -106,10 +103,10 @@ using ChannelConfig = uint32_t;
 // As an example: KSAUDIO_SPEAKER_7POINT1_SURROUND is mapped to
 // CHANNEL_LAYOUT_7_1 but the positions of Back L, Back R and Side L, Side R
 // speakers are different in these two definitions.
-MF_UTIL_EXPORT ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config);
+MEDIA_EXPORT ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config);
 
 // Converts a GUID (little endian) to a bytes array (big endian).
-MF_UTIL_EXPORT std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid);
+MEDIA_EXPORT std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid);
 
 }  // namespace media
 

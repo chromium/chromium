@@ -106,9 +106,6 @@ source_set("capture_device_specific") {
     "//third_party/libyuv",
     "//ui/gfx",
   ]
-  if (is_win) {
-    deps += [ "//media/base/win:media_foundation_util" ]
-  }
 }
 
 component("capture_lib") {
@@ -243,10 +240,7 @@ component("capture_lib") {
       "video/win/video_capture_device_win.cc",
       "video/win/video_capture_device_win.h",
     ]
-    deps += [
-      "//media/base/win:color_space_util_win",
-      "//media/base/win:media_foundation_util",
-    ]
+    deps += [ "//media/base/win:color_space_util_win" ]
     libs = [
       "mf.lib",
       "mfplat.lib",
@@ -534,8 +528,6 @@ test("capture_unittests") {
       "/DELAYLOAD:mfplat.dll",
       "/DELAYLOAD:mfreadwrite.dll",
     ]
-
-    deps += [ "//media/base/win:media_foundation_util" ]
   }
 
   if (is_chromeos) {

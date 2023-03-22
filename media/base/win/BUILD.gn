@@ -13,8 +13,7 @@ config("delay_load_mf") {
   ]
 }
 
-component("media_foundation_util") {
-  defines = [ "IS_MF_UTIL_IMPL" ]
+source_set("media_foundation_util") {
   sources = [
     "dxgi_device_manager.cc",
     "dxgi_device_manager.h",
@@ -23,13 +22,11 @@ component("media_foundation_util") {
     "mf_helpers.h",
     "mf_initializer.cc",
     "mf_initializer.h",
-    "mf_util_export.h",
   ]
-  configs += [ "//media:media_config" ]
+  configs += [ "//media:subcomponent_config" ]
   deps = [
     "//base",
     "//media:shared_memory_support",
-    "//ui/gfx:color_space",
   ]
   libs = [
     "d3d11.lib",

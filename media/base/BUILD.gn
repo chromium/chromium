@@ -35,6 +35,7 @@ source_set("base") {
 
   if (is_win) {
     visibility += [ "//media/base/win:color_space_util_win" ]
+    visibility += [ "//media/base/win:media_foundation_util" ]
   }
 
   if (is_android) {
@@ -664,7 +665,7 @@ source_set("unit_tests") {
   if (is_win) {
     sources += [ "win/dxgi_device_scope_handle_unittest.cc" ]
     deps += [
-      "//media/base/win:media_foundation_util",
+      "//media",
       "//ui/events:test_support",
     ]
     libs = [

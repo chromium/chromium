@@ -671,7 +671,6 @@ static_library("common") {
       # On Windows, we use //media/gpu/MediaFoundationVideoEncodeAcceleratorWin
       # to detect whether HW encoder is supported by the system.
       "//media",
-      "//media/base/win:media_foundation_util",
       "//media/gpu:gpu",
       "//mojo/core/embedder:embedder",
       "//remoting/host/win",

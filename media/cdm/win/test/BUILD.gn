@@ -55,7 +55,6 @@ source_set("media_foundation_clear_key") {
   deps = [
     "//base",
     "//media",
-    "//media/base/win:media_foundation_util",
     "//media/cdm:clear_key_cdm_common",
   ]
 
@@ -80,7 +79,7 @@ shared_library("media_foundation_clear_key_cdm") {
   deps = [
     ":media_foundation_clear_key",
     "//base",
-    "//media/base/win:media_foundation_util",
+    "//media",
   ]
 
   inputs = [ "dll_export.def" ]

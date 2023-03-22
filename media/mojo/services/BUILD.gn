@@ -191,10 +191,7 @@ component("services") {
       "media_foundation_service_broker.cc",
       "media_foundation_service_broker.h",
     ]
-    deps += [
-      "//media/base/win:media_foundation_util",
-      "//ui/gfx/mojom:dxgi_info",
-    ]
+    deps += [ "//ui/gfx/mojom:dxgi_info" ]
   }
 
   if ((is_chromeos_ash || is_linux) && (use_vaapi || use_v4l2_codec)) {

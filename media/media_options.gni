@@ -370,3 +370,7 @@ if (media_use_ffmpeg) {
 if (enable_library_cdms || is_win) {
   media_subcomponent_deps += [ "//media/cdm:cdm_type_conversion" ]
 }
+
+if (is_win) {
+  media_subcomponent_deps += [ "//media/base/win:media_foundation_util" ]
+}

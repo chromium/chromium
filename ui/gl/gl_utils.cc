@@ -27,7 +27,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <d3d11_1.h>
 #include "base/strings/stringprintf.h"
-#include "media/base/win/mf_helpers.h"
+#include "ui/gl/debug_utils.h"
 #include "ui/gl/direct_composition_support.h"
 #endif
 
@@ -169,7 +169,7 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
     }
     const std::string buffer_name =
         base::StringPrintf("%s_Buffer_%d", name_prefix, i);
-    hr = media::SetDebugName(swap_chain_buffer.Get(), buffer_name.c_str());
+    hr = SetDebugName(swap_chain_buffer.Get(), buffer_name.c_str());
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to label swap chain buffer " << i << ": "
                   << logging::SystemErrorCodeToString(hr);
@@ -181,7 +181,7 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
 // operations
 void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
                               const char* name_prefix) {
-  media::SetDebugName(swap_chain, name_prefix);
+  SetDebugName(swap_chain, name_prefix);
   LabelSwapChainBuffers(swap_chain, name_prefix);
 }
 #endif  // BUILDFLAG(IS_WIN)

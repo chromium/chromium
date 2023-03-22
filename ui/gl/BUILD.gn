@@ -305,6 +305,8 @@ component("gl") {
       "dcomp_surface_proxy.h",
       "dcomp_surface_registry.cc",
       "dcomp_surface_registry.h",
+      "debug_utils.cc",
+      "debug_utils.h",
       "delegated_ink_point_renderer_gpu.h",
       "direct_composition_child_surface_win.cc",
       "direct_composition_child_surface_win.h",
@@ -329,16 +331,14 @@ component("gl") {
 
     libs = [
       "dxgi.lib",
+      "dxguid.lib",
       "dwmapi.lib",
     ]
     ldflags = [
       "/DELAYLOAD:dwmapi.dll",
       "/DELAYLOAD:dxgi.dll",
     ]
-    deps += [
-      "//media/base/win:media_foundation_util",
-      "//ui/gfx/mojom:dxgi_info",
-    ]
+    deps += [ "//ui/gfx/mojom:dxgi_info" ]
 
     assert(use_egl)
     data_deps += [

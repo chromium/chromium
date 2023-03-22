@@ -16,12 +16,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/win/mf_helpers.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/dc_layer_tree.h"
+#include "ui/gl/debug_utils.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
@@ -487,8 +487,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     }
     DCHECK(staging_texture_);
     staging_texture_size_ = texture_size;
-    hr = media::SetDebugName(staging_texture_.Get(),
-                             "SwapChainPresenter_Staging");
+    hr = SetDebugName(staging_texture_.Get(), "SwapChainPresenter_Staging");
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
     }
@@ -544,7 +543,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
       return nullptr;
     }
     DCHECK(copy_texture_);
-    hr = media::SetDebugName(copy_texture_.Get(), "SwapChainPresenter_Copy");
+    hr = SetDebugName(copy_texture_.Get(), "SwapChainPresenter_Copy");
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
     }
