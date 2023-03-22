@@ -6,10 +6,54 @@
 from __future__ import print_function
 
 import unittest
+from unittest import mock
 
 from unexpected_passes import gpu_expectations
+from unexpected_passes_common import data_types
 
 # pylint: disable=protected-access
+
+
+class CreateTestExpectationMapUnittest(unittest.TestCase):
+  def setUp(self) -> None:
+    self.instance = gpu_expectations.GpuExpectations()
+
+    self._expectation_content = {}
+    self._content_patcher = mock.patch.object(
+        self.instance, '_GetNonRecentExpectationContent')
+    self._content_mock = self._content_patcher.start()
+    self.addCleanup(self._content_patcher.stop)
+
+    def SideEffect(filepath, _):
+      return self._expectation_content[filepath]
+
+    self._content_mock.side_effect = SideEffect
+
+  def testSlowExpectationsDropped(self) -> None:
+    """Tests that slow expectations get dropped from the generated map."""
+    filename = '/tmp/foo'
+    self._expectation_content[filename] = """\
+# tags: [ win linux ]
+# tags: [ nvidia intel ]
+# results: [ Failure Slow ]
+
+[ win intel ] foo/test [ Failure ]
+[ win nvidia ] foo/test [ Slow ]
+[ linux nvidia ] foo/test [ Slow ]
+[ linux intel ] foo/test [ Failure ]
+"""
+    expectation_map = self.instance.CreateTestExpectationMap(filename, None, 0)
+    # The Slow expectations should be omitted.
+    expected_expectation_map = {
+        filename: {
+            data_types.Expectation('foo/test', ['win', 'intel'], ['Failure']):
+            {},
+            data_types.Expectation('foo/test', ['linux', 'intel'], ['Failure']):
+            {},
+        },
+    }
+    self.assertEqual(expectation_map, expected_expectation_map)
+    self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
 
 class GetExpectationFilepathsUnittest(unittest.TestCase):

@@ -5,11 +5,14 @@
 
 from __future__ import print_function
 
+import collections
+import logging
 import os
 from typing import FrozenSet, List, Set
 
 import validate_tag_consistency
 
+from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
 
 EXPECTATIONS_DIR = os.path.realpath(
@@ -21,6 +24,25 @@ class GpuExpectations(expectations.Expectations):
   def __init__(self):
     super().__init__()
     self._known_tags = None
+
+  def CreateTestExpectationMap(self, *args,
+                               **kwargs) -> data_types.TestExpectationMap:
+    expectation_map = super().CreateTestExpectationMap(*args, **kwargs)
+    # We currently don't support handling Slow expectations, so drop them
+    # immediately so they can't be accidentally removed.
+    expectations_to_drop = collections.defaultdict(list)
+    for expectation_file, expectation_dict in expectation_map.items():
+      for expectation in expectation_dict:
+        if 'Slow' in expectation.expected_results:
+          expectations_to_drop[expectation_file].append(expectation)
+    for expectation_file, expectation_list in expectations_to_drop.items():
+      for expectation in expectation_list:
+        logging.info(
+            'Dropping expectation "%s" from %s since it includes a "Slow" '
+            'expected result', expectation.AsExpectationFileString(),
+            expectation_file)
+        del expectation_map[expectation_file][expectation]
+    return expectation_map
 
   def GetExpectationFilepaths(self) -> List[str]:
     filepaths = []
