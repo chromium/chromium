@@ -24,6 +24,7 @@ class PhoneHubManager;
 namespace eche_app {
 
 class LaunchAppHelper;
+class AppsLaunchInfoProvider;
 
 // Handles recent app clicks originating from Phone Hub recent apps.
 class EcheRecentAppClickHandler
@@ -36,7 +37,8 @@ class EcheRecentAppClickHandler
       phonehub::PhoneHubManager* phone_hub_manager,
       FeatureStatusProvider* feature_status_provider,
       LaunchAppHelper* launch_app_helper,
-      EcheStreamStatusChangeHandler* stream_status_change_handler);
+      EcheStreamStatusChangeHandler* stream_status_change_handler,
+      AppsLaunchInfoProvider* apps_launch_info_provider);
   ~EcheRecentAppClickHandler() override;
 
   EcheRecentAppClickHandler(const EcheRecentAppClickHandler&) = delete;
@@ -70,6 +72,7 @@ class EcheRecentAppClickHandler
   LaunchAppHelper* launch_app_helper_;
   EcheStreamStatusChangeHandler* stream_status_change_handler_;
   std::vector<phonehub::Notification::AppMetadata> to_stream_apps_;
+  AppsLaunchInfoProvider* apps_launch_info_provider_;
   bool is_click_handler_set_ = false;
   bool is_stream_started_ = false;
 };

@@ -7,6 +7,8 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/fake_launch_app_helper.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
@@ -50,12 +52,18 @@ class EcheNotificationClickHandlerTest : public testing::Test {
         base::BindRepeating(
             &EcheNotificationClickHandlerTest::FakeCloseNotificationFunction,
             base::Unretained(this)));
+    connection_status_handler_ =
+        std::make_unique<eche_app::EcheConnectionStatusHandler>();
+    apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
+        connection_status_handler_.get());
     handler_ = std::make_unique<EcheNotificationClickHandler>(
         &fake_phone_hub_manager_, &fake_feature_status_provider_,
-        launch_app_helper_.get());
+        launch_app_helper_.get(), apps_launch_info_provider_.get());
   }
 
   void TearDown() override {
+    connection_status_handler_.reset();
+    apps_launch_info_provider_.reset();
     launch_app_helper_.reset();
     handler_.reset();
   }
@@ -116,6 +124,9 @@ class EcheNotificationClickHandlerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
   std::unique_ptr<FakeLaunchAppHelper> launch_app_helper_;
+  std::unique_ptr<eche_app::EcheConnectionStatusHandler>
+      connection_status_handler_;
+  std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   size_t num_notifications_shown_ = 0;
   size_t num_app_launch_ = 0;
 };

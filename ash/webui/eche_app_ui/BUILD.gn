@@ -54,6 +54,8 @@ static_library("eche_app_ui") {
     "apps_access_manager_impl.h",
     "apps_access_setup_operation.cc",
     "apps_access_setup_operation.h",
+    "apps_launch_info_provider.cc",
+    "apps_launch_info_provider.h",
     "eche_alert_generator.cc",
     "eche_alert_generator.h",
     "eche_app_manager.cc",
@@ -163,6 +165,7 @@ source_set("unit_tests") {
   sources = [
     "apps_access_manager_impl_unittest.cc",
     "apps_access_setup_operation_unittest.cc",
+    "apps_launch_info_provider_unittest.cc",
     "eche_alert_generator_unittest.cc",
     "eche_app_manager_unittest.cc",
     "eche_connection_scheduler_impl_unittest.cc",

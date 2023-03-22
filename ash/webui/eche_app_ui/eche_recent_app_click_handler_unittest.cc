@@ -4,9 +4,12 @@
 
 #include "ash/webui/eche_app_ui/eche_recent_app_click_handler.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/fake_launch_app_helper.h"
@@ -50,14 +53,21 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
         base::BindRepeating(
             &EcheRecentAppClickHandlerTest::FakeCloseNotificationFunction,
             base::Unretained(this)));
+    connection_status_handler_ =
+        std::make_unique<eche_app::EcheConnectionStatusHandler>();
+    apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
+        connection_status_handler_.get());
     stream_status_change_handler_ =
         std::make_unique<EcheStreamStatusChangeHandler>();
     handler_ = std::make_unique<EcheRecentAppClickHandler>(
         &fake_phone_hub_manager_, &fake_feature_status_provider_,
-        launch_app_helper_.get(), stream_status_change_handler_.get());
+        launch_app_helper_.get(), stream_status_change_handler_.get(),
+        apps_launch_info_provider_.get());
   }
 
   void TearDown() override {
+    apps_launch_info_provider_.reset();
+    connection_status_handler_.reset();
     launch_app_helper_.reset();
     handler_.reset();
     stream_status_change_handler_.reset();
@@ -137,6 +147,9 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
   std::unique_ptr<FakeLaunchAppHelper> launch_app_helper_;
   std::unique_ptr<EcheStreamStatusChangeHandler> stream_status_change_handler_;
   std::unique_ptr<EcheRecentAppClickHandler> handler_;
+  std::unique_ptr<eche_app::EcheConnectionStatusHandler>
+      connection_status_handler_;
+  std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::string package_name_;
   std::u16string visible_name_;
   int64_t user_id_;

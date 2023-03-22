@@ -6,6 +6,7 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -17,9 +18,11 @@ namespace eche_app {
 EcheNotificationClickHandler::EcheNotificationClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
     FeatureStatusProvider* feature_status_provider,
-    LaunchAppHelper* launch_app_helper)
+    LaunchAppHelper* launch_app_helper,
+    AppsLaunchInfoProvider* apps_launch_info_provider)
     : feature_status_provider_(feature_status_provider),
-      launch_app_helper_(launch_app_helper) {
+      launch_app_helper_(launch_app_helper),
+      apps_launch_info_provider_(apps_launch_info_provider) {
   handler_ = phone_hub_manager->GetNotificationInteractionHandler();
   phone_model_ = phone_hub_manager->GetPhoneModel();
   feature_status_provider_->AddObserver(this);
@@ -48,6 +51,8 @@ void EcheNotificationClickHandler::HandleNotificationClick(
     case LaunchAppHelper::AppLaunchProhibitedReason::kNotProhibited:
       base::UmaHistogramEnumeration(
           "Eche.AppStream.LaunchAttempt",
+          mojom::AppStreamLaunchEntryPoint::NOTIFICATION);
+      apps_launch_info_provider_->SetEntryPoint(
           mojom::AppStreamLaunchEntryPoint::NOTIFICATION);
       launch_app_helper_->LaunchEcheApp(
           notification_id, app_metadata.package_name,

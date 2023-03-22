@@ -22,14 +22,17 @@ class PhoneHubManager;
 namespace eche_app {
 
 class LaunchAppHelper;
+class AppsLaunchInfoProvider;
 
 // Handles notification clicks originating from Phone Hub notifications.
 class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
                                      public FeatureStatusProvider::Observer {
  public:
-  EcheNotificationClickHandler(phonehub::PhoneHubManager* phone_hub_manager,
-                               FeatureStatusProvider* feature_status_provider,
-                               LaunchAppHelper* launch_app_helper);
+  EcheNotificationClickHandler(
+      phonehub::PhoneHubManager* phone_hub_manager,
+      FeatureStatusProvider* feature_status_provider,
+      LaunchAppHelper* launch_app_helper,
+      AppsLaunchInfoProvider* apps_launch_info_provider);
   ~EcheNotificationClickHandler() override;
 
   EcheNotificationClickHandler(const EcheNotificationClickHandler&) = delete;
@@ -51,6 +54,7 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
   phonehub::PhoneModel* phone_model_;
   FeatureStatusProvider* feature_status_provider_;
   LaunchAppHelper* launch_app_helper_;
+  AppsLaunchInfoProvider* apps_launch_info_provider_;
   bool is_click_handler_set_ = false;
 };
 

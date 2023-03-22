@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
+#include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
@@ -19,11 +20,13 @@ EcheRecentAppClickHandler::EcheRecentAppClickHandler(
     phonehub::PhoneHubManager* phone_hub_manager,
     FeatureStatusProvider* feature_status_provider,
     LaunchAppHelper* launch_app_helper,
-    EcheStreamStatusChangeHandler* stream_status_change_handler)
+    EcheStreamStatusChangeHandler* stream_status_change_handler,
+    AppsLaunchInfoProvider* apps_launch_info_provider)
     : phone_hub_manager_(phone_hub_manager),
       feature_status_provider_(feature_status_provider),
       launch_app_helper_(launch_app_helper),
-      stream_status_change_handler_(stream_status_change_handler) {
+      stream_status_change_handler_(stream_status_change_handler),
+      apps_launch_info_provider_(apps_launch_info_provider) {
   notification_handler_ =
       phone_hub_manager->GetNotificationInteractionHandler();
   recent_apps_handler_ = phone_hub_manager->GetRecentAppsInteractionHandler();
@@ -84,6 +87,7 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
       base::UmaHistogramEnumeration("Eche.AppStream.LaunchAttempt", entrypoint);
 
       to_stream_apps_.emplace_back(app_metadata);
+      apps_launch_info_provider_->SetEntryPoint(entrypoint);
       launch_app_helper_->LaunchEcheApp(
           /*notification_id=*/absl::nullopt, app_metadata.package_name,
           app_metadata.visible_app_name, app_metadata.user_id,
