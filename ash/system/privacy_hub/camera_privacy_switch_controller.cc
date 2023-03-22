@@ -180,16 +180,8 @@ void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(
 void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
     const std::string& device_id,
     cros::mojom::CameraPrivacySwitchState state) {
-  if (features::IsVideoConferenceEnabled()) {
-    // The `VideoConferenceTrayController` shows this info as a toast.
-    return;
-  }
-
-  if (features::IsPrivacyIndicatorsEnabled()) {
-    // Always hide if the switch was turned off.
-    if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-      turn_sw_switch_on_notification_.Hide();
-    }
+  if (features::IsVideoConferenceEnabled() ||
+      features::IsPrivacyIndicatorsEnabled()) {
     return;
   }
 
