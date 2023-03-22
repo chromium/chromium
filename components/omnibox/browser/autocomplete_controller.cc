@@ -474,6 +474,11 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   expire_timer_.Stop();
   stop_timer_.Stop();
 
+  // Cancel any pending requests to the scoring model and invalidate the WeakPtr
+  // to prevent its callbacks from being called.
+  scoring_model_task_tracker_.TryCancelAll();
+  scoring_model_weak_ptr_ = nullptr;
+
   // Start the new query.
   sync_pass_done_ = false;
   // Use `start_time` rather than `metrics.start_time_` for
@@ -1367,6 +1372,11 @@ void AutocompleteController::StopHelper(bool clear_result,
     provider->Stop(clear_result, due_to_user_inactivity);
   }
 
+  // Cancel any pending requests to the scoring model and invalidate the WeakPtr
+  // to prevent its callbacks from being called.
+  scoring_model_task_tracker_.TryCancelAll();
+  scoring_model_weak_ptr_ = nullptr;
+
   expire_timer_.Stop();
   stop_timer_.Stop();
   done_ = true;
@@ -1522,11 +1532,14 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
     return false;
   }
 
+  // Needed because the model is not owned and `this` may not longer be alive.
+  scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
+
   auto barrier_callback = base::BarrierCallback<AutocompleteMatch>(
       result_.size(),
       base::BindOnce(
           &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
-          weak_ptr_factory_.GetWeakPtr(), input_, last_default_match,
+          scoring_model_weak_ptr_, input_, last_default_match,
           last_default_associated_keyword, force_notify_default_match_changed));
 
   for (const auto& match : result_.matches_) {
@@ -1540,10 +1553,9 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
     }
 
     scoring_model_service->ScoreAutocompleteUrlMatch(
-        match.scoring_signals,
+        &scoring_model_task_tracker_, match.scoring_signals,
         base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                       weak_ptr_factory_.GetWeakPtr(), barrier_callback,
-                       match));
+                       scoring_model_weak_ptr_, barrier_callback, match));
   }
 
   return true;

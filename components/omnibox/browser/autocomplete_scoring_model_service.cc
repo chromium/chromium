@@ -35,6 +35,7 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
 AutocompleteScoringModelService::~AutocompleteScoringModelService() = default;
 
 void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
+    base::CancelableTaskTracker* tracker,
     const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
         scoring_signals,
     ResultCallback result_callback) {
@@ -51,6 +52,7 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
   }
 
   url_scoring_model_handler_->ExecuteModelWithInput(
+      tracker,
       base::BindOnce(&AutocompleteScoringModelService::ProcessModelOutput,
                      base::Unretained(this), std::move(result_callback)),
       *input_signals);

@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -505,6 +506,13 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool search_service_worker_signal_sent_;
 
   raw_ptr<TemplateURLService> template_url_service_;
+
+  // Combined, used to cancel model execution requests sent to
+  // `AutocompleteScoringModelService` and to prevent its callbacks from being
+  // called `base::CancelableTaskTracker` alone is insufficient because it
+  // cannot cancel tasks that have already started.
+  base::CancelableTaskTracker scoring_model_task_tracker_;
+  base::WeakPtr<AutocompleteController> scoring_model_weak_ptr_;
 
   base::WeakPtrFactory<AutocompleteController> weak_ptr_factory_{this};
 };
