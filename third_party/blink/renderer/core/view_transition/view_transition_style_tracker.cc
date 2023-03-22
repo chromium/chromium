@@ -360,7 +360,7 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // (unless changed by something like z-index on the pseudo-elements).
   auto& root_object = root->GetLayoutObject();
   auto& root_style = root_object.StyleRef();
-  if (root_style.ViewTransitionName()) {
+  if (root_style.ViewTransitionName() && !root_object.IsFragmented()) {
     DCHECK(root_object.GetNode());
     DCHECK(root_object.GetNode()->IsElementNode());
     AddTransitionElement(DynamicTo<Element>(root_object.GetNode()),
@@ -859,6 +859,13 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     return false;
   }
 
+  // Check if the root element participates in a transition and has been
+  // fragmented.
+  if (new_root_data_ &&
+      document_->documentElement()->GetLayoutObject()->IsFragmented()) {
+    return false;
+  }
+
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     if (!element_data->target_element)
@@ -870,6 +877,11 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     // TODO(khushalsagar): Verify that skipping a transition when things become
     // display none is aligned with spec.
     if (!layout_object) {
+      return false;
+    }
+
+    // End the transition if any of the objects have become fragmented.
+    if (layout_object->IsFragmented()) {
       return false;
     }
 

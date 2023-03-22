@@ -3318,6 +3318,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return *fragment_;
   }
 
+  bool IsFragmented() const {
+    NOT_DESTROYED();
+    return !!FirstFragment().NextFragment();
+  }
+
   enum OverflowRecalcType {
     kOnlyVisualOverflowRecalc,
     kLayoutAndVisualOverflowRecalc,
