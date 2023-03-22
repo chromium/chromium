@@ -402,16 +402,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // selection border doesn't show around the selection item. The
     // collection view needs to be updated with the selected item again
     // for it to appear correctly.
-    NSUInteger selectedIndex = self.selectedIndex;
-    if (selectedIndex != NSNotFound) {
-      [self.collectionView
-          selectItemAtIndexPath:CreateIndexPath(selectedIndex)
-                       animated:NO
-                 scrollPosition:UICollectionViewScrollPositionNone];
-      [self updateFractionVisibleOfLastItem];
+    [self deselectAllCollectionViewItemsAnimated:NO];
+    [self selectCollectionViewItemWithID:self.selectedItemID
+                                animated:NO
+                          scrollPosition:UICollectionViewScrollPositionNone];
+    [self updateFractionVisibleOfLastItem];
     }
     self.searchText = nil;
-  }
 }
 
 - (void)setSearchText:(NSString*)searchText {
@@ -487,13 +484,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self animateEmptyStateIn];
     return;
   }
-  UICollectionViewScrollPosition scrollPosition =
-      (self.currentLayout == self.horizontalLayout)
-          ? UICollectionViewScrollPositionCenteredHorizontally
-          : UICollectionViewScrollPositionTop;
-  [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                                    animated:NO
-                              scrollPosition:scrollPosition];
+
+  [self deselectAllCollectionViewItemsAnimated:NO];
+  [self selectCollectionViewItemWithID:self.selectedItemID animated:NO];
+
   // Update the delegate, in case it wasn't set when `items` was populated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
   [self removeEmptyStateAnimated:NO];
@@ -1159,10 +1153,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.selectedItemID = selectedItemID;
   [self.selectedEditingItemIDs removeAllObjects];
   [self.selectedSharableEditingItemIDs removeAllObjects];
+
   [self reloadTabs];
-  [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                                    animated:NO
-                              scrollPosition:UICollectionViewScrollPositionTop];
+
+  [self deselectAllCollectionViewItemsAnimated:NO];
+  [self selectCollectionViewItemWithID:self.selectedItemID animated:NO];
+
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
   } else {
@@ -1204,20 +1200,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self removeEmptyStateAnimated:YES];
     [self.collectionView insertItemsAtIndexPaths:@[ CreateIndexPath(index) ]];
   };
-  NSString* previouslySelectedItemID = self.selectedItemID;
+
   auto completion = ^(BOOL finished) {
-    [self.collectionView
-        deselectItemAtIndexPath:CreateIndexPath([self
-                                    indexOfItemWithID:previouslySelectedItemID])
-                       animated:NO];
-    UICollectionViewScrollPosition scrollPosition =
-        (self.currentLayout == self.horizontalLayout)
-            ? UICollectionViewScrollPositionCenteredHorizontally
-            : UICollectionViewScrollPositionNone;
-    [self.collectionView
-        selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:NO
-               scrollPosition:scrollPosition];
+    [self deselectAllCollectionViewItemsAnimated:NO];
+    [self selectCollectionViewItemWithID:self.selectedItemID animated:NO];
+
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
 
     // Check `index` boundaries in order to filter out possible race
@@ -1266,10 +1253,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
     if (weakSelf.items.count > 0) {
-      [weakSelf.collectionView
-          selectItemAtIndexPath:CreateIndexPath(weakSelf.selectedIndex)
-                       animated:NO
-                 scrollPosition:UICollectionViewScrollPositionNone];
+      [self deselectAllCollectionViewItemsAnimated:NO];
+      [self selectCollectionViewItemWithID:weakSelf.selectedItemID
+                                  animated:NO
+                            scrollPosition:UICollectionViewScrollPositionNone];
     }
     [weakSelf.delegate gridViewController:weakSelf
                        didChangeItemCount:weakSelf.items.count];
@@ -1294,14 +1281,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if ([self.selectedItemID isEqualToString:selectedItemID])
     return;
 
-  [self.collectionView
-      deselectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                     animated:NO];
+  [self deselectAllCollectionViewItemsAnimated:NO];
+
   self.selectedItemID = selectedItemID;
-  [self.collectionView
-      selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
-                   animated:NO
-             scrollPosition:UICollectionViewScrollPositionNone];
+  [self selectCollectionViewItemWithID:self.selectedItemID
+                              animated:NO
+                        scrollPosition:UICollectionViewScrollPositionNone];
   [self updateVisibleCellsOpacity];
 }
 
@@ -1364,12 +1349,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                        [weakSelf.collectionView reloadItemsAtIndexPaths:@[
                          CreateIndexPath(weakSelf.selectedIndex)
                        ]];
-                       [weakSelf.collectionView
-                           selectItemAtIndexPath:CreateIndexPath(
-                                                     weakSelf.selectedIndex)
-                                        animated:NO
-                                  scrollPosition:
-                                      UICollectionViewScrollPositionNone];
+                       [self deselectAllCollectionViewItemsAnimated:NO];
+                       [self
+                           selectCollectionViewItemWithID:weakSelf
+                                                              .selectedItemID
+                                                 animated:NO
+                                           scrollPosition:
+                                               UICollectionViewScrollPositionNone];
                      }
                      completion:nil];
   };
@@ -1539,6 +1525,49 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 #pragma mark - Private
+
+// Selects the collection view's item with `itemID`.
+- (void)selectCollectionViewItemWithID:(NSString*)itemID
+                              animated:(BOOL)animated
+                        scrollPosition:
+                            (UICollectionViewScrollPosition)scrollPosition {
+  NSUInteger itemIndex = [self indexOfItemWithID:itemID];
+
+  // Check `itemIndex` boundaries in order to filter out possible race
+  // conditions while mutating the collection.
+  if (itemIndex == NSNotFound || itemIndex >= self.items.count) {
+    return;
+  }
+
+  NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
+
+  [self.collectionView selectItemAtIndexPath:itemIndexPath
+                                    animated:animated
+                              scrollPosition:scrollPosition];
+}
+
+// Selects the collection view's item with `itemID`.
+- (void)selectCollectionViewItemWithID:(NSString*)itemID
+                              animated:(BOOL)animated {
+  UICollectionViewScrollPosition scrollPosition =
+      (self.currentLayout == self.horizontalLayout)
+          ? UICollectionViewScrollPositionCenteredHorizontally
+          : UICollectionViewScrollPositionTop;
+
+  [self selectCollectionViewItemWithID:itemID
+                              animated:animated
+                        scrollPosition:scrollPosition];
+}
+
+// Deselects all the collection view items.
+- (void)deselectAllCollectionViewItemsAnimated:(BOOL)animated {
+  NSArray<NSIndexPath*>* indexPathsForSelectedItems =
+      [self.collectionView indexPathsForSelectedItems];
+  for (NSIndexPath* itemIndexPath in indexPathsForSelectedItems) {
+    [self.collectionView deselectItemAtIndexPath:itemIndexPath
+                                        animated:animated];
+  }
+}
 
 - (void)voiceOverStatusDidChange {
   self.collectionView.dragInteractionEnabled =

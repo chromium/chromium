@@ -125,6 +125,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)contentWillAppearAnimated:(BOOL)animated {
   [self.collectionView reloadData];
 
+  [self deselectAllCollectionViewItemsAnimated:NO];
   [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
   [self scrollCollectionViewToSelectedItemAnimated:NO];
 
@@ -276,6 +277,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.delegate pinnedTabsViewController:self didChangeItemCount:items.count];
 
   [self.collectionView reloadData];
+
+  [self deselectAllCollectionViewItemsAnimated:YES];
   [self selectCollectionViewItemWithID:_selectedItemID animated:YES];
   [self scrollCollectionViewToSelectedItemAnimated:YES];
 }
@@ -286,8 +289,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Consistency check: `item`'s ID is not in `_items`.
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
 
-  NSString* previousItemID = _selectedItemID;
-
   __weak __typeof(self) weakSelf = self;
   [self.collectionView
       performBatchUpdates:^{
@@ -296,8 +297,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                       selectedItemID:selectedItemID];
       }
       completion:^(BOOL completed) {
-        [weakSelf
-            handleItemInsertionCompletionWithPreviousItemID:previousItemID];
+        [weakSelf handleItemInsertionCompletion];
       }];
 }
 
@@ -326,7 +326,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   }
 
-  [self deselectCollectionViewItemWithID:_selectedItemID animated:NO];
+  [self deselectAllCollectionViewItemsAnimated:NO];
+
   _selectedItemID = selectedItemID;
   [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
   [self scrollCollectionViewToSelectedItemAnimated:NO];
@@ -651,10 +652,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Handles the completion of item insertion into the collection view.
-- (void)handleItemInsertionCompletionWithPreviousItemID:
-    (NSString*)previousItemID {
-  [self
-      updateCollectionViewAfterItemInsertionWithPreviousItemID:previousItemID];
+- (void)handleItemInsertionCompletion {
+  [self updateCollectionViewAfterItemInsertion];
   [self.delegate pinnedTabsViewController:self didChangeItemCount:_items.count];
 }
 
@@ -802,11 +801,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _dropOverlayView.alpha = visible ? 1 : 0;
 }
 
-// Updates the collection view after an item insertion with the previously
-// selected item id.
-- (void)updateCollectionViewAfterItemInsertionWithPreviousItemID:
-    (NSString*)previousItemID {
-  [self deselectCollectionViewItemWithID:previousItemID animated:NO];
+// Updates the collection view after an item insertion.
+- (void)updateCollectionViewAfterItemInsertion {
+  [self deselectAllCollectionViewItemsAnimated:NO];
   [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
 
   // Scroll the collection view to the newly added item, so it doesn't
@@ -819,6 +816,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // Updates the collection view after an item deletion.
 - (void)updateCollectionViewAfterItemDeletion {
   if (_items.count > 0) {
+    [self deselectAllCollectionViewItemsAnimated:NO];
     [self selectCollectionViewItemWithID:_selectedItemID animated:NO];
   } else {
     [self pinnedTabsAvailable:_available];
@@ -841,6 +839,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                  [self.collectionView reloadItemsAtIndexPaths:@[
                    CreateIndexPath(self.selectedIndex)
                  ]];
+                 [self deselectAllCollectionViewItemsAnimated:NO];
                  [self selectCollectionViewItemWithID:self->_selectedItemID
                                              animated:NO];
                }
@@ -889,13 +888,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
              scrollPosition:UICollectionViewScrollPositionNone];
 }
 
-// Deselects the collection view's item with `itemID`.
-- (void)deselectCollectionViewItemWithID:(NSString*)itemID
-                                animated:(BOOL)animated {
-  NSUInteger itemIndex = [self indexOfItemWithID:itemID];
-  NSIndexPath* itemIndexPath = CreateIndexPath(itemIndex);
-
-  [self.collectionView deselectItemAtIndexPath:itemIndexPath animated:animated];
+// Deselects all the collection view items.
+- (void)deselectAllCollectionViewItemsAnimated:(BOOL)animated {
+  NSArray<NSIndexPath*>* indexPathsForSelectedItems =
+      [self.collectionView indexPathsForSelectedItems];
+  for (NSIndexPath* itemIndexPath in indexPathsForSelectedItems) {
+    [self.collectionView deselectItemAtIndexPath:itemIndexPath
+                                        animated:animated];
+  }
 }
 
 // Scrolls the collection view to the currently selected item.
