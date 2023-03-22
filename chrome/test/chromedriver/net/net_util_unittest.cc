@@ -86,6 +86,7 @@ class FetchUrlTest : public testing::Test,
   }
 
   void DestroyServerOnIO(base::WaitableEvent* event) {
+    url_loader_factory_ = nullptr;
     url_loader_factory_owner_.reset();
     server_.reset();
     event->Signal();
