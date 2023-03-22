@@ -71,11 +71,9 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 
 - (instancetype)init {
   if ((self = [super init])) {
-    SessionID::id_type futureSessionIDOfTab = SessionID::NewUnique().id() + 1;
     // Holds the SessionID that the new tab is going to get.
-    base::scoped_nsobject<NSNumber> numID(
-        [[NSNumber alloc] initWithInt:futureSessionIDOfTab]);
-    [self setUniqueID:numID];
+    SessionID::id_type futureSessionIDOfTab = SessionID::NewUnique().id() + 1;
+    self.uniqueID = [NSString stringWithFormat:@"%d", futureSessionIDOfTab];
   }
   return self;
 }
@@ -99,9 +97,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
     _profile = Profile::FromBrowserContext(webContents->GetBrowserContext());
     sessions::SessionTabHelper* session_tab_helper =
         sessions::SessionTabHelper::FromWebContents(webContents);
-    base::scoped_nsobject<NSNumber> numID(
-        [[NSNumber alloc] initWithInt:session_tab_helper->session_id().id()]);
-    [self setUniqueID:numID];
+    self.uniqueID = [NSString
+        stringWithFormat:@"%d", session_tab_helper->session_id().id()];
   }
   return self;
 }
@@ -115,9 +112,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(webContents);
   _profile = Profile::FromBrowserContext(webContents->GetBrowserContext());
-  base::scoped_nsobject<NSNumber> numID(
-      [[NSNumber alloc] initWithInt:session_tab_helper->session_id().id()]);
-  [self setUniqueID:numID];
+  self.uniqueID =
+      [NSString stringWithFormat:@"%d", session_tab_helper->session_id().id()];
 
   if ([self tempURL]) {
     [self setURL:[self tempURL]];

@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, InsertBookmarkFolder) {
   // properties {title:"foo"}|.
   base::scoped_nsobject<BookmarkFolderAppleScript> bookmark_folder(
       [[BookmarkFolderAppleScript alloc] init]);
-  base::scoped_nsobject<NSNumber> var([[bookmark_folder.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> var([[bookmark_folder.get() uniqueID] copy]);
   [bookmark_folder.get() setTitle:@"foo"];
   [bookmark_bar_.get() insertInBookmarkFolders:bookmark_folder.get()];
 
@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest,
   // properties {title:"foo"} at after bookmark folder 1|.
   base::scoped_nsobject<BookmarkFolderAppleScript> bookmark_folder(
       [[BookmarkFolderAppleScript alloc] init]);
-  base::scoped_nsobject<NSNumber> var([[bookmark_folder.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> var([[bookmark_folder.get() uniqueID] copy]);
   [bookmark_folder.get() setTitle:@"foo"];
   [bookmark_bar_.get() insertInBookmarkFolders:bookmark_folder.get() atIndex:1];
 
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest, InsertBookmarkItem) {
   // properties {title:"Google", URL:"http://google.com"}|.
   base::scoped_nsobject<BookmarkItemAppleScript> bookmark_item(
       [[BookmarkItemAppleScript alloc] init]);
-  base::scoped_nsobject<NSNumber> var([[bookmark_item.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> var([[bookmark_item.get() uniqueID] copy]);
   [bookmark_item.get() setTitle:@"Google"];
   [bookmark_item.get() setURL:@"http://google.com"];
   [bookmark_bar_.get() insertInBookmarkItems:bookmark_item.get()];
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkFolderAppleScriptTest,
   //       {title:"XKCD", URL:"http://xkcd.org} at after bookmark item 1
   base::scoped_nsobject<BookmarkItemAppleScript> bookmark_item(
       [[BookmarkItemAppleScript alloc] init]);
-  base::scoped_nsobject<NSNumber> var([[bookmark_item.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> var([[bookmark_item.get() uniqueID] copy]);
   [bookmark_item.get() setTitle:@"XKCD"];
   [bookmark_item.get() setURL:@"http://xkcd.org"];
 

@@ -91,9 +91,8 @@
     _browser = Browser::Create(Browser::CreateParams(aProfile, false));
     chrome::NewTab(_browser);
     _browser->window()->Show();
-    base::scoped_nsobject<NSNumber> numID(
-        [[NSNumber alloc] initWithInt:_browser->session_id().id()]);
-    [self setUniqueID:numID];
+    self.uniqueID =
+        [NSString stringWithFormat:@"%d", _browser->session_id().id()];
   }
   return self;
 }
@@ -109,9 +108,8 @@
     // the AppleScript runtime calls appleScriptWindows in
     // BrowserCrApplication and this particular window is never returned.
     _browser = aBrowser;
-    base::scoped_nsobject<NSNumber> numID(
-        [[NSNumber alloc] initWithInt:_browser->session_id().id()]);
-    [self setUniqueID:numID];
+    self.uniqueID =
+        [NSString stringWithFormat:@"%d", _browser->session_id().id()];
   }
   return self;
 }

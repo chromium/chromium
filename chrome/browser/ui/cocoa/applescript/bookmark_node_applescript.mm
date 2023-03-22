@@ -43,10 +43,8 @@ using bookmarks::BookmarkNode;
       return nil;
     }
 
-    base::scoped_nsobject<NSNumber> numID(
-        [[NSNumber alloc] initWithLongLong:model->next_node_id()]);
-    [self setUniqueID:numID];
-    [self setTempTitle:@""];
+    self.uniqueID = [NSString stringWithFormat:@"%lld", model->next_node_id()];
+    self.tempTitle = @"";
   }
   return self;
 }
@@ -69,9 +67,7 @@ using bookmarks::BookmarkNode;
     // and this particular bookmark item/folder is never returned.
     _bookmarkNode = aBookmarkNode;
 
-    base::scoped_nsobject<NSNumber> numID(
-        [[NSNumber alloc] initWithLongLong:aBookmarkNode->id()]);
-    [self setUniqueID:numID];
+    self.uniqueID = [NSString stringWithFormat:@"%lld", aBookmarkNode->id()];
   }
   return self;
 }
@@ -84,9 +80,7 @@ using bookmarks::BookmarkNode;
   // and this particular bookmark item/folder is never returned.
   _bookmarkNode = aBookmarkNode;
 
-  base::scoped_nsobject<NSNumber> numID(
-      [[NSNumber alloc] initWithLongLong:aBookmarkNode->id()]);
-  [self setUniqueID:numID];
+  self.uniqueID = [NSString stringWithFormat:@"%lld", aBookmarkNode->id()];
 
   [self setTitle:[self tempTitle]];
 }

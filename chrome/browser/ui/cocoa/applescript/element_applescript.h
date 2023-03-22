@@ -11,7 +11,7 @@
 // It takes care of all the infrastructure type operations.
 @interface ElementAppleScript : NSObject
 
-@property(nonatomic, copy) NSNumber* uniqueID;
+@property(nonatomic, copy) NSString* uniqueID;
 @property(nonatomic, retain) NSObject* container;
 @property(nonatomic, copy) NSString* containerProperty;
 

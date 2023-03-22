@@ -40,7 +40,7 @@
       <property name="name" code="pnam" description="The full title of the window." type="text" access="r">
         <cocoa key="title"/>
       </property>
-      <property name="id" code="ID  " description="The unique identifier of the window." type="integer" access="r">
+      <property name="id" code="ID  " description="The unique identifier of the window." type="text" access="r">
         <cocoa key="uniqueID"/>
       </property>
       <property name="index" code="pidx" description="The index of the window, ordered front to back." type="integer">
@@ -205,7 +205,7 @@
 
     <class name="tab" code="CrTb" description="A tab.">
       <cocoa class="TabAppleScript"/>
-      <property name="id" code="ID  " description="Unique ID of the tab." type="integer" access="r">
+      <property name="id" code="ID  " description="Unique ID of the tab." type="text" access="r">
         <cocoa key="uniqueID"/>
       </property>
       <property name="title" code="pnam" description="The title of the tab." type="text" access="r"/>
@@ -266,7 +266,7 @@
       <element description="The bookmarks present within." type="bookmark item">
         <cocoa key="bookmarkItems"/>
       </element>
-      <property name="id" code="ID  " description="Unique ID of the bookmark folder." type="number" access="r">
+      <property name="id" code="ID  " description="Unique ID of the bookmark folder." type="text" access="r">
         <cocoa key="uniqueID"/>
       </property>
       <property name="title" code="pnam" description="The title of the folder." type="text"/>
@@ -277,7 +277,7 @@
 
     <class name="bookmark item" code="CrBI" description="An item consists of an URL and the title of a bookmark">
       <cocoa class="BookmarkItemAppleScript"/>
-      <property name="id" code="ID  " description="Unique ID of the bookmark item." type="integer" access="r">
+      <property name="id" code="ID  " description="Unique ID of the bookmark item." type="text" access="r">
         <cocoa key="uniqueID"/>
       </property>
       <property name="title" code="pnam" description="The title of the bookmark item." type="text"/>

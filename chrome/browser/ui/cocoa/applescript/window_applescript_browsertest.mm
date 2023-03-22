@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTab) {
   //
   //   set var to make new tab with properties {URL:"http://google.com"}
   base::scoped_nsobject<TabAppleScript> aTab([[TabAppleScript alloc] init]);
-  base::scoped_nsobject<NSNumber> var([[aTab.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> var([[aTab.get() uniqueID] copy]);
   [aTab.get() setURL:@"http://google.com"];
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTabAtPosition) {
   //   set var to make new tab with properties
   //       {URL:"http://google.com"} at before tab 1
   base::scoped_nsobject<TabAppleScript> aTab([[TabAppleScript alloc] init]);
-  base::scoped_nsobject<NSNumber> var([[aTab.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> var([[aTab.get() uniqueID] copy]);
   [aTab.get() setURL:@"http://google.com"];
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);

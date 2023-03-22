@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   //   set var to make new window with properties {visible:false}|.
   base::scoped_nsobject<WindowAppleScript> aWindow(
       [[WindowAppleScript alloc] init]);
-  base::scoped_nsobject<NSNumber> var([[aWindow.get() uniqueID] copy]);
+  base::scoped_nsobject<NSString> var([[aWindow.get() uniqueID] copy]);
   [aWindow.get() setValue:@YES forKey:@"isVisible"];
 
   [NSApp insertInAppleScriptWindows:aWindow.get()];
