@@ -36,6 +36,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gl/gl_switches.h"
 #include "url/url_constants.h"
 
 namespace extensions {
@@ -52,6 +53,7 @@ class TabCaptureApiTest : public ExtensionApiTest {
     // Specify smallish window size to make testing of tab capture less CPU
     // intensive.
     command_line->AppendSwitchASCII(::switches::kWindowSize, "300,300");
+    command_line->AppendSwitch(::switches::kUseGpuInTests);
   }
 
   void AddExtensionToCommandLineAllowlist() {
