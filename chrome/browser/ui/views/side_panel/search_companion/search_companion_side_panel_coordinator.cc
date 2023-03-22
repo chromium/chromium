@@ -29,6 +29,11 @@ SearchCompanionSidePanelCoordinator::SearchCompanionSidePanelCoordinator(
 SearchCompanionSidePanelCoordinator::~SearchCompanionSidePanelCoordinator() =
     default;
 
+// static
+bool SearchCompanionSidePanelCoordinator::IsSupported(Profile* profile) {
+  return !profile->IsIncognitoProfile() && !profile->IsGuestSession();
+}
+
 void SearchCompanionSidePanelCoordinator::
     CreateAndRegisterEntriesForExistingWebContents(
         TabStripModel* tab_strip_model) {

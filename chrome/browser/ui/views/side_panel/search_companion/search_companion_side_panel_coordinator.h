@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 
 class Browser;
+class Profile;
 
 namespace views {
 class View;
@@ -31,6 +32,8 @@ class SearchCompanionSidePanelCoordinator
   SearchCompanionSidePanelCoordinator& operator=(
       const SearchCompanionSidePanelCoordinator&) = delete;
   ~SearchCompanionSidePanelCoordinator() override;
+
+  static bool IsSupported(Profile* profile);
 
   void CreateAndRegisterEntriesForExistingWebContents(
       TabStripModel* tab_strip_model);

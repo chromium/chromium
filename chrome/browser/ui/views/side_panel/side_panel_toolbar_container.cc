@@ -99,11 +99,16 @@ SidePanelToolbarButton* SidePanelToolbarContainer::GetSidePanelButton() const {
 void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
   DCHECK(pinned_entry_buttons_.empty());
 
-  // The only pinned entry is the search companion. Add it here directly.
-  // If we support pinning side panel entries more broadly using this container
-  // then we can fetch the name and icon from the entry itself and update pinned
-  // entry toolbar buttons as the coordinator becomes aware of them. This sort
-  // of observation is unnecessary for now when there is only one pinned entry.
+  // The only pinned entry is the search companion. Add it here directly if
+  // supported. If we support pinning side panel entries more broadly using this
+  // container then we can fetch the name and icon from the entry itself and
+  // update pinned entry toolbar buttons as the coordinator becomes aware of
+  // them. This sort of observation is unnecessary for now when there is only
+  // one pinned entry.
+  if (!SearchCompanionSidePanelCoordinator::IsSupported(
+          browser_view_->GetProfile())) {
+    return;
+  }
   auto* search_companion_coordinator =
       SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(
           browser_view_->browser());
