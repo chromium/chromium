@@ -11,8 +11,6 @@ source_set("page_info") {
     "page_info_view_controller.mm",
   ]
   deps = [
-    "resources:security_icon_dangerous",
-    "resources:security_icon_secure",
     "//base",
     "//base:i18n",
     "//components/keyed_service/core",
@@ -73,10 +71,6 @@ source_set("coordinator") {
   ]
   deps = [
     ":page_info",
-    "resources:page_info_bad",
-    "resources:page_info_good",
-    "resources:page_info_info",
-    "resources:page_info_offline",
     "//base",
     "//components/content_settings/core/browser",
     "//components/security_state/core",

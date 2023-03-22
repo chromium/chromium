@@ -32,10 +32,6 @@
 
 namespace {
 
-// TODO(crbug.com/1315544): Remove this once symbols are shipped.
-NSString* kSecurityIconDangerous = @"security_icon_dangerous";
-NSString* kSecurityIconSecure = @"security_icon_secure";
-
 CGFloat kSymbolSize = 18;
 
 // Build the certificate details based on the `SSLStatus` and the `URL`.
@@ -113,17 +109,12 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
 
   // Summary and details.
   if (!status.certificate) {
-    // Not HTTPS. This maps to the WARNING security level. Show the grey
+    // Not HTTPS. This maps to the WARNING security level. Show the red
     // triangle icon in page info based on the same logic used to determine
     // the iconography in the omnibox.
-    if (UseSymbols()) {
-      dataHolder.iconImage =
-          DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
-      dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
-
-    } else {
-      dataHolder.iconImage = [UIImage imageNamed:kSecurityIconDangerous];
-    }
+    dataHolder.iconImage =
+        DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
+    dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     dataHolder.message =
         [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
@@ -142,13 +133,9 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   if (net::IsCertStatusError(status.cert_status) ||
       status.security_style == web::SECURITY_STYLE_AUTHENTICATION_BROKEN) {
     // HTTPS with major errors
-    if (UseSymbols()) {
-      dataHolder.iconImage =
-          DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
-      dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
-    } else {
-      dataHolder.iconImage = [UIImage imageNamed:kSecurityIconDangerous];
-    }
+    dataHolder.iconImage =
+        DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
+    dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     NSString* certificateDetails = BuildCertificateDetailString(status, URL);
 
@@ -179,15 +166,11 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   if (status.content_status == web::SSLStatus::DISPLAYED_INSECURE_CONTENT) {
     // HTTPS with mixed content. This maps to the WARNING security level in M80,
     // so assume the WARNING state when determining whether to swap the icon for
-    // a grey triangle. This will result in an inconsistency between the omnibox
+    // a red triangle. This will result in an inconsistency between the omnibox
     // and page info if the mixed content WARNING feature is disabled.
-    if (UseSymbols()) {
-      dataHolder.iconImage =
-          DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
-      dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
-    } else {
-      dataHolder.iconImage = [UIImage imageNamed:kSecurityIconDangerous];
-    }
+    dataHolder.iconImage =
+        DefaultSymbolTemplateWithPointSize(kWarningSymbol, kSymbolSize);
+    dataHolder.iconBackgroundColor = [UIColor colorNamed:kRed500Color];
 
     dataHolder.message = BuildMessage(@[
       [NSString stringWithFormat:@"%@ BEGIN_LINK %@ END_LINK",
@@ -203,13 +186,9 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   // Valid HTTPS
   dataHolder.status =
       l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY_STATUS_SECURE);
-  if (UseSymbols()) {
-    dataHolder.iconImage =
-        DefaultSymbolTemplateWithPointSize(kSecureSymbol, kSymbolSize);
-    dataHolder.iconBackgroundColor = [UIColor colorNamed:kGreen500Color];
-  } else {
-    dataHolder.iconImage = [UIImage imageNamed:kSecurityIconSecure];
-  }
+  dataHolder.iconImage =
+      DefaultSymbolTemplateWithPointSize(kSecureSymbol, kSymbolSize);
+  dataHolder.iconBackgroundColor = [UIColor colorNamed:kGreen500Color];
 
   dataHolder.message = BuildMessage(@[
     [NSString
