@@ -145,11 +145,6 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 // If enabled, issues error and disables bookmarks sync when limit is crossed.
 BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
 
-// Enabled by default, it acts as a kill switch for a newly-introduced logic,
-// which implies that DataTypeManager (and hence individual datatypes) won't be
-// notified about browser shutdown.
-BASE_DECLARE_FEATURE(kSyncDoNotPropagateBrowserShutdownToDataTypes);
-
 // Enables codepath to allow clearing metadata when the data type is stopped.
 BASE_DECLARE_FEATURE(kSyncAllowClearingMetadataWhenDataTypeIsStopped);
 

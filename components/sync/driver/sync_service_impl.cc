@@ -539,9 +539,7 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
       // When aborting as part of shutdown, we should expect an aborted sync
       // configure result, else we'll dcheck when we try to read the sync error.
       expect_sync_configuration_aborted_ = true;
-      if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA ||
-          !base::FeatureList::IsEnabled(
-              kSyncDoNotPropagateBrowserShutdownToDataTypes)) {
+      if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
         data_type_manager_->Stop(shutdown_reason);
       }
     }
