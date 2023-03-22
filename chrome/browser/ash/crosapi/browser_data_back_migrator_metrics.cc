@@ -58,8 +58,6 @@ void RecordNumberOfLacrosSecondaryProfiles(
       ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir);
 
   size_t number_of_secondary_profiles = 0;
-  const std::string prefix = chrome::kMultiProfileDirPrefix;
-  const size_t prefix_length = prefix.length();
 
   base::FileEnumerator enumerator(lacros_dir, false /* recursive */,
                                   base::FileEnumerator::DIRECTORIES);
@@ -70,19 +68,7 @@ void RecordNumberOfLacrosSecondaryProfiles(
       continue;
     }
 
-    const std::string base_name = entry.BaseName().value();
-    // TODO(b/274470090): Add unit tests to prevent the crash in the future.
-    if (base_name.length() <= prefix_length) {
-      continue;
-    }
-
-    bool starts_with_prefix =
-        base::StartsWith(base_name, prefix, base::CompareCase::SENSITIVE);
-    int number;
-    bool ends_with_number =
-        base::StringToInt(base_name.substr(prefix_length), &number);
-
-    if (starts_with_prefix && ends_with_number) {
+    if (IsSecondaryProfileDirectory(entry.BaseName().value())) {
       number_of_secondary_profiles += 1;
     }
   }
@@ -118,6 +104,23 @@ std::string TaskStatusToString(
     MAPPING(MoveMergedItemsBackToAshMoveFileFailed);
 #undef MAPPING
   }
+}
+
+bool IsSecondaryProfileDirectory(const std::string& dir_base_name) {
+  const base::StringPiece prefix = chrome::kMultiProfileDirPrefix;
+  const size_t prefix_length = prefix.length();
+
+  if (dir_base_name.length() <= prefix_length) {
+    return false;
+  }
+
+  bool starts_with_prefix =
+      base::StartsWith(dir_base_name, prefix, base::CompareCase::SENSITIVE);
+  int number;
+  bool ends_with_number =
+      base::StringToInt(dir_base_name.substr(prefix_length), &number);
+
+  return starts_with_prefix && ends_with_number;
 }
 
 }  // namespace ash::browser_data_back_migrator_metrics

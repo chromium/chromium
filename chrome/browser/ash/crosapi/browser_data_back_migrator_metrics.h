@@ -51,6 +51,10 @@ void RecordNumberOfLacrosSecondaryProfiles(
 // Converts `TaskStatus` to string.
 std::string TaskStatusToString(BrowserDataBackMigrator::TaskStatus task_status);
 
+// Checks whether the directory name is in the format expected for a secondary
+// profile directory.
+bool IsSecondaryProfileDirectory(const std::string& dir_base_name);
+
 }  // namespace ash::browser_data_back_migrator_metrics
 
 #endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_BACK_MIGRATOR_METRICS_H_

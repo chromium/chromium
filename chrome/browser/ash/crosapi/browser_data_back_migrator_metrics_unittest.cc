@@ -153,4 +153,38 @@ TEST_F(BrowserDataBackMigratorMetricsFixtureTest,
       3, 1);
 }
 
+TEST(BrowserDataBackMigratorMetricsTest, IsSecondaryProfileDirectory) {
+  EXPECT_TRUE(browser_data_back_migrator_metrics::IsSecondaryProfileDirectory(
+      "Profile 3"));
+}
+
+TEST(BrowserDataBackMigratorMetricsTest,
+     IsSecondaryProfileDirectoryDefaultsDirectory) {
+  EXPECT_FALSE(browser_data_back_migrator_metrics::IsSecondaryProfileDirectory(
+      "Default"));
+}
+
+TEST(BrowserDataBackMigratorMetricsTest,
+     IsSecondaryProfileDirectoryProfileWithoutNumber) {
+  EXPECT_FALSE(browser_data_back_migrator_metrics::IsSecondaryProfileDirectory(
+      "Profile w/o number"));
+}
+
+TEST(BrowserDataBackMigratorMetricsTest,
+     IsSecondaryProfileDirectoryRandomName) {
+  EXPECT_FALSE(browser_data_back_migrator_metrics::IsSecondaryProfileDirectory(
+      "Other directory"));
+}
+
+TEST(BrowserDataBackMigratorMetricsTest, IsSecondaryProfileDirectoryShortName) {
+  EXPECT_FALSE(
+      browser_data_back_migrator_metrics::IsSecondaryProfileDirectory("ash"));
+}
+
+TEST(BrowserDataBackMigratorMetricsTest,
+     IsSecondaryProfileDirectoryEmptyString) {
+  EXPECT_FALSE(
+      browser_data_back_migrator_metrics::IsSecondaryProfileDirectory(""));
+}
+
 }  // namespace ash
