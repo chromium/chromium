@@ -84,8 +84,7 @@ TEST_F(TextSuggestionControllerTest, ApplySpellCheckSuggestion) {
 }
 
 // Flaky on Android: http://crbug.com/1104700
-// Failing on iOS: https://crbug.com/1411478
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ApplyTextSuggestion DISABLED_ApplyTextSuggestion
 #else
 #define MAYBE_ApplyTextSuggestion ApplyTextSuggestion
