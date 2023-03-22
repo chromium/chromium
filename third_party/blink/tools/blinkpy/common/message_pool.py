@@ -156,7 +156,7 @@ class _MessagePool(object):
             worker.start()
 
     def _worker_log_level(self):
-        log_level = logging.NOTSET
+        log_level = logging.root.level
         for handler in logging.root.handlers:
             if handler.level != logging.NOTSET:
                 if log_level == logging.NOTSET:

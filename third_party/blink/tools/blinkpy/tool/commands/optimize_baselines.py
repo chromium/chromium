@@ -26,25 +26,33 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         action='store_true',
         default=False,
         help=('Optimize all tests (instead of using TEST_NAMES)'))
+    check_option = optparse.make_option(
+        '--check',
+        action='store_true',
+        help=('Only check for redundant baselines instead of removing them. '
+              'Exits with code 0 if and only if no optimizations are '
+              'possible.'))
 
     def __init__(self):
-        super(OptimizeBaselines, self).__init__(options=[
+        super().__init__(options=[
             self.suffixes_option,
             self.port_name_option,
             self.all_option,
+            self.check_option,
         ] + self.platform_options + self.wpt_options)
+        self._successful = True
         self._exp_cache = TestExpectationsCache()
 
     def execute(self, options, args, tool):
         if not args != options.all_tests:
             _log.error('Must provide one of --all or TEST_NAMES')
-            return
+            return 1
 
-        self._tool = tool
+        self._tool, self._successful = tool, True
         port_names = tool.port_factory.all_port_names(options.platform)
         if not port_names:
             _log.error("No port names match '%s'", options.platform)
-            return
+            return 1
 
         port = tool.port_factory.get(options=options)
         test_set = self._get_test_set(port, options, args)
@@ -60,6 +68,14 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
             tasks = [(self.name, test_name, suffix) for test_name in test_set
                      for suffix in baseline_suffix_list]
             pool.run(tasks)
+        if options.check:
+            if self._successful:
+                _log.info('All baselines are optimal.')
+            else:
+                _log.warning('Some baselines require further optimization.')
+                _log.warning('Rerun `optimize-baselines` without `--check` '
+                             'to fix these issues.')
+                return 2
 
     def _get_test_set(self, port, options, args):
         test_set = set(port.tests() if options.all_tests else port.tests(args))
@@ -69,6 +85,9 @@ class OptimizeBaselines(AbstractParallelRebaselineCommand):
         ])
         test_set -= virtual_tests_to_exclude
         return test_set
+
+    def handle(self, name: str, source: str, successful: bool):
+        self._successful = self._successful and successful
 
 
 class Worker:
@@ -85,8 +104,14 @@ class Worker:
         self._optimizer = BaselineOptimizer(
             self._connection.host,
             self._connection.host.port_factory.get(options=self._options),
-            self._port_names)
+            self._port_names,
+            check=self._options.check)
 
     def handle(self, name: str, source: str, test_name: str, suffix: str):
-        self._optimizer.optimize(test_name, suffix)
-        self._connection.post(name)
+        successful = self._optimizer.optimize(test_name, suffix)
+        if self._options.check and not self._options.verbose and successful:
+            # Without `--verbose`, do not show optimization logs when a test
+            # passes the check.
+            self._connection.log_messages.clear()
+        else:
+            self._connection.post(name, successful)
