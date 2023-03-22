@@ -54,8 +54,10 @@ namespace {
 
 using base::UmaHistogramEnumeration;
 using password_manager::constants::kMaxPasswordNoteLength;
+using password_manager::metrics_util::LogPasswordNoteActionInSettings;
 using password_manager::metrics_util::LogPasswordSettingsReauthResult;
 using password_manager::metrics_util::PasswordCheckInteraction;
+using password_manager::metrics_util::PasswordNoteAction;
 using password_manager::metrics_util::ReauthResult;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -1430,6 +1432,21 @@ const int kMinNoteCharAmountForWarning = 901;
       "PasswordManager.iOS.PasswordDetails.CopyDetailsFailed", failure);
 }
 
+- (void)logChangeBetweenOldNote:(NSString*)oldNote
+                    currentNote:(NSString*)currentNote {
+  PasswordNoteAction action;
+  if (oldNote == currentNote) {
+    action = PasswordNoteAction::kNoteNotChanged;
+  } else if (oldNote.length != 0 && currentNote.length != 0) {
+    action = PasswordNoteAction::kNoteEditedInEditDialog;
+  } else if (oldNote.length == 0) {
+    action = PasswordNoteAction::kNoteAddedInEditDialog;
+  } else {
+    action = PasswordNoteAction::kNoteRemovedInEditDialog;
+  }
+  LogPasswordNoteActionInSettings(action);
+}
+
 #pragma mark - Public
 
 - (void)passwordEditingConfirmed {
@@ -1445,6 +1462,7 @@ const int kMinNoteCharAmountForWarning = 901;
     if (IsPasswordNotesWithBackupEnabled()) {
       self.passwords[i].note =
           self.passwordDetailsInfoItems[i].passwordNoteItem.text;
+      [self logChangeBetweenOldNote:oldNote currentNote:self.passwords[i].note];
     }
     [self.delegate passwordDetailsViewController:self
                           didEditPasswordDetails:self.passwords[i]

@@ -392,6 +392,11 @@ void LogUserInteractionsWhenAddingCredentialFromSettings(
       add_credential_from_settings_user_interaction);
 }
 
+void LogPasswordNoteActionInSettings(PasswordNoteAction action) {
+  base::UmaHistogramEnumeration("PasswordManager.PasswordNoteActionInSettings2",
+                                action);
+}
+
 void LogUserInteractionsInPasswordManagementBubble(
     PasswordManagementBubbleInteractions
         password_management_bubble_interaction) {

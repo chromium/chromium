@@ -836,6 +836,9 @@ void LogUserInteractionsWhenAddingCredentialFromSettings(
     AddCredentialFromSettingsUserInteractions
         add_credential_from_settings_user_interaction);
 
+// Log the user interaction with the note field in password add / edit dialogs.
+void LogPasswordNoteActionInSettings(PasswordNoteAction action);
+
 // Log the user interaction events with a revamped password management bubble
 // opened from the key icon in omnibox.
 void LogUserInteractionsInPasswordManagementBubble(

@@ -674,6 +674,11 @@ const int kMinNoteCharAmountForWarning = 901;
       LogUserInteractionsWhenAddingCredentialFromSettings(
           password_manager::metrics_util::
               AddCredentialFromSettingsUserInteractions::kCredentialAdded);
+  if (self.noteTextItem.text.length != 0) {
+    password_manager::metrics_util::LogPasswordNoteActionInSettings(
+        password_manager::metrics_util::PasswordNoteAction::
+            kNoteAddedInAddDialog);
+  }
   [self.delegate addPasswordViewController:self
                      didAddPasswordDetails:self.usernameTextItem.textFieldValue
                                   password:self.passwordTextItem.textFieldValue

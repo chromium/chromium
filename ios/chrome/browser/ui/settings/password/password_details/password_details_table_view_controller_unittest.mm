@@ -12,6 +12,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/base/features.h"
@@ -308,6 +309,13 @@ class PasswordDetailsTableViewControllerTest
     cell.textFieldValue = text;
   }
 
+  void SetEditCellMultiLineText(NSString* text, int section, int item) {
+    TableViewMultiLineTextEditItem* cell =
+        static_cast<TableViewMultiLineTextEditItem*>(
+            GetTableViewItem(section, item));
+    cell.text = text;
+  }
+
   void CheckDetailItemTextWithId(int expected_detail_text_id,
                                  int section,
                                  int item) {
@@ -397,6 +405,109 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPasswordWithNote) {
   CheckEditCellText(@"test@egmail.com", 1, 0);
   CheckEditCellText(kMaskedPassword, 1, 1);
   CheckEditCellMultiLineText(@"note", 1, 2);
+}
+
+// Tests that correct metrics is reported after adding a note.
+TEST_F(PasswordDetailsTableViewControllerTest, TestAddingPasswordWithNote) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+  base::HistogramTester histogram_tester;
+
+  SetPassword(kExampleCom, kUsername, kPassword, /*note=*/"", false);
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+  [passwordDetails editButtonPressed];
+  EXPECT_TRUE(passwordDetails.tableView.editing);
+
+  SetEditCellMultiLineText(@"note", 1, 2);
+  [passwordDetails editButtonPressed];
+  [passwordDetails passwordEditingConfirmed];
+
+  EXPECT_FALSE(passwordDetails.tableView.editing);
+  EXPECT_NSEQ(@"note", delegate().password.note);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordNoteActionInSettings2",
+      password_manager::metrics_util::PasswordNoteAction::
+          kNoteAddedInEditDialog,
+      1);
+}
+
+// Tests that correct metrics is reported after editing a note.
+TEST_F(PasswordDetailsTableViewControllerTest, TestEditingPasswordWithNote) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+  base::HistogramTester histogram_tester;
+
+  SetPassword();
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+  [passwordDetails editButtonPressed];
+  EXPECT_TRUE(passwordDetails.tableView.editing);
+
+  SetEditCellMultiLineText(@"new_note", 1, 2);
+  [passwordDetails editButtonPressed];
+  [passwordDetails passwordEditingConfirmed];
+
+  EXPECT_FALSE(passwordDetails.tableView.editing);
+  EXPECT_NSEQ(@"new_note", delegate().password.note);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordNoteActionInSettings2",
+      password_manager::metrics_util::PasswordNoteAction::
+          kNoteEditedInEditDialog,
+      1);
+}
+
+// Tests that correct metrics is reported after editing a password without a
+// note change.
+TEST_F(PasswordDetailsTableViewControllerTest, TestRemovingPasswordWithNote) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+  base::HistogramTester histogram_tester;
+
+  SetPassword();
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+  [passwordDetails editButtonPressed];
+  EXPECT_TRUE(passwordDetails.tableView.editing);
+
+  SetEditCellMultiLineText(@"", 1, 2);
+  [passwordDetails editButtonPressed];
+  [passwordDetails passwordEditingConfirmed];
+
+  EXPECT_FALSE(passwordDetails.tableView.editing);
+  EXPECT_NSEQ(@"", delegate().password.note);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordNoteActionInSettings2",
+      password_manager::metrics_util::PasswordNoteAction::
+          kNoteRemovedInEditDialog,
+      1);
+}
+
+// Tests that correct metrics is reported after removing a note.
+TEST_F(PasswordDetailsTableViewControllerTest,
+       TestEditingPasswordWithoutNoteChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
+  base::HistogramTester histogram_tester;
+
+  SetPassword();
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+  [passwordDetails editButtonPressed];
+  EXPECT_TRUE(passwordDetails.tableView.editing);
+
+  SetEditCellText(@"new_password", 1, 1);
+  [passwordDetails editButtonPressed];
+  [passwordDetails passwordEditingConfirmed];
+
+  EXPECT_FALSE(passwordDetails.tableView.editing);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordNoteActionInSettings2",
+      password_manager::metrics_util::PasswordNoteAction::kNoteNotChanged, 1);
 }
 
 // Tests that password is displayed properly with notes feature disabled.
