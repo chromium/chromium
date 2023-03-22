@@ -20,6 +20,7 @@
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
+#include "components/sync_preferences/test_syncable_prefs_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,21 +50,10 @@ const std::unordered_map<std::string, SyncablePrefMetadata>
         {kStringOsPrefName, {0, syncer::OS_PREFERENCES}},
         {kStringOsPriorityPrefName, {0, syncer::OS_PRIORITY_PREFERENCES}}};
 
-class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
- public:
-  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
-      const std::string& pref_name) const override {
-    if (auto it = kSyncablePrefsDatabase.find(pref_name);
-        it != kSyncablePrefsDatabase.end()) {
-      return it->second;
-    }
-    return absl::nullopt;
-  }
-};
-
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
-  TestPrefModelAssociatorClient() = default;
+  TestPrefModelAssociatorClient()
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
 
   TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
   TestPrefModelAssociatorClient& operator=(

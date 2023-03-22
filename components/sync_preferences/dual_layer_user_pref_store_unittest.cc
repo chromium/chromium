@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
+#include "components/sync_preferences/test_syncable_prefs_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +19,18 @@ namespace {
 constexpr char kPref1[] = "pref1";
 constexpr char kPref2[] = "pref2";
 constexpr char kPref3[] = "pref3";
+constexpr char kPrefName[] = "pref";
+constexpr char kNonExistentPrefName[] = "nonexistent-pref";
+constexpr char kNonSyncablePrefName[] = "nonsyncable-pref";
+
+// Assigning an id of 0 to all the test prefs.
+const std::unordered_map<std::string, SyncablePrefMetadata>
+    kSyncablePrefsDatabase = {
+        {kPref1, {0, syncer::PREFERENCES}},
+        {kPref2, {0, syncer::PREFERENCES}},
+        {kPref3, {0, syncer::PREFERENCES}},
+        {kPrefName, {0, syncer::PREFERENCES}},
+};
 
 base::Value MakeDict(
     const std::vector<std::pair<std::string, std::string>>& values) {
@@ -70,22 +83,15 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   MOCK_METHOD(void, OnInitializationCompleted, (bool succeeded), (override));
 };
 
-class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
- public:
-  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
-      const std::string& pref_name) const override {
-    return SyncablePrefMetadata{0, syncer::PREFERENCES};
-  }
-};
-
 }  // namespace
 
 class DualLayerUserPrefStoreTestBase : public testing::Test {
  public:
-  explicit DualLayerUserPrefStoreTestBase(bool initialize) {
+  explicit DualLayerUserPrefStoreTestBase(bool initialize)
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {
     local_store_ = base::MakeRefCounted<TestingPrefStore>();
     dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
-        local_store_, &prefs_database_);
+        local_store_, &syncable_prefs_database_);
 
     // TODO(crbug.com/1416480): Add proper test setup to enable and disable data
     // types appropriately.
@@ -101,7 +107,7 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
  protected:
   scoped_refptr<TestingPrefStore> local_store_;
   scoped_refptr<DualLayerUserPrefStore> dual_layer_store_;
-  TestSyncablePrefsDatabase prefs_database_;
+  TestSyncablePrefsDatabase syncable_prefs_database_;
 };
 
 class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {
@@ -171,38 +177,38 @@ TEST_F(DualLayerUserPrefStoreInitializationTest,
 }
 
 TEST_F(DualLayerUserPrefStoreTest, ReadsFromLocalStore) {
-  store()->GetLocalPrefStore()->SetValueSilently("pref",
+  store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
                                                  base::Value("local_value"), 0);
 
   // No value is set in the account store, so the one from the local store
   // should be returned.
-  EXPECT_TRUE(ValueInStoreIs(*store(), "pref", "local_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPrefName, "local_value"));
 
   // Reading the value should not have affected the account store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), "pref"));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPrefName));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, ReadsFromAccountStore) {
   store()->GetAccountPrefStore()->SetValueSilently(
-      "pref", base::Value("account_value"), 0);
+      kPrefName, base::Value("account_value"), 0);
 
   // No value is set in the local store, so the one from the account store
   // should be returned.
-  EXPECT_TRUE(ValueInStoreIs(*store(), "pref", "account_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPrefName, "account_value"));
 
   // Reading the value should not have affected the local store.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetLocalPrefStore(), "pref"));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetLocalPrefStore(), kPrefName));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, AccountTakesPrecedence) {
   store()->GetAccountPrefStore()->SetValueSilently(
-      "pref", base::Value("account_value"), 0);
-  store()->GetLocalPrefStore()->SetValueSilently("pref",
+      kPrefName, base::Value("account_value"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
                                                  base::Value("local_value"), 0);
 
   // Different values are set in both stores; the one from the account should
   // take precedence.
-  EXPECT_TRUE(ValueInStoreIs(*store(), "pref", "account_value"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPrefName, "account_value"));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, ReadsFromBothStores) {
@@ -294,28 +300,28 @@ TEST_F(DualLayerUserPrefStoreTest, RemovesFromBothStores) {
 }
 
 TEST_F(DualLayerUserPrefStoreTest, DoesNotReturnNonexistentPref) {
-  store()->SetValueSilently("pref", MakeDict({{"key", "value"}}), 0);
+  store()->SetValueSilently(kPrefName, MakeDict({{"key", "value"}}), 0);
 
   // The existing pref can be queried.
-  ASSERT_TRUE(store()->GetValue("pref", nullptr));
-  ASSERT_TRUE(store()->GetMutableValue("pref", nullptr));
+  ASSERT_TRUE(store()->GetValue(kPrefName, nullptr));
+  ASSERT_TRUE(store()->GetMutableValue(kPrefName, nullptr));
 
   // But a non-existing pref can't.
-  EXPECT_FALSE(store()->GetValue("nonexistent", nullptr));
-  EXPECT_FALSE(store()->GetMutableValue("nonexistent", nullptr));
+  EXPECT_FALSE(store()->GetValue(kNonExistentPrefName, nullptr));
+  EXPECT_FALSE(store()->GetMutableValue(kNonExistentPrefName, nullptr));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromLocalToBothStores) {
   const base::Value original_value = MakeDict({{"key", "value"}});
 
   // A dictionary-type value is present in the local store.
-  store()->GetLocalPrefStore()->SetValueSilently("pref", original_value.Clone(),
-                                                 0);
+  store()->GetLocalPrefStore()->SetValueSilently(kPrefName,
+                                                 original_value.Clone(), 0);
 
   // GetMutableValue() should return that value. In practice, this API is used
   // by ScopedDictPrefUpdate and ScopedListPrefUpdate.
   base::Value* mutable_value = nullptr;
-  ASSERT_TRUE(store()->GetMutableValue("pref", &mutable_value));
+  ASSERT_TRUE(store()->GetMutableValue(kPrefName, &mutable_value));
   ASSERT_TRUE(mutable_value);
   ASSERT_EQ(*mutable_value, original_value);
 
@@ -327,28 +333,28 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromLocalToBothStores) {
   // After updating the value, clients have to call ReportValueChanged() to let
   // the store know it has changed. The dual-layer store uses this to reconcile
   // between the two underlying stores.
-  store()->ReportValueChanged("pref", 0);
+  store()->ReportValueChanged(kPrefName, 0);
 
   // The new value should of course be returned from the dual-layer store now,
   // but it should also have been written to both of the underlying stores.
-  ASSERT_TRUE(ValueInStoreIs(*store(), "pref", expected_value));
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, expected_value));
   EXPECT_TRUE(
-      ValueInStoreIs(*store()->GetLocalPrefStore(), "pref", expected_value));
-  EXPECT_TRUE(
-      ValueInStoreIs(*store()->GetAccountPrefStore(), "pref", expected_value));
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, expected_value));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName,
+                             expected_value));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromAccountToBothStores) {
   const base::Value original_value = MakeDict({{"key", "value"}});
 
   // A dictionary-type value is present in the account store.
-  store()->GetAccountPrefStore()->SetValueSilently("pref",
+  store()->GetAccountPrefStore()->SetValueSilently(kPrefName,
                                                    original_value.Clone(), 0);
 
   // GetMutableValue() should return that value. In practice, this API is used
   // by ScopedDictPrefUpdate and ScopedListPrefUpdate.
   base::Value* mutable_value = nullptr;
-  ASSERT_TRUE(store()->GetMutableValue("pref", &mutable_value));
+  ASSERT_TRUE(store()->GetMutableValue(kPrefName, &mutable_value));
   ASSERT_TRUE(mutable_value);
   ASSERT_EQ(*mutable_value, original_value);
 
@@ -360,15 +366,15 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromAccountToBothStores) {
   // After updating the value, clients have to call ReportValueChanged() to let
   // the store know it has changed. The dual-layer store uses this to reconcile
   // between the two underlying stores.
-  store()->ReportValueChanged("pref", 0);
+  store()->ReportValueChanged(kPrefName, 0);
 
   // The new value should of course be returned from the dual-layer store now,
   // but it should also have been written to both of the underlying stores.
-  ASSERT_TRUE(ValueInStoreIs(*store(), "pref", expected_value));
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, expected_value));
   EXPECT_TRUE(
-      ValueInStoreIs(*store()->GetLocalPrefStore(), "pref", expected_value));
-  EXPECT_TRUE(
-      ValueInStoreIs(*store()->GetAccountPrefStore(), "pref", expected_value));
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, expected_value));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName,
+                             expected_value));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromBothToBothStores) {
@@ -378,14 +384,14 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromBothToBothStores) {
 
   // A dictionary-type value is present in both of the underlying stores.
   store()->GetLocalPrefStore()->SetValueSilently(
-      "pref", original_local_value.Clone(), 0);
+      kPrefName, original_local_value.Clone(), 0);
   store()->GetAccountPrefStore()->SetValueSilently(
-      "pref", original_account_value.Clone(), 0);
+      kPrefName, original_account_value.Clone(), 0);
 
   // GetMutableValue() should return that value. In practice, this API is used
   // by ScopedDictPrefUpdate and ScopedListPrefUpdate.
   base::Value* mutable_value = nullptr;
-  ASSERT_TRUE(store()->GetMutableValue("pref", &mutable_value));
+  ASSERT_TRUE(store()->GetMutableValue(kPrefName, &mutable_value));
   ASSERT_TRUE(mutable_value);
   ASSERT_EQ(*mutable_value, original_account_value);
 
@@ -397,30 +403,30 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromBothToBothStores) {
   // After updating the value, clients have to call ReportValueChanged() to let
   // the store know it has changed. The dual-layer store uses this to reconcile
   // between the two underlying stores.
-  store()->ReportValueChanged("pref", 0);
+  store()->ReportValueChanged(kPrefName, 0);
 
   // The new value should of course be returned from the dual-layer store now,
   // but it should also have been written to both of the underlying stores.
-  ASSERT_TRUE(ValueInStoreIs(*store(), "pref", expected_value));
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, expected_value));
   EXPECT_TRUE(
-      ValueInStoreIs(*store()->GetLocalPrefStore(), "pref", expected_value));
-  EXPECT_TRUE(
-      ValueInStoreIs(*store()->GetAccountPrefStore(), "pref", expected_value));
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, expected_value));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName,
+                             expected_value));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, ClearsMutableValueFromBothStores) {
   // A dictionary-type value is present in both of the underlying stores.
   const base::Value original_value = MakeDict({{"key", "value"}});
-  store()->SetValueSilently("pref", original_value.Clone(), 0);
+  store()->SetValueSilently(kPrefName, original_value.Clone(), 0);
   ASSERT_TRUE(
-      ValueInStoreIs(*store()->GetLocalPrefStore(), "pref", original_value));
-  ASSERT_TRUE(
-      ValueInStoreIs(*store()->GetAccountPrefStore(), "pref", original_value));
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, original_value));
+  ASSERT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName,
+                             original_value));
 
   // GetMutableValue() should return that value. In practice, this API is used
   // by ScopedDictPrefUpdate and ScopedListPrefUpdate.
   base::Value* mutable_value = nullptr;
-  ASSERT_TRUE(store()->GetMutableValue("pref", &mutable_value));
+  ASSERT_TRUE(store()->GetMutableValue(kPrefName, &mutable_value));
   ASSERT_TRUE(mutable_value);
   ASSERT_EQ(*mutable_value, original_value);
 
@@ -429,16 +435,16 @@ TEST_F(DualLayerUserPrefStoreTest, ClearsMutableValueFromBothStores) {
   // While the mutable value is "pending" (hasn't been "released" via
   // ReportValueChanged()), the pref gets cleared.
   // This shouldn't usually happen in practice, but in theory it could.
-  store()->RemoveValue("pref", 0);
+  store()->RemoveValue(kPrefName, 0);
 
   // Now the client that called GetMutableValue() previously reports that it is
   // done changing the value.
-  store()->ReportValueChanged("pref", 0);
+  store()->ReportValueChanged(kPrefName, 0);
 
   // The value should have been removed from both of the stores.
-  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), "pref"));
-  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetLocalPrefStore(), "pref"));
-  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), "pref"));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPrefName));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetLocalPrefStore(), kPrefName));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPrefName));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, NotifiesOfPrefChanges) {
@@ -550,8 +556,29 @@ TEST_F(DualLayerUserPrefStoreTest, NotifiesOfMutableValuePrefChanges) {
   store()->RemoveObserver(&observer);
 }
 
-// TODO(crbug.com/1416477): Add tests that ensure only syncable prefs are
-// written to the account store.
+TEST_F(DualLayerUserPrefStoreTest, ShouldAddOnlySyncablePrefsToAccountStore) {
+  constexpr char kNewValue[] = "new_value";
+
+  store()->SetValue(kPrefName, base::Value(kNewValue), 0);
+
+  // Value should be set in both the stores.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, kNewValue));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName, kNewValue));
+
+  store()->SetValue(kNonSyncablePrefName, base::Value(kNewValue), 0);
+
+  // No value should be set in the account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(),
+                                   kNonSyncablePrefName));
+  // Value is only set in the local store.
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(),
+                             kNonSyncablePrefName, kNewValue));
+}
+
+// TODO(crbug.com/1416477): Add tests that ensure only syncable prefs of syncing
+// types are written to the account store.
 
 // TODO(crbug.com/1416479): Add tests for pref-merging logic.
 

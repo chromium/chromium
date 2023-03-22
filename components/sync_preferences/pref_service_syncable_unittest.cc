@@ -35,6 +35,7 @@
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/sync_preferences/synced_pref_observer.h"
+#include "components/sync_preferences/test_syncable_prefs_database.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -384,21 +385,10 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationWithDataTypeMismatch) {
   EXPECT_THAT(prefs_.GetString(kStringPrefName), Eq(kExampleUrl0));
 }
 
-class TestSyncablePrefsDatabase : public SyncablePrefsDatabase {
- public:
-  absl::optional<SyncablePrefMetadata> GetSyncablePrefMetadata(
-      const std::string& pref_name) const override {
-    if (auto it = kSyncablePrefsDatabase.find(pref_name);
-        it != kSyncablePrefsDatabase.end()) {
-      return it->second;
-    }
-    return absl::nullopt;
-  }
-};
-
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
-  TestPrefModelAssociatorClient() = default;
+  TestPrefModelAssociatorClient()
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
 
   TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
   TestPrefModelAssociatorClient& operator=(
