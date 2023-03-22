@@ -1033,11 +1033,6 @@
       status: "stable",
       base_feature: "none",
     },
-    {
-      name: "CSSSystemAccentColor",
-      status: "experimental",
-      base_feature: "none",
-    },
     // `text-wrap: balance`. crbug.com/1251079
     {
       name: "CSSTextWrap",
