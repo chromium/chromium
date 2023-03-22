@@ -30,7 +30,9 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/gpu_data_manager.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -371,9 +373,11 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 #endif
 
   // Perform a navigation to the same content source. This will reuse the
-  // existing RenderWidgetHostViewBase.
+  // existing RenderWidgetHostViewBase, except if we trigger a RenderWidgetHost
+  // swap on the navigation (due to RenderDocument).
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  rwhvb = GetRenderWidgetHostView();
   EXPECT_FALSE(rwhvb->GetLocalSurfaceId().is_valid());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -435,9 +439,11 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 #endif
 
   // Perform a navigation to the same content source. This will reuse the
-  // existing RenderWidgetHostViewBase.
+  // existing RenderWidgetHostViewBase, except if we trigger a RenderWidgetHost
+  // swap on the navigation (due to RenderDocument).
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  rwhvb = GetRenderWidgetHostView();
   EXPECT_FALSE(rwhvb->GetLocalSurfaceId().is_valid());
 
   // Surface Synchronization can lead to several different Surfaces being
@@ -491,8 +497,8 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   // Creates the initial RenderWidgetHostViewBase, and connects to a
   // CompositorFrameSink.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  GURL url(embedded_test_server()->GetURL("/page_with_animation.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderWidgetHostViewBase* rwhvb = GetRenderWidgetHostView();
   ASSERT_TRUE(rwhvb);
   viz::LocalSurfaceId initial_lsid = rwhvb->GetLocalSurfaceId();
@@ -503,23 +509,36 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   EXPECT_TRUE(rwhvb->HasFallbackSurface());
 
   // Perform a navigation to the same content source. This will reuse the
-  // existing RenderWidgetHostViewBase.
+  // existing RenderWidgetHostViewBase, except if we trigger a RenderWidgetHost
+  // swap on the navigation (due to RenderDocument).
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  // Notify that this pending commit has no RenderFrameHost with which to get a
-  // Fallback Surface. This should evict the Fallback Surface.
-  web_contents->NotifySwappedFromRenderManagerWithoutFallbackContent(
-      web_contents->GetPrimaryMainFrame());
-  EXPECT_FALSE(rwhvb->HasFallbackSurface());
 
   // Actually complete a navigation once we've removed the Fallback Surface.
   // This should lead to a new viz::LocalSurfaceId.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+  TestNavigationManager nav_manager(shell()->web_contents(), url);
+  shell()->LoadURL(url);
+  EXPECT_TRUE(nav_manager.WaitForResponse());
+  // Notify that this pending commit has no RenderFrameHost with which to get a
+  // Fallback Surface. This should evict the Fallback Surface.
+  RenderFrameHostImpl* pending_rfh = static_cast<RenderFrameHostImpl*>(
+      nav_manager.GetNavigationHandle()->GetRenderFrameHost());
+  web_contents->NotifySwappedFromRenderManagerWithoutFallbackContent(
+      pending_rfh);
+  rwhvb = static_cast<RenderWidgetHostViewBase*>(pending_rfh->GetView());
+  EXPECT_FALSE(rwhvb->HasFallbackSurface());
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  EXPECT_EQ(rwhvb, GetRenderWidgetHostView());
   EXPECT_TRUE(rwhvb->GetLocalSurfaceId().is_valid());
   viz::LocalSurfaceId post_nav_lsid = rwhvb->GetLocalSurfaceId();
   EXPECT_NE(initial_lsid, post_nav_lsid);
-  EXPECT_TRUE(post_nav_lsid.IsNewerThan(initial_lsid));
+
+  // When RenderDocument is enabled, the RWHV will change as well so the
+  // LocalSurfaceIds are not comparable.
+  if (!ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(post_nav_lsid.IsNewerThan(initial_lsid));
+  }
 }
 
 namespace {

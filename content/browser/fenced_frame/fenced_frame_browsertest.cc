@@ -1191,17 +1191,15 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
 
   EXPECT_TRUE(ff_rfh->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
 
-  TestFrameNavigationObserver observer(ff_rfh.get());
   GURL new_fenced_frame_url =
       https_server()->GetURL("a.test", "/fenced_frames/sandbox_flags.html");
-  EXPECT_TRUE(
-      ExecJs(primary_rfh.get(),
-             JsReplace("document.querySelector('fencedframe').src = $1;",
-                       new_fenced_frame_url)));
-  observer.Wait();
+  RenderFrameHostImplWrapper new_fenced_frame_rfh(
+      fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+          ff_rfh.get(), new_fenced_frame_url));
 
-  EXPECT_TRUE(!ff_rfh->IsErrorDocument());
-  EXPECT_TRUE(ff_rfh->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
+  EXPECT_TRUE(!new_fenced_frame_rfh->IsErrorDocument());
+  EXPECT_TRUE(
+      new_fenced_frame_rfh->IsSandboxed(blink::kFencedFrameForcedSandboxFlags));
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest,
@@ -4916,6 +4914,7 @@ class FencedFrameReportEventBrowserTest
         }
         auto& response = *responses[response_index];
         response.WaitForRequest();
+
         // Verify the request has the correct content.
         EXPECT_EQ(
             response.http_request()->content,

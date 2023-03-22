@@ -1526,8 +1526,8 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerFencedFrameTest,
 
   // Navigate the fenced frame, this won't cause the find request queue to be
   // cleared, since it's not a primary main frame.
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
-                                                            find_test_url);
+  fenced_frame_host = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_host, find_test_url);
   EXPECT_TRUE(CheckFrame(fenced_frame_host));
   EXPECT_EQ(find_request_queue_size(), 1);
   EXPECT_EQ(last_request_id(), delegate.GetFindResults().request_id);

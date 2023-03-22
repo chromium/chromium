@@ -1891,7 +1891,7 @@ IN_PROC_BROWSER_TEST_F(
                 EvalJs(child_frame,
                        JsReplace("location = $1", kSameOriginSubframeUrl2)));
       capturer.Wait();
-
+      child_frame = ChildFrameAt(prerender_frame_host, 0);
       EXPECT_EQ(kSameOriginSubframeUrl2, child_frame->GetLastCommittedURL());
       ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl2), 1);
 
@@ -1917,7 +1917,7 @@ IN_PROC_BROWSER_TEST_F(
           ui::PAGE_TRANSITION_AUTO_SUBFRAME,
           /*is_renderer_initiated=*/false));
       capturer.Wait();
-
+      child_frame = ChildFrameAt(prerender_frame_host, 0);
       EXPECT_EQ(kSameOriginSubframeUrl3, child_frame->GetLastCommittedURL());
       ASSERT_EQ(GetRequestCount(kSameOriginSubframeUrl3), 1);
 
@@ -6134,7 +6134,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?1");
   const GURL kPrerenderingUrl2 = GetUrl("/empty.html?2");
-
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 

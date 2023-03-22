@@ -2013,6 +2013,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FastNavigationAbort) {
   // ensure that we won't trigger a same-site cross-RFH navigation.
   // TODO(crbug.com/1099193): This should also work on cross-RFH same-site
   // navigations.
+  if (ShouldCreateNewHostForAllFrames()) {
+    return;
+  }
   DisableProactiveBrowsingInstanceSwapFor(
       web_contents()->GetPrimaryMainFrame());
 
@@ -2462,6 +2465,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // that we won't trigger a same-site cross-RFH navigation.
   DisableProactiveBrowsingInstanceSwapFor(
       web_contents()->GetPrimaryMainFrame());
+  if (ShouldCreateNewHostForAllFrames()) {
+    return;
+  }
 
   // Prepare an interface receiver for FrameHostTestInterface.
   mojo::Remote<mojom::FrameHostTestInterface> test_interface;
@@ -6628,8 +6634,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(
       main_frame, embedded_test_server()->GetURL("a.com", "/title2.html")));
 
-  // The navigation should reuse the same RenderFrameHost.
-  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(), main_frame_wrapper.get());
+  // The navigation should reuse the same RenderFrameHost, except when
+  // RenderDocument is enabled.
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(main_frame_wrapper.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_EQ(web_contents()->GetPrimaryMainFrame(), main_frame_wrapper.get());
+  }
 
   // The destructors of DestructorLifetimeDocumentService and
   // DestructorLifetimeDocumentUserData also perform googletest
@@ -6710,8 +6721,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(
       child_frame, embedded_test_server()->GetURL("a.com", "/title2.html")));
 
-  // The navigation should reuse the same RenderFrameHost.
-  EXPECT_EQ(ChildFrameAt(shell(), 0), child_frame_wrapper.get());
+  // The navigation should reuse the same RenderFrameHost, except when
+  // RenderDocument is enabled.
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(child_frame_wrapper.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_EQ(ChildFrameAt(shell(), 0), child_frame_wrapper.get());
+  }
 
   // The destructors of DestructorLifetimeDocumentService and
   // DestructorLifetimeDocumentUserData also perform googletest

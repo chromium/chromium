@@ -2072,15 +2072,33 @@ IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
     EXPECT_EQ(main_url, child->current_frame_host()->GetInheritedBaseUrl());
   }
 
+  // Remove the srcdoc attribute from the child frame. This should trigger a
+  // navigation to about:blank.
+  {
+    EXPECT_TRUE(ExecJs(shell(),
+                       "var frame = document.getElementById('child-srcdoc'); "
+                       "frame.removeAttribute('srcdoc'); "));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+  EXPECT_EQ(GURL("about:blank"),
+            child->current_frame_host()->GetLastCommittedURL());
+  EXPECT_EQ(main_url, GetFrameBaseUrl(child->current_frame_host()));
+  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
+    EXPECT_EQ(main_url, child->current_frame_host()->GetInheritedBaseUrl());
+  }
+
+  // Navigate the subframe to `child_url`. This should remove the inherited base
+  // URL.
   {
     std::string js_str = base::StringPrintf(
         "var frame = document.getElementById('child-srcdoc'); "
-        "frame.removeAttribute('srcdoc'); "
         "frame.src = '%s';",
         child_url.spec().c_str());
     EXPECT_TRUE(ExecJs(shell(), js_str));
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
+
+  EXPECT_EQ(child_url, child->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(child_url, GetFrameBaseUrl(child->current_frame_host()));
   EXPECT_EQ(GURL(), child->current_frame_host()->GetInheritedBaseUrl());
 }
