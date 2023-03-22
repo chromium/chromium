@@ -227,7 +227,8 @@ function extractUrl(item) {
   if (document.URL.includes("ae.com")
       || document.URL.includes("kiehls.com")
       || document.URL.includes("discounttiredirect.com")
-      || document.URL.includes("shutterfly.com")) {
+      || document.URL.includes("shutterfly.com")
+      || document.URL.includes("bkstr.com")) {
     return "";
   }
   let anchors;
