@@ -55,6 +55,7 @@ void AppDiscoveryMetricsManager::OnOpenResult(ChromeSearchResult* result,
       .SetAppId(app_id)
       .SetAppName(std::string(app_title.begin(), app_title.end()))
       .SetFuzzyStringMatch(string_match_score)
+      .SetResultCategory(result->metrics_type())
       .Record();
 }
 

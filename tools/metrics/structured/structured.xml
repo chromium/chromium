@@ -671,6 +671,12 @@
         Name of the app that was launched. Names are UTF-16 string encoding.
       </summary>
     </metric>
+    <metric name="ResultCategory" type="int">
+      <summary>
+        Enum representing the category of app the result is. This enum should map to
+        ash::SearchResultType.
+      </summary>
+    </metric>
   </event>
 
   <event name="UserLogin">

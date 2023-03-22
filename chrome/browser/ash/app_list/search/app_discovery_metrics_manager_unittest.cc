@@ -99,7 +99,8 @@ class AppDiscoveryMetricsManagerTest : public testing::Test {
   void ValidateAppLaunchEvent(const metrics::structured::Event& event,
                               const std::string& app_id,
                               const std::u16string& app_title,
-                              double match_score) {
+                              double match_score,
+                              const ash::SearchResultType search_result_type) {
     cros_events::AppDiscovery_AppLauncherResultOpened expected_event;
 
     EXPECT_EQ(expected_event.project_name(), event.project_name());
@@ -107,7 +108,8 @@ class AppDiscoveryMetricsManagerTest : public testing::Test {
 
     expected_event.SetAppId(app_id)
         .SetAppName(std::string(app_title.begin(), app_title.end()))
-        .SetFuzzyStringMatch(match_score);
+        .SetFuzzyStringMatch(match_score)
+        .SetResultCategory(search_result_type);
 
     EXPECT_EQ(expected_event.metric_values(), event.metric_values());
   }
@@ -143,14 +145,16 @@ TEST_F(AppDiscoveryMetricsManagerTest, OnOpenAppResult) {
   const std::u16string app_name = u"app_name";
   const std::u16string query = u"app_name";
   const std::string app_id = "id";
+  const auto search_result_type =
+      ash::SearchResultType::PLAY_STORE_UNINSTALLED_APP;
 
-  TestSearchResult search_result(
-      app_id, app_name, ash::SearchResultType::PLAY_STORE_UNINSTALLED_APP);
+  TestSearchResult search_result(app_id, app_name, search_result_type);
 
   base::RunLoop run_loop;
   auto record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
-        ValidateAppLaunchEvent(event, app_id, app_name, /*match_score=*/1.0);
+        ValidateAppLaunchEvent(event, app_id, app_name, /*match_score=*/1.0,
+                               search_result_type);
         run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(record_callback);
@@ -163,20 +167,21 @@ TEST_F(AppDiscoveryMetricsManagerTest, OnOpenAppResultAppSyncDisabled) {
   const std::u16string app_name = u"app_name";
   const std::u16string query = u"app_name";
   const std::string app_id = "id";
+  const auto search_result_type =
+      ash::SearchResultType::PLAY_STORE_UNINSTALLED_APP;
 
   // Disable app-sync.
   sync_service()->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 
-  TestSearchResult search_result(
-      app_id, app_name, ash::SearchResultType::PLAY_STORE_UNINSTALLED_APP);
+  TestSearchResult search_result(app_id, app_name, search_result_type);
 
   base::RunLoop run_loop;
   auto record_callback = base::BindLambdaForTesting(
       [&, this](const metrics::structured::Event& event) {
         // App ID and app name will be stripped if app sync is disabled.
         ValidateAppLaunchEvent(event, /*app_id=*/"", /*app_title=*/u"",
-                               /*match_score=*/1.0);
+                               /*match_score=*/1.0, search_result_type);
         run_loop.Quit();
       });
   test_structured_metrics_provider()->SetOnEventsRecordClosure(record_callback);
