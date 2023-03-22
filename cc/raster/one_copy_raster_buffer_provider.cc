@@ -292,8 +292,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::PlaybackAndCopyOnWorkerThread(
     uint64_t previous_content_id,
     uint64_t new_content_id) {
   std::unique_ptr<StagingBuffer> staging_buffer =
-      staging_pool_.AcquireStagingBuffer(
-          resource_size, format.resource_format(), previous_content_id);
+      staging_pool_.AcquireStagingBuffer(resource_size, format,
+                                         previous_content_id);
   DCHECK(staging_buffer->size.width() >= raster_full_rect.width() &&
          staging_buffer->size.height() >= raster_full_rect.height());
 
@@ -478,7 +478,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   }
 
   int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
-      rect_to_copy.width(), staging_buffer->format);
+      rect_to_copy.width(), staging_buffer->format.resource_format());
   int chunk_size_in_rows =
       std::max(1, max_bytes_per_copy_operation_ / bytes_per_row);
   // Align chunk size to 4. Required to support compressed texture formats.

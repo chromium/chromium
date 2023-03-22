@@ -21,6 +21,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -44,17 +45,17 @@ class RasterContextProvider;
 namespace cc {
 
 struct StagingBuffer {
-  StagingBuffer(const gfx::Size& size, viz::ResourceFormat format);
+  StagingBuffer(const gfx::Size& size, viz::SharedImageFormat format);
   ~StagingBuffer();
 
   void DestroyGLResources(gpu::raster::RasterInterface* gl,
                           gpu::SharedImageInterface* sii);
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                    viz::ResourceFormat dump_format,
+                    viz::SharedImageFormat dump_format,
                     bool is_free) const;
 
   const gfx::Size size;
-  const viz::ResourceFormat format;
+  const viz::SharedImageFormat format;
   base::TimeTicks last_usage;
 
   // The following fields are initialized by OneCopyRasterBufferProvider.
@@ -98,13 +99,13 @@ class CC_EXPORT StagingBufferPool final
 
   std::unique_ptr<StagingBuffer> AcquireStagingBuffer(
       const gfx::Size& size,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       uint64_t previous_content_id);
   void ReleaseStagingBuffer(std::unique_ptr<StagingBuffer> staging_buffer);
 
  private:
   void AddStagingBuffer(const StagingBuffer* staging_buffer,
-                        viz::ResourceFormat format)
+                        viz::SharedImageFormat format)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void RemoveStagingBuffer(const StagingBuffer* staging_buffer)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
