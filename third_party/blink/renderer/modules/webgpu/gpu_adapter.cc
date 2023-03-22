@@ -160,18 +160,22 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
   switch (status) {
     case WGPURequestDeviceStatus_Success: {
       DCHECK(dawn_device);
+
+      if (is_consumed_) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kInvalidStateError,
+            "The adapter is invalid because it has already been used to create "
+            "a device. NOTE: The behavior in this error case may change in a "
+            "future release."));
+        break;
+      }
+      is_consumed_ = true;
+
       ExecutionContext* execution_context =
           ExecutionContext::From(script_state);
-
       auto* device = MakeGarbageCollected<GPUDevice>(
           execution_context, GetDawnControlClient(), this, dawn_device,
           descriptor);
-      if (is_invalid_) {
-        GetProcs().deviceForceLoss(
-            device->GetHandle(), WGPUDeviceLostReason_Undefined,
-            "Cannot request device on invalidated adapter.");
-        FlushNow();
-      }
       resolver->Resolve(device);
 
       ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())

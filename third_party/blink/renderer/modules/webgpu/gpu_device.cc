@@ -313,8 +313,6 @@ void GPUDevice::OnDeviceLostError(WGPUDeviceLostReason reason,
     AddConsoleWarning(message);
   }
 
-  // Invalidate the adapter given that a device was lost.
-  adapter_->invalidate();
   if (lost_property_->GetState() == LostProperty::kPending) {
     auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
         reason, StringFromASCIIAndUTF8(message));

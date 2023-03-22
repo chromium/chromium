@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WebGPU GPUAdapter single-use test</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  'use strict';
+
+  promise_test(async t => {
+    const adapter = await navigator.gpu.requestAdapter();
+    assert_true(adapter !== null);
+
+    const device = await adapter.requestDevice();
+    assert_true(device !== null);
+
+    // requestDevice was successful, so should fail from here on.
+    try {
+      await adapter.requestDevice();
+      assert_unreached('second requestDevice should have rejected');
+    } catch (e) {
+      assert_equals(e.name, 'InvalidStateError');
+    }
+  }, 'invalid after successful requestDevice');
+
+  promise_test(async t => {
+    const adapter = await navigator.gpu.requestAdapter();
+    assert_true(adapter !== null);
+
+    try {
+      await adapter.requestDevice({
+        requiredLimits: { maxBindGroups: adapter.limits.maxBindGroups + 1 },
+      });
+      assert_unreached('invalid requestDevice should have rejected');
+    } catch (e) {
+      assert_equals(e.name, 'OperationError');
+    }
+
+    // requestDevice failed, so should still be able to succeed.
+    const device = await adapter.requestDevice();
+    assert_true(device !== null);
+  }, 'valid when called after unsuccessful requestDevice');
+
+  promise_test(async t => {
+    const adapter = await navigator.gpu.requestAdapter();
+    assert_true(adapter !== null);
+
+    adapter.requestDevice({
+      requiredLimits: { maxBindGroups: adapter.limits.maxBindGroups + 1 },
+    }).catch(() => {});
+
+    // requestDevice will fail, so this should still be able to succeed.
+    const device = await adapter.requestDevice();
+    assert_true(device !== null);
+  }, 'valid when overlapping with unsuccessful requestDevice');
+</script>
