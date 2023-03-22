@@ -31,6 +31,7 @@ class CONTENT_EXPORT PpapiPluginSandboxedProcessLauncherDelegate
 #if BUILDFLAG(IS_WIN)
   std::string GetSandboxTag() override;
   bool InitializeConfig(sandbox::TargetConfig* config) override;
+  bool AllowWindowsFontsDir() override;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)

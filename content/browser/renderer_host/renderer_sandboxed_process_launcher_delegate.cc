@@ -58,11 +58,15 @@ RendererSandboxedProcessLauncherDelegate::GetSandboxType() {
 RendererSandboxedProcessLauncherDelegateWin::
     RendererSandboxedProcessLauncherDelegateWin(
         const base::CommandLine& cmd_line,
+        bool is_pdf_renderer,
         bool is_jit_disabled)
     : renderer_code_integrity_enabled_(
           GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()),
       renderer_app_container_disabled_(
-          GetContentClient()->browser()->IsRendererAppContainerDisabled()) {
+          GetContentClient()->browser()->IsRendererAppContainerDisabled()),
+      is_pdf_renderer_(is_pdf_renderer) {
+  // PDF renderers must be jitless.
+  CHECK(!is_pdf_renderer || is_jit_disabled);
   if (is_jit_disabled) {
     dynamic_code_can_be_disabled_ = true;
     return;
@@ -83,11 +87,25 @@ RendererSandboxedProcessLauncherDelegateWin::
   }
 }
 
+bool RendererSandboxedProcessLauncherDelegateWin::AllowWindowsFontsDir() {
+  if (is_pdf_renderer_) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(
+      sandbox::policy::features::kWinSboxAllowSystemFonts);
+}
+
 std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {
-  // PDF renderers may have jit disabled while normal renderers will not.
-  return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
-      dynamic_code_can_be_disabled_ ? "renderer-jitless" : "renderer",
-      GetSandboxType());
+  if (is_pdf_renderer_) {
+    // All pdf renderers are jitless so only need one tag for these.
+    return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+        "renderer-pdfium", GetSandboxType());
+  } else {
+    // Some renderers can be jitless so need different tags.
+    return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+        dynamic_code_can_be_disabled_ ? "renderer-jitless" : "renderer",
+        GetSandboxType());
+  }
 }
 
 bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(

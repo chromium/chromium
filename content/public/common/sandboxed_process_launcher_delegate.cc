@@ -44,6 +44,10 @@ bool SandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
 bool SandboxedProcessLauncherDelegate::CetCompatible() {
   return true;
 }
+
+bool SandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
+  return false;
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)

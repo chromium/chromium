@@ -39,6 +39,7 @@ class UtilitySandboxedProcessLauncherDelegate
   bool InitializeConfig(sandbox::TargetConfig* config) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
+  bool AllowWindowsFontsDir() override;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)

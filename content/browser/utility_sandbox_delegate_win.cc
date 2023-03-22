@@ -390,4 +390,12 @@ bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
   return GetContentClient()->browser()->IsUtilityCetCompatible(
       utility_sub_type);
 }
+
+bool UtilitySandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
+  // New utilities should use a font proxy rather than allowing direct access.
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor) {
+    return true;
+  }
+  return false;
+}
 }  // namespace content

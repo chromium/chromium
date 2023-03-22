@@ -48,6 +48,10 @@ bool PpapiPluginSandboxedProcessLauncherDelegate::InitializeConfig(
 
   return true;
 }
+
+bool PpapiPluginSandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
+  return true;
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)

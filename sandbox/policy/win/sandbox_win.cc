@@ -163,34 +163,24 @@ BASE_FEATURE(kEnableCsrssLockdownFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !defined(NACL_WIN64)
-// Adds the policy rules for the path and path\ with the semantic |access|.
-// If |children| is set to true, we need to add the wildcard rules to also
-// apply the rule to the subfiles and subfolders.
-bool AddDirectory(int path,
-                  const wchar_t* sub_dir,
-                  bool children,
-                  Semantics access,
-                  TargetConfig* config) {
+// Adds the policy rules to allow read-only access to the windows system fonts
+// directory, and any subdirectories.
+bool AddWindowsFontsDir(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   base::FilePath directory;
-  if (!base::PathService::Get(path, &directory))
+  if (!base::PathService::Get(base::DIR_WINDOWS_FONTS, &directory)) {
     return false;
+  }
 
-  if (sub_dir)
-    directory = base::MakeAbsoluteFilePath(directory.Append(sub_dir));
-
-  ResultCode result;
-  result =
-      config->AddRule(SubSystem::kFiles, access, directory.value().c_str());
+  ResultCode result =
+      config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
+                      directory.value().c_str());
   if (result != SBOX_ALL_OK)
     return false;
 
-  std::wstring directory_str = directory.value() + L"\\";
-  if (children)
-    directory_str += L"*";
-  // Otherwise, add the version of the path that ends with a separator.
-
-  result = config->AddRule(SubSystem::kFiles, access, directory_str.c_str());
+  std::wstring directory_str = directory.value() + L"\\*";
+  result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
+                           directory_str.c_str());
   if (result != SBOX_ALL_OK)
     return false;
 
@@ -676,14 +666,8 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   }
 
 #if !defined(NACL_WIN64)
-  if (base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxAllowSystemFonts)) {
-    if (process_type == switches::kRendererProcess ||
-        process_type == switches::kPpapiPluginProcess ||
-        sandbox_type == Sandbox::kPrintCompositor) {
-      AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
-                   Semantics::kFilesAllowReadonly, config);
-    }
+  if (delegate->AllowWindowsFontsDir()) {
+    AddWindowsFontsDir(config);
   }
 #endif
 
