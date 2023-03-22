@@ -110,16 +110,20 @@ export class PowerBookmarkRowElement extends PolymerElement {
    * Dispatches a custom click event when the user clicks anywhere on the row.
    */
   private onRowClicked_(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.dispatchEvent(new CustomEvent('row-clicked', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        bookmark: this.bookmark,
-        event: event,
-      },
-    }));
+    // Ignore clicks on the row when it has an input, to ensure the row doesn't
+    // eat input clicks.
+    if (!this.hasInput) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.dispatchEvent(new CustomEvent('row-clicked', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          bookmark: this.bookmark,
+          event: event,
+        },
+      }));
+    }
   }
 
   /**
