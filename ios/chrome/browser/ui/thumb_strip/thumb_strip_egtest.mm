@@ -6,7 +6,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/common/features.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
@@ -52,8 +52,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kExpandedTabStrip);
-  config.features_disabled.push_back(
-      fullscreen::features::kSmoothScrollingDefault);
+  config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   return config;
 }
 

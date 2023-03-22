@@ -10,7 +10,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -244,8 +243,7 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  config.features_disabled.push_back(
-      fullscreen::features::kSmoothScrollingDefault);
+  config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   return config;
 }
 

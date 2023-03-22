@@ -93,7 +93,6 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/fullscreen/test:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

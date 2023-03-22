@@ -30,18 +30,6 @@ source_set("fullscreen") {
   ]
 }
 
-source_set("feature_flags") {
-  sources = [
-    "fullscreen_features.h",
-    "fullscreen_features.mm",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  deps = [ "//components/flags_ui" ]
-  public_deps = [ "//base" ]
-}
-
 source_set("coordinators") {
   sources = [
     "chrome_coordinator+fullscreen_disabling.h",
@@ -87,7 +75,6 @@ source_set("internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":feature_flags",
     ":ui",
     "//base",
     "//components/keyed_service/ios",
