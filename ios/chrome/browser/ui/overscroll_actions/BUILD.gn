@@ -13,9 +13,6 @@ source_set("overscroll_actions") {
     "overscroll_actions_view.mm",
   ]
   deps = [
-    "resources:ptr_close",
-    "resources:ptr_new_tab",
-    "resources:ptr_reload",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",

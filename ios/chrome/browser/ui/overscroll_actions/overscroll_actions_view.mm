@@ -27,11 +27,6 @@
 
 namespace {
 
-// Actions images.
-NSString* const kNewTabActionImage = @"ptr_new_tab";
-NSString* const kReloadActionImage = @"ptr_reload";
-NSString* const kCloseActionImage = @"ptr_close";
-
 // The size of overscroll symbol images.
 const CGFloat kOverScrollSymbolPointSize = 22.;
 
@@ -258,45 +253,23 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     [_selectionCircleCroppingLayer addSublayer:_selectionCircleLayer];
 
     _addTabActionImageView = [[UIImageView alloc] init];
-    if (UseSymbols()) {
-      _addTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
-          kPlusSymbol, kOverScrollSymbolPointSize);
-      _addTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-    } else {
-      _addTabActionImageView.image = [[UIImage imageNamed:kNewTabActionImage]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      _addTabActionImageView.tintColor =
-          [UIColor colorNamed:kToolbarButtonColor];
-    }
+    _addTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
+        kPlusSymbol, kOverScrollSymbolPointSize);
+    _addTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     [_addTabActionImageView sizeToFit];
     [self addSubview:_addTabActionImageView];
+
     _reloadActionImageView = [[UIImageView alloc] init];
-    if (UseSymbols()) {
-      _reloadActionImageView.image = CustomSymbolTemplateWithPointSize(
-          kArrowClockWiseSymbol, kOverScrollSymbolPointSize);
-      _reloadActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-    } else {
-      _reloadActionImageView.image = [[UIImage imageNamed:kReloadActionImage]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      _reloadActionImageView.tintColor =
-          [UIColor colorNamed:kToolbarButtonColor];
-    }
+    _reloadActionImageView.image = CustomSymbolTemplateWithPointSize(
+        kArrowClockWiseSymbol, kOverScrollSymbolPointSize);
+    _reloadActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     [_reloadActionImageView sizeToFit];
-    if (UseRTLLayout())
-      [_reloadActionImageView setTransform:CGAffineTransformMakeScale(-1, 1)];
     [self addSubview:_reloadActionImageView];
+
     _closeTabActionImageView = [[UIImageView alloc] init];
-    if (UseSymbols()) {
-      _closeTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
-          kXMarkSymbol, kOverScrollSymbolPointSize);
-      _closeTabActionImageView.tintColor =
-          [UIColor colorNamed:kTextPrimaryColor];
-    } else {
-      _closeTabActionImageView.image = [[UIImage imageNamed:kCloseActionImage]
-          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      _closeTabActionImageView.tintColor =
-          [UIColor colorNamed:kToolbarButtonColor];
-    }
+    _closeTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
+        kXMarkSymbol, kOverScrollSymbolPointSize);
+    _closeTabActionImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     [_closeTabActionImageView sizeToFit];
     [self addSubview:_closeTabActionImageView];
 
@@ -312,6 +285,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _addTabLabel.text =
         l10n_util::GetNSString(IDS_IOS_OVERSCROLL_NEW_TAB_LABEL);
     [self addSubview:_addTabLabel];
+
     _reloadLabel = [[UILabel alloc] init];
     _reloadLabel.numberOfLines = 0;
     _reloadLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -323,6 +297,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     _reloadLabel.textColor = [UIColor colorNamed:kToolbarButtonColor];
     _reloadLabel.text = l10n_util::GetNSString(IDS_IOS_OVERSCROLL_RELOAD_LABEL);
     [self addSubview:_reloadLabel];
+
     _closeTabLabel = [[UILabel alloc] init];
     _closeTabLabel.numberOfLines = 0;
     _closeTabLabel.lineBreakMode = NSLineBreakByWordWrapping;
