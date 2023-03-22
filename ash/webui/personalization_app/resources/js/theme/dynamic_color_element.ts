@@ -27,6 +27,7 @@ import {getTemplate} from './dynamic_color_element.html.js';
 import {initializeDynamicColorData, setColorSchemePref, setStaticColorPref} from './theme_controller.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 import {ThemeObserver} from './theme_observer.js';
+import {DEFAULT_COLOR_SCHEME, DEFAULT_STATIC_COLOR, isAutomaticSeedColorEnabled} from './utils.js';
 
 export interface DynamicColorElement {
   $: {
@@ -36,9 +37,6 @@ export interface DynamicColorElement {
     staticColorSelector: IronSelectorElement,
   };
 }
-
-const DEFAULT_STATIC_COLOR = hexColorToSkColor('#4285f4');
-const DEFAULT_COLOR_SCHEME = ColorScheme.kTonalSpot;
 
 export class DynamicColorElement extends WithPersonalizationStore {
   static get is() {
@@ -144,7 +142,7 @@ export class DynamicColorElement extends WithPersonalizationStore {
   }
 
   private isAutomaticSeedColorEnabled_(colorScheme: ColorScheme|null) {
-    return colorScheme === null || colorScheme !== ColorScheme.kStatic;
+    return isAutomaticSeedColorEnabled(colorScheme);
   }
 
   private getColorSchemeAriaChecked_(

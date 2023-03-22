@@ -2616,6 +2616,20 @@
           Zone <ph name="ZONE_NUMBER">$1<ex>1</ex></ph>
         </message>
 
+        <!-- Personalization App Time of Day strings -->
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_TITLE" desc="Title for the dialog confirming user's selection of a Time of Day wallpaper.">
+          Confirm preset
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONTENT" desc="Content for the dialog confirming user's selection of a Time of Day wallpaper.">
+          Selecting this wallpaper will turn on auto dark mode and wallpaper color matching.
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON" desc="Label for the button to close the dialog confirming user's selection of a Time of Day wallpaper.">
+          Back
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON" desc="Label for the button to accept the dialog confirming user's selection of a Time of Day wallpaper.">
+          Confirm
+        </message>
+
         <!-- Personalization App Search Results -->
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">
           Personalization

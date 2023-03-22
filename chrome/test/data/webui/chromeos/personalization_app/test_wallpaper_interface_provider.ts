@@ -65,6 +65,14 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
           {url: 'https://collections.googleusercontent.com/3'},
         ],
       },
+      {
+        description: '',
+        id: 'id_3',
+        name: 'time-of-day',
+        previews: [
+          {url: 'https://collections.googleusercontent.com/tod'},
+        ],
+      },
     ];
 
     /**
@@ -92,6 +100,34 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
         unitId: BigInt(1),
         type: OnlineImageType.kDark,
       },
+      {
+        assetId: BigInt(3),
+        attribution: ['Image 3'],
+        url: {url: 'https://images.googleusercontent.com/light-1'},
+        unitId: BigInt(3),
+        type: OnlineImageType.kLight,
+      },
+      {
+        assetId: BigInt(4),
+        attribution: ['Image 3'],
+        url: {url: 'https://images.googleusercontent.com/morning-1'},
+        unitId: BigInt(3),
+        type: OnlineImageType.kMorning,
+      },
+      {
+        assetId: BigInt(5),
+        attribution: ['Image 3'],
+        url: {url: 'https://images.googleusercontent.com/afternoon-1'},
+        unitId: BigInt(3),
+        type: OnlineImageType.kLateAfternoon,
+      },
+      {
+        assetId: BigInt(6),
+        attribution: ['Image 3'],
+        url: {url: 'https://images.googleusercontent.com/dark-1'},
+        unitId: BigInt(3),
+        type: OnlineImageType.kDark,
+      },
     ];
 
     this.localImages = [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}];
@@ -116,6 +152,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
     this.albumId = '';
 
     this.collectionId = this.collections_![0]!.id;
+    this.timeOfDayCollectionId = this.collections_![3]!.id;
   }
 
   private collections_: WallpaperCollection[]|null;
@@ -139,6 +176,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
   currentWallpaper: CurrentWallpaper;
   albumId: string;
   collectionId: string;
+  timeOfDayCollectionId: string;
   selectWallpaperResponse = true;
   selectGooglePhotosPhotoResponse = true;
   selectGooglePhotosAlbumResponse: SetDailyRefreshResponse = {
