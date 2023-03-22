@@ -317,9 +317,9 @@ scoped_refptr<SimpleFontData> FontCache::GetDWriteFallbackFamily(
 
     Bcp47Vector locales;
     locales.push_back(fallback_locale->LocaleForSkFontMgr());
-    SkTypeface* typeface = font_manager_->matchFamilyStyleCharacter(
+    sk_sp<SkTypeface> typeface(font_manager_->matchFamilyStyleCharacter(
         family_name.c_str(), font_description.SkiaFontStyle(), locales.data(),
-        locales.size(), codepoint);
+        locales.size(), codepoint));
 
     if (!typeface)
       return nullptr;
