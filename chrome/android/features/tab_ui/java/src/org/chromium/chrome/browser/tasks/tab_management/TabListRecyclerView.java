@@ -243,7 +243,7 @@ class TabListRecyclerView
         assert mFadeOutAnimator == null;
         mListener.startedShowing(animate);
 
-        long duration = TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
+        long duration = TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())
                 ? FINAL_FADE_IN_DURATION_MS
                 : BASE_ANIMATION_DURATION_MS;
 
@@ -272,7 +272,7 @@ class TabListRecyclerView
                     mDynamicView.dropCachedBitmap();
                 }
                 // TODO(crbug.com/972157): remove this band-aid after we know why GTS is invisible.
-                if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+                if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext())) {
                     ViewUtils.requestLayout(TabListRecyclerView.this,
                             "TabListRecyclerView.startShowing.AnimatorListenerAdapter.onAnimationEnd");
                 }

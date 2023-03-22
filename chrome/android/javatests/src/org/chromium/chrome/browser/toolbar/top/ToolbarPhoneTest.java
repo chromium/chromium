@@ -407,7 +407,9 @@ public class ToolbarPhoneTest {
             cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
         });
 
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+        boolean isTabToGtsAnimationEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta); });
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
         }
 
@@ -447,7 +449,9 @@ public class ToolbarPhoneTest {
             cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_button).performClick();
         });
 
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+        boolean isTabToGtsAnimationEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta); });
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
         }
 
@@ -486,7 +490,9 @@ public class ToolbarPhoneTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { tabSwitcherButton.performClick(); });
 
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+        boolean isTabToGtsAnimationEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta); });
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
         }
 
@@ -502,7 +508,8 @@ public class ToolbarPhoneTest {
             }
             return false;
         });
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertFalse(
                     "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
         }
@@ -539,7 +546,9 @@ public class ToolbarPhoneTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { tabSwitcherButton.performClick(); });
 
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+        boolean isTabToGtsAnimationEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta); });
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
         }
 
@@ -555,7 +564,8 @@ public class ToolbarPhoneTest {
             }
             return false;
         });
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertFalse(
                     "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
         }
@@ -592,7 +602,9 @@ public class ToolbarPhoneTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> { tabSwitcherButton.performClick(); });
 
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+        boolean isTabToGtsAnimationEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> { return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta); });
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
         }
 
@@ -610,7 +622,8 @@ public class ToolbarPhoneTest {
             }
             return false;
         });
-        if (TabUiFeatureUtilities.isTabToGtsAnimationEnabled()) {
+
+        if (isTabToGtsAnimationEnabled) {
             Assert.assertFalse(
                     "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
         }

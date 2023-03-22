@@ -210,10 +210,11 @@ public class TabUiFeatureUtilities {
     /**
      * @return Whether the Tab-to-Grid (and Grid-to-Tab) transition animation is enabled.
      */
-    public static boolean isTabToGtsAnimationEnabled() {
+    public static boolean isTabToGtsAnimationEnabled(Context context) {
         Log.d(TAG, "GTS.MinMemoryMB = " + ZOOMING_MIN_MEMORY.getValue());
         return ChromeFeatureList.sTabToGTSAnimation.isEnabled()
-                && SysUtils.amountOfPhysicalMemoryKB() / 1024 >= ZOOMING_MIN_MEMORY.getValue();
+                && SysUtils.amountOfPhysicalMemoryKB() / 1024 >= ZOOMING_MIN_MEMORY.getValue()
+                && !shouldUseListMode(context);
     }
 
     /**
