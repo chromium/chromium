@@ -4286,10 +4286,10 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
         Verify It's You…
       </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault key for passwords. [iOS only]">
-        To use and save passwords in your Google Account, verify it’s you.
+        To use and save passwords in your Google Account, verify it's you.
       </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_HAS_TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault recoverability degraded for passwords. [iOS only]">
-        To make sure you can always use your saved passwords, verify it's you.
+        To make sure you can always use the passwords in your Google Account, verify it's you.
       </message>
     </messages>
   </release>

@@ -51,67 +51,6 @@ enum InfobarSyncError : uint8_t {
   kMaxValue = SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED,
 };
 
-AccountErrorUIInfo* GetUIInfoForPassphraseError() {
-  AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
-       initWithErrorType:syncer::SyncService::UserActionableError::
-                             kNeedsPassphrase
-      userActionableType:AccountErrorUserActionableType::kEnterPassphrase
-               messageID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE
-           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON];
-
-  return errorInfo;
-}
-
-AccountErrorUIInfo* GetUIInfoForTrustedVaultKeyErrorForPasswords() {
-  AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
-       initWithErrorType:syncer::SyncService::UserActionableError::
-                             kNeedsTrustedVaultKeyForPasswords
-      userActionableType:AccountErrorUserActionableType::kReauthForFetchKeys
-               messageID:
-                   IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_PASSWORDS_MESSAGE
-           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON];
-  return errorInfo;
-}
-
-AccountErrorUIInfo* GetUIInfoForTrustedVaultKeyErrorForEverything() {
-  AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
-       initWithErrorType:syncer::SyncService::UserActionableError::
-                             kNeedsTrustedVaultKeyForEverything
-      userActionableType:AccountErrorUserActionableType::kReauthForFetchKeys
-               messageID:
-                   IDS_IOS_ACCOUNT_TABLE_ERROR_NEEDS_TRUSTED_VAULT_KEY_FOR_EVERYTHING_MESSAGE
-           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON];
-  return errorInfo;
-}
-
-AccountErrorUIInfo*
-GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForPasswords() {
-  AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
-       initWithErrorType:syncer::SyncService::UserActionableError::
-                             kTrustedVaultRecoverabilityDegradedForPasswords
-      userActionableType:AccountErrorUserActionableType::
-                             kReauthForDegradedRecoverability
-               messageID:
-                   IDS_IOS_ACCOUNT_TABLE_ERROR_HAS_TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_MESSAGE
-           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON];
-
-  return errorInfo;
-}
-
-AccountErrorUIInfo*
-GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything() {
-  AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
-       initWithErrorType:syncer::SyncService::UserActionableError::
-                             kTrustedVaultRecoverabilityDegradedForEverything
-      userActionableType:AccountErrorUserActionableType::
-                             kReauthForDegradedRecoverability
-               messageID:
-                   IDS_IOS_ACCOUNT_TABLE_ERROR_HAS_TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_MESSAGE
-           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON];
-
-  return errorInfo;
-}
-
 }  // namespace
 
 NSString* GetSyncErrorDescriptionForSyncService(
@@ -279,42 +218,4 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
   DCHECK(infoBarManager);
   return SyncErrorInfoBarDelegate::Create(infoBarManager, browser_state,
                                           presenter);
-}
-
-AccountErrorUIInfo* GetAccountErrorUIInfo(ChromeBrowserState* browserState) {
-  if (!base::FeatureList::IsEnabled(
-          syncer::kIndicateAccountStorageErrorInAccountCell)) {
-    return nil;
-  }
-
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  DCHECK(syncService);
-  if (syncService->IsSyncFeatureEnabled()) {
-    // Don't indicate account errors when Sync is enabled.
-    return nil;
-  }
-
-  switch (syncService->GetUserActionableError()) {
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      return GetUIInfoForPassphraseError();
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-      return GetUIInfoForTrustedVaultKeyErrorForPasswords();
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-      return GetUIInfoForTrustedVaultKeyErrorForEverything();
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-      return GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForPasswords();
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-      return GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything();
-    case syncer::SyncService::UserActionableError::kNone:
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
-      break;
-  }
-
-  return nil;
 }
