@@ -16,10 +16,12 @@
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/safe_ref.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
+#include "content/browser/renderer_host/batched_proxy_ipc_sender.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -35,6 +37,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
@@ -491,7 +494,12 @@ void FrameTree::CreateProxiesForSiteInstance(
     const scoped_refptr<BrowsingContextState>&
         source_new_browsing_context_state) {
   SiteInstanceGroup* group = site_instance->group();
-  // Create the RenderFrameProxyHost for the new SiteInstance.
+
+  // Will be instantiated and passed to `CreateRenderFrameProxy()` when
+  // `kConsolidatedIPCForProxyCreation` is enabled to batch create proxies
+  // for child frames.
+  std::unique_ptr<BatchedProxyIPCSender> batched_proxy_ipc_sender;
+
   if (!source || !source->IsMainFrame()) {
     RenderViewHostImpl* render_view_host = GetRenderViewHost(group).get();
     if (render_view_host) {
@@ -507,10 +515,34 @@ void FrameTree::CreateProxiesForSiteInstance(
       // in the right SiteInstance if it doesn't exist, before creating the
       // other proxies; if the `blink::WebView` doesn't exist, the only way to
       // do this is to also create a proxy for the main frame as well.
-      root()->render_manager()->CreateRenderFrameProxy(
-          site_instance,
+      const scoped_refptr<BrowsingContextState>& root_browsing_context_state =
           source ? source->parent()->GetMainFrame()->browsing_context_state()
-                 : root()->current_frame_host()->browsing_context_state());
+                 : root()->current_frame_host()->browsing_context_state();
+
+      // TODO(https://crbug.com/1393697): Batch main frame proxy creation and
+      // pass an instance of `BatchedProxyIPCSender` here instead of nullptr.
+      root()->render_manager()->CreateRenderFrameProxy(
+          site_instance, root_browsing_context_state,
+          /*batched_proxy_ipc_sender=*/nullptr);
+
+      // We only need to use `BatchedProxyIPCSender` when navigating to a new
+      // `SiteInstance`. Proxies do not need to be created when navigating to a
+      // `SiteInstance` that has already been encountered, because site
+      // isolation would guarantee that all nodes already have either proxies
+      // or real frames. Due to the check above, the `render_view_host` does
+      // not exist here, which means we have not seen this `SiteInstance`
+      // before, so we instantiate `batched_proxy_ipc_sender` to consolidate
+      // IPCs for proxy creation.
+      bool should_consolidate_ipcs =
+          base::FeatureList::IsEnabled(kConsolidatedIPCForProxyCreation);
+      if (should_consolidate_ipcs) {
+        base::SafeRef<RenderFrameProxyHost> root_proxy =
+            root_browsing_context_state
+                ->GetRenderFrameProxyHost(site_instance->group())
+                ->GetSafeRef();
+        batched_proxy_ipc_sender =
+            std::make_unique<BatchedProxyIPCSender>(std::move(root_proxy));
+      }
     }
   }
 
@@ -572,10 +604,14 @@ void FrameTree::CreateProxiesForSiteInstance(
       // |node|'s current BrowsingContextState.
       node->render_manager()->CreateRenderFrameProxy(
           site_instance,
-          node == source
-              ? source_new_browsing_context_state
-              : node->current_frame_host()->browsing_context_state());
+          node == source ? source_new_browsing_context_state
+                         : node->current_frame_host()->browsing_context_state(),
+          batched_proxy_ipc_sender.get());
     }
+  }
+
+  if (batched_proxy_ipc_sender) {
+    batched_proxy_ipc_sender->CreateAllProxies();
   }
 }
 

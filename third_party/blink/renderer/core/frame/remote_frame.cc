@@ -1095,4 +1095,9 @@ void RemoteFrame::CreateRemoteChild(
       std::move(remote_frame_interfaces));
 }
 
+void RemoteFrame::CreateRemoteChildren(
+    Vector<mojom::blink::CreateRemoteChildParamsPtr> params) {
+  Client()->CreateRemoteChildren(params);
+}
+
 }  // namespace blink

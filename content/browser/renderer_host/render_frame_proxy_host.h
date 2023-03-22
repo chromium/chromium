@@ -11,9 +11,13 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -44,9 +48,9 @@ class RenderFrameProxyHost;
 
 namespace content {
 
+class BatchedProxyIPCSender;
 class CrossProcessFrameConnector;
 class FrameTreeNode;
-class RenderProcessHost;
 class RenderViewHostImpl;
 class RenderWidgetHostViewChildFrame;
 class SiteInstanceGroup;
@@ -120,10 +124,16 @@ class CONTENT_EXPORT RenderFrameProxyHost
   RenderProcessHost* GetProcess() const { return process_; }
 
   // Initializes the object and creates the `blink::RemoteFrame` in the process
-  // for the SiteInstanceGroup.
-  bool InitRenderFrameProxy();
+  // for the `site_instance_group_`. If `batched_proxy_ipc_sender` is not null,
+  // then the proxy will not be created immediately. It will be batch created
+  // later.
+  bool InitRenderFrameProxy(
+      BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
   int GetRoutingID() const { return routing_id_; }
+  GlobalRoutingID GetGlobalID() const {
+    return GlobalRoutingID(GetProcess()->GetID(), routing_id_);
+  }
 
   // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a
   // placeholder for a frame in a different SiteInstanceGroup.
@@ -293,6 +303,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
+  base::SafeRef<RenderFrameProxyHost> GetSafeRef();
+
  private:
   // These interceptor need access to frame_host_receiver_for_testing().
   friend class RemoteFrameHostInterceptor;
@@ -368,6 +380,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // Tracks metrics related to postMessage usage.
   // TODO(crbug.com/1159586): Remove when no longer needed.
   blink::PostMessageCounter post_message_counter_;
+
+  base::WeakPtrFactory<RenderFrameProxyHost> weak_factory_{this};
 };
 
 }  // namespace content

@@ -3419,7 +3419,8 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
 
 void RenderFrameHostManager::CreateRenderFrameProxy(
     SiteInstanceImpl* instance,
-    const scoped_refptr<BrowsingContextState>& browsing_context_state) {
+    const scoped_refptr<BrowsingContextState>& browsing_context_state,
+    BatchedProxyIPCSender* batched_proxy_ipc_sender) {
   CHECK(instance);
   TRACE_EVENT_INSTANT("navigation",
                       "RenderFrameHostManager::CreateRenderFrameProxy",
@@ -3506,7 +3507,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
   if (frame_tree_node_->IsMainFrame() && proxy->GetRenderViewHost()) {
     InitRenderView(group, proxy->GetRenderViewHost(), proxy);
   } else {
-    proxy->InitRenderFrameProxy();
+    proxy->InitRenderFrameProxy(batched_proxy_ipc_sender);
   }
 }
 

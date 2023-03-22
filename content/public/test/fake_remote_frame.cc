@@ -105,4 +105,6 @@ void FakeRemoteFrame::CreateRemoteChild(
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces) {
 }
 
+void FakeRemoteFrame::CreateRemoteChildren(
+    std::vector<blink::mojom::CreateRemoteChildParamsPtr> params) {}
 }  // namespace content

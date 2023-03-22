@@ -99,6 +99,8 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       const base::UnguessableToken& devtools_frame_token,
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
       override;
+  void CreateRemoteChildren(
+      std::vector<blink::mojom::CreateRemoteChildParamsPtr> params) override;
 
  private:
   mojo::AssociatedReceiver<blink::mojom::RemoteFrame> receiver_{this};

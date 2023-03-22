@@ -1572,6 +1572,8 @@ source_set("browser") {
     "renderer_host/back_forward_cache_impl.h",
     "renderer_host/back_forward_cache_metrics.cc",
     "renderer_host/back_forward_cache_metrics.h",
+    "renderer_host/batched_proxy_ipc_sender.cc",
+    "renderer_host/batched_proxy_ipc_sender.h",
     "renderer_host/blocked_scheme_navigation_throttle.cc",
     "renderer_host/blocked_scheme_navigation_throttle.h",
     "renderer_host/browsing_context_group_swap.cc",

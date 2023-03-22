@@ -63,6 +63,22 @@ struct RemoteFrameInterfacesFromBrowser {
   pending_associated_remote<blink.mojom.RemoteFrameHost> frame_host;
 };
 
+// An internal node in a tree that has the same structure as a `FrameTree` on
+// the host side. Contains all the parameters needed to create a `RemoteFrame`
+// for that node.
+struct CreateRemoteChildParams {
+  blink.mojom.RemoteFrameToken token;
+  blink.mojom.FrameToken? opener_frame_token;
+  blink.mojom.TreeScopeType tree_scope_type;
+  blink.mojom.FrameReplicationState replication_state;
+  blink.mojom.FrameOwnerProperties owner_properties;
+  bool is_loading;
+  mojo_base.mojom.UnguessableToken devtools_frame_token;
+  blink.mojom.RemoteFrameInterfacesFromBrowser frame_interfaces;
+
+  array<CreateRemoteChildParams> child_params;
+};
+
 // This struct holds parameters included in the OpenURL method sent by the
 // renderer to the browser, |is_history_navigation_in_new_child_frame| is true
 // in the case that the browser process should look for an existing history item
@@ -421,6 +437,13 @@ interface RemoteFrame {
                    bool is_loading,
                    mojo_base.mojom.UnguessableToken devtools_frame_token,
                    RemoteFrameInterfacesFromBrowser remote_frame_interfaces);
+
+  // Creates a `RemoteFrame` for each node in `params`. The resulting tree of
+  // `RemoteFrame`s has the same structure as `params`, with this `RemoteFrame`
+  // at the root (see https://crbug.com/1393697).
+  //
+  // `params`: An array of the root's immediate children.
+  CreateRemoteChildren(array<CreateRemoteChildParams> params);
 };
 
 // Implemented in Blink, this interface defines remote main-frame-specific

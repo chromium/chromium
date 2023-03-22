@@ -45,6 +45,7 @@ struct FramePolicy;
 }  // namespace blink
 
 namespace content {
+class BatchedProxyIPCSender;
 class FrameTree;
 class FrameTreeNode;
 class NavigationControllerImpl;
@@ -346,12 +347,21 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool for_early_commit,
       const scoped_refptr<BrowsingContextState>& browsing_context_state);
 
-  // Helper method to create and initialize a RenderFrameProxyHost.
-  // |browsing_context_state| is the BrowsingContextState in which the newly
-  // created RenderFrameProxyHost will be stored.
+  // Helper method to create and initialize a `RenderFrameProxyHost`.
+  // `browsing_context_state` is the `BrowsingContextState` in which the newly
+  // created `RenderFrameProxyHost` will be stored. If
+  // `batched_proxy_ipc_sender` is not null, then proxy creation will be
+  // delayed, and batched created later when
+  // `BatchedProxyIPCSender::CreateAllProxies()` is called. The only
+  // case where `batched_proxy_ipc_sender` is not null is when called by
+  // `FrameTree::CreateProxiesForSiteInstance()` in addition to
+  // `kConsolidatedIPCForProxyCreation` being enabled.
+  // TODO(peilinwang): consider refactoring this into 2 code paths if
+  // experiment shows promising results (https://crbug.com/1393697).
   void CreateRenderFrameProxy(
       SiteInstanceImpl* instance,
-      const scoped_refptr<BrowsingContextState>& browsing_context_state);
+      const scoped_refptr<BrowsingContextState>& browsing_context_state,
+      BatchedProxyIPCSender* batched_proxy_ipc_sender = nullptr);
 
   // Creates proxies for a new child frame at FrameTreeNode |child| in all
   // SiteInstances for which the current frame has proxies.  This method is

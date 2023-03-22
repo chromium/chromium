@@ -29,6 +29,11 @@ BASE_DECLARE_FEATURE(kOnShowWithPageVisibility);
 BASE_DECLARE_FEATURE(kOptimizeImmHideCalls);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// When enabled, when creating new proxies for all nodes in a `FrameTree`, one
+// IPC is sent to create all child frame proxies instead of sending one IPC per
+// proxy.
+BASE_DECLARE_FEATURE(kConsolidatedIPCForProxyCreation);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
 
 // When enabled, queues navigations instead of cancelling the previous

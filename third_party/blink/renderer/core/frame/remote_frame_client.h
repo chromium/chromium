@@ -38,6 +38,15 @@ class RemoteFrameClient : public FrameClient {
       const base::UnguessableToken& devtools_frame_token,
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr
           remote_frame_interfaces) = 0;
+
+  // Creates a `RemoteFrame` for each node in `params`. The resulting tree of
+  // `RemoteFrames` has the same structure as `params`, with this `RemoteFrame`
+  // at the root. This needs to be a client API so that the appropriate
+  // `WebRemoteFrameImpl` is created first before the core frame. In the future
+  // we should only create a `WebRemoteFrame` when we pass a `RemoteFrame`
+  // handle outside of blink.
+  virtual void CreateRemoteChildren(
+      const Vector<mojom::blink::CreateRemoteChildParamsPtr>& params) = 0;
 };
 
 }  // namespace blink

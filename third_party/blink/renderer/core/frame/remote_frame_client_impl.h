@@ -33,10 +33,23 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces)
       override;
   unsigned BackForwardLength() override;
+  void CreateRemoteChildren(
+      const Vector<mojom::blink::CreateRemoteChildParamsPtr>& params) override;
 
   WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
 
  private:
+  WebRemoteFrameImpl* CreateRemoteChildImpl(
+      const RemoteFrameToken& token,
+      const absl::optional<FrameToken>& opener_frame_token,
+      mojom::blink::TreeScopeType tree_scope_type,
+      mojom::blink::FrameReplicationStatePtr replication_state,
+      mojom::blink::FrameOwnerPropertiesPtr owner_properties,
+      bool is_loading,
+      const base::UnguessableToken& devtools_frame_token,
+      mojom::blink::RemoteFrameInterfacesFromBrowserPtr
+          remote_frame_interfaces);
+
   Member<WebRemoteFrameImpl> web_frame_;
 };
 
