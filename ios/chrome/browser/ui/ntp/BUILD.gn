@@ -146,19 +146,6 @@ source_set("coordinator") {
   ]
 }
 
-source_set("util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "new_tab_page_util.h",
-    "new_tab_page_util.mm",
-  ]
-  deps = [
-    "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/url:constants",
-    "//ios/web/public",
-  ]
-}
-
 source_set("field_trial") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

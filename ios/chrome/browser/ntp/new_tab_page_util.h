@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_UTIL_H_
-#define IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_UTIL_H_
+#define IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_UTIL_H_
 
 class GURL;
 
@@ -21,4 +21,4 @@ bool IsVisibleURLNewTabPage(web::WebState* web_state);
 // and has no navigation history.
 bool IsNTPWithoutHistory(web::WebState* web_state);
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_UTIL_H_

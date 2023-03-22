@@ -20,11 +20,11 @@ source_set("tab_context_menu") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/menu:tab_context_menu_delegate",
-    "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/web/public",
   ]

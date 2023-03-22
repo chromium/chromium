@@ -30,6 +30,19 @@ source_set("ntp") {
   ]
 }
 
+source_set("util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "new_tab_page_util.h",
+    "new_tab_page_util.mm",
+  ]
+  deps = [
+    ":ntp",
+    "//ios/chrome/browser/url:constants",
+    "//ios/web/public",
+  ]
+}
+
 source_set("features") {
   sources = [
     "features.h",

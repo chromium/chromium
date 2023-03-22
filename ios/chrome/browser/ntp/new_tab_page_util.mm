@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/ntp/new_tab_page_util.h"
 
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
