@@ -1918,46 +1918,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ManageSpace.ActionTaken"
-    enum="AndroidManageSpaceButton" expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Recorded when the user presses a button in the 'Manage Space' screen for
-    Chrome. Note: the 'Clear App Data' option is likely incorrect, as the result
-    of that button disables UMA recording (as we factory reset the app).
-  </summary>
-</histogram>
-
-<histogram name="Android.ManageSpace.ClearUnimportantTime" units="ms"
-    expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Records the time it takes to delete all unimportant sites when the user
-    initiates the 'Clear Unimportant Sites' action in the 'Manage Space' screen
-    for Chrome.
-  </summary>
-</histogram>
-
-<histogram name="Android.ManageSpace.TotalDiskUsageMB" units="MB"
-    expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Recorded when the user opens the 'Manage Space' screen for Chrome, after the
-    disk usage is calculated. The disk usage value represents the accumulated
-    disk usage by websites.
-  </summary>
-</histogram>
-
-<histogram name="Android.ManageSpace.UnimportantDiskUsageMB" units="MB"
-    expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
-  <summary>
-    Recorded when the user opens the 'Manage Space' screen for Chrome, after the
-    disk usage is calculated. The disk usage value represents the accumulated
-    disk usage by websites that are not considered 'important'.
-  </summary>
-</histogram>
-
 <histogram name="Android.MediaPickerShown" enum="MediaPickerShown"
     expires_after="2023-08-08">
   <owner>finnur@chromium.org</owner>

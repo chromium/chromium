@@ -2383,12 +2383,6 @@ Unknown properties are collapsed to zero. -->
   <int value="327695" label="5.15"/>
 </enum>
 
-<enum name="AndroidManageSpaceButton">
-  <int value="0" label="Clear Unimportant Storage"/>
-  <int value="1" label="Manage Site Storage"/>
-  <int value="2" label="Clear App Data"/>
-</enum>
-
 <enum name="AndroidMemoryNotificationBackground">
   <obsolete>
     Deprecated as of 04/2018 (M67).
