@@ -25,7 +25,6 @@ import org.chromium.base.jank_tracker.JankMetricUMARecorderJni;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -126,39 +125,59 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(() -> chromeActivityTestRule.loadUrl(url));
     }
 
-    private void assertHistogramsRecorded(int expectedCount, String histogramSuffix) {
-        Assert.assertEquals(expectedCount,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        FIRST_COMMIT_HISTOGRAM + histogramSuffix));
-        Assert.assertEquals(expectedCount,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix));
-        if (histogramSuffix.equals(TABBED_SUFFIX)) {
-            Assert.assertEquals(expectedCount,
-                    RecordHistogram.getHistogramTotalCountForTesting(
-                            FIRST_VISIBLE_CONTENT_HISTOGRAM));
-            Assert.assertEquals(expectedCount,
-                    RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM));
-            Assert.assertEquals(expectedCount,
-                    RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
+    private void assertOnePreForegroundSample(int sample) {
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, sample));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, sample == 1 ? 0 : 1));
+    }
+
+    private void assertHistogramsRecordedAsExpected(int expectedCount, String histogramSuffix) {
+        boolean isTabbedSuffix = histogramSuffix.equals(TABBED_SUFFIX);
+
+        // Check that the new first navigation commit is always recorded for the tabbed activity.
+        Assert.assertEquals(isTabbedSuffix ? expectedCount : 0,
+                RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
+
+        int firstCommitSamples = RecordHistogram.getHistogramTotalCountForTesting(
+                FIRST_COMMIT_HISTOGRAM + histogramSuffix);
+        Assert.assertTrue(firstCommitSamples < 2);
+
+        int firstContentfulPaintSamples = RecordHistogram.getHistogramTotalCountForTesting(
+                FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix);
+        Assert.assertTrue(firstContentfulPaintSamples < 2);
+
+        int visibleContentSamples =
+                RecordHistogram.getHistogramTotalCountForTesting(VISIBLE_CONTENT_HISTOGRAM);
+        Assert.assertTrue(visibleContentSamples < 2);
+
+        if (expectedCount == 1 && firstCommitSamples == 0) {
+            // The legacy version of the first navigation commit metric is racy. The sample is lost
+            // if the commit happens before the post-native initialization: crbug.com/1273097.
+            assertOnePreForegroundSample(1);
+            // The startup FCP and 'visible content' also record their samples depending on how fast
+            // they happen in relation to the post-native initialization.
+            Assert.assertTrue(firstCommitSamples <= firstContentfulPaintSamples);
+            Assert.assertTrue(firstCommitSamples <= visibleContentSamples);
+        } else {
+            if (expectedCount != 0) assertOnePreForegroundSample(0);
+            // Once the racy commit case is excluded, the histograms should record the expected
+            // number of samples.
+            Assert.assertEquals(expectedCount, firstCommitSamples);
+            Assert.assertEquals(expectedCount, firstContentfulPaintSamples);
+            if (isTabbedSuffix) {
+                Assert.assertEquals(expectedCount, visibleContentSamples);
+            }
         }
 
-        if (expectedCount > 0) {
-            // If the first nav commit was recorded, it should have also been registered as having
-            // occurred post-foregrounding (since otherwise it would not have been recorded).
-            Assert.assertEquals(expectedCount,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 0));
-            Assert.assertEquals(0,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
-        } else {
-            // Note that the first commit might or might not have occurred in this case depending on
-            // the test. However, if it occurred it must have occurred pre-foregrounding (since
-            // otherwise the core metric would have been recorded).
-            Assert.assertEquals(0,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 0));
+        if (isTabbedSuffix) {
+            // These tests only exercise the cases when the first visible content is calculated as
+            // the first navigation commit.
+            Assert.assertEquals(firstCommitSamples,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            FIRST_VISIBLE_CONTENT_HISTOGRAM));
         }
     }
 
@@ -170,24 +189,25 @@ public class StartupLoadingMetricsTest {
     public void testWebApkStartRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mWebApkActivityTestRule.startWebApkActivity(mTestPage));
-        assertHistogramsRecorded(1, WEB_APK_SUFFIX);
+        assertHistogramsRecordedAsExpected(1, WEB_APK_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(1, WEB_APK_SUFFIX);
+        assertHistogramsRecordedAsExpected(1, WEB_APK_SUFFIX);
     }
 
     /**
      * Tests that the startup loading histograms are recorded in case of intent coming from an
-     * external app.
+     * external app. Also checks that they are recorded only once.
      */
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1023433")
     public void testFromExternalAppRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityFromExternalApp(mTestPage, null));
-        assertHistogramsRecorded(1, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(1, TABBED_SUFFIX);
+
+        // Check that no new histograms were recorded on the second navigation.
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(1, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(1, TABBED_SUFFIX);
     }
 
     /**
@@ -198,9 +218,9 @@ public class StartupLoadingMetricsTest {
     public void testNTPNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
     /**
@@ -212,9 +232,9 @@ public class StartupLoadingMetricsTest {
     public void testBlankPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityOnBlankPage());
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
     /**
@@ -226,9 +246,9 @@ public class StartupLoadingMetricsTest {
     public void testErrorPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(mErrorPage));
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
     /**
@@ -240,9 +260,9 @@ public class StartupLoadingMetricsTest {
     public void testWebApkErrorPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mWebApkActivityTestRule.startWebApkActivity(mErrorPage));
-        assertHistogramsRecorded(0, WEB_APK_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, WEB_APK_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, mTestPage2);
-        assertHistogramsRecorded(0, WEB_APK_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, WEB_APK_SUFFIX);
     }
 
     /**
@@ -274,13 +294,13 @@ public class StartupLoadingMetricsTest {
             Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
             ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
         });
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
         runAndWaitForPageLoadMetricsRecorded(() -> {
             // Put Chrome in foreground before loading a new page.
             ChromeApplicationTestUtils.launchChrome(InstrumentationRegistry.getTargetContext());
             mTabbedActivityTestRule.loadUrl(mTestPage);
         });
-        assertHistogramsRecorded(0, TABBED_SUFFIX);
+        assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
     }
 
     @Test
