@@ -43,9 +43,15 @@ class ProfilePicker {
     // (closed the browser app).
     kQuitAtEnd = 2,
 
+    // The user opens the first run again while it's still running.
+    kAbortTask = 3,
+
+    // The user does something that bypasses the FRE (opens new window etc..).
+    kAbandonedFlow = 4,
+
     // Add any new values above this one, and update kMaxValue to the highest
     // enumerator value.
-    kMaxValue = kQuitAtEnd
+    kMaxValue = kAbandonedFlow
   };
   using FirstRunExitedCallback =
       base::OnceCallback<void(FirstRunExitStatus status)>;

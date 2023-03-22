@@ -27,14 +27,15 @@ sequenceDiagram
     activate FRS
     Caller->>FRS: OpenIfNeeded()<br/>with a ResumeTaskCallback<br/>aka void(bool success) callback
     deactivate Caller
-    note right of FRS: wraps ResumeTaskCallback as<br/>first_run_exited_callback having the<br/>signature void(FirstRunExitStatus)
+    note right of FRS: stores the ResumeTaskCallback and sends<br/> a first_run_exited_callback which is bound to <br/>OnFirstRunHasExited having the signature<br/>void(FirstRunExitStatus)
     FRS->>+PPV: ProfilePicker::Show()<br/>with first_run_exited_callback
     PPV->>+FC: Init()
     Note right of FC: FRE displayed,<br/>user advances through the flow.
 
     alt flow completed
       User->>FC: completes the flow
-      FC->>FRS: in PreFinishWithBrowser: run resume_task_callback with a<br/>success boolean based on the status
+      FC->>FRS: in PreFinishWithBrowser: run first_run_exited_callback with a<br/>success boolean based on the status
+      Note right of FRS: Handles the exit based on <br/>the status that is passed
       FRS->>+Caller: run ResumeTaskCallback<br/>with success=true
       Caller->>+Browser: launch browser
       deactivate Caller
@@ -52,6 +53,14 @@ sequenceDiagram
       deactivate PPV
       FRS->>+Caller: run ResumeTaskCallback<br/>with success=false
       deactivate Caller
+    else chrome opened while first run is running
+      User->>+Caller: Open Chrome while the first run is still running
+      Caller->>FRS: OpenIfNeeded()<br/>with a ResumeTaskCallback<br/>aka void(bool success) callback
+      deactivate Caller
+      FRS->>+Caller: The first_run_exited_callback<br/>that was passed in the previous call to<br/>OpenIfNeeded() runs ResumeTaskCallback<br/> with success=false
+      deactivate Caller
+      FRS->>PPV: ProfilePicker::Show()<br/>with first_run_exited_callback
+      Note right of PPV: Opens the profile picker<br/> that has the first run already running.
     end
 
     deactivate FRS

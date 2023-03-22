@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
@@ -100,6 +101,9 @@ class FirstRunService : public KeyedService {
   void OpenFirstRunIfNeeded(EntryPoint entry_point,
                             ResumeTaskCallback callback);
 
+  // Terminates the first run without re-opening a browser window.
+  void FinishFirstRunWithoutResumeTask();
+
  private:
   friend class FirstRunServiceFactory;
   FRIEND_TEST_ALL_PREFIXES(FirstRunFieldTrialCreatorTest, SetUpFromClientSide);
@@ -138,8 +142,10 @@ class FirstRunService : public KeyedService {
   // The finished state can be checked by calling `ShouldOpenFirstRun()`.
   void TryMarkFirstRunAlreadyFinished(base::OnceClosure callback);
 
-  void OpenFirstRunInternal(EntryPoint entry_point,
-                            ResumeTaskCallback callback);
+  void OpenFirstRunInternal(EntryPoint entry_point);
+
+  // Processes the outcome from the FRE and resumes the user's interrupted task.
+  void OnFirstRunHasExited(ProfilePicker::FirstRunExitStatus status);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void StartSilentSync(base::OnceClosure callback);
@@ -153,6 +159,7 @@ class FirstRunService : public KeyedService {
   std::unique_ptr<SilentSyncEnabler> silent_sync_enabler_;
 #endif
 
+  ResumeTaskCallback resume_task_callback_;
   base::WeakPtrFactory<FirstRunService> weak_ptr_factory_{this};
 };
 
