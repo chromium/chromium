@@ -4810,6 +4810,9 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/pixel_tests.filter',
           '--test-launcher-jobs=1',
         ],
+        'swarming': {
+          'shards': 3,
+        },
         'test': 'browser_tests',
         'mixins': [
           'skia_gold_test',
