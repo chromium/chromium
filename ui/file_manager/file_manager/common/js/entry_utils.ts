@@ -65,7 +65,7 @@ export function isMyFilesEntry(entry: Entry|FilesAppEntry|
     return true;
   }
   if (isVolumeEntry(entry) &&
-      entry.rootType === VolumeManagerCommon.RootType.DOWNLOADS) {
+      entry.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
     return true;
   }
 

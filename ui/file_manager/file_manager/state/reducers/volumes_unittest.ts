@@ -294,11 +294,13 @@ export async function testAddVolumeForMultipleUsbPartitionsGrouping(
       [partition1VolumeEntry.toURL()]: {
         ...partition1FileData,
         icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+        isEjectable: false,
       },
       // Partition-2 volume.
       [partition2VolumeEntry.toURL()]: {
         ...convertEntryToFileData(partition2VolumeEntry),
         icon: constants.ICON_TYPES.UNKNOWN_REMOVABLE,
+        isEjectable: false,
       },
       // My Files entry list.
       [myFilesFileData.entry.toURL()]: myFilesFileData,

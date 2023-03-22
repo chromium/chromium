@@ -44,14 +44,14 @@ export function addUiEntry(
       // Push the new entry to the children of FileData and sort them.
       const fileData = getFileData(currentState, myFilesEntry.toURL());
       if (fileData) {
-        fileData.children.push(entry.toURL());
-        const childEntries = fileData.children.map(
-            childKey => getEntry(currentState, childKey)!);
-        const newChildren =
+        const newChildren = fileData.children.concat(entry.toURL());
+        const childEntries =
+            newChildren.map(childKey => getEntry(currentState, childKey)!);
+        const sortedChildren =
             sortEntries(myFilesEntry, childEntries).map(entry => entry.toURL());
         currentState.allEntries[myFilesEntry.toURL()] = {
           ...fileData,
-          children: newChildren,
+          children: sortedChildren,
         };
       }
     }
@@ -92,7 +92,7 @@ export function removeUiEntry(
       if (fileData) {
         currentState.allEntries[myFilesEntry.toURL()] = {
           ...fileData,
-          children: (fileData.children || []).filter(child => child !== key),
+          children: fileData.children.filter(child => child !== key),
         };
       }
     }

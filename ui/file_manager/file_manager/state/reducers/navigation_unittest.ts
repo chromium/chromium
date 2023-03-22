@@ -569,7 +569,7 @@ export async function testMultipleUsbPartitionsGrouping(done: () => void) {
     {
       key: myFilesEntryListKey,
       section: NavigationSection.MY_FILES,
-      separator: true,
+      separator: false,
       type: NavigationType.ENTRY_LIST,
     },
     // parent entry for all removable partitions.
@@ -619,7 +619,7 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
     {
       key: myFilesEntryListKey,
       section: NavigationSection.MY_FILES,
-      separator: true,
+      separator: false,
       type: NavigationType.ENTRY_LIST,
     },
     // volume1.

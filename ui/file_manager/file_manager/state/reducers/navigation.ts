@@ -108,7 +108,8 @@ export function refreshNavigationRoots(
   roots.push({
     key: myFilesEntry.toURL(),
     section: NavigationSection.MY_FILES,
-    separator: true,
+    // Only show separator if this is not the first navigation item.
+    separator: processedEntryKeys.size > 0,
     type: myFilesVolume ? NavigationType.VOLUME : NavigationType.ENTRY_LIST,
   });
   processedEntryKeys.add(myFilesEntry.toURL());
@@ -149,7 +150,6 @@ export function refreshNavigationRoots(
     [VolumeType.MTP]: 6,
   };
   // Filter volumes based on the volumeInfoList in volumeManager.
-  // TODO: get volume manger properly.
   const {volumeManager} = window.fileManager;
   const filteredVolumeIds = new Set<VolumeId>();
   for (let i = 0; i < volumeManager.volumeInfoList.length; i++) {
