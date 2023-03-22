@@ -36,6 +36,7 @@ namespace {
 
 // The directory that the support packets will be stored.
 constexpr char kTargetDir[] = "/var/spool/support";
+constexpr char kFilenamePrefix[] = "admin-generated";
 
 // JSON keys used in the remote command payload.
 constexpr char kSupportPacketDetailsKey[] = "supportPacketDetails";
@@ -279,11 +280,9 @@ void DeviceCommandFetchSupportPacketJob::OnDataCollected(
                   << ErrorsToString(errors);
   }
 
-  // TODO(iremuguz): Update GetDefaultFileToExport function to get the filename
-  // prefix as parameter. We'll want a filename in "admin-generated_<case
-  // id>_<timestamp>" format.
-  base::FilePath target_file = GetDefaultFileToExport(
-      target_dir_, support_tool_handler_->GetCaseId(), base::Time::Now());
+  base::FilePath target_file = GetFilepathToExport(
+      target_dir_, kFilenamePrefix, support_tool_handler_->GetCaseId(),
+      base::Time::Now());
 
   support_tool_handler_->ExportCollectedData(
       support_packet_details_.requested_pii_types, target_file,

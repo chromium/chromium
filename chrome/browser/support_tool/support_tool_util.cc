@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
@@ -81,6 +83,14 @@ constexpr support_tool::DataCollectorType kDataCollectorsChromeosHwDetails[] = {
 // logs for Lacros.
 constexpr support_tool::DataCollectorType kOptionalDataCollectors[] = {
     support_tool::CHROMEOS_CROS_API, support_tool::CHROMEOS_LACROS};
+
+// Returns the current time in YYYY_MM_DD_HH_mm format.
+std::string GetTimestampString(base::Time timestamp) {
+  base::Time::Exploded tex;
+  timestamp.UTCExplode(&tex);
+  return base::StringPrintf("%04d_%02d_%02d_%02d_%02d", tex.year, tex.month,
+                            tex.day_of_month, tex.hour, tex.minute);
+}
 
 }  // namespace
 
@@ -287,4 +297,18 @@ GetAllAvailableDataCollectorsOnDevice() {
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return data_collectors;
+}
+
+base::FilePath GetFilepathToExport(base::FilePath target_directory,
+                                   const std::string& filename_prefix,
+                                   const std::string& case_id,
+                                   base::Time timestamp) {
+  std::string timestamp_string = GetTimestampString(timestamp);
+  std::string filename =
+      case_id.empty()
+          ? base::StringPrintf("%s_%s", filename_prefix.c_str(),
+                               timestamp_string.c_str())
+          : base::StringPrintf("%s_%s_%s", filename_prefix.c_str(),
+                               case_id.c_str(), timestamp_string.c_str());
+  return target_directory.AppendASCII(filename);
 }

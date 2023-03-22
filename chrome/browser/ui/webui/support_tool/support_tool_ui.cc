@@ -49,6 +49,9 @@
 
 namespace {
 
+// The filename prefix for the file to export the generated file.
+constexpr char kFilenamePrefix[] = "support_packet";
+
 void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISupportToolHost);
@@ -340,8 +343,9 @@ void SupportToolMessageHandler::HandleStartDataExport(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE,
       /*title=*/std::u16string(),
       /*default_path=*/
-      GetDefaultFileToExport(suggested_path, handler_->GetCaseId(),
-                             handler_->GetDataCollectionTimestamp()),
+      GetFilepathToExport(suggested_path, kFilenamePrefix,
+                          handler_->GetCaseId(),
+                          handler_->GetDataCollectionTimestamp()),
       /*file_types=*/&file_types,
       /*file_type_index=*/0,
       /*default_extension=*/base::FilePath::StringType(), owning_window,

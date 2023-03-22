@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
@@ -115,10 +114,6 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
 // }
 base::Value::Dict GetStartDataCollectionResult(bool success,
                                                std::string error_message);
-
-base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,
-                                      const std::string& case_id,
-                                      base::Time timestamp);
 
 // Generates a customized chrome://support-tool URL from given `case_id` and
 // `data_collector_items` and returns the result in a format Support Tool UI

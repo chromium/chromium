@@ -12,11 +12,8 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
@@ -200,14 +197,6 @@ base::Value::Dict GetDataCollectorItemForType(
   return dict;
 }
 
-// Returns the current time in YYYY_MM_DD_HH_mm format.
-std::string GetTimestampString(base::Time timestamp) {
-  base::Time::Exploded tex;
-  timestamp.LocalExplode(&tex);
-  return base::StringPrintf("%04d_%02d_%02d_%02d_%02d", tex.year, tex.month,
-                            tex.day_of_month, tex.hour, tex.minute);
-}
-
 std::string GetDataCollectionModuleQuery(
     std::set<support_tool::DataCollectorType> included_data_collectors) {
   support_tool::DataCollectionModule module;
@@ -349,18 +338,6 @@ base::Value::Dict GetStartDataCollectionResult(bool success,
   result.Set("success", success);
   result.Set("errorMessage", error_message);
   return result;
-}
-
-base::FilePath GetDefaultFileToExport(base::FilePath suggested_path,
-                                      const std::string& case_id,
-                                      base::Time timestamp) {
-  std::string timestamp_string = GetTimestampString(timestamp);
-  std::string filename =
-      case_id.empty()
-          ? base::StringPrintf("support_packet_%s", timestamp_string.c_str())
-          : base::StringPrintf("support_packet_%s_%s", case_id.c_str(),
-                               timestamp_string.c_str());
-  return suggested_path.AppendASCII(filename);
 }
 
 base::Value::Dict GenerateCustomizedURL(
