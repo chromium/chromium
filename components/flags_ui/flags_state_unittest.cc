@@ -16,6 +16,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -406,7 +407,7 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersNonDefault) {
                                                       feature_list.get());
 
   // Set the feature_list as the main instance so that
-  // variations::GetVariationParamValueByFeature below works.
+  // base::GetFieldTrialParamValueByFeature below works.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -415,8 +416,8 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersNonDefault) {
             variations::GetVariationParamValue(kTestTrial, kTestParam1));
 
   // The value should be associated also via the name of the feature.
-  EXPECT_EQ(kTestParamValue, variations::GetVariationParamValueByFeature(
-                                 kTestFeature1, kTestParam1));
+  EXPECT_EQ(kTestParamValue,
+            base::GetFieldTrialParamValueByFeature(kTestFeature1, kTestParam1));
 }
 
 TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersWithDefaultTrials) {
@@ -433,16 +434,16 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersWithDefaultTrials) {
                                                       feature_list.get());
 
   // Set the feature_list as the main instance so that
-  // variations::GetVariationParamValueByFeature below works.
+  // base::GetFieldTrialParamValueByFeature below works.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
   // The params should have the values predefined in these variations
   // (accessible via the names of the features).
-  EXPECT_EQ(kTestParamValue, variations::GetVariationParamValueByFeature(
-                                 kTestFeature1, kTestParam1));
-  EXPECT_EQ(kTestParamValue, variations::GetVariationParamValueByFeature(
-                                 kTestFeature2, kTestParam2));
+  EXPECT_EQ(kTestParamValue,
+            base::GetFieldTrialParamValueByFeature(kTestFeature1, kTestParam1));
+  EXPECT_EQ(kTestParamValue,
+            base::GetFieldTrialParamValueByFeature(kTestFeature2, kTestParam2));
   // The params are registered in the same trial.
   EXPECT_EQ(kTestParamValue,
             variations::GetVariationParamValue(kTestTrial, kTestParam1));

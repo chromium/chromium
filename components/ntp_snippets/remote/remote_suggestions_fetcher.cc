@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/ntp_snippets/remote/remote_suggestions_fetcher.h"
+#include "base/metrics/field_trial_params.h"
 
 #include "components/ntp_snippets/features.h"
 #include "components/ntp_snippets/ntp_snippets_constants.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/variations/variations_associated_data.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ntp_snippets {
@@ -20,7 +20,7 @@ const char kContentSuggestionsBackend[] = "content_suggestions_backend";
 }  // namespace
 
 GURL GetFetchEndpoint() {
-  std::string endpoint = variations::GetVariationParamValueByFeature(
+  std::string endpoint = base::GetFieldTrialParamValueByFeature(
       ntp_snippets::kArticleSuggestionsFeature, kContentSuggestionsBackend);
   if (!endpoint.empty()) {
     return GURL{endpoint};

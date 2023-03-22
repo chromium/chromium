@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/offline_pages/core/prefetch/prefetch_server_urls.h"
-
+#include "base/metrics/field_trial_params.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "components/variations/variations_associated_data.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 
@@ -30,7 +29,7 @@ const char kAltKeyName[] = "alt";
 const char kAltKeyValueForDownload[] = "media";
 
 GURL GetServerURL() {
-  GURL endpoint(variations::GetVariationParamValueByFeature(
+  GURL endpoint(base::GetFieldTrialParamValueByFeature(
       offline_pages::kPrefetchingOfflinePagesFeature, kOfflinePagesBackend));
 
   // |is_valid| returns false for bad URLs and also for empty URLs.

@@ -131,11 +131,6 @@ COMPONENT_EXPORT(VARIATIONS)
 std::string GetVariationParamValue(const std::string& trial_name,
                                    const std::string& param_name);
 
-// Deprecated. Use base::GetFieldTrialParamValueByFeature() instead.
-COMPONENT_EXPORT(VARIATIONS)
-std::string GetVariationParamValueByFeature(const base::Feature& feature,
-                                            const std::string& param_name);
-
 // Expose some functions for testing.
 namespace testing {
 

@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/variations/variations_associated_data.h"
 
 namespace safe_browsing {
 // Please define any new SafeBrowsing related features in this file, and add
@@ -337,11 +336,11 @@ base::Value::List GetFeatureStatusList() {
   }
 
   // Manually add experimental features that we want param values for.
-  param_list.Append(variations::GetVariationParamValueByFeature(
+  param_list.Append(base::GetFieldTrialParamValueByFeature(
       safe_browsing::kClientSideDetectionModelTag,
       kClientSideDetectionTagParamName));
   param_list.Append(kClientSideDetectionModelTag.name);
-  param_list.Append(variations::GetVariationParamValueByFeature(
+  param_list.Append(base::GetFieldTrialParamValueByFeature(
       kFileTypePoliciesTag, kFileTypePoliciesTagParamName));
   param_list.Append(kFileTypePoliciesTag.name);
 
@@ -351,7 +350,7 @@ base::Value::List GetFeatureStatusList() {
 std::string GetClientSideDetectionTag() {
   if (base::FeatureList::IsEnabled(
           safe_browsing::kClientSideDetectionModelTag)) {
-    return variations::GetVariationParamValueByFeature(
+    return base::GetFieldTrialParamValueByFeature(
         safe_browsing::kClientSideDetectionModelTag,
         kClientSideDetectionTagParamName);
   }
@@ -367,7 +366,7 @@ std::string GetFileTypePoliciesTag() {
   if (!base::FeatureList::IsEnabled(kFileTypePoliciesTag)) {
     return "default";
   }
-  std::string tag_value = variations::GetVariationParamValueByFeature(
+  std::string tag_value = base::GetFieldTrialParamValueByFeature(
       kFileTypePoliciesTag, kFileTypePoliciesTagParamName);
 
   return tag_value.empty() ? "default" : tag_value;

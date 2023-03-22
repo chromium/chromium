@@ -4,13 +4,13 @@
 
 #include "components/offline_pages/core/prefetch/store/prefetch_downloader_quota.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_store_utils.h"
-#include "components/variations/variations_associated_data.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 
@@ -47,7 +47,7 @@ PrefetchDownloaderQuota::PrefetchDownloaderQuota(sql::Database* db,
 PrefetchDownloaderQuota::~PrefetchDownloaderQuota() = default;
 
 int64_t PrefetchDownloaderQuota::GetMaxDailyQuotaBytes() {
-  std::string quota_bytes_as_string(variations::GetVariationParamValueByFeature(
+  std::string quota_bytes_as_string(base::GetFieldTrialParamValueByFeature(
       offline_pages::kPrefetchingOfflinePagesFeature,
       kMaxDailyQuotaBytesParamName));
   if (quota_bytes_as_string.empty())

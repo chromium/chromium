@@ -163,11 +163,6 @@ std::string GetVariationParamValue(const std::string& trial_name,
   return base::GetFieldTrialParamValue(trial_name, param_name);
 }
 
-std::string GetVariationParamValueByFeature(const base::Feature& feature,
-                                            const std::string& param_name) {
-  return base::GetFieldTrialParamValueByFeature(feature, param_name);
-}
-
 // Functions below are exposed for testing explicitly behind this namespace.
 // They simply wrap existing functions in this file.
 namespace testing {

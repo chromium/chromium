@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -230,7 +231,7 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
 #else
   const base::Feature& feature = metrics::internal::kMetricsReportingFeature;
 #endif  // BUILDFLAG(IS_ANDROID)
-  std::string rate_str = variations::GetVariationParamValueByFeature(
+  std::string rate_str = base::GetFieldTrialParamValueByFeature(
       feature, metrics::internal::kRateParamName);
   if (rate_str.empty())
     return false;
