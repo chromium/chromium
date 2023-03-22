@@ -173,6 +173,7 @@ AudioContext* AudioContext::Create(Document& document,
       "WebAudio.AudioContext.latencyHintCategory", latency_hint.Category(),
       WebAudioLatencyHint::AudioContextLatencyCategory::kLastValue);
 
+  // This value can be `nullopt` when there's no user-provided options.
   absl::optional<float> sample_rate;
   if (context_options->hasSampleRate()) {
     sample_rate = context_options->sampleRate();

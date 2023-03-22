@@ -116,6 +116,8 @@ class RealtimeAudioDestinationHandler final
   // Holds the audio device thread that runs the real time audio context.
   scoped_refptr<AudioDestination> platform_destination_;
 
+  // Stores the user-provided (AudioContextOptions) sample rate. When `nullopt`
+  // it is updated with the sample rate of the first platform destination.
   absl::optional<float> sample_rate_;
 
   // If true, the audio graph will be pulled to get new data.  Otherwise, the

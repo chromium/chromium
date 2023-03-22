@@ -315,6 +315,13 @@ void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
         Context()->GetDeferredTaskHandler().RenderQuantumFrames());
   }
 
+  // if `sample_rate_` is nullopt, it is supposed to use the default device
+  // sample rate. Update the internal sample rate for subsequent device change
+  // request. See https://crbug.com/1424839.
+  if (!sample_rate_.has_value()) {
+    sample_rate_ = platform_destination_->SampleRate();
+  }
+
   // TODO(crbug.com/991981): Can't query `GetCallbackBufferSize()` here because
   // creating the destination is not a synchronous process. When anything
   // touches the destination information between this call and
