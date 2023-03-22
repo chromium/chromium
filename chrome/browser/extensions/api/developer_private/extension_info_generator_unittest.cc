@@ -53,6 +53,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "components/supervised_user/core/common/features.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
@@ -953,7 +954,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
 // Tests for supervised users (child accounts). Supervised users are not allowed
 // to install apps or extensions unless their parent approves.
 class ExtensionInfoGeneratorUnitTestSupervised
-    : public ExtensionInfoGeneratorUnitTest {
+    : public ExtensionInfoGeneratorUnitTest,
+      public testing::WithParamInterface<bool> {
  public:
   ExtensionInfoGeneratorUnitTestSupervised() = default;
   ~ExtensionInfoGeneratorUnitTestSupervised() override = default;
@@ -988,9 +990,20 @@ class ExtensionInfoGeneratorUnitTestSupervised
 // Tests that when an extension is disabled pending permission updates, and the
 // parent has turned off the "Permissions for sites, apps and extensions"
 // toggle, then supervised users will see a kite error icon with a tooltip.
-TEST_F(ExtensionInfoGeneratorUnitTestSupervised,
+TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
        ParentDisabledPermissionsForSupervisedUsers) {
   // Preconditions.
+  base::test::ScopedFeatureList feature_list;
+  bool extensions_permissions_for_supervised_users_on_desktop = GetParam();
+  if (extensions_permissions_for_supervised_users_on_desktop) {
+    feature_list.InitAndEnableFeature(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+  } else {
+    feature_list.InitAndDisableFeature(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+  }
   ASSERT_TRUE(profile()->IsChild());
 
   base::FilePath base_path = data_dir().AppendASCII("permissions_increase");
@@ -1032,9 +1045,24 @@ TEST_F(ExtensionInfoGeneratorUnitTestSupervised,
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       GenerateExtensionInfo(extension_id);
 
-  // Verify that the kite icon error tooltip appears for supervised users.
-  EXPECT_TRUE(info->disable_reasons.parent_disabled_permissions);
+  // Verify that the kite icon error tooltip appears for supervised users on
+  // platforms where extensions are enabled for supervised users.
+
+  if (extensions_permissions_for_supervised_users_on_desktop) {
+    EXPECT_TRUE(info->disable_reasons.parent_disabled_permissions);
+  } else {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+    EXPECT_TRUE(info->disable_reasons.parent_disabled_permissions);
+#else
+    EXPECT_FALSE(info->disable_reasons.parent_disabled_permissions);
+#endif
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ExtensionsPermissionsForSupervisedUsersOnDesktopFeature,
+    ExtensionInfoGeneratorUnitTestSupervised,
+    testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 }  // namespace extensions

@@ -131,6 +131,9 @@ BASE_FEATURE(kEnableSupervisionOnDesktopAndIOS,
 BASE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
              "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
+             "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSynchronousSignInCheckingEnabled() {
   return base::FeatureList::IsEnabled(kSynchronousSignInChecking);

@@ -313,8 +313,29 @@ class SupervisedUserServiceExtensionTest
       : SupervisedUserServiceExtensionTestBase(true) {}
 };
 
-TEST_F(SupervisedUserServiceExtensionTest, AreExtensionsPermissionsEnabled) {
+TEST_F(SupervisedUserServiceExtensionTest,
+       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
   EXPECT_TRUE(profile_->IsChild());
+
+  SupervisedUserService* service =
+      SupervisedUserServiceFactory::GetForProfile(profile_.get());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());
+#else
+  EXPECT_FALSE(service->AreExtensionsPermissionsEnabled());
+#endif
+}
+
+TEST_F(SupervisedUserServiceExtensionTest,
+       AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      supervised_user::kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+  EXPECT_TRUE(profile_->IsChild());
+
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(service->AreExtensionsPermissionsEnabled());

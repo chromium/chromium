@@ -21,6 +21,7 @@ BASE_DECLARE_FEATURE(kSynchronousSignInChecking);
 // Flags related to supervision features on Desktop and iOS platforms.
 BASE_DECLARE_FEATURE(kEnableSupervisionOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
+BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.

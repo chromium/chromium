@@ -230,7 +230,14 @@ bool SupervisedUserService::IsURLFilteringEnabled() const {
 
 bool SupervisedUserService::AreExtensionsPermissionsEnabled() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   return profile_->IsChild();
+#else
+  return profile_->IsChild() &&
+         base::FeatureList::IsEnabled(
+             supervised_user::
+                 kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif
 #else
   return false;
 #endif
