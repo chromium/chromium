@@ -46,8 +46,8 @@ somewhere else.
 `NOTIMPLEMENTED`: This isn't implemented because we don't use it yet. If it's
 called, then we need to figure out what it should do.
 
-When something is called, but don't need an implementation, just comment that
-rather than using a logging macro.
+When something is called but doesn't need an implementation, just add a comment
+indicating this instead of using a logging macro.
 
 ## TODO comments
 
