@@ -602,6 +602,10 @@ crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/render
 crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
+crbug.com/1426793 [ android android-sm-a135m ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
+crbug.com/1426793 [ android android-sm-a135m ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Slow ]
+crbug.com/1426793 [ android android-sm-a135m ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Slow ]
+
 ############
 # ChromeOS #
 ############
