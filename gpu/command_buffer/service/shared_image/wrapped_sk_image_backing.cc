@@ -69,7 +69,12 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
       write_surface->getCanvas()->restoreToCount(1);
     }
     write_surfaces_.clear();
-    DCHECK(wrapped_sk_image()->SkSurfacesAreUnique(context_state_));
+
+#if DCHECK_IS_ON()
+    for (auto& promise_texture : wrapped_sk_image()->GetPromiseTextures()) {
+      DCHECK(context_state_->CachedSkSurfaceIsUnique(promise_texture.get()));
+    }
+#endif
   }
 
   std::vector<sk_sp<SkPromiseImageTexture>> BeginReadAccess(
@@ -190,6 +195,9 @@ bool WrappedSkImageBacking::Initialize() {
   for (int plane = 0; plane < num_planes; ++plane) {
     auto& texture = textures_[plane];
     gfx::Size plane_size = format().GetPlaneSize(plane, size());
+
+    constexpr GrRenderable is_renderable = GrRenderable::kYes;
+    constexpr GrProtected is_protected = GrProtected::kNo;
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_LINUX)
     // Blue for single-planar and magenta-ish for multi-planar.
     SkColor4f fallback_color =
@@ -205,13 +213,13 @@ bool WrappedSkImageBacking::Initialize() {
     texture.backend_texture =
         context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), GetSkColorType(plane),
-            fallback_color, mipmap, GrRenderable::kYes, GrProtected::kNo,
-            nullptr, nullptr, label);
+            fallback_color, mipmap, is_renderable, is_protected, nullptr,
+            nullptr, label);
 #else
     texture.backend_texture =
         context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), GetSkColorType(plane),
-            mipmap, GrRenderable::kYes, GrProtected::kNo, label);
+            mipmap, is_renderable, is_protected, label);
 #endif
 
     if (!texture.backend_texture.isValid()) {
@@ -372,22 +380,6 @@ std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(
   }
   surface_msaa_count_ = final_msaa_count;
   return surfaces;
-}
-
-bool WrappedSkImageBacking::SkSurfacesAreUnique(
-    scoped_refptr<SharedContextState> context_state) {
-  // This method should only be called on the same thread on which this
-  // backing is created on. Hence adding a dcheck on context_state to ensure
-  // this.
-  DCHECK_EQ(context_state_, context_state);
-  for (auto& texture : textures_) {
-    DCHECK(texture.promise_texture);
-    if (!context_state_->CachedSkSurfaceIsUnique(
-            texture.promise_texture.get())) {
-      return false;
-    }
-  }
-  return true;
 }
 
 std::unique_ptr<SkiaImageRepresentation> WrappedSkImageBacking::ProduceSkia(

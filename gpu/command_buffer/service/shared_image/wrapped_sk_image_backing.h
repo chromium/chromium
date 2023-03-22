@@ -87,7 +87,6 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
       int final_msaa_count,
       const SkSurfaceProps& surface_props,
       scoped_refptr<SharedContextState> context_state);
-  bool SkSurfacesAreUnique(scoped_refptr<SharedContextState> context_state);
   std::vector<sk_sp<SkPromiseImageTexture>> GetPromiseTextures();
 
   scoped_refptr<SharedContextState> context_state_;
