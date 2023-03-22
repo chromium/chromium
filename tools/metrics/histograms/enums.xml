@@ -57909,7 +57909,10 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="-1986814580" label="om"/>
   <int value="-1920649864" label="an"/>
   <int value="-1898669966" label="zh-CN"/>
-  <int value="-1895779836" label="empty string"/>
+  <int value="-1895779836" label="empty string">
+    Reported as page source language when language detection code was not run
+    (i.e. page closed or navigated away before running).
+  </int>
   <int value="-1872667487" label="rm"/>
   <int value="-1855113037" label="vi"/>
   <int value="-1835493637" label="ce"/>
