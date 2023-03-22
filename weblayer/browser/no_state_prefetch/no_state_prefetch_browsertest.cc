@@ -131,14 +131,22 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 
 // Test that adding a link-rel prerender tag causes a fetch.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       DISABLED_LinkRelPrerenderPageFetched) {
+                       LinkRelPrerenderPageFetched) {
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
   prerendered_page_fetched_->Run();
 }
 
+// Test that only render blocking resources are loaded during NoStatePrefetch.
+// TODO(https://crbug.com/1144282): Fix failures on Asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NSPLoadsRenderBlockingResource \
+  DISABLED_NSPLoadsRenderBlockingResource
+#else
+#define MAYBE_NSPLoadsRenderBlockingResource NSPLoadsRenderBlockingResource
+#endif
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       DISABLED_NSPLoadsRenderBlockingResource) {
+                       MAYBE_NSPLoadsRenderBlockingResource) {
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
   script_resource_fetched_->Run();
@@ -146,8 +154,16 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   EXPECT_FALSE(script_executed_);
 }
 
+// Test that navigating to a no-state-prefetched page executes JS and reuses
+// prerendered resources.
+// TODO(https://crbug.com/1144282): Fix failures on Asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NavigateToPrerenderedPage DISABLED_NavigateToPrerenderedPage
+#else
+#define MAYBE_NavigateToPrerenderedPage NavigateToPrerenderedPage
+#endif
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       DISABLED_NavigateToPrerenderedPage) {
+                       MAYBE_NavigateToPrerenderedPage) {
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
   script_resource_fetched_->Run();
@@ -189,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, DISABLED_UKMRecorded) {
 
 // link-rel="prerender" happens even when NoStatePrefetch has been disabled.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       DISABLED_LinkRelPrerenderWithNSPDisabled) {
+                       LinkRelPrerenderWithNSPDisabled) {
   GetProfile()->SetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED,
                                   false);
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
@@ -211,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, LinkRelNextWithNSPDisabled) {
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_ExternalPrerender DISABLED_ExternalPrerender
 #else
-#define MAYBE_ExternalPrerender DISABLED_ExternalPrerender
+#define MAYBE_ExternalPrerender ExternalPrerender
 #endif
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_ExternalPrerender) {
   GetProfile()->GetPrerenderController()->Prerender(

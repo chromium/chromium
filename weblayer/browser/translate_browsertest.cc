@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "components/infobars/android/infobar_android.h"  // nogncheck
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar_manager.h"  // nogncheck
 #include "components/translate/content/browser/translate_waiter.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_error_details.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -17,21 +21,14 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/browser/translate_client_impl.h"
+#include "weblayer/browser/translate_compact_infobar.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/tab.h"
+#include "weblayer/shell/android/browsertests_apk/translate_test_bridge.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/test_navigation_observer.h"
 #include "weblayer/test/weblayer_browser_test.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/infobars/android/infobar_android.h"  // nogncheck
-#include "components/infobars/content/content_infobar_manager.h"
-#include "components/infobars/core/infobar_manager.h"  // nogncheck
-#include "components/translate/core/browser/translate_download_manager.h"
-#include "weblayer/browser/translate_compact_infobar.h"
-#include "weblayer/shell/android/browsertests_apk/translate_test_bridge.h"
-#endif
 
 namespace weblayer {
 
@@ -103,7 +100,6 @@ std::unique_ptr<translate::TranslateWaiter> CreateTranslateWaiter(
 
 }  // namespace
 
-#if BUILDFLAG(IS_ANDROID)
 class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
  public:
   TestInfoBarManagerObserver() = default;
@@ -130,7 +126,6 @@ class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
   base::OnceClosure on_infobar_added_callback_;
   base::OnceClosure on_infobar_removed_callback_;
 };
-#endif  // if BUILDFLAG(IS_ANDROID)
 
 class TranslateBrowserTest : public WebLayerBrowserTest {
  public:
@@ -298,7 +293,7 @@ class IncognitoTranslateBrowserTest : public TranslateBrowserTest {
 // Test that the translation infrastructure is set up properly when the user is
 // in incognito mode.
 IN_PROC_BROWSER_TEST_F(IncognitoTranslateBrowserTest,
-                       PageTranslationSuccess_IncognitoMode) {
+                       DISABLED_PageTranslationSuccess_IncognitoMode) {
   ASSERT_TRUE(GetProfile()->GetBrowserContext()->IsOffTheRecord());
 
   SetTranslateScript(kTestValidScript);
@@ -326,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoTranslateBrowserTest,
 }
 
 // Test if there was an error during translation.
-IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, DISABLED_PageTranslationError) {
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationError) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -356,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, DISABLED_PageTranslationError) {
 
 // Test if there was an error during translate library initialization.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
-                       DISABLED_PageTranslationInitializationError) {
+                       PageTranslationInitializationError) {
   SetTranslateScript(kTestScriptInitializationError);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -383,8 +378,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 }
 
 // Test the checks translate lib never gets ready and throws timeout.
-IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
-                       DISABLED_PageTranslationTimeoutError) {
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageTranslationTimeoutError) {
   SetTranslateScript(kTestScriptTimeout);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -411,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 }
 
 // Test that autotranslation kicks in if configured via prefs.
-IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, DISABLED_Autotranslation) {
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, Autotranslation) {
   SetTranslateScript(kTestValidScript);
 
   TranslateClientImpl* translate_client = GetTranslateClient(shell());
@@ -436,7 +430,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, DISABLED_Autotranslation) {
   EXPECT_EQ("zh-CN", translate_client->GetLanguageState().current_language());
 }
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that the translation infobar is presented when visiting a page with a
 // translation opportunity and removed when navigating away.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslateInfoBarPresentation) {
@@ -481,9 +474,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslateInfoBarPresentation) {
   EXPECT_EQ(0u, infobar_manager->infobar_count());
   infobar_manager->RemoveObserver(&infobar_observer);
 }
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that the translation infobar is not presented when visiting a page with
 // a translation opportunity but where the page has specified that it should not
 // be translated.
@@ -511,9 +502,7 @@ IN_PROC_BROWSER_TEST_F(
   // were to be shown, this check would fail.
   EXPECT_EQ(0u, infobar_manager->infobar_count());
 }
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that the translation can be successfully initiated via infobar.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
@@ -575,9 +564,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, TranslationViaInfoBar) {
 
   infobar_manager->RemoveObserver(&infobar_observer);
 }
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that translation occurs when a target language is set.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
                        TranslationViaPredefinedTargetLanguage) {
@@ -618,9 +605,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 
   infobar_manager->RemoveObserver(&infobar_observer);
 }
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that the infobar appears on pages in the user's locale iff a target
 // language is set.
 IN_PROC_BROWSER_TEST_F(
@@ -662,9 +647,7 @@ IN_PROC_BROWSER_TEST_F(
 
   infobar_manager->RemoveObserver(&infobar_observer);
 }
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that when a predefined target language is set, the infobar does not
 // appear on pages in that language.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
@@ -705,9 +688,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 
   infobar_manager->RemoveObserver(&infobar_observer);
 }
-#endif
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that the translation infobar stays present when the "never translate
 // language" item is clicked. Note that this behavior is intentionally different
 // from that of Chrome, where the infobar is removed in this case and a snackbar
@@ -779,7 +760,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
   infobar_manager->RemoveObserver(&infobar_observer);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 // Test that the infobar shows when a predefined target language is set even if
 // the source language is in the "never translate" set.
 IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
@@ -832,7 +812,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
 
   infobar_manager->RemoveObserver(&infobar_observer);
 }
-#endif
 
 // Test that the translation infobar stays present when the "never translate
 // site" item is clicked. Note that this behavior is intentionally different
@@ -896,12 +875,10 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
   infobar_manager->RemoveObserver(&infobar_observer);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Test that the infobar shows when a predefined target language is set even if
-// the site is in the "never translate" set.
-IN_PROC_BROWSER_TEST_F(
-    TranslateBrowserTest,
-    DISABLED_PredefinedTargetLanguageOverridesSiteBlocklist) {
+// Test that the infobar does not show when a predefined target language is set
+// and the user selects to never translate the site.
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
+                       PredefinedTargetLanguageDoesNotOverrideSiteBlocklist) {
   auto* tab = static_cast<TabImpl*>(shell()->tab());
   auto* web_contents = tab->web_contents();
   auto* infobar_manager =
@@ -933,37 +910,19 @@ IN_PROC_BROWSER_TEST_F(
   TranslateTestBridge::ClickOverflowMenuItem(
       infobar, TranslateTestBridge::OverflowMenuItemId::NEVER_TRANSLATE_SITE);
 
-  // Since a predefined target language is set, the infobar should still be
-  // shown on new navigations to this site even though the site is blocklisted.
   ResetLanguageDeterminationWaiter();
-  base::RunLoop run_loop2;
-  infobar_observer.set_on_infobar_added_callback(run_loop2.QuitClosure());
-
   NavigateAndWaitForCompletion(
       GURL(embedded_test_server()->GetURL("/french_page2.html")), shell());
   language_determination_waiter_->Wait();
   EXPECT_EQ("fr", translate_client->GetLanguageState().source_language());
 
-  run_loop2.Run();
-
-  EXPECT_EQ(1u, infobar_manager->infobar_count());
-
-  ResetLanguageDeterminationWaiter();
-  base::RunLoop run_loop3;
-  infobar_observer.set_on_infobar_added_callback(run_loop3.QuitClosure());
-
-  NavigateAndWaitForCompletion(
-      GURL(embedded_test_server()->GetURL("/german_page.html")), shell());
-  language_determination_waiter_->Wait();
-  EXPECT_EQ("de", translate_client->GetLanguageState().source_language());
-
-  run_loop3.Run();
-
-  EXPECT_EQ(1u, infobar_manager->infobar_count());
+  // NOTE: There is no notification to wait for for the event of the infobar not
+  // showing. However, in practice the infobar is added synchronously, so if it
+  // were to be shown, this check would fail.
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
 
   infobar_manager->RemoveObserver(&infobar_observer);
 }
-#endif
 
 // Parameterized to run tests on the "never translate language" and "never
 // translate site" menu items.
@@ -1051,7 +1010,5 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TranslateTestBridge::OverflowMenuItemId::NEVER_TRANSLATE_LANGUAGE,
         TranslateTestBridge::OverflowMenuItemId::NEVER_TRANSLATE_SITE));
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace weblayer

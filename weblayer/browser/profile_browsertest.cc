@@ -47,8 +47,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PersistNetworkPrediction) {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
-                       DISABLED_GetCachedFaviconForPageUrl) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, GetCachedFaviconForPageUrl) {
   // Navigation to a page with a favicon.
   ASSERT_TRUE(embedded_test_server()->Start());
   TestFaviconFetcherDelegate fetcher_delegate;
@@ -76,8 +75,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
-                       DISABLED_ClearBrowsingDataDeletesFavicons) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearBrowsingDataDeletesFavicons) {
   // Navigate to a page with a favicon.
   ASSERT_TRUE(embedded_test_server()->Start());
   TestFaviconFetcherDelegate fetcher_delegate;

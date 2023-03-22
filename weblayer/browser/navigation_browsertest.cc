@@ -944,8 +944,7 @@ class NavigationBrowserTest2 : public NavigationBrowserTest {
 
 // This test verifies the embedder can replace the X-Client-Data header that
 // is also set by //components/variations.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest2,
-                       DISABLED_ReplaceXClientDataHeader) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest2, ReplaceXClientDataHeader) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   std::string last_header_value;
   auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();

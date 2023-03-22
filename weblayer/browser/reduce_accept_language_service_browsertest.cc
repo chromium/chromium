@@ -57,8 +57,7 @@ class ReduceAcceptLanguageServiceTest : public WebLayerBrowserTest {
   std::unique_ptr<ReduceAcceptLanguageServiceTester> service_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReduceAcceptLanguageServiceTest,
-                       DISABLED_GetAcceptLanguageList) {
+IN_PROC_BROWSER_TEST_F(ReduceAcceptLanguageServiceTest, GetAcceptLanguageList) {
   tester()->VerifyFetchAcceptLanguageList({"en", "ja", "it"});
   reduce_accept_language::ReduceAcceptLanguageService incognito_service(
       settings_map(), prefs(), true);

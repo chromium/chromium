@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, InterceptNoDownload) {
   EXPECT_EQ(download_dropped_count(), 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, DISABLED_Basic) {
+IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, Basic) {
   GURL url(embedded_test_server()->GetURL("/content-disposition.html"));
 
   shell()->tab()->GetNavigationController()->Navigate(url);
@@ -231,13 +231,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, DISABLED_Basic) {
             download_location().DirName());
 }
 
-// Test consistently failing on android: crbug.com/1273105
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_OverrideDownloadDirectory DISABLED_OverrideDownloadDirectory
-#else
-#define MAYBE_OverrideDownloadDirectory OverrideDownloadDirectory
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, MAYBE_OverrideDownloadDirectory) {
+IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, OverrideDownloadDirectory) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir download_dir;
   ASSERT_TRUE(download_dir.CreateUniqueTempDir());
@@ -287,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, Cancel) {
   EXPECT_EQ(download_state(), DownloadError::kCancelled);
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, DISABLED_PauseResume) {
+IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, PauseResume) {
   // Add an initial navigation to avoid the tab being deleted if the first
   // navigation is a download, since we use the tab for convenience in the
   // lambda.
@@ -322,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, DISABLED_PauseResume) {
   EXPECT_EQ(download_dropped_count(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, DISABLED_NetworkError) {
+IN_PROC_BROWSER_TEST_F(DownloadBrowserTest, NetworkError) {
   set_failed_callback(base::BindLambdaForTesting([](Download* download) {
     CHECK_EQ(download->GetState(), DownloadState::kFailed);
   }));

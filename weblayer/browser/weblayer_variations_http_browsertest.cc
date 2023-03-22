@@ -145,7 +145,7 @@ class WebLayerVariationsHttpBrowserTest : public WebLayerBrowserTest {
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to network requests to Google but stripped on redirects.
 IN_PROC_BROWSER_TEST_F(WebLayerVariationsHttpBrowserTest,
-                       DISABLED_TestStrippingHeadersFromResourceRequest) {
+                       TestStrippingHeadersFromResourceRequest) {
   OneShotNavigationObserver observer(shell());
   shell()->tab()->GetNavigationController()->Navigate(GetGoogleRedirectUrl1());
   observer.WaitForNavigation();

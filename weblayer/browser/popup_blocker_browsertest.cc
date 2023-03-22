@@ -32,10 +32,7 @@ class PopupBlockerBrowserTest : public WebLayerBrowserTest,
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     original_tab_ = shell()->tab();
-#if !BUILDFLAG(IS_ANDROID)
-    // Android does this in Java.
     original_tab_->SetNewTabDelegate(this);
-#endif
     shell()->browser()->AddObserver(this);
 
     NavigateAndWaitForCompletion(embedded_test_server()->GetURL("/echo"),
@@ -130,19 +127,18 @@ class PopupBlockerBrowserTest : public WebLayerBrowserTest,
   raw_ptr<Tab> new_tab_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_BlocksPopup) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlocksPopup) {
   ExecuteScript(original_tab(), "window.open('https://google.com')", true);
   EXPECT_EQ(GetBlockedPopupCount(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_BlocksMultiplePopups) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlocksMultiplePopups) {
   ExecuteScript(original_tab(), "window.open('https://google.com')", true);
   ExecuteScript(original_tab(), "window.open('https://google.com')", true);
   EXPECT_EQ(GetBlockedPopupCount(), 2u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       DISABLED_DoesNotBlockUserGesture) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DoesNotBlockUserGesture) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   ExecuteScriptWithUserGesture(
       original_tab(),
@@ -153,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
   EXPECT_EQ(GetBlockedPopupCount(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_OpensBlockedPopup) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpensBlockedPopup) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   ExecuteScript(
       original_tab(),
@@ -171,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_OpensBlockedPopup) {
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       DISABLED_AllowsPopupThroughContentSettingException) {
+                       AllowsPopupThroughContentSettingException) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   HostContentSettingsMapFactory::GetForBrowserContext(
       GetWebContents(original_tab())->GetBrowserContext())
@@ -187,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       DISABLED_AllowsPopupThroughContentSettingDefaultValue) {
+                       AllowsPopupThroughContentSettingDefaultValue) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   HostContentSettingsMapFactory::GetForBrowserContext(
       GetWebContents(original_tab())->GetBrowserContext())
@@ -202,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       DISABLED_BlockPopupThroughContentSettingException) {
+                       BlockPopupThroughContentSettingException) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   HostContentSettingsMapFactory::GetForBrowserContext(
       GetWebContents(original_tab())->GetBrowserContext())
@@ -220,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       DISABLED_BlocksAndOpensPopupFromOpenURL) {
+                       BlocksAndOpensPopupFromOpenURL) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   content::OpenURLParams params(popup_url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,

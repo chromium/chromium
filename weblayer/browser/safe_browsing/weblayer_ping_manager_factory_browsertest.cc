@@ -56,8 +56,7 @@ void WeblayerPingManagerFactoryTest::RunShouldFetchAccessTokenForReportTest(
       expect_should_fetch);
 }
 
-IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest,
-                       DISABLED_ReportThreatDetails) {
+IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest, ReportThreatDetails) {
   auto* ping_manager = WebLayerPingManagerFactory::GetForBrowserContext(
       GetProfile()->GetBrowserContext());
 
@@ -87,26 +86,25 @@ IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest,
             ReportThreatDetailsResult::SUCCESS);
 }
 IN_PROC_BROWSER_TEST_F(IncognitoModeWeblayerPingManagerFactoryTest,
-                       NoPingManagerForIncognito) {
+                       DISABLED_NoPingManagerForIncognito) {
   EXPECT_EQ(WebLayerPingManagerFactory::GetForBrowserContext(
                 GetProfile()->GetBrowserContext()),
             nullptr);
 }
 IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest,
-                       DISABLED_ShouldFetchAccessTokenForReport_Yes) {
+                       ShouldFetchAccessTokenForReport_Yes) {
   RunShouldFetchAccessTokenForReportTest(/*is_enhanced_protection=*/true,
                                          /*is_signed_in=*/true,
                                          /*expect_should_fetch=*/true);
 }
-IN_PROC_BROWSER_TEST_F(
-    WeblayerPingManagerFactoryTest,
-    DISABLED_ShouldFetchAccessTokenForReport_NotEnhancedProtection) {
+IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest,
+                       ShouldFetchAccessTokenForReport_NotEnhancedProtection) {
   RunShouldFetchAccessTokenForReportTest(/*is_enhanced_protection=*/false,
                                          /*is_signed_in=*/true,
                                          /*expect_should_fetch=*/false);
 }
 IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest,
-                       DISABLED_ShouldFetchAccessTokenForReport_NotSignedIn) {
+                       ShouldFetchAccessTokenForReport_NotSignedIn) {
   RunShouldFetchAccessTokenForReportTest(/*is_enhanced_protection=*/true,
                                          /*is_signed_in=*/false,
                                          /*expect_should_fetch=*/false);

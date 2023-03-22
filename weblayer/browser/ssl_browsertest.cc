@@ -21,6 +21,7 @@
 #include "weblayer/public/browser_observer.h"
 #include "weblayer/public/error_page.h"
 #include "weblayer/public/error_page_delegate.h"
+#include "weblayer/public/new_tab_delegate.h"
 #include "weblayer/public/tab.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/interstitial_utils.h"
@@ -33,15 +34,13 @@ namespace {
 
 #if BUILDFLAG(IS_ANDROID)
 // Waits for a new tab to be created, and then load |url|.
-class NewTabWaiter : public BrowserObserver {
+class NewTabWaiter : public NewTabDelegate {
  public:
-  NewTabWaiter(Browser* browser, const GURL& url) : url_(url) {
-    observation_.Observe(browser);
-  }
+  explicit NewTabWaiter(const GURL& url) : url_(url) {}
 
-  void OnTabAdded(Tab* tab) override {
+  void OnNewTab(Tab* new_tab, NewTabType type) override {
     navigation_observer_ = std::make_unique<TestNavigationObserver>(
-        url_, TestNavigationObserver::NavigationEvent::kStart, tab);
+        url_, TestNavigationObserver::NavigationEvent::kStart, new_tab);
     run_loop_.Quit();
   }
 
@@ -55,7 +54,6 @@ class NewTabWaiter : public BrowserObserver {
   GURL url_;
   std::unique_ptr<TestNavigationObserver> navigation_observer_;
   base::RunLoop run_loop_;
-  base::ScopedObservation<Browser, BrowserObserver> observation_{this};
 };
 #endif
 
@@ -228,9 +226,9 @@ class SSLBrowserTest : public WebLayerBrowserTest {
 
     // Note: The embedded test server cannot actually load the captive portal
     // login URL, so simply detect the start of the navigation to the page.
-    NewTabWaiter waiter(shell()->browser(),
-                        WebLayerSecurityBlockingPageFactory::
+    NewTabWaiter waiter(WebLayerSecurityBlockingPageFactory::
                             GetCaptivePortalLoginPageUrlForTesting());
+    shell()->tab()->SetNewTabDelegate(&waiter);
     ExecuteScript(shell(), "window.certificateErrorPageController.openLogin();",
                   false /*use_separate_isolate*/);
     waiter.Wait();
@@ -353,8 +351,7 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, OSReportsCaptivePortal) {
 #if BUILDFLAG(IS_ANDROID)
 // Tests that after reaching a captive portal interstitial, clicking on the
 // connect link will cause a navigation to the login page.
-IN_PROC_BROWSER_TEST_F(SSLBrowserTest,
-                       DISABLED_CaptivePortalConnectToLoginPage) {
+IN_PROC_BROWSER_TEST_F(SSLBrowserTest, CaptivePortalConnectToLoginPage) {
   SSLErrorHandler::SetOSReportsCaptivePortalForTesting(true);
 
   NavigateToPageWithMismatchedCertExpectCaptivePortalInterstitial();

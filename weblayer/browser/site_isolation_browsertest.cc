@@ -109,16 +109,8 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Failing on Android, see https://crbug.com/1254509.
-#if defined(ANDROID)
-#define MAYBE_SiteIsIsolatedAfterEnteringPassword \
-  DISABLED_SiteIsIsolatedAfterEnteringPassword
-#else
-#define MAYBE_SiteIsIsolatedAfterEnteringPassword \
-  SiteIsIsolatedAfterEnteringPassword
-#endif
 IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
-                       MAYBE_SiteIsIsolatedAfterEnteringPassword) {
+                       SiteIsIsolatedAfterEnteringPassword) {
   GURL url = embedded_test_server()->GetURL("sub.foo.com",
                                             "/simple_password_form.html");
   NavigateAndWaitForCompletion(url, shell());
@@ -218,8 +210,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
-                       DISABLED_IsolatedSiteIsSavedOnlyOnce) {
+IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest, IsolatedSiteIsSavedOnlyOnce) {
   GURL saved_url =
       embedded_test_server()->GetURL("saved.com", "/simple_page.html");
   StartIsolatingSite(saved_url);
@@ -232,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
 // Failing on Android, see https://crbug.com/1254509.
 #if defined(ANDROID)
 #define MAYBE_ClearSiteDataHeaderDoesNotClearSavedIsolatedSites \
-  DISABLED_ClearSiteDataHeaderDoesNotClearSavedIsolatedSites
+  ClearSiteDataHeaderDoesNotClearSavedIsolatedSites
 #else
 #define MAYBE_ClearSiteDataHeaderDoesNotClearSavedIsolatedSites \
   ClearSiteDataHeaderDoesNotClearSavedIsolatedSites
@@ -262,9 +253,8 @@ IN_PROC_BROWSER_TEST_F(
               UnorderedElementsAre("https://saved.com"));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SiteIsolationBrowserTest,
-    DISABLED_ExplicitClearBrowsingDataClearsSavedIsolatedSites) {
+IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
+                       ExplicitClearBrowsingDataClearsSavedIsolatedSites) {
   GURL saved_url =
       embedded_test_server()->GetURL("saved.com", "/simple_page.html");
   StartIsolatingSite(saved_url);

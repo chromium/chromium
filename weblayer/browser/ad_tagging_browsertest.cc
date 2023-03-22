@@ -40,7 +40,7 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest,
-                       DISABLED_AdContentSettingAllowed_AdTaggingDisabled) {
+                       AdContentSettingAllowed_AdTaggingDisabled) {
   HostContentSettingsMapFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext())
       ->SetDefaultContentSetting(ContentSettingsType::ADS,

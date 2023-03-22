@@ -141,13 +141,13 @@ public final class TestWebLayer {
         WebLayer.loadAsync(application, webLayer -> {
             Bundle args = new Bundle();
             args.putString(BrowserFragmentArgs.PROFILE_NAME, "browsertest");
-            args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, true);
+            args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, false);
 
             Browser browser = new Browser(webLayer.createBrowser(application, args));
-            browser.initializeState();
 
             WebFragmentEventHandler eventHandler =
                     new WebFragmentEventHandler(browser.connectFragment());
+            browser.initializeState();
             eventHandler.onAttach(application, null);
             eventHandler.onCreate();
             eventHandler.onStart();
