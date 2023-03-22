@@ -93,7 +93,7 @@ body {
 .dialog-navigation-list-contents {
   display: flex;
   flex: 1 1 auto;
-  margin-top: 8px;
+  margin-inline-start: 16px;
   position: relative;
 }
 
@@ -113,6 +113,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   overflow-y: hidden;
 }
 
+/* Can be removed after new directory replacement. -- BEGIN */
 #directory-tree .tree-item[section-start]::before {
   border-bottom: 1px solid var(--cros-separator-color);
   content: '';
@@ -124,65 +125,36 @@ html.breadcrumb-elider-expanded #directory-tree {
 #directory-tree .tree-row {
   cursor: pointer;
   height: auto;
-  padding: 4px 0;
+  padding: 4px; /* To cater 8px top/bottom padding and outline. */
 }
 
 #directory-tree .tree-row > .file-row {
   align-items: center;
-  border: 2px solid transparent;
   border-inline-start-width: 0 !important;
-  border-radius: 0 20px 20px 0;
+  border-radius: 20px;
   box-sizing: border-box;
-  color: var(--cros-text-color-primary);
+  color: var(--cros-sys-on_surface);
   display: flex;
-  height: 32px;
-  margin-inline-end: 6px;
-}
-
-html[dir='rtl'] #directory-tree .tree-row > .file-row {
-  border-radius: 20px 0 0 20px;
-}
-
-#directory-tree .tree-row > .expand-icon {
-  flex: none;
-  height: 36px;
-  left: 3px;
-  margin: -12px -2px;
-  right: 3px;
-  top: 0;
-  width: 36px;
+  height: 40px;
 }
 
 #directory-tree .tree-row > .file-row > .expand-icon {
   box-sizing: border-box;
   flex: none;
-  height: 32px;
-  padding: 6px;
-  width: 32px;
-}
-
-#directory-tree .tree-row > .item-icon {
-  flex: none;
-  height: 16px;
-  width: 16px;
+  height: 20px;
+  margin-inline-start: 8px;
+  width: 20px;
 }
 
 #directory-tree .tree-row > .file-row > .item-icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-icon-color-primary);
+  background-color: currentColor;
   background-image: none;
   flex: none;
   height: 20px;
-  left: -4px;
   position: relative;
-  right: -4px;
   width: 20px;
-}
-
-#directory-tree .tree-item:not([disabled])
-  .tree-row[active] > .file-row > .item-icon:not([style*='background-image']) {
-  background-color: var(--cros-icon-color-selection);
 }
 
 #directory-tree .tree-row > .file-row > .item-icon[style*='background-image'] {
@@ -192,20 +164,11 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   background-size: 16px 16px;
 }
 
-#directory-tree .tree-row > .label {
-  display: block;
-  flex: auto;
-  font-weight: 500;
-  margin: 0 6px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 #directory-tree .tree-row > .file-row > .label {
   display: block;
   flex: auto;
   font-weight: 500;
-  margin: 0 12px;
+  margin-inline-start: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -213,11 +176,6 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 #directory-tree .tree-row .rename-placeholder {
   flex: auto;
   font-weight: 500;
-}
-
-#directory-tree .tree-row > .rename-placeholder {
-  display: block;
-  margin: 0 6px;
 }
 
 #directory-tree .tree-row .rename-placeholder > input {
@@ -228,36 +186,34 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   display: none;
 }
 
-#directory-tree [renaming] > .tree-row > .label,
 #directory-tree [renaming] > .tree-row > .file-row > .label {
   display: none;
 }
 
-#directory-tree .tree-row > input {
-  display: none;
-  margin: 0 6px;
-  overflow: hidden;
-}
-
 #directory-tree .tree-row > .file-row > input {
   display: none;
-  margin: 0 10px;
+  height: 20px;
+  margin-inline: 8px 12px;
   overflow: hidden;
 }
 
-#directory-tree [renaming] > .tree-row > input,
+#directory-tree .tree-item:not([disabled])
+    .tree-row[active] > .file-row > input {
+  outline: 2px solid var(--cros-sys-inverse_primary);
+}
+
 #directory-tree [renaming] > .tree-row > .file-row > input {
   display: block;
 }
 
 html:not(.col-resize) #directory-tree .tree-item:not([disabled]) >
     .tree-row:not([active]):not([selected]):hover > .file-row {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 html.pointer-active #directory-tree .tree-item:not([disabled]) >
     .tree-row:not([active]):not([selected]) > .file-row:active {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 html.pointer-active #directory-tree
@@ -270,35 +226,31 @@ html.pointer-active #directory-tree :not(:active) {
 }
 
 html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row {
-  background-color: var(--cros-highlight-color-error);
+  background-color: var(--cros-sys-error_container);
+  color: var(--cros-sys-on_error_container);
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-hover_on_prominent);
+}
+
+html.drag-drop-active #directory-tree
+    .tree-item.accepts > .tree-row[active] > .file-row {
+  background-color: var(--cros-sys-primary);
 }
 
 html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row {
-  border: 2px solid var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-sys-focus_ring);
+  outline-offset: 2px;
 }
 
 #directory-tree .tree-item:not([disabled]) .tree-row[active] > .file-row {
-  background-color: var(--cros-highlight-color);
-  color: var(--cros-text-color-selection);
+  background-color: var(--cros-sys-primary);
+  color: var(--cros-sys-on_primary);
 }
 
-#directory-tree .tree-item[disabled] > .tree-row {
+#directory-tree .tree-item[disabled] > .tree-row > .file-row {
   cursor: default;
-}
-
-#directory-tree .tree-row > .align-right-icon {
-  --iron-icon-height: 16px;
-  --iron-icon-width: 16px;
-  border-style: none;
-  flex: none;
-  height: 40px;
-  position: relative;
-  width: 40px;
-  z-index: 1;
 }
 
 #directory-tree .tree-row > .file-row > .align-right-icon {
@@ -316,61 +268,48 @@ html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row
   z-index: 1;
 }
 
-#directory-tree .tree-row > .external-link-icon iron-icon {
-  padding: 12px;
-}
 
 #directory-tree .tree-row > .file-row > .external-link-icon iron-icon {
   padding: 6px;
 }
 
-#directory-tree .tree-row > .root-eject {
-  --text-color: currentColor;
-  min-width: 40px;
-  padding: 12px;
-}
-
 #directory-tree .tree-row > .file-row > .root-eject {
   --text-color: currentColor;
-  --hover-bg-color: var(--cros-ripple-color);
+  --hover-bg-color: var(--cros-sys-hover_on_subtle);
   min-width: 32px;
   padding: 0;
 }
 
-html.col-resize #directory-tree .tree-row > .root-eject:hover {
-  --hover-bg-color: none;
+#directory-tree .tree-row[active] > .file-row > .root-eject {
+  --hover-bg-color: var(--cros-sys-hover_on_prominent);
 }
 
 html.col-resize #directory-tree .tree-row > .file-row > .root-eject:hover {
   --hover-bg-color: none;
 }
 
-#directory-tree .tree-row > .root-eject:focus {
-  outline: 1px auto var(--cros-focus-ring-color);
-}
-
 #directory-tree .tree-row > .file-row > .root-eject:focus {
-  border: 1px solid var(--cros-focus-ring-color);
+  border: 1px solid var(--cros-sys-focus_ring);
 }
 
-#directory-tree .tree-row > .root-eject:active {
-  border-radius: 20px;
-  outline-width: 0;
+#directory-tree .tree-row[active] > .file-row > .root-eject:focus {
+  border: 1px solid var(--cros-sys-inverse_primary);
 }
 
 #directory-tree .tree-row > .file-row > .root-eject:active {
-  --ink-color: var(--cros-ripple-color);
+  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
   border-width: 0;
 }
 
-#directory-tree .root-item[disabled] {
-  opacity: 0.5;
-  pointer-events: none;
+#directory-tree .tree-row[active] > .file-row > .root-eject:active {
+  --ink-color: var(--cros-sys-ripple_neutral_on_prominent);
 }
+/* Can be removed after new directory replacement. -- END */
 
+/* Splitter. */
 .jelly-splitter {
   --xf-splitter-tracker-offset: 16px;
-  z-index: 500;  /* Must be below the contextmenu (600). */
+  --xf-splitter-z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
 html.pointer-active .jelly-splitter:not(.splitter-active):hover {
@@ -1665,9 +1604,7 @@ body.check-select #list-container list > li[lead] {
 }
 
 input.rename:focus,
-#directory-tree .tree-row .rename-placeholder > input:focus,
 #directory-tree .tree-row > .file-row .rename-placeholder > input:focus,
-#directory-tree .tree-row > input:focus,
 #directory-tree .tree-row > .file-row > input:focus {
   background-color: var(--cros-sys-app_base);
   border: none;
@@ -1677,9 +1614,7 @@ input.rename:focus,
 }
 
 input.rename::selection,
-#directory-tree .tree-row .rename-placeholder > input::selection,
 #directory-tree .tree-row > .file-row .rename-placeholder > input::selection,
-#directory-tree .tree-row > input::selection,
 #directory-tree .tree-row > .file-row > input::selection {
   background-color: var(--cros-sys-highlight_text);
 }

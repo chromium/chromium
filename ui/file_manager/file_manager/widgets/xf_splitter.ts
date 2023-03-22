@@ -194,6 +194,7 @@ function getCSS() {
       padding: 0;
       position: relative;
       width: 16px;
+      z-index: var(--xf-splitter-z-index);
     }
 
     :host-context(html[dir=rtl]) #tracker {

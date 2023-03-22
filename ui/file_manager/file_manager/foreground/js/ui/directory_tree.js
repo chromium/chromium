@@ -190,7 +190,7 @@ directorytree.createRowElementContent = (id) => {
 directorytree.styleRowElementDepth = (item, depth) => {
   const fileRowElement = item.rowElement.firstElementChild;
 
-  const indent = depth * 22;
+  const indent = depth * (util.isJellyEnabled() ? 20 : 22);
   let style = 'padding-inline-start: ' + indent + 'px';
   const width = indent + 60;
   style += '; min-width: ' + width + 'px;';
