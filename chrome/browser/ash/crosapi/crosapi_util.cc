@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
+#include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
@@ -471,7 +472,7 @@ void InjectBrowserInitParams(
   params->ash_metrics_enabled =
       local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
   params->ash_metrics_managed =
-      local_state->IsManagedPreference(metrics::prefs::kMetricsReportingEnabled)
+      IsMetricsReportingPolicyManaged()
           ? mojom::MetricsReportingManaged::kManaged
           : mojom::MetricsReportingManaged::kNotManaged;
 
