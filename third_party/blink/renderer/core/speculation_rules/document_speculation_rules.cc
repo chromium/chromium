@@ -480,6 +480,10 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
          &selector_matches_enabled](
             mojom::blink::SpeculationAction action,
             const HeapVector<Member<SpeculationRule>>& speculation_rules) {
+          if (!link->HrefURL().ProtocolIsInHTTPFamily()) {
+            return;
+          }
+
           // We exclude links that don't have a ComputedStyle stored (or have a
           // ComputedStyle only because EnsureComputedStyle was called, and
           // otherwise wouldn't). This corresponds to links that are not in the
