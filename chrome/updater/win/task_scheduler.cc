@@ -85,7 +85,7 @@ bool GetCurrentUser(base::win::ScopedBstr* user_name) {
   CHECK(user_name);
   ULONG user_name_size = 256;
   // Paranoia... ;-)
-  DCHECK_EQ(sizeof(OLECHAR), sizeof(WCHAR));
+  CHECK_EQ(sizeof(OLECHAR), sizeof(WCHAR));
   if (!::GetUserNameExW(
           NameSamCompatible,
           user_name->AllocateBytes(user_name_size * sizeof(OLECHAR)),
@@ -98,7 +98,7 @@ bool GetCurrentUser(base::win::ScopedBstr* user_name) {
             NameSamCompatible,
             user_name->AllocateBytes(user_name_size * sizeof(OLECHAR)),
             &user_name_size)) {
-      DCHECK_NE(DWORD{ERROR_MORE_DATA}, ::GetLastError());
+      CHECK_NE(DWORD{ERROR_MORE_DATA}, ::GetLastError());
       PLOG(ERROR) << "GetUserNameEx failed.";
       return false;
     }

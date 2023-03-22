@@ -10,6 +10,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -60,7 +61,7 @@ int ServiceMain::RunWindowsService(const base::CommandLine* command_line) {
   }
 
   int ret = service->Start();
-  DCHECK_NE(ret, int{STILL_ACTIVE});
+  CHECK_NE(ret, int{STILL_ACTIVE});
   return ret;
 }
 

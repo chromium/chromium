@@ -5,9 +5,9 @@
 #include "chrome/updater/win/ui/ui.h"
 
 #include <stdint.h>
-#include <functional>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -158,7 +158,7 @@ LRESULT OmahaWnd::OnNCDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
 
 // Called when ESC key is pressed.
 LRESULT OmahaWnd::OnCancel(WORD, WORD id, HWND, BOOL& handled) {
-  DCHECK_EQ(id, IDCANCEL);
+  CHECK_EQ(id, IDCANCEL);
 
   if (!is_close_enabled_) {
     return 0;
@@ -242,7 +242,7 @@ HRESULT OmahaWnd::EnableSystemCloseButton(bool enable) {
 
 HRESULT InitializeCommonControls(DWORD control_classes) {
   INITCOMMONCONTROLSEX init_ctrls = {sizeof(INITCOMMONCONTROLSEX), 0};
-  DCHECK_EQ(init_ctrls.dwSize, sizeof(init_ctrls));
+  CHECK_EQ(init_ctrls.dwSize, sizeof(init_ctrls));
   init_ctrls.dwICC = control_classes;
   if (!::InitCommonControlsEx(&init_ctrls)) {
     const DWORD error = ::GetLastError();

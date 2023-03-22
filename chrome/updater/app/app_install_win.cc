@@ -196,9 +196,9 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   // by the progress window. This call always occurs in the context of the
   // thread which owns the window.
   void Invoke(WPARAM wparam, LPARAM lparam) {
-    DCHECK_EQ(observer_thread_id_, ::GetCurrentThreadId());
-    DCHECK_NE(lparam, 0);
-    DCHECK_EQ(wparam, WPARAM{0});
+    CHECK_EQ(observer_thread_id_, ::GetCurrentThreadId());
+    CHECK_NE(lparam, 0);
+    CHECK_EQ(wparam, WPARAM{0});
     std::unique_ptr<base::OnceClosure> callback_wrapper(
         reinterpret_cast<base::OnceClosure*>(lparam));
     std::move(*callback_wrapper).Run();
@@ -886,7 +886,7 @@ void AppInstallControllerImpl::InitializeUI() {
 
 void AppInstallControllerImpl::RunUI() {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
 
   ui_message_loop_->Run();
   ui_message_loop_->RemoveMessageFilter(this);
@@ -899,13 +899,13 @@ void AppInstallControllerImpl::RunUI() {
 }
 
 void AppInstallControllerImpl::DoExit() {
-  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   PostThreadMessage(GetCurrentThreadId(), WM_QUIT, 0, 0);
 }
 
 BOOL AppInstallControllerImpl::PreTranslateMessage(MSG* msg) {
   if (const auto ui_thread_id = GetUIThreadID(); ui_thread_id != 0) {
-    DCHECK_EQ(ui_thread_id, GetCurrentThreadId());
+    CHECK_EQ(ui_thread_id, GetCurrentThreadId());
   } else {
     VLOG(1) << "Can't find a thread id for the message: " << msg->message;
   }
@@ -917,12 +917,12 @@ BOOL AppInstallControllerImpl::PreTranslateMessage(MSG* msg) {
 }
 
 DWORD AppInstallControllerImpl::GetUIThreadID() const {
-  DCHECK_NE(ui_thread_id_, 0u);
+  CHECK_NE(ui_thread_id_, 0u);
   return ui_thread_id_;
 }
 
 bool AppInstallControllerImpl::DoLaunchBrowser(const std::string& url) {
-  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
 
   return SUCCEEDED(RunDeElevated(base::SysUTF8ToWide(url), {}));
 }
@@ -930,17 +930,17 @@ bool AppInstallControllerImpl::DoLaunchBrowser(const std::string& url) {
 bool AppInstallControllerImpl::DoRestartBrowser(
     bool restart_all_browsers,
     const std::vector<std::u16string>& urls) {
-  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   return false;
 }
 
 bool AppInstallControllerImpl::DoReboot() {
-  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   return false;
 }
 
 void AppInstallControllerImpl::DoCancel() {
-  DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
+  CHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UpdateService::CancelInstalls, update_service_, app_id_));

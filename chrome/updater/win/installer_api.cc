@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
@@ -307,7 +308,7 @@ Installer::Result MakeInstallerResult(
         if (installer_outcome->installer_cmd_line) {
           result.installer_cmd_line = *installer_outcome->installer_cmd_line;
         }
-        DCHECK_EQ(result.error, 0);
+        CHECK_EQ(result.error, 0);
         break;
 
       case InstallerResult::kCustomError:
@@ -328,7 +329,7 @@ Installer::Result MakeInstallerResult(
         if (installer_outcome->installer_text) {
           result.installer_text = *installer_outcome->installer_text;
         }
-        DCHECK_NE(result.error, 0);
+        CHECK_NE(result.error, 0);
         break;
 
       case InstallerResult::kMsiError:
@@ -345,7 +346,7 @@ Installer::Result MakeInstallerResult(
           result.extended_error = *installer_outcome->installer_extracode1;
         }
         result.installer_text = GetTextForSystemError(result.error);
-        DCHECK_NE(result.error, 0);
+        CHECK_NE(result.error, 0);
         break;
 
       case InstallerResult::kExitCode:

@@ -569,7 +569,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       }
 
     } else if (result_) {
-      DCHECK_NE(result_.value(), UpdateService::Result::kSuccess);
+      CHECK_NE(result_.value(), UpdateService::Result::kSuccess);
       state_value = STATE_ERROR;
       error_code =
           (result_.value() == UpdateService::Result::kSuccess) ? 0 : -1;

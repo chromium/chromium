@@ -50,7 +50,7 @@ UpdaterScope GetUpdaterScopeForCommandLine(
       GetTagArgsForCommandLine(command_line).tag_args;
   if (tag_args && !tag_args->apps.empty() &&
       tag_args->apps.front().needs_admin) {
-    DCHECK_EQ(tag_args->apps.size(), size_t{1});
+    CHECK_EQ(tag_args->apps.size(), size_t{1});
     switch (*tag_args->apps.front().needs_admin) {
       case tagging::AppArgs::NeedsAdmin::kYes:
         return UpdaterScope::kSystem;

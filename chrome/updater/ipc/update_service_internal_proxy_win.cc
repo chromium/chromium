@@ -53,7 +53,7 @@ class UpdaterInternalCallback
 
  private:
   ~UpdaterInternalCallback() override {
-    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
     if (callback_)
       std::move(callback_).Run();
   }
@@ -66,13 +66,13 @@ class UpdaterInternalCallback
 };
 
 IFACEMETHODIMP UpdaterInternalCallback::Run(LONG result) {
-  DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+  CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
   VLOG(2) << __func__ << " result " << result << ".";
   return S_OK;
 }
 
 base::OnceClosure UpdaterInternalCallback::Disconnect() {
-  DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+  CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
   VLOG(2) << __func__;
   return std::move(callback_);
 }

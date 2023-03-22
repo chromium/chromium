@@ -48,7 +48,7 @@ std::wstring GetInstallerDisplayName(const std::u16string& bundle_name);
 // short, unsigned long, unsigned int etc.
 template <typename T>
 inline T CeilingDivide(T m, T n) {
-  DCHECK_NE(0, n);
+  CHECK_NE(0, n);
   return (m + n - 1) / n;
 }
 

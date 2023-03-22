@@ -4,6 +4,8 @@
 
 #include "chrome/updater/win/scoped_impersonation.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "chrome/updater/util/win_util.h"
 
@@ -14,7 +16,7 @@ HRESULT ScopedImpersonation::Impersonate(HANDLE token) {
     return E_FAIL;
 
   result_ = ::ImpersonateLoggedOnUser(token) ? S_OK : HRESULTFromLastError();
-  DCHECK_EQ(result_, S_OK);
+  CHECK_EQ(result_, S_OK);
   return result_;
 }
 

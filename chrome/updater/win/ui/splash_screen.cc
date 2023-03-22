@@ -62,7 +62,7 @@ SplashScreen::~SplashScreen() {
 
 void SplashScreen::Show() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(WindowState::STATE_CREATED, state_);
+  CHECK_EQ(WindowState::STATE_CREATED, state_);
 
   if (FAILED(Initialize())) {
     return;
@@ -199,7 +199,7 @@ void SplashScreen::InitProgressBar() {
 LRESULT SplashScreen::OnTimer(UINT, WPARAM, LPARAM, BOOL& handled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, WindowState::STATE_FADING);
-  DCHECK_GT(alpha_index_, 0);
+  CHECK_GT(alpha_index_, 0);
   if (--alpha_index_) {
     ::SetLayeredWindowAttributes(
         m_hWnd, 0, AlphaScaleToAlphaValue(kAlphaScales[alpha_index_]),

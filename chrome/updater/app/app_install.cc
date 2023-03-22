@@ -132,7 +132,7 @@ void AppInstall::FirstTaskRun() {
       tag_parsing_result.tag_args.value_or(tagging::TagArgs());
   if (!tag_args.apps.empty()) {
     // TODO(crbug.com/1128631): support bundles. For now, assume one app.
-    DCHECK_EQ(tag_args.apps.size(), size_t{1});
+    CHECK_EQ(tag_args.apps.size(), size_t{1});
     const tagging::AppArgs& app_args = tag_args.apps.front();
     app_id_ = app_args.app_id;
     app_name_ = app_args.app_name;

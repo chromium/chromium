@@ -13,6 +13,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #include "base/base_paths.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -55,8 +56,8 @@ constexpr int64_t kLogRotateAtSize = 1024 * 1024 * 5;  // 5 MiB.
 
 const char kHexString[] = "0123456789ABCDEF";
 inline char IntToHex(int i) {
-  DCHECK_GE(i, 0) << i << " not a hex value";
-  DCHECK_LE(i, 15) << i << " not a hex value";
+  CHECK_GE(i, 0) << i << " not a hex value";
+  CHECK_LE(i, 15) << i << " not a hex value";
   return kHexString[i];
 }
 

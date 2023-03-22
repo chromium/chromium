@@ -14,6 +14,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/sys_string_conversions.h"
@@ -48,7 +49,7 @@ bool ReadAttribute(IXMLDOMNode* node,
     return false;
   }
 
-  DCHECK_EQ(node_value.type(), VT_BSTR);
+  CHECK_EQ(node_value.type(), VT_BSTR);
   VARIANT released_variant = node_value.Release();
   *value = V_BSTR(&released_variant);
   return true;
