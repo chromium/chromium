@@ -453,6 +453,9 @@
   <message name="IDS_SETTINGS_CREDIT_CARD_NICKNAME_INVALID" desc="The error message that is shown when user uses digit numbers in credit card nickname">
     Nickname can’t include numbers
   </message>
+  <message name="IDS_SETTINGS_ADD_PAYMENT_METHODS" desc="The (accessibility) label that appears in the drop-down button for adding either an IBAN (International Bank Account Number), or a credit/debit card.">
+    Add payment methods
+  </message>
   <message name="IDS_SETTINGS_ADD_PAYMENT_METHOD_CREDIT_OR_DEBIT_CARD" desc="The label that appears in the drop-down selector when adding a local payment method, which allows users to add a credit or debit card.">
     Credit/Debit card
   </message>
