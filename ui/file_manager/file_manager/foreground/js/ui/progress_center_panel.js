@@ -455,7 +455,14 @@ export class ProgressCenterPanel {
     // Compares the current state and the new state to check if the update is
     // valid or not.
     const previousItem = this.items_[item.id];
+    if (previousItem?.isDestinationDrive) {
+      item.isDestinationDrive = true;
+    }
     switch (item.state) {
+      case ProgressItemState.PENDING:
+        this.items_[item.id] = item.clone();
+        break;
+
       case ProgressItemState.ERROR:
         if (previousItem &&
             previousItem.state !== ProgressItemState.PROGRESSING) {
@@ -489,6 +496,12 @@ export class ProgressCenterPanel {
    */
   updateItem(item) {
     this.updateItemState_(item);
+
+    // Item hasn't been updated with information from its first IOTask event
+    // from the backend yet. Let's wait for that before proceeding.
+    if (item.state === ProgressItemState.PENDING) {
+      return;
+    }
 
     // Update an open view item.
     const newItem = this.items_[item.id] || null;
