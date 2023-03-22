@@ -110,7 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> म्हणून साइन इन केले.</translation>
 <translation id="579702532610384533">रीकनेक्ट करा</translation>
 <translation id="5810269635982033450">स्क्रीन ट्रॅकपॅडसारखी काम करत आहे</translation>
-<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने तुमची स्क्रीन पाहण्यासाठी आणि तुमचा कीबोर्ड व माउस नियंत्रित करण्यासाठी ॲक्सेसची विनंती केली आहे. तुम्हाला ही विनंती अपेक्षित नसल्यास, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' दाबा. अन्यथा तयार असाल तेव्हा, कनेक्शनची अनुमती देण्यासाठी ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' निवडा.</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने तुमची स्क्रीन पाहण्यासाठी आणि तुमचा कीबोर्ड व माउस नियंत्रित करण्यासाठी ॲक्सेसची विनंती केली आहे. तुम्हाला ही विनंती अपेक्षित नसल्यास, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' प्रेस करा. अन्यथा तयार असाल तेव्हा, कनेक्शनची अनुमती देण्यासाठी ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' निवडा.</translation>
 <translation id="5823658491130719298">तुम्हाला दुरून ॲक्सेस करायच्या असलेल्या काँप्युटरवर, Chrome उघडा आणि <ph name="INSTALLATION_LINK" /> वर जा</translation>
 <translation id="5841343754884244200">डिस्प्ले पर्याय</translation>
 <translation id="6033507038939587647">कीबोर्ड पर्याय</translation>

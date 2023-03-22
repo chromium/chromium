@@ -347,7 +347,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="2908243544703713905">Có tin bài chưa đọc</translation>
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
 <translation id="2912296070571964914">Quản lý các chủ đề mà bạn quan tâm</translation>
-<translation id="2912345083818861431">Dùng phương thức khóa màn hình để xem các thẻ Ẩn danh đang mở</translation>
+<translation id="2912345083818861431">Dùng phương thức khóa màn hình để xem các thẻ ẩn danh đang mở</translation>
 <translation id="2923908459366352541">Tên không hợp lệ</translation>
 <translation id="2932150158123903946">Bộ nhớ Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Bàn phím của bạn sẽ không thay đổi</translation>
@@ -534,7 +534,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3934366560681368531">“</translation>
 <translation id="393697183122708255">Không có tìm kiếm bằng giọng nói đã bật</translation>
 <translation id="395377504920307820">Sử dụng mà không cần tài khoản</translation>
-<translation id="3958287878205277013">Để xóa nhật ký duyệt web Ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ Ẩn danh.</translation>
+<translation id="3958287878205277013">Để xóa nhật ký duyệt web ẩn danh khỏi thiết bị của bạn, hãy đóng tất cả thẻ ẩn danh.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sẽ tải trang của bạn khi sẵn sàng}other{Chrome sẽ tải trang của bạn khi sẵn sàng}}</translation>
 <translation id="3962119236270174787">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm</translation>
 <translation id="3963007978381181125">Việc mã hóa cụm mật khẩu không bao gồm địa chỉ và phương thức thanh toán từ Google Pay. Chỉ người có cụm mật khẩu của bạn mới có thể đọc dữ liệu mã hóa. Cụm mật khẩu này sẽ không được gửi đến hay lưu trữ tại Google. Nếu quên cụm mật khẩu hoặc muốn thay đổi tùy chọn cài đặt này, thì bạn cần đặt lại tính năng đồng bộ hóa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -1422,7 +1422,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8523928698583292556">Xóa mật khẩu đã lưu trữ</translation>
 <translation id="8540136935098276800">Nhập URL có định dạng chính xác</translation>
 <translation id="854522910157234410">Mở trang này</translation>
-<translation id="8551513938758868521">Khóa các thẻ Ẩn danh khi bạn đóng Chrome</translation>
+<translation id="8551513938758868521">Khóa các thẻ ẩn danh khi bạn đóng Chrome</translation>
 <translation id="8559990750235505898">Đề xuất dịch trang bằng các ngôn ngữ khác</translation>
 <translation id="8560560256644480257">Đang tạo GIF <ph name="PERCENT" />%%</translation>
 <translation id="8560602726703398413">Tìm danh sách đọc trong phần Dấu trang</translation>
@@ -1497,7 +1497,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8942627711005830162">Mở trong cửa sổ khác</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Không thể tải ngôn ngữ này xuống. Hãy thử lại sau.</translation>
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
-<translation id="8964479563882643397">Để mở một thẻ Ẩn danh mới, hãy mở trình đơn</translation>
+<translation id="8964479563882643397">Để mở một thẻ ẩn danh mới, hãy mở trình đơn</translation>
 <translation id="8965591936373831584">đang chờ xử lý</translation>
 <translation id="8967427617812342790">Thêm vào danh sách đọc</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_ONE" /> thẻ nữa sẽ đóng}other{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_MANY" /> thẻ nữa sẽ đóng}}</translation>
