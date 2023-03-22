@@ -107,7 +107,7 @@ class PageTimingMetricsSender {
  private:
   void EnsureSendTimer(bool urgent = false);
   void SendNow();
-  void ClearNewFeatures();
+  void InsertPageResourceDataUse(std::unique_ptr<PageResourceDataUse> data);
 
   std::unique_ptr<PageTimingSender> sender_;
   std::unique_ptr<base::OneShotTimer> timer_;

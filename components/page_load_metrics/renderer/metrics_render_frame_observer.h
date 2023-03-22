@@ -161,7 +161,6 @@ class MetricsRenderFrameObserver
   // information from ongoing resource requests on the previous page (or right
   // before this page loads in a new renderer).
   std::unique_ptr<PageResourceDataUse> provisional_frame_resource_data_use_;
-  int provisional_frame_resource_id_ = 0;
 
   base::ScopedObservation<subresource_filter::AdResourceTracker,
                           subresource_filter::AdResourceTracker::Observer>

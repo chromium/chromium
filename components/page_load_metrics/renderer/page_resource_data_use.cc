@@ -12,19 +12,8 @@
 
 namespace page_load_metrics {
 
-PageResourceDataUse::PageResourceDataUse()
-    : resource_id_(-1),
-      total_received_bytes_(0),
-      last_update_bytes_(0),
-      is_complete_(false),
-      is_canceled_(false),
-      reported_as_ad_resource_(false),
-      is_main_frame_resource_(false),
-      is_secure_scheme_(false),
-      proxy_used_(false),
-      is_primary_frame_resource_(false),
-      completed_before_fcp_(false),
-      cache_type_(mojom::CacheType::kNotCached) {}
+PageResourceDataUse::PageResourceDataUse(int resource_id)
+    : resource_id_(resource_id) {}
 
 PageResourceDataUse::PageResourceDataUse(const PageResourceDataUse& other) =
     default;
@@ -35,6 +24,9 @@ void PageResourceDataUse::DidStartResponse(
     int resource_id,
     const network::mojom::URLResponseHead& response_head,
     network::mojom::RequestDestination request_destination) {
+  if (resource_id_ != kUnknownResourceId) {
+    CHECK_EQ(resource_id_, resource_id);
+  }
   resource_id_ = resource_id;
 
   proxy_used_ = !response_head.proxy_server.is_direct();
@@ -68,10 +60,11 @@ void PageResourceDataUse::DidCancelResponse() {
 }
 
 void PageResourceDataUse::DidLoadFromMemoryCache(const GURL& response_url,
-                                                 int request_id,
                                                  int64_t encoded_body_length,
                                                  const std::string& mime_type) {
-  resource_id_ = request_id;
+  // Resource id was set in the constructor.
+  CHECK_NE(resource_id_, kUnknownResourceId);
+
   mime_type_ = mime_type;
   is_secure_scheme_ = response_url.SchemeIsCryptographic();
   cache_type_ = mojom::CacheType::kMemory;

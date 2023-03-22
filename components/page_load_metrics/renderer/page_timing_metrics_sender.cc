@@ -61,10 +61,9 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
   InitiateUserInteractionTiming();
-  const auto resource_id = initial_request->resource_id();
-  page_resource_data_use_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(resource_id),
-      std::forward_as_tuple(std::move(initial_request)));
+  if (initial_request) {
+    InsertPageResourceDataUse(std::move(initial_request));
+  }
   if (!IsEmpty(*last_timing_)) {
     EnsureSendTimer();
   }
@@ -153,11 +152,10 @@ void PageTimingMetricsSender::DidStartResponse(
     network::mojom::RequestDestination request_destination) {
   DCHECK(!base::Contains(page_resource_data_use_, resource_id));
 
-  auto resource_it = page_resource_data_use_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(resource_id),
-      std::forward_as_tuple(std::make_unique<PageResourceDataUse>()));
-  resource_it.first->second->DidStartResponse(
-      final_response_url, resource_id, response_head, request_destination);
+  auto data_use = std::make_unique<PageResourceDataUse>(resource_id);
+  data_use->DidStartResponse(final_response_url, resource_id, response_head,
+                             request_destination);
+  InsertPageResourceDataUse(std::move(data_use));
 }
 
 void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(
@@ -180,21 +178,20 @@ void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(
 void PageTimingMetricsSender::DidCompleteResponse(
     int resource_id,
     const network::URLLoaderCompletionStatus& status) {
-  auto resource_it = page_resource_data_use_.find(resource_id);
+  PageResourceDataUse* data_use_raw_ptr;
 
-  // It is possible that resources are not in the map, if response headers were
-  // not received or for failed/cancelled resources. For data reduction proxy
-  // purposes treat these as having no savings.
-  if (resource_it == page_resource_data_use_.end()) {
-    auto new_resource_it = page_resource_data_use_.emplace(
-        std::piecewise_construct, std::forward_as_tuple(resource_id),
-        std::forward_as_tuple(std::make_unique<PageResourceDataUse>()));
-    resource_it = new_resource_it.first;
+  auto resource_it = page_resource_data_use_.find(resource_id);
+  if (resource_it != page_resource_data_use_.end()) {
+    data_use_raw_ptr = resource_it->second.get();
+  } else {
+    auto data_use = std::make_unique<PageResourceDataUse>(resource_id);
+    data_use_raw_ptr = data_use.get();
+    InsertPageResourceDataUse(std::move(data_use));
   }
 
-  resource_it->second->DidCompleteResponse(status);
+  data_use_raw_ptr->DidCompleteResponse(status);
+  modified_resources_.insert(data_use_raw_ptr);
   EnsureSendTimer();
-  modified_resources_.insert(resource_it->second.get());
 }
 
 void PageTimingMetricsSender::DidCancelResponse(int resource_id) {
@@ -218,12 +215,11 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
   if (base::Contains(page_resource_data_use_, request_id))
     return;
 
-  auto resource_it = page_resource_data_use_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(request_id),
-      std::forward_as_tuple(std::make_unique<PageResourceDataUse>()));
-  resource_it.first->second->DidLoadFromMemoryCache(
-      response_url, request_id, encoded_body_length, mime_type);
-  modified_resources_.insert(resource_it.first->second.get());
+  auto data_use = std::make_unique<PageResourceDataUse>(request_id);
+  data_use->DidLoadFromMemoryCache(response_url, encoded_body_length,
+                                   mime_type);
+  modified_resources_.insert(data_use.get());
+  InsertPageResourceDataUse(std::move(data_use));
 }
 
 void PageTimingMetricsSender::OnMainFrameIntersectionChanged(
@@ -374,6 +370,12 @@ void PageTimingMetricsSender::DidObserveInputDelay(
       base::Milliseconds(std::max(int64_t(0), input_delay.InMilliseconds() -
                                                   kInputDelayAdjustmentMillis));
   EnsureSendTimer();
+}
+
+void PageTimingMetricsSender::InsertPageResourceDataUse(
+    std::unique_ptr<PageResourceDataUse> data) {
+  int resource_id = data->resource_id();
+  page_resource_data_use_[resource_id] = std::move(data);
 }
 
 void PageTimingMetricsSender::InitiateUserInteractionTiming() {

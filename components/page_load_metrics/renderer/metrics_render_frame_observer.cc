@@ -286,9 +286,8 @@ void MetricsRenderFrameObserver::DidSetPageLifecycleState() {
 void MetricsRenderFrameObserver::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
   // Create a new data use tracker for the new document load.
-  provisional_frame_resource_data_use_ =
-      std::make_unique<PageResourceDataUse>();
-  provisional_frame_resource_id_ = 0;
+  provisional_frame_resource_data_use_ = std::make_unique<PageResourceDataUse>(
+      PageResourceDataUse::kUnknownResourceId);
 
   // Send current metrics before the next page load commits. Don't reset here
   // as it may be a same document load.
@@ -331,7 +330,7 @@ void MetricsRenderFrameObserver::DidCreateDocumentElement() {
   page_timing_metrics_sender_ = std::make_unique<PageTimingMetricsSender>(
       CreatePageTimingSender(true /* limited_sending_mode */), CreateTimer(),
       std::move(timing.relative_timing), timing.monotonic_timing,
-      std::make_unique<PageResourceDataUse>());
+      /* initial_request=*/nullptr);
 
   OnMetricsSenderCreated();
 }
@@ -343,9 +342,6 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
 
   if (HasNoRenderFrame())
     return;
-
-  provisional_frame_resource_id_ =
-      provisional_frame_resource_data_use_->resource_id();
 
   Timing timing = GetTiming();
   page_timing_metrics_sender_ = std::make_unique<PageTimingMetricsSender>(
