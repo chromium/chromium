@@ -81,11 +81,12 @@ WGPUAdapterType PowerPreferenceToDawnAdapterType(
     WGPUPowerPreference power_preference) {
   switch (power_preference) {
     case WGPUPowerPreference_LowPower:
+    // Currently for simplicity we always choose integrated GPU as the device
+    // related to default power preference. This avoids websites starting
+    // WebGPU just for feature detection from powering up the discrete GPU.
+    case WGPUPowerPreference_Undefined:
       return WGPUAdapterType_IntegratedGPU;
     case WGPUPowerPreference_HighPerformance:
-    // Currently for simplicity we always choose discrete GPU as the device
-    // related to default power preference.
-    case WGPUPowerPreference_Undefined:
       return WGPUAdapterType_DiscreteGPU;
     default:
       NOTREACHED();
@@ -438,7 +439,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool enable_unsafe_webgpu_ = false;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
-      WebGPUPowerPreference::kDefaultHighPerformance;
+      WebGPUPowerPreference::kDefaultLowPower;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
   bool allow_unsafe_apis_;
@@ -1644,15 +1645,15 @@ int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
     }
   }
 
-  // For now, we always prefer the discrete GPU
-  if (discrete_gpu_adapter_index >= 0 &&
-      use_webgpu_power_preference_ != WebGPUPowerPreference::kForceLowPower) {
-    return discrete_gpu_adapter_index;
-  }
+  // For now, we always prefer the integrated GPU
   if (integrated_gpu_adapter_index >= 0 &&
       use_webgpu_power_preference_ !=
           WebGPUPowerPreference::kForceHighPerformance) {
     return integrated_gpu_adapter_index;
+  }
+  if (discrete_gpu_adapter_index >= 0 &&
+      use_webgpu_power_preference_ != WebGPUPowerPreference::kForceLowPower) {
+    return discrete_gpu_adapter_index;
   }
   if (use_webgpu_power_preference_ == WebGPUPowerPreference::kForceLowPower ||
       use_webgpu_power_preference_ ==

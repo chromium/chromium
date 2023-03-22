@@ -283,7 +283,7 @@ WebGPUPowerPreference ParseWebGPUPowerPreference(
     auto value =
         command_line->GetSwitchValueASCII(switches::kUseWebGPUPowerPreference);
     if (value.empty()) {
-      return WebGPUPowerPreference::kDefaultHighPerformance;
+      return WebGPUPowerPreference::kDefaultLowPower;
     } else if (value == "default-low-power") {
       return WebGPUPowerPreference::kDefaultLowPower;
     } else if (value == "default-high-performance") {
@@ -297,7 +297,7 @@ WebGPUPowerPreference ParseWebGPUPowerPreference(
                   << "=" << value << ".";
     }
   }
-  return WebGPUPowerPreference::kDefaultHighPerformance;
+  return WebGPUPowerPreference::kDefaultLowPower;
 }
 
 }  // namespace gles2
