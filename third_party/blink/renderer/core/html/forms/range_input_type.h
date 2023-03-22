@@ -70,6 +70,8 @@ class RangeInputType final : public InputType, public InputTypeView {
   void SanitizeValueInResponseToMinOrMaxAttributeChange() override;
   void StepAttributeChanged() override;
   void WarnIfValueIsInvalid(const String&) const override;
+  String RangeOverflowText(const Decimal& maxmum) const override;
+  String RangeUnderflowText(const Decimal& minimum) const override;
   void DidSetValue(const String&, bool value_changed) override;
   String SanitizeValue(const String& proposed_value) const override;
   bool ShouldRespectListAttribute() override;
