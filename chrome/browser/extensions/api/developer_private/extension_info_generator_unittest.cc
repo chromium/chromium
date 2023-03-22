@@ -980,8 +980,8 @@ class ExtensionInfoGeneratorUnitTestSupervised
 
     GetSupervisedUserService()->Init();
     // Set the pref to allow the child to request extension install.
-    GetSupervisedUserService()
-        ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
+    supervised_user_test_util::
+        SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
   }
 };
 
@@ -1026,8 +1026,8 @@ TEST_F(ExtensionInfoGeneratorUnitTestSupervised,
 
   // Simulate the parent disallowing the child from approving permission
   // updates.
-  GetSupervisedUserService()
-      ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
 
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       GenerateExtensionInfo(extension_id);

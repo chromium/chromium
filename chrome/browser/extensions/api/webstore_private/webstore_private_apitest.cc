@@ -371,10 +371,8 @@ class ExtensionWebstorePrivateApiTestChild
     ExtensionWebstorePrivateApiTest::SetUpOnMainThread();
 
     InitializeFamilyData();
-    SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForProfile(profile());
-    service->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(
-        true);
+    supervised_user_test_util::
+        SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
   }
 
   ash::LoggedInUserMixin* GetLoggedInUserMixin() {
@@ -488,10 +486,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTestChild,
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  SupervisedUserService* service =
-      SupervisedUserServiceFactory::GetForProfile(profile());
-  service->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(
-      false);
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
 
   set_next_dialog_action(NextDialogAction::kAccept);
   // Tell the Reauth API client to return a success for the next reauth

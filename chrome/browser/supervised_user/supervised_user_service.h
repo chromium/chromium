@@ -228,9 +228,6 @@ class SupervisedUserService
 
   bool GetSupervisedUserExtensionsMayRequestPermissionsPref() const;
 
-  void SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(
-      bool enabled);
-
   bool CanInstallExtensions() const;
 
   bool IsExtensionAllowed(const extensions::Extension& extension) const;

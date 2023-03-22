@@ -319,19 +319,6 @@ bool SupervisedUserService::
       prefs::kSupervisedUserExtensionsMayRequestPermissions);
 }
 
-void SupervisedUserService::
-    SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(
-        bool enabled) {
-  // TODO(crbug/1024646): kSupervisedUserExtensionsMayRequestPermissions is
-  // currently set indirectly by setting geolocation requests. Update Kids
-  // Management server to set a new bit for extension permissions and update
-  // this setter function.
-  settings_service_->SetLocalSetting(supervised_user::kGeolocationDisabled,
-                                     base::Value(!enabled));
-  user_prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
-                          enabled);
-}
-
 bool SupervisedUserService::CanInstallExtensions() const {
   return HasACustodian() &&
          GetSupervisedUserExtensionsMayRequestPermissionsPref();

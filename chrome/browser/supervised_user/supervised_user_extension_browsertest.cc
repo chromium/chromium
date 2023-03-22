@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -92,12 +93,6 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
     return SupervisedUserServiceFactory::GetForProfile(profile());
   }
 
-  void SetSupervisedUserExtensionsMayRequestPermissionsPref(bool enabled) {
-    GetSupervisedUserService()
-        ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(
-            enabled);
-  }
-
   bool IsDisabledForCustodianApproval(const std::string& extension_id) {
     ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile());
     return extension_prefs->HasDisableReason(
@@ -125,7 +120,8 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
 // after removing supervision. Prevents a regression to crbug/1045625.
 IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
                        PRE_RemovingSupervisionCustodianApprovalRequired) {
-  SetSupervisedUserExtensionsMayRequestPermissionsPref(true);
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
 
   EXPECT_TRUE(profile()->IsChild());
 

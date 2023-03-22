@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -323,8 +324,9 @@ TEST_F(SupervisedUserServiceExtensionTest,
        ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls) {
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
-  supervised_user_service
-      ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile_.get(),
+                                                           false);
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions));
   EXPECT_TRUE(profile_->IsChild());
@@ -376,8 +378,9 @@ TEST_F(SupervisedUserServiceExtensionTest,
       SupervisedUserServiceFactory::GetForProfile(profile_.get());
   // Enable child users to initiate extension installs by simulating the
   // toggling of "Permissions for sites, apps and extensions" to enabled.
-  supervised_user_service
-      ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile_.get(),
+                                                           true);
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions));
   EXPECT_TRUE(profile_->IsChild());
