@@ -102,11 +102,71 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return True
 
   def _GetSerialGlobs(self) -> Set[str]:
-    return {
+    globs = {
         # crbug.com/1406799. Large test.
         # Run serially to avoid impact on other tests.
         '*:api,operation,rendering,basic:large_draw:*',
     }
+
+    # crbug.com/dawn/1500. Flaky tests on Mac-Intel when using 16 byte formats
+    # in parallel.
+    FORMATS_WITH_16_BYTE_BLOCKS = [
+        # Basic color formats
+        'rgba32uint',
+        'rgba32sint',
+        'rgba32float',
+        # BC compression formats
+        'bc2-rgba-unorm',
+        'bc2-rgba-unorm-srgb',
+        'bc3-rgba-unorm',
+        'bc3-rgba-unorm-srgb',
+        'bc5-rg-unorm',
+        'bc5-rg-snorm',
+        'bc6h-rgb-ufloat',
+        'bc6h-rgb-float',
+        'bc7-rgba-unorm',
+        'bc7-rgba-unorm-srgb',
+        # ETC2 compression formats
+        'etc2-rgba8unorm',
+        'etc2-rgba8unorm-srgb',
+        'eac-rg11unorm',
+        'eac-rg11snorm',
+        # ASTC compression formats
+        'astc-4x4-unorm',
+        'astc-4x4-unorm-srgb',
+        'astc-5x4-unorm',
+        'astc-5x4-unorm-srgb',
+        'astc-5x5-unorm',
+        'astc-5x5-unorm-srgb',
+        'astc-6x5-unorm',
+        'astc-6x5-unorm-srgb',
+        'astc-6x6-unorm',
+        'astc-6x6-unorm-srgb',
+        'astc-8x5-unorm',
+        'astc-8x5-unorm-srgb',
+        'astc-8x6-unorm',
+        'astc-8x6-unorm-srgb',
+        'astc-8x8-unorm',
+        'astc-8x8-unorm-srgb',
+        'astc-10x5-unorm',
+        'astc-10x5-unorm-srgb',
+        'astc-10x6-unorm',
+        'astc-10x6-unorm-srgb',
+        'astc-10x8-unorm',
+        'astc-10x8-unorm-srgb',
+        'astc-10x10-unorm',
+        'astc-10x10-unorm-srgb',
+        'astc-12x10-unorm',
+        'astc-12x10-unorm-srgb',
+        'astc-12x12-unorm',
+        'astc-12x12-unorm-srgb'
+    ]
+    for f in FORMATS_WITH_16_BYTE_BLOCKS:
+      globs.add((
+          '*:api,operation,command_buffer,image_copy:origins_and_extents:'
+          'initMethod="WriteTexture";checkMethod="PartialCopyT2B";format="%s";*'
+      ) % f)
+    return globs
 
   def _GetSerialTests(self) -> Set[str]:
     return set()
