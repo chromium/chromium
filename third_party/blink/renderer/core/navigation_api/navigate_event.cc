@@ -41,7 +41,7 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
                 ? init->info()
                 : ScriptValue(context->GetIsolate(),
                               v8::Undefined(context->GetIsolate()))) {
-  DCHECK(IsA<LocalDOMWindow>(context));
+  CHECK(IsA<LocalDOMWindow>(context));
 }
 
 bool NavigateEvent::PerformSharedChecks(const String& function_name,
@@ -123,17 +123,16 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
     scroll_behavior_ = options->scroll();
   }
 
-  DCHECK(intercept_state_ == InterceptState::kNone ||
-         intercept_state_ == InterceptState::kIntercepted);
+  CHECK(intercept_state_ == InterceptState::kNone ||
+        intercept_state_ == InterceptState::kIntercepted);
   intercept_state_ = InterceptState::kIntercepted;
   if (options->hasHandler())
     navigation_action_handlers_list_.push_back(options->handler());
 }
 
 void NavigateEvent::DoCommit() {
-  DCHECK_EQ(intercept_state_, InterceptState::kIntercepted);
-  DCHECK(!dispatch_params_->destination_item ||
-         !dispatch_params_->state_object);
+  CHECK_EQ(intercept_state_, InterceptState::kIntercepted);
+  CHECK(!dispatch_params_->destination_item || !dispatch_params_->state_object);
 
   intercept_state_ = InterceptState::kCommitted;
 
@@ -167,7 +166,7 @@ void NavigateEvent::DoCommit() {
 }
 
 ScriptPromise NavigateEvent::GetReactionPromiseAll(ScriptState* script_state) {
-  DCHECK(navigation_action_handlers_list_.empty());
+  CHECK(navigation_action_handlers_list_.empty());
   if (!navigation_action_promises_list_.empty()) {
     return ScriptPromise::All(script_state, navigation_action_promises_list_);
   }
@@ -194,8 +193,8 @@ void NavigateEvent::FinalizeNavigationActionPromisesList() {
 }
 
 void NavigateEvent::PotentiallyResetTheFocus() {
-  DCHECK(intercept_state_ == InterceptState::kCommitted ||
-         intercept_state_ == InterceptState::kScrolled);
+  CHECK(intercept_state_ == InterceptState::kCommitted ||
+        intercept_state_ == InterceptState::kScrolled);
   auto* document = DomWindow()->document();
   document->RemoveFocusedElementChangeObserver(this);
 
@@ -222,7 +221,7 @@ void NavigateEvent::PotentiallyResetTheFocus() {
 }
 
 void NavigateEvent::DidChangeFocus() {
-  DCHECK(HasNavigationActions());
+  CHECK(HasNavigationActions());
   did_change_focus_during_intercept_ = true;
 }
 
@@ -259,8 +258,8 @@ void NavigateEvent::scroll(ExceptionState& exception_state) {
 }
 
 void NavigateEvent::Finish(bool did_fulfill) {
-  DCHECK_NE(intercept_state_, InterceptState::kIntercepted);
-  DCHECK_NE(intercept_state_, InterceptState::kFinished);
+  CHECK_NE(intercept_state_, InterceptState::kIntercepted);
+  CHECK_NE(intercept_state_, InterceptState::kFinished);
   if (intercept_state_ == InterceptState::kNone) {
     return;
   }
@@ -272,8 +271,8 @@ void NavigateEvent::Finish(bool did_fulfill) {
 }
 
 void NavigateEvent::PotentiallyProcessScrollBehavior() {
-  DCHECK(intercept_state_ == InterceptState::kCommitted ||
-         intercept_state_ == InterceptState::kScrolled);
+  CHECK(intercept_state_ == InterceptState::kCommitted ||
+        intercept_state_ == InterceptState::kScrolled);
   if (intercept_state_ == InterceptState::kScrolled) {
     return;
   }
@@ -293,12 +292,11 @@ WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
     return WebFrameLoadType::kBackForward;
   if (navigation_type == "reload")
     return WebFrameLoadType::kReload;
-  NOTREACHED();
-  return WebFrameLoadType::kStandard;
+  NOTREACHED_NORETURN();
 }
 
 void NavigateEvent::ProcessScrollBehavior() {
-  DCHECK_EQ(intercept_state_, InterceptState::kCommitted);
+  CHECK_EQ(intercept_state_, InterceptState::kCommitted);
   intercept_state_ = InterceptState::kScrolled;
 
   absl::optional<HistoryItem::ViewState> view_state =

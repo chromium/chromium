@@ -66,7 +66,7 @@ ScriptValue NavigationHistoryEntry::getState() const {
 
 void NavigationHistoryEntry::SetAndSaveState(
     scoped_refptr<SerializedScriptValue> state) {
-  DCHECK_EQ(this, DomWindow()->navigation()->currentEntry());
+  CHECK_EQ(this, DomWindow()->navigation()->currentEntry());
   state_ = state;
   DomWindow()->document()->Loader()->GetHistoryItem()->SetNavigationApiState(
       state_.get());

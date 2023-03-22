@@ -50,7 +50,7 @@ NavigationApiNavigation::NavigationApiNavigation(
 void NavigationApiNavigation::NotifyAboutTheCommittedToEntry(
     NavigationHistoryEntry* entry,
     WebFrameLoadType type) {
-  DCHECK_EQ(committed_to_entry_, nullptr);
+  CHECK_EQ(committed_to_entry_, nullptr);
   committed_to_entry_ = entry;
 
   if (type != WebFrameLoadType::kBackForward)
@@ -75,7 +75,7 @@ void NavigationApiNavigation::RejectFinishedPromise(const ScriptValue& value) {
 }
 
 void NavigationApiNavigation::CleanupForWillNeverSettle() {
-  DCHECK_EQ(committed_to_entry_, nullptr);
+  CHECK_EQ(committed_to_entry_, nullptr);
   committed_resolver_->Detach();
   finished_resolver_->Detach();
   serialized_state_.reset();
