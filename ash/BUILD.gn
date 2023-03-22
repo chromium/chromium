@@ -607,6 +607,8 @@ component("ash") {
     "glanceables/glanceables_welcome_label.cc",
     "glanceables/glanceables_welcome_label.h",
     "glanceables/tasks/glanceables_tasks_client.h",
+    "glanceables/tasks/glanceables_tasks_types.cc",
+    "glanceables/tasks/glanceables_tasks_types.h",
     "host/ash_window_tree_host.cc",
     "host/ash_window_tree_host.h",
     "host/ash_window_tree_host_delegate.h",
