@@ -10,7 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_model_utils.h"
+#include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_core_service.h"

@@ -6818,6 +6818,7 @@ test("unit_tests") {
       "../browser/diagnostics/diagnostics_model_unittest.cc",
       "../browser/download/bubble/download_bubble_prefs_unittest.cc",
       "../browser/download/bubble/download_bubble_ui_controller_unittest.cc",
+      "../browser/download/bubble/download_bubble_update_service_unittest.cc",
       "../browser/download/bubble/download_display_controller_unittest.cc",
       "../browser/download/download_commands_unittest.cc",
       "../browser/download/download_dir_policy_handler_unittest.cc",

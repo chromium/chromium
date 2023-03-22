@@ -32,6 +32,7 @@ class DownloadDisplay;
 // interface. Supports both regular Download and Offline items. When in the
 // future OfflineItems include regular Download on Desktop platforms,
 // we can remove AllDownloadItemNotifier::Observer.
+// TODO(chlily): Consolidate this with DownloadBubbleUIController.
 class DownloadDisplayController
     : public download::AllDownloadItemNotifier::Observer,
       public FullscreenObserver,

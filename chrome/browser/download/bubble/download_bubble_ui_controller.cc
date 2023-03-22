@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_model_utils.h"
+#include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
