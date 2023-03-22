@@ -6,6 +6,18 @@
 #ifndef IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_METRICS_H_
 #define IOS_CHROME_BROWSER_UI_CREDENTIAL_PROVIDER_PROMO_CREDENTIAL_PROVIDER_PROMO_METRICS_H_
 
+extern const char kIOSCredentialProviderPromoImpressionHistogram[];
+extern const char kIOSCredentialProviderPromoImpressionIsReminderHistogram[];
+extern const char kIOSCredentialProviderPromoOnPasswordSavedHistogram[];
+extern const char
+    kIOSCredentialProviderPromoOnPasswordSavedIsReminderHistogram[];
+extern const char kIOSCredentialProviderPromoOnPasswordCopiedHistogram[];
+extern const char
+    kIOSCredentialProviderPromoOnPasswordCopiedIsReminderHistogram[];
+extern const char kIOSCredentialProviderPromoOnAutofillUsedHistogram[];
+extern const char
+    kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram[];
+
 namespace credential_provider_promo {
 
 // Enum for histograms like

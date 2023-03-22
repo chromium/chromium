@@ -70,7 +70,10 @@ source_set("credential_provider_promo_ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "credential_provider_promo_mediator_unittest.mm" ]
+  sources = [
+    "credential_provider_promo_coordinator_unittest.mm",
+    "credential_provider_promo_mediator_unittest.mm",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":credential_provider_promo",
@@ -79,13 +82,17 @@ source_set("unit_tests") {
     "//components/password_manager/core/common",
     "//components/prefs:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/credential_provider_promo:features",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",

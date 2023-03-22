@@ -11,16 +11,35 @@
 #error "This file requires ARC support."
 #endif
 
+const char kIOSCredentialProviderPromoImpressionHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.Impression";
+const char kIOSCredentialProviderPromoImpressionIsReminderHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.Impression.IsReminder";
+const char kIOSCredentialProviderPromoOnPasswordSavedHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnPasswordSaved";
+const char kIOSCredentialProviderPromoOnPasswordSavedIsReminderHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnPasswordSaved.IsReminder";
+const char kIOSCredentialProviderPromoOnPasswordCopiedHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnPasswordCopied";
+const char kIOSCredentialProviderPromoOnPasswordCopiedIsReminderHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnPasswordCopied.IsReminder";
+const char kIOSCredentialProviderPromoOnAutofillUsedHistogram[] =
+    "IOS.CredentialProviderExtension.Promo."
+    "OnSuccessfulLoginWithAutofilledPassword";
+const char kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram[] =
+    "IOS.CredentialProviderExtension.Promo."
+    "OnSuccessfulLoginWithAutofilledPassword.IsReminder";
+
 namespace credential_provider_promo {
 
 void RecordImpression(IOSCredentialProviderPromoSource source,
                       bool is_reminder) {
   if (is_reminder) {
     base::UmaHistogramEnumeration(
-        "IOS.CredentialProviderExtension.Promo.Impression.IsReminder", source);
+        kIOSCredentialProviderPromoImpressionIsReminderHistogram, source);
   } else {
     base::UmaHistogramEnumeration(
-        "IOS.CredentialProviderExtension.Promo.Impression", source);
+        kIOSCredentialProviderPromoImpressionHistogram, source);
   }
 }
 
@@ -30,22 +49,20 @@ void RecordAction(IOSCredentialProviderPromoSource source,
   std::string name;
   switch (source) {
     case IOSCredentialProviderPromoSource::kPasswordCopied:
-      name = is_reminder
-                 ? "IOS.CredentialProviderExtension.Promo.OnPasswordCopied."
-                   "IsReminder"
-                 : "IOS.CredentialProviderExtension.Promo.OnPasswordCopied";
+      name =
+          is_reminder
+              ? kIOSCredentialProviderPromoOnPasswordCopiedIsReminderHistogram
+              : kIOSCredentialProviderPromoOnPasswordCopiedHistogram;
       break;
     case IOSCredentialProviderPromoSource::kPasswordSaved:
       name = is_reminder
-                 ? "IOS.CredentialProviderExtension.Promo.OnPasswordSaved."
-                   "IsReminder"
-                 : "IOS.CredentialProviderExtension.Promo.OnPasswordSaved";
+                 ? kIOSCredentialProviderPromoOnPasswordSavedIsReminderHistogram
+                 : kIOSCredentialProviderPromoOnPasswordSavedHistogram;
       break;
     case IOSCredentialProviderPromoSource::kAutofillUsed:
-      name = is_reminder ? "IOS.CredentialProviderExtension.Promo."
-                           "OnSuccessfulLoginWithAutofilledPassword.IsReminder"
-                         : "IOS.CredentialProviderExtension.Promo."
-                           "OnSuccessfulLoginWithAutofilledPassword";
+      name = is_reminder
+                 ? kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram
+                 : kIOSCredentialProviderPromoOnAutofillUsedHistogram;
       break;
     case IOSCredentialProviderPromoSource::kUnknown:
       NOTREACHED();
