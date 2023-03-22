@@ -5,21 +5,28 @@
 package org.chromium.chrome.browser.share.android_share_sheet;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.core.os.BuildCompat;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -40,9 +47,11 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
@@ -55,11 +64,15 @@ import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowBuildCompatForU;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowChooserActionHelper;
+import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowShareImageFileUtils;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.components.feature_engagement.Tracker;
@@ -69,7 +82,9 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}.
@@ -77,12 +92,17 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.DisableFeatures(
         {ChromeFeatureList.WEBNOTES_STYLIZE, ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
+@Config(shadows = {ShadowShareImageFileUtils.class, ShadowGURL.class})
 public class AndroidShareSheetControllerUnitTest {
     private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
     private static final String KEY_CHOOSER_ACTION_ICON = "icon";
     private static final String KEY_CHOOSER_ACTION_NAME = "name";
     private static final String KEY_CHOOSER_ACTION_ACTION = "action";
+    private static final Uri TEST_WEB_FAVICON_PREVIEW_URI =
+            Uri.parse("content://test.web.favicon.preview");
+    private static final Uri TEST_FALLBACK_FAVICON_PREVIEW_URI =
+            Uri.parse("content://test.fallback.favicon.preview");
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenario =
@@ -99,6 +119,8 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock
     UserPrefsJni mMockUserPrefsJni;
     @Mock
+    FaviconHelperJni mMockFaviconHelperJni;
+    @Mock
     BottomSheetController mBottomSheetController;
     @Mock
     TabModelSelector mTabModelSelector;
@@ -113,6 +135,7 @@ public class AndroidShareSheetControllerUnitTest {
     private WindowAndroid mWindow;
     private PayloadCallbackHelper<Tab> mPrintCallback;
     private AndroidShareSheetController mController;
+    private Bitmap mTestWebFavicon;
 
     @Before
     public void setup() {
@@ -128,6 +151,12 @@ public class AndroidShareSheetControllerUnitTest {
         PrefService service = mock(PrefService.class);
         doReturn(service).when(mMockUserPrefsJni).get(mProfile);
         doReturn(true).when(service).getBoolean(Pref.PRINTING_ENABLED);
+        // Set up favicon helper.
+        mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mMockFaviconHelperJni);
+        doReturn(1L).when(mMockFaviconHelperJni).init();
+        mTestWebFavicon = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        ShadowShareImageFileUtils.sExpectedWebBitmap = mTestWebFavicon;
+        setFaviconToFetchForTest(mTestWebFavicon);
 
         mActivityScenario.getScenario().onActivity((activity) -> mActivity = activity);
         mActivityScenario.getScenario().moveToState(State.RESUMED);
@@ -250,6 +279,68 @@ public class AndroidShareSheetControllerUnitTest {
                 sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
     }
 
+    @Test
+    public void shareTextWithPreviewFavicon() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher("Sharing.PreparePreviewFaviconDuration");
+
+        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setFileContentType("text/plain")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Assert.assertNotNull("Preview clip data should not be null.", intent.getClipData());
+        Assert.assertEquals("Image preview Uri is null.", TEST_WEB_FAVICON_PREVIEW_URI,
+                intent.getClipData().getItemAt(0).getUri());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void shareTextWithPreviewWithFallbackFavicon() {
+        // Assume favicon is not available for this test.
+        setFaviconToFetchForTest(null);
+
+        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setFileContentType("text/plain")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Assert.assertNotNull("Preview clip data should not be null.", intent.getClipData());
+        Assert.assertEquals("Image preview Uri is not as expected.",
+                TEST_FALLBACK_FAVICON_PREVIEW_URI, intent.getClipData().getItemAt(0).getUri());
+    }
+
+    @Test
+    public void sharePlainTextDoesNotProvidePreview() {
+        ShareParams params = new ShareParams.Builder(mWindow, "", "")
+                                     .setFileContentType("text/plain")
+                                     .setText("text")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Assert.assertNull("Preview clip data should be null.", intent.getClipData());
+        verifyZeroInteractions(mMockFaviconHelperJni);
+    }
+
+    private void setFaviconToFetchForTest(Bitmap favicon) {
+        doAnswer(invocation -> {
+            FaviconHelper.FaviconImageCallback callback = invocation.getArgument(4);
+            callback.onFaviconAvailable(favicon, GURL.emptyGURL());
+            return null;
+        })
+                .when(mMockFaviconHelperJni)
+                .getLocalFaviconImageForURL(anyLong(), eq(mProfile), any(), anyInt(), any());
+    }
+
     /**
      * Test implementation to build a ChooserAction.
      */
@@ -277,6 +368,22 @@ public class AndroidShareSheetControllerUnitTest {
         @Implementation
         protected static boolean isAtLeastU() {
             return true;
+        }
+    }
+
+    // Shadow class to bypass actually saving the image as URL for this test.
+    @Implements(ShareImageFileUtils.class)
+    static class ShadowShareImageFileUtils {
+        static @Nullable Bitmap sExpectedWebBitmap;
+
+        @Implementation
+        public static void generateTemporaryUriFromBitmap(
+                String fileName, Bitmap bitmap, Callback<Uri> callback) {
+            if (bitmap != null && bitmap.equals(sExpectedWebBitmap)) {
+                callback.onResult(TEST_WEB_FAVICON_PREVIEW_URI);
+            } else {
+                callback.onResult(TEST_FALLBACK_FAVICON_PREVIEW_URI);
+            }
         }
     }
 }

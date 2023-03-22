@@ -23,4 +23,7 @@ found in the LICENSE file.
 
     <!-- IPH for Link Toggle -->
     <dimen name="toggle_iph_y_inset">8dp</dimen>
+
+    <!-- Android share sheet -->
+    <dimen name="share_preview_favicon_size">32dp</dimen>
 </resources>

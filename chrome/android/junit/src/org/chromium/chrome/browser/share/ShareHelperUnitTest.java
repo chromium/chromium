@@ -273,6 +273,26 @@ public class ShareHelperUnitTest {
         ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, false, provider);
     }
 
+    @Test
+    public void shareWithPreviewUri() {
+        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setPreviewImageUri(mImageUri)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ShareHelper.shareWithSystemShareSheetUi(params, null, true);
+
+        Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+        assertNotNull("Shared intent is null.", nextIntent);
+        assertEquals(
+                "Intent is not a chooser intent.", Intent.ACTION_CHOOSER, nextIntent.getAction());
+
+        // Verify the intent has the right preview Uri.
+        Intent sharingIntent = nextIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+        assertEquals("Intent is not a SEND intent.", Intent.ACTION_SEND, sharingIntent.getAction());
+        assertEquals("Preview image Uri not set correctly.", mImageUri,
+                sharingIntent.getClipData().getItemAt(0).getUri());
+    }
+
     private void selectComponentFromChooserIntent(Intent chooserIntent, ComponentName componentName)
             throws SendIntentException {
         Intent sendBackIntent = new Intent().putExtra(Intent.EXTRA_CHOSEN_COMPONENT, componentName);

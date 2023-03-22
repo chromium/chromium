@@ -54,6 +54,9 @@ public class ShareParams {
      */
     private final Uri mSingleImageUri;
 
+    /** The Uri of the preview image (e.g. a favicon) of the text being shared. */
+    private Uri mPreviewImageUri;
+
     /** The boolean result of link to text generation. */
     private final Boolean mLinkToTextSuccessful;
 
@@ -72,8 +75,9 @@ public class ShareParams {
     private ShareParams(WindowAndroid window, String title, String text, String textFormat,
             String url, @Nullable String fileContentType, @Nullable ArrayList<Uri> fileUris,
             @Nullable String imageAltText, @Nullable Uri offlineUri, @Nullable Uri singleImageUri,
-            @Nullable TargetChosenCallback callback, @Nullable Boolean linkToTextSuccessful,
-            @Nullable String previewText, String previewTextFormat) {
+            @Nullable Uri previewImageUri, @Nullable TargetChosenCallback callback,
+            @Nullable Boolean linkToTextSuccessful, @Nullable String previewText,
+            String previewTextFormat) {
         mWindow = window;
         mTitle = title;
         mText = text;
@@ -84,6 +88,7 @@ public class ShareParams {
         mImageAltText = imageAltText;
         mOfflineUri = offlineUri;
         mSingleImageUri = singleImageUri;
+        mPreviewImageUri = previewImageUri;
         mCallback = callback;
         mLinkToTextSuccessful = linkToTextSuccessful;
         mPreviewText = previewText;
@@ -189,6 +194,19 @@ public class ShareParams {
         return mSingleImageUri;
     }
 
+    /** @return The Uri of the preview image (e.g. a favicon) of the text being shared. */
+    @Nullable
+    public Uri getPreviewImageUri() {
+        return mPreviewImageUri;
+    }
+
+    /**
+     * @param uri The Uri of the preview image (e.g. a favicon) of the text being shared.
+     */
+    public void setPreviewImageUri(Uri uri) {
+        mPreviewImageUri = uri;
+    }
+
     /**
      * @return The callback to be called when user makes a choice.
      */
@@ -249,6 +267,7 @@ public class ShareParams {
         private String mImageAltText;
         private Uri mOfflineUri;
         private Uri mSingleImageUri;
+        private Uri mPreviewImageUri;
         private TargetChosenCallback mCallback;
         private Boolean mLinkToTextSuccessful;
         private String mPreviewText;
@@ -329,6 +348,14 @@ public class ShareParams {
         }
 
         /**
+         * Sets the Uri of the preview image of the text being shared.
+         */
+        public Builder setPreviewImageUri(@Nullable Uri previewImageUri) {
+            mPreviewImageUri = previewImageUri;
+            return this;
+        }
+
+        /**
          * Sets the callback to be called when user makes a choice.
          */
         public Builder setCallback(@Nullable TargetChosenCallback callback) {
@@ -359,8 +386,8 @@ public class ShareParams {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
             }
             return new ShareParams(mWindow, mTitle, mText, mTextFormat, mUrl, mFileContentType,
-                    mFileUris, mImageAltText, mOfflineUri, mSingleImageUri, mCallback,
-                    mLinkToTextSuccessful, mPreviewText, mPreviewTextFormat);
+                    mFileUris, mImageAltText, mOfflineUri, mSingleImageUri, mPreviewImageUri,
+                    mCallback, mLinkToTextSuccessful, mPreviewText, mPreviewTextFormat);
         }
     }
 
