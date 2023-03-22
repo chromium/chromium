@@ -24,11 +24,8 @@ NativeThemeFluent::NativeThemeFluent(bool should_only_use_dark_colors)
   scrollbar_width_ = kFluentScrollbarThickness;
 
   const sk_sp<SkFontMgr> font_manager(SkFontMgr::RefDefault());
-  SkFontStyleSet* font_style_set =
-      font_manager->matchFamily(kFluentScrollbarFont);
-  if (font_style_set->count()) {
-    typeface_ = sk_sp<SkTypeface>(font_style_set->matchStyle(SkFontStyle()));
-  }
+  typeface_ = sk_sp<SkTypeface>(
+      font_manager->matchFamilyStyle(kFluentScrollbarFont, SkFontStyle()));
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;
