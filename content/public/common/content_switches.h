@@ -270,6 +270,7 @@ CONTENT_EXPORT extern const char kRendererWaitForJavaDebugger[];
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 CONTENT_EXPORT extern const char kEnableSpeechDispatcher[];
+CONTENT_EXPORT extern const char kLLVMProfileFile[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -1008,6 +1008,10 @@ const char kEnableAutomation[] = "enable-automation";
 // Linux speech service. Because it's buggy, the user must explicitly
 // enable it so that visiting a random webpage can't cause instability.
 const char kEnableSpeechDispatcher[] = "enable-speech-dispatcher";
+
+// For lacros, we do not use environment variable to pass values. Instead we
+// use a command line flag to pass the path to the device.
+const char kLLVMProfileFile[] = "llvm-profile-file";
 #endif
 
 #if BUILDFLAG(IS_WIN)

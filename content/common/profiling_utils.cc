@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/public/common/content_switches.h"
 
 namespace content {
 
@@ -40,7 +41,15 @@ base::FilePath GetProfileFileDirectory() {
 #if BUILDFLAG(IS_ANDROID)
   base::PathService::Get(base::DIR_TEMP, &path);
   path = path.Append("pgo_profiles/");
-#else  // !BUILDFLAG(IS_ANDROID)
+  // Lacros is similar to Android that it's running on a device that is not
+  // the host machine and environment variables aren't well supported.
+  // But Lacros also need to pass in the path so it is the same path as
+  // isolate test output folder on bots.
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  path = base::CommandLine::ForCurrentProcess()
+             ->GetSwitchValuePath(switches::kLLVMProfileFile)
+             .DirName();
+#else
   std::string prof_template;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   if (env->GetVar("LLVM_PROFILE_FILE", &prof_template)) {
