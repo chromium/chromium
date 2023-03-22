@@ -11,6 +11,11 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -73,8 +78,9 @@ class TestAccessManager : public CreditCardAccessManager {
   CreditCard card_;
 };
 
-class MockAutofillDriver : public TestAutofillDriver {
+class MockAutofillDriver : public TestContentAutofillDriver {
  public:
+  using TestContentAutofillDriver::TestContentAutofillDriver;
   MOCK_METHOD2(RendererShouldFillFieldWithValue,
                void(const FieldGlobalId& field, const std::u16string&));
 };
@@ -82,27 +88,26 @@ class MockAutofillDriver : public TestAutofillDriver {
 class CreditCardAccessoryControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  CreditCardAccessoryControllerTest()
-      : af_manager_(&mock_af_driver_, &client_) {
-    af_manager_.set_credit_card_access_manager_for_test(
-        std::make_unique<TestAccessManager>(&mock_af_driver_, &client_,
-                                            &data_manager_));
-  }
-
-  void SetUp() override {
+  CreditCardAccessoryControllerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {features::kAutofillEnableManualFallbackForVirtualCards,
          features::kAutofillShowUnmaskedCachedCardInManualFillingView},
         /*disabled_features=*/{features::kAutofillFillMerchantPromoCodeFields});
+  }
+
+  void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL(kExampleSite));
     SetFormOrigin(GURL(kExampleSite));
     FocusWebContentsOnMainFrame();
 
+    autofill_manager().set_credit_card_access_manager_for_test(
+        std::make_unique<TestAccessManager>(
+            &autofill_driver(), &autofill_client(), &data_manager_));
     CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
-        &af_manager_, &mock_af_driver_);
+        &autofill_manager(), &autofill_driver());
     data_manager_.SetPrefService(profile()->GetPrefs());
   }
 
@@ -122,31 +127,52 @@ class CreditCardAccessoryControllerTest
     form.unique_renderer_id = FormRendererId(1);
     form.action = origin;
     form.main_frame_origin = url::Origin::Create(origin);
-    client_.set_form_origin(origin);
+    autofill_client().set_form_origin(origin);
     // Promo codes are filtered by the last_committed_primary_main_frame_url.
-    client_.set_last_committed_primary_main_frame_url(GURL(kExampleSite));
+    autofill_client().set_last_committed_primary_main_frame_url(
+        GURL(kExampleSite));
   }
 
  protected:
-  TestAutofillClient client_;
-  testing::NiceMock<MockAutofillDriver> mock_af_driver_;
+  TestContentAutofillClient& autofill_client() {
+    return *autofill_client_injector_[web_contents()];
+  }
+
+  testing::NiceMock<MockAutofillDriver>& autofill_driver() {
+    return *autofill_driver_injector_[web_contents()];
+  }
+
+  TestBrowserAutofillManager& autofill_manager() {
+    return *autofill_manager_injector_[web_contents()];
+  }
+
   TestPersonalDataManager data_manager_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
-  TestBrowserAutofillManager af_manager_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
+  TestAutofillDriverInjector<testing::NiceMock<MockAutofillDriver>>
+      autofill_driver_injector_;
+  TestAutofillManagerInjector<TestBrowserAutofillManager>
+      autofill_manager_injector_;
 };
 
 class CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards
     : public CreditCardAccessoryControllerTest {
  public:
-  void SetUp() override {
+  CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{
             features::kAutofillShowUnmaskedCachedCardInManualFillingView,
             features::kAutofillFillMerchantPromoCodeFields});
+  }
+
+  void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL(kExampleSite));
     SetFormOrigin(GURL(kExampleSite));
@@ -154,20 +180,26 @@ class CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards
 
     CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
-        &af_manager_, &mock_af_driver_);
+        &autofill_manager(), &autofill_driver());
     data_manager_.SetPrefService(profile()->GetPrefs());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
     : public CreditCardAccessoryControllerTest {
  public:
-  void SetUp() override {
+  CreditCardAccessoryControllerTestSupportingPromoCodeOffers() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {features::kAutofillShowUnmaskedCachedCardInManualFillingView,
          features::kAutofillFillMerchantPromoCodeFields},
         /*disabled_features=*/{});
+  }
+
+  void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     NavigateAndCommit(GURL(kExampleSite));
     SetFormOrigin(GURL(kExampleSite));
@@ -175,9 +207,12 @@ class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
 
     CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
-        &af_manager_, &mock_af_driver_);
+        &autofill_manager(), &autofill_driver());
     data_manager_.SetPrefService(profile()->GetPrefs());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CreditCardAccessoryControllerTest,
@@ -312,7 +347,7 @@ TEST_F(CreditCardAccessoryControllerTest, ServerCardUnmask) {
   FieldGlobalId field_id{.frame_token = LocalFrameToken(*rfh->GetFrameToken()),
                          .renderer_id = FieldRendererId(123)};
 
-  EXPECT_CALL(mock_af_driver_,
+  EXPECT_CALL(autofill_driver(),
               RendererShouldFillFieldWithValue(field_id, expected_number));
 
   controller()->OnFillingTriggered(field_id, field);
@@ -329,7 +364,8 @@ TEST_F(CreditCardAccessoryControllerTest,
   card.set_record_type(CreditCard::FULL_SERVER_CARD);
   data_manager_.AddCreditCard(card);
   std::u16string cvc = u"123";
-  af_manager_.GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card, cvc);
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card,
+                                                                         cvc);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 
@@ -369,8 +405,8 @@ TEST_F(CreditCardAccessoryControllerTest, UnmaskedCacheCardsReorderedToTheTop) {
   unmasked_card.set_record_type(CreditCard::FULL_SERVER_CARD);
   data_manager_.AddCreditCard(unmasked_card);
   std::u16string cvc = u"123";
-  af_manager_.GetCreditCardAccessManager()->CacheUnmaskedCardInfo(unmasked_card,
-                                                                  cvc);
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
+      unmasked_card, cvc);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 
@@ -420,7 +456,8 @@ TEST_F(CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards,
   card.set_record_type(CreditCard::FULL_SERVER_CARD);
   data_manager_.AddCreditCard(card);
   std::u16string cvc = u"123";
-  af_manager_.GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card, cvc);
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(card,
+                                                                         cvc);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 
@@ -457,8 +494,8 @@ TEST_F(CreditCardAccessoryControllerTestWithoutSupportingUnmaskedCards,
   // cache.
   unmasked_card.set_record_type(CreditCard::VIRTUAL_CARD);
   std::u16string cvc = u"123";
-  af_manager_.GetCreditCardAccessManager()->CacheUnmaskedCardInfo(unmasked_card,
-                                                                  cvc);
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
+      unmasked_card, cvc);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
                             std::u16string());
 

@@ -14,13 +14,8 @@ namespace autofill {
 // A variant of TestAutofillClient that can be associated with a
 // content::WebContents.
 //
-// The typical pattern to associate it with a content::WebContents:
-//   auto client = std::make_unique<TestContentAutofillClient>(web_contents);
-//   web_contents->SetUserData(client->UserData(), std::move(client));
-//   ...
-//   web_contents->RemoveUserData(client->UserData());
-//
-// Consider using TestAutofillClientInjector, especially in browser tests.
+// Consider using TestAutofillClientInjector to inject the client correctly,
+// especially in browser tests.
 class TestContentAutofillClient
     : public TestAutofillClientTemplate<ContentAutofillClient> {
  public:

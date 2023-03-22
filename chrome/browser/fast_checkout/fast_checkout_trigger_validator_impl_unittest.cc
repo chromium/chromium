@@ -10,6 +10,11 @@
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -23,16 +28,13 @@ using ::testing::Return;
 
 class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
  public:
-  MockBrowserAutofillManager(autofill::TestAutofillDriver* driver,
-                             autofill::TestAutofillClient* client)
-      : autofill::TestBrowserAutofillManager(driver, client) {}
-  ~MockBrowserAutofillManager() override = default;
-
+  using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const override));
 };
 
-class MockAutofillClient : public autofill::TestAutofillClient {
+class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
 };
@@ -87,17 +89,15 @@ class FastCheckoutTriggerValidatorTest
     content::RenderViewHostTestHarness::SetUp();
 
     pdm_ = std::make_unique<MockPersonalDataManager>();
-    autofill_client_ = std::make_unique<MockAutofillClient>();
     capabilities_fetcher_ =
         std::make_unique<MockFastCheckoutCapabilitiesFetcher>();
     personal_data_helper_ = std::make_unique<MockPersonalDataHelper>();
-    autofill_driver_ = std::make_unique<autofill::TestAutofillDriver>();
-    autofill_manager_ = std::make_unique<MockBrowserAutofillManager>(
-        autofill_driver_.get(), autofill_client_.get());
     validator_ = std::make_unique<FastCheckoutTriggerValidatorImpl>(
         autofill_client(), capabilities_fetcher(), personal_data_helper());
     credit_card_ = autofill::test::GetCreditCard();
     profile_ = autofill::test::GetFullProfile();
+    // Creates the AutofillDriver and AutofillManager.
+    NavigateAndCommit(GURL("about:blank"));
 
     ON_CALL(*autofill_manager(), CanShowAutofillUi).WillByDefault(Return(true));
     ON_CALL(*capabilities_fetcher(), IsTriggerFormSupported)
@@ -116,7 +116,9 @@ class FastCheckoutTriggerValidatorTest
   }
 
   MockPersonalDataManager* pdm() { return pdm_.get(); }
-  MockAutofillClient* autofill_client() { return autofill_client_.get(); }
+  MockAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
   MockFastCheckoutCapabilitiesFetcher* capabilities_fetcher() {
     return capabilities_fetcher_.get();
   }
@@ -124,7 +126,7 @@ class FastCheckoutTriggerValidatorTest
     return personal_data_helper_.get();
   }
   MockBrowserAutofillManager* autofill_manager() {
-    return autofill_manager_.get();
+    return autofill_manager_injector_[web_contents()];
   }
   FastCheckoutTriggerValidatorImpl* validator() { return validator_.get(); }
 
@@ -144,11 +146,14 @@ class FastCheckoutTriggerValidatorTest
   autofill::CreditCard credit_card_;
   autofill::FormData form_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<autofill::TestAutofillDriver> autofill_driver_;
+  autofill::TestAutofillClientInjector<MockAutofillClient>
+      autofill_client_injector_;
+  autofill::TestAutofillDriverInjector<autofill::TestContentAutofillDriver>
+      autofill_driver_injector_;
+  autofill::TestAutofillManagerInjector<MockBrowserAutofillManager>
+      autofill_manager_injector_;
   std::unique_ptr<FastCheckoutTriggerValidatorImpl> validator_;
-  std::unique_ptr<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockFastCheckoutCapabilitiesFetcher> capabilities_fetcher_;
-  std::unique_ptr<MockBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<MockPersonalDataHelper> personal_data_helper_;
   std::unique_ptr<MockPersonalDataManager> pdm_;
 };

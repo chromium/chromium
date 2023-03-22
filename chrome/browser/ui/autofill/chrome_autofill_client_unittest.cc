@@ -12,8 +12,11 @@
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
@@ -25,6 +28,14 @@
 using base::test::ScopedFeatureList;
 
 namespace autofill {
+namespace {
+
+// Exposes the protected constructor.
+class TestChromeAutofillClient : public ChromeAutofillClient {
+ public:
+  explicit TestChromeAutofillClient(content::WebContents* web_contents)
+      : ChromeAutofillClient(web_contents) {}
+};
 
 #if BUILDFLAG(IS_ANDROID)
 class MockFastCheckoutClient : public FastCheckoutClientImpl {
@@ -50,12 +61,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-
     PreparePersonalDataManager();
-    ChromeAutofillClient::CreateForWebContents(web_contents());
-    chrome_autofill_client_ =
-        ChromeAutofillClient::FromWebContentsForTesting(web_contents());
-
 #if BUILDFLAG(IS_ANDROID)
     auto fast_checkout_client =
         std::make_unique<MockFastCheckoutClient>(web_contents());
@@ -64,15 +70,26 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
         content::WebContentsUserData<FastCheckoutClientImpl>::UserDataKey();
     web_contents()->SetUserData(key, std::move(fast_checkout_client));
 #endif
+    // Creates the AutofillDriver and AutofillManager.
+    NavigateAndCommit(GURL("about:blank"));
   }
 
  protected:
-  ChromeAutofillClient* client() { return chrome_autofill_client_; }
+  ChromeAutofillClient* client() {
+    return test_autofill_client_injector_[web_contents()];
+  }
+
   TestPersonalDataManager* personal_data_manager() {
     return personal_data_manager_;
   }
 
-  TestAutofillDriver* autofill_driver() { return &test_autofill_driver_; }
+  TestContentAutofillDriver* autofill_driver() {
+    return test_autofill_driver_injector_[web_contents()];
+  }
+
+  TestBrowserAutofillManager* autofill_manager() {
+    return test_autofill_manager_injector_[web_contents()];
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   MockFastCheckoutClient* fast_checkout_client() {
@@ -99,9 +116,13 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 
-  raw_ptr<ChromeAutofillClient> chrome_autofill_client_ = nullptr;
   raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
-  TestAutofillDriver test_autofill_driver_;
+  TestAutofillClientInjector<TestChromeAutofillClient>
+      test_autofill_client_injector_;
+  TestAutofillDriverInjector<TestContentAutofillDriver>
+      test_autofill_driver_injector_;
+  TestAutofillManagerInjector<TestBrowserAutofillManager>
+      test_autofill_manager_injector_;
 
 #if BUILDFLAG(IS_ANDROID)
   raw_ptr<MockFastCheckoutClient> fast_checkout_client_;
@@ -168,10 +189,8 @@ TEST_F(ChromeAutofillClientTest, IsFastCheckoutSupportedWithDisabledFeature) {
   FormFieldData field;
   ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kFastCheckout);
-  auto manager = std::make_unique<BrowserAutofillManager>(autofill_driver(),
-                                                          client(), "en-US");
-
-  EXPECT_FALSE(client()->IsFastCheckoutSupported(form, field, *manager));
+  EXPECT_FALSE(
+      client()->IsFastCheckoutSupported(form, field, *autofill_manager()));
 }
 
 TEST_F(ChromeAutofillClientTest,
@@ -197,19 +216,12 @@ TEST_F(ChromeAutofillClientTest, IsShowingFastCheckoutUI) {
 }
 
 TEST_F(ChromeAutofillClientTest, TryToShowFastCheckout) {
-  auto router = std::make_unique<autofill::ContentAutofillRouter>();
-  auto driver = std::make_unique<autofill::ContentAutofillDriver>(
-      web_contents()->GetPrimaryMainFrame(), router.get());
-  auto manager =
-      std::make_unique<BrowserAutofillManager>(driver.get(), client(), "en-US");
-  BrowserAutofillManager* manager_ptr = manager.get();
-  driver->set_autofill_manager(std::move(manager));
-
   EXPECT_CALL(*fast_checkout_client(), TryToStart)
       .WillOnce(testing::Return(true));
-  EXPECT_TRUE(client()->TryToShowFastCheckout(FormData(), FormFieldData(),
-                                              manager_ptr->GetWeakPtr()));
+  EXPECT_TRUE(client()->TryToShowFastCheckout(
+      FormData(), FormFieldData(), autofill_manager()->GetWeakPtr()));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+}  // namespace
 }  // namespace autofill

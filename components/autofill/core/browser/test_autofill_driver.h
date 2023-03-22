@@ -12,59 +12,45 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
-
-namespace content {
-class RenderFrameHost;
-}
 #endif
 
 namespace autofill {
 
-// This class is only for easier writing of tests.
-#if BUILDFLAG(IS_IOS)
-class TestAutofillDriver : public AutofillDriver {
-#else
-class TestAutofillDriver : public ContentAutofillDriver {
-#endif
+// This class is only for easier writing of tests. There are two instances of
+// the template:
+//
+// - TestAutofillDriver is a simple AutofillDriver;
+// - TestContentAutofillDriver is a ContentAutofillDriver, i.e., is associated
+//   to a content::WebContents and has a ContentAutofillDriverFactory
+//
+// As a rule of thumb, TestContentAutofillDriver is preferable in tests that
+// have a content::WebContents.
+template <typename T>
+class TestAutofillDriverTemplate : public T {
  public:
-  TestAutofillDriver();
-#if !BUILDFLAG(IS_IOS)
-  TestAutofillDriver(content::RenderFrameHost* rfh,
-                     ContentAutofillRouter* client);
-#endif
-  TestAutofillDriver(const TestAutofillDriver&) = delete;
-  TestAutofillDriver& operator=(const TestAutofillDriver&) = delete;
-  ~TestAutofillDriver() override;
+  static_assert(std::is_base_of_v<AutofillDriver, T>);
 
-#if BUILDFLAG(IS_IOS)
-  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
-    autofill_manager_ = std::move(autofill_manager);
+  using T::T;
+  TestAutofillDriverTemplate(const TestAutofillDriverTemplate&) = delete;
+  TestAutofillDriverTemplate& operator=(const TestAutofillDriverTemplate&) =
+      delete;
+  ~TestAutofillDriverTemplate() override = default;
+
+  // AutofillDriver:
+  bool IsInActiveFrame() const override { return is_in_active_frame_; }
+  bool IsInAnyMainFrame() const override { return is_in_any_main_frame_; }
+  bool IsPrerendering() const override { return false; }
+  bool CanShowAutofillUi() const override { return true; }
+  ui::AXTreeID GetAxTreeId() const override {
+    NOTIMPLEMENTED() << "See https://crbug.com/985933";
+    return ui::AXTreeIDUnknown();
   }
-
-  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
-#endif
-
-  // AutofillDriver implementation overrides.
-  bool IsInActiveFrame() const override;
-  bool IsInAnyMainFrame() const override;
-  bool IsPrerendering() const override;
-  bool CanShowAutofillUi() const override;
-  ui::AXTreeID GetAxTreeId() const override;
-  bool RendererIsAvailable() override;
-  // The return value contains the members (field, type) of `field_type_map` for
-  // which `field_type_filter_.Run(triggered_origin, field, type)` is true.
-  std::vector<FieldGlobalId> FillOrPreviewForm(
-      mojom::RendererFormDataAction action,
-      const FormData& data,
-      const url::Origin& triggered_origin,
-      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
-      override;
+  bool RendererIsAvailable() override { return true; }
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override {}
@@ -82,30 +68,60 @@ class TestAutofillDriver : public ContentAutofillDriver {
       const FieldGlobalId& field,
       const mojom::AutofillState state) override {}
   void PopupHidden() override {}
-  net::IsolationInfo IsolationInfo() override;
+  net::IsolationInfo IsolationInfo() override { return isolation_info_; }
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override {}
   void SetShouldSuppressKeyboard(bool suppress) override {}
   void TriggerReparseInAllFrames(
       base::OnceCallback<void(bool)> trigger_reparse_finished_callback)
       override {}
+  // The return value contains the members (field, type) of `field_type_map` for
+  // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
+  std::vector<FieldGlobalId> FillOrPreviewForm(
+      mojom::RendererFormDataAction action,
+      const FormData& form_data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
+      override {
+    std::vector<FieldGlobalId> result;
+    for (const auto& [id, type] : field_type_map) {
+      if (!field_type_map_filter_ ||
+          field_type_map_filter_.Run(triggered_origin, id, type)) {
+        result.push_back(id);
+      }
+    }
+    return result;
+  }
 
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.
 
-  void SetIsInActiveFrame(bool is_in_active_frame);
-  void SetIsInAnyMainFrame(bool is_in_any_main_frame);
-  void SetIsolationInfo(const net::IsolationInfo& isolation_info);
+  void SetIsInActiveFrame(bool is_in_active_frame) {
+    is_in_active_frame_ = is_in_active_frame;
+  }
+
+  void SetIsInAnyMainFrame(bool is_in_any_main_frame) {
+    is_in_any_main_frame_ = is_in_any_main_frame;
+  }
+
+  void SetIsolationInfo(const net::IsolationInfo& isolation_info) {
+    isolation_info_ = isolation_info;
+  }
 
   // The filter that determines the return value of FillOrPreviewForm().
   void SetFieldTypeMapFilter(
       base::RepeatingCallback<
-          bool(const url::Origin&, FieldGlobalId, ServerFieldType)> callback);
+          bool(const url::Origin&, FieldGlobalId, ServerFieldType)> callback) {
+    field_type_map_filter_ = callback;
+  }
 
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
 #if !BUILDFLAG(IS_IOS)
-  void SetAuthenticator(webauthn::InternalAuthenticator* authenticator_);
+  void SetAuthenticator(webauthn::InternalAuthenticator* authenticator_) {
+    test_authenticator_.reset(authenticator_);
+  }
 #endif
 
  private:
@@ -116,13 +132,28 @@ class TestAutofillDriver : public ContentAutofillDriver {
       bool(const url::Origin&, FieldGlobalId, ServerFieldType)>
       field_type_map_filter_;
 
-#if BUILDFLAG(IS_IOS)
-  std::unique_ptr<AutofillManager> autofill_manager_;
-#endif
-
 #if !BUILDFLAG(IS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator> test_authenticator_;
 #endif
+};
+
+// A simple `AutofillDriver` for tests. Consider `TestContentAutofillDriver` as
+// an alternative for tests where the content layer is visible.
+//
+// Consider using TestAutofillDriverInjector in browser tests.
+class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
+ public:
+  TestAutofillDriver();
+  ~TestAutofillDriver() override;
+
+  void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
+    autofill_manager_ = std::move(autofill_manager);
+  }
+
+  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
+
+ private:
+  std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 };
 
 }  // namespace autofill

@@ -732,7 +732,7 @@ class TestAutofillClientTemplate : public T {
 // A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as
 // an alternative for tests where the content layer is visible.
 //
-// Consider using TestAutofillClientInjector in browser tests.
+// Consider using TestAutofillClientInjector, especially in browser tests.
 class TestAutofillClient : public TestAutofillClientTemplate<AutofillClient> {
  public:
   using TestAutofillClientTemplate<AutofillClient>::TestAutofillClientTemplate;

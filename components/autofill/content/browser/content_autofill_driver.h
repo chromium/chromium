@@ -330,7 +330,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Weak ref to the AutofillRouter associated with the WebContents.
   // Do not access directly, use autofill_router() instead.
-  raw_ptr<ContentAutofillRouter> autofill_router_ = nullptr;
+  const raw_ptr<ContentAutofillRouter> autofill_router_ = nullptr;
 
   // The form pushed from the AutofillAgent to the AutofillDriver. When the
   // ProbablyFormSubmitted() event is fired, this form is considered the

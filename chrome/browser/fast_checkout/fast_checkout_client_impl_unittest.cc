@@ -22,6 +22,11 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -117,10 +122,7 @@ class MockFastCheckoutController : public FastCheckoutController {
 
 class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
  public:
-  MockBrowserAutofillManager(autofill::TestAutofillDriver* driver,
-                             autofill::TestAutofillClient* client)
-      : autofill::TestBrowserAutofillManager(driver, client) {}
-  ~MockBrowserAutofillManager() override = default;
+  using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
 
   MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), (override));
   MOCK_METHOD(void,
@@ -184,8 +186,9 @@ class MockFastCheckoutTriggerValidator : public FastCheckoutTriggerValidator {
   MOCK_METHOD(bool, HasValidPersonalData, (), (const));
 };
 
-class MockAutofillClient : public autofill::TestAutofillClient {
+class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(void, HideAutofillPopup, (autofill::PopupHidingReason), ());
 };
 
@@ -218,7 +221,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 
     autofill::PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(),
@@ -240,36 +243,27 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     test_client_->InjectFastCheckoutController(
         std::move(fast_checkout_controller));
 
-    // Prepare the AutofillDriver.
-    autofill_driver_ = std::make_unique<autofill::TestAutofillDriver>();
-
-    // Set AutofillManager on AutofillDriver.
-    autofill_client_ = std::make_unique<NiceMock<MockAutofillClient>>();
-    autofill_client_->set_test_payments_client(
+    autofill_client()->set_test_payments_client(
         std::make_unique<autofill::payments::TestPaymentsClient>(
-            autofill_client_->GetURLLoaderFactory(),
-            autofill_client_->GetIdentityManager(),
-            autofill_client_->GetPersonalDataManager()));
-    auto test_browser_autofill_manager =
-        std::make_unique<NiceMock<MockBrowserAutofillManager>>(
-            autofill_driver_.get(), autofill_client_.get());
-    autofill_manager_ = test_browser_autofill_manager.get();
-    autofill_driver_->set_autofill_manager(
-        std::move(test_browser_autofill_manager));
-
+            autofill_client()->GetURLLoaderFactory(),
+            autofill_client()->GetIdentityManager(),
+            autofill_client()->GetPersonalDataManager()));
     auto trigger_validator =
         std::make_unique<NiceMock<MockFastCheckoutTriggerValidator>>();
     validator_ = trigger_validator.get();
     test_client_->trigger_validator_ = std::move(trigger_validator);
     ON_CALL(*validator(), ShouldRun).WillByDefault(Return(true));
 
-    test_client_->autofill_client_ = autofill_client_.get();
+    test_client_->autofill_client_ = autofill_client();
 
     auto accessibility_service =
         std::make_unique<NiceMock<MockFastCheckoutAccessibilityService>>();
     accessibility_service_ = accessibility_service.get();
     fast_checkout_client()->accessibility_service_ =
         std::move(accessibility_service);
+
+    // Creates the AutofillDriver and AutofillManager.
+    NavigateAndCommit(GURL("about:blank"));
   }
 
   autofill::TestPersonalDataManager* personal_data_manager() {
@@ -285,9 +279,13 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
 
   MockFastCheckoutTriggerValidator* validator() { return validator_.get(); }
 
-  MockAutofillClient* autofill_client() { return autofill_client_.get(); }
+  MockAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
 
-  MockBrowserAutofillManager* autofill_manager() { return autofill_manager_; }
+  MockBrowserAutofillManager* autofill_manager() {
+    return autofill_manager_injector_[web_contents()];
+  }
 
   MockFastCheckoutAccessibilityService* accessibility_service() {
     return accessibility_service_;
@@ -385,12 +383,15 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
  private:
   // Required for using some `autofill::test` functions inside the test class.
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::unique_ptr<MockAutofillClient> autofill_client_;
+  autofill::TestAutofillClientInjector<NiceMock<MockAutofillClient>>
+      autofill_client_injector_;
+  autofill::TestAutofillDriverInjector<autofill::TestContentAutofillDriver>
+      autofill_driver_injector_;
+  autofill::TestAutofillManagerInjector<NiceMock<MockBrowserAutofillManager>>
+      autofill_manager_injector_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
-  std::unique_ptr<autofill::TestAutofillDriver> autofill_driver_;
   raw_ptr<TestFastCheckoutClientImpl> test_client_;
   raw_ptr<MockFastCheckoutTriggerValidator> validator_;
-  raw_ptr<MockBrowserAutofillManager> autofill_manager_;
   raw_ptr<MockFastCheckoutAccessibilityService> accessibility_service_;
 };
 

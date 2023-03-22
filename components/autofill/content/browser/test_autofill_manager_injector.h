@@ -39,8 +39,11 @@ class TestAutofillManagerInjectorBase {
 // navigated frames in all newly created WebContents.
 //
 // The injector only injects an AutofillManager if a driver is created.
-// Especially in unit tests it may be necessary to force-create the driver using
-// `client->GetAutofillDriverFactory()->DriverForFrame(rfh)`.
+// Especially in unit tests it may be necessary to do a navigation to create the
+// driver, for example with
+//   NavigateAndCommit(GURL("about:blank"))
+// or force-create the driver manually with
+//   client->GetAutofillDriverFactory()->DriverForFrame(rfh).
 //
 // To prevent hard-to-find bugs, only one TestAutofillManagerInjector may be
 // alive at a time. It must not be created before a TestAutofillClientInjector.
@@ -68,7 +71,7 @@ class TestAutofillManagerInjectorBase {
 //         autofill_manager_injector_;
 //   };
 template <typename T>
-class TestAutofillManagerInjector : TestAutofillManagerInjectorBase {
+class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
  public:
   static_assert(std::is_base_of_v<AutofillManager, T>);
 

@@ -13,8 +13,9 @@
 
 namespace autofill {
 
-// Asserts that at construction time, no other TestAutofillClientInjector *and*
-// no TestAutofillManagerInjector are alive.
+// Asserts that at construction time, no other TestAutofillClientInjector, no
+// other TestAutofillDriverInjector, and no TestAutofillManagerInjector are
+// alive.
 class TestAutofillClientInjectorBase {
  public:
   static bool some_instance_is_alive() { return num_instances_ > 0; }

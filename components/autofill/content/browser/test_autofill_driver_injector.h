@@ -15,8 +15,8 @@
 
 namespace autofill {
 
-// Asserts that at construction time, no other TestAutofillDriverInjector is
-// alive.
+// Asserts that at construction time, no other TestAutofillDriverInjector and no
+// TestAutofillManagerInjector are alive.
 class TestAutofillDriverInjectorBase {
  public:
   static bool some_instance_is_alive() { return num_instances_ > 0; }
@@ -38,9 +38,11 @@ class TestAutofillDriverInjectorBase {
 // navigated frames in all newly created WebContents.
 //
 // The injector only injects an AutofillDriver if a driver would also be created
-// if there was no injector. Especially in unit tests it may be necessary to
-// force-create the driver using
-// `client->GetAutofillDriverFactory()->DriverForFrame(rfh)`.
+// Especially in unit tests it may be necessary to do a navigation to create the
+// driver, for example with
+//   NavigateAndCommit(GURL("about:blank"))
+// or force-create the driver manually with
+//   client->GetAutofillDriverFactory()->DriverForFrame(rfh).
 //
 // The driver's AutofillManager is a fresh BrowserAutofillManager.
 //
@@ -60,7 +62,7 @@ class TestAutofillDriverInjectorBase {
 //     TestAutofillDriverInjector<TestAutofillDriver> autofill_driver_injector_;
 //   };
 template <typename T>
-class TestAutofillDriverInjector : TestAutofillDriverInjectorBase {
+class TestAutofillDriverInjector : public TestAutofillDriverInjectorBase {
  public:
   static_assert(std::is_base_of_v<ContentAutofillDriver, T>);
 

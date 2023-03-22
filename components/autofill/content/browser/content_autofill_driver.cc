@@ -59,29 +59,21 @@ const std::vector<FormData>& WithNewVersion(
 ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
     ContentAutofillRouter* autofill_router)
-    : render_frame_host_(render_frame_host), autofill_router_(autofill_router) {
-  if (render_frame_host_) {  // Can be nullptr only in tests.
-    suppress_showing_ime_callback_ = base::BindRepeating(
-        [](const ContentAutofillDriver* driver) {
-          return driver->should_suppress_keyboard_;
-        },
-        base::Unretained(this));
-    render_frame_host_->GetRenderWidgetHost()->AddSuppressShowingImeCallback(
-        suppress_showing_ime_callback_);
-  }
+    : render_frame_host_(render_frame_host),
+      autofill_router_(autofill_router),
+      suppress_showing_ime_callback_(base::BindRepeating(
+          [](const ContentAutofillDriver* driver) {
+            return driver->should_suppress_keyboard_;
+          },
+          base::Unretained(this))) {
+  render_frame_host_->GetRenderWidgetHost()->AddSuppressShowingImeCallback(
+      suppress_showing_ime_callback_);
 }
 
 ContentAutofillDriver::~ContentAutofillDriver() {
-  if (autofill_router_)  // Can be nullptr only in tests.
-    autofill_router_->UnregisterDriver(this);
-
-  // DONOTSUBMIT: Need to check whether RWH can be nullptr. I can't find the
-  // test right now where this happened, so I want to run the bots again. I had
-  // a hypothesis why that happened in that test.
-  if (render_frame_host_) {  // Can be nullptr only in tests.
-    render_frame_host_->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
-        suppress_showing_ime_callback_);
-  }
+  autofill_router_->UnregisterDriver(this);
+  render_frame_host_->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
+      suppress_showing_ime_callback_);
 }
 
 void ContentAutofillDriver::TriggerReparse() {
@@ -159,7 +151,7 @@ bool ContentAutofillDriver::RendererIsAvailable() {
 void ContentAutofillDriver::PopupHidden() {
   // If the unmask prompt is shown, keep showing the preview. The preview
   // will be cleared when the prompt closes.
-  if (autofill_manager_ && autofill_manager_->ShouldClearPreviewedForm()) {
+  if (autofill_manager_->ShouldClearPreviewedForm()) {
     RendererShouldClearPreviewedForm();
   }
 }
@@ -586,7 +578,7 @@ void ContentAutofillDriver::DidNavigateFrame(
   // If the navigation happened in the main frame and the BrowserAutofillManager
   // exists (not in Android Webview), and the AutofillOfferManager exists (not
   // in Incognito windows), notifies the navigation event.
-  if (navigation_handle->IsInPrimaryMainFrame() && autofill_manager_ &&
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       autofill_manager_->GetOfferManager()) {
     autofill_manager_->GetOfferManager()->OnDidNavigateFrame(
         autofill_manager_->client());
@@ -603,8 +595,7 @@ void ContentAutofillDriver::DidNavigateFrame(
   // The driver's RenderFrameHost may be used for the page we're navigating to.
   // Therefore, we need to forget all forms of the page we're navigating from.
   submitted_forms_.clear();
-  if (autofill_router_)  // Can be nullptr only in tests.
-    autofill_router_->UnregisterDriver(this);
+  autofill_router_->UnregisterDriver(this);
   autofill_manager_->Reset();
 }
 
