@@ -270,8 +270,8 @@ class RasterBufferProviderPerfTestBase {
 
     for (unsigned i = 0; i < num_raster_tasks; ++i) {
       ResourcePool::InUsePoolResource in_use_resource =
-          resource_pool_->AcquireResource(size, viz::RGBA_8888,
-                                          gfx::ColorSpace());
+          resource_pool_->AcquireResource(
+              size, viz::SinglePlaneFormat::kRGBA_8888, gfx::ColorSpace());
 
       // No tile ids are given to support partial updates.
       std::unique_ptr<RasterBuffer> raster_buffer;

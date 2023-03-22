@@ -287,10 +287,9 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     const auto& caps = gpu_raster
                            ? raster_context_provider->ContextCapabilities()
                            : context_provider->ContextCapabilities();
-    viz::ResourceFormat format =
-        gpu_raster
-            ? viz::PlatformColor::BestSupportedRenderBufferResourceFormat(caps)
-            : viz::PlatformColor::BestSupportedTextureResourceFormat(caps);
+    viz::SharedImageFormat format =
+        gpu_raster ? viz::PlatformColor::BestSupportedRenderBufferFormat(caps)
+                   : viz::PlatformColor::BestSupportedTextureFormat(caps);
     pool_resource = pool_->AcquireResource(internal_content_bounds_, format,
                                            gfx::ColorSpace());
 
@@ -343,7 +342,8 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     DCHECK_EQ(draw_mode, DRAW_MODE_SOFTWARE);
 
     pool_resource = pool_->AcquireResource(internal_content_bounds_,
-                                           viz::RGBA_8888, gfx::ColorSpace());
+                                           viz::SinglePlaneFormat::kRGBA_8888,
+                                           gfx::ColorSpace());
 
     if (!pool_resource.software_backing()) {
       auto backing = std::make_unique<HudSoftwareBacking>();

@@ -85,8 +85,8 @@ TEST_F(ResourcePoolTest, AcquireRelease) {
   gfx::Size size(100, 100);
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
-      size, format.resource_format(), color_space);
+  ResourcePool::InUsePoolResource resource =
+      resource_pool_->AcquireResource(size, format, color_space);
   EXPECT_EQ(size, resource.size());
   EXPECT_EQ(format, resource.format());
   EXPECT_EQ(color_space, resource.color_space());
@@ -96,7 +96,7 @@ TEST_F(ResourcePoolTest, AcquireRelease) {
 
 TEST_F(ResourcePoolTest, EventuallyEvictAndFlush) {
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
@@ -112,7 +112,7 @@ TEST_F(ResourcePoolTest, EventuallyEvictAndFlush) {
 
 TEST_F(ResourcePoolTest, FlushEvenIfMoreUnusedToEvict) {
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   ResourcePool::InUsePoolResource resource1 =
       resource_pool_->AcquireResource(size, format, color_space);
@@ -162,10 +162,10 @@ TEST_F(ResourcePoolTest, AccountingSingleResource) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  size_t resource_bytes =
-      viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format);
+  size_t resource_bytes = viz::ResourceSizes::UncheckedSizeInBytes<size_t>(
+      size, format.resource_format());
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
   SetBackingOnResource(resource);
@@ -199,7 +199,7 @@ TEST_F(ResourcePoolTest, SimpleResourceReuse) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space1;
   gfx::ColorSpace color_space2 = gfx::ColorSpace::CreateSRGB();
 
@@ -216,8 +216,8 @@ TEST_F(ResourcePoolTest, SimpleResourceReuse) {
   EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
 
   // Different size/format should allocate new resource.
-  resource = resource_pool_->AcquireResource(gfx::Size(50, 50),
-                                             viz::LUMINANCE_8, color_space1);
+  resource = resource_pool_->AcquireResource(
+      gfx::Size(50, 50), viz::SinglePlaneFormat::kLUMINANCE_8, color_space1);
   EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());
   CheckAndReturnResource(std::move(resource));
   EXPECT_EQ(2u, resource_pool_->GetTotalResourceCountForTesting());
@@ -238,7 +238,7 @@ TEST_F(ResourcePoolTest, LostResource) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
   ResourcePool::InUsePoolResource resource =
@@ -270,7 +270,7 @@ TEST_F(ResourcePoolTest, BusyResourcesNotFreed) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
 
   ResourcePool::InUsePoolResource resource =
@@ -316,7 +316,7 @@ TEST_F(ResourcePoolTest, UnusedResourcesEventuallyFreed) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
 
   ResourcePool::InUsePoolResource resource =
@@ -357,7 +357,7 @@ TEST_F(ResourcePoolTest, UnusedResourcesEventuallyFreed) {
 
 TEST_F(ResourcePoolTest, UpdateContentId) {
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
   uint64_t content_id = 42;
   uint64_t new_content_id = 43;
@@ -382,7 +382,7 @@ TEST_F(ResourcePoolTest, UpdateContentId) {
 
 TEST_F(ResourcePoolTest, UpdateContentIdAndInvalidatedRect) {
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
   uint64_t content_ids[] = {42, 43, 44};
   gfx::Rect invalidated_rect(20, 20, 10, 10);
@@ -428,7 +428,7 @@ TEST_F(ResourcePoolTest, UpdateContentIdAndInvalidatedRect) {
 
 TEST_F(ResourcePoolTest, LargeInvalidatedRect) {
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space;
   uint64_t content_ids[] = {42, 43, 44};
   // This rect is too large to take the area of it.
@@ -465,8 +465,8 @@ TEST_F(ResourcePoolTest, ReuseResource) {
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
   // Create unused resource with size 100x100.
-  ResourcePool::InUsePoolResource original = resource_pool_->AcquireResource(
-      gfx::Size(100, 100), format.resource_format(), color_space);
+  ResourcePool::InUsePoolResource original =
+      resource_pool_->AcquireResource(gfx::Size(100, 100), format, color_space);
   auto original_id = original.unique_id_for_testing();
   CheckAndReturnResource(std::move(original));
 
@@ -496,15 +496,15 @@ TEST_F(ResourcePoolTest, ReuseResource) {
   // support these.
   if (resource_pool_->AllowsNonExactReUseForTesting()) {
     ResourcePool::InUsePoolResource reused = resource_pool_->AcquireResource(
-        gfx::Size(50, 100), format.resource_format(), color_space);
+        gfx::Size(50, 100), format, color_space);
     EXPECT_EQ(original_id, reused.unique_id_for_testing());
     CheckAndReturnResource(std::move(reused));
-    reused = resource_pool_->AcquireResource(
-        gfx::Size(100, 50), format.resource_format(), color_space);
+    reused = resource_pool_->AcquireResource(gfx::Size(100, 50), format,
+                                             color_space);
     EXPECT_EQ(original_id, reused.unique_id_for_testing());
     CheckAndReturnResource(std::move(reused));
-    reused = resource_pool_->AcquireResource(
-        gfx::Size(71, 71), format.resource_format(), color_space);
+    reused =
+        resource_pool_->AcquireResource(gfx::Size(71, 71), format, color_space);
     EXPECT_EQ(original_id, reused.unique_id_for_testing());
     CheckAndReturnResource(std::move(reused));
   } else {
@@ -518,8 +518,8 @@ TEST_F(ResourcePoolTest, ReuseResource) {
 
   // 100x100 is an exact match and should succeed. A subsequent request for
   // the same size should fail (the resource is already in use).
-  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
-      gfx::Size(100, 100), format.resource_format(), color_space);
+  ResourcePool::InUsePoolResource resource =
+      resource_pool_->AcquireResource(gfx::Size(100, 100), format, color_space);
   EXPECT_EQ(nullptr, resource_pool_->ReuseResource(gfx::Size(100, 100), format,
                                                    color_space));
   CheckAndReturnResource(std::move(resource));
@@ -532,7 +532,7 @@ TEST_F(ResourcePoolTest, PurgedMemory) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
@@ -586,7 +586,7 @@ TEST_F(ResourcePoolTest, InvalidateResources) {
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
   gfx::Size size(100, 100);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   ResourcePool::InUsePoolResource busy_resource =
       resource_pool_->AcquireResource(size, format, color_space);
@@ -661,8 +661,8 @@ TEST_F(ResourcePoolTest, ExactRequestsRespected) {
       ResourcePool::kDefaultExpirationDelay, true);
 
   // Create unused resource with size 100x100.
-  CheckAndReturnResource(resource_pool_->AcquireResource(
-      gfx::Size(100, 100), format.resource_format(), color_space));
+  CheckAndReturnResource(resource_pool_->AcquireResource(gfx::Size(100, 100),
+                                                         format, color_space));
 
   // Try some cases that are smaller than 100x100, but within 2x area which
   // would typically allow reuse. Reuse should fail.
@@ -675,8 +675,8 @@ TEST_F(ResourcePoolTest, ExactRequestsRespected) {
 
   // 100x100 is an exact match and should succeed. A subsequent request for
   // the same size should fail (the resource is already in use).
-  ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
-      gfx::Size(100, 100), format.resource_format(), color_space);
+  ResourcePool::InUsePoolResource resource =
+      resource_pool_->AcquireResource(gfx::Size(100, 100), format, color_space);
   EXPECT_EQ(nullptr, resource_pool_->ReuseResource(gfx::Size(100, 100), format,
                                                    color_space));
   CheckAndReturnResource(std::move(resource));
@@ -690,8 +690,9 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
 
   // These values are all non-default values so we can tell they are propagated.
   gfx::Size size(100, 101);
-  viz::ResourceFormat format = viz::RGBA_4444;
-  EXPECT_NE(gfx::BufferFormat::RGBA_8888, viz::BufferFormat(format));
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
+  EXPECT_NE(gfx::BufferFormat::RGBA_8888,
+            viz::BufferFormat(format.resource_format()));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t target = 5;
   gpu::Mailbox mailbox;
@@ -726,7 +727,7 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_EQ(transfer[0].mailbox_holder.mailbox, mailbox);
   EXPECT_EQ(transfer[0].mailbox_holder.sync_token, sync_token);
   EXPECT_EQ(transfer[0].mailbox_holder.texture_target, target);
-  EXPECT_EQ(transfer[0].format.resource_format(), format);
+  EXPECT_EQ(transfer[0].format, format);
   EXPECT_EQ(
       transfer[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
@@ -743,8 +744,9 @@ TEST_F(ResourcePoolTest, InvalidResource) {
 
   // These values are all non-default values so we can tell they are propagated.
   gfx::Size size(100, 101);
-  viz::ResourceFormat format = viz::RGBA_4444;
-  EXPECT_NE(gfx::BufferFormat::RGBA_8888, viz::BufferFormat(format));
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_4444;
+  EXPECT_NE(gfx::BufferFormat::RGBA_8888,
+            viz::BufferFormat(format.resource_format()));
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t target = 5;
 

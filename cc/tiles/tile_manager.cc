@@ -1233,8 +1233,8 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
     const std::string& debug_name =
         prioritized_tile.source_tiling()->raster_source()->debug_name();
     resource = resource_pool_->AcquireResource(
-        tile->desired_texture_size(), format.resource_format(),
-        target_color_params.color_space, debug_name);
+        tile->desired_texture_size(), format, target_color_params.color_space,
+        debug_name);
     DCHECK(resource);
   }
 

@@ -219,7 +219,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
       ResourcePool::InUsePoolResource resource =
           resource_pool_->AcquireResource(
               tiles[i]->desired_texture_size(),
-              raster_buffer_provider_->GetFormat().resource_format(),
+              raster_buffer_provider_->GetFormat(),
               client_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB)
                   .color_space);
       raster_buffer_provider_->AcquireBufferForRaster(

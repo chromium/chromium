@@ -13069,7 +13069,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ExternalTransformSetNeedsRedraw) {
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, OnMemoryPressure) {
   gfx::Size size(200, 200);
-  viz::ResourceFormat format = viz::RGBA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   ResourcePool::InUsePoolResource resource =
       host_impl_->resource_pool()->AcquireResource(size, format, color_space);

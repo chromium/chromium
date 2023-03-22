@@ -221,7 +221,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // Tries to reuse a resource. If none are available, makes a new one.
   InUsePoolResource AcquireResource(
       const gfx::Size& size,
-      viz::ResourceFormat resource_format,
+      viz::SharedImageFormat format,
       const gfx::ColorSpace& color_space,
       const std::string& debug_name = std::string());
 

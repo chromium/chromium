@@ -249,7 +249,8 @@ class RasterBufferProviderTest
   }
 
   ResourcePool::InUsePoolResource AllocateResource(const gfx::Size& size) {
-    return pool_->AcquireResource(size, viz::RGBA_8888, gfx::ColorSpace());
+    return pool_->AcquireResource(size, viz::SinglePlaneFormat::kRGBA_8888,
+                                  gfx::ColorSpace());
   }
 
   void AppendTask(unsigned id,

@@ -1573,7 +1573,8 @@ TEST_F(TileManagerTilePriorityQueueTest,
 
   ResourcePool::InUsePoolResource resource =
       host_impl()->resource_pool()->AcquireResource(
-          gfx::Size(256, 256), viz::RGBA_8888, gfx::ColorSpace());
+          gfx::Size(256, 256), viz::SinglePlaneFormat::kRGBA_8888,
+          gfx::ColorSpace());
   resource.set_gpu_backing(std::make_unique<StubGpuBacking>());
 
   host_impl()->tile_manager()->CheckIfMoreTilesNeedToBePreparedForTesting();
@@ -2309,7 +2310,8 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Ensure there's a resource with our |kInvalidatedId| in the resource pool.
   ResourcePool::InUsePoolResource resource =
       host_impl->resource_pool()->AcquireResource(
-          kTileSize, viz::RGBA_8888, gfx::ColorSpace::CreateSRGB());
+          kTileSize, viz::SinglePlaneFormat::kRGBA_8888,
+          gfx::ColorSpace::CreateSRGB());
 
   resource.set_software_backing(std::make_unique<TestSoftwareBacking>());
   host_impl->resource_pool()->PrepareForExport(resource);
@@ -2374,7 +2376,8 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Ensure there's a resource with our |kInvalidatedId| in the resource pool.
   ResourcePool::InUsePoolResource resource =
       host_impl->resource_pool()->AcquireResource(
-          kTileSize, viz::RGBA_8888, gfx::ColorSpace::CreateSRGB());
+          kTileSize, viz::SinglePlaneFormat::kRGBA_8888,
+          gfx::ColorSpace::CreateSRGB());
   host_impl->resource_pool()->OnContentReplaced(resource, kInvalidatedId);
   host_impl->resource_pool()->ReleaseResource(std::move(resource));
 
