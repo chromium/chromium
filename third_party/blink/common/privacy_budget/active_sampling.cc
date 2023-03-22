@@ -24,12 +24,7 @@ namespace blink {
 bool IdentifiabilityActiveSampler::IsFontFamilyAvailable(const char* family,
                                                          SkFontMgr* fm) {
   base::ScopedAllowBaseSyncPrimitives allow;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  return !!fm->legacyMakeTypeface(family, SkFontStyle());
-#else
-  sk_sp<SkFontStyleSet> set(fm->matchFamily(family));
-  return set && set->count();
-#endif
+  return !!sk_sp<SkTypeface>(fm->matchFamilyStyle(family, SkFontStyle()));
 }
 
 // static
