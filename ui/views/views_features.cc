@@ -27,6 +27,6 @@ BASE_FEATURE(kEnableViewPaintOptimization,
 // When enabled, widgets will be shown based on their z-order level
 BASE_FEATURE(kWidgetLayering,
              "WidgetLayering",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace views::features
