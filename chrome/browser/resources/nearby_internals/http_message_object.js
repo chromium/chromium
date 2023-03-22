@@ -5,14 +5,15 @@
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './http_message_object.html.js';
 import {Direction, Rpc} from './types.js';
 
 Polymer({
   is: 'http-message-object',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     /**

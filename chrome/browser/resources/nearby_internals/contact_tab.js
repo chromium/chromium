@@ -6,18 +6,19 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './contact_object.js';
-import './shared_style.js';
+import './shared_style.css.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './contact_tab.html.js';
 import {NearbyContactBrowserProxy} from './nearby_contact_browser_proxy.js';
 import {ContactUpdate} from './types.js';
 
 Polymer({
   is: 'contact-tab',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [
     WebUIListenerBehavior,

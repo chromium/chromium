@@ -9,12 +9,15 @@ import './http_tab.js';
 import './logging_tab.js';
 import './contact_tab.js';
 import './ui_trigger_tab.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './nearby_internals.html.js';
 
 Polymer({
   is: 'nearby-internals',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   properties: {
     /** @private */

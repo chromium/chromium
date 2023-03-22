@@ -5,19 +5,20 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './ui_trigger_list_object.js';
-import './shared_style.js';
+import './shared_style.css.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
 import {NearbyShareStates, ShareTarget, ShareTargetDiscoveryChange, ShareTargetSelectOption, StatusCode, TimestampedMessage, TransferMetadataStatus} from './types.js';
+import {getTemplate} from './ui_trigger_tab.html.js';
 
 Polymer({
   is: 'ui-trigger-tab',
 
-  _template: html`{__html_template__}`,
+  _template: getTemplate(),
 
   behaviors: [
     WebUIListenerBehavior,

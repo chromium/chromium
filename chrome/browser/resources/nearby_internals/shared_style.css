@@ -1,0 +1,22 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #include=cr-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  cursor: default;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.internals-button {
+  background-color: rgb(0, 134, 179);
+  color: white;
+  font-family: Roboto;
+  margin: 5px;
+}
