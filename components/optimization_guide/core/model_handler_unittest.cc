@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/path_service.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/test_model_executor.h"
@@ -239,6 +240,67 @@ TEST_F(ModelHandlerTest, Execute) {
           optimization_guide::GetStringNameForOptimizationTarget(
               proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
       1);
+}
+
+TEST_F(ModelHandlerTest, ExecuteWithCancelableTaskTracker) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  base::CancelableTaskTracker task_tracker;
+
+  std::vector<float> input;
+  input.push_back(1.0f);
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  model_handler()->ExecuteModelWithInput(
+      &task_tracker,
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             const absl::optional<std::vector<float>>& output) {
+            EXPECT_TRUE(output.has_value());
+            EXPECT_EQ((size_t)1, output.value().size());
+            EXPECT_EQ(1.0f, output.value().at(0));
+
+            run_loop->Quit();
+          },
+          run_loop.get()),
+      input);
+  run_loop->Run();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      1);
+}
+
+TEST_F(ModelHandlerTest, ExecuteWithCancelableTaskTrackerCanceled) {
+  base::HistogramTester histogram_tester;
+  CreateModelHandler();
+
+  base::CancelableTaskTracker task_tracker;
+
+  std::vector<float> input;
+  input.push_back(1.0f);
+
+  bool task_completed = false;
+  model_handler()->ExecuteModelWithInput(
+      &task_tracker,
+      base::BindOnce(
+          [](bool* task_completed,
+             const absl::optional<std::vector<float>>& output) {
+            *task_completed = true;
+          },
+          &task_completed),
+      input);
+  task_tracker.TryCancelAll();
+
+  ASSERT_FALSE(task_completed);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecutor.TaskExecutionLatency." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      0);
 }
 
 TEST_F(ModelHandlerTest, AddOnModelUpdatedCallback_RunsImmediately) {

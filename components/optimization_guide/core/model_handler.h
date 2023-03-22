@@ -13,6 +13,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/model_executor.h"
@@ -89,17 +90,22 @@ class ModelHandler : public OptimizationTargetModelObserver {
   virtual void ExecuteModelWithInput(ExecutionCallback callback,
                                      InputTypes... input) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::TimeTicks now = base::TimeTicks::Now();
 
-    ExecutionCallback on_complete_callback =
-        base::BindOnce(&ModelHandler::OnExecutionCompleted, std::move(callback),
-                       optimization_target_, now);
     model_executor_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ModelExecutor<OutputType, InputTypes...>::SendForExecution,
-            model_executor_->GetWeakPtrForExecutionThread(),
-            std::move(on_complete_callback), now, input...));
+        FROM_HERE, GetExecutionTask(std::move(callback), input...));
+  }
+
+  // Same as the method above. But also receives a `base::CancelableTaskTracker`
+  // for cancelling the execution. Keep in mind that CancelableTaskTracker
+  // cannot cancel tasks that have already started to run. Virtual for testing.
+  // TODO(crbug/1173328): Add a way to surface errors.
+  virtual void ExecuteModelWithInput(base::CancelableTaskTracker* tracker,
+                                     ExecutionCallback callback,
+                                     InputTypes... input) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    tracker->PostTask(model_executor_task_runner_.get(), FROM_HERE,
+                      GetExecutionTask(std::move(callback), input...));
   }
 
   void SetShouldUnloadModelOnComplete(bool should_auto_unload) {
@@ -193,6 +199,20 @@ class ModelHandler : public OptimizationTargetModelObserver {
   }
 
  private:
+  // Returns a closure supplied with |callback| and |input| for model execution.
+  base::OnceClosure GetExecutionTask(ExecutionCallback callback,
+                                     InputTypes... input) {
+    base::TimeTicks now = base::TimeTicks::Now();
+
+    ExecutionCallback on_complete_callback =
+        base::BindOnce(&ModelHandler::OnExecutionCompleted, std::move(callback),
+                       optimization_target_, now);
+    return base::BindOnce(
+        &ModelExecutor<OutputType, InputTypes...>::SendForExecution,
+        model_executor_->GetWeakPtrForExecutionThread(),
+        std::move(on_complete_callback), now, input...);
+  }
+
   // This is called by |model_executor_|. This method does not have to be
   // static, but because it is stateless we've made it static so that we don't
   // have to have this class support WeakPointers.
