@@ -110,45 +110,43 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                "AudioWorkletHandler::Process");
 
-  // Render and update the node state when the processor is ready with no error.
-  // We also need to check if the global scope is valid before we request
-  // the rendering in the AudioWorkletGlobalScope.
-  if (processor_ && !processor_->hasErrorOccurred()) {
-    // If the input is not connected, inform the processor with nullptr.
-    for (unsigned i = 0; i < NumberOfInputs(); ++i) {
-      inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
-    }
-    for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
-      outputs_[i] = WrapRefCounted(Output(i).Bus());
-    }
-
-    for (const auto& param_name : param_value_map_.Keys()) {
-      auto* const param_handler = param_handler_map_.at(param_name);
-      AudioFloatArray* param_values = param_value_map_.at(param_name);
-      if (param_handler->HasSampleAccurateValues() &&
-          param_handler->IsAudioRate()) {
-        param_handler->CalculateSampleAccurateValues(
-            param_values->Data(), static_cast<uint32_t>(frames_to_process));
-      } else {
-        std::fill(param_values->Data(),
-                  param_values->Data() + frames_to_process,
-                  param_handler->FinalValue());
-      }
-    }
-
-    // Run the render code and check the state of processor. Finish the
-    // processor if needed.
-    if (!processor_->Process(inputs_, outputs_, param_value_map_) ||
-        processor_->hasErrorOccurred()) {
-      FinishProcessorOnRenderThread();
-    }
-  } else {
-    // The initialization of handler or the associated processor might not be
-    // ready yet or it is in the error state. If so, zero out the connected
-    // output.
+  // The associated processor is not ready, finished, or might be in an error
+  // state. If so, silence the connected outputs and return.
+  if (!processor_ || processor_->hasErrorOccurred()) {
     for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
       Output(i).Bus()->Zero();
     }
+    return;
+  }
+
+  // If the input is not connected, inform the processor with nullptr.
+  for (unsigned i = 0; i < NumberOfInputs(); ++i) {
+    inputs_[i] = Input(i).IsConnected() ? Input(i).Bus() : nullptr;
+  }
+  for (unsigned i = 0; i < NumberOfOutputs(); ++i) {
+    outputs_[i] = WrapRefCounted(Output(i).Bus());
+  }
+
+  for (const auto& param_name : param_value_map_.Keys()) {
+    auto* const param_handler = param_handler_map_.at(param_name);
+    AudioFloatArray* param_values = param_value_map_.at(param_name);
+    if (param_handler->HasSampleAccurateValues() &&
+        param_handler->IsAudioRate()) {
+      param_handler->CalculateSampleAccurateValues(
+          param_values->Data(), static_cast<uint32_t>(frames_to_process));
+    } else {
+      std::fill(param_values->Data(),
+                param_values->Data() + frames_to_process,
+                param_handler->FinalValue());
+    }
+  }
+
+  // Run the render code and check the return value or the state of processor.
+  // If the return value is falsy, the processor's `Process()` function
+  // won't be called again.
+  if (!processor_->Process(inputs_, outputs_, param_value_map_) ||
+      processor_->hasErrorOccurred()) {
+    FinishProcessorOnRenderThread();
   }
 }
 
@@ -238,6 +236,14 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
   Context()->NotifySourceNodeFinishedProcessing(this);
   processor_.Clear();
   tail_time_ = 0;
+
+  // The processor is cleared, so queue a task to mark this handler (and its
+  // associated AudioWorkletNode) is ready for GC.
+  PostCrossThreadTask(
+      *main_thread_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          &AudioWorkletHandler::MarkProcessorInactiveOnMainThread,
+          AsWeakPtr()));
 }
 
 void AudioWorkletHandler::NotifyProcessorError(
@@ -248,6 +254,12 @@ void AudioWorkletHandler::NotifyProcessorError(
   }
 
   static_cast<AudioWorkletNode*>(GetNode())->FireProcessorError(error_state);
+}
+
+void AudioWorkletHandler::MarkProcessorInactiveOnMainThread() {
+  DCHECK(IsMainThread());
+
+  is_processor_active_ = false;
 }
 
 }  // namespace blink

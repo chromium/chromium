@@ -59,6 +59,9 @@ class AudioWorkletHandler final
 
   void NotifyProcessorError(AudioWorkletProcessorErrorState);
 
+  void MarkProcessorInactiveOnMainThread();
+  bool IsProcessorActive() { return is_processor_active_; }
+
  private:
   AudioWorkletHandler(
       AudioNode&,
@@ -90,6 +93,11 @@ class AudioWorkletHandler final
 
   // Used only if number of inputs and outputs are 1.
   bool is_output_channel_count_given_ = false;
+
+  // The active flag of the AudioWorkletProcessor is used to decide the
+  // lifecycle of an AudioWorkletNode and its handler. This flag becomes false
+  // when a processor stops invoking the user-defined `process()` callback.
+  bool is_processor_active_ = true;
 };
 
 }  // namespace blink

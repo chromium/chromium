@@ -201,7 +201,7 @@ AudioWorkletNode* AudioWorkletNode::Create(
 }
 
 bool AudioWorkletNode::HasPendingActivity() const {
-  return !context()->IsContextCleared();
+  return GetWorkletHandler()->IsProcessorActive();
 }
 
 AudioParamMap* AudioWorkletNode::parameters() const {
