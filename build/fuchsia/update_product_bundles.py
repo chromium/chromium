@@ -15,13 +15,12 @@ import subprocess
 import sys
 
 from contextlib import ExitStack
-import ffx_session
-import log_manager
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'test')))
 
 import common
+import ffx_integration
 
 _PRODUCT_BUNDLES = [
     'core.x64-dfv2',
@@ -77,26 +76,22 @@ def get_hash_from_sdk():
     return json.load(f)['id']
 
 
-def remove_repositories(repo_names_to_remove, ffx_runner):
+def remove_repositories(repo_names_to_remove):
   """Removes given repos from repo list.
   Repo MUST be present in list to succeed.
 
   Args:
     repo_names_to_remove: List of repo names (as strings) to remove.
-    ffx_runner: ffx_session.FfxRunner instance to run the command.
   """
   for repo_name in repo_names_to_remove:
-    ffx_runner.run_ffx(('repository', 'remove', repo_name), check=True)
+    common.run_ffx_command(('repository', 'remove', repo_name), check=True)
 
 
-def get_repositories(ffx_runner):
+def get_repositories():
   """Lists repositories that are available on disk.
 
   Also prunes repositories that are listed, but do not have an actual packages
   directory.
-
-  Args:
-    ffx_runner: An FfxRunner instance.
 
   Returns:
     List of dictionaries containing info about the repositories. They have the
@@ -111,7 +106,9 @@ def get_repositories(ffx_runner):
   """
 
   repos = json.loads(
-      ffx_runner.run_ffx(('--machine', 'json', 'repository', 'list')).strip())
+      common.run_ffx_command(('--machine', 'json', 'repository', 'list'),
+                             check=True,
+                             capture_output=True).stdout.strip())
   to_prune = set()
   sdk_root_abspath = os.path.abspath(os.path.dirname(common.SDK_ROOT))
   for repo in repos:
@@ -126,25 +123,22 @@ def get_repositories(ffx_runner):
 
   repos = [repo for repo in repos if repo['name'] not in to_prune]
 
-  remove_repositories(to_prune, ffx_runner)
+  remove_repositories(to_prune)
   return repos
 
 
-def update_repositories_list(ffx_runner):
+def update_repositories_list():
   """Used to prune stale repositories."""
-  get_repositories(ffx_runner)
+  get_repositories()
 
 
-def remove_product_bundle(product_bundle, ffx_runner):
+def remove_product_bundle(product_bundle):
   """Removes product-bundle given."""
-  ffx_runner.run_ffx(('product-bundle', 'remove', '-f', product_bundle))
+  common.run_ffx_command(('product-bundle', 'remove', '-f', product_bundle))
 
 
-def get_product_bundle_urls(ffx_runner):
+def get_product_bundle_urls():
   """Retrieves URLs of available product-bundles.
-
-  Args:
-    ffx_runner: An FfxRunner instance.
 
   Returns:
     List of dictionaries of structure, indicating whether the product-bundle
@@ -155,8 +149,8 @@ def get_product_bundle_urls(ffx_runner):
     }
   """
   # TODO(fxb/115328): Replaces with JSON API when available.
-  bundles = ffx_runner.run_ffx(('product-bundle', 'list'), check=True)
-
+  bundles = common.run_ffx_command(('product-bundle', 'list'),
+                                   capture_output=True).stdout.strip()
   urls = [
       line.strip() for line in bundles.splitlines() if 'gs://fuchsia' in line
   ]
@@ -170,23 +164,20 @@ def get_product_bundle_urls(ffx_runner):
   return structured_urls
 
 
-def keep_product_bundles_by_sdk_version(sdk_version, ffx_runner):
+def keep_product_bundles_by_sdk_version(sdk_version):
   """Prunes product bundles not containing the sdk_version given."""
-  urls = get_product_bundle_urls(ffx_runner)
+  urls = get_product_bundle_urls()
   for url in urls:
     if url['downloaded'] and sdk_version not in url['url']:
-      remove_product_bundle(url['url'], ffx_runner)
+      remove_product_bundle(url['url'])
 
 
-def get_product_bundles(ffx_runner):
+def get_product_bundles():
   """Lists all downloaded product-bundles for the given SDK.
 
   Cross-references the repositories with downloaded packages and the stated
   downloaded product-bundles to validate whether or not a product-bundle is
   present. Prunes invalid product-bundles with each call as well.
-
-  Args:
-    ffx_runner: An FfxRunner instance.
 
   Returns:
     List of strings of product-bundle names downloaded and that FFX is aware
@@ -194,16 +185,13 @@ def get_product_bundles(ffx_runner):
   """
   downloaded_bundles = []
 
-  for url in get_product_bundle_urls(ffx_runner):
+  for url in get_product_bundle_urls():
     if url['downloaded']:
       # The product is separated by a #
       product = url['url'].split('#')
       downloaded_bundles.append(product[1])
 
-  # For each downloaded bundle, need to verify whether ffx repository believes
-  # it exists.
-  to_prune_bundles_index = []
-  repos = get_repositories(ffx_runner)
+  repos = get_repositories()
 
   # Some repo names do not match product-bundle names due to underscores.
   # Normalize them both.
@@ -216,19 +204,19 @@ def get_product_bundles(ffx_runner):
     if name.replace('-', '_') in repo_names:
       return True
 
-    remove_product_bundle(name, ffx_runner)
+    remove_product_bundle(name)
     return False
 
   return list(filter(bundle_is_active, downloaded_bundles))
 
 
-def download_product_bundle(product_bundle, ffx_runner):
+def download_product_bundle(product_bundle):
   """Download product bundles using the SDK."""
   # This also updates the repository list, in case it is stale.
-  update_repositories_list(ffx_runner)
+  update_repositories_list()
 
   try:
-    ffx_runner.run_ffx(
+    common.run_ffx_command(
         ('product-bundle', 'get', product_bundle, '--force-repo'))
   except subprocess.CalledProcessError as cpe:
     logging.error('Product bundle download has failed. ' +
@@ -236,22 +224,19 @@ def download_product_bundle(product_bundle, ffx_runner):
     raise
 
 
-def get_current_signature(ffx_runner):
+def get_current_signature():
   """Determines the SDK version of the product-bundles associated with the SDK.
 
   Parses this information from the URLs of the product-bundle.
 
-  Args:
-    ffx_runner: An FfxRunner instance.
-
   Returns:
     An SDK version string, or None if no product-bundle versions are downloaded.
   """
-  product_bundles = get_product_bundles(ffx_runner)
+  product_bundles = get_product_bundles()
   if not product_bundles:
     logging.info('No product bundles - signature will default to None')
     return None
-  product_bundle_urls = get_product_bundle_urls(ffx_runner)
+  product_bundle_urls = get_product_bundle_urls()
 
   # Get the numbers, hope they're the same.
   signatures = set()
@@ -299,11 +284,10 @@ def main():
                      'found in the DEPS file.')
 
   with ExitStack() as stack:
-    ffx_runner = ffx_session.FfxRunner(log_manager.LogManager(None))
 
     # Re-set the directory to which product bundles are downloaded so that
     # these bundles are located inside the Chromium codebase.
-    ffx_runner.run_ffx(
+    common.run_ffx_command(
         ('config', 'set', 'pbms.storage.path', common.IMAGES_ROOT))
 
     logging.debug('Checking for override file')
@@ -316,16 +300,17 @@ def main():
         pb_metadata = f.read().strip().split('\n')
         pb_metadata.append('{sdk.root}/*.json')
       stack.enter_context(
-          ffx_runner.scoped_config('pbms.metadata', json.dumps((pb_metadata))))
+          ffx_integration.ScopedFfxConfig('pbms.metadata',
+                                          json.dumps((pb_metadata))))
       logging.debug('Applied overrides')
 
     logging.debug('Getting new SDK hash')
     new_sdk_hash = get_hash_from_sdk()
-    keep_product_bundles_by_sdk_version(new_sdk_hash, ffx_runner)
+    keep_product_bundles_by_sdk_version(new_sdk_hash)
     logging.debug('Checking for current signature')
-    curr_signature = get_current_signature(ffx_runner)
+    curr_signature = get_current_signature()
 
-    current_images = get_product_bundles(ffx_runner)
+    current_images = get_product_bundles()
 
     # If SDK versions match, remove the product bundles that are no longer
     # needed and download missing ones.
@@ -335,34 +320,30 @@ def main():
       for image in current_images:
         if image not in new_product_bundles:
           logging.debug('Removing no longer needed Fuchsia image %s' % image)
-          remove_product_bundle(image, ffx_runner)
+          remove_product_bundle(image)
 
       bundles_to_download = set(new_product_bundles) - \
                             set(current_images)
       for bundle in bundles_to_download:
         logging.debug('Downloading image: %s', image)
-        download_product_bundle(bundle, ffx_runner)
+        download_product_bundle(bundle)
 
       return 0
 
     # If SDK versions do not match, remove all existing product bundles
     # and download the ones required.
     for pb in current_images:
-      remove_product_bundle(pb, ffx_runner)
+      remove_product_bundle(pb)
 
     logging.debug('Make clean images root')
-    curr_subdir = []
-    if os.path.exists(common.IMAGES_ROOT):
-      curr_subdir = os.listdir(common.IMAGES_ROOT)
     common.make_clean_directory(common.IMAGES_ROOT)
 
     for pb in new_product_bundles:
       logging.debug('Downloading bundle: %s', pb)
-      download_product_bundle(pb, ffx_runner)
+      download_product_bundle(pb)
 
-    current_pb = get_product_bundles(ffx_runner)
+    current_pb = get_product_bundles()
 
-    diff = set(current_pb) - set(new_product_bundles)
     assert set(current_pb) == set(new_product_bundles), (
         'Failed to download expected set of product-bundles. '
         f'Expected {new_product_bundles}, got {current_pb}')
