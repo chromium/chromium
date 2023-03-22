@@ -109,6 +109,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesFlushInBackground);
 // tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMoreAggressiveSolidColorDetection);
 
+// Allow CC FrameRateEstimater to reduce the frame rate to half of the default
+// if the condition meets the requirement.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReducedFrameRateEstimation);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

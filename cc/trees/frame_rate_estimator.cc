@@ -5,6 +5,7 @@
 #include "cc/trees/frame_rate_estimator.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "cc/base/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
@@ -24,8 +25,11 @@ FrameRateEstimator::FrameRateEstimator(base::SequencedTaskRunner* task_runner)
 FrameRateEstimator::~FrameRateEstimator() = default;
 
 void FrameRateEstimator::SetFrameEstimationEnabled(bool enabled) {
-  if (enabled == frame_rate_estimation_enabled_)
+  static const bool feature_allowed =
+      base::FeatureList::IsEnabled(features::kReducedFrameRateEstimation);
+  if (!feature_allowed || enabled == frame_rate_estimation_enabled_) {
     return;
+  }
 
   frame_rate_estimation_enabled_ = enabled;
   last_draw_time_ = base::TimeTicks();
