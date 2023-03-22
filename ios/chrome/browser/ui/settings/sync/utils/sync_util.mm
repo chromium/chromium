@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 
+#import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -16,7 +18,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
@@ -281,7 +282,8 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
 }
 
 AccountErrorUIInfo* GetAccountErrorUIInfo(ChromeBrowserState* browserState) {
-  if (!IsIndicateAccountStorageErrorInAccountCellEnabled()) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kIndicateAccountStorageErrorInAccountCell)) {
     return nil;
   }
 

@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/base/features.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
@@ -219,7 +220,7 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
 TEST_F(AccountsTableViewControllerTest, HoldPassphraseErrorWhenEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
@@ -255,7 +256,7 @@ TEST_F(AccountsTableViewControllerTest, HoldPassphraseErrorWhenEligible) {
 TEST_F(AccountsTableViewControllerTest, ClearPassphraseErrorWhenResolved) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
@@ -301,7 +302,7 @@ TEST_F(AccountsTableViewControllerTest, ClearPassphraseErrorWhenResolved) {
 TEST_F(AccountsTableViewControllerTest, DontHoldPassphraseErrorWhenIneligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";
@@ -336,7 +337,7 @@ TEST_F(AccountsTableViewControllerTest,
        DontHoldPassphraseErrorWhenEligibleNoError) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   const std::string email = "foo@gmail.com";
   const std::string gaia_id = "fooID";

@@ -209,15 +209,6 @@ BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType() {
   return BringYourOwnTabsPromptType::kDisabled;
 }
 
-BASE_FEATURE(kIndicateAccountStorageErrorInAccountCell,
-             "IndicatePassphraseErrorForSignedInUser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsIndicateAccountStorageErrorInAccountCellEnabled() {
-  return base::FeatureList::IsEnabled(
-      kIndicateAccountStorageErrorInAccountCell);
-}
-
 BASE_FEATURE(kNewNTPOmniboxLayout,
              "kNewNTPOmniboxLayout",
              base::FEATURE_DISABLED_BY_DEFAULT);

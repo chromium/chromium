@@ -14,6 +14,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/sync/base/features.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -381,7 +382,7 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
 TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   // Set account error.
   ON_CALL(*sync_service_mock_, GetUserActionableError())
@@ -409,7 +410,7 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
 TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   // Set account error to resolve.
   ON_CALL(*sync_service_mock_, GetUserActionableError())
@@ -453,7 +454,7 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
 TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   // Enable Sync to make the account item ineligible to indicate errors.
   SetupSyncServiceEnabledExpectations();
@@ -485,7 +486,7 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
 TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      kIndicateAccountStorageErrorInAccountCell);
+      syncer::kIndicateAccountStorageErrorInAccountCell);
 
   // Set no account error state.
   ON_CALL(*sync_service_mock_, GetUserActionableError())

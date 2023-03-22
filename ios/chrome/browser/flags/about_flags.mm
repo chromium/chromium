@@ -1430,7 +1430,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIndicateAccountStorageErrorInAccountCellName,
      flag_descriptions::kIndicateAccountStorageErrorInAccountCellDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kIndicateAccountStorageErrorInAccountCell)},
+     FEATURE_VALUE_TYPE(syncer::kIndicateAccountStorageErrorInAccountCell)},
     {"enable-bookmarks-account-storage",
      flag_descriptions::kEnableBookmarksAccountStorageName,
      flag_descriptions::kEnableBookmarksAccountStorageDescription,

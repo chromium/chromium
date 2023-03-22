@@ -181,6 +181,12 @@ BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 // TODO(crbug.com/1425071): Remove this.
 BASE_DECLARE_FEATURE(kSyncPollImmediatelyOnEveryStartup);
 
+#if BUILDFLAG(IS_IOS)
+// Feature flag to enable indicating the Account Storage error in the Account
+// Cell when Sync is turned OFF (iOS only).
+BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

@@ -155,14 +155,6 @@ extern const char kAddToHomeScreenDisableIncognitoParam[];
 // Helper function to check the feature add to home screen.
 bool ShouldAddToHomeScreen(bool in_incognito);
 
-// Feature flag to enable indicating the Account Storage error in the Account
-// Cell when Sync is turned OFF.
-BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
-
-// Returns true if the `kIndicateAccountStorageErrorInAccountCell` feature is
-// enabled.
-bool IsIndicateAccountStorageErrorInAccountCellEnabled();
-
 // Feature flag to enable the new layout of the NTP omnibox.
 BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/sync/utils/identity_error_util.h"
 
+#import "base/feature_list.h"
+#import "components/sync/base/features.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_user_settings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -34,7 +36,8 @@ AccountErrorUIInfo* GetAccountErrorUIInfoForPassphraseError() {
 }  // namespace
 
 AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
-  if (!IsIndicateAccountStorageErrorInAccountCellEnabled()) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kIndicateAccountStorageErrorInAccountCell)) {
     return nil;
   }
 

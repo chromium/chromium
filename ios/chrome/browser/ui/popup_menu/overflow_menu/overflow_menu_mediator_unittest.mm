@@ -21,6 +21,7 @@
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/sync/base/features.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/translate/core/browser/translate_pref_names.h"
@@ -641,9 +642,10 @@ TEST_F(OverflowMenuMediatorTest, TestWhatsNewDisabled) {
 // eligible identity error that can be resolved from the Settings menu.
 TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
-                                 kIndicateAccountStorageErrorInAccountCell},
-                                {});
+  feature_list.InitWithFeatures(
+      {kIndicateSyncErrorInOverflowMenu,
+       syncer::kIndicateAccountStorageErrorInAccountCell},
+      {});
 
   CreateMediator(/*is_incognito=*/NO);
 
@@ -669,9 +671,10 @@ TEST_F(OverflowMenuMediatorTest, TestEligibleIdentityErrorWhenSyncOff) {
 // there is no eligible identity error. Sync is OFF.
 TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
-                                 kIndicateAccountStorageErrorInAccountCell},
-                                {});
+  feature_list.InitWithFeatures(
+      {kIndicateSyncErrorInOverflowMenu,
+       syncer::kIndicateAccountStorageErrorInAccountCell},
+      {});
 
   CreateMediator(/*is_incognito=*/NO);
 
@@ -695,9 +698,10 @@ TEST_F(OverflowMenuMediatorTest, TestNoEligibleIdentityErrorWhenSyncOff) {
 // signed in and has Sync turned ON.
 TEST_F(OverflowMenuMediatorTest, TestSyncError) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
-                                 kIndicateAccountStorageErrorInAccountCell},
-                                {});
+  feature_list.InitWithFeatures(
+      {kIndicateSyncErrorInOverflowMenu,
+       syncer::kIndicateAccountStorageErrorInAccountCell},
+      {});
 
   CreateMediator(/*is_incognito=*/NO);
 
@@ -723,9 +727,10 @@ TEST_F(OverflowMenuMediatorTest, TestSyncError) {
 // destination when there is no error in both Sync and Identity levels.
 TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kIndicateSyncErrorInOverflowMenu,
-                                 kIndicateAccountStorageErrorInAccountCell},
-                                {});
+  feature_list.InitWithFeatures(
+      {kIndicateSyncErrorInOverflowMenu,
+       syncer::kIndicateAccountStorageErrorInAccountCell},
+      {});
 
   CreateMediator(/*is_incognito=*/NO);
 
@@ -751,7 +756,7 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kIndicateSyncErrorInOverflowMenu,
-       kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
+       syncer::kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
       {});
 
   const GURL kUrl("https://chromium.test");
@@ -791,7 +796,7 @@ TEST_F(OverflowMenuMediatorTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kIndicateSyncErrorInOverflowMenu,
-       kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
+       syncer::kIndicateAccountStorageErrorInAccountCell, kWhatsNewIOS},
       {});
 
   CreateMediator(/*is_incognito=*/NO);
