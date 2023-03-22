@@ -1541,7 +1541,7 @@ BASE_FEATURE(kOsSyncConsentRevamp,
 // ChromeOS Settings.
 BASE_FEATURE(kOsSettingsAppBadgingToggle,
              "OsSettingsAppBadgingToggle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables search result feedback in ChromeOS Settings when no search results
 // are returned.
