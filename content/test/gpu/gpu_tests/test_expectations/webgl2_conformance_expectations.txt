@@ -653,6 +653,12 @@ crbug.com/1027125 [ android angle-disabled no-passthrough qualcomm ] deqp/functi
 # Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
+# finder:group-start crbug.com/1426535 Flaky DCHECK on Pixel 4 and 6
+crbug.com/1426535 [ android ] conformance/state/gl-enable-enum-test.html [ RetryOnFailure ]
+crbug.com/1426535 [ android ] conformance/state/gl-get-calls.html [ RetryOnFailure ]
+crbug.com/1426535 [ android ] conformance/state/gl-initial-state.html [ RetryOnFailure ]
+# finder:group-end
+
 ## Pixel 2 ##
 
 crbug.com/906742 [ android-pie android-pixel-2 no-passthrough qualcomm ] conformance2/glsl3/compare-structs-containing-arrays.html [ Failure ]

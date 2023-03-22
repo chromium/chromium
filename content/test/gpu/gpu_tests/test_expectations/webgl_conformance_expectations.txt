@@ -526,6 +526,12 @@ crbug.com/834933 [ android-chromium android-s android-sm-a235m angle-disabled no
 crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
 crbug.com/1347077 [ android-s android-sm-a235m angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
+# finder:group-start crbug.com/1426535 Flaky DCHECK on Pixel 4 and 6
+crbug.com/1426535 [ android ] conformance/state/gl-enable-enum-test.html [ RetryOnFailure ]
+crbug.com/1426535 [ android ] conformance/state/gl-get-calls.html [ RetryOnFailure ]
+crbug.com/1426535 [ android ] conformance/state/gl-initial-state.html [ RetryOnFailure ]
+# finder:group-end
+
 ## Nexus 5X ##
 
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
@@ -578,8 +584,6 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBG
 crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1426535 [ android android-pixel-6 ] conformance/state/gl-enable-enum-test.html [ RetryOnFailure ]
-crbug.com/1426535 [ android android-pixel-6 ] conformance/state/gl-get-calls.html [ RetryOnFailure ]
 
 # finder:group-start crbug.com/1383180 failures happen in many tests, so can be classified as stale for one specific test
 crbug.com/1383180 [ android android-pixel-6 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
