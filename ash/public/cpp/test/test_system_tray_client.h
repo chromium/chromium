@@ -73,6 +73,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowAudioSettings() override;
   bool IsUserFeedbackEnabled() override;
   void ShowEolInfoPage() override;
+  void RecordEolNoticeShown() override;
 
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;

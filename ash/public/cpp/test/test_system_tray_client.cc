@@ -159,4 +159,6 @@ void TestSystemTrayClient::ShowEolInfoPage() {
   ++show_eol_info_count_;
 }
 
+void TestSystemTrayClient::RecordEolNoticeShown() {}
+
 }  // namespace ash

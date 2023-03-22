@@ -182,6 +182,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // reached end of life.
   virtual void ShowEolInfoPage() = 0;
 
+  // Records a UMA metric that the end of life notice was shown.
+  virtual void RecordEolNoticeShown() = 0;
+
   // Returns 'true' if the user preference is set to allow users to submit
   // feedback, 'false' otherwise.
   virtual bool IsUserFeedbackEnabled() = 0;

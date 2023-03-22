@@ -121,7 +121,9 @@ void EolNotification::OnEolInfo(UpdateEngineClient::EolInfo eol_info) {
   if (tray_client) {
     tray_client->SetShowEolNotice(
         incentive_type ==
-            ash::eol_incentive_util::EolIncentiveType::kEolPassed ||
+                ash::eol_incentive_util::EolIncentiveType::kEolPassed ||
+            incentive_type ==
+                ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently,
         incentive_type ==
             ash::eol_incentive_util::EolIncentiveType::kEolPassedRecently);
   }
@@ -192,6 +194,9 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
                   weak_ptr_factory_.GetWeakPtr()))
           .Build(),
       /*metadata=*/nullptr);
+
+  eol_incentive_util::RecordShowSourceHistogram(
+      eol_incentive_util::EolIncentiveShowSource::kNotification_Original);
 }
 
 void EolNotification::Close(bool by_user) {
@@ -214,16 +219,33 @@ void EolNotification::Click(const absl::optional<int>& button_index,
 
   if (dismiss_pref_ == prefs::kEolApproachingIncentiveNotificationDismissed ||
       dismiss_pref_ == prefs::kEolPassedFinalIncentiveDismissed) {
+    bool use_offer_url = features::kEolIncentiveParam.Get() !=
+                         features::EolIncentiveParam::kNoOffer;
     switch (*button_index) {
       case kButtonClaim:
         // Open link for eol incentive notification.
         NewWindowDelegate::GetPrimary()->OpenUrl(
-            GURL(features::kEolIncentiveParam.Get() ==
-                         features::EolIncentiveParam::kNoOffer
-                     ? chrome::kEolIncentiveNotificationNoOfferURL
-                     : chrome::kEolIncentiveNotificationOfferURL),
+            GURL(use_offer_url ? chrome::kEolIncentiveNotificationOfferURL
+                               : chrome::kEolIncentiveNotificationNoOfferURL),
             NewWindowDelegate::OpenUrlFrom::kUserInteraction,
             NewWindowDelegate::Disposition::kNewForegroundTab);
+
+        if (dismiss_pref_ ==
+            prefs::kEolApproachingIncentiveNotificationDismissed) {
+          // Record button pressed for eol approaching.
+          eol_incentive_util::RecordButtonClicked(
+              use_offer_url ? eol_incentive_util::EolIncentiveButtonType::
+                                  kNotification_Offer_Approaching
+                            : eol_incentive_util::EolIncentiveButtonType::
+                                  kNotification_NoOffer_Approaching);
+        } else {
+          // Record button pressed for eol recently passed.
+          eol_incentive_util::RecordButtonClicked(
+              use_offer_url ? eol_incentive_util::EolIncentiveButtonType::
+                                  kNotification_Offer_RecentlyPassed
+                            : eol_incentive_util::EolIncentiveButtonType::
+                                  kNotification_NoOffer_RecentlyPassed);
+        }
         break;
       case kButtonAboutUpdates:
         // Open link to learn more about updates.
@@ -231,6 +253,14 @@ void EolNotification::Click(const absl::optional<int>& button_index,
             GURL(chrome::kEolNotificationURL),
             NewWindowDelegate::OpenUrlFrom::kUserInteraction,
             NewWindowDelegate::Disposition::kNewForegroundTab);
+
+        eol_incentive_util::RecordButtonClicked(
+            dismiss_pref_ ==
+                    prefs::kEolApproachingIncentiveNotificationDismissed
+                ? eol_incentive_util::EolIncentiveButtonType::
+                      kNotification_AboutUpdates_Approaching
+                : eol_incentive_util::EolIncentiveButtonType::
+                      kNotification_AboutUpdates_RecentlyPassed);
         break;
     }
     profile_->GetPrefs()->SetBoolean(prefs::kEolNotificationDismissed, true);
@@ -244,10 +274,17 @@ void EolNotification::Click(const absl::optional<int>& button_index,
         NewWindowDelegate::GetPrimary()->OpenUrl(
             url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
             NewWindowDelegate::Disposition::kNewForegroundTab);
+
+        eol_incentive_util::RecordButtonClicked(
+            eol_incentive_util::EolIncentiveButtonType::
+                kNotification_Original_LearnMore);
         break;
       }
       case BUTTON_DISMISS:
         CHECK(dismiss_pref_);
+        eol_incentive_util::RecordButtonClicked(
+            eol_incentive_util::EolIncentiveButtonType::
+                kNotification_Original_Dismiss);
         // Set dismiss pref.
         profile_->GetPrefs()->SetBoolean(*dismiss_pref_, true);
         break;
@@ -398,6 +435,17 @@ void EolNotification::ShowIncentiveNotification(
                   weak_ptr_factory_.GetWeakPtr()))
           .Build(),
       /*metadata=*/nullptr);
+
+  if (incentive_type == eol_incentive_util::EolIncentiveType::kEolApproaching) {
+    // Record approaching eol notification shown.
+    eol_incentive_util::RecordShowSourceHistogram(
+        eol_incentive_util::EolIncentiveShowSource::kNotification_Approaching);
+  } else {
+    // Record recently passed eol notification shown.
+    eol_incentive_util::RecordShowSourceHistogram(
+        eol_incentive_util::EolIncentiveShowSource::
+            kNotification_RecentlyPassed);
+  }
 }
 
 void EolNotification::ResetDismissedPrefs() {

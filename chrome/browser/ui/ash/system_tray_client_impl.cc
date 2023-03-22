@@ -29,6 +29,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/eol_incentive_util.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
@@ -364,7 +365,9 @@ void SystemTrayClientImpl::SetLocaleList(
   system_tray_->SetLocaleList(std::move(locale_list), current_locale_iso_code);
 }
 
-void SystemTrayClientImpl::SetShowEolNotice(bool show) {
+void SystemTrayClientImpl::SetShowEolNotice(bool show,
+                                            bool eol_passed_recently) {
+  eol_incentive_recently_passed_ = eol_passed_recently;
   system_tray_->SetShowEolNotice(show);
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -784,10 +787,33 @@ void SystemTrayClientImpl::ShowAudioSettings() {
 }
 
 void SystemTrayClientImpl::ShowEolInfoPage() {
+  const bool use_offer_url = ash::features::kEolIncentiveParam.Get() !=
+                                 ash::features::EolIncentiveParam::kNoOffer &&
+                             eol_incentive_recently_passed_;
+
+  if (eol_incentive_recently_passed_) {
+    ash::eol_incentive_util::RecordButtonClicked(
+        use_offer_url ? ash::eol_incentive_util::EolIncentiveButtonType::
+                            kQuickSettings_Offer_RecentlyPassed
+                      : ash::eol_incentive_util::EolIncentiveButtonType::
+                            kQuickSettings_NoOffer_RecentlyPassed);
+  } else {
+    DCHECK(!use_offer_url);
+    ash::eol_incentive_util::RecordButtonClicked(
+        ash::eol_incentive_util::EolIncentiveButtonType::
+            kQuickSettings_NoOffer_Passed);
+  }
+
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(chrome::kEolNotificationURL),
+      GURL(use_offer_url ? chrome::kEolIncentiveNotificationOfferURL
+                         : chrome::kEolIncentiveNotificationNoOfferURL),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void SystemTrayClientImpl::RecordEolNoticeShown() {
+  ash::eol_incentive_util::RecordShowSourceHistogram(
+      ash::eol_incentive_util::EolIncentiveShowSource::kQuickSettings);
 }
 
 bool SystemTrayClientImpl::IsUserFeedbackEnabled() {

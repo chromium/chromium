@@ -88,6 +88,8 @@ EolNoticeQuickSettingsView::EolNoticeQuickSettingsView()
 
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+
+  Shell::Get()->system_tray_model()->client()->RecordEolNoticeShown();
 }
 
 EolNoticeQuickSettingsView::~EolNoticeQuickSettingsView() = default;

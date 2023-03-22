@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
@@ -87,6 +88,14 @@ EolIncentiveType ShouldShowEolIncentive(Profile* profile,
 
   // Eol passed, but more than a few days ago.
   return EolIncentiveType::kEolPassed;
+}
+
+void RecordShowSourceHistogram(EolIncentiveShowSource source) {
+  base::UmaHistogramEnumeration(kEolIncentiveShowSourceHistogramName, source);
+}
+
+void RecordButtonClicked(EolIncentiveButtonType type) {
+  base::UmaHistogramEnumeration(kEolIncentiveURLButtonClicked, type);
 }
 
 }  // namespace ash::eol_incentive_util
