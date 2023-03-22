@@ -150,10 +150,10 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertAndDeleteTabs) {
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, NSWindowTest) {
   base::scoped_nsobject<WindowAppleScript> window(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
-  [window.get() setValue:@YES forKey:@"isMiniaturized"];
-  EXPECT_TRUE([[window.get() valueForKey:@"isMiniaturized"] boolValue]);
-  [window.get() setValue:@NO forKey:@"isMiniaturized"];
-  EXPECT_FALSE([[window.get() valueForKey:@"isMiniaturized"] boolValue]);
+  [window.get() setValue:@YES forKey:@"miniaturized"];
+  EXPECT_TRUE([[window.get() valueForKey:@"miniaturized"] boolValue]);
+  [window.get() setValue:@NO forKey:@"miniaturized"];
+  EXPECT_FALSE([[window.get() valueForKey:@"miniaturized"] boolValue]);
 }
 
 // Getting and setting the active tab.

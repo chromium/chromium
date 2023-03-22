@@ -54,14 +54,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   base::scoped_nsobject<WindowAppleScript> aWindow(
       [[WindowAppleScript alloc] init]);
   base::scoped_nsobject<NSString> var([[aWindow.get() uniqueID] copy]);
-  [aWindow.get() setValue:@YES forKey:@"isVisible"];
+  [aWindow.get() setValue:@YES forKey:@"visible"];
 
   [NSApp insertInAppleScriptWindows:aWindow.get()];
   chrome::testing::NSRunLoopRunAllPending();
 
   // Represents the window after it is added.
   WindowAppleScript* window = [NSApp appleScriptWindows][0];
-  EXPECT_NSEQ(@YES, [aWindow.get() valueForKey:@"isVisible"]);
+  EXPECT_NSEQ(@YES, [aWindow.get() valueForKey:@"visible"]);
   EXPECT_EQ([window container], NSApp);
   EXPECT_NSEQ(AppleScript::kWindowsProperty, [window containerProperty]);
   EXPECT_NSEQ(var, [window uniqueID]);
