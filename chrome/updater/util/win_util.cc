@@ -78,7 +78,7 @@ HResultOr<bool> IsUserRunningSplitToken() {
   }
   bool is_split_token = elevation_type == TokenElevationTypeFull ||
                         elevation_type == TokenElevationTypeLimited;
-  DCHECK(is_split_token || elevation_type == TokenElevationTypeDefault);
+  CHECK(is_split_token || elevation_type == TokenElevationTypeDefault);
   return base::ok(is_split_token);
 }
 
@@ -175,8 +175,8 @@ HWND CreateForegroundParentWindowForUAC() {
 bool CompareOSVersionsInternal(const OSVERSIONINFOEX& os,
                                DWORD type_mask,
                                BYTE oper) {
-  DCHECK(type_mask);
-  DCHECK(oper);
+  CHECK(type_mask);
+  CHECK(oper);
 
   ULONGLONG cond_mask = 0;
   cond_mask = ::VerSetConditionMask(cond_mask, VER_MAJORVERSION, oper);
@@ -221,7 +221,7 @@ HMODULE GetCurrentModuleHandle() {
 HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
                                        UpdaterScope scope,
                                        HANDLE* unique_event) {
-  DCHECK(unique_event);
+  CHECK(unique_event);
 
   const std::wstring event_name = base::ASCIIToWide(base::GenerateGUID());
   NamedObjectAttributes attr =
@@ -240,7 +240,7 @@ HRESULT CreateUniqueEventInEnvironment(const std::wstring& var_name,
 HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
                                        UpdaterScope scope,
                                        HANDLE* unique_event) {
-  DCHECK(unique_event);
+  CHECK(unique_event);
 
   wchar_t event_name[MAX_PATH] = {0};
   if (!::GetEnvironmentVariable(var_name.c_str(), event_name,
@@ -258,9 +258,9 @@ HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
 }
 
 HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle) {
-  DCHECK(event_handle);
-  DCHECK(event_attr);
-  DCHECK(!event_attr->name.empty());
+  CHECK(event_handle);
+  CHECK(event_attr);
+  CHECK(!event_attr->name.empty());
   *event_handle = ::CreateEvent(&event_attr->sa,
                                 true,   // manual reset
                                 false,  // not signaled
@@ -274,7 +274,7 @@ HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle) {
 
 NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
                                                UpdaterScope scope) {
-  DCHECK(base_name);
+  CHECK(base_name);
 
   switch (scope) {
     case UpdaterScope::kUser: {
@@ -493,7 +493,7 @@ HResultOr<bool> IsCOMCallerAdmin() {
   HResultOr<bool> result = IsTokenAdmin(token.get());
   if (!result.has_value()) {
     HRESULT hr = result.error();
-    DCHECK(FAILED(hr));
+    CHECK(FAILED(hr));
     LOG(ERROR) << __func__ << ": IsTokenAdmin failed: " << std::hex << hr;
   }
   return result;
@@ -560,7 +560,7 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
                                      const std::wstring& verb) {
   VLOG(1) << __func__ << ": path: " << file_path
           << ", parameters:" << parameters << ", verb:" << verb;
-  DCHECK(!file_path.empty());
+  CHECK(!file_path.empty());
 
   const HWND hwnd = CreateForegroundParentWindowForUAC();
   const base::ScopedClosureRunner destroy_window(base::BindOnce(
@@ -804,7 +804,7 @@ absl::optional<OSVERSIONINFOEX> GetOSVersion() {
 }
 
 bool CompareOSVersions(const OSVERSIONINFOEX& os_version, BYTE oper) {
-  DCHECK(oper);
+  CHECK(oper);
 
   constexpr DWORD kOSTypeMask = VER_MAJORVERSION | VER_MINORVERSION |
                                 VER_SERVICEPACKMAJOR | VER_SERVICEPACKMINOR;
@@ -994,7 +994,7 @@ base::FilePath GetExecutableRelativePath() {
 }
 
 bool IsGuid(const std::wstring& s) {
-  DCHECK(!s.empty());
+  CHECK(!s.empty());
 
   GUID guid = {0};
   return SUCCEEDED(::IIDFromString(&s[0], &guid));

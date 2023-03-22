@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/ui/yes_no_dialog.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/updater/win/ui/l10n_util.h"
@@ -16,11 +17,11 @@ namespace updater::ui {
 
 YesNoDialog::YesNoDialog(WTL::CMessageLoop* message_loop, HWND parent)
     : message_loop_(message_loop), parent_(parent), yes_clicked_(false) {
-  DCHECK(message_loop);
+  CHECK(message_loop);
 }
 
 YesNoDialog::~YesNoDialog() {
-  DCHECK(!IsWindow());
+  CHECK(!IsWindow());
 }
 
 BOOL YesNoDialog::PreTranslateMessage(MSG* msg) {
@@ -29,7 +30,7 @@ BOOL YesNoDialog::PreTranslateMessage(MSG* msg) {
 
 HRESULT YesNoDialog::Initialize(const std::wstring& yes_no_title,
                                 const std::wstring& yes_no_text) {
-  DCHECK(!IsWindow());
+  CHECK(!IsWindow());
 
   if (!Create(parent_)) {
     return E_FAIL;
@@ -66,8 +67,8 @@ HRESULT YesNoDialog::Initialize(const std::wstring& yes_no_title,
 }
 
 HRESULT YesNoDialog::Show() {
-  DCHECK(IsWindow());
-  DCHECK(!IsWindowVisible());
+  CHECK(IsWindow());
+  CHECK(!IsWindowVisible());
 
   CenterWindow(nullptr);
   ShowWindow(SW_SHOWNORMAL);
@@ -79,7 +80,7 @@ LRESULT YesNoDialog::OnClickedButton(WORD notify_code,
                                      WORD id,
                                      HWND wnd_ctl,
                                      BOOL& handled) {
-  DCHECK(id == IDOK || id == IDCANCEL);
+  CHECK(id == IDOK || id == IDCANCEL);
 
   switch (id) {
     case IDOK:

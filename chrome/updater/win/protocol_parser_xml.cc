@@ -360,7 +360,7 @@ bool ProtocolParserXML::ParseChildren(const ElementHandlerMap& handler_map,
 
 bool ProtocolParserXML::DoParse(const std::string& response_xml,
                                 Results* results) {
-  DCHECK(results);
+  CHECK(results);
 
   Microsoft::WRL::ComPtr<IXMLDOMDocument> xmldoc;
   HRESULT hr = ::CoCreateInstance(CLSID_DOMDocument30, nullptr, CLSCTX_ALL,

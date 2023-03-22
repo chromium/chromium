@@ -426,7 +426,7 @@ bool DMResponseValidator::ValidatePayloadPolicy(
     const enterprise_management::PolicyData& policy_data,
     PolicyValidationResult& validation_result) const {
   // Policy type was validated previously.
-  DCHECK(policy_data.has_policy_type());
+  CHECK(policy_data.has_policy_type());
 
   if (base::EqualsCaseInsensitiveASCII(policy_data.policy_type(),
                                        kGoogleUpdatePolicyType)) {

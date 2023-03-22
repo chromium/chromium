@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -69,7 +70,7 @@ std::wstring GetTimestampString(const base::Time& timestamp) {
 
 bool UTCFileTimeToLocalSystemTime(const FILETIME& file_time_utc,
                                   SYSTEMTIME* system_time_local) {
-  DCHECK(system_time_local);
+  CHECK(system_time_local);
   SYSTEMTIME system_time_utc = {};
   if (!::FileTimeToSystemTime(&file_time_utc, &system_time_utc) ||
       !::SystemTimeToTzSpecificLocalTime(nullptr, &system_time_utc,
@@ -81,7 +82,7 @@ bool UTCFileTimeToLocalSystemTime(const FILETIME& file_time_utc,
 }
 
 bool GetCurrentUser(base::win::ScopedBstr* user_name) {
-  DCHECK(user_name);
+  CHECK(user_name);
   ULONG user_name_size = 256;
   // Paranoia... ;-)
   DCHECK_EQ(sizeof(OLECHAR), sizeof(WCHAR));
@@ -122,16 +123,16 @@ class TaskSchedulerV2 final : public TaskScheduler {
   TaskSchedulerV2(UpdaterScope scope, bool use_task_subfolders)
       : scope_(scope), use_task_subfolders_(use_task_subfolders) {
     task_service_ = GetTaskService();
-    DCHECK(task_service_);
+    CHECK(task_service_);
     task_folder_ = GetUpdaterTaskFolder();
-    DCHECK(task_folder_);
+    CHECK(task_folder_);
   }
   TaskSchedulerV2(const TaskSchedulerV2&) = delete;
   TaskSchedulerV2& operator=(const TaskSchedulerV2&) = delete;
 
   // TaskScheduler overrides.
   bool IsTaskRegistered(const wchar_t* task_name) override {
-    DCHECK(task_name);
+    CHECK(task_name);
     if (!task_folder_) {
       return false;
     }
@@ -141,8 +142,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   bool GetNextTaskRunTime(const wchar_t* task_name,
                           base::Time* next_run_time) override {
-    DCHECK(task_name);
-    DCHECK(next_run_time);
+    CHECK(task_name);
+    CHECK(next_run_time);
     if (!task_folder_) {
       return false;
     }
@@ -194,7 +195,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   bool SetTaskEnabled(const wchar_t* task_name, bool enabled) override {
-    DCHECK(task_name);
+    CHECK(task_name);
     if (!task_folder_) {
       return false;
     }
@@ -217,7 +218,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   bool IsTaskEnabled(const wchar_t* task_name) override {
-    DCHECK(task_name);
+    CHECK(task_name);
     if (!task_folder_) {
       return false;
     }
@@ -241,7 +242,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   bool IsTaskRunning(const wchar_t* task_name) override {
-    DCHECK(task_name);
+    CHECK(task_name);
 
     if (!task_folder_) {
       return false;
@@ -271,7 +272,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   bool GetTaskNameList(std::vector<std::wstring>* task_names) override {
-    DCHECK(task_names);
+    CHECK(task_names);
     if (!task_folder_) {
       return false;
     }
@@ -283,7 +284,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   std::wstring FindFirstTaskName(const std::wstring& task_prefix) override {
-    DCHECK(!task_prefix.empty());
+    CHECK(!task_prefix.empty());
 
     std::vector<std::wstring> task_names;
     if (!GetTaskNameList(&task_names)) {
@@ -300,8 +301,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   bool GetTaskInfo(const wchar_t* task_name, TaskInfo* info) override {
-    DCHECK(task_name);
-    DCHECK(info);
+    CHECK(task_name);
+    CHECK(info);
     if (!task_folder_) {
       return false;
     }
@@ -370,7 +371,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   bool DeleteTask(const wchar_t* task_name) override {
-    DCHECK(task_name);
+    CHECK(task_name);
     if (!task_folder_) {
       return false;
     }
@@ -403,7 +404,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    DCHECK(!IsTaskRegistered(task_name));
+    CHECK(!IsTaskRegistered(task_name));
 
     if (!use_task_subfolders_) {
       return true;
@@ -422,12 +423,12 @@ class TaskSchedulerV2 final : public TaskScheduler {
                     const base::CommandLine& run_command,
                     TriggerType trigger_type,
                     bool hidden) override {
-    DCHECK(task_name);
-    DCHECK(task_description);
+    CHECK(task_name);
+    CHECK(task_description);
 
     // Create the task definition object to create the task.
     Microsoft::WRL::ComPtr<ITaskDefinition> task;
-    DCHECK(task_service_);
+    CHECK(task_service_);
     HRESULT hr = task_service_->NewTask(0, &task);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't create new task. " << std::hex << hr;
@@ -687,7 +688,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     base::win::ScopedVariant user(user_name.Get());
 
-    DCHECK(task_folder_);
+    CHECK(task_folder_);
     hr = task_folder_->RegisterTaskDefinition(
         base::win::ScopedBstr(task_name).Get(), task.Get(),
         TASK_CREATE_OR_UPDATE,
@@ -701,7 +702,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    DCHECK(IsTaskRegistered(task_name));
+    CHECK(IsTaskRegistered(task_name));
 
     VLOG(1) << __func__ << ":" << task_name << ": "
             << run_command.GetCommandLineString();
@@ -709,7 +710,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   bool StartTask(const wchar_t* task_name) override {
-    DCHECK(task_name);
+    CHECK(task_name);
 
     if (!task_folder_) {
       return false;
@@ -736,7 +737,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   std::wstring GetTaskSubfolderName() override {
-    DCHECK(use_task_subfolders_);
+    CHECK(use_task_subfolders_);
 
     return base::StrCat(
         {GetTaskCompanyFolder(), L"\\" PRODUCT_FULLNAME_STRING});
@@ -766,7 +767,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   class TaskIterator {
    public:
     explicit TaskIterator(ITaskFolder* task_folder) {
-      DCHECK(task_folder);
+      CHECK(task_folder);
       HRESULT hr = task_folder->GetTasks(TASK_ENUM_HIDDEN, &tasks_);
       if (FAILED(hr)) {
         if (!IsFileOrPathNotFoundError(hr)) {
@@ -787,7 +788,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     // Increment to the next valid item in the task list. Skip entries for
     // which we cannot retrieve a name.
     void Next() {
-      DCHECK(!done_);
+      CHECK(!done_);
       task_.Reset();
       name_.clear();
       if (++task_index_ >= num_tasks_) {
@@ -824,7 +825,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     // Provide access to the current task.
     IRegisteredTask* operator->() const {
       IRegisteredTask* result = task_.Get();
-      DCHECK(result);
+      CHECK(result);
       return result;
     }
 
@@ -867,7 +868,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   // task folders have a "System" suffix, and User task folders have a "User"
   // suffix.
   std::wstring GetTaskCompanyFolder() const {
-    DCHECK(use_task_subfolders_);
+    CHECK(use_task_subfolders_);
 
     return base::StrCat({L"\\" COMPANY_SHORTNAME_STRING,
                          IsSystemInstall(scope_) ? L"System" : L"User"});
@@ -889,8 +890,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   // Return the description of the task.
   HRESULT GetTaskDescription(IRegisteredTask* task, std::wstring* description) {
-    DCHECK(task);
-    DCHECK(description);
+    CHECK(task);
+    CHECK(description);
 
     base::win::ScopedBstr task_name_bstr;
     HRESULT hr = task->get_Name(task_name_bstr.Receive());
@@ -932,8 +933,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
   // actions are silently ignored.
   bool GetTaskExecActions(IRegisteredTask* task,
                           std::vector<TaskExecAction>* actions) {
-    DCHECK(task);
-    DCHECK(actions);
+    CHECK(task);
+    CHECK(actions);
     Microsoft::WRL::ComPtr<ITaskDefinition> task_definition;
     HRESULT hr = task->get_Definition(&task_definition);
     if (FAILED(hr)) {
@@ -1032,8 +1033,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   // Return the log-on type required for the task's actions to be run.
   HRESULT GetTaskLogonType(IRegisteredTask* task, uint32_t* logon_type) {
-    DCHECK(task);
-    DCHECK(logon_type);
+    CHECK(task);
+    CHECK(logon_type);
     Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
     HRESULT hr = task->get_Definition(&task_info);
     if (FAILED(hr)) {
@@ -1124,8 +1125,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   // Return the UserId of the task.
   HRESULT GetTaskUserId(IRegisteredTask* task, std::wstring* user_id) {
-    DCHECK(task);
-    DCHECK(user_id);
+    CHECK(task);
+    CHECK(user_id);
 
     Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
     HRESULT hr = task->get_Definition(&task_info);
@@ -1155,8 +1156,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   HRESULT GetTaskTriggerType(IRegisteredTask* task, TriggerType* trigger_type) {
-    DCHECK(task);
-    DCHECK(trigger_type);
+    CHECK(task);
+    CHECK(trigger_type);
 
     Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
     HRESULT hr = task->get_Definition(&task_info);

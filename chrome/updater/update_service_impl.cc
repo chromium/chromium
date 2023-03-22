@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
@@ -365,7 +366,7 @@ void UpdateServiceImpl::ForceInstall(StateChangeCallback state_update,
   }
   std::vector<std::string> force_install_apps =
       force_install_apps_status.policy();
-  DCHECK(!force_install_apps.empty());
+  CHECK(!force_install_apps.empty());
 
   std::vector<std::string> installed_app_ids = persisted_data_->GetAppIds();
   base::ranges::sort(force_install_apps);
@@ -448,7 +449,7 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto app_ids = persisted_data_->GetAppIds();
-  DCHECK(base::Contains(app_ids, kUpdaterAppId));
+  CHECK(base::Contains(app_ids, kUpdaterAppId));
 
   const Priority priority = Priority::kBackground;
   ShouldBlockUpdateForMeteredNetwork(

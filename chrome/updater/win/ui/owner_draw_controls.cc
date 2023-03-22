@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_util.h"
@@ -37,8 +38,8 @@ LRESULT CaptionButton::OnCreate(UINT, WPARAM, LPARAM, BOOL& handled) {
   handled = false;
 
   tool_tip_window_.Create(m_hWnd);
-  DCHECK(tool_tip_window_.IsWindow());
-  DCHECK(!tool_tip_text_.IsEmpty());
+  CHECK(tool_tip_window_.IsWindow());
+  CHECK(!tool_tip_text_.IsEmpty());
 
   tool_tip_window_.SetDelayTime(TTDT_AUTOMATIC, 2000);
   tool_tip_window_.Activate(TRUE);
@@ -345,8 +346,8 @@ void OwnerDrawTitleBarWindow::UpdateButtonState(const WTL::CMenuHandle& menu,
                                                 const int button_margin,
                                                 CaptionButton* button,
                                                 CRect* button_rect) {
-  DCHECK(button);
-  DCHECK(button_rect);
+  CHECK(button);
+  CHECK(button_rect);
 
   if (!button->IsWindow()) {
     return;
@@ -414,7 +415,7 @@ OwnerDrawTitleBar::~OwnerDrawTitleBar() = default;
 void OwnerDrawTitleBar::CreateOwnerDrawTitleBar(HWND parent_hwnd,
                                                 HWND title_bar_spacer_hwnd,
                                                 COLORREF bk_color) {
-  DCHECK(parent_hwnd);
+  CHECK(parent_hwnd);
 
   CRect title_bar_client_rect =
       ComputeTitleBarClientRect(parent_hwnd, title_bar_spacer_hwnd);
@@ -423,9 +424,9 @@ void OwnerDrawTitleBar::CreateOwnerDrawTitleBar(HWND parent_hwnd,
   // dialog box window. DS_MODALFRAME and WS_BORDER are incompatible with this
   // title bar. WS_DLGFRAME is recommended as well.
   const LONG parent_style = ::GetWindowLong(parent_hwnd, GWL_STYLE);
-  DCHECK(!(parent_style & DS_MODALFRAME));
-  DCHECK(!(parent_style & WS_BORDER));
-  DCHECK(parent_style & WS_DLGFRAME);
+  CHECK(!(parent_style & DS_MODALFRAME));
+  CHECK(!(parent_style & WS_BORDER));
+  CHECK(parent_style & WS_DLGFRAME);
 
   title_bar_window_.set_bk_color(bk_color);
   title_bar_window_.Create(
@@ -434,13 +435,13 @@ void OwnerDrawTitleBar::CreateOwnerDrawTitleBar(HWND parent_hwnd,
 }
 
 void OwnerDrawTitleBar::RecalcLayout() {
-  DCHECK(title_bar_window_.IsWindow());
+  CHECK(title_bar_window_.IsWindow());
   title_bar_window_.RecalcLayout();
 }
 
 CRect OwnerDrawTitleBar::ComputeTitleBarClientRect(HWND parent_hwnd,
                                                    HWND title_bar_spacer_hwnd) {
-  DCHECK(parent_hwnd);
+  CHECK(parent_hwnd);
 
   CRect parent_client_rect;
   ::GetClientRect(parent_hwnd, &parent_client_rect);
@@ -463,7 +464,7 @@ void CustomDlgColors::SetCustomDlgColors(COLORREF text_color,
   text_color_ = text_color;
   bk_color_ = bk_color;
 
-  DCHECK(bk_brush_.IsNull());
+  CHECK(bk_brush_.IsNull());
   bk_brush_.CreateSolidBrush(bk_color_);
 }
 
@@ -531,7 +532,7 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
     LONG bar_rect_left(bar_rect_right -
                        client_rect.Width() * kMarqueeWidth / kBarWidth);
     progress_bar_rect.left = std::max(bar_rect_left, client_rect.left);
-    DCHECK(progress_bar_rect.left <= progress_bar_rect.right);
+    CHECK_LE(progress_bar_rect.left, progress_bar_rect.right);
   }
 
   WTL::CRgn rgn = ::CreateRectRgnIndirect(&client_rect);
@@ -547,7 +548,7 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
   // Since the region is rectangles, instead of using FillRgn, this code gets
   // all the rectangles in the 'rgn' and fills them by hand.
   const int rgndata_size = rgn.GetRegionData(nullptr, 0);
-  DCHECK(rgndata_size);
+  CHECK(rgndata_size);
   std::vector<uint8_t> rgndata_buff(rgndata_size);
   RGNDATA& rgndata = *reinterpret_cast<RGNDATA*>(&rgndata_buff[0]);
 

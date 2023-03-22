@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -85,7 +86,7 @@ DMStorage::DMStorage(const base::FilePath& policy_cache_root,
     : policy_cache_root_(policy_cache_root),
       policy_info_file_(policy_cache_root_.AppendASCII(kPolicyInfoFileName)),
       token_service_(std::move(token_service)) {
-  DCHECK(token_service_);
+  CHECK(token_service_);
 }
 
 DMStorage::~DMStorage() {

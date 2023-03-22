@@ -13,7 +13,7 @@
 namespace updater::ui {
 
 HRESULT UIDisplayedEventManager::CreateEvent(UpdaterScope scope) {
-  DCHECK(!IsEventHandleInitialized());
+  CHECK(!IsEventHandleInitialized());
   return CreateUniqueEventInEnvironment(
       kLegacyUiDisplayedEventEnvironmentVariableName, scope,
       ScopedKernelHANDLE::Receiver(GetUIDisplayedEvent()).get());
@@ -21,7 +21,7 @@ HRESULT UIDisplayedEventManager::CreateEvent(UpdaterScope scope) {
 
 HRESULT UIDisplayedEventManager::GetEvent(UpdaterScope scope,
                                           HANDLE* ui_displayed_event) {
-  DCHECK(ui_displayed_event);
+  CHECK(ui_displayed_event);
   *ui_displayed_event = nullptr;
   if (IsEventHandleInitialized()) {
     *ui_displayed_event = GetUIDisplayedEvent().get();
@@ -53,7 +53,7 @@ void UIDisplayedEventManager::SignalEvent(UpdaterScope scope) {
     }
   }
 
-  DCHECK(IsEventHandleInitialized());
+  CHECK(IsEventHandleInitialized());
   ::SetEvent(GetUIDisplayedEvent().get());
 }
 

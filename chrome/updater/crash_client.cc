@@ -73,7 +73,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static bool initialized = false;
-  DCHECK(!initialized);
+  CHECK(!initialized);
   initialized = true;
 
   if (!InitializeDatabaseOnly(updater_scope))
@@ -127,7 +127,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
                                            &env_usage_stats) &&
        env_usage_stats == kUsageStatsEnabledValueEnabled)) {
     crashpad::Settings* crashpad_settings = database_->GetSettings();
-    DCHECK(crashpad_settings);
+    CHECK(crashpad_settings);
     crashpad_settings->SetUploadsEnabled(true);
   }
 

@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -30,7 +32,7 @@ constexpr int kDefaultAlphaScale = 100;
 constexpr int kAlphaScales[] = {0, 30, 47, 62, 75, 85, 93, kDefaultAlphaScale};
 
 uint8_t AlphaScaleToAlphaValue(int alpha_scale) {
-  DCHECK(alpha_scale >= 0 && alpha_scale <= 100);
+  CHECK(alpha_scale >= 0 && alpha_scale <= 100);
   return static_cast<uint8_t>(alpha_scale * 255 / 100);
 }
 
@@ -54,8 +56,8 @@ SplashScreen::~SplashScreen() {
 
   // TODO(crbug.com/1059094) this assert may fire when the dtor is called
   // while the window is fading out.
-  DCHECK(state_ == WindowState::STATE_CREATED ||
-         state_ == WindowState::STATE_CLOSED);
+  CHECK(state_ == WindowState::STATE_CREATED ||
+        state_ == WindowState::STATE_CLOSED);
 }
 
 void SplashScreen::Show() {
@@ -66,7 +68,7 @@ void SplashScreen::Show() {
     return;
   }
 
-  DCHECK(IsWindow());
+  CHECK(IsWindow());
   ShowWindow(SW_SHOWNORMAL);
   SwitchToState(WindowState::STATE_SHOW_NORMAL);
 }
@@ -113,8 +115,8 @@ void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
 
 HRESULT SplashScreen::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!IsWindow());
-  DCHECK(state_ == WindowState::STATE_CREATED);
+  CHECK(!IsWindow());
+  CHECK_EQ(state_, WindowState::STATE_CREATED);
 
   if (!Create(nullptr)) {
     return E_FAIL;
@@ -176,7 +178,7 @@ void SplashScreen::EnableSystemButtons(bool enable) {
 
     // Remove Close/Minimize/Maximize from the system menu.
     HMENU menu(::GetSystemMenu(*this, false));
-    DCHECK(menu);
+    CHECK(menu);
     ::RemoveMenu(menu, SC_CLOSE, MF_BYCOMMAND);
     ::RemoveMenu(menu, SC_MINIMIZE, MF_BYCOMMAND);
     ::RemoveMenu(menu, SC_MAXIMIZE, MF_BYCOMMAND);
@@ -196,7 +198,7 @@ void SplashScreen::InitProgressBar() {
 
 LRESULT SplashScreen::OnTimer(UINT, WPARAM, LPARAM, BOOL& handled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(state_ == WindowState::STATE_FADING);
+  CHECK_EQ(state_, WindowState::STATE_FADING);
   DCHECK_GT(alpha_index_, 0);
   if (--alpha_index_) {
     ::SetLayeredWindowAttributes(
@@ -220,7 +222,7 @@ LRESULT SplashScreen::OnClose(UINT, WPARAM, LPARAM, BOOL& handled) {
 LRESULT SplashScreen::OnDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (timer_created_) {
-    DCHECK(IsWindow());
+    CHECK(IsWindow());
     KillTimer(kClosingTimerID);
   }
   std::move(on_close_closure_).Run();
@@ -239,7 +241,7 @@ void SplashScreen::SwitchToState(WindowState new_state) {
       alpha_index_ = std::size(kAlphaScales) - 1;
       break;
     case WindowState::STATE_FADING:
-      DCHECK(IsWindow());
+      CHECK(IsWindow());
       timer_created_ = SetTimer(kClosingTimerID, kTimerInterval, nullptr) != 0;
       if (!timer_created_) {
         Close();

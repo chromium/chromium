@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -23,7 +24,7 @@ namespace {
 
 base::WaitableEvent EventForSwitch(const base::CommandLine& command_line,
                                    const char switch_value[]) {
-  DCHECK(command_line.HasSwitch(switch_value));
+  CHECK(command_line.HasSwitch(switch_value));
 
   const std::wstring event_name =
       command_line.GetSwitchValueNative(switch_value);
@@ -88,7 +89,7 @@ int DoMain(const base::CommandLine* command_line) {
 
 int main(int, char**) {
   bool success = base::CommandLine::Init(0, nullptr);
-  DCHECK(success);
+  CHECK(success);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 

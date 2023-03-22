@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -54,9 +55,8 @@ namespace updater {
 
 PersistedData::PersistedData(UpdaterScope scope, PrefService* pref_service)
     : scope_(scope), pref_service_(pref_service) {
-  DCHECK(pref_service_);
-  DCHECK(
-      pref_service_->FindPreference(update_client::kPersistedDataPreference));
+  CHECK(pref_service_);
+  CHECK(pref_service_->FindPreference(update_client::kPersistedDataPreference));
 }
 
 PersistedData::~PersistedData() {
@@ -71,7 +71,7 @@ base::Version PersistedData::GetProductVersion(const std::string& id) const {
 void PersistedData::SetProductVersion(const std::string& id,
                                       const base::Version& pv) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pv.IsValid());
+  CHECK(pv.IsValid());
   SetString(id, kPV, pv.GetString());
 }
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -51,7 +52,7 @@ void DeleteComServer(UpdaterScope scope, bool uninstall_all) {
 }
 
 void DeleteComService(bool uninstall_all) {
-  DCHECK(::IsUserAnAdmin());
+  CHECK(::IsUserAnAdmin());
 
   for (const GUID& appid :
        JoinVectors(GetSideBySideServers(UpdaterScope::kSystem),
@@ -146,7 +147,7 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
 // the function uninstalls only the internal updater.
 int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
   VLOG(1) << __func__ << ", scope: " << scope;
-  DCHECK(!IsSystemInstall(scope) || ::IsUserAnAdmin());
+  CHECK(!IsSystemInstall(scope) || ::IsUserAnAdmin());
 
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(

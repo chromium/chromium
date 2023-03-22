@@ -40,20 +40,20 @@ constexpr size_t kMaxStringLen = 0x4000;  // 16KB.
 }  // namespace
 
 STDMETHODIMP UpdateStateImpl::get_state(LONG* state) {
-  DCHECK(state);
+  CHECK(state);
   *state = static_cast<LONG>(update_state_.state);
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_appId(BSTR* app_id) {
-  DCHECK(app_id);
+  CHECK(app_id);
   *app_id =
       base::win::ScopedBstr(base::UTF8ToWide(update_state_.app_id)).Release();
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_nextVersion(BSTR* next_version) {
-  DCHECK(next_version);
+  CHECK(next_version);
   *next_version =
       base::win::ScopedBstr(
           update_state_.next_version.IsValid()
@@ -64,43 +64,43 @@ STDMETHODIMP UpdateStateImpl::get_nextVersion(BSTR* next_version) {
 }
 
 STDMETHODIMP UpdateStateImpl::get_downloadedBytes(LONGLONG* downloaded_bytes) {
-  DCHECK(downloaded_bytes);
+  CHECK(downloaded_bytes);
   *downloaded_bytes = LONGLONG{update_state_.downloaded_bytes};
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_totalBytes(LONGLONG* total_bytes) {
-  DCHECK(total_bytes);
+  CHECK(total_bytes);
   *total_bytes = LONGLONG{update_state_.total_bytes};
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_installProgress(LONG* install_progress) {
-  DCHECK(install_progress);
+  CHECK(install_progress);
   *install_progress = LONG{update_state_.install_progress};
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_errorCategory(LONG* error_category) {
-  DCHECK(error_category);
+  CHECK(error_category);
   *error_category = static_cast<LONG>(update_state_.error_category);
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_errorCode(LONG* error_code) {
-  DCHECK(error_code);
+  CHECK(error_code);
   *error_code = LONG{update_state_.error_code};
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_extraCode1(LONG* extra_code1) {
-  DCHECK(extra_code1);
+  CHECK(extra_code1);
   *extra_code1 = LONG{update_state_.extra_code1};
   return S_OK;
 }
 
 STDMETHODIMP UpdateStateImpl::get_installerText(BSTR* installer_text) {
-  DCHECK(installer_text);
+  CHECK(installer_text);
   *installer_text =
       base::win::ScopedBstr(base::UTF8ToWide(update_state_.installer_text))
           .Release();
@@ -109,7 +109,7 @@ STDMETHODIMP UpdateStateImpl::get_installerText(BSTR* installer_text) {
 
 STDMETHODIMP UpdateStateImpl::get_installerCommandLine(
     BSTR* installer_cmd_line) {
-  DCHECK(installer_cmd_line);
+  CHECK(installer_cmd_line);
   *installer_cmd_line =
       base::win::ScopedBstr(base::UTF8ToWide(update_state_.installer_cmd_line))
           .Release();
@@ -117,13 +117,13 @@ STDMETHODIMP UpdateStateImpl::get_installerCommandLine(
 }
 
 STDMETHODIMP CompleteStatusImpl::get_statusCode(LONG* code) {
-  DCHECK(code);
+  CHECK(code);
   *code = code_;
   return S_OK;
 }
 
 STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
-  DCHECK(message);
+  CHECK(message);
   *message = base::win::ScopedBstr(message_).Release();
   return S_OK;
 }
@@ -133,7 +133,7 @@ HRESULT UpdaterImpl::RuntimeClassInitialize() {
 }
 
 HRESULT UpdaterImpl::GetVersion(BSTR* version) {
-  DCHECK(version);
+  CHECK(version);
 
   // Return the hardcoded version instead of calling the corresponding
   // non-blocking function of `UpdateServiceImpl`. This results in some

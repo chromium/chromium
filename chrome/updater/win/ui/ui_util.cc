@@ -23,7 +23,7 @@ struct FindProcessWindowsRecord {
 BOOL CALLBACK FindProcessWindowsEnumProc(HWND hwnd, LPARAM lparam) {
   FindProcessWindowsRecord* enum_record =
       reinterpret_cast<FindProcessWindowsRecord*>(lparam);
-  DCHECK(enum_record);
+  CHECK(enum_record);
 
   DWORD process_id = 0;
   ::GetWindowThreadProcessId(hwnd, &process_id);
@@ -56,7 +56,7 @@ BOOL CALLBACK FindProcessWindowsEnumProc(HWND hwnd, LPARAM lparam) {
 bool FindProcessWindows(uint32_t process_id,
                         uint32_t window_flags,
                         std::vector<HWND>* windows) {
-  DCHECK(windows);
+  CHECK(windows);
   windows->clear();
   FindProcessWindowsRecord enum_record = {0};
   enum_record.process_id = process_id;
@@ -85,8 +85,8 @@ bool HasSystemMenu(HWND wnd) {
 }
 
 HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon) {
-  DCHECK(hwnd);
-  DCHECK(hicon);
+  CHECK(hwnd);
+  CHECK(hicon);
 
   *hicon = nullptr;
 

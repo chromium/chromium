@@ -154,13 +154,13 @@ void AddInstallServerWorkItems(HKEY root,
 std::wstring GetTaskName(UpdaterScope scope) {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
-  DCHECK(task_scheduler);
+  CHECK(task_scheduler);
   return task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance(scope);
-  DCHECK(task_scheduler);
+  CHECK(task_scheduler);
 
   const std::wstring task_name = GetTaskName(scope);
   if (task_name.empty()) {
@@ -264,7 +264,7 @@ std::vector<CLSID> GetServers(bool is_internal, UpdaterScope scope) {
 void AddComServerWorkItems(const base::FilePath& com_server_path,
                            bool is_internal,
                            WorkItemList* list) {
-  DCHECK(list);
+  CHECK(list);
   VLOG(1) << __func__ << ": " << com_server_path << ": " << is_internal;
 
   if (com_server_path.empty()) {
@@ -289,7 +289,7 @@ void AddComServerWorkItems(const base::FilePath& com_server_path,
 void AddComServiceWorkItems(const base::FilePath& com_service_path,
                             bool internal_service,
                             WorkItemList* list) {
-  DCHECK(::IsUserAnAdmin());
+  CHECK(::IsUserAnAdmin());
   VLOG(1) << __func__ << ": " << com_service_path << ": " << internal_service;
 
   if (com_service_path.empty()) {
@@ -422,7 +422,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
 void RegisterUserRunAtStartup(const std::wstring& run_value_name,
                               const base::CommandLine& command,
                               WorkItemList* list) {
-  DCHECK(list);
+  CHECK(list);
   VLOG(1) << __func__;
 
   list->AddSetRegValueWorkItem(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
@@ -447,7 +447,7 @@ RegisterWakeTaskWorkItem::~RegisterWakeTaskWorkItem() = default;
 bool RegisterWakeTaskWorkItem::DoImpl() {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope_);
-  DCHECK(task_scheduler);
+  CHECK(task_scheduler);
 
   // Task already exists.
   if (!GetTaskName(scope_).empty()) {
@@ -461,7 +461,7 @@ bool RegisterWakeTaskWorkItem::DoImpl() {
     return false;
   }
 
-  DCHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
+  CHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
 
   if (!task_scheduler->RegisterTask(
           task_name.c_str(), GetTaskDisplayName(scope_).c_str(), run_command_,
@@ -479,7 +479,7 @@ void RegisterWakeTaskWorkItem::RollbackImpl() {
   }
 
   auto task_scheduler = TaskScheduler::CreateInstance(scope_);
-  DCHECK(task_scheduler);
+  CHECK(task_scheduler);
   task_scheduler->DeleteTask(task_name_.c_str());
 }
 

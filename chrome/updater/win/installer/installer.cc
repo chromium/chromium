@@ -20,6 +20,7 @@
 
 // TODO(crbug.com/1128529): remove the dependencies on //base/ to reduce the
 // code size.
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -190,9 +191,9 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
 ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
                                             wchar_t* cmd_line_args,
                                             size_t cmd_line_args_capacity) {
-  DCHECK(cmd_line);
-  DCHECK(cmd_line_args);
-  DCHECK(cmd_line_args_capacity);
+  CHECK(cmd_line);
+  CHECK(cmd_line_args);
+  CHECK(cmd_line_args_capacity);
 
   *cmd_line_args = '\0';
   CommandString args;
@@ -254,8 +255,8 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
 // Executes updater.exe, waits for it to finish and returns the exit code.
 ProcessExitResult RunSetup(const wchar_t* setup_path,
                            const wchar_t* cmd_line_args) {
-  DCHECK(setup_path && *setup_path);
-  DCHECK(cmd_line_args && *cmd_line_args);
+  CHECK(setup_path && *setup_path);
+  CHECK(cmd_line_args && *cmd_line_args);
 
   CommandString cmd_line;
 
@@ -272,8 +273,8 @@ ProcessExitResult RunSetup(const wchar_t* setup_path,
 }
 
 ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
-  DCHECK(!::IsUserAnAdmin());
-  DCHECK(!command_line.HasSwitch(kCmdLinePrefersUser));
+  CHECK(!::IsUserAnAdmin());
+  CHECK(!command_line.HasSwitch(kCmdLinePrefersUser));
 
   if (command_line.HasSwitch(kCmdLineExpectElevated)) {
     VLOG(1) << __func__ << "Unexpected elevation loop! "
@@ -297,7 +298,7 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 }
 
 ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
-  DCHECK(::IsUserAnAdmin());
+  CHECK(::IsUserAnAdmin());
 
   if (command_line.HasSwitch(kCmdLineExpectDeElevated)) {
     VLOG(1) << __func__ << "Unexpected de-elevation loop! "
@@ -307,7 +308,7 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
 
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
-  DCHECK(com_initializer.Succeeded());
+  CHECK(com_initializer.Succeeded());
 
   // Deelevate the metainstaller.
   HRESULT hr =

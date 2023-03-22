@@ -62,7 +62,7 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
                           const base::FilePath& updater_path,
                           HKEY root,
                           WorkItemList* list) {
-  DCHECK(list);
+  CHECK(list);
 
   base::CommandLine uninstall_if_unused_command(updater_path);
 
@@ -145,7 +145,7 @@ bool SwapGoogleUpdate(UpdaterScope scope,
                       const base::FilePath& temp_path,
                       HKEY root,
                       WorkItemList* list) {
-  DCHECK(list);
+  CHECK(list);
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);

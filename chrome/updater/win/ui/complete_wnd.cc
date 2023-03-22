@@ -5,6 +5,7 @@
 #include "chrome/updater/win/ui/complete_wnd.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -57,8 +58,8 @@ LRESULT CompleteWnd::OnClickedButton(WORD notify_code,
                                      WORD id,
                                      HWND wnd_ctl,
                                      BOOL& handled) {
-  DCHECK(id == IDC_CLOSE);
-  DCHECK(is_complete());
+  CHECK_EQ(id, IDC_CLOSE);
+  CHECK(is_complete());
 
   CloseWindow();
 
@@ -70,7 +71,7 @@ LRESULT CompleteWnd::OnClickedGetHelp(WORD notify_code,
                                       WORD id,
                                       HWND wnd_ctl,
                                       BOOL& handled) {
-  DCHECK(events_sink_);
+  CHECK(events_sink_);
   if (events_sink_) {
     events_sink_->DoLaunchBrowser(help_url_);
   }
@@ -93,7 +94,7 @@ void CompleteWnd::DisplayCompletionDialog(bool is_success,
 
   SetDlgItemText(IDC_CLOSE, GetLocalizedString(IDS_UPDATER_CLOSE_BASE).c_str());
 
-  DCHECK(!text.empty());
+  CHECK(!text.empty());
 
   // FormatMessage() converts all LFs to CRLFs, which are rendered as little
   // squares in UI. To avoid this, convert all CRLFs to LFs.

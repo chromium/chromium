@@ -62,7 +62,7 @@ class PolicyStatus {
   explicit operator bool() const { return effective_policy_.has_value(); }
   // Convenience method to extract the effective policy's value.
   const T& policy() {
-    DCHECK(effective_policy_);
+    CHECK(effective_policy_);
     return effective_policy_->policy;
   }
   const T& policy_or(const T& fallback) {

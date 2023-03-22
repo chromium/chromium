@@ -104,13 +104,13 @@ class StateChangeObserverImpl : public mojom::StateChangeObserver {
 
   // Overrides for mojom::StateChangeObserver.
   void OnStateChange(mojom::UpdateStatePtr state_mojom) override {
-    DCHECK(complete_callback_) << "OnStateChange received after OnComplete";
+    CHECK(complete_callback_) << "OnStateChange received after OnComplete";
     state_change_callback_.Run(MakeUpdateState(state_mojom));
   }
 
   void OnComplete(mojom::UpdateService::Result result) override {
-    DCHECK(complete_callback_) << "OnComplete received without a valid "
-                                  "callback. Was OnComplete run twice?";
+    CHECK(complete_callback_) << "OnComplete received without a valid "
+                                 "callback. Was OnComplete run twice?";
     if (complete_callback_) {
       std::move(complete_callback_)
           .Run(static_cast<updater::UpdateService::Result>(result));

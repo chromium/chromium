@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <functional>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -31,7 +32,7 @@ const OmahaWnd::ControlAttributes OmahaWnd::kDisabledNonButtonAttributes = {
 void EnableFlatButtons(HWND hwnd_parent) {
   struct Local {
     static BOOL CALLBACK EnumProc(HWND hwnd, LPARAM) {
-      DCHECK(hwnd);
+      CHECK(hwnd);
       CWindow wnd(hwnd);
       const DWORD style = wnd.GetStyle();
       if (style & BS_FLAT) {
@@ -47,7 +48,7 @@ void EnableFlatButtons(HWND hwnd_parent) {
 void HideWindowChildren(HWND hwnd_parent) {
   struct Local {
     static BOOL CALLBACK EnumProc(HWND hwnd, LPARAM) {
-      DCHECK(hwnd);
+      CHECK(hwnd);
       ShowWindow(hwnd, SW_HIDE);
       return true;
     }
@@ -63,12 +64,12 @@ OmahaWnd::OmahaWnd(int dialog_id, WTL::CMessageLoop* message_loop, HWND parent)
       is_close_enabled_(true),
       events_sink_(nullptr),
       scope_(UpdaterScope::kUser) {
-  DCHECK(message_loop);
+  CHECK(message_loop);
 }
 
 OmahaWnd::~OmahaWnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!IsWindow());
+  CHECK(!IsWindow());
 }
 
 HRESULT OmahaWnd::Initialize() {
@@ -96,7 +97,7 @@ void OmahaWnd::InitializeDialog() {
 
   // Disable the Maximize System Menu item.
   HMENU menu = ::GetSystemMenu(*this, false);
-  DCHECK(menu);
+  CHECK(menu);
   ::EnableMenuItem(menu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
 
   progress_bar_.SubclassWindow(GetDlgItem(IDC_PROGRESS));
@@ -209,7 +210,7 @@ void OmahaWnd::SetControlAttributes(int control_id,
   }
 
   HWND hwnd = GetDlgItem(control_id);
-  DCHECK(hwnd);
+  CHECK(hwnd);
   ::ShowWindow(hwnd, attributes.is_visible ? SW_SHOW : SW_HIDE);
   ::EnableWindow(hwnd, attributes.is_enabled ? true : false);
   if (attributes.is_button && attributes.is_default) {
@@ -231,7 +232,7 @@ HRESULT OmahaWnd::EnableClose(bool enable) {
 
 HRESULT OmahaWnd::EnableSystemCloseButton(bool enable) {
   HMENU menu = ::GetSystemMenu(*this, false);
-  DCHECK(menu);
+  CHECK(menu);
   uint32_t flags = MF_BYCOMMAND;
   flags |= enable ? MF_ENABLED : MF_GRAYED;
   ::EnableMenuItem(menu, SC_CLOSE, flags);

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -63,7 +64,7 @@ std::vector<base::FilePath> GetSetupFiles(const base::FilePath& source_dir) {
 // TODO(crbug.com/1069976): use specific return values for different code paths.
 int Setup(UpdaterScope scope) {
   VLOG(1) << __func__ << ", scope: " << scope;
-  DCHECK(!IsSystemInstall(scope) || ::IsUserAnAdmin());
+  CHECK(!IsSystemInstall(scope) || ::IsUserAnAdmin());
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);

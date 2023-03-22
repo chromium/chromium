@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -44,7 +45,7 @@ class ActionHandler : public update_client::ActionHandler {
 void ActionHandler::Handle(const base::FilePath& action,
                            const std::string&,
                            Callback callback) {
-  DCHECK(!action.empty());
+  CHECK(!action.empty());
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::WithBaseSyncPrimitives(),

@@ -38,13 +38,13 @@ HRESULT GetProcessUser(std::wstring* name,
 }
 
 HRESULT GetProcessUserSid(CSid* sid) {
-  DCHECK(sid);
+  CHECK(sid);
 
   CAccessToken token;
   if (!token.GetProcessToken(TOKEN_QUERY) || !token.GetUser(sid)) {
     HRESULT hr = HRESULTFromLastError();
     std::wstring thread_sid;
-    DCHECK(FAILED(GetThreadUserSid(&thread_sid)));
+    CHECK(FAILED(GetThreadUserSid(&thread_sid)));
     return hr;
   }
 
@@ -58,7 +58,7 @@ bool IsLocalSystemUser() {
 }
 
 HRESULT GetThreadUserSid(std::wstring* sid) {
-  DCHECK(sid);
+  CHECK(sid);
   CAccessToken access_token;
   CSid user_sid;
   if (access_token.GetThreadToken(TOKEN_READ) &&

@@ -91,8 +91,8 @@ AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
     : splash_screen_maker_(std::move(splash_screen_maker)),
       app_install_controller_maker_(app_install_controller_maker),
       external_constants_(CreateExternalConstants()) {
-  DCHECK(splash_screen_maker_);
-  DCHECK(app_install_controller_maker_);
+  CHECK(splash_screen_maker_);
+  CHECK(app_install_controller_maker_);
 }
 
 AppInstall::~AppInstall() = default;
@@ -104,7 +104,6 @@ void AppInstall::Initialize() {
 
 void AppInstall::FirstTaskRun() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
 
   if (WrongUser(updater_scope())) {
     VLOG(0) << "The current user is not compatible with the current scope. "

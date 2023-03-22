@@ -173,7 +173,7 @@ SystemdService::~SystemdService() = default;
 
 void SystemdService::OnSocketReadable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(server_socket_.is_valid());
+  CHECK(server_socket_.is_valid());
 
   base::ScopedFD remote_fd(accept(server_socket_.get(), nullptr, nullptr));
   if (!remote_fd.is_valid()) {

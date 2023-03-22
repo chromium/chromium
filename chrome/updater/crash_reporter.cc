@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -67,7 +68,7 @@ std::vector<std::string> MakeCrashHandlerArgs(UpdaterScope updater_scope) {
 void StartCrashReporter(UpdaterScope updater_scope,
                         const std::string& version) {
   static bool started = false;
-  DCHECK(!started);
+  CHECK(!started);
   started = true;
 
   base::FilePath handler_path;
@@ -99,7 +100,7 @@ void StartCrashReporter(UpdaterScope updater_scope,
 
 int CrashReporterMain() {
   base::CommandLine command_line = *base::CommandLine::ForCurrentProcess();
-  DCHECK(command_line.HasSwitch(kCrashHandlerSwitch));
+  CHECK(command_line.HasSwitch(kCrashHandlerSwitch));
 
   // Disable rate-limiting until this is fixed:
   //   https://bugs.chromium.org/p/crashpad/issues/detail?id=23
