@@ -4,6 +4,10 @@
 
 #import "chrome/browser/ui/cocoa/applescript/browsercrapplication+applescript.h"
 
+#include <Foundation/Foundation.h>
+
+#include <map>
+
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
@@ -13,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
@@ -24,39 +29,43 @@ using bookmarks::BookmarkModel;
 @implementation BrowserCrApplication (AppleScriptAdditions)
 
 - (NSArray*)appleScriptWindows {
-  NSMutableArray* appleScriptWindows = [NSMutableArray
-      arrayWithCapacity:chrome::GetTotalBrowserCount()];
-  // Iterate through all browsers and check if it closing,
-  // if not add it to list.
+  std::map<NSWindow*, Browser*> browsers;
   for (auto* browser : *BrowserList::GetInstance()) {
-    if (browser->IsAttemptingToCloseBrowser())
+    if (browser->IsAttemptingToCloseBrowser()) {
       continue;
+    }
 
-    base::scoped_nsobject<WindowAppleScript> window(
-        [[WindowAppleScript alloc] initWithBrowser:browser]);
-    [window setContainer:NSApp
-                property:AppleScript::kWindowsProperty];
-    [appleScriptWindows addObject:window];
+    browsers.emplace(browser->window()->GetNativeWindow().GetNativeNSWindow(),
+                     browser);
   }
-  // Windows sorted by their index value, which is obtained by calling
-  // orderedIndex: on each window.
-  [appleScriptWindows sortUsingSelector:@selector(windowComparator:)];
-  return appleScriptWindows;
+
+  NSMutableArray* result = [NSMutableArray array];
+  for (NSWindow* window in NSApp.orderedWindows) {
+    const auto& browser_it = browsers.find(window);
+    if (browser_it == browsers.end()) {
+      continue;
+    }
+
+    WindowAppleScript* aWindow = [[[WindowAppleScript alloc]
+        initWithBrowser:browser_it->second] autorelease];
+    [aWindow setContainer:self property:AppleScript::kWindowsProperty];
+    [result addObject:aWindow];
+  }
+
+  return result;
 }
 
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow {
   // This method gets called when a new window is created so
   // the container and property are set here.
-  [aWindow setContainer:self
-               property:AppleScript::kWindowsProperty];
+  [aWindow setContainer:self property:AppleScript::kWindowsProperty];
 }
 
 - (void)insertInAppleScriptWindows:(WindowAppleScript*)aWindow
                            atIndex:(int)index {
   // This method gets called when a new window is created so
   // the container and property are set here.
-  [aWindow setContainer:self
-               property:AppleScript::kWindowsProperty];
+  [aWindow setContainer:self property:AppleScript::kWindowsProperty];
   // Note: AppleScript is 1-based.
   index--;
   [aWindow setOrderedIndex:@(index)];

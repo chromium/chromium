@@ -40,7 +40,6 @@
 @end
 
 @implementation WindowAppleScript {
- @private
   raw_ptr<Browser> _browser;  // weak.
 }
 
@@ -141,8 +140,9 @@
     _browser->tab_strip_model()->ActivateTabAt(
         atIndex, TabStripUserGestureDetails(
                      TabStripUserGestureDetails::GestureType::kOther));
-  } else
+  } else {
     AppleScript::SetError(AppleScript::Error::kInvalidTabIndex);
+  }
 }
 
 - (NSString*)givenName {
@@ -253,19 +253,6 @@
     return;
   }
   [[self nativeHandle] setOrderedIndex:index];
-}
-
-- (NSComparisonResult)windowComparator:(WindowAppleScript*)otherWindow {
-  int thisIndex = [[self orderedIndex] intValue];
-  int otherIndex = [[otherWindow orderedIndex] intValue];
-  if (thisIndex < otherIndex) {
-    return NSOrderedAscending;
-  } else if (thisIndex > otherIndex) {
-    return NSOrderedDescending;
-  }
-  // Indexes can never be same.
-  NOTREACHED();
-  return NSOrderedSame;
 }
 
 // Get and set values from the associated NSWindow.

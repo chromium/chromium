@@ -15,6 +15,7 @@ class Profile;
 
 // Represents a window class.
 @interface WindowAppleScript : ElementAppleScript
+
 // Creates a new window, returns nil if there is an error.
 - (instancetype)init;
 
@@ -62,9 +63,6 @@ class Profile;
 // The index of the window, windows are ordered front to back.
 - (NSNumber*)orderedIndex;
 - (void)setOrderedIndex:(NSNumber*)anIndex;
-
-// Used to sort windows by index.
-- (NSComparisonResult)windowComparator:(WindowAppleScript*)otherWindow;
 
 // For standard window functions like zoomable, bounds etc, we dont handle it
 // but instead pass it onto the NSWindow associated with the window.

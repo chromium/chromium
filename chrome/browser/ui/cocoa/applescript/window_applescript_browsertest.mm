@@ -167,15 +167,3 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTab) {
   TabAppleScript* tab2 = [window.get() tabs][1];
   EXPECT_NSEQ([[window.get() activeTab] uniqueID], [tab2 uniqueID]);
 }
-
-// Order of windows.
-IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, DISABLED_WindowOrder) {
-  base::scoped_nsobject<WindowAppleScript> window2(
-      [[WindowAppleScript alloc] initWithBrowser:browser()]);
-  base::scoped_nsobject<WindowAppleScript> window1(
-      [[WindowAppleScript alloc] init]);
-  chrome::testing::NSRunLoopRunAllPending();
-  EXPECT_EQ([window1.get() windowComparator:window2.get()], NSOrderedAscending);
-  EXPECT_EQ([window2.get() windowComparator:window1.get()],
-            NSOrderedDescending);
-}
