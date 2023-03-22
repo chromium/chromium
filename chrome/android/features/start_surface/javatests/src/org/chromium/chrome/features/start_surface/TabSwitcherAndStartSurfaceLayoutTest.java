@@ -444,7 +444,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1130830")
     public void testTabToGridFromNtp() throws InterruptedException {
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(NTP_URL);
