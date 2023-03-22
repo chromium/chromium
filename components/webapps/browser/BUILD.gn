@@ -78,6 +78,8 @@ source_set("browser") {
       "android/add_to_homescreen_mediator.h",
       "android/add_to_homescreen_params.cc",
       "android/add_to_homescreen_params.h",
+      "android/ambient_badge_manager.cc",
+      "android/ambient_badge_manager.h",
       "android/ambient_badge_metrics.cc",
       "android/ambient_badge_metrics.h",
       "android/app_banner_manager_android.cc",

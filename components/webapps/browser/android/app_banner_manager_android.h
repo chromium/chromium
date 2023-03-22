@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
+#include "components/webapps/browser/android/ambient_badge_manager.h"
+#include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -46,38 +48,12 @@ struct AddToHomescreenParams;
 //
 // TODO(crbug.com/1147268): remove remaining Chrome-specific functionality and
 // move to //components/webapps.
-class AppBannerManagerAndroid : public AppBannerManager,
-                                public InstallableAmbientBadgeClient {
+class AppBannerManagerAndroid : public AppBannerManager {
  public:
   explicit AppBannerManagerAndroid(content::WebContents* web_contents);
   AppBannerManagerAndroid(const AppBannerManagerAndroid&) = delete;
   AppBannerManagerAndroid& operator=(const AppBannerManagerAndroid&) = delete;
   ~AppBannerManagerAndroid() override;
-
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.banners
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AmbientBadgeState
-  enum class AmbientBadgeState {
-    // The ambient badge pipeline has not yet been triggered for this page load.
-    INACTIVE = 0,
-
-    // The ambient badge pipeline is running.
-    ACTIVE = 1,
-
-    // Ambient badge blocked because of recently dismissed
-    BLOCKED = 2,
-
-    // Waiting for service worker install to trigger the banner.
-    PENDING_WORKER = 3,
-
-    // Waiting for sufficient engagement to trigger the ambient badge.
-    PENDING_ENGAGEMENT = 4,
-
-    // Showing Ambient Badge.
-    SHOWING = 5,
-
-    // Ambient badge dismissed.
-    DISMISSED = 6,
-  };
 
   // Returns a reference to the Java-side AppBannerManager owned by this object.
   const base::android::ScopedJavaLocalRef<jobject> GetJavaBannerManager() const;
@@ -113,9 +89,7 @@ class AppBannerManagerAndroid : public AppBannerManager,
   // AppBannerManager overrides.
   void RequestAppBanner(const GURL& validated_url) override;
 
-  // InstallableAmbientBadgeClient overrides.
-  void AddToHomescreenFromBadge() override;
-  void BadgeDismissed() override;
+  void ShowBannerFromBadge();
 
   // Installs the app referenced by the data in |a2hs_params|.
   // |a2hs_event_callback| will be run to inform the caller of the progress of
@@ -132,6 +106,15 @@ class AppBannerManagerAndroid : public AppBannerManager,
   // alternative UI should be shown.
   bool MaybeShowPwaBottomSheetController(bool expand_sheet,
                                          WebappInstallSource install_source);
+
+  // Run before showing the ambient badge. This calls back to the
+  // InstallableManager to continue checking service worker criteria for showing
+  // ambient badge.
+  void PerformWorkerCheckForAmbientBadge();
+
+  // Checks whether the web page has sufficient engagement for showing the
+  // ambient badge.
+  bool HasSufficientEngagementForAmbientBadge();
 
  protected:
   // AppBannerManager overrides.
@@ -151,21 +134,12 @@ class AppBannerManagerAndroid : public AppBannerManager,
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
 
-  // Run before showing the ambient badge. This calls back to the
-  // InstallableManager to continue checking service worker criteria for showing
-  // ambient badge.
-  void PerformWorkerCheckForAmbientBadge();
-
   // Callback invoked by the InstallableManager once it has finished checking
   // service worker for showing ambient badge.
-  void OnDidPerformWorkerCheckForAmbientBadge(const InstallableData& data);
+  virtual void OnDidPerformWorkerCheckForAmbientBadge(
+      const InstallableData& data);
 
   void CheckEngagementForAmbientBadge();
-
-  // Called to show UI that promotes installation of a PWA. This is normally the
-  // mini-infobar ("banner") but clients can override it by providing a
-  // specialization of this class.
-  virtual void ShowAmbientBadge();
 
   // Called when an install event occurs, allowing specializations to record
   // additional metrics.
@@ -213,34 +187,21 @@ class AppBannerManagerAndroid : public AppBannerManager,
   // manifest.
   void OnNativeAppIconFetched(const SkBitmap& bitmap);
 
-  // Checks whether the web page has sufficient engagement for showing the
-  // ambient badge.
-  bool HasSufficientEngagementForAmbientBadge();
-
-  bool ShouldSuppressAmbientBadge();
-
   // Shows the in-product help if possible and returns true when a request to
   // show it was made, but false if conditions (e.g. engagement score) for
   // showing where not deemed adequate.
   bool MaybeShowInProductHelp() const;
 
-  // Hides the ambient badge if it is showing.
-  void HideAmbientBadge();
-
   // The Java-side AppBannerManager.
   base::android::ScopedJavaGlobalRef<jobject> java_banner_manager_;
 
-  // Message controller for the ambient badge.
-  InstallableAmbientBadgeMessageController message_controller_{this};
+  std::unique_ptr<AmbientBadgeManager> ambient_badge_manager_;
 
   // App package name for a native app banner.
   std::string native_app_package_;
 
   // Title to display in the banner for native app.
   std::u16string native_app_title_;
-
-  // The current ambient badge status.
-  AmbientBadgeState badge_state_ = AmbientBadgeState::INACTIVE;
 
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 };

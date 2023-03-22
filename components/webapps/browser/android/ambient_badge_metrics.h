@@ -10,13 +10,6 @@
 
 namespace webapps {
 
-// This enum backs a UMA histogram, so it should be treated as append-only.
-enum class AppType {
-  kNativeApp = 0,
-  kWebApp = 1,
-  kMaxValue = kWebApp,
-};
-
 void RecordAmbientBadgeDisplayEvent(AddToHomescreenParams::AppType type);
 void RecordAmbientBadgeDismissEvent(AddToHomescreenParams::AppType type);
 void RecordAmbientBadgeClickEvent(AddToHomescreenParams::AppType type);

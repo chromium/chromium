@@ -40,6 +40,8 @@ struct AddToHomescreenParams {
 
   AddToHomescreenParams();
   ~AddToHomescreenParams();
+
+  std::string GetAppIdentifier();
 };
 
 }  // namespace webapps

@@ -25,7 +25,7 @@ class WebLayerAppBannerManagerAndroid
       WebLayerAppBannerManagerAndroid>::FromWebContents;
 
  protected:
-  void ShowAmbientBadge() override;
+  void MaybeShowAmbientBadge() override;
   void ShowBannerUi(webapps::WebappInstallSource install_source) override;
 
  private:

@@ -69,7 +69,7 @@ generate_jni("webapps_jni_headers") {
 
 java_cpp_enum("webapps_java_enums_srcjar") {
   sources = [
-    "//components/webapps/browser/android/app_banner_manager_android.h",
+    "//components/webapps/browser/android/ambient_badge_manager.h",
     "//components/webapps/browser/banners/app_banner_manager.h",
     "//components/webapps/browser/banners/app_banner_settings_helper.h",
     "//components/webapps/browser/installable/installable_metrics.h",
