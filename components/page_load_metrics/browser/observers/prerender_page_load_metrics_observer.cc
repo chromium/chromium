@@ -14,6 +14,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace internal {
 
@@ -56,6 +57,10 @@ const char
 const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
     "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration."
     "Prerender";
+
+// Monitors serving preload cache to prerender.
+const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
+    "PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus";
 
 // This metric is used for debugging https://crbug.com/1379491.
 // Intentionally this metric doesn't record observer events per trigger type
@@ -268,6 +273,34 @@ void PrerenderPageLoadMetricsObserver::OnComplete(
   RecordSessionEndHistograms(timing, /*app_entering_background=*/false);
 }
 
+void PrerenderPageLoadMetricsObserver::OnLoadedResource(
+    const page_load_metrics::ExtraRequestCompleteInfo&
+        extra_request_complete_info) {
+  // Return early if this load is not for the main resource of the main frame of
+  // the prerendered page.
+  if (extra_request_complete_info.request_destination !=
+      network::mojom::RequestDestination::kDocument) {
+    return;
+  }
+
+  CHECK(!main_resource_load_status_);
+  main_resource_load_status_ =
+      static_cast<net::Error>(extra_request_complete_info.net_error);
+}
+
+void PrerenderPageLoadMetricsObserver::MaybeRecordMainResourceLoadStatus() {
+  // Only record UMA for the activated prerendered page that has started
+  // loading. If the trigger type is not set, the page is not activated since it
+  // is set at `DidActivatePrerenderedPage`.  If the main_resource_load_status_
+  // is not set, the page is not loaded.
+  if (!trigger_type_ || !main_resource_load_status_.has_value()) {
+    return;
+  }
+  base::UmaHistogramSparse(
+      AppendSuffix(internal::kPageLoadPrerenderActivatedPageLoaderStatus),
+      std::abs(*main_resource_load_status_));
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
@@ -284,6 +317,7 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
   base::UmaHistogramEnumeration(
       internal::kPageLoadPrerenderObserverEvent,
       internal::PageLoadPrerenderObserverEvent::kRecordSessionEndHistograms);
+  MaybeRecordMainResourceLoadStatus();
 
   if (!GetDelegate().WasPrerenderedThenActivatedInForeground() ||
       !main_frame_timing.activation_start) {

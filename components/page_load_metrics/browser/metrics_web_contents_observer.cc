@@ -374,6 +374,10 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
         primary_page_->HasMatchingNavigationRequestID(request_id)) {
       return primary_page_.get();
     }
+    if (auto page_pair = inactive_pages_.find(render_frame_host_or_null);
+        page_pair != inactive_pages_.end()) {
+      return page_pair->second.get();
+    }
   } else {
     // Non main resources are always associated with the currently committed
     // load, `primary_page_` or `active_pages_`. If the resource

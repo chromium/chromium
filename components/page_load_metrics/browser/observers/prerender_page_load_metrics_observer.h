@@ -71,8 +71,17 @@ enum class PageLoadPrerenderForegroundCheckEvent {
 
 }  // namespace internal
 
+namespace page_load_metrics {
+struct ExtraRequestCompleteInfo;
+}  // namespace page_load_metrics
+
+namespace net{
+enum Error;
+}  // namespace net
+
 // Prerender2 (content/browser/preloading/prerender/README.md):
-// Records custom page load timing metrics for prerendered page loads.
+// Records custom page load timing and loading status metrics for prerendered
+// page loads.
 class PrerenderPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
@@ -98,6 +107,8 @@ class PrerenderPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
+                            extra_request_complete_info) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
@@ -111,6 +122,9 @@ class PrerenderPageLoadMetricsObserver
   // Records Interaction to Next Paint (INP) to UMA and UKM.
   void RecordNormalizedResponsivenessMetrics();
 
+  // Records loading status for an activated and loaded page.
+  void MaybeRecordMainResourceLoadStatus();
+
   // Helper function to concatenate the histogram name, the trigger type and the
   // embedder histogram suffix when the trigger type is kEmbedder.
   std::string AppendSuffix(const std::string& histogram_name) const;
@@ -120,6 +134,9 @@ class PrerenderPageLoadMetricsObserver
   // set if Chrome did not receive response headers or if the prerendered page
   // load was not activated.
   absl::optional<bool> main_frame_resource_has_no_store_;
+
+  // Set when the main resource of the main frame finishes loading.
+  absl::optional<net::Error> main_resource_load_status_;
 
   // The type to trigger prerendering.
   absl::optional<content::PrerenderTriggerType> trigger_type_;

@@ -751,6 +751,53 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
 }
 
+// Tests that metrics are recoreded correctly for loading main resource of an
+// activated page.
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       MainResourceLoadEvent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  GURL prerender_iframe_url = embedded_test_server()->GetURL("/title1.html");
+  prerender_helper_.AddPrerender(prerender_url);
+  prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);
+  content::test::PrerenderHostObserver observer(*web_contents(), prerender_url);
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+
+  // Activate the page and add a new iframe.
+  observer.WaitForActivation();
+  std::string add_iframe_script = R"(
+    function add_iframe(url) {
+      const frame = document.createElement('iframe');
+      frame.src = url;
+      document.body.appendChild(frame);
+      return new Promise(resolve => {
+        frame.onload = e => resolve('LOADED');
+      });
+    }
+    add_iframe($1);
+  )";
+  EXPECT_EQ("LOADED",
+            EvalJs(web_contents(), content::JsReplace(add_iframe_script,
+                                                      prerender_iframe_url)));
+
+  // Flush metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+
+  // Record the result for only once.
+  histogram_tester().ExpectUniqueSample(
+      prerender_helper_.GenerateHistogramName(
+          "PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus",
+          content::PrerenderTriggerType::kSpeculationRule, ""),
+      net::Error::OK, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
                        MainFrameNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -763,7 +810,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
   GURL navigation_url = embedded_test_server()->GetURL("/title3.html");
   int host_id = prerender_helper_.AddPrerender(prerender_url);
+  prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
   prerender_helper_.NavigatePrerenderedPage(host_id, navigation_url);
+  prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
 
   // Expect that OnPrerenderStart is called twice for the initial prerender
   // navigation and the main frame navigation in the prerendered page.

@@ -40,6 +40,7 @@
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1891,7 +1892,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   // 2. Trigger prefetch and serve the first part of response body.
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url),
                            {SearchPrefetchStatus::kCanBeServed});
-
   DispatchDelayedResponseTask();
 
   // 3. Trigger prerender.
@@ -1917,6 +1917,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   DispatchDelayedResponseTask();
   WaitForActivatedPageLoaded();
 
+  // Flush metrics.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  histogram_tester.ExpectUniqueSample(
+      "PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus.Embedder_"
+      "DefaultSearchEngine",
+      std::abs(net::Error::OK), 1);
   // Prerender should not retry the request.
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));

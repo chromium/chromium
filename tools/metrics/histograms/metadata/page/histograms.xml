@@ -2441,6 +2441,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PrerenderTriggerType}"
+    enum="NetErrorCodes" expires_after="2023-08-27">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records error codes for loading of a main resource of a main frame which
+    belongs to a prerendered and then activated page when the page received
+    loading completion event for the resource.
+
+    This metric is used to monitor whether preload cache intercepting logic
+    causes extra page loading errors.
+  </summary>
+<!-- PrerenderTriggerType variant is defined in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
 <histogram name="PageLoad.Internal.Prerender2.Event"
     enum="PageLoadPrerenderEvent" expires_after="2023-09-17">
   <owner>asamidoi@chromium.org</owner>
