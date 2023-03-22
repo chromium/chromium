@@ -191,20 +191,35 @@ TEST_F(ArcVmDataMigrationNotifierTest, MigrationConfirmed) {
           profile()->GetPrefs()->GetInteger(prefs::kArcVmDataMigrationStatus)));
 }
 
-// Tests that no notification is shown once the migration has started.
+// Tests that no notification is shown once the migration has started but the
+// maximum number of auto-resumes has not been reached yet.
 TEST_F(ArcVmDataMigrationNotifierTest, MigrationStarted) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kArcVmDataMigrationStatus,
-      static_cast<int>(ArcVmDataMigrationStatus::kStarted));
+  auto* prefs = profile()->GetPrefs();
+  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
+  prefs->SetInteger(prefs::kArcVmDataMigrationAutoResumeCount, 0);
 
-  arc_session_manager()->StartArcForTesting();
+  arc_session_manager()->RequestEnable();
   EXPECT_FALSE(notification_tester()->GetNotification(kNotificationId));
-  EXPECT_EQ(
-      ArcVmDataMigrationStatus::kStarted,
-      static_cast<ArcVmDataMigrationStatus>(
-          profile()->GetPrefs()->GetInteger(prefs::kArcVmDataMigrationStatus)));
+  EXPECT_EQ(GetArcVmDataMigrationStatus(prefs),
+            ArcVmDataMigrationStatus::kStarted);
+}
+
+// Tests that a notification is shown when the migration has started and the
+// maximum number of auto-resumes has been reached.
+TEST_F(ArcVmDataMigrationNotifierTest, MaxNumberOfAutoResumesReached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+  auto* prefs = profile()->GetPrefs();
+  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
+  prefs->SetInteger(prefs::kArcVmDataMigrationAutoResumeCount,
+                    kArcVmDataMigrationMaxAutoResumeCount + 1);
+
+  arc_session_manager()->RequestEnable();
+  EXPECT_TRUE(notification_tester()->GetNotification(kNotificationId));
+  EXPECT_EQ(GetArcVmDataMigrationStatus(prefs),
+            ArcVmDataMigrationStatus::kStarted);
 }
 
 // Tests that no notification is shown once the migration has finished.

@@ -742,6 +742,16 @@ TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_Overdue) {
   EXPECT_EQ(GetDaysUntilArcVmDataMigrationDeadline(profile_prefs()), 1);
 }
 
+// Tests that GetDaysUntilArcVmDataMigrationDeadline() returns the correct value
+// when the migration is in progress.
+TEST_F(ArcUtilTest, GetDaysUntilArcVmDataMigrationDeadline_MigrationStarted) {
+  SetArcVmDataMigrationStatus(profile_prefs(),
+                              ArcVmDataMigrationStatus::kStarted);
+  profile_prefs()->SetTime(prefs::kArcVmDataMigrationNotificationFirstShownTime,
+                           base::Time::Now());
+  EXPECT_EQ(GetDaysUntilArcVmDataMigrationDeadline(profile_prefs()), 1);
+}
+
 TEST_F(ArcUtilTest, GetDesiredDiskImageSizeForArcVmDataMigrationInBytes) {
   EXPECT_EQ(GetDesiredDiskImageSizeForArcVmDataMigrationInBytes(0, 0),
             4ULL << 30 /* kMinimumDiskImageSizeInBytes = 4 GB */);

@@ -2285,6 +2285,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.AutoResumeCount" units="count"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The number of times ARCVM /data migration has been automatically resumed.
+    This is reported when an auto-resume is triggered, or the maximum number of
+    auto-resumes has been hit for the first time. The value 0 means that no
+    auto-resume has been attempted, and the first auto-resume will be triggered
+    right after the event. Samples in the overflow bucket means that the maximum
+    number of auto-resumes has been reached but the migration is not finished
+    yet, in which case auto-resume is disabled and the user needs to manually
+    resume the migration. Each value should be recorded at most once per user.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.DesiredDiskImageSizeInGB.{SatisfiedOrNot}"
     units="GB" expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
@@ -2477,6 +2494,20 @@ chromium-metrics-reviews@google.com.
     <variant name="Satisfied" summary="satisfied"/>
     <variant name="Unsatisfied" summary="not satisfied"/>
   </token>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.ResumeNotificationShown"
+    enum="BooleanEnabled" expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    Counts how many times the notification for resuming ARCVM /data migration is
+    shown while the migration is in progress. The notification is shown (and
+    thus the event is reported) only when auto-resume is disabled after the
+    maximum number of auto-resumes has been reached but the migration has not
+    finished yet.
+  </summary>
 </histogram>
 
 <histogram name="Arc.VmDataMigration.ScreenEvent.On{ArcVmDataMigrationType}"

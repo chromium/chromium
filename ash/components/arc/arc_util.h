@@ -242,10 +242,11 @@ void SetArcVmDataMigrationStatus(PrefService* prefs,
 // Returns whether ARCVM should use virtio-blk for /data.
 bool ShouldUseVirtioBlkData(PrefService* prefs);
 
-// Returns ARCVM /data migration should be done within how many days. Calculated
-// from the time when the ARCVM /data migration notification is shown for the
-// first time. The minimum return value is 1 (which means the migration should
-// be done within a day = today).
+// Returns ARCVM /data migration should be done within how many days. When the
+// migration has not started, the value is calculated from the time when the
+// ARCVM /data migration notification is shown for the first time. When the
+// migration is in progress, the minimum value 1 is returned, which means the
+// migration should be done within a day = today.
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs);
 
 // Whether ARCVM /data migration notification and/or dialog should be

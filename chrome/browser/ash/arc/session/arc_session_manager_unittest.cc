@@ -864,14 +864,18 @@ TEST_F(ArcSessionManagerTest, ArcVmDataMigrationInProgress_RequestEnable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
 
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 0);
+
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
   EXPECT_EQ(restart_count, 1);
 
   arc_session_manager()->RequestEnable();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
   EXPECT_EQ(restart_count, 1);
 
   arc_session_manager()->Shutdown();
@@ -892,9 +896,12 @@ TEST_F(ArcSessionManagerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
 
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 0);
+
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
   EXPECT_EQ(restart_count, 1);
 
   arc_session_manager()->RequestArcDataRemoval();
@@ -902,7 +909,41 @@ TEST_F(ArcSessionManagerTest,
   // /data removal request should persist, i.e., /data should not be removed.
   EXPECT_TRUE(prefs->GetBoolean(prefs::kArcDataRemoveRequested));
   EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount), 1);
   EXPECT_EQ(restart_count, 1);
+
+  arc_session_manager()->Shutdown();
+}
+
+TEST_F(ArcSessionManagerTest, ArcVmDataMigration_MaxAutoResumeCountReached) {
+  int restart_count = 0;
+  // Replace chrome::AttemptRestart() for testing.
+  arc_session_manager()->SetAttemptRestartCallbackForTesting(
+      base::BindLambdaForTesting([&restart_count]() { ++restart_count; }));
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+  SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kStarted);
+  prefs->SetInteger(prefs::kArcVmDataMigrationAutoResumeCount,
+                    kArcVmDataMigrationMaxAutoResumeCount);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount),
+            kArcVmDataMigrationMaxAutoResumeCount + 1);
+
+  arc_session_manager()->RequestEnable();
+  base::RunLoop().RunUntilIdle();
+  // ARC should be blocked and auto-resume should not be triggered.
+  EXPECT_EQ(arc_session_manager()->state(), ArcSessionManager::State::STOPPED);
+  EXPECT_EQ(restart_count, 0);
+  EXPECT_EQ(prefs->GetInteger(prefs::kArcVmDataMigrationAutoResumeCount),
+            kArcVmDataMigrationMaxAutoResumeCount + 1);
 
   arc_session_manager()->Shutdown();
 }

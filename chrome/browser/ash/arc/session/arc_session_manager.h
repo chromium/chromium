@@ -45,6 +45,12 @@ constexpr const char kGeneratedBuildPropertyFilePath[] =
 constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
     "/run/arcvm/host_generated/combined.prop";
 
+// Maximum number of auto-resumes for ARCVM /data migration. When this number of
+// auto-resumes have been already attempted but the migration has not finished,
+// ARC is blocked and the user needs to manually trigger the resume by clicking
+// a notification.
+constexpr int kArcVmDataMigrationMaxAutoResumeCount = 3;
+
 class ArcDataRemover;
 class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;

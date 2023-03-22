@@ -28,6 +28,8 @@ class ArcVmDataMigrationNotifier : public ArcSessionManagerObserver {
   // ArcSessinoManagerObserver overrides:
   void OnArcStarted() override;
   void OnArcSessionStopped(ArcStopReason reason) override;
+  void OnArcSessionBlockedByArcVmDataMigration(
+      bool auto_resume_enabled) override;
 
  private:
   Profile* const profile_;

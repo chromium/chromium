@@ -112,6 +112,20 @@ void ArcVmDataMigrationNotifier::OnArcSessionStopped(ArcStopReason reason) {
   CloseNotification();
 }
 
+void ArcVmDataMigrationNotifier::OnArcSessionBlockedByArcVmDataMigration(
+    bool auto_resume_enabled) {
+  if (auto_resume_enabled) {
+    // No need to show a notification.
+    return;
+  }
+  LOG(WARNING) << "Showing a non-dismissible notification for ARCVM /data "
+                  "migration, because auto-resume is disabled";
+  // TODO(b/258278176): Implement appropriate UI.
+  base::UmaHistogramBoolean("Arc.VmDataMigration.ResumeNotificationShown",
+                            true);
+  ShowNotification();
+}
+
 void ArcVmDataMigrationNotifier::ShowNotification() {
   const int days_until_deadline =
       GetDaysUntilArcVmDataMigrationDeadline(profile_->GetPrefs());
@@ -180,8 +194,11 @@ void ArcVmDataMigrationNotifier::OnNotificationClicked(
 
 void ArcVmDataMigrationNotifier::OnRestartAccepted(bool accepted) {
   if (accepted) {
-    SetArcVmDataMigrationStatus(profile_->GetPrefs(),
-                                ArcVmDataMigrationStatus::kConfirmed);
+    auto* prefs = profile_->GetPrefs();
+    if (GetArcVmDataMigrationStatus(prefs) !=
+        ArcVmDataMigrationStatus::kStarted) {
+      SetArcVmDataMigrationStatus(prefs, ArcVmDataMigrationStatus::kConfirmed);
+    }
     chrome::AttemptRestart();
   }
 }
