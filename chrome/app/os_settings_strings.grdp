@@ -1166,6 +1166,12 @@
   <message name="IDS_SETTINGS_CHROMEVOX_MENU_ENABLE_EVENT_STREAM_LOGGING" desc="In the ChromeVox settings subpage, under developer options the label for the toggle that enables event stream logging.">
     Enable event stream logging
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BRAILLE_WORD_WRAP" desc="In the ChromeVox settings subpage, the label for the toggle that enables wrapping of words if a whole line doesn't fit on a braille display. When this option is enabled, an effort is made to keep the characters of words together on the display. Otherwise, as many characters as possible are put on each braille display line, possible splitting words between lines.">
+    Enable word wrap
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_MENU_BRAILLE_COMMANDS" desc="In the ChromeVox settings subpage, the label for the toggle that enables displaying Perkins Brailler commands in the ChromeVox menus.">
+    Show braille commands in the ChromeVox menus
+  </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
     Full-screen magnifier
   </message>

@@ -159,6 +159,20 @@ found in the LICENSE file.
   </cr-link-row>
 </div>
 <h2>$i18n{chromeVoxBrailleLabel}</h2>
+<div class="sub-item">
+  <settings-toggle-button
+      id="brailleWordWrapToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.braille_word_wrap}}"
+      label="$i18n{chromeVoxBrailleWordWrap}">
+  </settings-toggle-button>
+  <settings-toggle-button
+      id="menuBrailleCommandsToggle"
+      class="settings-box continuation"
+      pref="{{prefs.settings.a11y.chromevox.menu_braille_commands}}"
+      label="$i18n{chromeVoxMenuBrailleCommands}">
+  </settings-toggle-button>
+</div>
 <cr-expand-button id="developerOptionsExpandButton" class="hr"
     expanded="{{developerOptionsExpanded_}}">
   <h2 id="developerOptionsHeading">$i18n{chromeVoxDeveloperOptionsLabel}</h2>

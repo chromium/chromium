@@ -73,6 +73,20 @@ suite('ChromeVoxSubpageTests', function() {
       type: ControlType.TOGGLE,
     },
     {
+      id: 'brailleWordWrapToggle',
+      prefKey: 'settings.a11y.chromevox.braille_word_wrap',
+      defaultValue: true,
+      secondaryValue: false,
+      type: ControlType.TOGGLE,
+    },
+    {
+      id: 'menuBrailleCommandsToggle',
+      prefKey: 'settings.a11y.chromevox.menu_braille_commands',
+      defaultValue: false,
+      secondaryValue: true,
+      type: ControlType.TOGGLE,
+    },
+    {
       id: 'enableEarconLoggingToggle',
       prefKey: 'settings.a11y.chromevox.enable_earcon_logging',
       defaultValue: false,
