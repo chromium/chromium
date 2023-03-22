@@ -118,6 +118,10 @@ BASE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey,
              "PartitionNelAndReportingByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableCrossSiteFlagNetworkIsolationKey,
+             "EnableCrossSiteFlagNetworkIsolationKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTLS13KeyUpdate,
              "TLS13KeyUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);

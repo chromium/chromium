@@ -26,6 +26,17 @@ std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
 }  // namespace
 
 NetworkIsolationKey::NetworkIsolationKey(
+    SerializationPasskey,
+    SchemefulSite top_frame_site,
+    bool is_cross_site,
+    absl::optional<base::UnguessableToken> nonce)
+    : top_frame_site_(std::move(top_frame_site)),
+      is_cross_site_(is_cross_site),
+      nonce_(std::move(nonce)) {
+  CHECK_EQ(GetMode(), Mode::kCrossSiteFlagEnabled);
+}
+
+NetworkIsolationKey::NetworkIsolationKey(
     const SchemefulSite& top_frame_site,
     const SchemefulSite& frame_site,
     const absl::optional<base::UnguessableToken>& nonce)
@@ -41,6 +52,9 @@ NetworkIsolationKey::NetworkIsolationKey(
       frame_site_((GetMode() == Mode::kFrameSiteEnabled)
                       ? absl::make_optional(std::move(frame_site))
                       : absl::nullopt),
+      is_cross_site_((GetMode() == Mode::kCrossSiteFlagEnabled)
+                         ? absl::make_optional(*top_frame_site_ != frame_site)
+                         : absl::nullopt),
       nonce_(std::move(nonce)) {
   DCHECK(!nonce_ || !nonce_->is_empty());
 }
@@ -84,17 +98,32 @@ absl::optional<std::string> NetworkIsolationKey::ToCacheKeyString() const {
   if (IsTransient())
     return absl::nullopt;
 
-  std::string frame_site_str = " " + ((GetMode() == Mode::kFrameSiteEnabled)
-                                          ? frame_site_->Serialize()
-                                          : top_frame_site_->Serialize());
-  return top_frame_site_->Serialize() + frame_site_str;
+  std::string variable_key_piece;
+  switch (GetMode()) {
+    case Mode::kFrameSiteEnabled:
+      variable_key_piece = frame_site_->Serialize();
+      break;
+    case Mode::kCrossSiteFlagEnabled:
+      variable_key_piece = (*is_cross_site_ ? "_1" : "_0");
+      break;
+  }
+  return top_frame_site_->Serialize() + " " + variable_key_piece;
 }
 
 std::string NetworkIsolationKey::ToDebugString() const {
   // The space-separated serialization of |top_frame_site_| and
   // |frame_site_|.
   std::string return_string = GetSiteDebugString(top_frame_site_);
-  return_string += " " + GetSiteDebugString(frame_site_);
+  switch (GetMode()) {
+    case Mode::kFrameSiteEnabled:
+      return_string += " " + GetSiteDebugString(frame_site_);
+      break;
+    case Mode::kCrossSiteFlagEnabled:
+      if (is_cross_site_.has_value()) {
+        return_string += (*is_cross_site_ ? " cross-site" : " same-site");
+      }
+      break;
+  }
 
   if (nonce_.has_value()) {
     return_string += " (with nonce " + nonce_->ToString() + ")";
@@ -121,9 +150,12 @@ bool NetworkIsolationKey::IsTransient() const {
 
 // static
 NetworkIsolationKey::Mode NetworkIsolationKey::GetMode() {
-  // NIKs are currently always triple-keyed, but we will experiment with
-  // 2.5-keying in crbug.com/1414808.
-  return Mode::kFrameSiteEnabled;
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnableCrossSiteFlagNetworkIsolationKey)) {
+    return Mode::kCrossSiteFlagEnabled;
+  } else {
+    return Mode::kFrameSiteEnabled;
+  }
 }
 
 const absl::optional<SchemefulSite>& NetworkIsolationKey::GetFrameSite() const {
@@ -132,14 +164,26 @@ const absl::optional<SchemefulSite>& NetworkIsolationKey::GetFrameSite() const {
   return frame_site_;
 }
 
+absl::optional<bool> NetworkIsolationKey::GetIsCrossSite() const {
+  CHECK(GetMode() == Mode::kCrossSiteFlagEnabled);
+  return is_cross_site_;
+}
+
 bool NetworkIsolationKey::IsEmpty() const {
   return !top_frame_site_.has_value() && !frame_site_.has_value();
 }
 
 bool NetworkIsolationKey::IsOpaque() const {
-  return top_frame_site_->opaque() ||
-         (GetMode() == Mode::kFrameSiteEnabled && frame_site_->opaque()) ||
-         nonce_.has_value();
+  if (top_frame_site_->opaque()) {
+    return true;
+  }
+  if (GetMode() == Mode::kFrameSiteEnabled && frame_site_->opaque()) {
+    return true;
+  }
+  if (nonce_.has_value()) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace net

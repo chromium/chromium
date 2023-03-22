@@ -34,18 +34,24 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromFrameSite(
 
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
     const net::NetworkIsolationKey& network_isolation_key) {
-  // If NIK is double-keyed, a 2.5-keyed NAK cannot be constructed from it.
-  DCHECK_EQ(NetworkIsolationKey::GetMode(),
-            NetworkIsolationKey::Mode::kFrameSiteEnabled);
-
   // We cannot create a valid NetworkAnonymizationKey from a NetworkIsolationKey
   // that is not fully populated.
   if (!network_isolation_key.IsFullyPopulated()) {
     return NetworkAnonymizationKey();
   }
-  return CreateFromFrameSite(network_isolation_key.GetTopFrameSite().value(),
-                             network_isolation_key.GetFrameSite().value(),
-                             network_isolation_key.GetNonce());
+
+  switch (NetworkIsolationKey::GetMode()) {
+    case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+      return CreateFromFrameSite(
+          network_isolation_key.GetTopFrameSite().value(),
+          network_isolation_key.GetFrameSite().value(),
+          network_isolation_key.GetNonce());
+    case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+      return NetworkAnonymizationKey(
+          network_isolation_key.GetTopFrameSite().value(),
+          network_isolation_key.GetIsCrossSite().value(),
+          network_isolation_key.GetNonce());
+  }
 }
 
 NetworkAnonymizationKey::NetworkAnonymizationKey()

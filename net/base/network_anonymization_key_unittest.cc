@@ -26,7 +26,39 @@ class NetworkAnonymizationKeyTest : public testing::Test {
   const base::UnguessableToken kNonce = base::UnguessableToken::Create();
 };
 
-TEST_F(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
+class NetworkAnonymizationKeyTestWithNikMode
+    : public NetworkAnonymizationKeyTest,
+      public testing::WithParamInterface<NetworkIsolationKey::Mode> {
+ public:
+  NetworkAnonymizationKeyTestWithNikMode() {
+    switch (GetParam()) {
+      case NetworkIsolationKey::Mode::kFrameSiteEnabled:
+        scoped_feature_list_.InitAndDisableFeature(
+            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+        break;
+      case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
+        scoped_feature_list_.InitAndEnableFeature(
+            net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+        break;
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Tests,
+    NetworkAnonymizationKeyTestWithNikMode,
+    testing::ValuesIn({NetworkIsolationKey::Mode::kFrameSiteEnabled,
+                       NetworkIsolationKey::Mode::kCrossSiteFlagEnabled}),
+    [](const testing::TestParamInfo<NetworkIsolationKey::Mode>& info) {
+      return info.param == NetworkIsolationKey::Mode::kFrameSiteEnabled
+                 ? "NikFrameSiteEnabled"
+                 : "NikCrossSiteFlagEnabled";
+    });
+
+TEST_P(NetworkAnonymizationKeyTestWithNikMode, CreateFromNetworkIsolationKey) {
   SchemefulSite site_a = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site_b = SchemefulSite(GURL("http://b.test/"));
   SchemefulSite opaque = SchemefulSite(url::Origin());
@@ -375,8 +407,8 @@ TEST(NetworkAnonymizationKeyFeatureShiftTest,
   EXPECT_FALSE(NetworkAnonymizationKey::FromValue(double_key_value,
                                                   &expected_failure_nak));
 
-  // Check that deserializing a triple keyed value (a 2-element list containing
-  // two sites) fails.
+  // Check that deserializing a triple keyed value (a 2-element list
+  // containing two sites) fails.
   base::Value::List triple_key_list;
   triple_key_list.Append(serialized_site.Clone());
   triple_key_list.Append(std::move(serialized_site));

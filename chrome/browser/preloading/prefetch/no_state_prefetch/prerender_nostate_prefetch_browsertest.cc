@@ -474,21 +474,47 @@ class NoStatePrefetchBrowserTest
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
+enum SplitCacheTestCase {
+  kSplitCacheDisabled,
+  kSplitCacheEnabledDoublePlusBitKeyed,
+  kSplitCacheEnabledTripleKeyed,
+};
+
 class NoStatePrefetchBrowserTestHttpCache
     : public NoStatePrefetchBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<SplitCacheTestCase> {
  protected:
-  void SetUp() override {
-    bool split_cache_by_network_isolation_key = GetParam();
-    if (split_cache_by_network_isolation_key) {
-      feature_list_.InitAndEnableFeature(
+  NoStatePrefetchBrowserTestHttpCache() { InitializeScopedFeatureList(); }
+
+  void InitializeScopedFeatureList() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsSplitCacheEnabled()) {
+      enabled_features.push_back(
           net::features::kSplitCacheByNetworkIsolationKey);
     } else {
-      feature_list_.InitAndDisableFeature(
+      disabled_features.push_back(
           net::features::kSplitCacheByNetworkIsolationKey);
     }
 
-    NoStatePrefetchBrowserTest::SetUp();
+    if (IsCrossSiteFlagSchemeEnabled()) {
+      enabled_features.push_back(
+          net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+    } else {
+      disabled_features.push_back(
+          net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  bool IsSplitCacheEnabled() const {
+    return GetParam() != SplitCacheTestCase::kSplitCacheDisabled;
+  }
+
+  bool IsCrossSiteFlagSchemeEnabled() const {
+    return GetParam() ==
+           SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed;
   }
 
  private:
@@ -523,13 +549,31 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       current_browser(), src_server()->GetURL(prerender_path)));
 
-  WaitForRequestCount(image_src, 2);
+  if (IsCrossSiteFlagSchemeEnabled()) {
+    // If the NIK only uses an is-cross-site bit instead of the full frame site
+    // in the cache key, then the two iframes will share a cache partition.
+    WaitForRequestCount(image_src, 1);
+  } else {
+    WaitForRequestCount(image_src, 2);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     NoStatePrefetchBrowserTestHttpCache_DefaultAndAppendFrameOrigin,
-    ::testing::Values(true));
+    testing::ValuesIn(
+        {SplitCacheTestCase::kSplitCacheEnabledTripleKeyed,
+         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed}),
+    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
+      switch (info.param) {
+        case (SplitCacheTestCase::kSplitCacheDisabled):
+          return "NotUsedForThisTestSuite";
+        case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyed):
+          return "TripleKeyed";
+        case (SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed):
+          return "DoublePlusBitKeyed";
+      }
+    });
 
 // Checks that a page is correctly prefetched in the case of a
 // <link rel=prerender> tag and the JavaScript on the page is not executed.
@@ -638,7 +682,20 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     NoStatePrefetchBrowserTestHttpCache_DefaultAndDoubleKeyedHttpCache,
-    ::testing::Bool());
+    testing::ValuesIn(
+        {SplitCacheTestCase::kSplitCacheDisabled,
+         SplitCacheTestCase::kSplitCacheEnabledTripleKeyed,
+         SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed}),
+    [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
+      switch (info.param) {
+        case (SplitCacheTestCase::kSplitCacheDisabled):
+          return "SplitCacheDisabled";
+        case (SplitCacheTestCase::kSplitCacheEnabledTripleKeyed):
+          return "TripleKeyed";
+        case (SplitCacheTestCase::kSplitCacheEnabledDoublePlusBitKeyed):
+          return "DoublePlusBitKeyed";
+      }
+    });
 
 // Checks that the expected resource types are fetched via NoState Prefetch.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchAllResourceTypes) {

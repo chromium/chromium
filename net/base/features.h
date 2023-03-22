@@ -153,6 +153,14 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionSSLSessionsByNetworkIsolationKey);
 // testing.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey);
 
+// Creates a <double key + is_cross_site> NetworkIsolationKey which is used
+// to partition the HTTP cache. This key will have the following properties:
+// `top_frame_site_` -> the schemeful site of the top level page.
+// `frame_site_` -> absl::nullopt.
+// `is_cross_site_` -> a boolean indicating whether the frame site is
+// schemefully cross-site from the top-level site.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableCrossSiteFlagNetworkIsolationKey);
+
 // Enables sending TLS 1.3 Key Update messages on TLS 1.3 connections in order
 // to ensure that this corner of the spec is exercised. This is currently
 // disabled by default because we discovered incompatibilities with some
