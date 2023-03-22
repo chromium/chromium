@@ -1725,6 +1725,18 @@ TEST_P(WaylandWindowTest, ConfigureEventIsNotAckedMultipleTimes) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
 }
 
+TEST_P(WaylandWindowTest, ManyConfigureEventsDoesNotCrash) {
+  constexpr uint32_t kConfigureSerial = 2u;
+
+  auto state = InitializeWlArrayWithActivatedState();
+  gfx::Size size{500, 300};
+  for (int i = 0; i < 3000; ++i) {
+    SendConfigureEvent(surface_id_, size, state, kConfigureSerial + i);
+    size.Enlarge(1, 1);
+  }
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+}
+
 TEST_P(WaylandWindowTest, OnActivationChanged) {
   uint32_t serial = 0;
 
