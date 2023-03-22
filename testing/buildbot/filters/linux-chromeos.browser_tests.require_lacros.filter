@@ -41,10 +41,6 @@ WebKioskAshRequiresLacrosTest*
 -ChromeVoxTutorialTest.Gestures
 -ChromeVoxTutorialTest.ExitButtonTest
 -ChromeVoxTutorialTest.EscapeTest
-# Flaky (crbug.com/1268842).
--ChromeVoxBackgroundTest.GestureOnPopUpButton
--ChromeVoxBackgroundTest.HitTestOnExoSurface
--ChromeVoxEditingTest.JumpCommandsSyncSelection
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
 -ChromeVoxBackgroundTest.ListBoxItemsNavigation
@@ -60,6 +56,10 @@ WebKioskAshRequiresLacrosTest*
 -ChromeVoxBackgroundTest.CrossWindowNextPreviousFocus
 -ChromeVoxBackgroundTest.MultipleListBoxes
 -ChromeVoxBackgroundTest.SelectOptionSelected
+-ChromeVoxBackgroundTest.GestureGranularity
+-ChromeVoxBackgroundTest.GestureOnPopUpButton
+-ChromeVoxBackgroundTest.HitTestOnExoSurface
+-ChromeVoxEditingTest.JumpCommandsSyncSelection
 # TODO(b/268051293) Flaky
 -SelectToSpeakKeystrokeSelectionTest.NonReorderedSvgPreservesSelectionStartEnd
 -SelectToSpeakKeystrokeSelectionTest.OmniboxPartiallySelectedInMid
