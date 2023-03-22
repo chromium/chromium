@@ -724,15 +724,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   InformAboutCanceledNavigation();
   CHECK(window_);
 
-  const KURL& current_url = window_->Url();
-
-  const String& key = params->destination_item
-                          ? params->destination_item->GetNavigationApiKey()
-                          : String();
-  PromoteUpcomingNavigationToOngoing(key);
-
   if (HasEntriesAndEventsDisabled()) {
-    // This assertions holds because:
+    // These assertions holds because:
     // * back()/forward()/traverseTo() immediately fail when
     //   `HasEntriesAndEventsDisabled()` is false, because current_entry_index_
     //   will be permanently -1.
@@ -741,22 +734,30 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     //   promote to `ongoing_navigation_`.
     // * non-NavigationApi navigations never create an upcoming navigation.
     CHECK(!ongoing_navigation_);
+    CHECK(!upcoming_non_traversal_navigation_);
+    CHECK(upcoming_traversals_.empty());
     return DispatchResult::kContinue;
   }
 
-  LocalFrame* frame = window_->GetFrame();
-  auto* script_state = ToScriptStateForMainWorld(frame);
-  ScriptState::Scope scope(script_state);
-
+  const String& key = params->destination_item
+                          ? params->destination_item->GetNavigationApiKey()
+                          : String();
   if (params->frame_load_type == WebFrameLoadType::kBackForward &&
       params->event_type == NavigateEventType::kFragment &&
       !keys_to_indices_.Contains(key)) {
     // This same document history traversal was preempted by another navigation
     // that removed this entry from the back/forward list. Proceeding will leave
     // entries_ out of sync with the browser process.
-    AbortOngoingNavigation(script_state);
+    TraverseCancelled(
+        key, mojom::blink::TraverseCancelledReason::kAbortedBeforeCommit);
     return DispatchResult::kAbort;
   }
+
+  PromoteUpcomingNavigationToOngoing(key);
+
+  LocalFrame* frame = window_->GetFrame();
+  auto* script_state = ToScriptStateForMainWorld(frame);
+  ScriptState::Scope scope(script_state);
 
   auto* init = NavigateEventInit::Create();
   const String& navigation_type =
@@ -795,13 +796,13 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
                       should_allow_traversal_cancellation);
   init->setCanIntercept(
       CanChangeToUrlForHistoryApi(params->url, window_->GetSecurityOrigin(),
-                                  current_url) &&
+                                  window_->Url()) &&
       (params->event_type != NavigateEventType::kCrossDocument ||
        params->frame_load_type != WebFrameLoadType::kBackForward));
   init->setHashChange(
       params->event_type == NavigateEventType::kFragment &&
-      params->url != current_url &&
-      EqualIgnoringFragmentIdentifier(params->url, current_url));
+      params->url != window_->Url() &&
+      EqualIgnoringFragmentIdentifier(params->url, window_->Url()));
 
   init->setUserInitiated(params->involvement !=
                          UserNavigationInvolvement::kNone);
@@ -968,18 +969,16 @@ void NavigationApi::DidFinishOngoingNavigation() {
 }
 
 void NavigationApi::AbortOngoingNavigation(ScriptState* script_state) {
+  CHECK(ongoing_navigate_event_);
   ScriptValue error = ScriptValue::From(
       script_state,
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                          "Navigation was aborted"));
-
-  if (ongoing_navigate_event_) {
-    if (ongoing_navigate_event_->IsBeingDispatched())
-      ongoing_navigate_event_->preventDefault();
-    ongoing_navigate_event_->signal()->SignalAbort(script_state, error);
-    ongoing_navigate_event_ = nullptr;
+  if (ongoing_navigate_event_->IsBeingDispatched()) {
+    ongoing_navigate_event_->preventDefault();
   }
-
+  ongoing_navigate_event_->signal()->SignalAbort(script_state, error);
+  ongoing_navigate_event_ = nullptr;
   DidFailOngoingNavigation(error);
 }
 
