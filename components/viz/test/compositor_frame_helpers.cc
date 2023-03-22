@@ -13,6 +13,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_element_draw_quad.h"
+#include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -272,6 +273,12 @@ RenderPassBuilder& RenderPassBuilder::SetMaskFilter(
   auto* sqs = GetLastQuadSharedQuadState();
   sqs->mask_filter_info = mask_filter_info;
   sqs->is_fast_rounded_corner = is_fast_rounded_corner;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadLayerId(uint32_t layer_id) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->layer_id = layer_id;
   return *this;
 }
 

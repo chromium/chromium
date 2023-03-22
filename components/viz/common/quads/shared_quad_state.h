@@ -13,11 +13,9 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 class TracedValue;
-}
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace viz {
 
@@ -31,6 +29,7 @@ class VIZ_COMMON_EXPORT SharedQuadState {
  public:
   SharedQuadState();
   SharedQuadState(const SharedQuadState& other);
+  SharedQuadState& operator=(const SharedQuadState& other);
   ~SharedQuadState();
 
   // No comparison for |overlay_damage_index| and |is_fast_rounded_corner|.
@@ -38,6 +37,8 @@ class VIZ_COMMON_EXPORT SharedQuadState {
 
   void SetAll(const SharedQuadState& other);
 
+  // TODO(kylechar): Remove default value for `layer_id` after updating all
+  // callers.
   void SetAll(const gfx::Transform& transform,
               const gfx::Rect& layer_rect,
               const gfx::Rect& visible_layer_rect,
@@ -46,7 +47,8 @@ class VIZ_COMMON_EXPORT SharedQuadState {
               bool contents_opaque,
               float opacity_f,
               SkBlendMode blend,
-              int sorting_context);
+              int sorting_context,
+              uint32_t layer_id = 0);
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
   // Transforms quad rects into the target content space.
@@ -67,9 +69,16 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   absl::optional<gfx::Rect> clip_rect;
   // Indicates whether the content in |quad_layer_rect| are fully opaque.
   bool are_contents_opaque = true;
-  float opacity = 1.f;
+  float opacity = 1.0f;
   SkBlendMode blend_mode = SkBlendMode::kSrcOver;
   int sorting_context_id = 0;
+  // Optionally set by the client with a stable ID for the layer that produced
+  // the DrawQuad(s). This is used to help identify that DrawQuad(s) in one
+  // frame came from the same layer as DrawQuads() from a previous frame, even
+  // if they changed position or other attributes.
+  uint32_t layer_id = 0;
+  // Used by SurfaceAggregator to namespace layer_ids from different clients.
+  uint32_t layer_namespace_id = 0;
   // Used by SurfaceAggregator to decide whether to merge quads for a surface
   // into their target render pass. It is a performance optimization by avoiding
   // render passes as much as possible.

@@ -37,7 +37,7 @@ struct SharedQuadState {
   // supported.
   uint32 blend_mode;
   int32 sorting_context_id;
+  uint32 layer_id;
 
   bool is_fast_rounded_corner;
-
 };

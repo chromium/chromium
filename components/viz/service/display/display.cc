@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -612,11 +613,15 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
                     root_render_pass.damage_rect);
 
   for (auto* quad : root_render_pass.quad_list) {
-    auto& transform = quad->shared_quad_state->quad_to_target_transform;
+    auto* sqs = quad->shared_quad_state;
+    auto& transform = sqs->quad_to_target_transform;
     auto display_rect = transform.MapRect(gfx::RectF(quad->rect));
     DBG_DRAW_TEXT_OPT("frame.root.material", DBG_OPT_GREEN,
                       display_rect.origin(),
                       base::NumberToString(static_cast<int>(quad->material)));
+    DBG_DRAW_TEXT_OPT(
+        "frame.root.layer_id", DBG_OPT_BLUE, display_rect.origin(),
+        base::StringPrintf("%u:%u", sqs->layer_namespace_id, sqs->layer_id));
     DBG_DRAW_TEXT_OPT("frame.root.display_rect", DBG_OPT_GREEN,
                       display_rect.origin(), display_rect.ToString());
     DBG_DRAW_TEXT_OPT(

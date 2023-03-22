@@ -1448,6 +1448,113 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ScaleForDeviceScaleFactor) {
   }
 }
 
+// Verify that layer_ids are deduplicated in the final AggregatedFrame
+// correctly.
+TEST_F(SurfaceAggregatorValidSurfaceTest, LayerIds) {
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+
+  gfx::Rect child_surface_rect(20, 20);
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(child_surface_rect)
+                    .AddSolidColorQuad(gfx::Rect(20, 20), SkColors::kRed)
+                    .SetQuadLayerId(1u))
+            .Build();
+
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(frame));
+  }
+
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kSurfaceSize)
+                               .AddSurfaceQuad(child_surface_rect,
+                                               SurfaceRange(child_surface_id))
+                               .SetQuadLayerId(2)
+                               .AddSolidColorQuad(gfx::Rect(kSurfaceSize),
+                                                  SkColors::kBlack)
+                               .SetQuadLayerId(3))
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  {
+    auto frame = AggregateFrame(root_surface_id_);
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    auto* render_pass = frame.render_pass_list.back().get();
+
+    uint32_t root_surface_namespace =
+        aggregator_.GetLatestFrameData(root_surface_id_)
+            ->GetClientNamespaceId();
+    uint32_t child_surface_namespace =
+        aggregator_.GetLatestFrameData(child_surface_id)
+            ->GetClientNamespaceId();
+
+    // The child surface is merged into the root surface so there is a single
+    // render pass with a solid color draw quad from both clients. Both will
+    // have client namespace ID + original layer ID as their final layer ID.
+    EXPECT_THAT(render_pass->quad_list,
+                ElementsAre(AllOf(IsSolidColorQuad(SkColors::kRed),
+                                  HasLayerNamespaceId(child_surface_namespace),
+                                  HasLayerId(1u)),
+                            AllOf(IsSolidColorQuad(SkColors::kBlack),
+                                  HasLayerNamespaceId(root_surface_namespace),
+                                  HasLayerId(3u))));
+  }
+
+  // Redo the aggregation but don't allow merging child surface into the root
+  // render pass.
+  {
+    CompositorFrame frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(RenderPassBuilder(kSurfaceSize)
+                               .AddSurfaceQuad(child_surface_rect,
+                                               SurfaceRange(child_surface_id),
+                                               {.allow_merge = false})
+                               .SetQuadLayerId(2)
+                               .AddSolidColorQuad(gfx::Rect(kSurfaceSize),
+                                                  SkColors::kBlack)
+                               .SetQuadLayerId(3))
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(frame));
+  }
+
+  {
+    auto frame = AggregateFrame(root_surface_id_);
+    ASSERT_EQ(2u, frame.render_pass_list.size());
+    auto* child_pass = frame.render_pass_list.at(0).get();
+    auto* root_pass = frame.render_pass_list.at(1).get();
+
+    uint32_t root_surface_namespace =
+        aggregator_.GetLatestFrameData(root_surface_id_)
+            ->GetClientNamespaceId();
+    uint32_t child_surface_namespace =
+        aggregator_.GetLatestFrameData(child_surface_id)
+            ->GetClientNamespaceId();
+
+    EXPECT_THAT(child_pass->quad_list,
+                ElementsAre(AllOf(IsSolidColorQuad(SkColors::kRed),
+                                  HasLayerNamespaceId(child_surface_namespace),
+                                  HasLayerId(1u))));
+
+    // The AggregatedRenderPassDrawQuad is taking the place of the
+    // SurfaceDrawQuad so it should have the same client namespace as other
+    // quads from the root surface.
+    EXPECT_THAT(root_pass->quad_list,
+                ElementsAre(AllOf(IsAggregatedRenderPassQuad(),
+                                  HasLayerNamespaceId(root_surface_namespace),
+                                  HasLayerId(2u)),
+                            AllOf(IsSolidColorQuad(SkColors::kBlack),
+                                  HasLayerNamespaceId(root_surface_namespace),
+                                  HasLayerId(3u))));
+  }
+}
+
 // This test verifies that the appropriate transform will be applied to a
 // surface embedded by a parent SurfaceDrawQuad marked as
 // stretch_content_to_fill_bounds.

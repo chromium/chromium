@@ -165,6 +165,9 @@ class RenderPassBuilder {
   RenderPassBuilder& SetMaskFilter(const gfx::MaskFilterInfo& mask_filter_info,
                                    bool is_fast_rounded_corner);
 
+  // Sets SharedQuadState::layer_id for the last quad.
+  RenderPassBuilder& SetQuadLayerId(uint32_t layer_id);
+
  private:
   // Appends and returns a new SharedQuadState for quad.
   SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,

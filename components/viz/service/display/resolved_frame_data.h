@@ -144,6 +144,10 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   bool is_valid() const { return valid_; }
   uint64_t previous_frame_index() const { return previous_frame_index_; }
 
+  // Returns namespace ID for the client that submitted this frame. This is used
+  // to deduplicate layer IDs from different clients.
+  uint32_t GetClientNamespaceId() const;
+
   void SetFullDamageForNextAggregation();
 
   // Force release all resources registered with display resource provider. Note

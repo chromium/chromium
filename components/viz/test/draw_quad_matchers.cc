@@ -125,4 +125,16 @@ testing::Matcher<const DrawQuad*> AreContentsOpaque(bool opaque) {
       testing::Eq(opaque)));
 }
 
+testing::Matcher<const DrawQuad*> HasLayerId(uint32_t layer_id) {
+  return HasSharedQuadState(testing::Field(
+      "layer_id", &SharedQuadState::layer_id, testing::Eq(layer_id)));
+}
+
+testing::Matcher<const DrawQuad*> HasLayerNamespaceId(
+    uint32_t layer_namespace_id) {
+  return HasSharedQuadState(testing::Field("layer_namespace_id",
+                                           &SharedQuadState::layer_namespace_id,
+                                           testing::Eq(layer_namespace_id)));
+}
+
 }  // namespace viz

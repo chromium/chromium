@@ -161,6 +161,7 @@ absl::optional<gfx::Rect> CalculateClipRect(
 // - |dest_render_pass| is where the new SharedQuadState will be created.
 SharedQuadState* CopyAndScaleSharedQuadState(
     const SharedQuadState* source_sqs,
+    uint32_t client_namespace_id,
     const gfx::Transform& quad_to_target_transform,
     const gfx::Transform& target_transform,
     const gfx::Rect& quad_layer_rect,
@@ -185,7 +186,9 @@ SharedQuadState* CopyAndScaleSharedQuadState(
       new_transform, quad_layer_rect, visible_quad_layer_rect,
       mask_filter_info_ext.mask_filter_info, new_clip_rect,
       source_sqs->are_contents_opaque, source_sqs->opacity,
-      source_sqs->blend_mode, source_sqs->sorting_context_id);
+      source_sqs->blend_mode, source_sqs->sorting_context_id,
+      source_sqs->layer_id);
+  shared_quad_state->layer_namespace_id = client_namespace_id;
   shared_quad_state->is_fast_rounded_corner =
       mask_filter_info_ext.is_fast_rounded_corner;
   return shared_quad_state;
@@ -195,14 +198,16 @@ SharedQuadState* CopyAndScaleSharedQuadState(
 // into it. See CopyAndScaleSharedQuadState() for full documentation.
 SharedQuadState* CopySharedQuadState(
     const SharedQuadState* source_sqs,
+    uint32_t client_namespace_id,
     const gfx::Transform& target_transform,
     const absl::optional<gfx::Rect>& added_clip_rect,
     const MaskFilterInfoExt& mask_filter_info,
     AggregatedRenderPass* dest_render_pass) {
   return CopyAndScaleSharedQuadState(
-      source_sqs, source_sqs->quad_to_target_transform, target_transform,
-      source_sqs->quad_layer_rect, source_sqs->visible_quad_layer_rect,
-      added_clip_rect, mask_filter_info, dest_render_pass);
+      source_sqs, client_namespace_id, source_sqs->quad_to_target_transform,
+      target_transform, source_sqs->quad_layer_rect,
+      source_sqs->visible_quad_layer_rect, added_clip_rect, mask_filter_info,
+      dest_render_pass);
 }
 
 // Returns true if |resolved_pass| needs full damage. This is because:
@@ -561,6 +566,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
 void SurfaceAggregator::HandleSurfaceQuad(
     const CompositorRenderPass& source_pass,
     const SurfaceDrawQuad* surface_quad,
+    uint32_t embedder_client_namespace_id,
     float parent_device_scale_factor,
     const gfx::Transform& target_transform,
     const absl::optional<gfx::Rect>& added_clip_rect,
@@ -615,9 +621,9 @@ void SurfaceAggregator::HandleSurfaceQuad(
   // SolidColorDrawQuad with the provided default background color. This
   // can happen after a Viz process crash.
   if (!resolved_frame) {
-    EmitDefaultBackgroundColorQuad(surface_quad, target_transform,
-                                   surface_clip_rect, dest_pass,
-                                   mask_filter_info);
+    EmitDefaultBackgroundColorQuad(surface_quad, embedder_client_namespace_id,
+                                   target_transform, surface_clip_rect,
+                                   dest_pass, mask_filter_info);
     return;
   }
 
@@ -638,14 +644,16 @@ void SurfaceAggregator::HandleSurfaceQuad(
     // TODO(crbug.com/1308932): CompositorFrameMetadata to SkColor4f
     EmitGutterQuadsIfNecessary(surface_quad->visible_rect, fallback_rect,
                                surface_quad->shared_quad_state,
-                               target_transform, surface_clip_rect,
+                               embedder_client_namespace_id, target_transform,
+                               surface_clip_rect,
                                fallback_frame.metadata.root_background_color,
                                dest_pass, mask_filter_info);
   }
 
   EmitSurfaceContent(*resolved_frame, parent_device_scale_factor, surface_quad,
-                     target_transform, surface_clip_rect, combined_clip_rect,
-                     dest_pass, ignore_undamaged, damage_rect_in_quad_space,
+                     embedder_client_namespace_id, target_transform,
+                     surface_clip_rect, combined_clip_rect, dest_pass,
+                     ignore_undamaged, damage_rect_in_quad_space,
                      damage_rect_in_quad_space_valid, mask_filter_info);
 }
 
@@ -653,6 +661,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     const ResolvedFrameData& resolved_frame,
     float parent_device_scale_factor,
     const SurfaceDrawQuad* surface_quad,
+    uint32_t embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const absl::optional<gfx::Rect>& added_clip_rect,
     const absl::optional<gfx::Rect>& dest_root_target_clip_rect,
@@ -845,7 +854,8 @@ void SurfaceAggregator::EmitSurfaceContent(
                     mask_filter_info);
   } else {
     auto* shared_quad_state = CopyAndScaleSharedQuadState(
-        surface_quad_sqs, scaled_quad_to_target_transform, target_transform,
+        surface_quad_sqs, embedder_client_namespace_id,
+        scaled_quad_to_target_transform, target_transform,
         gfx::ScaleToEnclosingRect(surface_quad_sqs->quad_layer_rect,
                                   inverse_extra_content_scale_x,
                                   inverse_extra_content_scale_y),
@@ -907,6 +917,7 @@ void SurfaceAggregator::EmitSurfaceContent(
 
 void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
     const SurfaceDrawQuad* surface_quad,
+    uint32_t embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const absl::optional<gfx::Rect>& clip_rect,
     AggregatedRenderPass* dest_pass,
@@ -917,9 +928,9 @@ void SurfaceAggregator::EmitDefaultBackgroundColorQuad(
   // No matching surface was found so create a SolidColorDrawQuad with the
   // SurfaceDrawQuad default background color.
   SkColor4f background_color = surface_quad->default_background_color;
-  auto* shared_quad_state =
-      CopySharedQuadState(surface_quad->shared_quad_state, target_transform,
-                          clip_rect, mask_filter_info, dest_pass);
+  auto* shared_quad_state = CopySharedQuadState(
+      surface_quad->shared_quad_state, embedder_client_namespace_id,
+      target_transform, clip_rect, mask_filter_info, dest_pass);
 
   auto* solid_color_quad =
       dest_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -931,6 +942,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
     const gfx::Rect& primary_rect,
     const gfx::Rect& fallback_rect,
     const SharedQuadState* primary_shared_quad_state,
+    uint32_t embedder_client_namespace_id,
     const gfx::Transform& target_transform,
     const absl::optional<gfx::Rect>& clip_rect,
     SkColor4f background_color,
@@ -950,7 +962,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
                                 primary_rect.height());
 
     SharedQuadState* shared_quad_state = CopyAndScaleSharedQuadState(
-        primary_shared_quad_state,
+        primary_shared_quad_state, embedder_client_namespace_id,
         primary_shared_quad_state->quad_to_target_transform, target_transform,
         right_gutter_rect, right_gutter_rect, clip_rect, mask_filter_info,
         dest_pass);
@@ -967,7 +979,7 @@ void SurfaceAggregator::EmitGutterQuadsIfNecessary(
         primary_rect.height() - fallback_rect.height());
 
     SharedQuadState* shared_quad_state = CopyAndScaleSharedQuadState(
-        primary_shared_quad_state,
+        primary_shared_quad_state, embedder_client_namespace_id,
         primary_shared_quad_state->quad_to_target_transform, target_transform,
         bottom_gutter_rect, bottom_gutter_rect, clip_rect, mask_filter_info,
         dest_pass);
@@ -1221,6 +1233,9 @@ void SurfaceAggregator::CopyQuadsToPass(
 
   size_t quad_index = 0;
   auto& resolved_draw_quads = resolved_pass.draw_quads();
+
+  uint32_t client_namespace_id = resolved_frame.GetClientNamespaceId();
+
   for (auto* quad : source_quad_list) {
     const ResolvedQuadData& quad_data = resolved_draw_quads[quad_index++];
 
@@ -1247,9 +1262,10 @@ void SurfaceAggregator::CopyQuadsToPass(
             quad->shared_quad_state->is_fast_rounded_corner, target_transform);
       }
 
-      HandleSurfaceQuad(source_pass, surface_quad, parent_device_scale_factor,
-                        target_transform, clip_rect, dest_root_target_clip_rect,
-                        dest_pass, ignore_undamaged, &damage_rect_in_quad_space,
+      HandleSurfaceQuad(source_pass, surface_quad, client_namespace_id,
+                        parent_device_scale_factor, target_transform, clip_rect,
+                        dest_root_target_clip_rect, dest_pass, ignore_undamaged,
+                        &damage_rect_in_quad_space,
                         &damage_rect_in_quad_space_valid,
                         new_mask_filter_info_ext);
     } else {
@@ -1260,9 +1276,9 @@ void SurfaceAggregator::CopyQuadsToPass(
                                 quad->shared_quad_state->is_fast_rounded_corner,
                                 target_transform);
         }
-        SharedQuadState* dest_shared_quad_state =
-            CopySharedQuadState(quad->shared_quad_state, target_transform,
-                                clip_rect, new_mask_filter_info_ext, dest_pass);
+        SharedQuadState* dest_shared_quad_state = CopySharedQuadState(
+            quad->shared_quad_state, client_namespace_id, target_transform,
+            clip_rect, new_mask_filter_info_ext, dest_pass);
         // Here we output the optional quad's |per_quad_damage| to the
         // |surface_damage_rect_list_|. Any non per quad damage associated with
         // this |source_pass| will have been added to the
