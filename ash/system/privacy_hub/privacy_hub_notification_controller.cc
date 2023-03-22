@@ -172,6 +172,11 @@ void PrivacyHubNotificationController::UpdateSoftwareSwitchNotification(
 
 void PrivacyHubNotificationController::ShowHardwareSwitchNotification(
     const Sensor sensor) {
+  if (features::IsPrivacyIndicatorsEnabled() ||
+      features::IsVideoConferenceEnabled()) {
+    return;
+  }
+
   switch (sensor) {
     case Sensor::kMicrophone: {
       RemoveSensor(sensor);
@@ -208,6 +213,10 @@ void PrivacyHubNotificationController::RemoveHardwareSwitchNotification(
 
 void PrivacyHubNotificationController::UpdateHardwareSwitchNotification(
     const Sensor sensor) {
+  if (features::IsPrivacyIndicatorsEnabled() ||
+      features::IsVideoConferenceEnabled()) {
+    return;
+  }
   switch (sensor) {
     case Sensor::kMicrophone: {
       microphone_hw_switch_notification_->Update();

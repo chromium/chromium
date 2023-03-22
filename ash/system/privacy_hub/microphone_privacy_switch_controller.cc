@@ -191,8 +191,10 @@ void MicrophonePrivacySwitchController::SetMicrophoneNotificationVisible(
 
   if (visible) {
     if (mic_muted_by_mute_switch_) {
-      privacy_hub_notification_controller->ShowHardwareSwitchNotification(
-          SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+      if (!features::IsPrivacyIndicatorsEnabled()) {
+        privacy_hub_notification_controller->ShowHardwareSwitchNotification(
+            SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+      }
     } else {
       privacy_hub_notification_controller->ShowSoftwareSwitchNotification(
           SensorDisabledNotificationDelegate::Sensor::kMicrophone);
@@ -216,8 +218,10 @@ void MicrophonePrivacySwitchController::UpdateMicrophoneNotification() {
       Shell::Get()->system_notification_controller()->privacy_hub();
 
   if (mic_muted_by_mute_switch_) {
-    privacy_hub_notification_controller->UpdateHardwareSwitchNotification(
-        SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+    if (!features::IsPrivacyIndicatorsEnabled()) {
+      privacy_hub_notification_controller->UpdateHardwareSwitchNotification(
+          SensorDisabledNotificationDelegate::Sensor::kMicrophone);
+    }
   } else {
     privacy_hub_notification_controller->UpdateSoftwareSwitchNotification(
         SensorDisabledNotificationDelegate::Sensor::kMicrophone);

@@ -490,7 +490,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionButton) {
   EXPECT_FALSE(GetSWSwitchNotification());
   message_center::Notification* notification = GetHWSwitchNotification();
 
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(notification);
     return;
   }
@@ -518,7 +518,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, HwMuteNotificationActionBody) {
 
   message_center::Notification* notification = GetHWSwitchNotification();
 
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(notification);
     return;
   }
@@ -552,6 +552,13 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
                   IDS_MICROPHONE_MUTED_NOTIFICATION_ACTION_BUTTON),
               notification->buttons()[0].title);
   }
+
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
+    // The rest of the test tests interaction between the hardware and software
+    // notifications, and the hardware notification is not shown when Video
+    // Conference or Privacy Indicator is enabled.
+    return;
+  }
   // Toggle microphone mute switch and verify that new notification appears
   // with a "Learn more" button.
   SetMicrophoneMuteSwitchState(/*muted=*/true);
@@ -559,7 +566,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
   EXPECT_FALSE(GetSWSwitchNotification());
 
   notification = GetHWSwitchNotification();
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(notification);
   } else {
     ASSERT_TRUE(notification);
@@ -589,19 +596,22 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
     EXPECT_TRUE(GetSWSwitchPopupNotification());
   }
 
-  // Toggle microphone mute switch and verify that toggling mute switch creates
-  // new hardware switch pop up notification and the software switch
+  // Toggle microphone mute hardware switch and verify that toggling mute switch
+  // creates new hardware switch pop up notification and the software switch
   // notification is removed.
   SetMicrophoneMuteSwitchState(/*muted=*/true);
 
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(GetHWSwitchNotification());
     EXPECT_FALSE(GetHWSwitchNotification());
-  } else {
-    // Verify the notification popup is shown.
-    EXPECT_TRUE(GetHWSwitchNotification());
-    EXPECT_TRUE(GetHWSwitchNotification());
+    // The rest of the test is not relevant as the hardware switch notification
+    // is not shown.
+    return;
   }
+
+  // Verify the notification popup is shown.
+  EXPECT_TRUE(GetHWSwitchNotification());
+  EXPECT_TRUE(GetHWSwitchNotification());
 
   // The software switch notification is instantly hidden.
   EXPECT_FALSE(GetSWSwitchNotification());
@@ -621,7 +631,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
   SetMicrophoneMuteSwitchState(/*muted=*/true);
   LaunchApp(u"junior");
 
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(GetHWSwitchNotification());
     EXPECT_FALSE(GetHWSwitchNotification());
   } else {
@@ -653,7 +663,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
   // Add another audio input stream, and verify the notification popup shows.
   LaunchApp(u"junior1");
 
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(GetHWSwitchNotification());
     EXPECT_FALSE(GetHWSwitchPopupNotification());
   } else {
@@ -670,7 +680,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
   CloseApp(u"junior1");
 
   // Verify that notification popup is not reshown.
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(GetHWSwitchNotification());
   } else {
     EXPECT_TRUE(GetHWSwitchNotification());
@@ -679,7 +689,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest,
 
   // Adding another stream shows a popup again.
   LaunchApp(u"rose");
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(GetHWSwitchNotification());
     EXPECT_FALSE(GetHWSwitchPopupNotification());
   } else {
@@ -773,7 +783,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, NotificationText) {
 
   // Toggle the hw switch.
   SetMicrophoneMuteSwitchState(/*muted=*/true);
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(GetHWSwitchNotification());
     EXPECT_FALSE(GetHWSwitchPopupNotification());
   } else {
@@ -852,7 +862,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   LaunchApp(app1);
 
   notification_ptr = GetHWSwitchNotification();
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(notification_ptr);
   } else {
     ASSERT_TRUE(notification_ptr);
@@ -867,7 +877,7 @@ TEST_P(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   CloseApp(app2);
 
   notification_ptr = GetHWSwitchNotification();
-  if (IsVideoConferenceEnabled()) {
+  if (IsVideoConferenceEnabled() || IsPrivacyIndicatorsEnabled()) {
     EXPECT_FALSE(notification_ptr);
   } else {
     ASSERT_TRUE(notification_ptr);
