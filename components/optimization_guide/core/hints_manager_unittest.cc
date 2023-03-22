@@ -476,6 +476,9 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+ protected:
+  std::unique_ptr<HintsManager> hints_manager_;
+
  private:
   void WriteConfigToFile(const proto::Configuration& config,
                          const base::FilePath& filePath) {
@@ -489,7 +492,6 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OptimizationGuideStore> hint_store_;
   std::unique_ptr<FakeTabUrlProvider> tab_url_provider_;
-  std::unique_ptr<HintsManager> hints_manager_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -1677,17 +1679,35 @@ class HintsManagerFetchingTest : public HintsManagerTest {
             {
                 features::kRemoteOptimizationGuideFetching,
                 {{"max_concurrent_page_navigation_fetches", "2"},
-                 {"max_concurrent_batch_update_fetches", "2"}},
+                 {"max_concurrent_batch_update_fetches",
+                  base::NumberToString(batch_concurrency_limit_)}},
             },
         },
         {features::kRemoteOptimizationGuideFetchingAnonymousDataConsent});
   }
 
+  size_t batch_concurrency_limit() const { return batch_concurrency_limit_; }
+
  private:
+  size_t batch_concurrency_limit_ = 2;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_list_;
 };
+
+TEST_F(HintsManagerFetchingTest, BatchUpdateFetcherCleanup) {
+  EXPECT_GT(batch_concurrency_limit(), 1u);
+  for (size_t i = 0; i < batch_concurrency_limit() * 2; ++i) {
+    auto request_id_and_fetcher =
+        hints_manager_->CreateAndTrackBatchUpdateHintsFetcher();
+    // Now run clean up on this id and expect LRU size to be 0.
+    hints_manager_->CleanUpBatchUpdateHintsFetcher(
+        request_id_and_fetcher.first);
+    EXPECT_EQ(0u, hints_manager_->batch_update_hints_fetchers_.size());
+  }
+  EXPECT_EQ(hints_manager()->num_batch_update_hints_fetches_initiated(),
+            int(batch_concurrency_limit() * 2));
+}
 
 TEST_F(HintsManagerFetchingTest,
        HintsFetchNotAllowedIfFeatureIsEnabledButUserNotAllowed) {

@@ -1206,13 +1206,12 @@ HintsManager::CreateAndTrackBatchUpdateHintsFetcher() {
   std::unique_ptr<HintsFetcher> hints_fetcher =
       hints_fetcher_factory_->BuildInstance(optimization_guide_logger_);
   HintsFetcher* hints_fetcher_ptr = hints_fetcher.get();
-  batch_update_hints_fetchers_.Put(batch_update_hints_fetcher_request_id_++,
-                                   std::move(hints_fetcher));
+  auto it = batch_update_hints_fetchers_.Put(
+      batch_update_hints_fetcher_request_id_++, std::move(hints_fetcher));
   UMA_HISTOGRAM_COUNTS_100(
       "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches",
       batch_update_hints_fetchers_.size());
-  return std::make_pair(batch_update_hints_fetcher_request_id_,
-                        hints_fetcher_ptr);
+  return std::make_pair(it->first, hints_fetcher_ptr);
 }
 
 void HintsManager::CleanUpBatchUpdateHintsFetcher(int32_t request_id) {
