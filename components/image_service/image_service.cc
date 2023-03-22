@@ -149,10 +149,10 @@ ImageService::ImageService(
     optimization_guide::NewOptimizationGuideDecider* opt_guide,
     syncer::SyncService* sync_service)
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
-      personalized_data_collection_consent_helper_(
+      history_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedDataCollectionConsentHelper(sync_service)),
-      bookmarks_data_collection_consent_helper_(
+      bookmarks_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedBookmarksDataCollectionConsentHelper(
                   sync_service)) {
@@ -171,23 +171,6 @@ base::WeakPtr<ImageService> ImageService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool ImageService::HasPermissionToFetchImage(mojom::ClientId client_id) const {
-  switch (client_id) {
-    case mojom::ClientId::Journeys:
-    case mojom::ClientId::JourneysSidePanel:
-    case mojom::ClientId::NtpQuests: {
-      return personalized_data_collection_consent_helper_ &&
-             personalized_data_collection_consent_helper_->IsEnabled();
-    }
-    case mojom::ClientId::NtpRealbox:
-      // TODO(b/244507194): Figure out consent story for NTP realbox case.
-      return false;
-    case mojom::ClientId::Bookmarks:
-      return bookmarks_data_collection_consent_helper_ &&
-             bookmarks_data_collection_consent_helper_->IsEnabled();
-  }
-}
-
 void ImageService::FetchImageFor(mojom::ClientId client_id,
                                  const GURL& page_url,
                                  const mojom::Options& options,
@@ -198,7 +181,36 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
     return std::move(callback).Run(GURL());
   }
 
-  if (!HasPermissionToFetchImage(client_id)) {
+  GetConsentToFetchImage(
+      client_id,
+      base::BindOnce(&ImageService::OnConsentResult, weak_factory_.GetWeakPtr(),
+                     client_id, page_url, options, std::move(callback)));
+}
+
+void ImageService::GetConsentToFetchImage(
+    mojom::ClientId client_id,
+    base::OnceCallback<void(bool)> callback) {
+  switch (client_id) {
+    case mojom::ClientId::Journeys:
+    case mojom::ClientId::JourneysSidePanel:
+    case mojom::ClientId::NtpQuests: {
+      return history_consent_throttle_.EnqueueRequest(std::move(callback));
+    }
+    case mojom::ClientId::NtpRealbox:
+      // TODO(b/244507194): Figure out consent story for NTP realbox case.
+      return std::move(callback).Run(false);
+    case mojom::ClientId::Bookmarks: {
+      return bookmarks_consent_throttle_.EnqueueRequest(std::move(callback));
+    }
+  }
+}
+
+void ImageService::OnConsentResult(mojom::ClientId client_id,
+                                   const GURL& page_url,
+                                   const mojom::Options& options,
+                                   ResultCallback callback,
+                                   bool consent_is_enabled) {
+  if (!consent_is_enabled) {
     return std::move(callback).Run(GURL());
   }
 

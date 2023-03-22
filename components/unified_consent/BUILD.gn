@@ -4,6 +4,8 @@
 
 static_library("unified_consent") {
   sources = [
+    "consent_throttle.cc",
+    "consent_throttle.h",
     "pref_names.cc",
     "pref_names.h",
     "unified_consent_metrics.cc",
@@ -27,6 +29,7 @@ static_library("unified_consent") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "consent_throttle_unittest.cc",
     "unified_consent_service_unittest.cc",
     "url_keyed_data_collection_consent_helper_unittest.cc",
   ]

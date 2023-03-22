@@ -20,6 +20,12 @@ namespace unified_consent {
 // for URL-keyed data collection.
 class UrlKeyedDataCollectionConsentHelper {
  public:
+  enum class State {
+    kInitializing,
+    kDisabled,
+    kEnabled,
+  };
+
   class Observer {
    public:
     // Called when the state of the URL-keyed data collection changes.
@@ -63,9 +69,14 @@ class UrlKeyedDataCollectionConsentHelper {
 
   virtual ~UrlKeyedDataCollectionConsentHelper();
 
+  // Returns the state of the consent helper. To throttle requests until after
+  // initialization, use the `ConsentThrottle` class.
+  virtual State GetConsentState() = 0;
+
   // Returns true if the user has consented for URL keyed anonymized data
-  // collection.
-  virtual bool IsEnabled() = 0;
+  // collection. Note, this is a simplified form of `GetConsentState()` where
+  // kInitializing and kDisabled are both considered NOT enabled.
+  bool IsEnabled();
 
   // Methods to register or remove observers.
   void AddObserver(Observer* observer);

@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/image_service/image_service.h"
+
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/image_service/features.h"
 #include "components/image_service/metrics_util.h"
@@ -33,6 +37,8 @@ class ImageServiceTestOptGuide : public TestNewOptimizationGuideDecider {
       const base::flat_set<proto::OptimizationType>& optimization_types,
       proto::RequestContext request_context,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback) override {
+    requests_received_++;
+
     // For this test, we just want to store the parameters which were used in
     // the call, and the test will manually send a response to `callback`.
     on_demand_call_urls_ = urls;
@@ -40,6 +46,8 @@ class ImageServiceTestOptGuide : public TestNewOptimizationGuideDecider {
     on_demand_call_request_context_ = request_context;
     on_demand_call_callback_ = std::move(callback);
   }
+
+  size_t requests_received_ = 0;
 
   std::vector<GURL> on_demand_call_urls_;
   base::flat_set<proto::OptimizationType> on_demand_call_optimization_types_;
@@ -69,11 +77,25 @@ class ImageServiceTest : public testing::Test {
         nullptr, test_opt_guide_.get(), test_sync_service_.get());
   }
 
+  bool GetConsentToFetchImageAwaitResult(mojom::ClientId client_id) {
+    bool out_consent = false;
+    base::RunLoop loop;
+    image_service_->GetConsentToFetchImage(
+        client_id, base::BindLambdaForTesting([&](bool result) {
+          out_consent = result;
+          loop.Quit();
+        }));
+    loop.Run();
+    return out_consent;
+  }
+
   ImageServiceTest(const ImageServiceTest&) = delete;
   ImageServiceTest& operator=(const ImageServiceTest&) = delete;
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<optimization_guide::ImageServiceTestOptGuide> test_opt_guide_;
   std::unique_ptr<syncer::TestSyncService> test_sync_service_;
@@ -88,28 +110,29 @@ void StoreImageUrlResponse(GURL* out_image_url, const GURL& image_url) {
   *out_image_url = image_url;
 }
 
+void AppendResponse(std::vector<GURL>* responses, const GURL& image_url) {
+  DCHECK(responses);
+  responses->push_back(image_url);
+}
+
 TEST_F(ImageServiceTest, RegisteredSalientImageType) {
   ASSERT_EQ(test_opt_guide_->registered_optimization_types().size(), 1U);
   EXPECT_EQ(test_opt_guide_->registered_optimization_types()[0],
             optimization_guide::proto::SALIENT_IMAGE);
 }
 
-TEST_F(ImageServiceTest, HasPermissionToFetchImage) {
+TEST_F(ImageServiceTest, GetConsentToFetchImage) {
   test_sync_service_->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/syncer::UserSelectableTypeSet());
   test_sync_service_->FireStateChanged();
 
+  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
   EXPECT_FALSE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::Journeys));
-  EXPECT_FALSE(image_service_->HasPermissionToFetchImage(
-      mojom::ClientId::JourneysSidePanel));
-  EXPECT_FALSE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::NtpRealbox));
-  EXPECT_FALSE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::NtpQuests));
-  EXPECT_FALSE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::Bookmarks));
+      GetConsentToFetchImageAwaitResult(mojom::ClientId::JourneysSidePanel));
+  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpRealbox));
+  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
+  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
 
   test_sync_service_->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -117,16 +140,62 @@ TEST_F(ImageServiceTest, HasPermissionToFetchImage) {
           syncer::UserSelectableType::kHistory));
   test_sync_service_->FireStateChanged();
 
+  EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Journeys));
   EXPECT_TRUE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::Journeys));
-  EXPECT_TRUE(image_service_->HasPermissionToFetchImage(
-      mojom::ClientId::JourneysSidePanel));
-  EXPECT_FALSE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::NtpRealbox));
-  EXPECT_TRUE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::NtpQuests));
-  EXPECT_FALSE(
-      image_service_->HasPermissionToFetchImage(mojom::ClientId::Bookmarks));
+      GetConsentToFetchImageAwaitResult(mojom::ClientId::JourneysSidePanel));
+  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpRealbox));
+  EXPECT_TRUE(GetConsentToFetchImageAwaitResult(mojom::ClientId::NtpQuests));
+  EXPECT_FALSE(GetConsentToFetchImageAwaitResult(mojom::ClientId::Bookmarks));
+}
+
+TEST_F(ImageServiceTest, SyncInitialization) {
+  // Put Sync into the initializing state.
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+  test_sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kHistory));
+  test_sync_service_->FireStateChanged();
+
+  mojom::Options options;
+  options.suggest_images = false;
+  options.optimization_guide_images = true;
+
+  std::vector<GURL> responses;
+  image_service_->FetchImageFor(mojom::ClientId::Journeys,
+                                GURL("https://page-url.com"), options,
+                                base::BindOnce(&AppendResponse, &responses));
+  EXPECT_EQ(test_opt_guide_->requests_received_, 0U)
+      << "Expect no immediate requests, because the consent should be "
+         "throttling it.";
+  EXPECT_TRUE(responses.empty());
+
+  task_environment.FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(test_opt_guide_->requests_received_, 0U)
+      << "After 10 seconds, the throttle should have killed the request, never "
+         "passing it to the backend.";
+  ASSERT_EQ(responses.size(), 1U);
+  EXPECT_EQ(responses[0], GURL());
+
+  // Now send another request.
+  image_service_->FetchImageFor(mojom::ClientId::Journeys,
+                                GURL("https://page-url.com"), options,
+                                base::BindOnce(&AppendResponse, &responses));
+  task_environment.FastForwardBy(base::Seconds(3));
+  EXPECT_EQ(test_opt_guide_->requests_received_, 0U) << "Still throttled.";
+
+  // Now set the test sync service to active.
+  test_sync_service_->SetTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(test_opt_guide_->requests_received_, 1U)
+      << "The test backend should immediately get the request after Sync "
+         "activates, and the consent throttle unthrottles.";
+
+  // This test only covers sync unthrottling, so we don't care about fulfilling
+  // the actual request. That's covered by
+  // OptimizationGuideSalientImagesEndToEnd.
 }
 
 TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
