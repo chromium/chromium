@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
@@ -61,6 +63,25 @@ bool IsDownloadURLValid(const GURL& url) {
          url.DomainIs(ime::kGoogleKeyboardDownloadDomain);
 }
 
+bool ShouldUseUpdatedDownloadLogic() {
+  return base::FeatureList::IsEnabled(features::kImeDownloaderUpdate);
+}
+
+std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(const GURL& url) {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = url;
+  resource_request->load_flags =
+      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
+  // Disable cookies for this request.
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto url_loader = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  // TODO(https://crbug.com/971954): Allow the client to specify the timeout.
+  url_loader->SetTimeoutDuration(base::Minutes(10));
+  return url_loader;
+}
+
 }  // namespace
 
 ImeServiceConnector::ImeServiceConnector(Profile* profile)
@@ -72,33 +93,37 @@ void ImeServiceConnector::DownloadImeFileTo(
     const GURL& url,
     const base::FilePath& file_path,
     DownloadImeFileToCallback callback) {
-  // For now, we don't allow the client to download multi files at same time.
-  // Downloading request will be aborted and return empty before the current
-  // downloading task exits.
-  // TODO(https://crbug.com/971954): Support multi downloads.
   // Validate url and file_path, return an empty file path if not.
-  if (url_loader_ || !IsDownloadURLValid(url) ||
-      !IsDownloadPathValid(file_path)) {
+  if (!IsDownloadURLValid(url) || !IsDownloadPathValid(file_path)) {
     base::FilePath empty_path;
     std::move(callback).Run(empty_path);
     return;
   }
 
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = url;
-  resource_request->load_flags =
-      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  // Disable cookies for this request.
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  if (ShouldUseUpdatedDownloadLogic()) {
+    base::FilePath full_path = profile_->GetPath().Append(file_path);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ImeServiceConnector::MaybeTriggerDownload,
+                                  weak_ptr_factory_.GetWeakPtr(), url,
+                                  full_path, std::move(callback)));
+    return;
+  }
 
-  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                 traffic_annotation);
-  // TODO(https://crbug.com/971954): Allow the client to specify the timeout.
-  url_loader_->SetTimeoutDuration(base::Minutes(10));
+  // For now, we don't allow the client to download multi files at same time.
+  // Downloading request will be aborted and return empty before the current
+  // downloading task exits.
+  // TODO(https://crbug.com/971954): Support multi downloads.
+  // Validate url and file_path, return an empty file path if not.
+  if (url_loader_) {
+    base::FilePath empty_path;
+    std::move(callback).Run(empty_path);
+    return;
+  }
 
   // Download the language module into a preconfigured ime folder of current
   // user's home which is allowed in IME service's sandbox.
   base::FilePath full_path = profile_->GetPath().Append(file_path);
+  url_loader_ = CreateUrlLoader(url);
   url_loader_->DownloadToFile(
       url_loader_factory_.get(),
       base::BindOnce(&ImeServiceConnector::OnFileDownloadComplete,
@@ -130,6 +155,44 @@ void ImeServiceConnector::OnFileDownloadComplete(
   std::move(client_callback).Run(path);
   url_loader_.reset();
   return;
+}
+
+void ImeServiceConnector::MaybeTriggerDownload(
+    GURL url,
+    base::FilePath file_path,
+    DownloadImeFileToCallback callback) {
+  // Do not trigger a new download if one is already in progress for the same
+  // url. Store the callback given and run it when the current download
+  // finishes.
+  if (url_loader_ && active_request_url_ && active_request_url_ == url.spec()) {
+    download_callbacks_.emplace_back(std::move(callback));
+    return;
+  }
+
+  // Reset the download context before triggering a new download request.
+  active_request_url_ = url.spec();
+  download_callbacks_.clear();
+  download_callbacks_.emplace_back(std::move(callback));
+  url_loader_ = CreateUrlLoader(url);
+  url_loader_->DownloadToFile(
+      url_loader_factory_.get(),
+      base::BindOnce(&ImeServiceConnector::HandleDownloadResponse,
+                     weak_ptr_factory_.GetWeakPtr()),
+      file_path);
+}
+
+void ImeServiceConnector::HandleDownloadResponse(base::FilePath file_path) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ImeServiceConnector::NotifyAllDownloadListeners,
+                     weak_ptr_factory_.GetWeakPtr(), file_path));
+}
+
+void ImeServiceConnector::NotifyAllDownloadListeners(base::FilePath file_path) {
+  while (!download_callbacks_.empty()) {
+    std::move(download_callbacks_.back()).Run(file_path);
+    download_callbacks_.pop_back();
+  }
 }
 
 }  // namespace input_method

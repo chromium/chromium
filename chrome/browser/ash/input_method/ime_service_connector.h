@@ -7,6 +7,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -45,6 +46,13 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
                               base::FilePath path);
 
  private:
+  void MaybeTriggerDownload(GURL url,
+                            base::FilePath file_path,
+                            DownloadImeFileToCallback callback);
+
+  void HandleDownloadResponse(base::FilePath file_path);
+  void NotifyAllDownloadListeners(base::FilePath file_path);
+
   Profile* const profile_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -52,10 +60,18 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   // The current request in progress, or NULL.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
+  // The url of the current in progress request.
+  absl::optional<std::string> active_request_url_;
+
+  // Callbacks collected for simultaneous requests for the same download url.
+  std::vector<DownloadImeFileToCallback> download_callbacks_;
+
   // Persistent connection to the IME service process.
   mojo::Remote<ime::mojom::ImeService> remote_service_;
   mojo::Receiver<ime::mojom::PlatformAccessProvider> platform_access_receiver_{
       this};
+
+  base::WeakPtrFactory<ImeServiceConnector> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method
