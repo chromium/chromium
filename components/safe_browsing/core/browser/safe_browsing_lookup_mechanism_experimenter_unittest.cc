@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -28,10 +29,30 @@ MATCHER_P(Matches, threat_type, "") {
 
 class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
  public:
-  explicit MockSafeBrowsingLookupMechanism(bool is_safe_synchronously,
-                                           SBThreatType threat_type,
-                                           base::TimeDelta time_to_completion,
-                                           bool is_url_real_time)
+  // Optional details that can be passed through to the lookup mechanism used
+  // for url-level validation test cases.
+  struct UrlLevelValidationDetails {
+    UrlLevelValidationDetails(
+        absl::optional<SBThreatType> locally_cached_results_threat_type,
+        bool real_time_request_failed,
+        absl::optional<bool> matched_high_confidence_allowlist)
+        : locally_cached_results_threat_type(
+              locally_cached_results_threat_type),
+          real_time_request_failed(real_time_request_failed),
+          matched_high_confidence_allowlist(matched_high_confidence_allowlist) {
+    }
+
+    absl::optional<SBThreatType> locally_cached_results_threat_type;
+    bool real_time_request_failed = false;
+    absl::optional<bool> matched_high_confidence_allowlist;
+  };
+
+  explicit MockSafeBrowsingLookupMechanism(
+      bool is_safe_synchronously,
+      SBThreatType threat_type,
+      base::TimeDelta time_to_completion,
+      bool is_url_real_time,
+      absl::optional<UrlLevelValidationDetails> url_level_validation_details)
       : SafeBrowsingLookupMechanism(
             GURL(),
             SBThreatTypeSet({}),
@@ -41,7 +62,21 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
         is_safe_synchronously_(is_safe_synchronously),
         time_to_completion_(time_to_completion),
         threat_type_(threat_type),
-        is_url_real_time_(is_url_real_time) {}
+        is_url_real_time_(is_url_real_time),
+        locally_cached_results_threat_type_(
+            url_level_validation_details.has_value()
+                ? url_level_validation_details.value()
+                      .locally_cached_results_threat_type
+                : absl::nullopt),
+        real_time_request_failed_(
+            url_level_validation_details.has_value()
+                ? url_level_validation_details.value().real_time_request_failed
+                : false),
+        matched_high_confidence_allowlist_(
+            url_level_validation_details.has_value()
+                ? url_level_validation_details.value()
+                      .matched_high_confidence_allowlist
+                : false) {}
 
  private:
   StartCheckResult StartCheckInternal() override {
@@ -55,13 +90,15 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
                   url_, threat_type_, ThreatMetadata(),
                   /*is_from_url_real_time_check=*/is_url_real_time_,
                   /*url_real_time_lookup_response=*/nullptr,
-                  /*locally_cached_results_threat_type=*/absl::nullopt,
-                  /*real_time_request_failed=*/false)),
+                  /*locally_cached_results_threat_type=*/
+                  locally_cached_results_threat_type_,
+                  /*real_time_request_failed=*/real_time_request_failed_)),
           time_to_completion_);
     }
     return StartCheckResult(is_safe_synchronously_,
                             /*did_check_url_real_time_allowlist=*/false,
-                            /*matched_high_confidence_allowlist=*/false);
+                            /*matched_high_confidence_allowlist=*/
+                            matched_high_confidence_allowlist_);
   }
 
   // StartCheckInternal will return this value. Also, if it is true, the
@@ -77,8 +114,40 @@ class MockSafeBrowsingLookupMechanism : public SafeBrowsingLookupMechanism {
   // Whether this is the URL real-time mechanism. Used for the |CompleteCheck|
   // callback.
   bool is_url_real_time_;
+  // Passed into |CompleteCheck| callback.
+  absl::optional<SBThreatType> locally_cached_results_threat_type_;
+  // Passed into |CompleteCheck| callback.
+  bool real_time_request_failed_;
+  // Returned with |StartCheckInternal|.
+  absl::optional<bool> matched_high_confidence_allowlist_;
 
   base::WeakPtrFactory<MockSafeBrowsingLookupMechanism> weak_factory_{this};
+};
+
+class MockPingManager : public PingManager {
+ public:
+  MockPingManager()
+      : PingManager(safe_browsing::GetTestV4ProtocolConfig(),
+                    nullptr,
+                    nullptr,
+                    base::NullCallback(),
+                    nullptr,
+                    base::SequencedTaskRunner::GetCurrentDefault(),
+                    base::NullCallback(),
+                    base::NullCallback()) {}
+  ReportThreatDetailsResult ReportThreatDetails(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      bool attach_default_data = true) override {
+    // Any experimenter calls into PingManager should never attach default data.
+    DCHECK(!attach_default_data);
+    report_ = std::move(report);
+    return ReportThreatDetailsResult::SUCCESS;
+  }
+  ClientSafeBrowsingReportRequest* GetReport() { return report_.get(); }
+  void ClearReport() { report_ = nullptr; }
+
+ private:
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report_;
 };
 
 struct EligibilityConfig {
@@ -156,10 +225,11 @@ class PretendCheckerOnIO {
  public:
   explicit PretendCheckerOnIO(base::TimeDelta time_to_will_process_response,
                               base::TimeDelta time_to_self_destruct,
-                              bool is_prefetch) {
+                              bool is_prefetch,
+                              base::WeakPtr<PingManager> ping_manager_on_ui) {
     mechanism_experimenter_ =
         base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
-            is_prefetch, /*ping_manager_on_ui=*/nullptr,
+            is_prefetch, ping_manager_on_ui,
             base::SequencedTaskRunner::GetCurrentDefault());
     safe_browsing_url_checker_impl_ =
         std::make_unique<PretendSafeBrowsingUrlCheckerImpl>(
@@ -200,6 +270,10 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
  protected:
   using UnknownNoYesResult = Experimenter::ExperimentUnknownNoYesResult;
   using AllInOneResult = Experimenter::ExperimentAllInOneResult;
+  using UrlLevelValidationDetails =
+      MockSafeBrowsingLookupMechanism::UrlLevelValidationDetails;
+  using ExperimentThreatType = ClientSafeBrowsingReportRequest::
+      HashRealTimeExperimentDetails::ExperimentThreatType;
 
   struct DelayedResponseInfo {
     std::vector<UnknownNoYesResult> urt_hpd_hprt_delayed_responses;
@@ -217,6 +291,11 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         url_real_time_result, hash_database_result, hash_real_time_result);
   }
 
+  ExperimentThreatType GetExperimentDetailsThreatType(
+      absl::optional<SBThreatType> threat_type) {
+    return Experimenter::GetExperimentDetailsThreatType(threat_type);
+  }
+
   void RunChecks(
       scoped_refptr<Experimenter> mechanism_experimenter,
       size_t safe_browsing_url_checker_index,
@@ -225,8 +304,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       std::unique_ptr<SafeBrowsingLookupMechanism> hash_real_time_mechanism,
       CompleteCheckCallbackWithTimeout url_real_time_result_callback) {
     mechanism_experimenter->RunChecksInternal(
-        safe_browsing_url_checker_index, std::move(url_real_time_mechanism),
-        std::move(hash_database_mechanism), std::move(hash_real_time_mechanism),
+        safe_browsing_url_checker_index, GURL("http://some.url.com/"),
+        std::move(url_real_time_mechanism), std::move(hash_database_mechanism),
+        std::move(hash_real_time_mechanism),
         std::move(url_real_time_result_callback));
   }
   void CreateAndRunChecks(
@@ -236,19 +316,25 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       std::vector<base::TimeDelta> urt_hpd_hprt_times_taken,
       std::vector<SBThreatType> urt_hpd_hprt_threat_types,
       CompleteCheckCallbackWithTimeout url_real_time_result_callback,
-      bool immediately_resolve_eligibility) {
+      bool immediately_resolve_eligibility,
+      std::vector<absl::optional<UrlLevelValidationDetails>>
+          urt_hpd_hprt_url_level_validation_details) {
     DCHECK(urt_hpd_hprt_times_taken[1] != base::Seconds(0) ||
            urt_hpd_hprt_threat_types[1] == SB_THREAT_TYPE_SAFE);
     RunChecks(
         mechanism_experimenter, safe_browsing_url_checker_index,
-        CreateUrlRealTimeMechanism(urt_hpd_hprt_threat_types[0],
-                                   urt_hpd_hprt_times_taken[0]),
+        CreateUrlRealTimeMechanism(
+            urt_hpd_hprt_threat_types[0], urt_hpd_hprt_times_taken[0],
+            urt_hpd_hprt_url_level_validation_details[0]),
         urt_hpd_hprt_times_taken[1] == base::Seconds(0)
-            ? CreateSyncHashDatabaseMechanism()
-            : CreateAsyncHashDatabaseMechanism(urt_hpd_hprt_threat_types[1],
-                                               urt_hpd_hprt_times_taken[1]),
-        CreateHashRealTimeMechanism(urt_hpd_hprt_threat_types[2],
-                                    urt_hpd_hprt_times_taken[2]),
+            ? CreateSyncHashDatabaseMechanism(
+                  urt_hpd_hprt_url_level_validation_details[1])
+            : CreateAsyncHashDatabaseMechanism(
+                  urt_hpd_hprt_threat_types[1], urt_hpd_hprt_times_taken[1],
+                  urt_hpd_hprt_url_level_validation_details[1]),
+        CreateHashRealTimeMechanism(
+            urt_hpd_hprt_threat_types[2], urt_hpd_hprt_times_taken[2],
+            urt_hpd_hprt_url_level_validation_details[2]),
         std::move(url_real_time_result_callback));
 
     if (immediately_resolve_eligibility) {
@@ -266,8 +352,8 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     // also control its own lifetime via |time_to_self_destruct|.
     auto* checker_on_io = new PretendCheckerOnIO(
         /*time_to_will_process_response=*/will_process_response_time_taken,
-        /*time_to_self_destruct=*/checker_on_io_self_destruct_time,
-        is_prefetch);
+        /*time_to_self_destruct=*/checker_on_io_self_destruct_time, is_prefetch,
+        ping_manager_->GetWeakPtr());
     url_checker_delegate_->SetEligibilityConfigs(
         checker_on_io->GetExperimenter(), eligibility_configs);
     return checker_on_io->GetExperimenter();
@@ -286,7 +372,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       base::TimeDelta checker_on_io_self_destruct_time,
       CompleteCheckCallbackWithTimeout url_real_time_result_callback,
       absl::optional<std::vector<EligibilityConfig>> eligibility_configs,
-      bool is_prefetch) {
+      bool is_prefetch,
+      std::vector<absl::optional<UrlLevelValidationDetails>>
+          urt_hpd_hprt_url_level_validation_details) {
     auto mechanism_experimenter = SetUpExperimenter(
         will_process_response_time_taken, checker_on_io_self_destruct_time,
         eligibility_configs, is_prefetch);
@@ -294,40 +382,48 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         mechanism_experimenter, /*safe_browsing_url_checker_index=*/0,
         urt_hpd_hprt_times_taken, urt_hpd_hprt_threat_types,
         std::move(url_real_time_result_callback),
-        /*immediately_resolve_eligibility=*/!eligibility_configs.has_value());
+        /*immediately_resolve_eligibility=*/!eligibility_configs.has_value(),
+        urt_hpd_hprt_url_level_validation_details);
     return mechanism_experimenter;
   }
 
   std::unique_ptr<MockSafeBrowsingLookupMechanism> CreateUrlRealTimeMechanism(
       SBThreatType threat_type,
-      base::TimeDelta time_to_completion) {
+      base::TimeDelta time_to_completion,
+      absl::optional<UrlLevelValidationDetails> url_level_validation_details) {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/false, /*threat_type=*/threat_type,
-        /*time_to_completion=*/time_to_completion, /*is_url_real_time=*/true);
+        /*time_to_completion=*/time_to_completion, /*is_url_real_time=*/true,
+        url_level_validation_details);
   }
   std::unique_ptr<MockSafeBrowsingLookupMechanism> CreateHashRealTimeMechanism(
       SBThreatType threat_type,
-      base::TimeDelta time_to_completion) {
+      base::TimeDelta time_to_completion,
+      absl::optional<UrlLevelValidationDetails> url_level_validation_details) {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/false, /*threat_type=*/threat_type,
-        /*time_to_completion=*/time_to_completion, /*is_url_real_time=*/false);
+        /*time_to_completion=*/time_to_completion, /*is_url_real_time=*/false,
+        url_level_validation_details);
   }
   std::unique_ptr<MockSafeBrowsingLookupMechanism>
-  CreateSyncHashDatabaseMechanism() {
+  CreateSyncHashDatabaseMechanism(
+      absl::optional<UrlLevelValidationDetails> url_level_validation_details) {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/true,
         /*threat_type=*/SB_THREAT_TYPE_SAFE,       // not used
         /*time_to_completion=*/base::TimeDelta(),  // not used
-        /*is_url_real_time=*/false);
+        /*is_url_real_time=*/false, url_level_validation_details);
   }
   std::unique_ptr<MockSafeBrowsingLookupMechanism>
-  CreateAsyncHashDatabaseMechanism(SBThreatType threat_type,
-                                   base::TimeDelta time_to_completion) {
+  CreateAsyncHashDatabaseMechanism(
+      SBThreatType threat_type,
+      base::TimeDelta time_to_completion,
+      absl::optional<UrlLevelValidationDetails> url_level_validation_details) {
     return std::make_unique<MockSafeBrowsingLookupMechanism>(
         /*is_safe_synchronously=*/false,
         /*threat_type=*/threat_type,
         /*time_to_completion=*/time_to_completion,
-        /*is_url_real_time=*/false);
+        /*is_url_real_time=*/false, url_level_validation_details);
   }
 
   void VerifyNoLogs() {
@@ -529,7 +625,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         /*urt_hpd_hprt_threat_types=*/
         {SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE},
         will_process_response_time_taken, checker_on_io_self_destruct_time,
-        url_real_time_result_callback.Get(), eligibility_configs, is_prefetch);
+        url_real_time_result_callback.Get(), eligibility_configs, is_prefetch,
+        /*urt_hpd_hprt_url_level_validation_details=*/
+        {absl::nullopt, absl::nullopt, absl::nullopt});
 
     task_environment_.FastForwardUntilNoTasksRemain();
 
@@ -565,7 +663,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         will_process_response_time_taken, checker_on_io_self_destruct_time,
         url_real_time_result_callback.Get(),
         /*eligibility_configs=*/absl::nullopt,
-        /*is_prefetch=*/false);
+        /*is_prefetch=*/false,
+        /*urt_hpd_hprt_url_level_validation_details=*/
+        {absl::nullopt, absl::nullopt, absl::nullopt});
 
     task_environment_.FastForwardUntilNoTasksRemain();
 
@@ -685,7 +785,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
             &SafeBrowsingLookupMechanismExperimenterTest::CallbackForRedirects,
             base::Unretained(this), experimenter, urt_hpd_hprt_times_taken,
             urt_hpd_hprt_threat_types, eligibility_configs, index + 1),
-        /*immediately_resolve_eligibility=*/!eligibility_configs.has_value());
+        /*immediately_resolve_eligibility=*/!eligibility_configs.has_value(),
+        /*urt_hpd_hprt_url_level_validation_details=*/
+        {absl::nullopt, absl::nullopt, absl::nullopt});
     if (eligibility_configs.has_value()) {
       url_checker_delegate_->SetEligibilityConfig(
           experimenter, eligibility_configs.value()[index]);
@@ -747,7 +849,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
                          eligibility_configs,
                          /*index=*/1),
           /*immediately_resolve_eligibility=*/
-          !eligibility_configs.has_value());
+          !eligibility_configs.has_value(),
+          /*urt_hpd_hprt_url_level_validation_details=*/
+          {absl::nullopt, absl::nullopt, absl::nullopt});
     }
     task_environment_.FastForwardUntilNoTasksRemain();
 
@@ -821,7 +925,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         urt_hpd_hprt_times_taken, urt_hpd_hprt_threat_types,
         will_process_response_time_taken, checker_on_io_self_destruct_time,
         url_real_time_result_callback.Get(),
-        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false);
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false,
+        /*urt_hpd_hprt_url_level_validation_details=*/
+        {absl::nullopt, absl::nullopt, absl::nullopt});
     task_environment_.FastForwardUntilNoTasksRemain();
     auto warning_threat_types = {
         SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_MALWARE,
@@ -867,7 +973,9 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
          SB_THREAT_TYPE_URL_PHISHING},
         will_process_response_time_taken, checker_on_io_self_destruct_time,
         url_real_time_result_callback.Get(),
-        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false);
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false,
+        /*urt_hpd_hprt_url_level_validation_details=*/
+        {absl::nullopt, absl::nullopt, absl::nullopt});
     task_environment_.FastForwardUntilNoTasksRemain();
     std::vector<bool> expected_urt_hpd_hprt_had_warnings = {
         !urt_hpd_hprt_time_out[0], !urt_hpd_hprt_time_out[1],
@@ -886,12 +994,88 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
         will_process_response_time_taken, checker_on_io_self_destruct_time);
   }
 
+  // Should be used to test URL-level validation. It verifies that the CSBRR is
+  // sent (or not sent if appropriate), and that the contents are correct.
+  void RunUrlLevelValidationTest(
+      std::vector<SBThreatType> urt_hpd_hprt_threat_types,
+      std::vector<absl::optional<UrlLevelValidationDetails>>
+          urt_hpd_hprt_url_level_validation_details,
+      std::vector<bool> urt_hpd_hprt_time_out,
+      bool expect_report_sent) {
+    base::MockCallback<CompleteCheckCallbackWithTimeout>
+        url_real_time_result_callback;
+    if (urt_hpd_hprt_time_out[0]) {
+      EXPECT_CALL(url_real_time_result_callback,
+                  Run(true, testing::Eq(absl::nullopt)))
+          .Times(1);
+    } else {
+      EXPECT_CALL(url_real_time_result_callback,
+                  Run(false, Matches(urt_hpd_hprt_threat_types[0])))
+          .Times(1);
+    }
+    auto urt_hpd_hprt_times_taken = {
+        urt_hpd_hprt_time_out[0] ? base::Seconds(6) : base::Seconds(2),
+        urt_hpd_hprt_time_out[1] ? base::Seconds(6) : base::Seconds(1),
+        urt_hpd_hprt_time_out[2] ? base::Seconds(6) : base::Seconds(3)};
+    auto will_process_response_time_taken = base::Seconds(4);
+    auto checker_on_io_self_destruct_time = base::Seconds(8);
+    SetUpExperimenterAndChecks(
+        urt_hpd_hprt_times_taken, urt_hpd_hprt_threat_types,
+        will_process_response_time_taken, checker_on_io_self_destruct_time,
+        url_real_time_result_callback.Get(),
+        /*eligibility_configs=*/absl::nullopt, /*is_prefetch=*/false,
+        urt_hpd_hprt_url_level_validation_details);
+    task_environment_.FastForwardUntilNoTasksRemain();
+
+    ClientSafeBrowsingReportRequest* report = ping_manager_->GetReport();
+    EXPECT_EQ(!!report, expect_report_sent);
+    if (!expect_report_sent) {
+      return;
+    }
+    EXPECT_EQ(
+        report->type(),
+        ClientSafeBrowsingReportRequest::HASH_PREFIX_REAL_TIME_EXPERIMENT);
+    EXPECT_EQ(report->url(), "http://some.url.com/");
+    EXPECT_TRUE(report->has_hash_real_time_experiment_details());
+    ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails
+        experiment_details = report->hash_real_time_experiment_details();
+    EXPECT_EQ(experiment_details.hash_database_threat_type(),
+              GetExperimentDetailsThreatType(urt_hpd_hprt_threat_types[1]));
+    EXPECT_EQ(experiment_details.url_realtime_details().threat_type(),
+              GetExperimentDetailsThreatType(urt_hpd_hprt_threat_types[0]));
+    EXPECT_EQ(experiment_details.url_realtime_details().matched_global_cache(),
+              urt_hpd_hprt_url_level_validation_details[0]
+                  .value()
+                  .matched_high_confidence_allowlist);
+    EXPECT_EQ(experiment_details.url_realtime_details()
+                  .locally_cached_results_threat_type(),
+              GetExperimentDetailsThreatType(
+                  urt_hpd_hprt_url_level_validation_details[0]
+                      .value()
+                      .locally_cached_results_threat_type));
+    EXPECT_EQ(experiment_details.hash_realtime_details().threat_type(),
+              GetExperimentDetailsThreatType(urt_hpd_hprt_threat_types[2]));
+    EXPECT_EQ(experiment_details.hash_realtime_details().matched_global_cache(),
+              urt_hpd_hprt_url_level_validation_details[2]
+                  .value()
+                  .matched_high_confidence_allowlist);
+    EXPECT_EQ(experiment_details.hash_realtime_details()
+                  .locally_cached_results_threat_type(),
+              GetExperimentDetailsThreatType(
+                  urt_hpd_hprt_url_level_validation_details[2]
+                      .value()
+                      .locally_cached_results_threat_type));
+    ping_manager_->ClearReport();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::HistogramTester> histogram_tester_ =
       std::make_unique<base::HistogramTester>();
   std::unique_ptr<PretendUrlCheckerDelegate> url_checker_delegate_ =
       std::make_unique<PretendUrlCheckerDelegate>();
+  std::unique_ptr<safe_browsing::MockPingManager> ping_manager_ =
+      std::make_unique<safe_browsing::MockPingManager>();
 };
 
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestLifetimes) {
@@ -957,13 +1141,243 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestTimeouts) {
   }
 }
 
+TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestUrlLevelValidation) {
+  std::vector<bool> no_time_outs = {false, false, false};
+  std::vector<absl::optional<UrlLevelValidationDetails>>
+      sample_urt_hpd_hprt_url_level_validation_details = {
+          UrlLevelValidationDetails(
+              /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+              /*real_time_request_failed=*/false,
+              /*matched_high_confidence_allowlist=*/true),
+          UrlLevelValidationDetails(
+              /*locally_cached_results_threat_type=*/absl::nullopt,
+              /*real_time_request_failed=*/false,
+              /*matched_high_confidence_allowlist=*/absl::nullopt),
+          UrlLevelValidationDetails(
+              /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_BILLING,
+              /*real_time_request_failed=*/false,
+              /*matched_high_confidence_allowlist=*/true)};
+  std::vector<SBThreatType> sample_urt_hpd_hprt_threat_types = {
+      SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_URL_MALWARE,
+      SB_THREAT_TYPE_URL_PHISHING};
+
+  // Report sent cases:
+  {
+    // Variation 1 of different types of values that can be logged.
+    std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+        SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_SAFE,
+        SB_THREAT_TYPE_URL_MALWARE};
+    std::vector<absl::optional<UrlLevelValidationDetails>>
+        urt_hpd_hprt_url_level_validation_details = {
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_BILLING,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/true),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/absl::nullopt,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/absl::nullopt),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/
+                SB_THREAT_TYPE_URL_UNWANTED, /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/false)};
+    RunUrlLevelValidationTest(
+        urt_hpd_hprt_threat_types, urt_hpd_hprt_url_level_validation_details,
+        /*urt_hpd_hprt_time_out=*/no_time_outs, /*expect_report_sent=*/true);
+  }
+  {
+    // Variation 2 of different types of values that can be logged.
+    std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+        SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_URL_MALWARE,
+        SB_THREAT_TYPE_URL_PHISHING};
+    std::vector<absl::optional<UrlLevelValidationDetails>>
+        urt_hpd_hprt_url_level_validation_details = {
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/
+                SB_THREAT_TYPE_URL_UNWANTED, /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/false),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/absl::nullopt,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/absl::nullopt),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/true)};
+    RunUrlLevelValidationTest(
+        urt_hpd_hprt_threat_types, urt_hpd_hprt_url_level_validation_details,
+        /*urt_hpd_hprt_time_out=*/no_time_outs, /*expect_report_sent=*/true);
+  }
+  {
+    // Variation 3 of different types of values that can be logged.
+    std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+        SB_THREAT_TYPE_URL_MALWARE, SB_THREAT_TYPE_URL_PHISHING,
+        SB_THREAT_TYPE_SAFE};
+    std::vector<absl::optional<UrlLevelValidationDetails>>
+        urt_hpd_hprt_url_level_validation_details = {
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/true),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/absl::nullopt,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/absl::nullopt),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_BILLING,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/true)};
+    RunUrlLevelValidationTest(
+        urt_hpd_hprt_threat_types, urt_hpd_hprt_url_level_validation_details,
+        /*urt_hpd_hprt_time_out=*/no_time_outs, /*expect_report_sent=*/true);
+  }
+  {
+    // Even if we would show a warning for all mechanisms, if the threat types
+    // are different, we still send a report.
+    std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+        SB_THREAT_TYPE_URL_MALWARE, SB_THREAT_TYPE_URL_PHISHING,
+        SB_THREAT_TYPE_URL_UNWANTED};
+    RunUrlLevelValidationTest(urt_hpd_hprt_threat_types,
+                              sample_urt_hpd_hprt_url_level_validation_details,
+                              /*urt_hpd_hprt_time_out=*/no_time_outs,
+                              /*expect_report_sent=*/true);
+  }
+
+  // Report not sent cases:
+  {
+    // Report not sent because all mechanisms say safe.
+    std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+        SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SAFE};
+    RunUrlLevelValidationTest(urt_hpd_hprt_threat_types,
+                              sample_urt_hpd_hprt_url_level_validation_details,
+                              /*urt_hpd_hprt_time_out=*/no_time_outs,
+                              /*expect_report_sent=*/false);
+  }
+  {
+    // Report not sent because all mechanisms say unsafe.
+    std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+        SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_PHISHING,
+        SB_THREAT_TYPE_URL_PHISHING};
+    RunUrlLevelValidationTest(urt_hpd_hprt_threat_types,
+                              sample_urt_hpd_hprt_url_level_validation_details,
+                              /*urt_hpd_hprt_time_out=*/no_time_outs,
+                              /*expect_report_sent=*/false);
+  }
+  {
+    // Report not sent because all mechanisms say safe or suspicious, which does
+    // not count as a warning.
+    std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+        SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_SUSPICIOUS_SITE,
+        SB_THREAT_TYPE_SUSPICIOUS_SITE};
+    RunUrlLevelValidationTest(urt_hpd_hprt_threat_types,
+                              sample_urt_hpd_hprt_url_level_validation_details,
+                              /*urt_hpd_hprt_time_out=*/no_time_outs,
+                              /*expect_report_sent=*/false);
+  }
+  {
+    // Report not sent because URL real-time timed out.
+    std::vector<bool> urt_hpd_hprt_time_out = {true, false, false};
+    RunUrlLevelValidationTest(sample_urt_hpd_hprt_threat_types,
+                              sample_urt_hpd_hprt_url_level_validation_details,
+                              urt_hpd_hprt_time_out,
+                              /*expect_report_sent=*/false);
+  }
+  {
+    // Report not sent because hash real-time timed out.
+    std::vector<bool> urt_hpd_hprt_time_out = {false, false, true};
+    RunUrlLevelValidationTest(sample_urt_hpd_hprt_threat_types,
+                              sample_urt_hpd_hprt_url_level_validation_details,
+                              urt_hpd_hprt_time_out,
+                              /*expect_report_sent=*/false);
+  }
+  {
+    // Report not sent because hash database timed out.
+    std::vector<bool> urt_hpd_hprt_time_out = {false, true, false};
+    RunUrlLevelValidationTest(sample_urt_hpd_hprt_threat_types,
+                              sample_urt_hpd_hprt_url_level_validation_details,
+                              urt_hpd_hprt_time_out,
+                              /*expect_report_sent=*/false);
+  }
+  {
+    // Report not sent because URL real-time request failed.
+    std::vector<absl::optional<UrlLevelValidationDetails>>
+        urt_hpd_hprt_url_level_validation_details = {
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/
+                SB_THREAT_TYPE_URL_UNWANTED, /*real_time_request_failed=*/true,
+                /*matched_high_confidence_allowlist=*/false),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/absl::nullopt,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/absl::nullopt),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/true)};
+    RunUrlLevelValidationTest(sample_urt_hpd_hprt_threat_types,
+                              urt_hpd_hprt_url_level_validation_details,
+                              /*urt_hpd_hprt_time_out=*/no_time_outs,
+                              /*expect_report_sent=*/false);
+  }
+  {
+    // Report not sent because hash real-time request failed.
+    std::vector<absl::optional<UrlLevelValidationDetails>>
+        urt_hpd_hprt_url_level_validation_details = {
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/
+                SB_THREAT_TYPE_URL_UNWANTED, /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/false),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/absl::nullopt,
+                /*real_time_request_failed=*/false,
+                /*matched_high_confidence_allowlist=*/absl::nullopt),
+            UrlLevelValidationDetails(
+                /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+                /*real_time_request_failed=*/true,
+                /*matched_high_confidence_allowlist=*/true)};
+    RunUrlLevelValidationTest(sample_urt_hpd_hprt_threat_types,
+                              urt_hpd_hprt_url_level_validation_details,
+                              /*urt_hpd_hprt_time_out=*/no_time_outs,
+                              /*expect_report_sent=*/false);
+  }
+}
+
+TEST_F(SafeBrowsingLookupMechanismExperimenterTest,
+       TestGetExperimentDetailsThreatType) {
+  struct TestCase {
+    absl::optional<SBThreatType> threat_type;
+    ExperimentThreatType expected_experiment_threat_type;
+  } test_cases[] = {
+      {absl::nullopt, ClientSafeBrowsingReportRequest::
+                          HashRealTimeExperimentDetails::SAFE_OR_OTHER},
+      {SB_THREAT_TYPE_URL_PHISHING,
+       ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
+           PHISHING},
+      {SB_THREAT_TYPE_URL_MALWARE,
+       ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::MALWARE},
+      {SB_THREAT_TYPE_URL_UNWANTED,
+       ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
+           UNWANTED},
+      {SB_THREAT_TYPE_BILLING,
+       ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::BILLING},
+      {SB_THREAT_TYPE_SUSPICIOUS_SITE,
+       ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
+           SAFE_OR_OTHER},
+  };
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(GetExperimentDetailsThreatType(test_case.threat_type),
+              test_case.expected_experiment_threat_type);
+  }
+}
+
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestEmptyExperiment) {
   // After one second, calls into mechanism_experimenter's
   // |OnBrowserUrlLoaderThrottleCheckerOnSBDestructed|, which ends the
   // experiment.
   new PretendCheckerOnIO(
       /*time_to_will_process_response=*/base::Seconds(3),
-      /*time_to_self_destruct=*/base::Seconds(1), /*is_prefetch=*/false);
+      /*time_to_self_destruct=*/base::Seconds(1), /*is_prefetch=*/false,
+      ping_manager_->GetWeakPtr());
   task_environment_.FastForwardUntilNoTasksRemain();
   VerifyNoLogs();
 }
@@ -1355,7 +1769,9 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestGetDelayInformation) {
   for (const auto& test_case : test_cases) {
     auto results = Experimenter::MechanismResults(
         test_case.mechanism_time_taken, /*had_warning=*/false,
-        /*timed_out=*/false);
+        /*timed_out=*/false, /*threat_type=*/absl::nullopt,
+        /*locally_cached_results_threat_type=*/absl::nullopt,
+        /*real_time_request_failed=*/absl::nullopt);
     auto experimenter = base::MakeRefCounted<Experimenter>(
         /*is_prefetch=*/false, /*ping_manager_on_ui=*/nullptr,
         /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());

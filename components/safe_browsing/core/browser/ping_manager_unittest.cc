@@ -44,6 +44,7 @@ class PingManagerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
   void RunReportThreatDetailsTest(
+      absl::optional<bool> attach_default_data,
       bool expect_access_token,
       absl::optional<ChromeUserPopulation> expected_user_population,
       absl::optional<std::string> expected_page_load_token_value,
@@ -124,6 +125,7 @@ TestSafeBrowsingTokenFetcher* PingManagerTest::SetUpTokenFetcher() {
 }
 
 void PingManagerTest::RunReportThreatDetailsTest(
+    absl::optional<bool> attach_default_data,
     bool expect_access_token,
     absl::optional<ChromeUserPopulation> expected_user_population,
     absl::optional<std::string> expected_page_load_token_value,
@@ -181,7 +183,10 @@ void PingManagerTest::RunReportThreatDetailsTest(
 
   EXPECT_CALL(*webui_delegate_.get(), AddToCSBRRsSent(_)).Times(1);
   PingManager::ReportThreatDetailsResult result =
-      ping_manager()->ReportThreatDetails(std::move(report));
+      attach_default_data.has_value()
+          ? ping_manager()->ReportThreatDetails(std::move(report),
+                                                attach_default_data.value())
+          : ping_manager()->ReportThreatDetails(std::move(report));
   EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::SUCCESS);
   EXPECT_EQ(raw_token_fetcher->WasStartCalled(), expect_access_token);
   if (expect_access_token) {
@@ -449,7 +454,8 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithAccessToken) {
       /*get_user_population_callback=*/absl::nullopt,
       /*get_page_load_token_callback=*/absl::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/true);
-  RunReportThreatDetailsTest(/*expect_access_token=*/true,
+  RunReportThreatDetailsTest(/*attach_default_data=*/absl::nullopt,
+                             /*expect_access_token=*/true,
                              /*expected_user_population=*/absl::nullopt,
                              /*expected_page_load_token_value=*/absl::nullopt,
                              /*expect_cookies_removed=*/true);
@@ -462,7 +468,8 @@ TEST_F(PingManagerTest,
       /*get_user_population_callback=*/absl::nullopt,
       /*get_page_load_token_callback=*/absl::nullopt);
   SetUpFeatureList(/*should_enable_remove_cookies=*/false);
-  RunReportThreatDetailsTest(/*expect_access_token=*/true,
+  RunReportThreatDetailsTest(/*attach_default_data=*/absl::nullopt,
+                             /*expect_access_token=*/true,
                              /*expected_user_population=*/absl::nullopt,
                              /*expected_page_load_token_value=*/absl::nullopt,
                              /*expect_cookies_removed=*/false);
@@ -478,7 +485,8 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithUserPopulation) {
       /*get_page_load_token_callback=*/absl::nullopt);
   auto population = ChromeUserPopulation();
   population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
-  RunReportThreatDetailsTest(/*expect_access_token=*/false,
+  RunReportThreatDetailsTest(/*attach_default_data=*/absl::nullopt,
+                             /*expect_access_token=*/false,
                              /*expected_user_population=*/population,
                              /*expected_page_load_token_value=*/absl::nullopt,
                              /*expect_cookies_removed=*/false);
@@ -493,9 +501,30 @@ TEST_F(PingManagerTest, ReportThreatDetailsWithPageLoadToken) {
         return token;
       }));
   RunReportThreatDetailsTest(
-      /*expect_access_token=*/false,
+      /*attach_default_data=*/absl::nullopt, /*expect_access_token=*/false,
       /*expected_user_population=*/absl::nullopt,
       /*expected_page_load_token_value=*/"testing_page_load_token",
+      /*expect_cookies_removed=*/false);
+}
+TEST_F(PingManagerTest, ReportThreatDetailsDontAttachDefaultData) {
+  SetNewPingManager(
+      /*get_should_fetch_access_token=*/base::BindRepeating(
+          []() { return true; }),
+      /*get_user_population_callback=*/base::BindRepeating([]() {
+        auto population = ChromeUserPopulation();
+        population.set_user_population(ChromeUserPopulation::SAFE_BROWSING);
+        return population;
+      }),
+      /*get_page_load_token_callback=*/base::BindRepeating([](GURL url) {
+        ChromeUserPopulation::PageLoadToken token;
+        token.set_token_value("testing_page_load_token");
+        return token;
+      }));
+  SetUpFeatureList(/*should_enable_remove_cookies=*/true);
+  RunReportThreatDetailsTest(
+      /*attach_default_data=*/false, /*expect_access_token=*/false,
+      /*expected_user_population=*/absl::nullopt,
+      /*expected_page_load_token_value=*/absl::nullopt,
       /*expect_cookies_removed=*/false);
 }
 

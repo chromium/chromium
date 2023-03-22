@@ -1463,7 +1463,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 27
+// Next tag: 29
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1488,6 +1488,8 @@ message ClientSafeBrowsingReportRequest {
     APK_DOWNLOAD = 17;
     BLOCKED_AD_REDIRECT = 19;
     BLOCKED_AD_POPUP = 20;
+    // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
+    HASH_PREFIX_REAL_TIME_EXPERIMENT = 21;
   }
 
   message HTTPHeader {
@@ -1700,6 +1702,39 @@ message ClientSafeBrowsingReportRequest {
     optional int64 interval_msec = 4;
   }
   repeated DownloadWarningAction download_warning_actions = 27;
+
+  message HashRealTimeExperimentDetails {
+    enum ExperimentThreatType {
+      SAFE_OR_OTHER = 0;  // This differs from the SafeBrowsing ThreatType.
+      MALWARE = 1;
+      PHISHING = 2;
+      UNWANTED = 3;
+      BILLING = 4;
+    }
+    message RealTimeDetails {
+      // The threat type determined by the mechanism.
+      optional ExperimentThreatType threat_type = 1;
+      // Whether the global cache / high-confidence allowlist was matched, which
+      // results in the mechanism falling back to a hash database lookup.
+      optional bool matched_global_cache = 2;
+      // The threat type determined by the mechanism using only the local cache
+      // results. This may differ from the threat_type. Only populated if the
+      // local real-time cache was checked. It should never be populated if
+      // matched_global_cache = true. It is possible for this field to be safe
+      // while threat_type is not if it's for the URL real-time check.
+      optional ExperimentThreatType locally_cached_results_threat_type = 3;
+    }
+    // The threat type determined by the hash database mechanism.
+    optional ExperimentThreatType hash_database_threat_type = 1;
+    // Details associated with the URL real-time lookup mechanism.
+    optional RealTimeDetails url_realtime_details = 2;
+    // Details associated with the hash real-time lookup mechanism.
+    optional RealTimeDetails hash_realtime_details = 3;
+  }
+
+  // Only populated for type = HASH_PREFIX_REAL_TIME_EXPERIMENT.
+  // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
+  optional HashRealTimeExperimentDetails hash_real_time_experiment_details = 28;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).

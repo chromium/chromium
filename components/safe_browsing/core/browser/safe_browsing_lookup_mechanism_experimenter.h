@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -126,9 +127,13 @@ class SafeBrowsingLookupMechanismExperimenter
   };
   // Contains the results of a particular mechanism's run.
   struct MechanismResults {
-    MechanismResults(base::TimeDelta time_taken,
-                     bool had_warning,
-                     bool timed_out);
+    MechanismResults(
+        base::TimeDelta time_taken,
+        bool had_warning,
+        bool timed_out,
+        absl::optional<SBThreatType> threat_type,
+        absl::optional<SBThreatType> locally_cached_results_threat_type,
+        absl::optional<bool> real_time_request_failed);
     ~MechanismResults();
     // How long the run took.
     base::TimeDelta time_taken;
@@ -136,12 +141,28 @@ class SafeBrowsingLookupMechanismExperimenter
     bool had_warning;
     // Whether the run did not complete in time.
     bool timed_out;
+
+    // The following three fields (|threat_type|,
+    // |locally_cached_results_threat_type|, |real_time_request_failed|) are
+    // only used for URL-level validation logging.
+
+    // The result threat type. Can be unpopulated if the run timed out.
+    absl::optional<SBThreatType> threat_type;
+    // The result threat type using only locally cached results. This is only
+    // populated if a real-time check's local cache was checked, and if the run
+    // did not time out.
+    absl::optional<SBThreatType> locally_cached_results_threat_type;
+    // Whether the request failed due to backoff, network errors, or other
+    // service unavailability. This only applies to real-time checks, and is
+    // false otherwise. This is only populated if the run did not time out.
+    absl::optional<bool> real_time_request_failed;
   };
   // This represents all the information necessary to run a specific check
   // (across all 3 relevant mechanisms) as well as the results of each
   // individual lookup once it completes.
   struct CheckToRun {
     CheckToRun(
+        const GURL& url,
         std::unique_ptr<SafeBrowsingLookupMechanismRunner> url_real_time_runner,
         std::unique_ptr<SafeBrowsingLookupMechanismRunner> hash_database_runner,
         std::unique_ptr<SafeBrowsingLookupMechanismRunner>
@@ -152,6 +173,9 @@ class SafeBrowsingLookupMechanismExperimenter
     // Represents a specific mechanism lookup's inputs and outputs.
     struct RunDetails {
       std::unique_ptr<SafeBrowsingLookupMechanismRunner> runner;
+      // This is separate from |results| because it is populated (if relevant)
+      // when the run starts, rather than when the run completes.
+      absl::optional<bool> matched_global_cache;
       absl::optional<MechanismResults> results;
       explicit RunDetails(
           std::unique_ptr<SafeBrowsingLookupMechanismRunner> runner);
@@ -168,6 +192,10 @@ class SafeBrowsingLookupMechanismExperimenter
       SafeBrowsingLookupMechanismRunner::CompleteCheckCallbackWithTimeout
           url_result_callback;
     };
+
+    // The URL used for the lookup. This field is used for URL-level validation
+    // logging.
+    GURL url;
     // The following three are the RunDetails corresponding to each mechanism
     // lookup.
     RunDetails hash_database_details;
@@ -194,6 +222,7 @@ class SafeBrowsingLookupMechanismExperimenter
   // mechanism objects have been created.
   SafeBrowsingLookupMechanism::StartCheckResult RunChecksInternal(
       size_t safe_browsing_url_checker_index,
+      const GURL& url,
       std::unique_ptr<SafeBrowsingLookupMechanism> url_real_time_mechanism,
       std::unique_ptr<SafeBrowsingLookupMechanism> hash_database_mechanism,
       std::unique_ptr<SafeBrowsingLookupMechanism> hash_real_time_mechanism,
@@ -218,7 +247,9 @@ class SafeBrowsingLookupMechanismExperimenter
           result);
   void OnHashDatabaseCheckCompleteInternal(
       bool timed_out,
-      absl::optional<SBThreatType> threat_type);
+      absl::optional<SBThreatType> threat_type,
+      absl::optional<SBThreatType> locally_cached_results_threat_type,
+      absl::optional<bool> real_time_request_failed);
   // Kicks off the next hash-prefix database lookup available from the
   // |checks_to_run_| vector.
   void RunNextHashDatabaseCheck();
@@ -244,16 +275,34 @@ class SafeBrowsingLookupMechanismExperimenter
   // only be called if at least one check is "eligible," i.e. that it has true
   // for |would_check_show_warning_if_unsafe|.
   void LogExperimentResults();
+  // If none of the mechanisms timed out or reported they failed, but they did
+  // not all agree on whether the URL was safe, this logs a
+  // ClientSafeBrowsingReport for validation purposes that the results are
+  // expected as part of ensuring that the new hash real-time mechanism is
+  // working correctly. Note that the hash database mechanism never reports it
+  // fails even if it does. This happens infrequently and isn't interesting for
+  // debugging, so we ignore that possibility and log the results anyway. This
+  // method is only called if there is only one check total.
+  void MaybeLogUrlLevelResults() const;
+  // Logs a ClientSafeBrowsingReport (as described above
+  // |MaybeLogUrlLevelResults|). This method is static because it runs on the UI
+  // thread.
+  static void SendUrlLevelValidationReport(
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      base::WeakPtr<PingManager> ping_manager_on_ui);
   // Once this is called, this object will be cleaned up either immediately or
   // shortly afterwards once other objects (SafeBrowsingUrlCheckerImpl or
   // BrowserUrlLoaderThrottle) with pointers to it have also been destructed.
   void EndExperiment();
-  // Stores derived information from |timed_out| and |threat_type| on
-  // |run_details|. It can also trigger ending the experiment if this result was
+  // Stores derived information onto |run_details| from the rest of th
+  // parameters. It can also trigger ending the experiment if this result was
   // the last piece of information the experiment was waiting on.
-  void StoreCheckResults(bool timed_out,
-                         absl::optional<SBThreatType> threat_type,
-                         CheckToRun::RunDetails& run_details);
+  void StoreCheckResults(
+      bool timed_out,
+      absl::optional<SBThreatType> threat_type,
+      absl::optional<SBThreatType> locally_cached_results_threat_type,
+      absl::optional<bool> real_time_request_failed,
+      CheckToRun::RunDetails& run_details);
 
   // Helper function to combine boolean results from each of the three
   // mechanisms into a single enum for logging.
@@ -261,6 +310,11 @@ class SafeBrowsingLookupMechanismExperimenter
       bool url_real_time_result,
       bool hash_database_result,
       bool hash_real_time_result);
+  // Converts a |SBThreatType| to the one used for the hash real-time experiment
+  // CSBRR.
+  static ClientSafeBrowsingReportRequest::HashRealTimeExperimentDetails::
+      ExperimentThreatType
+      GetExperimentDetailsThreatType(absl::optional<SBThreatType> threat_type);
   // Returns details on whether the result caused a delay, and if so, by how
   // much.
   DelayInformation GetDelayInformation(MechanismResults& results) const;

@@ -1375,6 +1375,9 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
       case ClientSafeBrowsingReportRequest::BLOCKED_AD_POPUP:
         report_type = "BLOCKED_AD_POPUP";
         break;
+      case ClientSafeBrowsingReportRequest::HASH_PREFIX_REAL_TIME_EXPERIMENT:
+        report_type = "HASH_PREFIX_REAL_TIME_EXPERIMENT";
+        break;
     }
     report_request.Set("type", report_type);
   }

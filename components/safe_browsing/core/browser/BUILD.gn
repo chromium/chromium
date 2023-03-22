@@ -108,6 +108,7 @@ source_set("safe_browsing_lookup_mechanism_experimenter_unittest") {
     ":browser",
     "//base/test:test_support",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
     "//testing/gtest",
   ]
 }
