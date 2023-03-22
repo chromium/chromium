@@ -1,0 +1,8 @@
+include_rules = [
+  "+content/public/browser",
+]
+specific_include_rules = {
+  "content_web_state\.mm": [
+    "+third_party/blink/public/mojom/favicon/favicon_url.mojom.h",
+  ],
+}

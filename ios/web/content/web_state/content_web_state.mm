@@ -5,12 +5,20 @@
 #import "ios/web/content/web_state/content_web_state.h"
 
 #import "base/strings/utf_string_conversions.h"
+#import "content/public/browser/navigation_entry.h"
+#import "content/public/browser/web_contents.h"
+#import "ios/web/content/navigation/content_navigation_context.h"
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
 #import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
-#import "ios/web/public/favicon/favicon_status.h"
+#import "ios/web/public/favicon/favicon_url.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
+#import "net/cert/x509_util.h"
+#import "net/cert/x509_util_apple.h"
+#import "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#import "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,9 +26,56 @@
 
 namespace web {
 
+namespace {
+
+// The content navigation machinery should not use this so we will use a dummy.
+// TODO(crbug.com/1419001): enable returning nullptr for the cache.
+class DummySessionCertificatePolicyCache
+    : public SessionCertificatePolicyCache {
+ public:
+  explicit DummySessionCertificatePolicyCache(BrowserState* browser_state)
+      : SessionCertificatePolicyCache(browser_state) {}
+
+  void UpdateCertificatePolicyCache(
+      const scoped_refptr<web::CertificatePolicyCache>& cache) const override {}
+
+  void RegisterAllowedCertificate(
+      const scoped_refptr<net::X509Certificate> certificate,
+      const std::string& host,
+      net::CertStatus status) override {}
+};
+
+FaviconURL::IconType IconTypeFromContentIconType(
+    blink::mojom::FaviconIconType icon_type) {
+  switch (icon_type) {
+    case blink::mojom::FaviconIconType::kFavicon:
+      return FaviconURL::IconType::kFavicon;
+    case blink::mojom::FaviconIconType::kTouchIcon:
+      return FaviconURL::IconType::kTouchIcon;
+    case blink::mojom::FaviconIconType::kTouchPrecomposedIcon:
+      return FaviconURL::IconType::kTouchPrecomposedIcon;
+    case blink::mojom::FaviconIconType::kInvalid:
+      return FaviconURL::IconType::kInvalid;
+  }
+  NOTREACHED();
+  return FaviconURL::IconType::kInvalid;
+}
+
+}  // namespace
+
 ContentWebState::ContentWebState(const CreateParams& params) {
-  navigation_manager_ =
-      std::make_unique<ContentNavigationManager>(params.browser_state);
+  // TODO(crbug.com/1419001): initialize web_contents_ with
+  // WebContents::Create(...) when a BrowserContext is available.
+  WebContentsObserver::Observe(web_contents_.get());
+  content::NavigationController* controller = nullptr;
+  if (web_contents_) {
+    controller = &web_contents_->GetController();
+  }
+  certificate_policy_cache_ =
+      std::make_unique<DummySessionCertificatePolicyCache>(
+          params.browser_state);
+  navigation_manager_ = std::make_unique<ContentNavigationManager>(
+      this, params.browser_state, controller);
   web_frames_manager_ = std::make_unique<ContentWebFramesManager>();
 
   web_view_ = [[UIScrollView alloc] init];
@@ -39,6 +94,7 @@ ContentWebState::ContentWebState(const CreateParams& params) {
 }
 
 ContentWebState::~ContentWebState() {
+  WebContentsObserver::Observe(nullptr);
   for (auto& observer : observers_) {
     observer.WebStateDestroyed(this);
   }
@@ -125,12 +181,12 @@ WebFramesManager* ContentWebState::GetPageWorldWebFramesManager() {
 
 const SessionCertificatePolicyCache*
 ContentWebState::GetSessionCertificatePolicyCache() const {
-  return nullptr;
+  return certificate_policy_cache_.get();
 }
 
 SessionCertificatePolicyCache*
 ContentWebState::GetSessionCertificatePolicyCache() {
-  return nullptr;
+  return certificate_policy_cache_.get();
 }
 
 CRWSessionStorage* ContentWebState::BuildSessionStorage() {
@@ -157,16 +213,16 @@ bool ContentWebState::ContentIsHTML() const {
 }
 
 const std::u16string& ContentWebState::GetTitle() const {
-  static std::u16string title = u"Content";
-  return title;
+  static std::u16string title = u"";
+  return web_contents_ ? web_contents_->GetTitle() : title;
 }
 
 bool ContentWebState::IsLoading() const {
-  return false;
+  return web_contents_ ? web_contents_->IsLoading() : false;
 }
 
 double ContentWebState::GetLoadingProgress() const {
-  return 0.75;
+  return web_contents_ ? web_contents_->GetLoadProgress() : 0.0;
 }
 
 bool ContentWebState::IsVisible() const {
@@ -190,30 +246,37 @@ bool ContentWebState::IsWebPageInFullscreenMode() const {
 }
 
 const FaviconStatus& ContentWebState::GetFaviconStatus() const {
-  static FaviconStatus status;
-  return status;
+  auto* item = navigation_manager_->GetVisibleItem();
+  if (item && item->GetFaviconStatus().valid) {
+    return item->GetFaviconStatus();
+  }
+  return favicon_status_;
 }
 
-void ContentWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {}
+void ContentWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
+  favicon_status_ = favicon_status;
+}
 
 int ContentWebState::GetNavigationItemCount() const {
-  return 0;
+  return navigation_manager_->GetItemCount();
 }
 
 const GURL& ContentWebState::GetVisibleURL() const {
-  static GURL url("https://www.chromium.org/blink");
-  return url;
+  auto* item = navigation_manager_->GetVisibleItem();
+  return item ? item->GetURL() : GURL::EmptyGURL();
 }
 
 const GURL& ContentWebState::GetLastCommittedURL() const {
-  static GURL url("https://https://www.chromium.org/blink");
-  return url;
+  auto* item = navigation_manager_->GetLastCommittedItem();
+  return item ? item->GetURL() : GURL::EmptyGURL();
 }
 
 GURL ContentWebState::GetCurrentURL(
     URLVerificationTrustLevel* trust_level) const {
-  static GURL url("https://https://www.chromium.org/blink");
-  return url;
+  // TODO(crbug.com/1419001): Make sure that callers are using this correctly
+  // and that unexpected URLs are not displayed.
+  auto* item = navigation_manager_->GetLastCommittedItem();
+  return item ? item->GetURL() : GURL::EmptyGURL();
 }
 
 WebFramesManager* ContentWebState::GetWebFramesManager(ContentWorld world) {
@@ -289,7 +352,11 @@ void ContentWebState::RemovePolicyDecider(WebStatePolicyDecider* decider) {
   policy_deciders_.RemoveObserver(decider);
 }
 
-void ContentWebState::DidChangeVisibleSecurityState() {}
+void ContentWebState::DidChangeVisibleSecurityState() {
+  for (auto& observer : observers_) {
+    observer.DidChangeVisibleSecurityState(this);
+  }
+}
 
 bool ContentWebState::HasOpener() const {
   return false;
@@ -307,5 +374,112 @@ void ContentWebState::TakeSnapshot(const gfx::RectF& rect,
 void ContentWebState::CreateFullPagePdf(base::OnceCallback<void(NSData*)>) {}
 
 void ContentWebState::CloseMediaPresentations() {}
+
+void ContentWebState::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  auto* context =
+      ContentNavigationContext::GetOrCreate(navigation_handle, this);
+  for (auto& observer : observers_) {
+    observer.DidStartNavigation(this, context);
+  }
+}
+
+void ContentWebState::DidRedirectNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  auto* context =
+      ContentNavigationContext::GetOrCreate(navigation_handle, this);
+  for (auto& observer : observers_) {
+    observer.DidRedirectNavigation(this, context);
+  }
+}
+
+void ContentWebState::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+  auto* context =
+      ContentNavigationContext::GetOrCreate(navigation_handle, this);
+  for (auto& observer : observers_) {
+    observer.DidFinishNavigation(this, context);
+  }
+}
+
+void ContentWebState::DidStartLoading() {
+  for (auto& observer : observers_) {
+    observer.DidStartLoading(this);
+  }
+}
+
+void ContentWebState::DidStopLoading() {
+  for (auto& observer : observers_) {
+    observer.DidStopLoading(this);
+  }
+}
+
+void ContentWebState::LoadProgressChanged(double progress) {
+  for (auto& observer : observers_) {
+    observer.LoadProgressChanged(this, progress);
+  }
+}
+
+void ContentWebState::TitleWasSet(content::NavigationEntry* entry) {
+  for (auto& observer : observers_) {
+    observer.TitleWasSet(this);
+  }
+}
+
+void ContentWebState::DidUpdateFaviconURL(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+  std::vector<FaviconURL> favicon_urls;
+  for (const auto& c : candidates) {
+    FaviconURL favicon_url;
+    favicon_url.icon_url = c->icon_url;
+    favicon_url.icon_type = IconTypeFromContentIconType(c->icon_type);
+    favicon_url.icon_sizes = c->icon_sizes;
+    favicon_urls.push_back(favicon_url);
+  }
+  for (auto& observer : observers_) {
+    observer.FaviconUrlUpdated(this, favicon_urls);
+  }
+}
+
+void ContentWebState::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  // TODO(crbug.com/1419001): handle WebFrames.
+}
+
+void ContentWebState::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  // TODO(crbug.com/1419001): handle WebFrames.
+}
+
+void ContentWebState::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  for (auto& observer : observers_) {
+    observer.PageLoaded(this, web::PageLoadCompletionStatus::SUCCESS);
+  }
+}
+
+void ContentWebState::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {}
+
+void ContentWebState::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  for (auto& observer : observers_) {
+    observer.RenderProcessGone(this);
+  }
+}
 
 }  // namespace web

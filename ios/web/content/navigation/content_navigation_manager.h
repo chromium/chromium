@@ -13,13 +13,21 @@
 #error File can only be included when USE_BLINK is true
 #endif
 
+namespace content {
+class NavigationController;
+}  // namespace content
+
 namespace web {
+
+class ContentWebState;
 
 // ContentNavigationManager is a NavigationManager implementation that
 // is built on top of //content's NavigationController.
 class ContentNavigationManager : public NavigationManager {
  public:
-  ContentNavigationManager(BrowserState* browser_state);
+  ContentNavigationManager(ContentWebState* web_state,
+                           BrowserState* browser_state,
+                           content::NavigationController* controller);
   ~ContentNavigationManager() override;
   BrowserState* GetBrowserState() const override;
   WebState* GetWebState() const override;
@@ -52,7 +60,9 @@ class ContentNavigationManager : public NavigationManager {
   void AddRestoreCompletionCallback(base::OnceClosure callback) override;
 
  private:
-  BrowserState* browser_state_;
+  raw_ptr<ContentWebState> web_state_;
+  raw_ptr<BrowserState> browser_state_;
+  raw_ptr<content::NavigationController> controller_;
 };
 
 }  // namespace web
