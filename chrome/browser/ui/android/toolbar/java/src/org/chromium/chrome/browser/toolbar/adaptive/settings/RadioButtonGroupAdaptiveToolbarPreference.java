@@ -35,10 +35,12 @@ public class RadioButtonGroupAdaptiveToolbarPreference
     private @NonNull RadioButtonWithDescription mShareButton;
     private @NonNull RadioButtonWithDescription mVoiceSearchButton;
     private @NonNull RadioButtonWithDescription mTranslateButton;
+    private @NonNull RadioButtonWithDescription mAddToBookmarksButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
     private boolean mCanUseVoiceSearch = true;
     private boolean mCanUseTranslate;
+    private boolean mCanUseAddToBookmarks;
 
     public RadioButtonGroupAdaptiveToolbarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -61,6 +63,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_voice_search);
         mTranslateButton =
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_translate);
+        mAddToBookmarksButton = (RadioButtonWithDescription) holder.findViewById(
+                R.id.adaptive_option_add_to_bookmarks);
 
         initializeRadioButtonSelection();
         RecordUserAction.record("Mobile.AdaptiveToolbarButton.SettingsPage.Opened");
@@ -90,6 +94,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                     getButtonString(uiState.autoButtonCaption)));
             updateVoiceButtonVisibility();
             updateTranslateButtonVisibility();
+            updateAddToBookmarksButtonVisibility();
         });
         AdaptiveToolbarStats.recordRadioButtonStateAsync(mStatePredictor, /*onStartup=*/true);
     }
@@ -108,6 +113,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             mSelected = AdaptiveToolbarButtonVariant.VOICE;
         } else if (mTranslateButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.TRANSLATE;
+        } else if (mAddToBookmarksButton.isChecked()) {
+            mSelected = AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS;
         } else {
             assert false : "No matching setting found.";
         }
@@ -141,6 +148,8 @@ public class RadioButtonGroupAdaptiveToolbarPreference
                 return mVoiceSearchButton;
             case AdaptiveToolbarButtonVariant.TRANSLATE:
                 return mTranslateButton;
+            case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
+                return mAddToBookmarksButton;
         }
         return null;
     }
@@ -161,6 +170,9 @@ public class RadioButtonGroupAdaptiveToolbarPreference
             case AdaptiveToolbarButtonVariant.TRANSLATE:
                 stringRes = R.string.adaptive_toolbar_button_preference_translate;
                 break;
+            case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
+                stringRes = R.string.adaptive_toolbar_button_preference_add_to_bookmarks;
+                break;
             default:
                 assert false : "Unknown variant " + variant;
         }
@@ -177,12 +189,21 @@ public class RadioButtonGroupAdaptiveToolbarPreference
         updateTranslateButtonVisibility();
     }
 
+    void setCanUseAddToBookmarks(boolean canUseAddToBookmarks) {
+        mCanUseAddToBookmarks = canUseAddToBookmarks;
+        updateAddToBookmarksButtonVisibility();
+    }
+
     private void updateVoiceButtonVisibility() {
         updateButtonVisibility(mVoiceSearchButton, mCanUseVoiceSearch);
     }
 
     private void updateTranslateButtonVisibility() {
         updateButtonVisibility(mTranslateButton, mCanUseTranslate);
+    }
+
+    private void updateAddToBookmarksButtonVisibility() {
+        updateButtonVisibility(mAddToBookmarksButton, mCanUseAddToBookmarks);
     }
 
     /**

@@ -46,7 +46,8 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
         SettingsFeatureList.HIGHLIGHT_MANAGED_PREF_DISCLAIMER_ANDROID,
-        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE})
+        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE,
+        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS})
 public class AdaptiveToolbarPreferenceFragmentTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -193,6 +194,58 @@ public class AdaptiveToolbarPreferenceFragmentTest {
                     getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getId());
             Assert.assertEquals(
                     View.GONE, getButton(AdaptiveToolbarButtonVariant.TRANSLATE).getVisibility());
+            assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,
+                    SharedPreferencesManager.getInstance().readInt(
+                            ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS)
+    public void testAddToBookmarksOption_Enabled() {
+        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+        scenario.onFragment(fragment -> {
+            mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
+            // Select Add to bookmarks.
+            Assert.assertEquals(R.id.adaptive_option_add_to_bookmarks,
+                    getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS).getId());
+            selectButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
+            assertButtonCheckedCorrectly(
+                    "Add to bookmarks", AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
+            Assert.assertEquals(
+                    AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS, mRadioPreference.getSelection());
+            Assert.assertEquals(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
+                    SharedPreferencesManager.getInstance().readInt(
+                            ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS));
+        });
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS)
+    public void testAddToBookmarksOption_Disabled() {
+        // Set initial preference to add to bookmarks.
+        SharedPreferencesManager.getInstance().writeInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS);
+        FragmentScenario<AdaptiveToolbarPreferenceFragment> scenario =
+                FragmentScenario.launchInContainer(AdaptiveToolbarPreferenceFragment.class,
+                        Bundle.EMPTY, org.chromium.chrome.R.style.Theme_Chromium_Settings);
+        scenario.onFragment(fragment -> {
+            mRadioPreference = (RadioButtonGroupAdaptiveToolbarPreference) fragment.findPreference(
+                    AdaptiveToolbarPreferenceFragment.PREF_ADAPTIVE_RADIO_GROUP);
+
+            // Add to bookmarks option should be hidden, and we should have reverted back to "Auto".
+            Assert.assertEquals(R.id.adaptive_option_add_to_bookmarks,
+                    getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS).getId());
+            Assert.assertEquals(View.GONE,
+                    getButton(AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS).getVisibility());
             assertButtonCheckedCorrectly("Based on your usage", AdaptiveToolbarButtonVariant.AUTO);
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO, mRadioPreference.getSelection());
             Assert.assertEquals(AdaptiveToolbarButtonVariant.AUTO,

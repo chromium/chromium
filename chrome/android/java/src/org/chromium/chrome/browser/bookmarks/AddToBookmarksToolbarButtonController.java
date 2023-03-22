@@ -10,9 +10,13 @@ import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 /**
@@ -42,10 +46,23 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
     }
 
     @Override
+    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
+        return new IPHCommandBuilder(tab.getContext().getResources(),
+                FeatureConstants
+                        .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_FEATURE,
+                /* stringId = */ R.string.adaptive_toolbar_button_add_to_bookmarks_iph,
+                /* accessibilityStringId = */
+                R.string.adaptive_toolbar_button_add_to_bookmarks_iph);
+    }
+
+    @Override
     public void onClick(View view) {
         if (!mTabBookmarkerSupplier.hasValue() || !mActiveTabSupplier.hasValue()) return;
 
-        // TODO: Record IPH event using mTrackerSupplier.
+        if (mTrackerSupplier.hasValue()) {
+            mTrackerSupplier.get().notifyEvent(
+                    EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED);
+        }
 
         RecordUserAction.record("MobileTopToolbarAddToBookmarksButton");
         mTabBookmarkerSupplier.get().addOrEditBookmark(mActiveTabSupplier.get());

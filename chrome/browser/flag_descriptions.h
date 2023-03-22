@@ -2426,6 +2426,8 @@ extern const char kAdaptiveButtonInTopToolbarName[];
 extern const char kAdaptiveButtonInTopToolbarDescription[];
 extern const char kAdaptiveButtonInTopToolbarTranslateName[];
 extern const char kAdaptiveButtonInTopToolbarTranslateDescription[];
+extern const char kAdaptiveButtonInTopToolbarAddToBookmarksName[];
+extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
 extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
 

@@ -152,6 +152,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.SHARE:
             case AdaptiveToolbarButtonVariant.VOICE:
             case AdaptiveToolbarButtonVariant.TRANSLATE:
+            case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
                 return true;
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:
@@ -221,6 +222,8 @@ public class AdaptiveToolbarStatePredictor {
                 return VoiceRecognitionUtil.isVoiceSearchEnabled(mAndroidPermissionDelegate);
             case AdaptiveToolbarButtonVariant.TRANSLATE:
                 return AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled();
+            case AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS:
+                return AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled();
             default:
                 return true;
         }

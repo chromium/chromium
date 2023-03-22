@@ -4231,6 +4231,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAdaptiveButtonInTopToolbarTranslateDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAdaptiveButtonInTopToolbarTranslate)},
+    {"adaptive-button-in-top-toolbar-add-to-bookmarks",
+     flag_descriptions::kAdaptiveButtonInTopToolbarAddToBookmarksName,
+     flag_descriptions::kAdaptiveButtonInTopToolbarAddToBookmarksDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAdaptiveButtonInTopToolbarAddToBookmarks)},
     {"adaptive-button-in-top-toolbar-customization",
      flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationName,
      flag_descriptions::kAdaptiveButtonInTopToolbarCustomizationDescription,

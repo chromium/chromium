@@ -70,6 +70,8 @@ BASE_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature);
 BASE_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationTranslateFeature);
+BASE_DECLARE_FEATURE(
+    kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature);
 BASE_DECLARE_FEATURE(kIPHAddToHomescreenMessageFeature);
 BASE_DECLARE_FEATURE(kIPHAutoDarkOptOutFeature);
 BASE_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageFeature);

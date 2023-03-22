@@ -15,6 +15,7 @@ namespace android {
 // Alphabetical:
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbar);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarTranslate);
+BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarAddToBookmarks);
 BASE_DECLARE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2);
 BASE_DECLARE_FEATURE(kAddEduAccountFromAccountSettingsForSupervisedUsers);
 BASE_DECLARE_FEATURE(kAddToHomescreenIPH);

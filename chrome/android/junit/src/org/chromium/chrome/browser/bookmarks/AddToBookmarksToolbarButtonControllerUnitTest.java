@@ -29,6 +29,7 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.WebContents;
 
@@ -97,6 +98,8 @@ public class AddToBookmarksToolbarButtonControllerUnitTest {
 
         Assert.assertEquals(
                 1, mActionTester.getActionCount("MobileTopToolbarAddToBookmarksButton"));
+        verify(mTracker).notifyEvent(
+                EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED);
         verify(mTabBookmarker).addOrEditBookmark(mTab);
     }
 }

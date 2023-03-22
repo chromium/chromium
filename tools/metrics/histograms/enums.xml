@@ -1464,6 +1464,7 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Price tracking"/>
   <int value="7" label="Reader mode"/>
   <int value="8" label="Translate"/>
+  <int value="9" label="Add to bookmarks"/>
 </enum>
 
 <enum name="AdaptiveToolbarRadioButtonState">
@@ -1476,6 +1477,8 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Voice"/>
   <int value="7" label="Translate"/>
   <int value="8" label="Auto with translate"/>
+  <int value="9" label="Add to bookmarks"/>
+  <int value="10" label="Auto with add to bookmarks"/>
 </enum>
 
 <enum name="AdaptiveToolbarSegmentSwitch">
@@ -61769,6 +61772,8 @@ from previous Chrome versions.
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
   <int value="-286603268" label="hide-android-files-in-files-app"/>
+  <int value="-285499775"
+      label="AdaptiveButtonInTopToolbarAddToBookmarks:enabled"/>
   <int value="-284694765" label="JourneysIncludeSyncedVisits:disabled"/>
   <int value="-284547865" label="UnifiedConsent:enabled"/>
   <int value="-284470280" label="ShelfPalmRejectionTouchArea:enabled"/>
@@ -63273,6 +63278,8 @@ from previous Chrome versions.
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
   <int value="550411207" label="enable-webgpu-developer-features"/>
   <int value="550741462" label="WebAppBorderless:disabled"/>
+  <int value="552143503"
+      label="AdaptiveButtonInTopToolbarAddToBookmarks:disabled"/>
   <int value="552158955" label="NotificationPermissionBottomSheet:enabled"/>
   <int value="552317551" label="MediaAppHandlesPdf:disabled"/>
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>

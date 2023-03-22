@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.omnibox.ActionChipsDelegateImpl;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -1135,6 +1136,11 @@ public class RootUiCoordinator
                             AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
                             mActivityLifecycleDispatcher, mTabCreatorManagerSupplier,
                             mActivityTabProvider, trackerSupplier);
+            AddToBookmarksToolbarButtonController addToBookmarksToolbarButtonController =
+                    new AddToBookmarksToolbarButtonController(mActivityTabProvider,
+                            AppCompatResources.getDrawable(mActivity, R.drawable.btn_star),
+                            mActivity.getString(R.string.menu_bookmark), mTabBookmarkerSupplier,
+                            trackerSupplier);
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                     new AdaptiveToolbarButtonController(mActivity, new SettingsLauncherImpl(),
                             mActivityLifecycleDispatcher, new AdaptiveButtonActionMenuCoordinator(),
@@ -1145,6 +1151,9 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.SHARE, shareButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
+            adaptiveToolbarButtonController.addButtonVariant(
+                    AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
+                    addToBookmarksToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.TRANSLATE, translateToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(

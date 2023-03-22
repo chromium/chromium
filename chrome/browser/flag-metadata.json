@@ -44,6 +44,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "adaptive-button-in-top-toolbar-add-to-bookmarks",
+    "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "adaptive-button-in-top-toolbar-customization",
     "owners": [ "shaktisahu", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 120

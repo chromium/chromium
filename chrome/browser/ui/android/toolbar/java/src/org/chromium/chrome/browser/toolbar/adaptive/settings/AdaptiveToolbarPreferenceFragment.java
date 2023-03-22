@@ -57,6 +57,8 @@ public class AdaptiveToolbarPreferenceFragment extends PreferenceFragmentCompat 
         mRadioButtonGroup.setCanUseVoiceSearch(getCanUseVoiceSearch());
         mRadioButtonGroup.setCanUseTranslate(
                 AdaptiveToolbarFeatures.isAdaptiveToolbarTranslateEnabled());
+        mRadioButtonGroup.setCanUseAddToBookmarks(
+                AdaptiveToolbarFeatures.isAdaptiveToolbarAddToBookmarksEnabled());
         mRadioButtonGroup.setStatePredictor(new AdaptiveToolbarStatePredictor(
                 new ActivityAndroidPermissionDelegate(new WeakReference(getActivity()))));
         mRadioButtonGroup.setOnPreferenceChangeListener((preference, newValue) -> {

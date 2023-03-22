@@ -159,6 +159,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &history_clusters::internal::kJourneys,
     &kAdaptiveButtonInTopToolbar,
     &kAdaptiveButtonInTopToolbarTranslate,
+    &kAdaptiveButtonInTopToolbarAddToBookmarks,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAddEduAccountFromAccountSettingsForSupervisedUsers,
     &kAddToHomescreenIPH,
@@ -433,6 +434,10 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbar,
 
 BASE_FEATURE(kAdaptiveButtonInTopToolbarTranslate,
              "AdaptiveButtonInTopToolbarTranslate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAdaptiveButtonInTopToolbarAddToBookmarks,
+             "AdaptiveButtonInTopToolbarAddToBookmarks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2,

@@ -4240,11 +4240,19 @@ const char kVideoTutorialsInstantFetchDescription[] =
 const char kAdaptiveButtonInTopToolbarName[] = "Adaptive button in top toolbar";
 const char kAdaptiveButtonInTopToolbarDescription[] =
     "Enables showing an adaptive action button in the top toolbar";
+
 const char kAdaptiveButtonInTopToolbarTranslateName[] =
     "Adaptive button in top toolbar - Translate button";
 const char kAdaptiveButtonInTopToolbarTranslateDescription[] =
     "Enables a translate button in the top toolbar. Must be selected in "
     "Settings > Toolbar Shortcut.";
+const char kAdaptiveButtonInTopToolbarAddToBookmarksName[] =
+    "Adaptive button in top toolbar - Add to bookmarks button";
+const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[] =
+    "Enables an add to bookmarks button in the top toolbar. Must be selected "
+    "in "
+    "Settings > Toolbar Shortcut.";
+
 const char kAdaptiveButtonInTopToolbarCustomizationName[] =
     "Adaptive button in top toolbar customization";
 const char kAdaptiveButtonInTopToolbarCustomizationDescription[] =

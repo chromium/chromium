@@ -265,6 +265,10 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED =
             "adaptive_toolbar_customization_translate_opened";
 
+    /** AdaptiveButtonInTopToolbarCustomization add to bookmarks events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED =
+            "adaptive_toolbar_customization_add_to_bookmarks_opened";
+
     /** Open new incognito tab from app menu. */
     public static final String APP_MENU_NEW_INCOGNITO_TAB_CLICKED =
             "app_menu_new_incognito_tab_clicked";
