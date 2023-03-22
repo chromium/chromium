@@ -186,8 +186,28 @@ chromium-metrics-reviews@google.com.
 
     - For WebApps, PWAs or WebApks.
 
+    Bugs:
+
+    - This metric does not get recorded when the first navigation commit happens
+    before post-native initialization. This behaviour is not intentional, see
+    crbug.com/1273097. TimeToFirstVisibleContent2 addresses this issue.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Startup.Android.Cold.TimeToFirstVisibleContent2" units="ms"
+    expires_after="2023-09-22">
+  <owner>yfriedman@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The time from Chrome tabbed activity creation to the moment the Chrome first
+    appears ready.
+
+    Currently experimental. Has the same semantics as
+    Startup.Android.Cold.TimeToFirstVisibleContent, without the known bug.
   </summary>
 </histogram>
 

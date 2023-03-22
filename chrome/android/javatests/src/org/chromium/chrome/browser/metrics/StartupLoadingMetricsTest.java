@@ -58,6 +58,8 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstContentfulPaint";
     private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstVisibleContent";
+    private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM2 =
+            "Startup.Android.Cold.TimeToFirstVisibleContent2";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
     private static final String FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM =
@@ -178,6 +180,9 @@ public class StartupLoadingMetricsTest {
             Assert.assertEquals(firstCommitSamples,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             FIRST_VISIBLE_CONTENT_HISTOGRAM));
+            Assert.assertEquals(expectedCount,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            FIRST_VISIBLE_CONTENT_HISTOGRAM2));
         }
     }
 

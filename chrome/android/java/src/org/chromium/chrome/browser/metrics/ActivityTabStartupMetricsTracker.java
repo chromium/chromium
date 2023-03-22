@@ -65,6 +65,7 @@ public class ActivityTabStartupMetricsTracker {
     private PageLoadMetricsObserverImpl mPageLoadMetricsObserver;
     private boolean mShouldTrackStartupMetrics;
     private boolean mFirstVisibleContentRecorded;
+    private boolean mFirstVisibleContent2Recorded;
     private boolean mVisibleContentRecorded;
 
     // Records whether the tracked first navigation commit was recorded pre-the app being in the
@@ -175,6 +176,7 @@ public class ActivityTabStartupMetricsTracker {
                 RecordHistogram.recordBooleanHistogram(
                         FIRST_PAINT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
                 recordFirstVisibleContent(durationMs);
+                recordFirstVisibleContent2(durationMs);
                 recordVisibleContent(durationMs);
             }
 
@@ -252,6 +254,7 @@ public class ActivityTabStartupMetricsTracker {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed", mFirstCommitTimeMs);
+            recordFirstVisibleContent2(mFirstCommitTimeMs);
         }
 
         mShouldTrackStartupMetrics = false;
@@ -296,9 +299,11 @@ public class ActivityTabStartupMetricsTracker {
     }
 
     /**
-     * Record the time to first visible content. This metric acts as the Clank cold start guardian
-     * metric. Reports the minimum value of
-     * Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed and
+     * Records the legacy version of the time to first visible content.
+     *
+     * This metric acts as the Clank cold start guardian metric.
+     *
+     * Reports the minimum value of Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed and
      * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
      *
      * @param durationMs duration in millis.
@@ -309,6 +314,24 @@ public class ActivityTabStartupMetricsTracker {
         mFirstVisibleContentRecorded = true;
         RecordHistogram.recordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent", durationMs);
+    }
+
+    /**
+     * Records the time to first visible content.
+     *
+     * This metric aims to become the new the Clank cold start guardian metric.
+     *
+     * Reports the minimum value of Startup.Android.Cold.TimeToFirstNavigationCommit2.Tabbed and
+     * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
+     *
+     * @param durationMs duration in millis.
+     */
+    private void recordFirstVisibleContent2(long durationMs) {
+        if (mFirstVisibleContent2Recorded) return;
+
+        mFirstVisibleContent2Recorded = true;
+        RecordHistogram.recordMediumTimesHistogram(
+                "Startup.Android.Cold.TimeToFirstVisibleContent2", durationMs);
     }
 
     /**
