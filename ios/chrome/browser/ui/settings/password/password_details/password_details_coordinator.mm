@@ -49,9 +49,6 @@
   password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
 
-  // The handler used for CredentialProviderPromoCommands.
-  id<CredentialProviderPromoCommands> _credentialProviderPromoHandler;
-
   // Tells whether or not to support move to account option. If YES, move option
   // will be supported, NO otherwise.
   BOOL _supportMoveToAccount;
@@ -97,10 +94,6 @@
     _credential = credential;
     _reauthenticationModule = reauthModule;
     _supportMoveToAccount = supportMoveToAccount;
-    if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
-      _credentialProviderPromoHandler = HandlerForProtocol(
-          browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
-    }
   }
   return self;
 }
@@ -122,10 +115,6 @@
     _affiliatedGroup = affiliatedGroup;
     _reauthenticationModule = reauthModule;
     _supportMoveToAccount = supportMoveToAccount;
-    if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
-      _credentialProviderPromoHandler = HandlerForProtocol(
-          browser->GetCommandDispatcher(), CredentialProviderPromoCommands);
-    }
   }
   return self;
 }
@@ -350,8 +339,10 @@
 
 - (void)onPasswordCopiedByUser {
   if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
-    DCHECK(_credentialProviderPromoHandler);
-    [_credentialProviderPromoHandler
+    id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           CredentialProviderPromoCommands);
+    [credentialProviderPromoHandler
         showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                    PasswordCopied];
   }

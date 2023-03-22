@@ -8,13 +8,22 @@
 
 #import <memory>
 
+#import "base/test/scoped_feature_list.h"
+#import "components/password_manager/core/browser/password_form.h"
+
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
+#import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_form_manager.h"
+#import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/passwords/password_controller.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -22,15 +31,19 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using password_manager::MockPasswordFormManagerForUI;
 using password_manager::PasswordFormManager;
+using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerClient;
 using password_manager::prefs::kCredentialsEnableService;
+using testing::NiceMock;
 using testing::Return;
 
 // TODO(crbug.com/958833): this file is initiated because of needing test for
@@ -42,6 +55,7 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
         store_(new testing::NiceMock<
                password_manager::MockPasswordStoreInterface>()) {
     browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     web::WebState::CreateParams params(browser_state_.get());
     web_state_ = web::WebState::Create(params);
@@ -73,6 +87,7 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<Browser> browser_;
   std::unique_ptr<web::WebState> web_state_;
 
   // PasswordController for testing.
@@ -102,4 +117,46 @@ TEST_F(IOSChromePasswordManagerClientTest, PasswordManagerEnabledPolicyTest) {
   // IsSavingAndFillingEnabled should return true, which means the password
   // should be saved.
   EXPECT_TRUE(client->IsSavingAndFillingEnabled(url));
+}
+
+// Tests that `NotifySuccessfulLoginWithExistingPassword` dispatches
+// `CredentialProviderPromoCommands`.
+TEST_F(IOSChromePasswordManagerClientTest,
+       NotifySuccessfulLoginWithExistingPasswordTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kCredentialProviderExtensionPromo,
+      {{"enable_promo_on_login_with_autofill", "true"}});
+
+  // Create a dispatcher for the client, register the command handler for
+  // `CredentialProviderPromoCommands`
+  id credential_provider_promo_commands_handler_mock =
+      OCMStrictProtocolMock(@protocol(CredentialProviderPromoCommands));
+
+  id dispatcher = [[CommandDispatcher alloc] init];
+  [dispatcher
+      startDispatchingToTarget:credential_provider_promo_commands_handler_mock
+                   forProtocol:@protocol(CredentialProviderPromoCommands)];
+  passwordController_.dispatcher = dispatcher;
+
+  // Expect the call with correct trigger type.
+  [[credential_provider_promo_commands_handler_mock expect]
+      showCredentialProviderPromoWithTrigger:
+          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
+
+  // Set up the param for the `NotifySuccessfulLoginWithExistingPassword` call.
+  password_manager::PasswordForm form;
+  auto manager = std::make_unique<NiceMock<MockPasswordFormManagerForUI>>();
+  ON_CALL(*manager, GetPendingCredentials)
+      .WillByDefault(testing::ReturnRef(form));
+  ON_CALL(*manager, IsMovableToAccountStore).WillByDefault(Return(true));
+
+  // Call the tested function.
+  (passwordController_.passwordManagerClient)
+      ->NotifySuccessfulLoginWithExistingPassword(std::move(manager));
+
+  // Verify.
+  [credential_provider_promo_commands_handler_mock verify];
+
+  passwordController_.dispatcher = nil;
 }

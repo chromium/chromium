@@ -216,6 +216,8 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/credential_provider_promo:features",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/passwords/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",

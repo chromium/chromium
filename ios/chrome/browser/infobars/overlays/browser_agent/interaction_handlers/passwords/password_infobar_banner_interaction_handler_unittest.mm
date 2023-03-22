@@ -95,11 +95,15 @@ TEST_F(PasswordInfobarBannerInteractionHandlerTest, MainButton) {
 TEST_F(PasswordInfobarBannerInteractionHandlerTest,
        MainButtonTriggersCredentialProviderPromo) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCredentialProviderExtensionPromo);
+  feature_list.InitAndEnableFeatureWithParameters(
+      kCredentialProviderExtensionPromo,
+      {{"enable_promo_on_password_saved", "true"}});
 
   [[mock_credential_provider_promo_commands_handler_ expect]
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  PasswordSaved];
 
   handler_.MainButtonTapped(infobar_);
+
+  [mock_credential_provider_promo_commands_handler_ verify];
 }
