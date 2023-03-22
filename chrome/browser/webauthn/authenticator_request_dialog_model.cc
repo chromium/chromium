@@ -1187,7 +1187,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
                  kHasRecognizedCredential);
     mechanisms_.emplace_back(
         Mechanism::WindowsAPI(), desc, desc,
-        GetTransportIcon(AuthenticatorTransport::kUsbHumanInterfaceDevice),
+        GetTransportIcon(AuthenticatorTransport::kInternal),
         base::BindRepeating(&AuthenticatorRequestDialogModel::StartWinNativeApi,
                             base::Unretained(this), mechanisms_.size()),
         !priority_transport.has_value() && win_api_should_be_priority);
