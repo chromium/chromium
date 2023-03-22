@@ -2250,9 +2250,7 @@ class ContentScriptApiPrerenderingTest : public ContentScriptApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1344548): Re-enable this test
-IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest,
-                       DISABLED_Prerendering) {
+IN_PROC_BROWSER_TEST_F(ContentScriptApiPrerenderingTest, Prerendering) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
 }
