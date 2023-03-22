@@ -204,6 +204,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     bool generate_mipmap = false;
     ResourceFormat format;
     gfx::ColorSpace color_space;
+    // Render pass wants scanout
+    bool is_scanout = false;
+    // Render pass wants to synchronize updates with other overlays, on Windows
+    // this means a DComp surface.
+    bool scanout_dcomp_surface = false;
   };
 
   static gfx::RectF QuadVertexRect();
@@ -228,9 +233,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   void SetScissorTestRectInDrawSpace(const gfx::Rect& draw_space_rect);
 
   gfx::Size CalculateTextureSizeForRenderPass(
-      const AggregatedRenderPass* render_pass);
+      const AggregatedRenderPass* render_pass) const;
   gfx::Size CalculateSizeForOutputSurface(
       const gfx::Size& device_viewport_size);
+  RenderPassRequirements CalculateRenderPassRequirements(
+      const AggregatedRenderPass* render_pass) const;
 
   void FlushPolygons(
       base::circular_deque<std::unique_ptr<DrawPolygon>>* poly_list,

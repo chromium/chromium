@@ -108,6 +108,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
                                          const gfx::Size& size,
                                          ResourceFormat format,
                                          bool mipmap,
+                                         bool scanout_dcomp_surface,
                                          sk_sp<SkColorSpace> color_space,
                                          bool is_overlay,
                                          const gpu::Mailbox& mailbox) = 0;

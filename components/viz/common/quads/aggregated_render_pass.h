@@ -98,6 +98,13 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   // Indicates current RenderPass is a color conversion pass.
   bool is_color_conversion_pass = false;
 
+  // Windows only: Indicates that the render pass backing's updates need to be
+  // synchronized with tree updates. A swap chain does not synchronize its
+  // presents with DComp commits. This is needed when e.g. the render pass has
+  // video holes that need to line up with other overlays or is itself presented
+  // as an overlay.
+  bool needs_synchronous_dcomp_commit = false;
+
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
  private:

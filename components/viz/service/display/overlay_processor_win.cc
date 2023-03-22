@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -14,6 +15,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/gl_utils.h"
 
@@ -92,11 +94,40 @@ void OverlayProcessorWin::ProcessForOverlays(
   }
 
   if (was_using_dc_layers != using_dc_layers_) {
-    output_surface_->SetEnableDCLayers(using_dc_layers_);
     // The entire surface has to be redrawn if switching from or to direct
     // composition layers, because the previous contents are discarded and some
     // contents would otherwise be undefined.
     *damage_rect = root_render_pass->output_rect;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDCompPresenter)) {
+    if (!root_render_pass->copy_requests.empty()) {
+      // A DComp surface is not readable by viz.
+      // |DCLayerOverlayProcessor::Process| should avoid overlay candidates if
+      // there are e.g. copy output requests present.
+      DCHECK(!using_dc_layers_);
+    }
+
+    // We have overlays, so our root surface requires a backing that
+    // synchronizes with DComp commit. A swap chain's Present does not
+    // synchronize with the DComp tree updates and would result in minor desync
+    // during e.g. scrolling videos.
+    root_render_pass->needs_synchronous_dcomp_commit = using_dc_layers_;
+
+    // We only need to have a transparent backing if there's underlays, but we
+    // unconditionally ask for transparency to avoid thrashing allocations if a
+    // video alternated between overlay and underlay.
+    root_render_pass->has_transparent_background = using_dc_layers_;
+
+    // |root_render_pass| will be promoted to overlay only if
+    // |output_surface_plane| is present.
+    DCHECK_NE(output_surface_plane, nullptr);
+    output_surface_plane->enable_blending =
+        root_render_pass->has_transparent_background;
+  } else {
+    if (was_using_dc_layers != using_dc_layers_) {
+      output_surface_->SetEnableDCLayers(using_dc_layers_);
+    }
   }
 
   if (debug_settings_->show_dc_layer_debug_borders) {

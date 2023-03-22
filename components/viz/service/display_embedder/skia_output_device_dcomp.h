@@ -27,7 +27,6 @@ struct DCLayerOverlayParams;
 namespace gpu {
 class SharedContextState;
 class SharedImageRepresentationFactory;
-class SharedImageFactory;
 
 namespace gles2 {
 class FeatureInfo;
@@ -148,7 +147,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompPresenter final
     : public SkiaOutputDeviceDComp {
  public:
   SkiaOutputDeviceDCompPresenter(
-      gpu::SharedImageFactory* shared_image_factory,
       gpu::SharedImageRepresentationFactory*
           shared_image_representation_factory,
       gpu::SharedContextState* context_state,
@@ -164,15 +162,12 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompPresenter final
                const gfx::ColorSpace& color_space,
                float device_scale_factor,
                gfx::OverlayTransform transform) override;
-  void Submit(bool sync_cpu, base::OnceClosure callback) override;
   bool SetDrawRectangle(const gfx::Rect& draw_rectangle) override;
-  void SetEnableDCLayers(bool enable) override;
   void SetGpuVSyncEnabled(bool enabled) override;
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
-
-  bool IsRootSurfaceAllocatedForTesting() const;
+  bool IsPrimaryPlaneOverlay() const override;
 
  protected:
   bool ScheduleDCLayer(
@@ -183,39 +178,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceDCompPresenter final
                  gfx::FrameData data) override;
 
  private:
-  // Idempotent
-  bool EnsureRootSurfaceAllocated();
-  // Idempotent
-  void DestroyRootSurface();
-
-  // Returns true on success.
-  bool ScheduleRootSurfaceAsOverlay();
-
   // Any implementation capable of scheduling a DComp layer. Currently only
   // |DCompPresenter|.
   scoped_refptr<gl::Presenter> presenter_;
-
-  const raw_ptr<gpu::SharedImageFactory> shared_image_factory_;
-
-  // Parameters from the most recent |Reshape|.
-  SkSurfaceCharacterization characterization_;
-  gfx::ColorSpace color_space_;
-  float device_scale_factor_ = 1.0;
-  gfx::OverlayTransform transform_;
-
-  // Valid from SetDrawRectangle to BeginPaint
-  absl::optional<gfx::Rect> update_rect_;
-
-  bool want_dcomp_surface_ = false;
-
-  // Valid from |EnsureRootSurfaceAllocated| to |DestroyRootSurface|.
-  gpu::Mailbox root_surface_mailbox_;
-  // Valid from |EnsureRootSurfaceAllocated| to |DestroyRootSurface|.
-  std::unique_ptr<gpu::SkiaImageRepresentation>
-      root_surface_skia_representation_;
-  // Valid from BeginPaint to EndPaint
-  std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>
-      root_surface_write_access_;
 };
 
 }  // namespace viz

@@ -185,6 +185,14 @@ BASE_FEATURE(kDisableVideoOverlayIfMoving,
 BASE_FEATURE(kNoUndamagedOverlayPromotion,
              "NoUndamagedOverlayPromotion",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use a DCompPresenter as the root surface, instead of a
+// DirectCompositionSurfaceWin. DCompPresenter is surface-less and the actual
+// allocation of the root surface will be owned by the
+// SkiaOutputDeviceDCompPresenter.
+BASE_FEATURE(kDCompPresenter,
+             "DCompPresenter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)

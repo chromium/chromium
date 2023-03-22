@@ -8,6 +8,7 @@
 
 #include "base/win/windows_version.h"
 #include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,14 +25,6 @@
 
 namespace gpu {
 namespace {
-// Use a DCompPresenter as the root surface, instead of a
-// DirectCompositionSurfaceWin. DCompPresenter is surface-less and the actual
-// allocation of the root surface will be owned by the
-// SkiaOutputDeviceDCompPresenter.
-BASE_FEATURE(kDCompPresenter,
-             "DCompPresenter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 gl::DirectCompositionSurfaceWin::Settings
 CreateDirectCompositionSurfaceSettings(
     const GpuDriverBugWorkarounds& workarounds) {
@@ -55,7 +48,7 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
   if (gl::DirectCompositionSupported() &&
-      base::FeatureList::IsEnabled(kDCompPresenter)) {
+      base::FeatureList::IsEnabled(features::kDCompPresenter)) {
     auto vsync_callback = delegate->GetGpuVSyncCallback();
     auto settings = CreateDirectCompositionSurfaceSettings(
         delegate->GetFeatureInfo()->workarounds());

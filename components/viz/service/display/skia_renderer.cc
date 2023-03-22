@@ -823,6 +823,11 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
       current_gpu_commands_completed_fence_.get());
   this->resource_provider()->SetReleaseFence(current_release_fence_.get());
 
+#if BUILDFLAG(IS_WIN)
+  // Windows does not use buffer queue because a swap chain and DComp surface
+  // internally manage buffers and cross-frame damage. It instead lets the
+  // renderer allocate the root surface like a normal render pass backing.
+#else
   if (output_surface->capabilities().renderer_allocates_images) {
     // When using dynamic frame buffer allocation we'll start with 0 buffers and
     // let EnsureMinNumberOfBuffers() increase it later.
@@ -834,6 +839,7 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
         skia_output_surface_, skia_output_surface_->GetSurfaceHandle(),
         number_of_buffers);
   }
+#endif
 
 #if OS_ANDROID
   use_real_color_space_for_stream_video_ =
@@ -868,13 +874,9 @@ void SkiaRenderer::FinishDrawingFrame() {
   if (current_frame()->output_surface_plane) {
     auto& surface_plane = current_frame()->output_surface_plane.value();
 
-    if (!buffer_queue_) {
+    if (!output_surface_->capabilities().renderer_allocates_images) {
       skia_output_surface_->ScheduleOutputSurfaceAsOverlay(surface_plane);
     } else {
-#if BUILDFLAG(IS_WIN)
-      // Windows does not use buffer_queue_ so this won't be reached.
-      NOTREACHED();
-#else
       auto root_pass_backing =
           render_pass_backings_.find(current_frame()->root_render_pass->id);
       // The root pass backing should always exist.
@@ -883,11 +885,11 @@ void SkiaRenderer::FinishDrawingFrame() {
       OverlayCandidate surface_candidate;
       surface_candidate.mailbox = root_pass_backing->second.mailbox;
       surface_candidate.is_root_render_pass = true;
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
       surface_candidate.transform = gfx::Transform();
 #else
       surface_candidate.transform = surface_plane.transform;
-#endif  // BUILDFLAG(IS_APPLE)
+#endif
       surface_candidate.display_rect = surface_plane.display_rect;
       surface_candidate.uv_rect = surface_plane.uv_rect;
       surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
@@ -903,7 +905,6 @@ void SkiaRenderer::FinishDrawingFrame() {
 
       current_frame()->overlay_list.insert(
           current_frame()->overlay_list.begin(), surface_candidate);
-#endif  // BUILDFLAG(IS_WIN)
     }
   } else {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_APPLE)
@@ -1126,11 +1127,11 @@ void SkiaRenderer::BindFramebufferToTexture(
   RenderPassBacking& backing = iter->second;
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
       render_pass_id, backing.size, backing.format, backing.generate_mipmap,
-      RenderPassBackingSkColorSpace(backing), /*is_overlay=*/is_root,
-      backing.mailbox);
+      backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
+      /*is_overlay=*/is_root, backing.mailbox);
 
   if (is_root && debug_settings_->show_overdraw_feedback) {
-    DCHECK(buffer_queue_);
+    DCHECK(output_surface_->capabilities().renderer_allocates_images);
     current_canvas_ = skia_output_surface_->RecordOverdrawForCurrentPaint();
   }
 }
@@ -3072,7 +3073,9 @@ void SkiaRenderer::FinishDrawingRenderPass() {
   current_canvas_ = nullptr;
   // Non-root render passes that are scheduled as overlays will be painted in
   // PrepareRenderPassOverlay().
-  bool is_overlay = buffer_queue_ && is_root_render_pass;
+  bool is_overlay =
+      skia_output_surface_->capabilities().renderer_allocates_images &&
+      is_root_render_pass;
   EndPaint(current_render_pass_update_rect_, /*failed=*/false, is_overlay);
 
   // Defer flushing drawing task for root render pass, to avoid extra
@@ -3097,15 +3100,19 @@ void SkiaRenderer::UpdateRenderPassTextures(
   const auto& root_pass_id = render_passes_in_draw_order.back()->id;
   std::vector<AggregatedRenderPassId> passes_to_delete;
   for (const auto& [backing_id, backing] : render_pass_backings_) {
-    // If a root backing exists but its id does not match the current root
-    // render pass id, then it must be an old backing that should be deleted.
-    // Otherwise we should not delete a root backing in case it is scheduled
-    // this frame but not drawn.
-    if (backing.is_root) {
-      if (backing_id != root_pass_id) {
-        passes_to_delete.push_back(backing_id);
+    // Buffer queue's root manages the root pass backing and its bookkeeping
+    // separately from other render pass backings.
+    if (buffer_queue_) {
+      // If a root backing exists but its id does not match the current root
+      // render pass id, then it must be an old backing that should be deleted.
+      // Otherwise we should not delete a root backing in case it is scheduled
+      // this frame but not drawn (e.g. in the case of overlay-only damage).
+      if (backing.is_root) {
+        if (backing_id != root_pass_id) {
+          passes_to_delete.push_back(backing_id);
+        }
+        continue;
       }
-      continue;
     }
 
     auto render_pass_it = render_passes_in_frame.find(backing_id);
@@ -3122,9 +3129,12 @@ void SkiaRenderer::UpdateRenderPassTextures(
     bool no_change_in_format = requirements.format == backing.format;
     bool no_change_in_color_space =
         requirements.color_space == backing.color_space;
+    bool scanout_appropriate =
+        requirements.is_scanout == backing.is_scanout &&
+        requirements.scanout_dcomp_surface == backing.scanout_dcomp_surface;
 
     if (!size_appropriate || !mipmap_appropriate || !no_change_in_format ||
-        !no_change_in_color_space) {
+        !no_change_in_color_space || !scanout_appropriate) {
       passes_to_delete.push_back(backing_id);
     }
   }
@@ -3134,10 +3144,10 @@ void SkiaRenderer::UpdateRenderPassTextures(
   for (size_t i = 0; i < passes_to_delete.size(); ++i) {
     auto it = render_pass_backings_.find(passes_to_delete[i]);
     auto& backing = it->second;
-    // Buffers for root render pass backings are managed by |buffer_queue_|, not
+    // Root render pass backings managed by |buffer_queue_| are not managed by
     // DisplayResourceProvider, so we should not destroy them here. This
     // reallocation is done in Reshape before drawing the frame
-    if (!backing.is_root) {
+    if (!(buffer_queue_ && backing.is_root)) {
       skia_output_surface_->DestroySharedImage(backing.mailbox);
     }
     render_pass_backings_.erase(it);
@@ -3151,8 +3161,11 @@ void SkiaRenderer::UpdateRenderPassTextures(
 void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     const AggregatedRenderPassId& render_pass_id,
     const RenderPassRequirements& requirements) {
-  if (render_pass_id == current_frame()->root_render_pass->id) {
-    DCHECK(buffer_queue_);
+  const bool is_root = render_pass_id == current_frame()->root_render_pass->id;
+
+  // Root render pass backings managed by |buffer_queue_| are not managed by
+  // DisplayResourceProvider, so we should not allocate them here.
+  if (buffer_queue_ && is_root) {
     auto& root_pass_backing = render_pass_backings_[render_pass_id];
     root_pass_backing.is_root = true;
     root_pass_backing.mailbox = buffer_queue_->GetCurrentBuffer();
@@ -3160,6 +3173,8 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     root_pass_backing.size = requirements.size;
     root_pass_backing.format = requirements.format;
     root_pass_backing.color_space = requirements.color_space;
+    root_pass_backing.is_scanout = true;
+    root_pass_backing.scanout_dcomp_surface = false;
     return;
   }
 
@@ -3169,14 +3184,43 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     // A root backing should not be used for other render passes. If the root
     // pass id has changed, then it's old backing should have been deleted
     // already in UpdateRenderPassTextures().
-    DCHECK(!it->second.is_root);
+    DCHECK(!(buffer_queue_ && it->second.is_root));
     return;
   }
 
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
-  if (requirements.generate_mipmap)
+  if (requirements.generate_mipmap) {
+    DCHECK(!requirements.is_scanout);
     usage |= gpu::SHARED_IMAGE_USAGE_MIPMAP;
+  }
+  if (requirements.is_scanout) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+
+#if BUILDFLAG(IS_WIN)
+    // DComp surfaces do not support RGB10A2 so we must fall back to swap
+    // chains. If this happens with video overlays, this can result in the video
+    // overlay and its parent surface having unsynchronized updates.
+    //
+    // TODO(tangm): We should clean this up by either avoiding HDR or using
+    //              RGBAF16 surfaces in this case.
+    const bool dcomp_surface_unsupported_format =
+        requirements.format == ResourceFormat::RGBA_1010102;
+
+    if (requirements.scanout_dcomp_surface &&
+        !dcomp_surface_unsupported_format) {
+      usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE;
+
+      // DComp surfaces are write-only, viz cannot sample them.
+      usage &= ~gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    }
+#else
+    DCHECK(!requirements.scanout_dcomp_surface);
+#endif
+  } else {
+    DCHECK(!requirements.scanout_dcomp_surface);
+  }
+
   auto mailbox = skia_output_surface_->CreateSharedImage(
       requirements.format, requirements.size, requirements.color_space, usage,
       gpu::kNullSurfaceHandle);
@@ -3184,7 +3228,8 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
       render_pass_id,
       RenderPassBacking({requirements.size, requirements.generate_mipmap,
                          requirements.color_space, requirements.format, mailbox,
-                         /*is_root=*/false}));
+                         is_root, requirements.is_scanout,
+                         requirements.scanout_dcomp_surface}));
 }
 
 void SkiaRenderer::FlushOutputSurface() {
@@ -3302,9 +3347,14 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, kOverlayUsage,
         gpu::kNullSurfaceHandle);
-    overlay_params.render_pass_backing = {
-        buffer_size, /*generate_mipmap=*/false, color_space, buffer_format,
-        mailbox,     /*is_root=*/false};
+    overlay_params.render_pass_backing = {buffer_size,
+                                          /*generate_mipmap=*/false,
+                                          color_space,
+                                          buffer_format,
+                                          mailbox,
+                                          /*is_root=*/false,
+                                          /*is_scanout=*/true,
+                                          /*scanout_dcomp_surface=*/false};
   } else {
     overlay_params = *it;
     available_render_pass_overlay_backings_.erase(it);
@@ -3482,6 +3532,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
         quad->render_pass_id, dst_overlay_backing.size,
         dst_overlay_backing.format, /*mipmap=*/false,
+        /*scanout_dcomp_surface=*/false,
         RenderPassBackingSkColorSpace(dst_overlay_backing),
         /*is_overlay=*/true, overlay->mailbox);
     if (!current_canvas_) {

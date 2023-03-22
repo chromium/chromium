@@ -170,6 +170,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     const gfx::Size& surface_size,
     ResourceFormat format,
     bool mipmap,
+    bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
     bool is_overlay,
     const gpu::Mailbox& mailbox) {

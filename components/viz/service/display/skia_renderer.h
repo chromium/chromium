@@ -276,11 +276,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   struct RenderPassBacking {
     gfx::Size size;
-    bool generate_mipmap;
+    bool generate_mipmap = false;
     gfx::ColorSpace color_space;
     ResourceFormat format;
     gpu::Mailbox mailbox;
-    bool is_root;
+    bool is_root = false;
+    bool is_scanout = false;
+    bool scanout_dcomp_surface = false;
   };
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
