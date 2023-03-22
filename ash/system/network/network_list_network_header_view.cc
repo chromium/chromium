@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/switch.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_list_header_view.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -41,13 +42,19 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
   toggle_ = toggle.get();
 
   if (features::IsQsRevampEnabled()) {
+    auto qs_toggle = std::make_unique<Switch>(
+        base::BindRepeating(&NetworkListNetworkHeaderView::ToggleButtonPressed,
+                            weak_factory_.GetWeakPtr()));
+    qs_toggle->SetAccessibleName(l10n_util::GetStringUTF16(label_id));
+    qs_toggle->SetID(kQsToggleButtonId);
+    qs_toggle_ = qs_toggle.get();
     auto image_view = std::make_unique<views::ImageView>();
     image_view->SetImage(ui::ImageModel::FromVectorIcon(
         vector_icon, cros_tokens::kCrosSysOnSurface));
     entry_row()->AddViewAndLabel(std::move(image_view),
                                  l10n_util::GetStringUTF16(label_id));
     entry_row()->SetExpandable(true);
-    entry_row()->AddRightView(toggle.release());
+    entry_row()->AddRightView(qs_toggle.release());
   } else {
     container()->AddView(TriView::Container::END, toggle.release());
   }
@@ -58,16 +65,24 @@ NetworkListNetworkHeaderView::~NetworkListNetworkHeaderView() = default;
 void NetworkListNetworkHeaderView::SetToggleState(bool enabled,
                                                   bool is_on,
                                                   bool animate_toggle) {
-  toggle_->SetEnabled(enabled);
-  toggle_->SetAcceptsEvents(enabled);
-
   if (features::IsQsRevampEnabled()) {
     entry_row()->SetEnabled(enabled);
-    // Update the  on/off label.
+    // Update the on/off label.
     entry_row()->text_label()->SetText(l10n_util::GetStringUTF16(
         is_on ? enabled_label_id_ : IDS_ASH_QUICK_SETTINGS_NETWORK_DISABLED));
+
+    qs_toggle_->SetEnabled(enabled);
+    qs_toggle_->SetCanProcessEventsWithinSubtree(enabled);
+    if (animate_toggle) {
+      qs_toggle_->AnimateIsOn(is_on);
+    } else {
+      qs_toggle_->SetIsOn(is_on);
+    }
+    return;
   }
 
+  toggle_->SetEnabled(enabled);
+  toggle_->SetAcceptsEvents(enabled);
   if (animate_toggle) {
     toggle_->AnimateIsOn(is_on);
     return;
@@ -81,7 +96,11 @@ void NetworkListNetworkHeaderView::AddExtraButtons() {}
 void NetworkListNetworkHeaderView::OnToggleToggled(bool is_on) {}
 
 void NetworkListNetworkHeaderView::SetToggleVisibility(bool visible) {
-  toggle_->SetVisible(visible);
+  if (features::IsQsRevampEnabled()) {
+    qs_toggle_->SetVisible(visible);
+  } else {
+    toggle_->SetVisible(visible);
+  }
 }
 
 void NetworkListNetworkHeaderView::ToggleButtonPressed() {
@@ -96,8 +115,14 @@ void NetworkListNetworkHeaderView::UpdateToggleState(bool has_new_state) {
   // disabling of mobile radio. The toggle will get unlocked in the next
   // call to SetToggleState(). Note that we don't disable/enable
   // because that would clear focus.
-  toggle_->SetAcceptsEvents(false);
-  OnToggleToggled(has_new_state ? toggle_->GetIsOn() : !toggle_->GetIsOn());
+  if (features::IsQsRevampEnabled()) {
+    qs_toggle_->SetAcceptsEvents(false);
+    OnToggleToggled(has_new_state ? qs_toggle_->GetIsOn()
+                                  : !qs_toggle_->GetIsOn());
+  } else {
+    toggle_->SetAcceptsEvents(false);
+    OnToggleToggled(has_new_state ? toggle_->GetIsOn() : !toggle_->GetIsOn());
+  }
 }
 
 }  // namespace ash

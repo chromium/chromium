@@ -340,11 +340,10 @@ void AudioDetailedView::CreateLiveCaptionView() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
 
   // Creates a toggle button on the right.
-  auto toggle = std::make_unique<TrayToggleButton>(
-      base::BindRepeating(&AudioDetailedView::ToggleLiveCaptionState,
-                          weak_factory_.GetWeakPtr()),
-      IDS_ASH_STATUS_TRAY_LIVE_CAPTION,
-      /*use_empty_border=*/true);
+  auto toggle = std::make_unique<Switch>(base::BindRepeating(
+      &AudioDetailedView::ToggleLiveCaptionState, weak_factory_.GetWeakPtr()));
+  SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
   toggle->SetIsOn(live_caption_enabled);
   std::u16string toggle_tooltip =
       live_caption_enabled
@@ -435,10 +434,7 @@ AudioDetailedView::CreateQsNoiseCancellationToggleRow(
 
   // Create a non-clickable non-focusable toggle button on the right. The events
   // and focus behavior should be handled by `noise_cancellation_view_` instead.
-  auto toggle =
-      std::make_unique<TrayToggleButton>(views::Button::PressedCallback(),
-                                         /*accessible_name_id=*/absl::nullopt,
-                                         /*use_empty_border=*/true);
+  auto toggle = std::make_unique<Switch>();
   toggle->SetIsOn(noise_cancellation_state);
   toggle->SetCanProcessEventsWithinSubtree(false);
   toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);

@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/switch.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_network_view_impl.h"
 #include "ash/system/network/network_utils.h"
@@ -225,6 +226,36 @@ class NetworkListViewControllerTest : public AshTestBase,
     return GetWifiSubHeader()->toggle_;
   }
 
+  Switch* GetQsMobileToggleButton() { return GetMobileSubHeader()->qs_toggle_; }
+
+  Switch* GetQsWifiToggleButton() { return GetWifiSubHeader()->qs_toggle_; }
+
+  void CheckWifiToggleButtonStatus(bool toggled_on) {
+    if (IsQsRevampEnabled()) {
+      EXPECT_TRUE(GetQsWifiToggleButton()->GetVisible());
+      EXPECT_TRUE(GetQsWifiToggleButton()->GetEnabled());
+      EXPECT_EQ(GetQsWifiToggleButton()->GetIsOn(), toggled_on);
+    } else {
+      EXPECT_TRUE(GetWifiToggleButton()->GetVisible());
+      EXPECT_TRUE(GetWifiToggleButton()->GetEnabled());
+      EXPECT_EQ(GetWifiToggleButton()->GetIsOn(), toggled_on);
+    }
+  }
+
+  void CheckMobileToggleButtonStatus(bool enabled,
+                                     bool toggled_on,
+                                     bool visible = true) {
+    if (IsQsRevampEnabled()) {
+      EXPECT_EQ(GetQsMobileToggleButton()->GetVisible(), visible);
+      EXPECT_EQ(GetQsMobileToggleButton()->GetEnabled(), enabled);
+      EXPECT_EQ(GetQsMobileToggleButton()->GetIsOn(), toggled_on);
+    } else {
+      EXPECT_EQ(GetMobileToggleButton()->GetVisible(), visible);
+      EXPECT_EQ(GetMobileToggleButton()->GetEnabled(), enabled);
+      EXPECT_EQ(GetMobileToggleButton()->GetIsOn(), toggled_on);
+    }
+  }
+
   IconButton* GetAddEsimButton() {
     return FindViewById<IconButton*>(
         NetworkListMobileHeaderViewImpl::kAddESimButtonId);
@@ -298,7 +329,7 @@ class NetworkListViewControllerTest : public AshTestBase,
 
       // Expect that the view at `index` is a network item, and that it is an
       // wifi network.
-      if (!wifi_network_count && GetWifiToggleButton()->GetIsOn()) {
+      if (!wifi_network_count && GetQsWifiToggleButton()->GetIsOn()) {
         // When no WiFi networks are available, status message is shown.
         EXPECT_NE(nullptr, GetWifiStatusMessage());
       }
@@ -592,9 +623,7 @@ TEST_P(NetworkListViewControllerTest, WifiSectionHeader) {
 
   ASSERT_THAT(GetWifiSubHeader(), NotNull());
   EXPECT_THAT(GetWifiSeparator(), IsNull());
-  EXPECT_TRUE(GetWifiToggleButton()->GetVisible());
-  EXPECT_TRUE(GetWifiToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetWifiToggleButton()->GetIsOn());
+  CheckWifiToggleButtonStatus(/*toggled_on=*/true);
   histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
                                      DetailedViewSection::kWifiSection, 1);
 
@@ -606,9 +635,7 @@ TEST_P(NetworkListViewControllerTest, WifiSectionHeader) {
   cros_network()->SetDeviceProperties(properties.Clone());
 
   ASSERT_THAT(GetWifiSubHeader(), NotNull());
-  EXPECT_TRUE(GetWifiToggleButton()->GetVisible());
-  EXPECT_TRUE(GetWifiToggleButton()->GetEnabled());
-  EXPECT_FALSE(GetWifiToggleButton()->GetIsOn());
+  CheckWifiToggleButtonStatus(/*toggled_on=*/false);
   histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
                                      DetailedViewSection::kWifiSection, 1);
 }
@@ -913,9 +940,7 @@ TEST_P(NetworkListViewControllerTest,
   cros_network()->SetDeviceProperties(properties.Clone());
 
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
-  EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_FALSE(GetMobileToggleButton()->GetIsOn());
+  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/false);
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR),
       GetMobileStatusMessage()->label()->GetText());
@@ -927,9 +952,7 @@ TEST_P(NetworkListViewControllerTest,
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
             GetMobileStatusMessage()->label()->GetText());
-  EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetMobileToggleButton()->GetIsOn());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
 
   // No message is shown when there are available networks.
   cros_network()->AddNetworkAndDevice(
@@ -938,9 +961,7 @@ TEST_P(NetworkListViewControllerTest,
           ConnectionStateType::kConnected));
 
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
-  EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetMobileToggleButton()->GetIsOn());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
 
   // Message shown again when list is empty.
   cros_network()->ClearNetworksAndDevices();
@@ -949,15 +970,17 @@ TEST_P(NetworkListViewControllerTest,
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
             GetMobileStatusMessage()->label()->GetText());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  if (IsQsRevampEnabled()) {
+    EXPECT_TRUE(GetQsMobileToggleButton()->GetVisible());
+  } else {
+    EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  }
 
   // No message is shown when inhibited.
   properties->inhibit_reason = InhibitReason::kResettingEuiccMemory;
   cros_network()->SetDeviceProperties(properties.Clone());
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
-  EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetMobileToggleButton()->GetIsOn());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/true);
 
   // Uninhibit the device.
   properties->inhibit_reason = InhibitReason::kNotInhibited;
@@ -967,9 +990,7 @@ TEST_P(NetworkListViewControllerTest,
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS),
             GetMobileStatusMessage()->label()->GetText());
-  EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetMobileToggleButton()->GetIsOn());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
 
   // When device is in disabling message is shown.
   properties->device_state = DeviceStateType::kDisabling;
@@ -979,9 +1000,7 @@ TEST_P(NetworkListViewControllerTest,
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING),
       GetMobileStatusMessage()->label()->GetText());
-  EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_FALSE(GetMobileToggleButton()->GetIsOn());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/false);
 
   properties->device_state = DeviceStateType::kDisabled;
   cros_network()->SetDeviceProperties(properties.Clone());
@@ -998,9 +1017,7 @@ TEST_P(NetworkListViewControllerTest,
         GetMobileStatusMessage()->label()->GetText());
   }
 
-  EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_FALSE(GetMobileToggleButton()->GetIsOn());
-  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/false);
 
   // The toggle is not enabled, the cellular device SIM is locked, and user
   // cannot open the settings page.
@@ -1011,7 +1028,11 @@ TEST_P(NetworkListViewControllerTest,
   properties->sim_lock_status->lock_type = "lock";
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
+  if (IsQsRevampEnabled()) {
+    EXPECT_FALSE(GetQsMobileToggleButton()->GetEnabled());
+  } else {
+    EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
+  }
 }
 
 TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
@@ -1027,8 +1048,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
 
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
   ASSERT_THAT(GetMobileSubHeader(), NotNull());
-  EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetMobileToggleButton()->GetIsOn());
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/true);
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND),
       GetMobileStatusMessage()->label()->GetText());
@@ -1037,8 +1057,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   properties->device_state = DeviceStateType::kUninitialized;
   cros_network()->SetDeviceProperties(properties.Clone());
   SetBluetoothAdapterState(BluetoothSystemState::kEnabling);
-  EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetMobileToggleButton()->GetIsOn());
+  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/true);
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR),
@@ -1046,8 +1065,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
 
   // Set Bluetooth device to disabling.
   SetBluetoothAdapterState(BluetoothSystemState::kDisabling);
-  EXPECT_TRUE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_FALSE(GetMobileToggleButton()->GetIsOn());
+  CheckMobileToggleButtonStatus(/*enabled=*/true, /*toggled_on=*/false);
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH),
@@ -1056,8 +1074,7 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
   // Simulate login as secondary user and disable Bluetooth device.
   LoginAsSecondaryUser();
   SetBluetoothAdapterState(BluetoothSystemState::kDisabled);
-  EXPECT_FALSE(GetMobileToggleButton()->GetEnabled());
-  EXPECT_FALSE(GetMobileToggleButton()->GetIsOn());
+  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/false);
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH),

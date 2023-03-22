@@ -20,6 +20,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/switch.h"
 #include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -104,9 +105,15 @@ void UpdateToggleState(HoverHighlightView* item, bool toggled) {
   if (!item)
     return;
   views::View* right_view = item->right_view();
-  // The right view is either an enterprise icon or a tray toggle button.
-  if (views::IsViewClass<TrayToggleButton>(right_view)) {
-    TrayToggleButton* button = static_cast<TrayToggleButton*>(right_view);
+  // The right view is either an enterprise icon or a `TrayToggleButton`.
+  // For QsRevamp: the right view is either an enterprise icon or a `Switch`.
+  if (!features::IsQsRevampEnabled()) {
+    if (views::IsViewClass<TrayToggleButton>(right_view)) {
+      TrayToggleButton* button = static_cast<TrayToggleButton*>(right_view);
+      button->AnimateIsOn(toggled);
+    }
+  } else if (views::IsViewClass<Switch>(right_view)) {
+    Switch* button = static_cast<Switch*>(right_view);
     button->AnimateIsOn(toggled);
   }
   // The entire row is treated as one element for accessibility.
@@ -656,10 +663,15 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
                        enterprise_managed_icon.Size().width());
   } else {
     // Create a non-clickable non-focusable toggle button on the right.
-    auto toggle = std::make_unique<TrayToggleButton>(
-        views::Button::PressedCallback(),
-        /*accessible_name_id=*/absl::nullopt,
-        /*use_empty_border=*/features::IsQsRevampEnabled());
+    std::unique_ptr<views::ToggleButton> toggle;
+    if (!features::IsQsRevampEnabled()) {
+      toggle = std::make_unique<TrayToggleButton>(
+          views::Button::PressedCallback(),
+          /*accessible_name_id=*/absl::nullopt,
+          /*use_empty_border=*/features::IsQsRevampEnabled());
+    } else {
+      toggle = std::make_unique<Switch>();
+    }
     toggle->SetIsOn(checked);
     toggle->SetCanProcessEventsWithinSubtree(false);
     toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);

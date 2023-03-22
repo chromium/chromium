@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/switch.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
 #include "ash/system/audio/mic_gain_slider_view.h"
@@ -440,14 +441,7 @@ TEST_P(UnifiedAudioDetailedViewControllerTest,
   // view first.
   GetAudioDetailedView();
   EXPECT_EQ(1u, toggles_map_.size());
-
-  if (!IsQsRevampEnabled()) {
-    views::ToggleButton* toggle =
-        (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
-    EXPECT_TRUE(toggle->GetIsOn());
-  } else {
-    EXPECT_TRUE(noise_cancellation_button());
-  }
+  noise_cancellation_button()->GetIsOn();
 }
 
 TEST_P(UnifiedAudioDetailedViewControllerTest,
@@ -468,15 +462,15 @@ TEST_P(UnifiedAudioDetailedViewControllerTest,
   GetAudioDetailedView();
   EXPECT_EQ(1u, toggles_map_.size());
 
-  if (!IsQsRevampEnabled()) {
-    views::ToggleButton* toggle =
-        (views::ToggleButton*)toggles_map_[internal_mic.id]->children()[1];
-    auto widget = CreateFramelessTestWidget();
-    widget->SetContentsView(toggle);
+  views::ToggleButton* toggle = noise_cancellation_button();
+  auto widget = CreateFramelessTestWidget();
+  widget->SetContentsView(toggle);
 
-    // The toggle loaded the pref correctly.
-    EXPECT_FALSE(toggle->GetIsOn());
-    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+  // The toggle loaded the pref correctly.
+  EXPECT_FALSE(toggle->GetIsOn());
+  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+
+  if (!IsQsRevampEnabled()) {
     ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_NONE);
@@ -490,13 +484,6 @@ TEST_P(UnifiedAudioDetailedViewControllerTest,
     views::test::ButtonTestApi(toggle).NotifyClick(press);
     EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
   } else {
-    auto widget = CreateFramelessTestWidget();
-    widget->SetContentsView(noise_cancellation_button());
-
-    // The toggle loaded the pref correctly.
-    EXPECT_FALSE(noise_cancellation_button()->GetIsOn());
-    EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
-
     // For QsRevamp, the entire row of `noise_cancellation_view_` is clickable.
     ToggleNoiseCancellation();
     EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());

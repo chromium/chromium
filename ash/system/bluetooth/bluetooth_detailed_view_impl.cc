@@ -96,8 +96,9 @@ void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
       IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, toggle_tooltip));
 
   // Ensure the toggle button is in sync with the current Bluetooth state.
-  if (toggle_button_->GetIsOn() != enabled)
+  if (toggle_button_->GetIsOn() != enabled) {
     toggle_button_->SetIsOn(enabled);
+  }
 
   InvalidateLayout();
 }
@@ -183,11 +184,9 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   toggle_row_->AddViewAndLabel(std::move(icon), u"");
   toggle_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
-  auto toggle = std::make_unique<TrayToggleButton>(
-      base::BindRepeating(&BluetoothDetailedViewImpl::OnToggleClicked,
-                          weak_factory_.GetWeakPtr()),
-      IDS_ASH_STATUS_TRAY_BLUETOOTH,
-      /*use_empty_border=*/true);
+  auto toggle = std::make_unique<Switch>(base::BindRepeating(
+      &BluetoothDetailedViewImpl::OnToggleClicked, weak_factory_.GetWeakPtr()));
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
   toggle_button_ = toggle.get();
   toggle_row_->AddRightView(toggle.release());
 
