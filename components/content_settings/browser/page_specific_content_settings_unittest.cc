@@ -16,6 +16,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/trust_token_access_details.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -472,6 +473,63 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerCookie) {
   EXPECT_EQ(5u, objects.GetObjectCountForDomain(GURL("http://google.com")));
   // google.com and www.google.com
   EXPECT_EQ(2u, objects.GetHostCount());
+}
+
+TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelTrustToken) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
+
+  // Before Trust Token accesses, there should be no objects here.
+  EXPECT_EQ(
+      0, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+  const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
+  const url::Origin issuer =
+      url::Origin::Create(GURL("http://issuer.example/"));
+  // Access a Trust Token.
+  GetHandle()->OnTrustTokensAccessed(
+      web_contents()->GetPrimaryMainFrame(),
+      content::TrustTokenAccessDetails(
+          origin, network::mojom::TrustTokenOperationType::kIssuance, issuer,
+          false));
+
+  EXPECT_EQ(
+      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
+}
+
+TEST_F(PageSpecificContentSettingsTest,
+       BrowsingDataModelTrustTokenPendingNavigation) {
+  NavigateAndCommit(GURL("http://google.com"));
+
+  std::unique_ptr<content::NavigationSimulator> simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://other.com"), web_contents());
+  simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
+  simulator->Start();
+
+  const url::Origin origin = url::Origin::Create(GURL("http://google.com/"));
+  const url::Origin issuer =
+      url::Origin::Create(GURL("http://issuer.example/"));
+  // Access a Trust Token.
+  GetHandle()->OnTrustTokensAccessed(
+      simulator->GetNavigationHandle(),
+      content::TrustTokenAccessDetails(
+          origin, network::mojom::TrustTokenOperationType::kIssuance, issuer,
+          false));
+  simulator->Commit();
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      simulator->GetFinalRenderFrameHost());
+  auto* allowed_browsing_data_model = pscs->allowed_browsing_data_model();
+
+  // Before Trust Token accesses, there should be no objects here.
+  EXPECT_EQ(
+      1, browsing_data::GetUniqueHostCount(pscs->allowed_local_shared_objects(),
+                                           *allowed_browsing_data_model));
 }
 
 TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainerHostsCount) {

@@ -39,6 +39,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/trust_token_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -83,6 +84,7 @@ class InflightNavigationContentSettings
  public:
   ~InflightNavigationContentSettings() override;
   std::vector<content::CookieAccessDetails> cookie_accesses;
+  std::vector<content::TrustTokenAccessDetails> trust_token_accesses;
   std::vector<std::pair<GURL, content::AllowServiceWorkerResult>>
       service_worker_accesses;
 
@@ -143,6 +145,12 @@ class WebContentsHandler
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::RenderFrameHost* rfh,
                          const content::CookieAccessDetails& details) override;
+  void OnTrustTokensAccessed(
+      content::NavigationHandle* navigation,
+      const content::TrustTokenAccessDetails& details) override;
+  void OnTrustTokensAccessed(
+      content::RenderFrameHost* rfh,
+      const content::TrustTokenAccessDetails& details) override;
   // Called when a specific Service Worker scope was accessed.
   // If access was blocked due to the user's content settings,
   // |blocked_by_policy_javascript| or/and |blocked_by_policy_cookie|
@@ -227,6 +235,10 @@ void WebContentsHandler::TransferNavigationContentSettingsToCommittedDocument(
   for (const auto& cookie_access : navigation_settings.cookie_accesses) {
     OnCookiesAccessed(rfh, cookie_access);
   }
+  for (const auto& trust_token_access :
+       navigation_settings.trust_token_accesses) {
+    OnTrustTokensAccessed(rfh, trust_token_access);
+  }
   for (const auto& service_worker_access :
        navigation_settings.service_worker_accesses) {
     OnServiceWorkerAccessed(rfh, service_worker_access.first,
@@ -257,6 +269,32 @@ void WebContentsHandler::OnCookiesAccessed(
   auto* pscs = PageSpecificContentSettings::GetForPage(rfh->GetPage());
   if (pscs)
     pscs->OnCookiesAccessed(details);
+}
+
+void WebContentsHandler::OnTrustTokensAccessed(
+    content::NavigationHandle* navigation,
+    const content::TrustTokenAccessDetails& details) {
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+    inflight_navigation_settings->trust_token_accesses.push_back(details);
+    return;
+  }
+  // All accesses during main frame navigations should enter the block above and
+  // not reach here. We also don't expect any accesses to be made during page
+  // activations or same-document navigations.
+  DCHECK(navigation->GetParentFrame());
+  OnTrustTokensAccessed(navigation->GetParentFrame()->GetMainFrame(), details);
+}
+
+void WebContentsHandler::OnTrustTokensAccessed(
+    content::RenderFrameHost* rfh,
+    const content::TrustTokenAccessDetails& details) {
+  auto* pscs = PageSpecificContentSettings::GetForPage(rfh->GetPage());
+  if (pscs) {
+    pscs->OnTrustTokenAccessed(details.origin, details.blocked);
+  }
 }
 
 void WebContentsHandler::OnServiceWorkerAccessed(
@@ -862,7 +900,6 @@ void PageSpecificContentSettings::OnTopicAccessed(
 void PageSpecificContentSettings::OnTrustTokenAccessed(
     const url::Origin& api_origin,
     bool blocked) {
-  // TODO(crbug.com/1378703): Call this method.
   // The size isn't relevant here and won't be displayed in the UI.
   const int kTrustTokenSize = 0;
   auto& model =
