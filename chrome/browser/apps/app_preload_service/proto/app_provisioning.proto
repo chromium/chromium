@@ -14,8 +14,6 @@ package apps.proto;
 // In the future this file will be add only, however breaking changes can be
 // be made until the interface is finalized (currently aimed for M110).
 
-// TODO(b/243338003): Review and finalise API. >> THIS IS A DRAFT API ONLY <<
-
 message AppProvisioningListAppsRequest {
   enum UserType {
     // Default for deserialization when an unexpected value is encountered.
