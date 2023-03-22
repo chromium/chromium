@@ -5757,6 +5757,10 @@ crbug.com/1308932 compositing/overflow/non-reparented-overlay-scrollbars.html [ 
 crbug.com/1308932 scrollbars/auto-scrollbar-fades-out.html [ Failure ]
 crbug.com/1308932 scrollbars/overlay-scrollbars-within-overflow-scroll.html [ Failure ]
 
+# Temporarily disable test for CSS nesting support CL in DevTools to land
+crbug.com/1172985 http/tests/devtools/elements/styles-1/commit-selector-mark-matching.js [ Failure Pass ]
+crbug.com/1172985 http/tests/devtools/elements/styles-2/pseudo-elements.js [ Failure Pass ]
+
 # Sheriff 2022-06-24
 crbug.com/1339211 [ Mac10.13 Release ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
 crbug.com/1339291 [ Mac12-arm64 Release ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure Pass ]
