@@ -817,6 +817,15 @@ AutofillProfile* PersonalDataManager::GetProfileByGUID(
   return iter != profiles.end() ? *iter : nullptr;
 }
 
+bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
+  // The CONTACT_INFO data type is only running for eligible users. See
+  // ContactInfoModelTypeController.
+  return base::FeatureList::IsEnabled(
+             features::kAutofillAccountProfilesMigration) &&
+         sync_service_ &&
+         sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
+}
+
 void PersonalDataManager::MigrateProfileToAccount(
     const AutofillProfile& profile) {
   DCHECK_EQ(profile.source(), AutofillProfile::Source::kLocalOrSyncable);

@@ -40,6 +40,14 @@ BASE_FEATURE(kAutofillAccountProfilesUnionView,
 const base::FeatureParam<bool> kAutofillEnableSilentUpdatesForAccountProfiles{
     &kAutofillAccountProfilesUnionView, "enable_silent_updates", true};
 
+// When enabled, creating new kAccount profiles becomes possible for eligible
+// users. Moreover, users are prompted to migrate existing kLocalOrSyncable
+// profiles to the kAccount storage.
+// TODO(crbug.com/1423319): Remove once launched.
+BASE_FEATURE(kAutofillAccountProfilesMigration,
+             "AutofillAccountProfilesMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
 // When enabled, address profile save problem will contain a dropdown for

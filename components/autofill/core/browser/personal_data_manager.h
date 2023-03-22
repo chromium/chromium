@@ -211,6 +211,10 @@ class PersonalDataManager : public KeyedService,
   // profile with the specified |guid|.
   virtual AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
+  // Determines whether the logged in user (if any) is eligible to store
+  // Autofill address profiles to their account.
+  bool IsEligibleForAddressAccountStorage() const;
+
   // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has
   // multiple side-effects for the profile:
   // - It is stored in a different backend.
