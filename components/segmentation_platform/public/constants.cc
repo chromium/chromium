@@ -46,6 +46,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kDeviceSwitcherUmaName;
   } else if (segmentation_key == kTabletProductivityUserKey) {
     return kTabletProductivityUserUmaName;
+  } else if (segmentation_key == kDeviceTierKey) {
+    return kDeviceTierUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -104,6 +106,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
     case proto::SegmentId::
         OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER:
       return "TabletProductivityUserSegment";
+    case proto::SegmentId::DEVICE_TIER_SEGMENT:
+      return "DeviceTierSegment";
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.
@@ -135,7 +139,9 @@ proto::Predictor::PredictorTypeCase GetClassifierType(
     return proto::Predictor::kBinaryClassifier;
   } else if (segmentation_key == kFeedUserSegmentationKey ||
              segmentation_key == kPowerUserKey ||
-             segmentation_key == kSearchUserKey) {
+             segmentation_key == kSearchUserKey ||
+             segmentation_key == kDeviceTierKey ||
+             segmentation_key == kTabletProductivityUserKey) {
     return proto::Predictor::kBinnedClassifier;
   }
   // This case is reached when UNKNOWN segment is valid, in case of boolean
