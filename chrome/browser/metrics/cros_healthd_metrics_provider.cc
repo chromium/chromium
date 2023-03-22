@@ -130,10 +130,9 @@ void CrosHealthdMetricsProvider::OnProbeDone(
       }
 
       case ash::cros_healthd::mojom::BlockDeviceInfo::Tag::kEmmcDeviceInfo: {
-        DCHECK(storage->vendor_id->is_emmc_oemid());
         dev.set_type(
             SystemProfileProto::Hardware::InternalStorageDevice::TYPE_EMMC);
-        dev.set_vendor_id(storage->vendor_id->get_emmc_oemid());
+        dev.set_vendor_id(device_info->get_emmc_device_info()->manfid);
         dev.set_product_id(device_info->get_emmc_device_info()->pnm);
         dev.set_revision(device_info->get_emmc_device_info()->prv);
         dev.set_firmware_version(device_info->get_emmc_device_info()->fwrev);
