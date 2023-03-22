@@ -229,4 +229,12 @@ TEST(IBANTest, ValidateIbanValue_ValidateOnRegexAndCountry) {
   EXPECT_FALSE(IBAN::IsValid(u"XXA1CBKU0000000000001234560101"));
 }
 
+TEST(IBANTest, IsIbanApplicableInCountry) {
+  // Is an IBAN-supported country.
+  EXPECT_TRUE(IBAN::IsIbanApplicableInCountry("KW"));
+
+  // Not an IBAN-supported country.
+  EXPECT_FALSE(IBAN::IsIbanApplicableInCountry("AB"));
+}
+
 }  // namespace autofill

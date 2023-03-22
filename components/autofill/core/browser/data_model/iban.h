@@ -40,6 +40,9 @@ class IBAN : public AutofillDataModel {
   // https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
   static bool IsValid(const std::u16string& value);
 
+  // Returns true if `country_code` is in the IBAN-supported country list.
+  static bool IsIbanApplicableInCountry(const std::string& country_code);
+
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;
   bool SetMetadata(const AutofillMetadata& metadata) override;

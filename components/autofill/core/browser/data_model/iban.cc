@@ -223,6 +223,12 @@ bool IBAN::IsValid(const std::u16string& value) {
   return GetRemainderOfIbanValue(iban_value) == 1;
 }
 
+// static
+bool IBAN::IsIbanApplicableInCountry(const std::string& country_code) {
+  auto* it = kCountryToIbanLength.find(country_code);
+  return it != kCountryToIbanLength.end();
+}
+
 bool IBAN::SetMetadata(const AutofillMetadata& metadata) {
   // Make sure the ids match.
   return metadata.id != guid() && AutofillDataModel::SetMetadata(metadata);

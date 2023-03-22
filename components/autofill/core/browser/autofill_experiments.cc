@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
@@ -75,16 +76,6 @@ const char* const kAutofillUpstreamLaunchedCountries[] = {
     "IT", "JP", "KY", "LC", "LT", "LU", "LV", "ME", "MK", "MO", "MQ", "MT",
     "NC", "NL", "NO", "NZ", "PA", "PL", "PR", "PT", "RE", "RO", "RU", "SE",
     "SG", "SI", "SK", "TH", "TR", "TT", "TW", "UA", "US", "VI", "VN", "ZA"};
-
-// The list of countries that are familiar with IBAN functionality.
-const char* const kAutofillIbanApplicableCountries[] = {
-    "AD", "AE", "AL", "AT", "AZ", "BA", "BE", "BG", "BH", "BR", "BY",
-    "CH", "CR", "CY", "CZ", "DE", "DK", "DO", "EE", "EG", "ES", "FI",
-    "FO", "FR", "GB", "GE", "GI", "GL", "GR", "GT", "HR", "HU", "IE",
-    "IL", "IQ", "IS", "IT", "JO", "KZ", "KW", "LB", "LC", "LI", "LT",
-    "LU", "LV", "LY", "MC", "MD", "ME", "MK", "MR", "MT", "MU", "NL",
-    "NO", "PK", "PL", "PS", "PT", "QA", "RO", "RS", "SA", "SC", "SD",
-    "SE", "SI", "SK", "SM", "ST", "TL", "TN", "TR", "UA", "VG", "XK"};
 
 // The list of supported additional email domains for credit card upload if the
 // AutofillUpstreamAllowAdditionalEmailDomains flag is enabled. Specifically
@@ -315,9 +306,7 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
   }
 
   std::string country_code = base::ToUpperASCII(user_country_code);
-  auto* const* country_iter =
-      base::ranges::find(kAutofillIbanApplicableCountries, country_code);
-  return country_iter != std::end(kAutofillIbanApplicableCountries) ||
+  return IBAN::IsIbanApplicableInCountry(user_country_code) ||
          prefs::HasSeenIban(pref_service);
 }
 
