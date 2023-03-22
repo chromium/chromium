@@ -1485,6 +1485,16 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
   const std::string* path = extension.FindString(kPrefPath);
   if (!path)
     return nullptr;
+
+  // The old creation flag value for indicating an extension was a bookmark app.
+  // This matches the commented-out entry in extension.h.
+  constexpr int kOldBookmarkAppFlag = 1 << 4;
+  absl::optional<int> creation_flags = extension.FindInt(kPrefCreationFlags);
+  if (creation_flags && (*creation_flags & kOldBookmarkAppFlag)) {
+    // This is an old bookmark app entry. Ignore it.
+    return nullptr;
+  }
+
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(*path);
 
   // Make path absolute. Most (but not all) extension types have relative paths.
