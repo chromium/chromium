@@ -1001,6 +1001,32 @@ TEST_F(SyncDataTypeManagerImplTest, FailingPreconditionKeepData) {
   dtm_->Stop(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
   EXPECT_TRUE(configurer_.connected_types().Empty());
+
+  EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
+}
+
+TEST_F(SyncDataTypeManagerImplTest, FailingPreconditionClearData) {
+  AddController(BOOKMARKS);
+  GetController(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndClearData);
+
+  // Bookmarks is never started due to failing preconditions.
+  DataTypeStatusTable::TypeErrorMap error_map;
+  error_map[BOOKMARKS] =
+      SyncError(FROM_HERE, SyncError::DATATYPE_POLICY_ERROR, "", BOOKMARKS);
+  DataTypeStatusTable expected_status_table;
+  expected_status_table.UpdateFailedDataTypes(error_map);
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, expected_status_table);
+
+  Configure(ModelTypeSet(BOOKMARKS));
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+
+  EXPECT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_EQ(0U, configurer_.connected_types().Size());
+
+  EXPECT_EQ(1, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 }
 
 // Tests that unready types are not started after ResetDataTypeErrors and

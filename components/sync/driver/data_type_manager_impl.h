@@ -88,9 +88,9 @@ class DataTypeManagerImpl : public DataTypeManager,
   // Prepare the parameters for the configurer's configuration.
   ModelTypeConfigurer::ConfigureParams PrepareConfigureParams();
 
-  // Update precondition state of types in data_type_status_table_ to match
+  // Update precondition state of types in `data_type_status_table_` to match
   // value of DataTypeController::GetPreconditionState().
-  void UpdatePreconditionErrors(const ModelTypeSet& desired_types);
+  void UpdatePreconditionErrors();
 
   // Update precondition state for |type|, such that data_type_status_table_
   // matches DataTypeController::GetPreconditionState(). Returns true if there
