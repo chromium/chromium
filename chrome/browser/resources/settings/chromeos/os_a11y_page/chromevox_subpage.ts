@@ -28,10 +28,16 @@ import {Route, Router} from '../router.js';
 import {getTemplate} from './chromevox_subpage.html.js';
 import {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
 
+export {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+
 const SYSTEM_VOICE = 'chromeos_system_voice';
 const CHROMEVOX_EXTENSION_ID = 'mndnfokpggljbaajbnioimlmbfngpief';
 const GOOGLE_TTS_EXTENSION_ID = 'gjjabgpgjpampikjhjpfhneeoapjbjaf';
 const ESPEAK_TTS_EXTENSION_ID = 'dakbfdmgjiabojdgbiljlhgjbokobjpg';
+const EVENT_STREAM_FILTERS_PREF_KEY =
+    'settings.a11y.chromevox.event_stream_filters';
+
+type EventStreamFiltersPrefValue = Record<string, boolean>;
 
 /**
  * Represents a voice as sent from the TTS Handler class.
@@ -169,6 +175,70 @@ class SettingsChromeVoxSubpageElement extends
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Event stream filters list. Should match
+       * SettingsManager.EVENT_STREAM_FILTERS from settings_manager.js.
+       */
+      eventStreamFilters_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            'activedescendantchanged',
+            'alert',
+            'ariaAttributeChanged',
+            'autocorrectionOccured',
+            'blur',
+            'checkedStateChanged',
+            'childrenChanged',
+            'clicked',
+            'documentSelectionChanged',
+            'documentTitleChanged',
+            'expandedChanged',
+            'focus',
+            'focusContext',
+            'hide',
+            'hitTestResult',
+            'hover',
+            'imageFrameUpdated',
+            'invalidStatusChanged',
+            'layoutComplete',
+            'liveRegionChanged',
+            'liveRegionCreated',
+            'loadComplete',
+            'locationChanged',
+            'mediaStartedPlaying',
+            'mediaStoppedPlaying',
+            'menuEnd',
+            'menuItemSelected',
+            'menuListValueChanged',
+            'menuPopupEnd',
+            'menuPopupStart',
+            'menuStart',
+            'mouseCanceled',
+            'mouseDragged',
+            'mouseMoved',
+            'mousePressed',
+            'mouseReleased',
+            'rowCollapsed',
+            'rowCountChanged',
+            'rowExpanded',
+            'scrollPositionChanged',
+            'scrolledToAnchor',
+            'selectedChildrenChanged',
+            'selection',
+            'selectionAdd',
+            'selectionRemove',
+            'show',
+            'stateChanged',
+            'textChanged',
+            'textSelectionChanged',
+            'treeChanged',
+            'valueInTextFieldChanged',
+          ];
+        },
+      },
     };
   }
 
@@ -298,6 +368,34 @@ class SettingsChromeVoxSubpageElement extends
     window.open(
         'chrome-extension://' + CHROMEVOX_EXTENSION_ID +
         '/chromevox/log_page/log.html');
+  }
+
+  private getEventStreamFilterPref_(eventStreamFilter: string):
+      chrome.settingsPrivate.PrefObject<boolean> {
+    return {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: Boolean(this.prefs) &&
+          this.getPref<EventStreamFiltersPrefValue>(
+                  EVENT_STREAM_FILTERS_PREF_KEY)
+              .value[eventStreamFilter],
+    };
+  }
+
+  /**
+   * When an event stream filter checkbox is checked, update the dictionary pref
+   * of event stream filter states.
+   */
+  private onEventStreamFilterPrefChanged_(e: Event): void {
+    // Get all eventStreamFilters, set new filter state.
+    const filter = e.target as SettingsToggleButtonElement;
+    const eventStreamFilters = {
+      ...this
+          .getPref<EventStreamFiltersPrefValue>(EVENT_STREAM_FILTERS_PREF_KEY)
+          .value,
+      [filter.id]: filter.checked,
+    };
+    this.setPrefValue(EVENT_STREAM_FILTERS_PREF_KEY, eventStreamFilters);
   }
 }
 

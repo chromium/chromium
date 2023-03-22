@@ -17,6 +17,10 @@ found in the LICENSE file.
     padding-inline-start: var(--cr-section-indent-width);
   }
 
+  .indented {
+    margin-inline-start: 32px;
+  }
+
   .settings-box {
     margin-inline-end: var(--cr-section-padding);
     padding-inline-end: 0;
@@ -190,5 +194,19 @@ found in the LICENSE file.
         sub-label="$i18n{chromeVoxEventLogDescription}"
         on-click="onEventLogTap_" external embedded>
     </cr-link-row>
+    <template is="dom-if" if="[[prefs.settings.a11y.chromevox.enable_event_stream_logging.value]]">
+      <div class="indented">
+        <template is="dom-repeat" items="[[eventStreamFilters_]]">
+          <settings-toggle-button
+              id="[[item]]"
+              class="settings-box"
+              pref="[[getEventStreamFilterPref_(item, prefs.settings.a11y.chromevox.event_stream_filters)]]"
+              label="[[item]]"
+              on-settings-boolean-control-change="onEventStreamFilterPrefChanged_"
+              no-set-pref>
+          </settings-toggle-button>
+        </template>
+      </div>
+    </template>
   </div>
 </iron-collapse>
