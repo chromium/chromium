@@ -54,6 +54,10 @@ const char kEnableDawnBackendValidation[] = "enable-dawn-backend-validation";
 // The adapter to use for WebGPU content.
 GPU_EXPORT extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
 
+// The adapter selecting strategy related to GPUPowerPreference.
+GPU_EXPORT extern const char kUseWebGPUPowerPreference[] =
+    "use-webgpu-power-preference";
+
 // Set the Dawn features(toggles) enabled on the creation of Dawn devices.
 const char kEnableDawnFeatures[] = "enable-dawn-features";
 

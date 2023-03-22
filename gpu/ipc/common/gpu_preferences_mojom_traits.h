@@ -129,6 +129,45 @@ struct GPU_EXPORT
 };
 
 template <>
+struct GPU_EXPORT
+    EnumTraits<gpu::mojom::WebGPUPowerPreference, gpu::WebGPUPowerPreference> {
+  static gpu::mojom::WebGPUPowerPreference ToMojom(
+      gpu::WebGPUPowerPreference input) {
+    switch (input) {
+      case gpu::WebGPUPowerPreference::kDefaultLowPower:
+        return gpu::mojom::WebGPUPowerPreference::kDefaultLowPower;
+      case gpu::WebGPUPowerPreference::kDefaultHighPerformance:
+        return gpu::mojom::WebGPUPowerPreference::kDefaultHighPerformance;
+      case gpu::WebGPUPowerPreference::kForceLowPower:
+        return gpu::mojom::WebGPUPowerPreference::kForceLowPower;
+      case gpu::WebGPUPowerPreference::kForceHighPerformance:
+        return gpu::mojom::WebGPUPowerPreference::kForceHighPerformance;
+    }
+    NOTREACHED();
+    return gpu::mojom::WebGPUPowerPreference::kDefaultHighPerformance;
+  }
+
+  static bool FromMojom(gpu::mojom::WebGPUPowerPreference input,
+                        gpu::WebGPUPowerPreference* out) {
+    switch (input) {
+      case gpu::mojom::WebGPUPowerPreference::kDefaultLowPower:
+        *out = gpu::WebGPUPowerPreference::kDefaultLowPower;
+        return true;
+      case gpu::mojom::WebGPUPowerPreference::kDefaultHighPerformance:
+        *out = gpu::WebGPUPowerPreference::kDefaultHighPerformance;
+        return true;
+      case gpu::mojom::WebGPUPowerPreference::kForceLowPower:
+        *out = gpu::WebGPUPowerPreference::kForceLowPower;
+        return true;
+      case gpu::mojom::WebGPUPowerPreference::kForceHighPerformance:
+        *out = gpu::WebGPUPowerPreference::kForceHighPerformance;
+        return true;
+    }
+    return false;
+  }
+};
+
+template <>
 struct GPU_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
                              gpu::DawnBackendValidationLevel> {
   static gpu::mojom::DawnBackendValidationLevel ToMojom(
@@ -239,6 +278,10 @@ struct GPU_EXPORT
     out->enable_unsafe_webgpu = prefs.enable_unsafe_webgpu();
     if (!prefs.ReadUseWebgpuAdapter(&out->use_webgpu_adapter))
       return false;
+    if (!prefs.ReadUseWebgpuPowerPreference(
+            &out->use_webgpu_power_preference)) {
+      return false;
+    }
     if (!prefs.ReadEnableDawnBackendValidation(
             &out->enable_dawn_backend_validation))
       return false;
@@ -423,6 +466,10 @@ struct GPU_EXPORT
   static gpu::WebGPUAdapterName use_webgpu_adapter(
       const gpu::GpuPreferences& prefs) {
     return prefs.use_webgpu_adapter;
+  }
+  static gpu::WebGPUPowerPreference use_webgpu_power_preference(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.use_webgpu_power_preference;
   }
   static gpu::DawnBackendValidationLevel enable_dawn_backend_validation(
       const gpu::GpuPreferences& prefs) {

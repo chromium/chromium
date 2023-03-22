@@ -26,6 +26,14 @@ enum WebGPUAdapterName {
   kSwiftShader = 2,
 };
 
+// Corresponds to gpu::WebGPUPowerPreference.
+enum WebGPUPowerPreference {
+  kDefaultLowPower = 0,
+  kDefaultHighPerformance = 1,
+  kForceLowPower = 2,
+  kForceHighPerformance = 3,
+};
+
 // Corresponds to gpu::GrContextType.
 enum GrContextType {
   kGL = 0,
@@ -96,6 +104,7 @@ struct GpuPreferences {
   bool enable_webgpu;
   bool enable_unsafe_webgpu;
   WebGPUAdapterName use_webgpu_adapter;
+  WebGPUPowerPreference use_webgpu_power_preference;
   DawnBackendValidationLevel enable_dawn_backend_validation;
   array<string> enabled_dawn_features_list;
   array<string> disabled_dawn_features_list;

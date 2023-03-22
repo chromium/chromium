@@ -71,6 +71,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _enable_dawn_backend_validation = False
   _use_webgpu_adapter = None  # use the default
   _original_environ = None
+  _use_webgpu_power_preference = None
 
   _build_dir = None
 
@@ -187,6 +188,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         type=str,
         default=None,
         help=('Runs the browser with a particular WebGPU adapter'))
+    parser.add_option(
+        '--use-webgpu-power-preference',
+        type=str,
+        default=None,
+        help=('Runs the browser with a particular WebGPU power preference'))
 
   @classmethod
   def StartBrowser(cls) -> None:
@@ -211,6 +217,9 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     if cls._use_webgpu_adapter:
       browser_args.append('--use-webgpu-adapter=%s' % cls._use_webgpu_adapter)
+    if cls._use_webgpu_power_preference:
+      browser_args.append('--use-webgpu-power-preference=%s' %
+                          cls._use_webgpu_power_preference)
     if cls._enable_dawn_backend_validation:
       if sys.platform == 'win32':
         browser_args.append('--enable-dawn-backend-validation=partial')
@@ -237,6 +246,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       cls._test_timeout = options.override_timeout
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
     cls._use_webgpu_adapter = options.use_webgpu_adapter
+    cls._use_webgpu_power_preference = options.use_webgpu_power_preference
 
   @classmethod
   def _ModifyBrowserEnvironment(cls) -> None:
@@ -505,6 +515,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       tags.append('webgpu-adapter-' + cls._use_webgpu_adapter)
     else:
       tags.append('webgpu-adapter-default')
+    # No need to tag _use_webgpu_power_preference here,
+    # since Telemetry already reports the GPU vendorID
 
     system_info = browser.GetSystemInfo()
     if system_info:

@@ -437,6 +437,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   bool enable_unsafe_webgpu_ = false;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
+  WebGPUPowerPreference use_webgpu_power_preference_ =
+      WebGPUPowerPreference::kDefaultHighPerformance;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
   bool allow_unsafe_apis_;
@@ -1098,6 +1100,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
       isolation_key_provider_(isolation_key_provider) {
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
+  use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
@@ -1571,8 +1574,37 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
     WGPUPowerPreference power_preference,
     bool force_fallback) const {
-  WGPUAdapterType preferred_adapter_type =
-      PowerPreferenceToDawnAdapterType(power_preference);
+  WGPUAdapterType preferred_adapter_type;
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kSwiftShader) {
+    // When it is using SwiftShader, it is using CPU, so ignore webgpu power
+    // preference flag.
+    DCHECK(force_fallback);
+    preferred_adapter_type = WGPUAdapterType_CPU;
+  } else {
+    WGPUPowerPreference adjusted_power_preference = power_preference;
+    switch (use_webgpu_power_preference_) {
+      case WebGPUPowerPreference::kDefaultLowPower:
+        if (adjusted_power_preference == WGPUPowerPreference_Undefined) {
+          adjusted_power_preference = WGPUPowerPreference_LowPower;
+        }
+        break;
+      case WebGPUPowerPreference::kDefaultHighPerformance:
+        if (adjusted_power_preference == WGPUPowerPreference_Undefined) {
+          adjusted_power_preference = WGPUPowerPreference_HighPerformance;
+        }
+        break;
+      case WebGPUPowerPreference::kForceLowPower:
+        adjusted_power_preference = WGPUPowerPreference_LowPower;
+        break;
+      case WebGPUPowerPreference::kForceHighPerformance:
+        adjusted_power_preference = WGPUPowerPreference_HighPerformance;
+        break;
+      default:
+        break;
+    }
+    preferred_adapter_type =
+        PowerPreferenceToDawnAdapterType(adjusted_power_preference);
+  }
 
   int32_t discrete_gpu_adapter_index = -1;
   int32_t integrated_gpu_adapter_index = -1;
@@ -1613,11 +1645,21 @@ int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
   }
 
   // For now, we always prefer the discrete GPU
-  if (discrete_gpu_adapter_index >= 0) {
+  if (discrete_gpu_adapter_index >= 0 &&
+      use_webgpu_power_preference_ != WebGPUPowerPreference::kForceLowPower) {
     return discrete_gpu_adapter_index;
   }
-  if (integrated_gpu_adapter_index >= 0) {
+  if (integrated_gpu_adapter_index >= 0 &&
+      use_webgpu_power_preference_ !=
+          WebGPUPowerPreference::kForceHighPerformance) {
     return integrated_gpu_adapter_index;
+  }
+  if (use_webgpu_power_preference_ == WebGPUPowerPreference::kForceLowPower ||
+      use_webgpu_power_preference_ ==
+          WebGPUPowerPreference::kForceHighPerformance) {
+    // If we cannot find the forced adapter type, early return here instead of
+    // returning any other adapter.
+    return -1;
   }
   if (cpu_adapter_index >= 0) {
     return cpu_adapter_index;

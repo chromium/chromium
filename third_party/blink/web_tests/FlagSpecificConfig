@@ -53,7 +53,8 @@
           "--disable-dawn-features=disallow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
-          "--enable-accelerated-2d-canvas"
+          "--enable-accelerated-2d-canvas",
+          "--use-webgpu-power-preference=default-high-performance"
     ],
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
@@ -66,7 +67,9 @@
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
           "helps match the test behavior with the browser.",
           "--enable-accelerated-2d-canvas ensures that the canvas reference",
-          "tests are using GPU rather than CPU"
+          "tests are using GPU rather than CPU",
+          "--use-webgpu-power-preference=default-high-performance indicates",
+          "it uses high-performance gpu when not explicitly specified"
     ]
   },
   {
@@ -128,7 +131,8 @@
           "--disable-dawn-features=disallow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
-          "--enable-accelerated-2d-canvas"
+          "--enable-accelerated-2d-canvas",
+          "--use-webgpu-power-preference=default-high-performance"
     ],
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
@@ -141,7 +145,9 @@
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
           "helps match the test behavior with the browser.",
           "--enable-accelerated-2d-canvas ensures that the canvas reference",
-          "tests are using GPU rather than CPU"
+          "tests are using GPU rather than CPU",
+          "--use-webgpu-power-preference=default-high-performance indicates",
+          "it uses high-performance gpu when not explicitly specified"
     ]
   },
   {
@@ -152,7 +158,8 @@
           "--disable-dawn-features=disallow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
-          "--enable-accelerated-2d-canvas"
+          "--enable-accelerated-2d-canvas",
+          "--use-webgpu-power-preference=default-high-performance"
     ],
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
@@ -165,7 +172,9 @@
           "needed to tell Dawn which ANGLE adapter Chromium is using. This",
           "helps match the test behavior with the browser.",
           "--enable-accelerated-2d-canvas ensures that the canvas reference",
-          "tests are using GPU rather than CPU"
+          "tests are using GPU rather than CPU",
+          "--use-webgpu-power-preference=default-high-performance indicates",
+          "it uses high-performance gpu when not explicitly specified"
     ]
   }
 ]
