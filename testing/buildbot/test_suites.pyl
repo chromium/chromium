@@ -546,7 +546,6 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
-        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',
@@ -5105,7 +5104,6 @@
           'expiration': 18000,
           'hard_timeout': 14400,
         },
-        'experiment_percentage': 100,
         'merge': {
           'args': [
             '--verbose',

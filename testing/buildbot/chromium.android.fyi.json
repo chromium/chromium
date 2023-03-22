@@ -154,7 +154,6 @@
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--use-upstream-wpt"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "chrome_public_wpt",
         "merge": {
           "args": [
@@ -1313,7 +1312,6 @@
           "--log-wptreport",
           "--use-upstream-wpt"
         ],
-        "experiment_percentage": 100,
         "isolate_name": "system_webview_wpt",
         "merge": {
           "args": [
