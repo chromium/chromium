@@ -513,6 +513,12 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnitTypeForCategory(
   }
 }
 
+// static
+CSSPrimitiveValue::UnitType CSSPrimitiveValue::CanonicalUnit(
+    CSSPrimitiveValue::UnitType unit_type) {
+  return CanonicalUnitTypeForCategory(UnitTypeToUnitCategory(unit_type));
+}
+
 bool CSSPrimitiveValue::UnitTypeToLengthUnitType(UnitType unit_type,
                                                  LengthUnitType& length_type) {
   switch (unit_type) {

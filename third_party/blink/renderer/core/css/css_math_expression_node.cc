@@ -215,6 +215,22 @@ absl::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
   return absl::nullopt;
 }
 
+bool CanEagerlySimplify(CalculationCategory calc_cat) {
+  // Eager Simplification can be expanded to more cases like lengths with
+  // absolute units.
+  // TODO(crbug.com/1050968)
+
+  switch (calc_cat) {
+    case CalculationCategory::kCalcNumber:
+    case CalculationCategory::kCalcAngle:
+    case CalculationCategory::kCalcTime:
+    case CalculationCategory::kCalcFrequency:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 // ------ Start of CSSMathExpressionNumericLiteral member functions ------
@@ -427,6 +443,28 @@ static CalculationCategory DetermineCategory(
   return kCalcOther;
 }
 
+static CalculationCategory DetermineComparisonCategory(
+    const CSSMathExpressionOperation::Operands& operands) {
+  DCHECK(!operands.empty());
+
+  bool is_first = true;
+  CalculationCategory category = kCalcOther;
+  for (const CSSMathExpressionNode* operand : operands) {
+    if (is_first) {
+      category = operand->Category();
+    } else {
+      category = kAddSubtractResult[category][operand->Category()];
+    }
+
+    is_first = false;
+    if (category == kCalcOther) {
+      break;
+    }
+  }
+
+  return category;
+}
+
 // ------ Start of CSSMathExpressionOperation member functions ------
 
 // static
@@ -453,21 +491,48 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
     CSSMathOperator op) {
   DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
          op == CSSMathOperator::kClamp);
-  DCHECK(operands.size());
-  bool is_first = true;
-  CalculationCategory category;
-  for (const CSSMathExpressionNode* operand : operands) {
-    if (is_first) {
-      category = operand->Category();
-    } else {
-      category = kAddSubtractResult[category][operand->Category()];
+
+  CalculationCategory category = DetermineComparisonCategory(operands);
+  if (category == kCalcOther) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<CSSMathExpressionOperation>(
+      category, std::move(operands), op);
+}
+
+// static
+CSSMathExpressionNode*
+CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
+    Operands&& operands,
+    CSSMathOperator op) {
+  DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
+         op == CSSMathOperator::kClamp);
+
+  CalculationCategory category = DetermineComparisonCategory(operands);
+  if (category == kCalcOther) {
+    return nullptr;
+  }
+
+  if (CanEagerlySimplify(category)) {
+    Vector<double> canonical_values;
+    canonical_values.reserve(operands.size());
+    for (const CSSMathExpressionNode* operand : operands) {
+      absl::optional<double> canonical_value =
+          operand->ComputeValueInCanonicalUnit();
+
+      DCHECK(canonical_value.has_value());
+
+      canonical_values.push_back(canonical_value.value());
     }
 
-    is_first = false;
-    if (category == kCalcOther) {
-      return nullptr;
-    }
+    CSSPrimitiveValue::UnitType canonical_unit =
+        CSSPrimitiveValue::CanonicalUnit(operands.front()->ResolvedUnitType());
+
+    return CSSMathExpressionNumericLiteral::Create(
+        EvaluateOperator(canonical_values, op), canonical_unit);
   }
+
   return MakeGarbageCollected<CSSMathExpressionOperation>(
       category, std::move(operands), op);
 }
@@ -1611,13 +1676,13 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kWebkitCalc:
         return const_cast<CSSMathExpressionNode*>(nodes.front().Get());
       case CSSValueID::kMin:
-        return CSSMathExpressionOperation::CreateComparisonFunction(
+        return CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
             std::move(nodes), CSSMathOperator::kMin);
       case CSSValueID::kMax:
-        return CSSMathExpressionOperation::CreateComparisonFunction(
+        return CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
             std::move(nodes), CSSMathOperator::kMax);
       case CSSValueID::kClamp:
-        return CSSMathExpressionOperation::CreateComparisonFunction(
+        return CSSMathExpressionOperation::CreateComparisonFunctionSimplified(
             std::move(nodes), CSSMathOperator::kClamp);
       case CSSValueID::kSin:
       case CSSValueID::kCos:

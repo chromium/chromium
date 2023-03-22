@@ -389,6 +389,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
   static UnitType CanonicalUnitTypeForCategory(UnitCategory);
+  static UnitType CanonicalUnit(UnitType unit_type);
   static double ConversionToCanonicalUnitsScaleFactor(UnitType);
 
   // Returns true and populates lengthUnitType, if unitType is a length unit.
