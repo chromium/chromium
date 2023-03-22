@@ -355,7 +355,7 @@ void SVGImage::DrawForContainer(const DrawInfo& draw_info,
                                 const gfx::RectF& dst_rect,
                                 const gfx::RectF& src_rect) {
   gfx::RectF unzoomed_src = src_rect;
-  unzoomed_src.Scale(1 / draw_info.Zoom());
+  unzoomed_src.InvScale(draw_info.Zoom());
 
   // Compensate for the container size rounding by adjusting the source rect.
   gfx::SizeF residual_scale = draw_info.CalculateResidualScale();
@@ -448,13 +448,13 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
 
 bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
                                    cc::PaintFlags& flags,
+                                   const gfx::RectF& unzoomed_src_rect,
                                    const SkMatrix& local_matrix) {
   if (draw_info.ContainerSize().IsEmpty())
     return false;
-  // TODO(pdr): Pass a tighter cull rect based on the src rect to optimize out
-  // parts of the paint record that are not visible (see: crbug.com/1401086).
+  const gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
   absl::optional<PaintRecord> record =
-      PaintRecordForCurrentFrame(draw_info, nullptr);
+      PaintRecordForCurrentFrame(draw_info, &cull_rect);
   if (!record)
     return false;
 
@@ -476,19 +476,29 @@ bool SVGImage::ApplyShader(cc::PaintFlags& flags,
                            const ImageDrawOptions& draw_options) {
   const DrawInfo draw_info(gfx::SizeF(intrinsic_size_), 1, NullURL(),
                            draw_options.apply_dark_mode);
-  return ApplyShaderInternal(draw_info, flags, local_matrix);
+  return ApplyShaderInternal(draw_info, flags, src_rect, local_matrix);
 }
 
 bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
                                        cc::PaintFlags& flags,
+                                       const gfx::RectF& src_rect,
                                        const SkMatrix& local_matrix) {
+  gfx::RectF unzoomed_src = src_rect;
+  unzoomed_src.InvScale(draw_info.Zoom());
+
+  // Compensate for the container size rounding by adjusting the source rect.
+  const gfx::SizeF residual_scale = draw_info.CalculateResidualScale();
+  unzoomed_src.set_size(gfx::ScaleSize(
+      unzoomed_src.size(), residual_scale.width(), residual_scale.height()));
+
   // Compensate for the container size rounding.
-  gfx::SizeF residual_scale =
-      gfx::ScaleSize(draw_info.CalculateResidualScale(), draw_info.Zoom());
+  const gfx::SizeF zoomed_residual_scale =
+      gfx::ScaleSize(residual_scale, draw_info.Zoom());
   auto adjusted_local_matrix = local_matrix;
-  adjusted_local_matrix.preScale(residual_scale.width(),
-                                 residual_scale.height());
-  return ApplyShaderInternal(draw_info, flags, adjusted_local_matrix);
+  adjusted_local_matrix.preScale(zoomed_residual_scale.width(),
+                                 zoomed_residual_scale.height());
+  return ApplyShaderInternal(draw_info, flags, unzoomed_src,
+                             adjusted_local_matrix);
 }
 
 void SVGImage::Draw(cc::PaintCanvas* canvas,
@@ -555,7 +565,7 @@ void SVGImage::DrawInternal(const DrawInfo& draw_info,
                             const cc::PaintFlags& flags,
                             const gfx::RectF& dst_rect,
                             const gfx::RectF& unzoomed_src_rect) {
-  gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
+  const gfx::Rect cull_rect(gfx::ToEnclosingRect(unzoomed_src_rect));
   absl::optional<PaintRecord> record =
       PaintRecordForCurrentFrame(draw_info, &cull_rect);
   if (!record)

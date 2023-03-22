@@ -205,9 +205,11 @@ class CORE_EXPORT SVGImage final : public Image {
                    const ImageDrawOptions&) override;
   bool ApplyShaderForContainer(const DrawInfo&,
                                cc::PaintFlags&,
+                               const gfx::RectF& src_rect,
                                const SkMatrix& local_matrix);
   bool ApplyShaderInternal(const DrawInfo&,
                            cc::PaintFlags&,
+                           const gfx::RectF& unzoomed_src_rect,
                            const SkMatrix& local_matrix);
 
   void StopAnimation();

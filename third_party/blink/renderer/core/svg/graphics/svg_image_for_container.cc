@@ -74,7 +74,8 @@ bool SVGImageForContainer::ApplyShader(cc::PaintFlags& flags,
                                        const ImageDrawOptions& draw_options) {
   const SVGImage::DrawInfo draw_info(container_size_, zoom_, url_,
                                      draw_options.apply_dark_mode);
-  return image_->ApplyShaderForContainer(draw_info, flags, local_matrix);
+  return image_->ApplyShaderForContainer(draw_info, flags, src_rect,
+                                         local_matrix);
 }
 
 PaintImage SVGImageForContainer::PaintImageForCurrentFrame() {
