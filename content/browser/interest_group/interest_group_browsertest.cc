@@ -8180,7 +8180,6 @@ IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
       EXPECT_TRUE(ExecJs(shell(),
                          "document.querySelector('fencedframe').remove();"
                          "const ff = document.createElement('fencedframe');"
-                         "ff.mode = 'opaque-ads';"
                          "document.body.appendChild(ff);"));
     }
     ClearReceivedRequests();

@@ -2195,7 +2195,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   {
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
   }
   EXPECT_EQ(1U, root->child_count());
@@ -2292,7 +2291,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   EXPECT_TRUE(ExecJs(root,
                      "var f1 = document.createElement('fencedframe');"
-                     "f1.mode = 'opaque-ads';"
                      "document.body.appendChild(f1);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -2319,7 +2317,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   EXPECT_TRUE(ExecJs(fenced_frame_root_node1,
                      "var f2 = document.createElement('fencedframe');"
-                     "f2.mode = 'opaque-ads';"
                      "document.body.appendChild(f2);"));
 
   EXPECT_EQ(1U, fenced_frame_root_node1->child_count());
@@ -2357,12 +2354,10 @@ IN_PROC_BROWSER_TEST_F(
   {
     EXPECT_TRUE(ExecJs(root,
                        "var f1 = document.createElement('fencedframe');"
-                       "f1.mode = 'opaque-ads';"
                        "document.body.appendChild(f1);"));
 
     EXPECT_TRUE(ExecJs(root,
                        "var f2 = document.createElement('fencedframe');"
-                       "f2.mode = 'opaque-ads';"
                        "document.body.appendChild(f2);"));
   }
 
@@ -2421,7 +2416,6 @@ IN_PROC_BROWSER_TEST_F(
   {
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
   }
   EXPECT_EQ(1U, root->child_count());
@@ -2500,7 +2494,6 @@ IN_PROC_BROWSER_TEST_F(
   {
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
   }
   EXPECT_EQ(1U, root->child_count());
@@ -2570,7 +2563,6 @@ IN_PROC_BROWSER_TEST_F(
   {
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
   }
   EXPECT_EQ(1U, root->child_count());
@@ -2648,7 +2640,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Test the fenced frame.
   EXPECT_TRUE(ExecJs(root_rfh,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(1U, root_rfh->child_count());
 
@@ -2731,7 +2722,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Add and navigate a fenced frame.
   EXPECT_TRUE(ExecJs(root_rfh,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
   EXPECT_EQ(1U, root_rfh->child_count());
   FrameTreeNode* fenced_frame_root_node =
@@ -3074,7 +3064,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   {
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
   }
   EXPECT_EQ(1U, root->child_count());
@@ -3230,7 +3219,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Create a fenced frame.
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -3284,7 +3272,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Create a fenced frame.
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -4033,7 +4020,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   {
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
   }
   EXPECT_EQ(1U, root->child_count());
@@ -4090,7 +4076,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
     EXPECT_TRUE(ExecJs(root,
                        "var f = document.createElement('fencedframe');"
-                       "f.mode = 'opaque-ads';"
                        "document.body.appendChild(f);"));
 
     EXPECT_EQ(1U, root->child_count());
@@ -4421,7 +4406,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
         nodeA,
         JsReplace(
             "var nested_fenced_frame = document.createElement('fencedframe');"
-            "nested_fenced_frame.mode = 'opaque-ads';"
             "nested_fenced_frame.width = $1;"
             "nested_fenced_frame.height = $2;"
             "document.body.appendChild(nested_fenced_frame);",
@@ -4761,7 +4745,6 @@ class FencedFrameReportEventBrowserTest
     EXPECT_TRUE(
         ExecJs(root,
                "var fenced_frame = document.createElement('fencedframe');"
-               "fenced_frame.mode = 'opaque-ads';"
                "document.body.appendChild(fenced_frame);"));
     EXPECT_EQ(1U, root->child_count());
     FrameTreeNode* fenced_frame_root_node =
@@ -4965,7 +4948,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                             .root();
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'default';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -5406,7 +5388,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                             .root();
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -5538,7 +5519,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                             .root();
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -5713,7 +5693,6 @@ IN_PROC_BROWSER_TEST_F(
                             .root();
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -5798,7 +5777,6 @@ IN_PROC_BROWSER_TEST_F(
                             .root();
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -6220,7 +6198,6 @@ class FencedFrameAutomaticBeaconBrowserTest
 
     EXPECT_TRUE(
         ExecJs(root, JsReplace("var ad_frame = document.createElement($1);"
-                               "ad_frame.mode = 'opaque-ads';"
                                "document.body.appendChild(ad_frame);",
                                GetParam())));
 

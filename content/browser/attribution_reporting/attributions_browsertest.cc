@@ -1691,7 +1691,6 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
       scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
     static constexpr char kAddFencedFrameScript[] = R"({
         var f = document.createElement('fencedframe');
-        f.mode = 'opaque-ads';
         document.body.appendChild(f);
     })";
     EXPECT_TRUE(ExecJs(root, kAddFencedFrameScript));

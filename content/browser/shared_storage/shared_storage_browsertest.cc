@@ -4853,7 +4853,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -4956,7 +4955,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -5160,7 +5158,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(2U, root->child_count());
@@ -5328,7 +5325,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());
@@ -5448,7 +5444,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
 
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(1U, root->child_count());

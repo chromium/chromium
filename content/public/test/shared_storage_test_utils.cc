@@ -70,7 +70,6 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
 
   EXPECT_TRUE(ExecJs(root,
                      "var f = document.createElement('fencedframe');"
-                     "f.mode = 'opaque-ads';"
                      "document.body.appendChild(f);"));
 
   EXPECT_EQ(initial_child_count + 1, root_node->child_count());
