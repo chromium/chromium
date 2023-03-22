@@ -232,6 +232,10 @@ extern const char kPasswordsGroupingInfoRequested[];
 // Boolean pref indicating if the one-time notice for account storage was shown.
 // The notice informs passwords will start being saved to the signed-in account.
 extern const char kAccountStorageNoticeShown[];
+
+// Integer value indicating the number of times the "new feature icon" was
+// displayed with the account storage opt-out toggle.
+extern const char kAccountStorageNewFeatureIconImpressions[];
 #endif  // BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop

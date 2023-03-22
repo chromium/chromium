@@ -65,6 +65,10 @@ using password_manager::prefs::kCredentialsEnableService;
 
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
+
+  // Flag to avoid incrementing the number of impressions of the icon more than
+  // once through the lifetime of the UI.
+  BOOL _accountStorageNewFeatureIconImpressionsIncremented;
 }
 
 // Helper object which maintains state about the "Export Passwords..." flow, and
@@ -136,6 +140,15 @@ using password_manager::prefs::kCredentialsEnableService;
                                         _syncService->GetAccountInfo().email)];
 
   [self.consumer setAccountStorageState:[self computeAccountStorageState]];
+
+  // < and not <= below, because the next impression must be counted.
+  const int impressionCount = _prefService->GetInteger(
+      password_manager::prefs::kAccountStorageNewFeatureIconImpressions);
+  const int maxImpressionCount =
+      password_manager::features::kMaxAccountStorageNewFeatureIconImpressions
+          .Get();
+  [self.consumer
+      setShowAccountStorageNewFeatureIcon:impressionCount < maxImpressionCount];
 
   // TODO(crbug.com/1082827): In addition to setting this value here, we should
   // observe for changes (i.e., if policy changes while the screen is open) and
@@ -225,6 +238,17 @@ using password_manager::prefs::kCredentialsEnableService;
   }
   _syncService->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
                                                     types);
+}
+
+- (void)accountStorageNewFeatureIconDidShow {
+  if (!_accountStorageNewFeatureIconImpressionsIncremented) {
+    _accountStorageNewFeatureIconImpressionsIncremented = YES;
+    _prefService->SetInteger(
+        password_manager::prefs::kAccountStorageNewFeatureIconImpressions,
+        1 + _prefService->GetInteger(
+                password_manager::prefs::
+                    kAccountStorageNewFeatureIconImpressions));
+  }
 }
 
 #pragma mark - SavedPasswordsPresenterObserver

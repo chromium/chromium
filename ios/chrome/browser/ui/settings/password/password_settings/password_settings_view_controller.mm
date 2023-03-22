@@ -98,6 +98,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 @property(nonatomic, assign)
     PasswordSettingsAccountStorageState accountStorageState;
 
+// Indicates whether the account storage switch should contain an icon
+// indicating a new feature. This doesn't mean the switch itself is shown.
+@property(nonatomic, assign) BOOL showAccountStorageNewFeatureIcon;
+
 // Indicates the signed in account.
 @property(nonatomic, copy) NSString* signedInAccount;
 
@@ -242,8 +246,12 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
                                 action:@selector(accountStorageSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
 
+      if (!_showAccountStorageNewFeatureIcon) {
+        break;
+      }
+
       // Add new feature icon, vertically centered with the text.
-      // TODO(crbug.com/1377384): Limit impressions of the icon.
+      [self.delegate accountStorageNewFeatureIconDidShow];
       NSTextAttachment* iconAttachment = [[NSTextAttachment alloc] init];
       iconAttachment.image = [PasswordSettingsViewController newFeatureIcon];
       CGSize iconSize = iconAttachment.image.size;
@@ -539,6 +547,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   if (self.modelLoadStatus != ModelNotLoaded) {
     [self updateAccountStorageSwitch];
   }
+}
+
+- (void)setShowAccountStorageNewFeatureIcon:(BOOL)show {
+  _showAccountStorageNewFeatureIcon = show;
 }
 
 - (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled {

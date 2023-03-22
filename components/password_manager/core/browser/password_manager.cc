@@ -343,6 +343,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPasswordsGroupingInfoRequested, false);
 #if BUILDFLAG(IS_IOS)
   registry->RegisterBooleanPref(prefs::kAccountStorageNoticeShown, false);
+  registry->RegisterIntegerPref(prefs::kAccountStorageNewFeatureIconImpressions,
+                                0);
 #endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
   registry->RegisterListPref(prefs::kPasswordManagerPromoCardsList);

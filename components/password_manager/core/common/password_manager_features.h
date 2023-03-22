@@ -30,7 +30,13 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 #endif
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
+
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
+inline constexpr base::FeatureParam<int>
+    kMaxAccountStorageNewFeatureIconImpressions = {
+        &kEnablePasswordsAccountStorage,
+        "max_account_storage_new_feature_icon_impressions", 5};
+
 BASE_DECLARE_FEATURE(kEnablePasswordGenerationForClearTextFields);
 BASE_DECLARE_FEATURE(kEnablePasswordManagerWithinFencedFrame);
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
