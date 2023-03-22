@@ -90,9 +90,9 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Session end timeout in seconds</string>
+			<string>Refresh timer timeout in seconds</string>
 			<key>Key</key>
-			<string>FeedSessionEndTimerTimeoutInSeconds</string>
+			<string>FeedRefreshTimerTimeoutInSeconds</string>
 			<key>DefaultValue</key>
 			<string></string>
 			<key>KeyboardType</key>

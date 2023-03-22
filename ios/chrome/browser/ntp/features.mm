@@ -73,7 +73,6 @@ const char kBackgroundRefreshIntervalInSeconds[] =
     "BackgroundRefreshIntervalInSeconds";
 const char kBackgroundRefreshMaxAgeInSeconds[] =
     "BackgroundRefreshMaxAgeInSeconds";
-
 const char kEnableFeedSessionCloseForegroundRefresh[] =
     "EnableFeedSessionCloseForegroundRefresh";
 const char kEnableFeedAppCloseForegroundRefresh[] =
@@ -82,8 +81,8 @@ const char kEnableFeedAppCloseBackgroundRefresh[] =
     "EnableFeedAppCloseBackgroundRefresh";
 const char kAppCloseBackgroundRefreshIntervalInSeconds[] =
     "AppCloseBackgroundRefreshIntervalInSeconds";
-const char kFeedSessionEndTimerTimeoutInSeconds[] =
-    "FeedSessionEndTimerTimeoutInSeconds";
+const char kFeedRefreshTimerTimeoutInSeconds[] =
+    "FeedRefreshTimerTimeoutInSeconds";
 const char kFeedSeenRefreshThresholdInSeconds[] =
     "FeedSeenRefreshThresholdInSeconds";
 const char kFeedUnseenRefreshThresholdInSeconds[] =
@@ -234,15 +233,14 @@ double GetAppCloseBackgroundRefreshIntervalInSeconds() {
       /*default=*/base::Minutes(5).InSecondsF());
 }
 
-double GetFeedSessionEndTimerTimeoutInSeconds() {
+double GetFeedRefreshTimerTimeoutInSeconds() {
   double override_value = [[NSUserDefaults standardUserDefaults]
-      doubleForKey:@"FeedSessionEndTimerTimeoutInSeconds"];
+      doubleForKey:@"FeedRefreshTimerTimeoutInSeconds"];
   if (override_value > 0.0) {
     return override_value;
   }
   return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedInvisibleForegroundRefresh,
-      kFeedSessionEndTimerTimeoutInSeconds,
+      kEnableFeedInvisibleForegroundRefresh, kFeedRefreshTimerTimeoutInSeconds,
       /*default=*/base::Minutes(5).InSecondsF());
 }
 

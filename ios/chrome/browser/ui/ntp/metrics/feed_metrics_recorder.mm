@@ -81,8 +81,8 @@ using feed::FeedUserActionType;
 // `ContentSuggestions.Feed.TimeSpentInFeed`
 @property(nonatomic, assign) base::TimeDelta timeSpentInFeed;
 
-// Timer to signal end of session.
-@property(nonatomic, strong) NSTimer* sessionEndTimer;
+// Timer to refresh the feed.
+@property(nonatomic, strong) NSTimer* refreshTimer;
 
 // YES if the NTP is visible.
 @property(nonatomic, assign) BOOL isNTPVisible;
@@ -106,8 +106,8 @@ using feed::FeedUserActionType;
 #pragma mark - Public
 
 - (void)dealloc {
-  [self.sessionEndTimer invalidate];
-  self.sessionEndTimer = nil;
+  [self.refreshTimer invalidate];
+  self.refreshTimer = nil;
 }
 
 + (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger {
@@ -166,7 +166,7 @@ using feed::FeedUserActionType;
   // Invalidate the timer when the user returns to the feed since the feed
   // should not be refreshed when the user is viewing it.
   if (visible) {
-    [self.sessionEndTimer invalidate];
+    [self.refreshTimer invalidate];
     [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                     kOpenedFeedSurface
                                   asInteraction:NO];
@@ -909,7 +909,7 @@ using feed::FeedUserActionType;
   // engagement criteria. For example, setting `engagedSimpleReportedDiscover`
   // must happen before this call.
   if (IsFeedSessionCloseForegroundRefreshEnabled()) {
-    [self setOrExtendSessionEndTimer];
+    [self setOrExtendRefreshTimer];
   }
 }
 
@@ -1278,22 +1278,22 @@ using feed::FeedUserActionType;
   }
 }
 
-// Sets or extends the session end timer.
-- (void)setOrExtendSessionEndTimer {
-  [self.sessionEndTimer invalidate];
+// Sets or extends the refresh timer.
+- (void)setOrExtendRefreshTimer {
+  [self.refreshTimer invalidate];
   __weak FeedMetricsRecorder* weakSelf = self;
-  self.sessionEndTimer = [NSTimer
-      scheduledTimerWithTimeInterval:GetFeedSessionEndTimerTimeoutInSeconds()
+  self.refreshTimer = [NSTimer
+      scheduledTimerWithTimeInterval:GetFeedRefreshTimerTimeoutInSeconds()
                               target:weakSelf
-                            selector:@selector(sessionEndTimerEnded)
+                            selector:@selector(refreshTimerEnded)
                             userInfo:nil
                              repeats:NO];
 }
 
-// Signals that the session end timer ended.
-- (void)sessionEndTimerEnded {
-  [self.sessionEndTimer invalidate];
-  self.sessionEndTimer = nil;
+// Signals that the refresh timer ended.
+- (void)refreshTimerEnded {
+  [self.refreshTimer invalidate];
+  self.refreshTimer = nil;
   if (![self isNTPAndFeedVisible]) {
     // The feed refresher checks feed engagement criteria.
     self.feedRefresher->RefreshFeed(

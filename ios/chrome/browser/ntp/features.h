@@ -81,8 +81,8 @@ extern const char kEnableFeedAppCloseBackgroundRefresh[];
 extern const char kAppCloseBackgroundRefreshIntervalInSeconds[];
 
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` for the time
-// interval used to set the session end timer.
-extern const char kFeedSessionEndTimerTimeoutInSeconds[];
+// interval used to set the refresh timer.
+extern const char kFeedRefreshTimerTimeoutInSeconds[];
 
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` for the refresh
 // threshold when the last refresh was seen.
@@ -167,7 +167,7 @@ bool IsFeedAppCloseBackgroundRefreshEnabled();
 double GetAppCloseBackgroundRefreshIntervalInSeconds();
 
 // Returns the time interval used to set the session end timer.
-double GetFeedSessionEndTimerTimeoutInSeconds();
+double GetFeedRefreshTimerTimeoutInSeconds();
 
 // Returns the refresh threshold (aka feed expiration) for a feed that has been
 // seen.
