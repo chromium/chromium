@@ -20,16 +20,13 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_urls.h"
-#include "extensions/common/frame_context_data.h"
 #include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "extensions/renderer/renderer_frame_context_data.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-context.h"
@@ -42,80 +39,6 @@
 namespace extensions {
 
 namespace {
-
-class RendererFrameContextData : public FrameContextData {
- public:
-  explicit RendererFrameContextData(const blink::WebLocalFrame* frame)
-      : frame_(frame) {}
-
-  ~RendererFrameContextData() override = default;
-
-  std::unique_ptr<ContextData> Clone() const override {
-    return CloneFrameContextData();
-  }
-
-  std::unique_ptr<FrameContextData> CloneFrameContextData() const override {
-    return std::make_unique<RendererFrameContextData>(frame_);
-  }
-
-  bool IsIsolatedApplication() const override {
-    return blink::IsIsolatedContext();
-  }
-
-  std::unique_ptr<FrameContextData> GetLocalParentOrOpener() const override {
-    blink::WebFrame* parent_or_opener = nullptr;
-    if (frame_->Parent())
-      parent_or_opener = frame_->Parent();
-    else
-      parent_or_opener = frame_->Opener();
-    if (!parent_or_opener || !parent_or_opener->IsWebLocalFrame())
-      return nullptr;
-
-    blink::WebLocalFrame* local_parent_or_opener =
-        parent_or_opener->ToWebLocalFrame();
-    if (local_parent_or_opener->GetDocument().IsNull())
-      return nullptr;
-
-    return std::make_unique<RendererFrameContextData>(local_parent_or_opener);
-  }
-
-  GURL GetUrl() const override {
-    if (frame_->GetDocument().Url().IsEmpty()) {
-      // It's possible for URL to be empty when `frame_` is on the initial empty
-      // document. TODO(https://crbug.com/1197308): Consider making  `frame_`'s
-      // document's URL about:blank instead of empty in that case.
-      return GURL(url::kAboutBlankURL);
-    }
-    return frame_->GetDocument().Url();
-  }
-
-  url::Origin GetOrigin() const override { return frame_->GetSecurityOrigin(); }
-
-  bool CanAccess(const url::Origin& target) const override {
-    return frame_->GetSecurityOrigin().CanAccess(target);
-  }
-
-  bool CanAccess(const FrameContextData& target) const override {
-    // It is important that below `web_security_origin` wraps the security
-    // origin of the `target_frame` (rather than a new origin created via
-    // url::Origin round-trip - such an origin wouldn't be 100% equivalent -
-    // e.g. `disallowdocumentaccess` information might be lost).  FWIW, this
-    // scenario is execised by ScriptContextTest.GetEffectiveDocumentURL.
-    const blink::WebLocalFrame* target_frame =
-        static_cast<const RendererFrameContextData&>(target).frame_;
-    blink::WebSecurityOrigin web_security_origin =
-        target_frame->GetDocument().GetSecurityOrigin();
-
-    return frame_->GetSecurityOrigin().CanAccess(web_security_origin);
-  }
-
-  uintptr_t GetId() const override {
-    return reinterpret_cast<uintptr_t>(frame_);
-  }
-
- private:
-  const blink::WebLocalFrame* const frame_;
-};
 
 GURL GetEffectiveDocumentURL(
     blink::WebLocalFrame* frame,

@@ -178,6 +178,8 @@ source_set("renderer") {
     "render_frame_observer_natives.h",
     "renderer_extension_registry.cc",
     "renderer_extension_registry.h",
+    "renderer_frame_context_data.cc",
+    "renderer_frame_context_data.h",
     "resource_bundle_source_map.cc",
     "resource_bundle_source_map.h",
     "runtime_custom_bindings.cc",
