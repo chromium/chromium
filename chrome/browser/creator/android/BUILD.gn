@@ -6,7 +6,6 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/creator/CreatorApiBridge.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorCoordinator.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorMediator.java",
     "java/src/org/chromium/chrome/browser/creator/CreatorProfileView.java",
@@ -83,11 +82,6 @@ android_resources("creator_java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//ui/android:ui_java_resources",
   ]
-}
-
-generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/creator/CreatorApiBridge.java" ]
 }
 
 robolectric_library("junit") {

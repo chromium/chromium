@@ -8,12 +8,9 @@ import static org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionReques
 
 import android.content.Context;
 
-import org.chromium.chrome.browser.creator.CreatorApiBridge.Creator;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.ui.modelutil.PropertyModel;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * Sets up the Mediator for Cormorant Creator surface.  It is based on the doc at
@@ -21,7 +18,6 @@ import java.nio.charset.StandardCharsets;
  */
 public class CreatorMediator {
     private Context mContext;
-    private Creator mCreator;
     private PropertyModel mCreatorModel;
     private final CreatorSnackbarController mCreatorSnackbarController;
     private SignInInterstitialInitiator mSignInInterstitialInitiator;
@@ -33,9 +29,6 @@ public class CreatorMediator {
         mCreatorModel = creatorModel;
         mCreatorSnackbarController = creatorSnackbarController;
         mSignInInterstitialInitiator = signInInterstitialInitiator;
-        if (mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY) != null) {
-            getCreator();
-        }
 
         // Set Follow OnClick Action
         mCreatorModel.set(CreatorProperties.ON_FOLLOW_CLICK_KEY, this::followClickHandler);
@@ -66,16 +59,5 @@ public class CreatorMediator {
                     mCreatorSnackbarController.showSnackbarForUnfollow(
                             result.requestStatus, mCreatorModel.get(CreatorProperties.TITLE_KEY));
                 });
-    }
-
-    private void getCreator() {
-        CreatorApiBridge.getCreator(new String(mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY),
-                                            StandardCharsets.UTF_8),
-                this::onGetCreator);
-    }
-
-    private void onGetCreator(Creator creator) {
-        // TODO(crbug/1374058): Get Title and Url from CreatorAPI
-        mCreator = creator;
     }
 }
