@@ -19,6 +19,7 @@ message LogUploadEvent {
   optional .reporting.UploadSettings upload_settings = 1;
   optional .reporting.UploadTracker upload_tracker = 2;
 
-  // Additional fields provided by the caller can be added here (e.g. command
-  // ID).
+  // Additional fields provided by the caller can be added here.
+  // The ID of the remote device command that triggered the log upload.
+  optional int64 command_id = 3;
 }
