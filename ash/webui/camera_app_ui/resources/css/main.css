@@ -912,15 +912,20 @@ body.use-fake-camera #view-expert-settings label.require-chromeos-vcd {
   position: absolute;
   right: 0;
   top: 0;
+  transition: visibility 500ms;
+  visibility: hidden;
 }
 
 body:not(.streaming) #expert-controls,
 body:not(.streaming) #open-settings,
 body:not(.streaming) #options-group,
 body:not(.streaming) #preview-focus,
-body:not(.streaming) #preview-grid,
 body:not(.streaming) #toggle-mic {
   visibility: hidden;
+}
+
+body:not(.streaming) #preview-grid {
+  display: none;
 }
 
 body:not(.expert) #settings-expert,
@@ -940,6 +945,10 @@ body:not(.custom-video-parameters) #expert-controls>.video-option-row {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+}
+
+body.grid #preview-grid {
+  visibility: visible;
 }
 
 body.grid.grid-4x4 #preview-grid-horizontal::before {
@@ -1001,12 +1010,12 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
 
 #preview-grid-horizontal,
 #preview-grid-horizontal::before {
-  transition: height 500ms, visibility 500ms;
+  transition: height 500ms;
 }
 
 #preview-grid-vertical,
 #preview-grid-vertical::before {
-  transition: width 500ms, visibility 500ms;
+  transition: width 500ms;
 }
 
 #record-time {
