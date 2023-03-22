@@ -1625,7 +1625,7 @@ void Shell::Init(
         std::make_unique<federated::FederatedServiceControllerImpl>();
   }
 
-  if (features::IsWelcomeTourEnabled()) {
+  if (features::IsUserEducationEnabled()) {
     user_education_controller_ = std::make_unique<UserEducationController>(
         shell_delegate_->CreateUserEducationDelegate());
   }

@@ -317,6 +317,11 @@ BASE_FEATURE(kCaptureModeDemoTools,
              "CaptureModeDemoTools",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the tour that walks new users through the Capture Mode feature.
+BASE_FEATURE(kCaptureModeTour,
+             "CaptureModeTour",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.
 BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
@@ -1146,6 +1151,11 @@ BASE_FEATURE(kHoldingSpaceRefresh,
 // Enables suggestions in the pinned files section of Holding Space.
 BASE_FEATURE(kHoldingSpaceSuggestions,
              "HoldingSpaceSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the tour that walks new users through the Holding Space feature.
+BASE_FEATURE(kHoldingSpaceTour,
+             "HoldingSpaceTour",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a call-to-action label beside the home button.
@@ -2432,6 +2442,10 @@ bool IsCaptivePortalErrorPageEnabled() {
   return base::FeatureList::IsEnabled(kCaptivePortalErrorPage);
 }
 
+bool IsCaptureModeTourEnabled() {
+  return base::FeatureList::IsEnabled(kCaptureModeTour);
+}
+
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
 }
@@ -2708,6 +2722,10 @@ bool IsHoldingSpaceRefreshEnabled() {
 
 bool IsHoldingSpaceSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
+}
+
+bool IsHoldingSpaceTourEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpaceTour);
 }
 
 bool IsHomeButtonWithTextEnabled() {
@@ -3244,6 +3262,11 @@ bool IsUseLoginShelfWidgetEnabled() {
 
 bool IsUseStorkSmdsServerAddressEnabled() {
   return base::FeatureList::IsEnabled(kUseStorkSmdsServerAddress);
+}
+
+bool IsUserEducationEnabled() {
+  return IsCaptureModeTourEnabled() || IsHoldingSpaceTourEnabled() ||
+         IsWelcomeTourEnabled();
 }
 
 bool IsVideoConferenceEnabled() {

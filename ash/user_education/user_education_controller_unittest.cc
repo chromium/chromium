@@ -16,35 +16,55 @@ namespace ash {
 // UserEducationControllerTest -------------------------------------------------
 
 // Base class for tests of the `UserEducationController` parameterized by
-// whether the Welcome Tour feature is enabled.
+// whether user education features are enabled.
 class UserEducationControllerTest
     : public AshTestBase,
-      public testing::WithParamInterface</*welcome_tour_enabled=*/bool> {
+      public testing::WithParamInterface<
+          std::tuple</*capture_mode_tour_enabled=*/bool,
+                     /*holding_space_tour_enabled=*/bool,
+                     /*welcome_tour_enabled=*/bool>> {
  public:
   UserEducationControllerTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+    (IsCaptureModeTourEnabled() ? enabled_features : disabled_features)
+        .emplace_back(features::kCaptureModeTour);
+    (IsHoldingSpaceTourEnabled() ? enabled_features : disabled_features)
+        .emplace_back(features::kHoldingSpaceTour);
     (IsWelcomeTourEnabled() ? enabled_features : disabled_features)
         .emplace_back(features::kWelcomeTour);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  // Returns whether the Capture Mode Tour is enabled given test
+  // parameterization.
+  bool IsCaptureModeTourEnabled() const { return std::get<0>(GetParam()); }
+
+  // Returns whether the Holding Space Tour is enabled given test
+  // parameterization.
+  bool IsHoldingSpaceTourEnabled() const { return std::get<1>(GetParam()); }
+
   // Returns whether the Welcome Tour is enabled given test parameterization.
-  bool IsWelcomeTourEnabled() const { return GetParam(); }
+  bool IsWelcomeTourEnabled() const { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UserEducationControllerTest,
-                         /*welcome_tour_enabled=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UserEducationControllerTest,
+    testing::Combine(/*capture_mode_tour_enabled=*/testing::Bool(),
+                     /*holding_space_tour_enabled=*/testing::Bool(),
+                     /*welcome_tour_enabled=*/testing::Bool()));
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that the controller exists if and only if Welcome Tour is enabled.
+// Verifies that the controller exists iff user education features are enabled.
 TEST_P(UserEducationControllerTest, Exists) {
-  EXPECT_EQ(!!UserEducationController::Get(), IsWelcomeTourEnabled());
+  EXPECT_EQ(!!UserEducationController::Get(), IsCaptureModeTourEnabled() ||
+                                                  IsHoldingSpaceTourEnabled() ||
+                                                  IsWelcomeTourEnabled());
 }
 
 }  // namespace ash
