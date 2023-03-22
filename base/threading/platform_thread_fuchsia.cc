@@ -10,12 +10,12 @@
 
 #include <mutex>
 
-#include <fuchsia/media/cpp/fidl.h>
+#include <fidl/fuchsia.media/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scheduler.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread_internal_posix.h"
@@ -26,16 +26,14 @@ namespace base {
 
 namespace {
 
-fuchsia::media::ProfileProviderSyncPtr ConnectProfileProvider() {
-  fuchsia::media::ProfileProviderSyncPtr profile_provider;
-  const zx_status_t status = base::ComponentContextForProcess()->svc()->Connect(
-      profile_provider.NewRequest());
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status)
-        << "Failed to connect to ProfileProvider! Is "
-           "fuchsia.media.ProfileProvider in the component sandbox?";
+fidl::SyncClient<fuchsia_media::ProfileProvider> ConnectProfileProvider() {
+  auto profile_provider_client_end =
+      base::fuchsia_component::Connect<fuchsia_media::ProfileProvider>();
+  if (profile_provider_client_end.is_error()) {
+    LOG(ERROR) << base::FidlConnectionErrorMessage(profile_provider_client_end);
+    return {};
   }
-  return profile_provider;
+  return fidl::SyncClient(std::move(profile_provider_client_end.value()));
 }
 
 // Sets the current thread to the given scheduling role, optionally including
@@ -49,7 +47,8 @@ void SetThreadRole(StringPiece role_name,
   DCHECK_GE(capacity, 0.0);
   DCHECK_LE(capacity, 1.0);
 
-  static const base::NoDestructor<fuchsia::media::ProfileProviderSyncPtr>
+  static const base::NoDestructor<
+      fidl::SyncClient<fuchsia_media::ProfileProvider>>
       profile_provider(ConnectProfileProvider());
 
   zx::thread dup_thread;
@@ -58,11 +57,16 @@ void SetThreadRole(StringPiece role_name,
   ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
 
   std::string role_selector{role_name};
-  int64_t out_period, out_capacity;
-  (*profile_provider)
-      ->RegisterHandlerWithCapacity(std::move(dup_thread), role_selector,
-                                    period.ToZxDuration(), capacity,
-                                    &out_period, &out_capacity);
+  auto result = (*profile_provider)
+                    ->RegisterHandlerWithCapacity(
+                        {{.thread_handle = std::move(dup_thread),
+                          .name = role_selector,
+                          .period = period.ToZxDuration(),
+                          .capacity = capacity}});
+  if (result.is_error()) {
+    ZX_DLOG(ERROR, result.error_value().status())
+        << "Failed call to RegisterHandlerWithCapacity";
+  }
 }
 
 }  // namespace
