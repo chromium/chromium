@@ -126,8 +126,34 @@ size_t DualReadingListModel::unseen_size() const {
 
 void DualReadingListModel::MarkAllSeen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  DCHECK(loaded());
+
+  std::unique_ptr<DualReadingListModel::ScopedReadingListBatchUpdate>
+      scoped_model_batch_updates = BeginBatchUpdates();
+
+  for (const auto& url : GetKeys()) {
+    scoped_refptr<const ReadingListEntry> entry = GetEntryByURL(url);
+    const bool notify_observers = !entry->HasBeenSeen();
+    if (notify_observers) {
+      NotifyObserversWithWillUpdateEntry(url);
+      UpdateEntryStateCountersOnEntryRemoval(*entry);
+    }
+
+    {
+      base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+          &suppress_observer_notifications_, true);
+      local_or_syncable_model_->MarkEntrySeenIfExists(url);
+      account_model_->MarkEntrySeenIfExists(url);
+    }
+
+    if (notify_observers) {
+      UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
+      NotifyObserversWithDidUpdateEntry(url);
+      NotifyObserversWithDidApplyChanges();
+    }
+  }
+
+  DCHECK_EQ(unseen_entry_count_, 0ul);
 }
 
 bool DualReadingListModel::DeleteAllEntries() {

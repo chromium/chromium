@@ -307,6 +307,74 @@ TEST_F(DualReadingListModelTest, ReturnKeysSize) {
   EXPECT_EQ(2ul, dual_model_->size());
 }
 
+TEST_F(DualReadingListModelTest, MarkAllSeen) {
+  const GURL kLocalUrl("http://local_url.com/");
+  const GURL kAccountUrl("http://account_url.com/");
+  const GURL kCommonUrl("http://common_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kLocalUrl, clock_.Now()),
+       TestEntryBuilder(kCommonUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kAccountUrl, clock_.Now()),
+          TestEntryBuilder(kCommonUrl, clock_.Now())}));
+  ASSERT_TRUE(dual_model_->loaded());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_FALSE(dual_model_->GetEntryByURL(kLocalUrl)->HasBeenSeen());
+  ASSERT_FALSE(dual_model_->GetEntryByURL(kAccountUrl)->HasBeenSeen());
+  ASSERT_FALSE(dual_model_->GetEntryByURL(kCommonUrl)->HasBeenSeen());
+  ASSERT_FALSE(dual_model_->GetEntryByURL(kLocalUrl)->IsRead());
+  ASSERT_FALSE(dual_model_->GetEntryByURL(kAccountUrl)->IsRead());
+  ASSERT_FALSE(dual_model_->GetEntryByURL(kCommonUrl)->IsRead());
+
+  {
+    testing::InSequence seq1;
+    EXPECT_CALL(observer_,
+                ReadingListWillUpdateEntry(dual_model_.get(), kLocalUrl));
+    EXPECT_CALL(observer_,
+                ReadingListDidUpdateEntry(dual_model_.get(), kLocalUrl));
+    EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()))
+        .RetiresOnSaturation();
+  }
+
+  {
+    testing::InSequence seq2;
+    EXPECT_CALL(observer_,
+                ReadingListWillUpdateEntry(dual_model_.get(), kAccountUrl));
+    EXPECT_CALL(observer_,
+                ReadingListDidUpdateEntry(dual_model_.get(), kAccountUrl));
+    EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()))
+        .RetiresOnSaturation();
+  }
+
+  {
+    testing::InSequence seq3;
+    EXPECT_CALL(observer_,
+                ReadingListWillUpdateEntry(dual_model_.get(), kCommonUrl));
+    EXPECT_CALL(observer_,
+                ReadingListDidUpdateEntry(dual_model_.get(), kCommonUrl));
+    EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()))
+        .RetiresOnSaturation();
+  }
+
+  dual_model_->MarkAllSeen();
+
+  EXPECT_TRUE(dual_model_->GetEntryByURL(kLocalUrl)->HasBeenSeen());
+  EXPECT_TRUE(dual_model_->GetEntryByURL(kAccountUrl)->HasBeenSeen());
+  EXPECT_TRUE(dual_model_->GetEntryByURL(kCommonUrl)->HasBeenSeen());
+  EXPECT_FALSE(dual_model_->GetEntryByURL(kLocalUrl)->IsRead());
+  EXPECT_FALSE(dual_model_->GetEntryByURL(kAccountUrl)->IsRead());
+  EXPECT_FALSE(dual_model_->GetEntryByURL(kCommonUrl)->IsRead());
+}
+
 TEST_F(DualReadingListModelTest, BatchUpdates) {
   ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion());
   EXPECT_CALL(observer_, ReadingListModelBeganBatchUpdates(dual_model_.get()));
@@ -1882,6 +1950,63 @@ TEST_F(DualReadingListModelTest, ShouldMaintainCountsWhenModelLoaded) {
   EXPECT_EQ(8ul, dual_model_->size());
   EXPECT_EQ(2ul, dual_model_->unseen_size());
   EXPECT_EQ(5ul, dual_model_->unread_size());
+}
+
+TEST_F(DualReadingListModelTest, ShouldMaintainCountsWhenMarkAllSeen) {
+  const GURL kUnseenLocalUrl("http://unseen_local_url.com/");
+  const GURL kUnreadLocalUrl("http://unread_local_url.com/");
+  const GURL kReadLocalUrl("http://read_local_url.com/");
+  const GURL kUnseenAccountUrl("http://unseen_account_url.com/");
+  const GURL kUnreadAccountUrl("http://unread_account_url.com/");
+  const GURL kReadAccountUrl("http://read_account_url.com/");
+  const GURL kUnseenCommonUrl("http://unseen_common_url.com/");
+  const GURL kUnreadCommonUrl("http://unread_common_url.com/");
+  const GURL kReadCommonUrl("http://read_common_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndTriggerLoadCompletion(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUnseenLocalUrl, clock_.Now()),
+       TestEntryBuilder(kUnreadLocalUrl, clock_.Now()).SetRead(false),
+       TestEntryBuilder(kReadLocalUrl, clock_.Now()).SetRead(),
+       TestEntryBuilder(kUnseenCommonUrl, clock_.Now()),
+       TestEntryBuilder(kUnreadCommonUrl, clock_.Now()).SetRead(false),
+       TestEntryBuilder(kReadCommonUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUnseenAccountUrl, clock_.Now()),
+          TestEntryBuilder(kUnreadAccountUrl, clock_.Now()).SetRead(false),
+          TestEntryBuilder(kReadAccountUrl, clock_.Now()).SetRead(),
+          TestEntryBuilder(kUnseenCommonUrl, clock_.Now()),
+          TestEntryBuilder(kUnreadCommonUrl, clock_.Now()).SetRead(false),
+          TestEntryBuilder(kReadCommonUrl, clock_.Now())
+              .SetRead(clock_.Now() + base::Seconds(1))}));
+  ASSERT_TRUE(dual_model_->loaded());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_EQ(9ul, dual_model_->size());
+  ASSERT_EQ(3ul, dual_model_->unseen_size());
+  ASSERT_EQ(6ul, dual_model_->unread_size());
+
+  dual_model_->MarkAllSeen();
+
+  EXPECT_EQ(9ul, dual_model_->size());
+  EXPECT_EQ(0ul, dual_model_->unseen_size());
+  EXPECT_EQ(6ul, dual_model_->unread_size());
 }
 
 TEST_F(DualReadingListModelTest,
