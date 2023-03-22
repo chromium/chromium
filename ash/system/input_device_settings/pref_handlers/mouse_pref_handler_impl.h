@@ -25,14 +25,6 @@ class ASH_EXPORT MousePrefHandlerImpl : public MousePrefHandler {
                                mojom::Mouse* mouse) override;
   void UpdateMouseSettings(PrefService* pref_service,
                            const mojom::Mouse& mouse) override;
-
- private:
-  mojom::MouseSettingsPtr GetNewMouseSettings(PrefService* prefs,
-                                              const mojom::Mouse& Mouse);
-  mojom::MouseSettingsPtr RetrieveMouseSettings(
-      PrefService* prefs,
-      const mojom::Mouse& mouse,
-      const base::Value::Dict& settings_dict);
 };
 
 }  // namespace ash

@@ -38,6 +38,14 @@ const mojom::MouseSettings kMouseSettingsDefault(
     /*scroll_sensitivity=*/kDefaultSensitivity,
     /*scroll_acceleration=*/kDefaultScrollAcceleration);
 
+const mojom::MouseSettings kMouseSettingsNotDefault(
+    /*swap_right=*/!kDefaultSwapRight,
+    /*sensitivity=*/1,
+    /*reverse_scrolling=*/!kDefaultReverseScrolling,
+    /*acceleration_enabled=*/!kDefaultAccelerationEnabled,
+    /*scroll_sensitivity=*/1,
+    /*scroll_acceleration=*/!kDefaultScrollAcceleration);
+
 const mojom::MouseSettings kMouseSettings1(
     /*swap_right=*/false,
     /*sensitivity=*/1,
@@ -82,17 +90,30 @@ class MousePrefHandlerTest : public AshTestBase {
     // We are using these test constants as a a way to differentiate values
     // retrieved from prefs or default mouse settings.
     pref_service_->registry()->RegisterBooleanPref(
-        prefs::kPrimaryMouseButtonRight, kTestSwapRight);
+        prefs::kPrimaryMouseButtonRight, kDefaultSwapRight);
     pref_service_->registry()->RegisterIntegerPref(prefs::kMouseSensitivity,
-                                                   kTestSensitivity);
+                                                   kDefaultSensitivity);
     pref_service_->registry()->RegisterBooleanPref(prefs::kMouseReverseScroll,
-                                                   kTestReverseScrolling);
+                                                   kDefaultReverseScrolling);
     pref_service_->registry()->RegisterBooleanPref(prefs::kMouseAcceleration,
-                                                   kTestAccelerationEnabled);
+                                                   kDefaultAccelerationEnabled);
     pref_service_->registry()->RegisterIntegerPref(
-        prefs::kMouseScrollSensitivity, kTestScrollSensitivity);
+        prefs::kMouseScrollSensitivity, kDefaultSensitivity);
     pref_service_->registry()->RegisterBooleanPref(
-        prefs::kMouseScrollAcceleration, kTestScrollAcceleration);
+        prefs::kMouseScrollAcceleration, kDefaultScrollAcceleration);
+
+    pref_service_->SetUserPref(prefs::kPrimaryMouseButtonRight,
+                               base::Value(kTestSwapRight));
+    pref_service_->SetUserPref(prefs::kMouseSensitivity,
+                               base::Value(kTestSensitivity));
+    pref_service_->SetUserPref(prefs::kMouseReverseScroll,
+                               base::Value(kTestReverseScrolling));
+    pref_service_->SetUserPref(prefs::kMouseAcceleration,
+                               base::Value(kTestAccelerationEnabled));
+    pref_service_->SetUserPref(prefs::kMouseScrollSensitivity,
+                               base::Value(kTestScrollSensitivity));
+    pref_service_->SetUserPref(prefs::kMouseScrollAcceleration,
+                               base::Value(kTestScrollAcceleration));
   }
 
   void CheckMouseSettingsAndDictAreEqual(
@@ -100,33 +121,51 @@ class MousePrefHandlerTest : public AshTestBase {
       const base::Value::Dict& settings_dict) {
     const auto swap_right =
         settings_dict.FindBool(prefs::kMouseSettingSwapRight);
-    ASSERT_TRUE(swap_right.has_value());
-    EXPECT_EQ(settings.swap_right, swap_right);
+    if (swap_right.has_value()) {
+      EXPECT_EQ(settings.swap_right, swap_right);
+    } else {
+      EXPECT_EQ(settings.swap_right, kDefaultSwapRight);
+    }
 
     const auto sensitivity =
         settings_dict.FindInt(prefs::kMouseSettingSensitivity);
-    ASSERT_TRUE(sensitivity.has_value());
-    EXPECT_EQ(settings.sensitivity, sensitivity);
+    if (sensitivity.has_value()) {
+      EXPECT_EQ(settings.sensitivity, sensitivity);
+    } else {
+      EXPECT_EQ(settings.sensitivity, kDefaultSensitivity);
+    }
 
     const auto reverse_scrolling =
         settings_dict.FindBool(prefs::kMouseSettingReverseScrolling);
-    ASSERT_TRUE(reverse_scrolling.has_value());
-    EXPECT_EQ(settings.reverse_scrolling, reverse_scrolling);
+    if (reverse_scrolling.has_value()) {
+      EXPECT_EQ(settings.reverse_scrolling, reverse_scrolling);
+    } else {
+      EXPECT_EQ(settings.reverse_scrolling, kDefaultReverseScrolling);
+    }
 
     const auto acceleration_enabled =
         settings_dict.FindBool(prefs::kMouseSettingAccelerationEnabled);
-    ASSERT_TRUE(acceleration_enabled.has_value());
-    EXPECT_EQ(settings.acceleration_enabled, acceleration_enabled);
+    if (acceleration_enabled.has_value()) {
+      EXPECT_EQ(settings.acceleration_enabled, acceleration_enabled);
+    } else {
+      EXPECT_EQ(settings.acceleration_enabled, kDefaultAccelerationEnabled);
+    }
 
     const auto scroll_sensitivity =
         settings_dict.FindInt(prefs::kMouseSettingScrollSensitivity);
-    ASSERT_TRUE(scroll_sensitivity.has_value());
-    EXPECT_EQ(settings.scroll_sensitivity, scroll_sensitivity);
+    if (scroll_sensitivity.has_value()) {
+      EXPECT_EQ(settings.scroll_sensitivity, scroll_sensitivity);
+    } else {
+      EXPECT_EQ(settings.scroll_sensitivity, kDefaultSensitivity);
+    }
 
     const auto scroll_acceleration =
         settings_dict.FindBool(prefs::kMouseSettingScrollAcceleration);
-    ASSERT_TRUE(scroll_acceleration.has_value());
-    EXPECT_EQ(settings.scroll_acceleration, scroll_acceleration);
+    if (scroll_acceleration.has_value()) {
+      EXPECT_EQ(settings.scroll_acceleration, scroll_acceleration);
+    } else {
+      EXPECT_EQ(settings.scroll_acceleration, kDefaultScrollAcceleration);
+    }
   }
 
   void CallUpdateMouseSettings(const std::string& device_key,
@@ -145,6 +184,16 @@ class MousePrefHandlerTest : public AshTestBase {
 
     pref_handler_->InitializeMouseSettings(pref_service_.get(), mouse.get());
     return std::move(mouse->settings);
+  }
+
+  const base::Value::Dict* GetSettingsDict(const std::string& device_key) {
+    const auto& devices_dict =
+        pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref);
+    EXPECT_EQ(1u, devices_dict.size());
+    const auto* settings_dict = devices_dict.FindDict(device_key);
+    EXPECT_NE(nullptr, settings_dict);
+
+    return settings_dict;
   }
 
  protected:
@@ -294,6 +343,71 @@ TEST_F(MousePrefHandlerTest, MouseObserveredInTransitionPeriod) {
   ASSERT_EQ(settings->scroll_acceleration, kTestScrollAcceleration);
 }
 
+TEST_F(MousePrefHandlerTest, TransitionPeriodSettingsPersistedWhenUserChosen) {
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+  Shell::Get()->input_device_tracker()->OnMouseConnected(mouse);
+
+  pref_service_->SetUserPref(prefs::kPrimaryMouseButtonRight,
+                             base::Value(kDefaultSwapRight));
+  pref_service_->SetUserPref(prefs::kMouseSensitivity,
+                             base::Value(kDefaultSensitivity));
+  pref_service_->SetUserPref(prefs::kMouseReverseScroll,
+                             base::Value(kDefaultReverseScrolling));
+  pref_service_->SetUserPref(prefs::kMouseAcceleration,
+                             base::Value(kDefaultAccelerationEnabled));
+  pref_service_->SetUserPref(prefs::kMouseScrollSensitivity,
+                             base::Value(kDefaultSensitivity));
+  pref_service_->SetUserPref(prefs::kMouseScrollAcceleration,
+                             base::Value(kDefaultScrollAcceleration));
+  mojom::MouseSettingsPtr settings =
+      CallInitializeMouseSettings(mouse.device_key);
+  EXPECT_EQ(kMouseSettingsDefault, *settings);
+
+  const auto* settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSensitivity));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingReverseScrolling));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingAccelerationEnabled));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollSensitivity));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollAcceleration));
+  CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
+}
+
+TEST_F(MousePrefHandlerTest, DefaultNotPersistedUntilUpdated) {
+  CallUpdateMouseSettings(kMouseKey1, kMouseSettingsDefault);
+
+  const auto* settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingSensitivity));
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingReverseScrolling));
+  EXPECT_FALSE(
+      settings_dict->contains(prefs::kMouseSettingAccelerationEnabled));
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingScrollSensitivity));
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingScrollAcceleration));
+  CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
+
+  CallUpdateMouseSettings(kMouseKey1, kMouseSettingsNotDefault);
+  settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSensitivity));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingReverseScrolling));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingAccelerationEnabled));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollSensitivity));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollAcceleration));
+  CheckMouseSettingsAndDictAreEqual(kMouseSettingsNotDefault, *settings_dict);
+
+  CallUpdateMouseSettings(kMouseKey1, kMouseSettingsDefault);
+  settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSensitivity));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingReverseScrolling));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingAccelerationEnabled));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollSensitivity));
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollAcceleration));
+  CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
+}
+
 class MouseSettingsPrefConversionTest
     : public MousePrefHandlerTest,
       public testing::WithParamInterface<
@@ -327,12 +441,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MouseSettingsPrefConversionTest, CheckConversion) {
   CallUpdateMouseSettings(device_key_, settings_);
 
-  const auto& devices_dict =
-      pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref);
-  ASSERT_EQ(1u, devices_dict.size());
-  auto* settings_dict = devices_dict.FindDict(device_key_);
-  ASSERT_NE(nullptr, settings_dict);
-
+  const auto* settings_dict = GetSettingsDict(device_key_);
   CheckMouseSettingsAndDictAreEqual(settings_, *settings_dict);
 }
 
