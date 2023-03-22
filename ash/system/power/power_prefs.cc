@@ -129,7 +129,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 double GetAdaptiveChargingMinProbability() {
   // An AdaptiveCharging decision is considered to be reliable if the inference
   // score is higher than this number.
-  constexpr double kDefaultAdaptiveChargingMinProbability = 0.2;
+  constexpr double kDefaultAdaptiveChargingMinProbability = 0.35;
 
   return base::GetFieldTrialParamByFeatureAsDouble(
       ash::features::kAdaptiveCharging, "adaptive_charging_min_probability",
