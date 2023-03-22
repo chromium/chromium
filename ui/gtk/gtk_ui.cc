@@ -187,7 +187,7 @@ GtkUiPlatform* GtkUi::GetPlatform() {
 }
 
 bool GtkUi::Initialize() {
-  if (!LoadGtk()) {
+  if (!LoadGtk() || !GtkCheckVersion(3, 20)) {
     return false;
   }
 
@@ -278,24 +278,24 @@ bool GtkUi::GetDisplayProperty(int id, int* result) const {
   return false;
 }
 
-SkColor GtkUi::GetFocusRingColor() const {
-  return focus_ring_color_;
+void GtkUi::GetFocusRingColor(SkColor* color) const {
+  *color = focus_ring_color_;
 }
 
-SkColor GtkUi::GetActiveSelectionBgColor() const {
-  return active_selection_bg_color_;
+void GtkUi::GetActiveSelectionBgColor(SkColor* color) const {
+  *color = active_selection_bg_color_;
 }
 
-SkColor GtkUi::GetActiveSelectionFgColor() const {
-  return active_selection_fg_color_;
+void GtkUi::GetActiveSelectionFgColor(SkColor* color) const {
+  *color = active_selection_fg_color_;
 }
 
-SkColor GtkUi::GetInactiveSelectionBgColor() const {
-  return inactive_selection_bg_color_;
+void GtkUi::GetInactiveSelectionBgColor(SkColor* color) const {
+  *color = inactive_selection_bg_color_;
 }
 
-SkColor GtkUi::GetInactiveSelectionFgColor() const {
-  return inactive_selection_fg_color_;
+void GtkUi::GetInactiveSelectionFgColor(SkColor* color) const {
+  *color = inactive_selection_fg_color_;
 }
 
 base::TimeDelta GtkUi::GetCursorBlinkInterval() const {

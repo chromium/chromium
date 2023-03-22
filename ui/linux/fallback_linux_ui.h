@@ -1,10 +1,11 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_LINUX_FAKE_LINUX_UI_H_
-#define UI_LINUX_FAKE_LINUX_UI_H_
+#ifndef UI_LINUX_FALLBACK_LINUX_UI_H_
+#define UI_LINUX_FALLBACK_LINUX_UI_H_
 
+#include "ui/gfx/font_render_params.h"
 #include "ui/linux/linux_ui.h"
 
 namespace ui {
@@ -12,10 +13,10 @@ namespace ui {
 // This class is meant to be overridden by tests.  It's provided as a
 // convenience so that tests don't have to stub lots of methods just to override
 // a single one.
-class FakeLinuxUi : public LinuxUiAndTheme {
+class FallbackLinuxUi : public LinuxUiAndTheme {
  public:
-  FakeLinuxUi();
-  ~FakeLinuxUi() override;
+  FallbackLinuxUi();
+  ~FallbackLinuxUi() override;
 
   // ui::LinuxUi:
   bool Initialize() override;
@@ -67,8 +68,12 @@ class FakeLinuxUi : public LinuxUiAndTheme {
   bool PreferDarkTheme() const override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
   ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
+
+ private:
+  std::string default_font_family_;
+  gfx::FontRenderParams default_font_render_params_;
 };
 
 }  // namespace ui
 
-#endif  // UI_LINUX_FAKE_LINUX_UI_H_
+#endif  // UI_LINUX_FALLBACK_LINUX_UI_H_

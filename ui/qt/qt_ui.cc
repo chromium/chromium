@@ -211,28 +211,28 @@ bool QtUi::GetDisplayProperty(int id, int* result) const {
 }
 
 DISABLE_CFI_VCALL
-SkColor QtUi::GetFocusRingColor() const {
-  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
+void QtUi::GetFocusRingColor(SkColor* color) const {
+  *color = shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
 DISABLE_CFI_VCALL
-SkColor QtUi::GetActiveSelectionBgColor() const {
-  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
+void QtUi::GetActiveSelectionBgColor(SkColor* color) const {
+  *color = shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
 DISABLE_CFI_VCALL
-SkColor QtUi::GetActiveSelectionFgColor() const {
-  return shim_->GetColor(ColorType::kHighlightFg, ColorState::kNormal);
+void QtUi::GetActiveSelectionFgColor(SkColor* color) const {
+  *color = shim_->GetColor(ColorType::kHighlightFg, ColorState::kNormal);
 }
 
 DISABLE_CFI_VCALL
-SkColor QtUi::GetInactiveSelectionBgColor() const {
-  return shim_->GetColor(ColorType::kHighlightBg, ColorState::kInactive);
+void QtUi::GetInactiveSelectionBgColor(SkColor* color) const {
+  *color = shim_->GetColor(ColorType::kHighlightBg, ColorState::kInactive);
 }
 
 DISABLE_CFI_VCALL
-SkColor QtUi::GetInactiveSelectionFgColor() const {
-  return shim_->GetColor(ColorType::kHighlightFg, ColorState::kInactive);
+void QtUi::GetInactiveSelectionFgColor(SkColor* color) const {
+  *color = shim_->GetColor(ColorType::kHighlightFg, ColorState::kInactive);
 }
 
 DISABLE_CFI_VCALL

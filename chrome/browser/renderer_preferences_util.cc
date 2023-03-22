@@ -159,15 +159,15 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   if (linux_ui_theme) {
     if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
-      prefs->focus_ring_color = linux_ui_theme->GetFocusRingColor();
-      prefs->active_selection_bg_color =
-          linux_ui_theme->GetActiveSelectionBgColor();
-      prefs->active_selection_fg_color =
-          linux_ui_theme->GetActiveSelectionFgColor();
-      prefs->inactive_selection_bg_color =
-          linux_ui_theme->GetInactiveSelectionBgColor();
-      prefs->inactive_selection_fg_color =
-          linux_ui_theme->GetInactiveSelectionFgColor();
+      linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
+      linux_ui_theme->GetActiveSelectionBgColor(
+          &prefs->active_selection_bg_color);
+      linux_ui_theme->GetActiveSelectionFgColor(
+          &prefs->active_selection_fg_color);
+      linux_ui_theme->GetInactiveSelectionBgColor(
+          &prefs->inactive_selection_bg_color);
+      linux_ui_theme->GetInactiveSelectionFgColor(
+          &prefs->inactive_selection_fg_color);
     }
   }
 

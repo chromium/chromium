@@ -54,24 +54,24 @@ bool FakeLinuxUi::GetDisplayProperty(int id, int* result) const {
   return false;
 }
 
-SkColor FakeLinuxUi::GetFocusRingColor() const {
-  return gfx::kPlaceholderColor;
+void FakeLinuxUi::GetFocusRingColor(SkColor* color) const {
+  *color = gfx::kPlaceholderColor;
 }
 
-SkColor FakeLinuxUi::GetActiveSelectionBgColor() const {
-  return gfx::kPlaceholderColor;
+void FakeLinuxUi::GetActiveSelectionBgColor(SkColor* color) const {
+  *color = gfx::kPlaceholderColor;
 }
 
-SkColor FakeLinuxUi::GetActiveSelectionFgColor() const {
-  return gfx::kPlaceholderColor;
+void FakeLinuxUi::GetActiveSelectionFgColor(SkColor* color) const {
+  *color = gfx::kPlaceholderColor;
 }
 
-SkColor FakeLinuxUi::GetInactiveSelectionBgColor() const {
-  return gfx::kPlaceholderColor;
+void FakeLinuxUi::GetInactiveSelectionBgColor(SkColor* color) const {
+  *color = gfx::kPlaceholderColor;
 }
 
-SkColor FakeLinuxUi::GetInactiveSelectionFgColor() const {
-  return gfx::kPlaceholderColor;
+void FakeLinuxUi::GetInactiveSelectionFgColor(SkColor* color) const {
+  *color = gfx::kPlaceholderColor;
 }
 
 base::TimeDelta FakeLinuxUi::GetCursorBlinkInterval() const {

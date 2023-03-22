@@ -254,11 +254,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
   virtual bool GetDisplayProperty(int id, int* result) const = 0;
 
   // Returns the preferences that we pass to Blink.
-  virtual SkColor GetFocusRingColor() const = 0;
-  virtual SkColor GetActiveSelectionBgColor() const = 0;
-  virtual SkColor GetActiveSelectionFgColor() const = 0;
-  virtual SkColor GetInactiveSelectionBgColor() const = 0;
-  virtual SkColor GetInactiveSelectionFgColor() const = 0;
+  virtual void GetFocusRingColor(SkColor* color) const = 0;
+  virtual void GetActiveSelectionBgColor(SkColor* color) const = 0;
+  virtual void GetActiveSelectionFgColor(SkColor* color) const = 0;
+  virtual void GetInactiveSelectionBgColor(SkColor* color) const = 0;
+  virtual void GetInactiveSelectionFgColor(SkColor* color) const = 0;
 
   // Only used on GTK to indicate if the dark GTK theme variant is
   // preferred.

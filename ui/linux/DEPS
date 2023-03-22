@@ -15,4 +15,8 @@ specific_include_rules = {
     "+ui/gtk",
     "+ui/qt",
   ],
+  "fallback_linux_ui.cc": [
+    "+ui/events/keycodes",
+    "+ui/views/controls",
+  ],
 }
