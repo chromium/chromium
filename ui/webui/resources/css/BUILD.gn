@@ -24,7 +24,6 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "action_link.css",
-    "butter_bar.css",
     "chrome_shared.css",
     "list.css",
     "menu_button.css",
