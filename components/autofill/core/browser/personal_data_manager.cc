@@ -821,7 +821,7 @@ bool PersonalDataManager::IsEligibleForAddressAccountStorage() const {
   // The CONTACT_INFO data type is only running for eligible users. See
   // ContactInfoModelTypeController.
   return base::FeatureList::IsEnabled(
-             features::kAutofillAccountProfilesMigration) &&
+             features::kAutofillAccountProfileStorage) &&
          sync_service_ &&
          sync_service_->GetActiveDataTypes().Has(syncer::CONTACT_INFO);
 }

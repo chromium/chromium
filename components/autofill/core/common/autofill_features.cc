@@ -44,8 +44,8 @@ const base::FeatureParam<bool> kAutofillEnableSilentUpdatesForAccountProfiles{
 // users. Moreover, users are prompted to migrate existing kLocalOrSyncable
 // profiles to the kAccount storage.
 // TODO(crbug.com/1423319): Remove once launched.
-BASE_FEATURE(kAutofillAccountProfilesMigration,
-             "AutofillAccountProfilesMigration",
+BASE_FEATURE(kAutofillAccountProfileStorage,
+             "AutofillAccountProfileStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
