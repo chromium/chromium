@@ -60,6 +60,14 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // Returns true if the OriginAgentCluster header will be respected.
   static bool IsOriginAgentClusterEnabled();
 
+  // Returns whether defaulting to origin-keyed agent cluster (without
+  // necessarily an origin-keyed process) is enabled.
+  // OriginAgentClusters are enabled by default if kOriginIsolationHeader and
+  // kOriginAgentClusterDefaultEnabled are enabled, and if there is no
+  // enterprise policy forbidding it.
+  static bool AreOriginAgentClustersEnabledByDefault(
+      BrowserContext* browser_context);
+
   // Returns true if Cross-Origin-Opener-Policy headers may be used as
   // heuristics for turning on site isolation.
   static bool IsSiteIsolationForCOOPEnabled();

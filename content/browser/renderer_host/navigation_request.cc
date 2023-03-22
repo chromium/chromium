@@ -3328,27 +3328,20 @@ bool NavigationRequest::IsOriginAgentClusterOptOutRequested() {
 
   // We only allow explicit opt-outs when OAC-by-default is enabled. The
   // following check will be false if IsOriginAgentClusterEnabled() is false.
-  if (!AreOriginAgentClustersEnabledByDefault())
+  if (!SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+          frame_tree_node_->navigator().controller().GetBrowserContext())) {
     return false;
+  }
 
   return response_head_->parsed_headers->origin_agent_cluster ==
          network::mojom::OriginAgentClusterValue::kFalse;
 }
 
-bool NavigationRequest::AreOriginAgentClustersEnabledByDefault() const {
-  // OriginAgentClusters are enabled by default if OriginAgentCluster and
-  // kOriginAgentClusterDefaultEnabled are enabled, and if there is no
-  // enterprise policy forbidding it.
-  return SiteIsolationPolicy::IsOriginAgentClusterEnabled() &&
-         base::FeatureList::IsEnabled(
-             blink::features::kOriginAgentClusterDefaultEnabled) &&
-         !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
-             frame_tree_node_->navigator().controller().GetBrowserContext());
-}
-
 bool NavigationRequest::IsIsolationImplied() {
-  if (!AreOriginAgentClustersEnabledByDefault())
+  if (!SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+          frame_tree_node_->navigator().controller().GetBrowserContext())) {
     return false;
+  }
 
   return !response() || response_head_->parsed_headers->origin_agent_cluster ==
                             network::mojom::OriginAgentClusterValue::kAbsent;
@@ -3381,7 +3374,8 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
                                                  requested_isolation_state)
           .is_origin_agent_cluster();
 
-  if (AreOriginAgentClustersEnabledByDefault()) {
+  if (SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+          frame_tree_node_->navigator().controller().GetBrowserContext())) {
     // When OAC is enabled by default, report enum values that distinguish
     // between explicitly requesting OAC (on or off) and having no related
     // header.

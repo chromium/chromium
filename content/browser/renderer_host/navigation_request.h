@@ -1240,10 +1240,6 @@ class CONTENT_EXPORT NavigationRequest
   // AreOriginAgentClustersEnabledByDefault() is false.
   bool IsOriginAgentClusterOptOutRequested();
 
-  // Returns whether defaulting to origin-keyed agent cluster (without
-  // necessarily an origin-keyed process) is enabled.
-  bool AreOriginAgentClustersEnabledByDefault() const;
-
   // Returns whether this navigation request should use an origin-keyed
   // agent cluster (but not an origin-keyed process).
   bool IsIsolationImplied();

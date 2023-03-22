@@ -16,11 +16,7 @@ namespace content {
 OriginAgentClusterIsolationState
 OriginAgentClusterIsolationState::CreateForDefaultIsolation(
     BrowserContext* context) {
-  if (SiteIsolationPolicy::IsOriginAgentClusterEnabled() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kOriginAgentClusterDefaultEnabled) &&
-      !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
-          context)) {
+  if (SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(context)) {
     return CreateForOriginAgentCluster(
         false /* requires_origin_keyed_process */);
   }

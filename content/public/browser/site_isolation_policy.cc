@@ -204,6 +204,19 @@ bool SiteIsolationPolicy::IsOriginAgentClusterEnabled() {
 }
 
 // static
+bool SiteIsolationPolicy::AreOriginAgentClustersEnabledByDefault(
+    BrowserContext* browser_context) {
+  // OriginAgentClusters are enabled by default if OriginAgentCluster and
+  // kOriginAgentClusterDefaultEnabled are enabled, and if there is no
+  // enterprise policy forbidding it.
+  return IsOriginAgentClusterEnabled() &&
+         base::FeatureList::IsEnabled(
+             blink::features::kOriginAgentClusterDefaultEnabled) &&
+         !GetContentClient()->browser()->ShouldDisableOriginAgentClusterDefault(
+             browser_context);
+}
+
+// static
 bool SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled() {
   // If the user has explicitly enabled site isolation for COOP sites from the
   // command line, honor this regardless of policies that may disable site
