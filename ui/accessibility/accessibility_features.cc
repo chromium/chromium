@@ -263,15 +263,6 @@ bool IsAccessibilityFormControlsAXModeEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityFormControlsMode);
 }
-
-BASE_FEATURE(kOptimizeAccessibilityUiThreadWork,
-             "OptimizeAccessibilityUiThreadWork",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsOptimizeAccessibilityUiThreadWorkEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kOptimizeAccessibilityUiThreadWork);
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

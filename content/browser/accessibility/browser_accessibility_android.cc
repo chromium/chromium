@@ -533,11 +533,8 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 }
 
 bool BrowserAccessibilityAndroid::IsLeaf() const {
-  if (base::FeatureList::IsEnabled(
-          features::kOptimizeAccessibilityUiThreadWork)) {
-    if (g_leaf_map.Get().find(this) != g_leaf_map.Get().end()) {
-      return g_leaf_map.Get()[this];
-    }
+  if (g_leaf_map.Get().find(this) != g_leaf_map.Get().end()) {
+    return g_leaf_map.Get()[this];
   }
 
   if (BrowserAccessibility::IsLeaf()) {
@@ -744,9 +741,7 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
       text += static_cast<BrowserAccessibilityAndroid*>(it.get())
                   ->GetSubstringTextContentUTF16(predicate);
-      if (base::FeatureList::IsEnabled(
-              features::kOptimizeAccessibilityUiThreadWork) &&
-          predicate && predicate.value().Run(text)) {
+      if (predicate && predicate.value().Run(text)) {
         break;
       }
     }

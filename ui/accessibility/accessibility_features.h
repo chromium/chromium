@@ -207,10 +207,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFormControlsMode);
 // Returns true if the form controls AXMode is enabled.
 AX_BASE_EXPORT bool IsAccessibilityFormControlsAXModeEnabled();
 
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeAccessibilityUiThreadWork);
-
-bool IsOptimizeAccessibilityUiThreadWorkEnabled();
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
