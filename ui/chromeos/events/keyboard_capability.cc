@@ -167,6 +167,26 @@ bool KeyboardCapability::HasLauncherButton(
 }
 
 // static
+bool KeyboardCapability::IsTopRowKey(const KeyboardCode& key_code) {
+  // A set that includes all top row keys from different keyboards.
+  static const base::NoDestructor<base::flat_set<KeyboardCode>>
+      top_row_action_keys({
+          KeyboardCode::VKEY_BROWSER_BACK,
+          KeyboardCode::VKEY_BROWSER_FORWARD,
+          KeyboardCode::VKEY_BROWSER_REFRESH,
+          KeyboardCode::VKEY_ZOOM,
+          KeyboardCode::VKEY_MEDIA_LAUNCH_APP1,
+          KeyboardCode::VKEY_BRIGHTNESS_DOWN,
+          KeyboardCode::VKEY_BRIGHTNESS_UP,
+          KeyboardCode::VKEY_MEDIA_PLAY_PAUSE,
+          KeyboardCode::VKEY_VOLUME_MUTE,
+          KeyboardCode::VKEY_VOLUME_DOWN,
+          KeyboardCode::VKEY_VOLUME_UP,
+      });
+  return base::Contains(*top_row_action_keys, key_code);
+}
+
+// static
 bool KeyboardCapability::HasSixPackKey(const InputDevice& keyboard) {
   // If the keyboard is an internal keyboard, return false. Otherwise, return
   // true. This is correct for most of the keyboards. Edge cases will be handled
@@ -296,6 +316,46 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
   for (const auto& id : keyboard_ids_to_remove) {
     keyboard_info_map_.erase(id);
   }
+}
+
+bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
+                                     const InputDevice& keyboard) const {
+  // Handle top row keys.
+  if (IsTopRowKey(key_code)) {
+    KeyboardTopRowLayout layout =
+        EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard);
+    switch (layout) {
+      case KeyboardTopRowLayout::kKbdTopRowLayout1:
+        return kLayout1TopRowKeyToFKeyMap.contains(key_code);
+      case KeyboardTopRowLayout::kKbdTopRowLayout2:
+        return kLayout2TopRowKeyToFKeyMap.contains(key_code);
+      case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
+      case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
+        return kLayoutWilcoDrallionTopRowKeyToFKeyMap.contains(key_code);
+      case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+        // TODO(zhangwenyu): Handle custom vivaldi layout.
+        return true;
+    }
+  }
+
+  // Handle six pack keys.
+  if (IsSixPackKey(key_code)) {
+    return HasSixPackKey(keyboard);
+  }
+
+  // TODO(zhangwenyu): check other specific keys, e.g. assistant key.
+  return true;
+}
+
+bool KeyboardCapability::HasKeyEventOnAnyKeyboard(
+    const KeyboardCode& key_code) const {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasKeyEvent(key_code, keyboard)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ui

@@ -177,6 +177,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Enable or disable top row keys as F-Keys.
   void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) const;
 
+  // Check if a key code is one of the top row keys.
+  static bool IsTopRowKey(const KeyboardCode& key_code);
+
   // Check if a key code is one of the six pack keys.
   static bool IsSixPackKey(const KeyboardCode& key_code);
 
@@ -216,6 +219,13 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // InputDeviceEventObserver:
   void OnDeviceListsComplete() override;
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
+
+  // Check if a specific key event exists on a given keyboard.
+  bool HasKeyEvent(const KeyboardCode& key_code,
+                   const InputDevice& keyboard) const;
+
+  // Check if any of the connected keyboards has a specific key event.
+  bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code) const;
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() {
     return keyboard_info_map_;

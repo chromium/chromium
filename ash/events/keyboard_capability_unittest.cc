@@ -34,6 +34,27 @@ constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 constexpr int kDeviceId1 = 5;
 constexpr int kDeviceId2 = 10;
 
+ui::InputDeviceType INTERNAL = ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+ui::InputDeviceType EXTERNAL_USB = ui::InputDeviceType::INPUT_DEVICE_USB;
+ui::InputDeviceType EXTERNAL_BLUETOOTH =
+    ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH;
+// For INPUT_DEVICE_UNKNOWN type, we treat it as external keyboard.
+ui::InputDeviceType EXTERNAL_UNKNOWN =
+    ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
+
+struct KeyEventTestData {
+  // All currently connected keyboards' connection type, e.g.
+  // INPUT_DEVICE_INTERNAL.
+  std::vector<ui::InputDeviceType> keyboard_connection_types;
+  // All currently connected keyboards' layout types.
+  std::vector<std::string> keyboard_layout_types;
+  ui::KeyboardCode key_code;
+  // Expected result of whether this key event exists on each keyboard.
+  std::vector<bool> expected_has_key_event;
+  // Expected result of whether this key event exists on all connected.
+  bool expected_has_key_event_on_any_keyboard;
+};
+
 // NOTE: This only creates a simple ui::InputDevice based on a device
 // capabilities report; it is not suitable for subclasses of ui::InputDevice.
 ui::InputDevice InputDeviceFromCapabilities(
@@ -73,6 +94,11 @@ class FakeDeviceManager {
                              /*devtype=*/absl::nullopt,
                              std::move(sysfs_attributes),
                              std::move(sysfs_properties));
+  }
+
+  void RemoveAllDevices() {
+    fake_udev_.Reset();
+    fake_keyboard_devices_.clear();
   }
 
  private:
@@ -329,6 +355,21 @@ TEST_F(KeyboardCapabilityTest, TestRemoveDevicesFromList) {
   ASSERT_EQ(0u, keyboard_capability_->keyboard_info_map().size());
 }
 
+TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {
+  for (const auto& [key_code, _] : ui::kLayout1TopRowKeyToFKeyMap) {
+    EXPECT_TRUE(keyboard_capability_->IsTopRowKey(key_code));
+  }
+  for (const auto& [key_code, _] : ui::kLayout2TopRowKeyToFKeyMap) {
+    EXPECT_TRUE(keyboard_capability_->IsTopRowKey(key_code));
+  }
+  for (const auto& [key_code, _] : ui::kLayoutWilcoDrallionTopRowKeyToFKeyMap) {
+    EXPECT_TRUE(keyboard_capability_->IsTopRowKey(key_code));
+  }
+
+  // A key not in any of the above maps is not a top row key.
+  EXPECT_FALSE(keyboard_capability_->IsTopRowKey(ui::KeyboardCode::VKEY_A));
+}
+
 class ModifierKeyTest : public KeyboardCapabilityTest,
                         public testing::WithParamInterface<
                             std::tuple<ui::DeviceCapabilities,
@@ -382,6 +423,115 @@ TEST_P(ModifierKeyTest, TestGetModifierKeys) {
   base::ranges::sort(expected_modifier_keys);
   base::ranges::sort(modifier_keys);
   EXPECT_EQ(expected_modifier_keys, modifier_keys);
+}
+
+class KeyEventTest : public KeyboardCapabilityTest,
+                     public testing::WithParamInterface<KeyEventTestData> {};
+
+// Tests that given the keyboard connection type and layout type, check if this
+// keyboard has a specific key event.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KeyEventTest,
+    testing::ValuesIn(std::vector<KeyEventTestData>{
+        // Testing top row keys.
+        {{INTERNAL},
+         {kKbdTopRowLayout1Tag},
+         ui::VKEY_BROWSER_FORWARD,
+         {true},
+         true},
+        {{EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag},
+         ui::VKEY_ZOOM,
+         {true},
+         true},
+        {{EXTERNAL_USB},
+         {kKbdTopRowLayout1Tag},
+         ui::VKEY_MEDIA_PLAY_PAUSE,
+         {false},
+         false},
+        {{INTERNAL},
+         {kKbdTopRowLayout2Tag},
+         ui::VKEY_BROWSER_FORWARD,
+         {false},
+         false},
+        {{EXTERNAL_UNKNOWN},
+         {kKbdTopRowLayout2Tag},
+         ui::VKEY_MEDIA_PLAY_PAUSE,
+         {true},
+         true},
+        {{INTERNAL}, {kKbdTopRowLayoutWilcoTag}, ui::VKEY_ZOOM, {true}, true},
+        {{EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayoutDrallionTag},
+         ui::VKEY_BRIGHTNESS_UP,
+         {true},
+         true},
+        {{INTERNAL, EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag},
+         ui::VKEY_BROWSER_FORWARD,
+         {true, false},
+         true},
+        {{INTERNAL, EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout2Tag, kKbdTopRowLayout2Tag},
+         ui::VKEY_BROWSER_FORWARD,
+         {false, false},
+         false},
+        {{INTERNAL, EXTERNAL_USB, EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayout2Tag, kKbdTopRowLayoutWilcoTag},
+         ui::VKEY_VOLUME_UP,
+         {true, true, true},
+         true},
+
+        // Testing six pack keys.
+        {{INTERNAL}, {kKbdTopRowLayout1Tag}, ui::VKEY_INSERT, {false}, false},
+        {{EXTERNAL_USB}, {kKbdTopRowLayout1Tag}, ui::VKEY_INSERT, {true}, true},
+        {{INTERNAL, EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayoutWilcoTag},
+         ui::VKEY_HOME,
+         {false, true},
+         true},
+
+        // Testing other keys.
+        {{INTERNAL}, {kKbdTopRowLayout1Tag}, ui::VKEY_LEFT, {true}, true},
+        {{EXTERNAL_BLUETOOTH},
+         {kKbdTopRowLayout2Tag},
+         ui::VKEY_ESCAPE,
+         {true},
+         true},
+        {{EXTERNAL_UNKNOWN},
+         {kKbdTopRowLayoutWilcoTag},
+         ui::VKEY_A,
+         {true},
+         true},
+        {{INTERNAL}, {kKbdTopRowLayoutDrallionTag}, ui::VKEY_2, {true}, true},
+    }));
+
+TEST_P(KeyEventTest, TestHasKeyEvent) {
+  auto [keyboard_connection_types, keyboard_layout_types, key_code,
+        expected_has_key_event, expected_has_key_event_on_any_keyboard] =
+      GetParam();
+
+  fake_keyboard_manager_->RemoveAllDevices();
+  for (size_t i = 0; i < keyboard_layout_types.size(); i++) {
+    std::string layout = keyboard_layout_types[i];
+    ui::InputDevice fake_keyboard(
+        /*id=*/i, /*type=*/keyboard_connection_types[i],
+        /*name=*/layout);
+    fake_keyboard.sys_path = base::FilePath("path" + layout);
+    fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, layout);
+
+    if (expected_has_key_event[i]) {
+      EXPECT_TRUE(keyboard_capability_->HasKeyEvent(key_code, fake_keyboard));
+    } else {
+      EXPECT_FALSE(keyboard_capability_->HasKeyEvent(key_code, fake_keyboard));
+    }
+  }
+
+  if (expected_has_key_event_on_any_keyboard) {
+    EXPECT_TRUE(keyboard_capability_->HasKeyEventOnAnyKeyboard(key_code));
+  } else {
+    EXPECT_FALSE(keyboard_capability_->HasKeyEventOnAnyKeyboard(key_code));
+  }
 }
 
 }  // namespace ash
