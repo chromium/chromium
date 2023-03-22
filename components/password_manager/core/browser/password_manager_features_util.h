@@ -73,7 +73,7 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
 // enabled, etc). |pref_service| must not be null. |sync_service| may be null
 // (commonly the case in incognito mode), in which case this will simply return
 // false. See PasswordFeatureManager::ShouldShowPasswordStorePicker.
-// TODO(crbug.com/1392699): This predicate is kinda confusing, especially on
+// TODO(crbug.com/1426783): This predicate is kinda confusing, especially on
 // mobile. Consider splitting it in two, "should offer move" and "should offer
 // store choice".
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
