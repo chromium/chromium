@@ -1903,8 +1903,7 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
       {
           .href = kInsecureURL,
           .attributionsrc = kSecureURL,
-          // TODO(crbug.com/1381123): This should be false.
-          .impression_expected = true,
+          .impression_expected = false,
       },
       {
           .href = kSecureURL,
@@ -1929,14 +1928,6 @@ TEST_F(ContextMenuControllerTest, AttributionSrc) {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<blink::test::ScopedMockedURLLoad> load;
-    if (test_case.attributionsrc == kSecureURL) {
-      // TODO(crbug.com/1381123): Remove this once the background attributionsrc
-      // request is made on the navigation, not context-menu creation.
-      load.emplace(url_test_helpers::ToKURL(kSecureURL),
-                   test::CoreTestDataPath("foo.html"));
-    }
-
     Persistent<HTMLAnchorElement> anchor =
         MakeGarbageCollected<HTMLAnchorElement>(*GetDocument());
     anchor->setInnerText("abc");

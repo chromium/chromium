@@ -747,16 +747,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (const AtomicString& attribution_src_value =
             anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
         !attribution_src_value.IsNull()) {
-      // TODO(crbug.com/1381123): The background request should be sent at
-      // navigation, not context-menu creation.
-      if (!attribution_src_value.empty()) {
-        data.impression =
-            selected_frame->GetAttributionSrcLoader()->RegisterNavigation(
-                selected_frame->GetDocument()->CompleteURL(
-                    attribution_src_value),
-                mojom::blink::AttributionNavigationType::kContextMenu,
-                /*element=*/anchor);
-      }
+      // TODO(crbug.com/1381123): Support background attributionsrc requests
+      // if attribute value is non-empty.
 
       // An impression should be attached to the navigation regardless of
       // whether a background request would have been allowed or attempted.
