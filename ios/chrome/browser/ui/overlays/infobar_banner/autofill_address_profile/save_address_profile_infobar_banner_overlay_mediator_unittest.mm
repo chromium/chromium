@@ -50,7 +50,10 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
-          profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
+          profile, /*original_profile=*/nullptr,
+          /*syncing_user_email=*/absl::nullopt,
+          /*locale=*/"en-US",
+          autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       passed_delegate.get();
@@ -88,7 +91,10 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
-          profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
+          profile, /*original_profile=*/nullptr,
+          /*syncing_user_email=*/absl::nullopt,
+          /*locale=*/"en-US",
+          autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());
   InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
                      std::move(passed_delegate));

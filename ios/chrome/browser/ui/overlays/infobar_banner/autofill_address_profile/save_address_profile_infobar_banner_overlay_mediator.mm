@@ -65,7 +65,10 @@ using autofill_address_profile_infobar_overlays::
       setTitleText:base::SysUTF16ToNSString(self.config->message_text())];
   [self.consumer
       setSubtitleText:base::SysUTF16ToNSString(self.config->description())];
-  [self.consumer setRestrictSubtitleTextToSingleLine:YES];
+
+  if (!self.config->is_migration_to_account()) {
+    [self.consumer setRestrictSubtitleTextToSingleLine:YES];
+  }
 
   [self.consumer
       setIconImage:CustomSymbolWithPointSize(kLocationFillSymbol,

@@ -23,7 +23,9 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
+      absl::optional<std::u16string> syncing_user_email,
       const std::string& locale,
+      AutofillClient::SaveAddressProfilePromptOptions options,
       AutofillClient::AddressProfileSavePromptCallback callback);
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillSaveUpdateAddressProfileDelegateIOS&) = delete;
@@ -88,6 +90,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   bool Cancel() override;
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
+  bool IsMigrationToAccount() const { return is_migration_to_account_; }
+
 #if defined(UNIT_TEST)
   // Getter for |user_decision_|. Used for the testing purposes.
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
@@ -120,6 +124,12 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   // True if the either of banner or modal is visible currently.
   bool is_infobar_visible_ = false;
+
+  // Denotes if an account migration prompt should be shown.
+  bool is_migration_to_account_;
+
+  // Denotes the email address of the syncing account.
+  absl::optional<std::u16string> syncing_user_email_;
 
   // Records the last user decision based on the interactions with the
   // banner/modal to be sent with |address_profile_save_prompt_callback_|.

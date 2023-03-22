@@ -18,10 +18,13 @@ MockAutofillSaveUpdateAddressProfileDelegateIOS::
         const autofill::AutofillProfile* original_profile,
         const std::string& locale,
         autofill::AutofillClient::AddressProfileSavePromptCallback callback)
-    : AutofillSaveUpdateAddressProfileDelegateIOS(profile,
-                                                  original_profile,
-                                                  locale,
-                                                  std::move(callback)) {}
+    : AutofillSaveUpdateAddressProfileDelegateIOS(
+          profile,
+          original_profile,
+          /*syncing_user_email=*/absl::nullopt,
+          locale,
+          autofill::AutofillClient::SaveAddressProfilePromptOptions{},
+          std::move(callback)) {}
 
 MockAutofillSaveUpdateAddressProfileDelegateIOS::
     ~MockAutofillSaveUpdateAddressProfileDelegateIOS() = default;

@@ -49,8 +49,12 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
@@ -380,8 +384,9 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
   }
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, original_profile,
-      GetApplicationContext()->GetApplicationLocale(), std::move(callback));
+      profile, original_profile, SyncingUserEmail(),
+      GetApplicationContext()->GetApplicationLocale(), options,
+      std::move(callback));
 
   infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
@@ -530,6 +535,22 @@ void ChromeAutofillClientIOS::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   std::move(callback).Run(
       base::SysNSStringToUTF8(ios::provider::GetRiskData()));
+}
+
+absl::optional<std::u16string> ChromeAutofillClientIOS::SyncingUserEmail() {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_);
+  DCHECK(authenticationService);
+  id<SystemIdentity> identity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+  if (identity) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(browser_state_);
+    if (syncSetupService->IsDataTypeActive(syncer::AUTOFILL)) {
+      return base::SysNSStringToUTF16(identity.userEmail);
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace autofill

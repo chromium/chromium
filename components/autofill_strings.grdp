@@ -384,6 +384,9 @@
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE" desc="In Title Case: Title shown in the message that offers the user to proceed with saving a new address." meaning="In Title Case for iOS">
       Save Address?
     </message>
+   <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE" desc="In Title Case: Title shown in the message that offers the user to proceed with saving a new address in the google account" meaning="In Title Case for iOS">
+      Save in Account?
+    </message>
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with saving a new address.">
       Save…
     </message>
@@ -398,6 +401,9 @@
     </message>
     <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="In Title Case: Title shown at the top of modal dialog that offers the user to update an existing address." meaning="In Title Case for iOS">
       Update Address
+    </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE" desc="Subtitle shown in the messages UI view when a new profile is asked to be saved in the Google Account">
+       In your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
     </message>
   </if>
   <!-- Used on Desktop: -->

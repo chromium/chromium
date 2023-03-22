@@ -15,30 +15,49 @@
 
 namespace autofill {
 
-TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
-     HandleUserAction_Accepted) {
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
-      callback.Get());
+class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
+ protected:
+  AutofillSaveUpdateAddressProfileDelegateIOSTest() = default;
+  ~AutofillSaveUpdateAddressProfileDelegateIOSTest() override {}
 
+  void SetUp() override { profile_ = test::GetFullProfile(); }
+
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS>
+  CreateAutofillSaveUpdateAddressProfileDelegate(
+      AutofillProfile* original_profile = nullptr,
+      absl::optional<std::u16string> email = absl::nullopt,
+      bool is_migration_to_account = false) {
+    return std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
+        profile_, original_profile, email,
+        /*locale=*/"en-US",
+        AutofillClient::SaveAddressProfilePromptOptions{
+            .is_migration_to_account = is_migration_to_account},
+        callback_.Get());
+  }
+
+  AutofillProfile profile_;
+  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
+      callback_;
+};
+
+// Tests that the callback is run with kAccepted on Accepted.
+TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+       HandleUserAction_Accepted) {
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate();
   EXPECT_CALL(
-      callback,
+      callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          profile));
+          profile_));
   delegate->Accept();
 }
 
 // Tests that the delegate returns Save Address profile strings when the
 // original_profile is supplied as nullptr to the delegate.
-TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestSaveAddressStrings) {
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
-      callback.Get());
-
+TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+       TestSaveAddressStrings) {
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate();
   EXPECT_EQ(delegate->GetMessageActionText(),
             l10n_util::GetStringUTF16(
                 IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION));
@@ -49,16 +68,29 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestSaveAddressStrings) {
             std::u16string(u"John H. Doe, 666 Erebus St."));
 }
 
+// Tests the message UI strings when the profile is saved in the Google Account.
+TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+       TestSaveAddressInAccountStrings) {
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate(nullptr, u"test@gmail.com",
+                                                     true);
+  EXPECT_EQ(delegate->GetDescription(),
+            l10n_util::GetStringFUTF16(
+                IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE,
+                u"test@gmail.com"));
+  EXPECT_EQ(delegate->GetMessageText(),
+            l10n_util::GetStringUTF16(
+                IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE));
+}
+
 // Tests that the delegate returns Update Address profile strings when the
 // original_profile is supplied to the delegate.
-TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
-     TestUpdateAddressStrings) {
-  AutofillProfile profile = test::GetFullProfile();
+TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+       TestUpdateAddressStrings) {
   AutofillProfile original_profile = test::GetFullProfile();
   original_profile.SetInfo(NAME_FULL, u"John Doe", "en-US");
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, &original_profile, /*locale=*/"en-US", callback.Get());
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate(&original_profile);
 
   EXPECT_EQ(delegate->GetMessageActionText(),
             l10n_util::GetStringUTF16(
@@ -71,17 +103,14 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
 }
 
 // Tests that the callback is run with kDeclined on destruction.
-TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
-     TestCallbackOnDestruction) {
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
-  auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
-      callback.Get());
+TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+       TestCallbackOnDestruction) {
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate();
 
   delegate->Cancel();
   EXPECT_CALL(
-      callback,
+      callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
           testing::_));
   // The callback should run in the destructor.
@@ -89,30 +118,26 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
 }
 
 // Tests that the callback is run with kAccepted on Accept.
-TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestCallbackOnSave) {
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestCallbackOnSave) {
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate();
   EXPECT_CALL(
-      callback,
+      callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
           testing::_));
-  AutofillSaveUpdateAddressProfileDelegateIOS(
-      profile, /*original_profile=*/nullptr, /*locale=*/"en-US", callback.Get())
-      .Accept();
+  delegate->Accept();
 }
 
 // Tests that the callback is run with kEditAccepted on EditAccepted.
-TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
-     TestCallbackOnEditAccepted) {
-  AutofillProfile profile = test::GetFullProfile();
-  base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
+TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
+       TestCallbackOnEditAccepted) {
+  std::unique_ptr<AutofillSaveUpdateAddressProfileDelegateIOS> delegate =
+      CreateAutofillSaveUpdateAddressProfileDelegate();
   EXPECT_CALL(
-      callback,
+      callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
           testing::_));
-  AutofillSaveUpdateAddressProfileDelegateIOS(
-      profile, /*original_profile=*/nullptr, /*locale=*/"en-US", callback.Get())
-      .EditAccepted();
+  delegate->EditAccepted();
 }
 
 }  // namespace autofill

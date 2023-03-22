@@ -156,6 +156,9 @@ class ChromeAutofillClientIOS : public AutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
  private:
+  // Returns the account email if the account is syncing.
+  absl::optional<std::u16string> SyncingUserEmail();
+
   PrefService* pref_service_;
   syncer::SyncService* sync_service_;
   std::unique_ptr<AutofillDownloadManager> download_manager_;

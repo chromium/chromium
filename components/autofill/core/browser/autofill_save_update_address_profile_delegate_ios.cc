@@ -23,12 +23,16 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
     AutofillSaveUpdateAddressProfileDelegateIOS(
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
+        absl::optional<std::u16string> syncing_user_email,
         const std::string& locale,
+        AutofillClient::SaveAddressProfilePromptOptions options,
         AutofillClient::AddressProfileSavePromptCallback callback)
     : locale_(locale),
       profile_(profile),
       original_profile_(base::OptionalFromPtr(original_profile)),
-      address_profile_save_prompt_callback_(std::move(callback)) {}
+      address_profile_save_prompt_callback_(std::move(callback)),
+      is_migration_to_account_(options.is_migration_to_account),
+      syncing_user_email_(syncing_user_email) {}
 
 AutofillSaveUpdateAddressProfileDelegateIOS::
     ~AutofillSaveUpdateAddressProfileDelegateIOS() {
@@ -74,6 +78,13 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
     const {
+  if (is_migration_to_account_) {
+    DCHECK(profile_.source() != autofill::AutofillProfile::Source::kAccount);
+    DCHECK(syncing_user_email_);
+    return l10n_util::GetStringFUTF16(
+        IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE,
+        *syncing_user_email_);
+  }
   return GetProfileDescription(
       original_profile_ ? *original_profile_ : profile_, locale_,
       /*include_address_and_contacts=*/true);
@@ -184,6 +195,10 @@ int AutofillSaveUpdateAddressProfileDelegateIOS::GetIconId() const {
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageText()
     const {
+  if (is_migration_to_account_) {
+    return l10n_util::GetStringUTF16(
+        IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_TITLE);
+  }
   return l10n_util::GetStringUTF16(
       original_profile_ ? IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE
                         : IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE);

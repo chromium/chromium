@@ -47,7 +47,10 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
     std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
         delegate = std::make_unique<
             autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
-            profile, /*original_profile=*/nullptr, /*locale=*/"en-US",
+            profile, /*original_profile=*/nullptr,
+            /*syncing_user_email=*/absl::nullopt,
+            /*locale=*/"en-US",
+            autofill::AutofillClient::SaveAddressProfilePromptOptions{},
             base::DoNothing());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(
