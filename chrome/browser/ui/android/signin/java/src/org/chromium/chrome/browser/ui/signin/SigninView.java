@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,9 +17,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.drawable.AnimationLooper;
-import org.chromium.ui.widget.ButtonCompat;
 
 /** View that wraps signin screen and caches references to UI elements. */
 class SigninView extends LinearLayout {
@@ -32,10 +33,10 @@ class SigninView extends LinearLayout {
     private TextView mSyncTitle;
     private TextView mSyncDescription;
     private TextView mDetailsDescription;
-    private ButtonCompat mAcceptButton;
+    private DualControlLayout mButtonBar;
+    private Button mAcceptButton;
     private Button mRefuseButton;
     private Button mMoreButton;
-    private View mAcceptButtonEndPadding;
     private AnimationLooper mAnimationLooper;
 
     public SigninView(Context context, @Nullable AttributeSet attrs) {
@@ -56,10 +57,20 @@ class SigninView extends LinearLayout {
         mSyncTitle = findViewById(R.id.signin_sync_title);
         mSyncDescription = findViewById(R.id.signin_sync_description);
         mDetailsDescription = findViewById(R.id.signin_details_description);
-        mAcceptButton = findViewById(R.id.positive_button);
-        mRefuseButton = findViewById(R.id.negative_button);
         mMoreButton = findViewById(R.id.more_button);
-        mAcceptButtonEndPadding = findViewById(R.id.positive_button_end_padding);
+
+        mRefuseButton = DualControlLayout.createButtonForLayout(getContext(), false, "", null);
+        mRefuseButton.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mAcceptButton = DualControlLayout.createButtonForLayout(getContext(), true, "", null);
+        mAcceptButton.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mButtonBar = findViewById(R.id.dual_control_button_bar);
+        mButtonBar.addView(mAcceptButton);
+        mButtonBar.addView(mRefuseButton);
+        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
 
         ImageView headerImage = findViewById(R.id.signin_header_image);
         mAnimationLooper = new AnimationLooper(headerImage.getDrawable());
@@ -105,7 +116,11 @@ class SigninView extends LinearLayout {
         return mDetailsDescription;
     }
 
-    ButtonCompat getAcceptButton() {
+    DualControlLayout getButtonBar() {
+        return mButtonBar;
+    }
+
+    Button getAcceptButton() {
         return mAcceptButton;
     }
 
@@ -115,10 +130,6 @@ class SigninView extends LinearLayout {
 
     Button getMoreButton() {
         return mMoreButton;
-    }
-
-    View getAcceptButtonEndPadding() {
-        return mAcceptButtonEndPadding;
     }
 
     void startAnimations() {

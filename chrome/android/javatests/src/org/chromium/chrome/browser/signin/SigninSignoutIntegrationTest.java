@@ -135,7 +135,7 @@ public class SigninSignoutIntegrationTest {
                 });
         assertSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { syncConsentActivity.findViewById(R.id.positive_button).performClick(); });
+                () -> { syncConsentActivity.findViewById(R.id.button_primary).performClick(); });
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
         verify(mSignInStateObserverMock).onSignedIn();
@@ -169,7 +169,7 @@ public class SigninSignoutIntegrationTest {
 
         assertNotSyncing();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { syncConsentActivity.findViewById(R.id.positive_button).performClick(); });
+                () -> { syncConsentActivity.findViewById(R.id.button_primary).performClick(); });
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
         // Enabling Sync will invoke SignInStateObserverMock.onSignedIn() a second time.
@@ -280,7 +280,7 @@ public class SigninSignoutIntegrationTest {
 
         assertNotSyncing();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { syncConsentActivity.findViewById(R.id.positive_button).performClick(); });
+                () -> { syncConsentActivity.findViewById(R.id.button_primary).performClick(); });
 
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));

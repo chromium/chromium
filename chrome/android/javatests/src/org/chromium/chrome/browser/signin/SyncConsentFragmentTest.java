@@ -496,7 +496,7 @@ public class SyncConsentFragmentTest {
         // Espresso.
         // We check the button is enabled rather than visible, as it may be off-screen on small
         // devices.
-        onView(withId(R.id.positive_button)).check(matches(isEnabled()));
+        onView(withId(R.id.button_primary)).check(matches(isEnabled()));
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "fre_sync_consent_fragment_with_regular_child_allow_sync_off");
     }
@@ -715,8 +715,8 @@ public class SyncConsentFragmentTest {
                     SyncConsentActivityLauncherImpl.get().launchActivityForPromoAddAccountFlow(
                             mChromeActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS);
                 });
-        onView(withId(R.id.positive_button)).check(matches(withText(R.string.signin_add_account)));
-        onView(withId(R.id.negative_button)).check(matches(withText(R.string.cancel)));
+        onView(withId(R.id.button_primary)).check(matches(withText(R.string.signin_add_account)));
+        onView(withId(R.id.button_secondary)).check(matches(withText(R.string.cancel)));
         settingsHistogram.assertExpected();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());

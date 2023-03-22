@@ -111,29 +111,16 @@ found in the LICENSE file.
                 tools:text="@string/signin_details_description"/>
         </RelativeLayout>
     </org.chromium.chrome.browser.ui.signin.SigninScrollView>
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/button_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp">
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/negative_button"
-            style="@style/TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="@string/no_thanks"/>
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:visibility="invisible"/>
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/positive_button"
-            style="@style/FilledButton.Flat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="@string/signin_accept_button"/>
+        <org.chromium.components.browser_ui.widget.DualControlLayout
+            android:id="@+id/dual_control_button_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/more_button"
             style="@style/TextButton"
@@ -141,13 +128,8 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:drawableEnd="@drawable/down_arrow"
             android:drawablePadding="8dp"
+            android:layout_gravity="center"
             android:visibility="gone"
             tools:text="@string/more"/>
-        <View
-            android:id="@+id/positive_button_end_padding"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:visibility="gone"/>
-    </LinearLayout>
+    </FrameLayout>
 </org.chromium.chrome.browser.ui.signin.SigninView>

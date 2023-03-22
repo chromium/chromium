@@ -248,7 +248,7 @@ public class FirstRunActivitySigninAndSyncTest {
         clickButton(R.id.signin_fre_continue_button);
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.positive_button);
+        clickButton(R.id.button_primary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
         SyncTestUtil.waitForSyncFeatureEnabled();
@@ -281,7 +281,7 @@ public class FirstRunActivitySigninAndSyncTest {
         clickButton(R.id.signin_fre_continue_button);
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.negative_button);
+        clickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
@@ -340,7 +340,7 @@ public class FirstRunActivitySigninAndSyncTest {
         clickButton(R.id.signin_fre_continue_button);
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.positive_button);
+        clickButton(R.id.button_primary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
         SyncTestUtil.waitForSyncFeatureEnabled();
@@ -360,7 +360,7 @@ public class FirstRunActivitySigninAndSyncTest {
         clickButton(R.id.signin_fre_continue_button);
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
 
-        clickButton(R.id.negative_button);
+        clickButton(R.id.button_secondary);
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 

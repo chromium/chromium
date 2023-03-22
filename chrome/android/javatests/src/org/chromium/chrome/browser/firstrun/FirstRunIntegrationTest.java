@@ -1343,7 +1343,7 @@ public class FirstRunIntegrationTest {
             ensureSigninPromoIsCurrentPage();
 
             int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
-            clickButton(mFirstRunActivity, R.id.negative_button, "Failed to skip signing-in");
+            clickButton(mFirstRunActivity, R.id.button_secondary, "Failed to skip signing-in");
             mScopedObserverData.jumpToPageCallback.waitForCallback(
                     "Failed trying to move past the sign in fragment", jumpCallCount);
 

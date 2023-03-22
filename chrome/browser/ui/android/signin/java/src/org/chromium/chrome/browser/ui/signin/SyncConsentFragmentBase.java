@@ -399,7 +399,7 @@ public abstract class SyncConsentFragmentBase
             // TODO(https://crbug.com/821127): Revise this user action.
             RecordUserAction.record("Signin_MoreButton_Shown");
         });
-        mSyncConsentView.getScrollView().setScrolledToBottomObserver(this::showAcceptButton);
+        mSyncConsentView.getScrollView().setScrolledToBottomObserver(this::showButtonBar);
         mSyncConsentView.getDetailsDescriptionView().setMovementMethod(
                 LinkMovementMethod.getInstance());
 
@@ -411,14 +411,14 @@ public abstract class SyncConsentFragmentBase
 
         mSigninView.getAccountPickerView().setOnClickListener(view -> onAccountPickerClicked());
         mSigninView.getRefuseButton().setOnClickListener(this::onRefuseButtonClicked);
-        mSigninView.getAcceptButton().setVisibility(View.GONE);
+        mSigninView.getButtonBar().setVisibility(View.GONE);
         mSigninView.getMoreButton().setVisibility(View.VISIBLE);
         mSigninView.getMoreButton().setOnClickListener(view -> {
             mSigninView.getScrollView().smoothScrollBy(0, mSigninView.getScrollView().getHeight());
             // TODO(https://crbug.com/821127): Revise this user action.
             RecordUserAction.record("Signin_MoreButton_Shown");
         });
-        mSigninView.getScrollView().setScrolledToBottomObserver(this::showAcceptButton);
+        mSigninView.getScrollView().setScrolledToBottomObserver(this::showButtonBar);
         mSigninView.getDetailsDescriptionView().setMovementMethod(LinkMovementMethod.getInstance());
 
         final Drawable endImageViewDrawable;
@@ -639,14 +639,14 @@ public abstract class SyncConsentFragmentBase
         }
     }
 
-    private void showAcceptButton() {
+    private void showButtonBar() {
         if (mSyncConsentView != null) {
             mSyncConsentView.getRefuseButton().setVisibility(View.VISIBLE);
             mSyncConsentView.getAcceptButton().setVisibility(View.VISIBLE);
             mSyncConsentView.getMoreButton().setVisibility(View.GONE);
             mSyncConsentView.getScrollView().setScrolledToBottomObserver(null);
         } else {
-            mSigninView.getAcceptButton().setVisibility(View.VISIBLE);
+            mSigninView.getButtonBar().setVisibility(View.VISIBLE);
             mSigninView.getMoreButton().setVisibility(View.GONE);
             mSigninView.getScrollView().setScrolledToBottomObserver(null);
         }
