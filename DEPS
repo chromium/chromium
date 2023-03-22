@@ -5010,7 +5010,9 @@ hooks = [
   {
     'name': 'Fetch PGO profiles for V8 builtins',
     'pattern': '.',
-    'condition': 'checkout_pgo_profiles',
+    # Always download profiles on Android builds. The GN arg `is_official_build`
+    # is required to consider the profiles during build time.
+    'condition': 'checkout_pgo_profiles or checkout_android',
     'action': [ 'python3',
                 'src/v8/tools/builtins-pgo/download_profiles.py',
                 'download',
