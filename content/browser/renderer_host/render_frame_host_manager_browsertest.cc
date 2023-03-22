@@ -1861,6 +1861,16 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     RenderFrameHostManagerTest,
     DeleteSpeculativeRFHPendingCommitOfPendingEntryOnInterrupted1) {
+  if (ShouldCreateNewHostForAllFrames()) {
+    // This test involves starting a navigation while another navigation is
+    // committing, which might lead to deletion of a pending commit RFH, which
+    // will crash when RenderDocument is enabled. Skip the test if so.
+    // TODO(https://crbug.com/1220337): Update this test to work under
+    // navigation queueing, which will prevent the deletion of the pending
+    // commit RFH but still fails because this test actually expects the pending
+    // commit RFH to get deleted.
+    return;
+  }
   const std::string kOriginalPath = "/original.html";
   const std::string kFirstRedirectPath = "/redirect1.html";
   const std::string kSecondRedirectPath = "/reidrect2.html";
@@ -3885,9 +3895,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, LastCommittedOrigin) {
   GURL url_b_with_frame(embedded_test_server()->GetURL(
       "b.com", "/navigation_controller/page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_b_with_frame));
-  if (IsProactivelySwapBrowsingInstanceOnSameSiteNavigationEnabled()) {
-    // If same-site ProactivelySwapBrowsingInstance or main-frame RenderDocument
-    // is enabled, the navigation will result in a new RFH.
+  if (ShouldCreateNewHostForAllFrames()) {
+    // If main-frame RenderDocument is enabled, the navigation will result in a
+    // new RFH.
     EXPECT_NE(rfh_b, web_contents->GetPrimaryMainFrame());
     rfh_b = web_contents->GetPrimaryMainFrame();
   } else {

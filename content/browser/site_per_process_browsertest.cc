@@ -8595,7 +8595,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   const bool using_speculative_rfh =
       !!first_child->render_manager()->speculative_frame_host();
   EXPECT_EQ(using_speculative_rfh,
-            GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
+            GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe);
 
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
@@ -8722,7 +8722,7 @@ IN_PROC_BROWSER_TEST_P(
   const bool using_speculative_rfh =
       !!first_child->render_manager()->speculative_frame_host();
   EXPECT_EQ(using_speculative_rfh,
-            GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
+            GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe);
 
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // There should be no commit...
@@ -8852,7 +8852,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   const bool using_speculative_rfh =
       !!first_child->render_manager()->speculative_frame_host();
   EXPECT_EQ(using_speculative_rfh,
-            GetRenderDocumentLevel() == RenderDocumentLevel::kSubframe);
+            GetRenderDocumentLevel() >= RenderDocumentLevel::kSubframe);
 
   // `WaitForResponse()` should signal failure by returning `false` false since
   // the URLLoaderInterceptor forces a network error.

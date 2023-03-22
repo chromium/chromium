@@ -26,11 +26,14 @@ namespace {
 class RenderDocumentHostBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // RenderDocumentHost only works when RenderDocument is enabled at at least
-    // the sub-frame level.
     InitAndEnableRenderDocumentFeature(
-        &feature_list_,
-        GetRenderDocumentLevelName(RenderDocumentLevel::kSubframe));
+        &feature_list_for_render_document_,
+        GetRenderDocumentLevelName(RenderDocumentLevel::kAllFrames));
+    // Disable BackForwardCache so that the RenderFrameHost changes aren't
+    // caused by proactive BrowsingInstance swap.
+    feature_list_for_back_forward_cache_.InitWithFeatures(
+        {}, {features::kBackForwardCache,
+             features::kProactivelySwapBrowsingInstance});
   }
 
   void SetUpOnMainThread() override {
@@ -47,33 +50,30 @@ class RenderDocumentHostBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+  base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
 };
 
 }  // namespace
 
 // A new RenderFrameHost must be used after a same process navigation.
-// TODO(arthursonzogni): Implement RenderDocument and enable this test.
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, DISABLED_BasicMainFrame) {
+IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, BasicMainFrame) {
   GURL url_1(embedded_test_server()->GetURL("/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("/title2.html"));
   GURL url_3(embedded_test_server()->GetURL("/title3.html"));
 
   // 1) Navigate to A1.
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
-  RenderFrameHostImpl* rfh_1 = current_main_frame();
-  RenderFrameDeletedObserver delete_rfh_1(rfh_1);
+  RenderFrameHostWrapper rfh_1(current_main_frame());
 
   // 2) Navigate to A2.
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
-  RenderFrameHostImpl* rfh_2 = current_main_frame();
-  EXPECT_TRUE(delete_rfh_1.deleted());
-  EXPECT_NE(rfh_1, rfh_2);
-  RenderFrameDeletedObserver delete_rfh_2(rfh_2);
+  RenderFrameHostWrapper rfh_2(current_main_frame());
+  EXPECT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
 
   // 3) Navigate to A3.
   EXPECT_TRUE(NavigateToURL(shell(), url_3));
-  EXPECT_TRUE(delete_rfh_2.deleted());
+  EXPECT_TRUE(rfh_2.WaitUntilRenderFrameDeleted());
 }
 
 // A new RenderFrameHost must be used after a same process subframe navigation.
@@ -137,11 +137,20 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest, PopupScriptableNavigate) {
   EXPECT_EQ("bar_1", EvalJs(web_contents(), "other_window.foo;"));
   EXPECT_EQ("bar_1", EvalJs(new_contents, "window.foo;"));
 
+  // The URL is accessible from each side.
+  EXPECT_EQ(url_1, EvalJs(web_contents(), "other_window.location.href;"));
+  EXPECT_EQ(url_1, EvalJs(new_contents, "window.location.href;"));
+
   // 3) Navigate the new window same-process.
   int process_id = new_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   EXPECT_TRUE(NavigateToURL(new_contents, url_2));
   EXPECT_EQ(process_id,
             new_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+
+  // The URL is accessible from each side and correctly reflects the current
+  // value.
+  EXPECT_EQ(url_2, EvalJs(web_contents(), "other_window.location.href;"));
+  EXPECT_EQ(url_2, EvalJs(new_contents, "window.location.href;"));
 
   // The object is no longer accessible from each side.
   EXPECT_EQ(nullptr, EvalJs(web_contents(), "other_window.foo;"));
@@ -188,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostBrowserTest,
   RenderFrameHostImpl* subframe_rfh_2 =
       main_rfh->child_at(0)->current_frame_host();
 
-  // The object is no accessible here from each side.
+  // The object is no longer accessible from each side.
   EXPECT_EQ(nullptr, EvalJs(main_rfh, "other_window.foo;"));
   EXPECT_EQ(nullptr, EvalJs(subframe_rfh_2, "window.foo"));
 

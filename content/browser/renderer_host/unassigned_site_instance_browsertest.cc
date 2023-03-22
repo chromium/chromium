@@ -14,6 +14,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
@@ -778,6 +779,17 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
 // chrome-native://newtab.  See https://crbug.com/970046.
 IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
                        NavigationRacesWithCommitInunassignedSiteInstance) {
+  if (ShouldCreateNewHostForAllFrames()) {
+    // This test involves starting a navigation while another navigation is
+    // committing, which might lead to deletion of a pending commit RFH, which
+    // will crash when RenderDocument is enabled. Skip the test if so.
+    // TODO(https://crbug.com/1220337): Update this test to work under
+    // navigation queueing, which will prevent the deletion of the pending
+    // commit RFH but still fails because this test waits for the new navigation
+    // to get to the WillProcessResponse stage before finishing the commit of
+    // the pending commit RFH.
+    return;
+  }
   // Prepare for a second navigation to a normal URL.  Ensure it's isolated so
   // that it requires a process lock on all platforms.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
@@ -808,7 +820,8 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
         // the site still unassigned.
         EXPECT_FALSE(
             static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance())->HasSite());
-        EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+        EXPECT_EQ(ShouldCreateNewHostForAllFrames(),
+                  !!root->render_manager()->speculative_frame_host());
 
         shell->LoadURL(regular_url());
 
@@ -842,8 +855,10 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   shell->LoadURL(embedder_defined_unassigned_url());
 
   // The navigation should stay in the initial empty SiteInstance, so there
-  // shouldn't be a speculative RFH at this point.
-  EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+  // shouldn't be a speculative RFH at this point, unless RenderDocument is
+  // enabled for all frames.
+  EXPECT_EQ(ShouldCreateNewHostForAllFrames(),
+            !!root->render_manager()->speculative_frame_host());
 
   // Wait for the DidCommit IPC for |embedder_defined_unassigned_url|, and
   // before processing it, trigger a navigation to |regular_url| and wait for

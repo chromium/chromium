@@ -1314,6 +1314,20 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     // Finish the navigation to the COOP page.
     ASSERT_TRUE(coop_navigation.WaitForNavigationFinished());
+
+    // The navigation will fail if we create speculative RFH when the navigation
+    // started (instead of only when the response started), because the renderer
+    // process will crash and trigger deletion of the speculative RFH and the
+    // navigation using that speculative RFH.
+    // TODO(https://crbug.com/1426413): If the final RenderFrameHost picked for
+    // the navigation doesn't use the same process as the crashed process, we
+    // can crash the process after the final RenderFrameHost has been picked
+    // instead, and the navigation will commit normally.
+    if (ShouldCreateNewHostForAllFrames()) {
+      EXPECT_FALSE(coop_navigation.was_committed());
+      return;
+    }
+
     EXPECT_TRUE(coop_navigation.was_successful());
     EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1411,6 +1425,20 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     // Finish the navigation to the non COOP page.
     ASSERT_TRUE(non_coop_navigation.WaitForNavigationFinished());
+
+    // The navigation will fail if we create speculative RFH when the navigation
+    // started (instead of only when the response started), because the renderer
+    // process will crash and trigger deletion of the speculative RFH and the
+    // navigation using that speculative RFH.
+    // TODO(https://crbug.com/1426413): If the final RenderFrameHost picked for
+    // the navigation doesn't use the same process as the crashed process, we
+    // can crash the process after the final RenderFrameHost has been picked
+    // instead, and the navigation will commit normally.
+    if (ShouldCreateNewHostForAllFrames()) {
+      EXPECT_FALSE(non_coop_navigation.was_committed());
+      return;
+    }
+
     EXPECT_TRUE(non_coop_navigation.was_successful());
     EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
@@ -1510,7 +1538,21 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     // Finish the navigation to the COOP page.
     ASSERT_TRUE(coop_navigation.WaitForNavigationFinished());
-    EXPECT_TRUE(coop_navigation.was_successful());
+
+    // The navigation will fail if we create speculative RFH when the navigation
+    // started (instead of only when the response started), because the renderer
+    // process will crash and trigger deletion of the speculative RFH and the
+    // navigation using that speculative RFH.
+    // TODO(https://crbug.com/1426413): If the final RenderFrameHost picked for
+    // the navigation doesn't use the same process as the crashed process, we
+    // can crash the process after the final RenderFrameHost has been picked
+    // instead, and the navigation will commit normally.
+    if (ShouldCreateNewHostForAllFrames()) {
+      EXPECT_FALSE(coop_navigation.was_committed());
+    } else {
+      EXPECT_TRUE(coop_navigation.was_committed());
+    }
+
     EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
         initial_site_instance.get()));
     EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
@@ -1771,14 +1813,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     shell()->LoadURL(non_coop_page);
     EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
 
-    // TODO(ahemery): RenderDocument will always create a Speculative RFH.
-    // Update these expectations to test the speculative RFH's SI relation when
-    // RenderDocument lands.
-    EXPECT_FALSE(web_contents()
-                     ->GetPrimaryFrameTree()
-                     .root()
-                     ->render_manager()
-                     ->speculative_frame_host());
+    // A speculative RenderFrameHost will only be created if we always use a new
+    // RenderFrameHost for all cross-document navigations.
+    EXPECT_EQ(ShouldCreateNewHostForAllFrames(),
+              !!web_contents()
+                    ->GetPrimaryFrameTree()
+                    .root()
+                    ->render_manager()
+                    ->speculative_frame_host());
 
     ASSERT_TRUE(non_coop_navigation.WaitForNavigationFinished());
 
@@ -1869,14 +1911,14 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     shell()->LoadURL(coop_page);
     EXPECT_TRUE(coop_navigation.WaitForRequestStart());
 
-    // TODO(ahemery): RenderDocument will always create a Speculative RFH.
-    // Update these expectations to test the speculative RFH's SI relation when
-    // RenderDocument lands.
-    EXPECT_FALSE(web_contents()
-                     ->GetPrimaryFrameTree()
-                     .root()
-                     ->render_manager()
-                     ->speculative_frame_host());
+    // A speculative RenderFrameHost will only be created if we always use a new
+    // RenderFrameHost for all cross-document navigations.
+    EXPECT_EQ(ShouldCreateNewHostForAllFrames(),
+              !!web_contents()
+                    ->GetPrimaryFrameTree()
+                    .root()
+                    ->render_manager()
+                    ->speculative_frame_host());
 
     ASSERT_TRUE(coop_navigation.WaitForNavigationFinished());
 
@@ -3678,6 +3720,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   RenderProcessHost* process_A = initial_main_si->GetProcess();
 
   // The popup then navigates the opener to a COOP page.
+  EXPECT_TRUE(popup_rfh->frame_tree_node()->opener());
   ASSERT_TRUE(ExecJs(popup_rfh, JsReplace("opener.location = $1", coop_page)));
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
   ASSERT_TRUE(initial_main_rfh.WaitUntilRenderFrameDeleted());
@@ -3689,11 +3732,24 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   RenderProcessHost* process_B = main_si->GetProcess();
   ASSERT_FALSE(popup_si->IsRelatedSiteInstance(main_si));
 
-  // The popup still uses process A, but the main page now uses a different
-  // process. The opener link should be cut and no proxy should remain between
-  // the two site instances.
+  // The popup still uses process A, but the opener link should be cut and no
+  // proxy should remain between the two site instances.
   EXPECT_EQ(process_A, popup_si->GetProcess());
-  EXPECT_NE(process_B, process_A);
+  if (ShouldCreateNewHostForAllFrames()) {
+    // When RenderDocument is enabled, we will create a new RenderFrameHost
+    // using the same SiteInstance from the start of the navigation where we
+    // don't have the COOP information yet. Then when we receive the final
+    // response, we will try to reuse the process used by the speculative RFH,
+    // which is the same process as before.
+    // TODO(https://crbug.com/1426413): This is unexpected. Fix this so that the
+    // process won't be reused.
+    EXPECT_EQ(process_B, process_A);
+  } else {
+    // When RenderDocument is enabled, we will only create a new RenderFrameHost
+    // when the final response for the COOP page is created. In this case, a new
+    // process will be created for the final RenderFrameHost.
+    EXPECT_NE(process_B, process_A);
+  }
   EXPECT_FALSE(popup_rfh->frame_tree_node()->opener());
   EXPECT_TRUE(popup_rfh->frame_tree_node()
                   ->render_manager()
