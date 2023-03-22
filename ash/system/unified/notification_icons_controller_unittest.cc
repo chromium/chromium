@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -50,7 +51,7 @@ class NotificationIconsControllerTest
 
   std::string AddNotification(bool is_pinned,
                               bool is_critical_warning,
-                              const std::string& app_id = "app") {
+                              const std::string& notifier_id = "app") {
     std::string id = base::NumberToString(notification_id_++);
 
     auto warning_level =
@@ -66,7 +67,7 @@ class NotificationIconsControllerTest
             u"test message", std::u16string() /*display_source */,
             GURL() /* origin_url */,
             message_center::NotifierId(
-                message_center::NotifierType::SYSTEM_COMPONENT, app_id,
+                message_center::NotifierType::SYSTEM_COMPONENT, notifier_id,
                 NotificationCatalogName::kTestCatalogName),
             rich_notification_data, nullptr /* delegate */, gfx::VectorIcon(),
             warning_level));
@@ -249,7 +250,26 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
 
   AddNotification(true /* is_pinned */, false /* is_critical_warning */,
                   kVmCameraMicNotifierId);
+
   // VM camera/mic notification should not be shown.
+  EXPECT_FALSE(
+      GetNotificationIconsController()->tray_items().back()->GetVisible());
+
+  if (!IsQsRevampEnabled()) {
+    EXPECT_FALSE(separator()->GetVisible());
+  }
+
+  // Notification count does not update for this notification (since there's
+  // another tray item for this).
+  GetNotificationIconsController()->notification_counter_view()->Update();
+  EXPECT_EQ(2, GetNotificationIconsController()
+                   ->notification_counter_view()
+                   ->count_for_display_for_testing());
+
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */,
+                  kPrivacyIndicatorsNotifierId);
+
+  // Privacy indicator notification should not be shown.
   EXPECT_FALSE(
       GetNotificationIconsController()->tray_items().back()->GetVisible());
 

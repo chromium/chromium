@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/message_center_utils.h"
 
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/root_window_controller.h"
@@ -39,9 +40,7 @@ void ReportAnimationSmoothness(const std::string& animation_histogram_name,
 
 }  // namespace
 
-namespace ash {
-
-namespace message_center_utils {
+namespace ash::message_center_utils {
 
 bool CompareNotifications(message_center::Notification* n1,
                           message_center::Notification* n2) {
@@ -85,9 +84,11 @@ size_t GetNotificationCount() {
       [](auto* notification) {
         const std::string& notifier = notification->notifier_id().id;
 
-        // Don't count these notifications since we have `CameraMicTrayItemView`
-        // to show indicators on the systray.
-        if (notifier == kVmCameraMicNotifierId) {
+        // Don't count these notifications since we have
+        // `PrivacyIndicatorsTrayItemView` or `CameraMicTrayItemView` to show
+        // indicators on the systray.
+        if (notifier == kPrivacyIndicatorsNotifierId ||
+            notifier == kVmCameraMicNotifierId) {
           return false;
         }
 
@@ -279,6 +280,4 @@ absl::optional<gfx::ImageSkia> ResizeImageIfExceedSizeLimit(
       gfx::ToFlooredSize(resized_size));
 }
 
-}  // namespace message_center_utils
-
-}  // namespace ash
+}  // namespace ash::message_center_utils

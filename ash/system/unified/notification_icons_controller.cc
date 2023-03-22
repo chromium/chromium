@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -67,8 +68,10 @@ bool ShouldShowNotification(message_center::Notification* notification) {
   // already indicated by another item in tray.
   if (notifier_id == kVmCameraMicNotifierId ||
       notifier_id == kBatteryNotificationNotifierId ||
-      notifier_id == kUsbNotificationNotifierId)
+      notifier_id == kUsbNotificationNotifierId ||
+      notifier_id == kPrivacyIndicatorsNotifierId) {
     return false;
+  }
 
   // We only show notification icon in the tray if it is either:
   // *   Pinned (generally used for background process such as sharing your
