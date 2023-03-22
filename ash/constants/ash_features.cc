@@ -340,6 +340,13 @@ BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
              "CheckPasswordsAgainstCryptohomeHelper",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
+// will cause the clipboard history menu to show. From there, the user can
+// select a clipboard history item to replace the initially pasted content.
+BASE_FEATURE(kClipboardHistoryLongpress,
+             "ClipboardHistoryLongpress",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the clipboard nudge shown prefs will be reset at the start of
 // each new user session.
 BASE_FEATURE(kClipboardHistoryNudgeSessionReset,
@@ -356,13 +363,6 @@ BASE_FEATURE(kClipboardHistoryRefresh,
 // the top of the history list.
 BASE_FEATURE(kClipboardHistoryReorder,
              "ClipboardHistoryReorder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
-// will cause the clipboard history menu to show. From there, the user can
-// select a clipboard history item to replace the initially pasted content.
-BASE_FEATURE(kClipboardHistorySelector,
-             "ClipboardHistorySelector",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled and account falls under the new deal, will be allowed to toggle
@@ -2459,6 +2459,10 @@ bool IsChromadAvailableEnabled() {
   return base::FeatureList::IsEnabled(kChromadAvailable);
 }
 
+bool IsClipboardHistoryLongpressEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
+}
+
 bool IsClipboardHistoryNudgeSessionResetEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
 }
@@ -2469,10 +2473,6 @@ bool IsClipboardHistoryRefreshEnabled() {
 
 bool IsClipboardHistoryReorderEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryReorder);
-}
-
-bool IsClipboardHistorySelectorEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistorySelector);
 }
 
 bool IsCryptauthAttestationSyncingEnabled() {
