@@ -9706,6 +9706,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPassthroughYuvRgbConversionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPassthroughYuvRgbConversion)},
 
+    {"use-multi-plane-format-for-hardware-video",
+     flag_descriptions::kUseMultiPlaneFormatForHardwareVideoName,
+     flag_descriptions::kUseMultiPlaneFormatForHardwareVideoDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kUseMultiPlaneFormatForHardwareVideo)},
+
     {"policy-merge-multi-source",
      flag_descriptions::kPolicyMergeMultiSourceName,
      flag_descriptions::kPolicyMergeMultiSourceDescription, kOsAll,

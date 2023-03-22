@@ -63903,6 +63903,7 @@ from previous Chrome versions.
   <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
   <int value="904437796" label="OmniboxBlurWithEscape:disabled"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
+  <int value="907051864" label="UseMultiPlaneFormatForHardwareVideo:disabled"/>
   <int value="907056713" label="DetectFormSubmissionOnFormClear:enabled"/>
   <int value="908302031"
       label="OmniboxUIExperimentElideSuggestionUrlAfterHost:enabled"/>
@@ -64252,6 +64253,7 @@ from previous Chrome versions.
   <int value="1102035446"
       label="AutofillUpstreamAuthenticatePreflightCall:enabled"/>
   <int value="1102780374" label="ClickToCallDetectionV2:disabled"/>
+  <int value="1104206686" label="UseMultiPlaneFormatForHardwareVideo:enabled"/>
   <int value="1104948452" label="manual-enhanced-bookmarks-optout"/>
   <int value="1105182444"
       label="ChromeCleanupScanCompletedNotification:disabled"/>
