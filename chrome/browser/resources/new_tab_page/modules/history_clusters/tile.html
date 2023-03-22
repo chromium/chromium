@@ -75,27 +75,34 @@
   }
 
   #title {
+    -webkit-box-orient: vertical;
     color: var(--color-new-tab-page-primary-foreground);
+    display: -webkit-box;
     font-size: 16px;
+    margin: 16px;
+    max-width: calc(100% - 32px);
     white-space: initial;
   }
 
   :host([large-format]) #title {
+    -webkit-line-clamp: 2;
     height: 48px;
-    max-width: 298px;
-    padding: 16px 16px 24px;
+    line-height: 24px;
+    margin-bottom: 28px;
   }
 
   :host([medium-format]) #title {
-    height: 60px;
+    -webkit-line-clamp: 4;
+    height: 80px;
+    line-height: 20px;
+    margin-inline-start: 8px;
     max-width: 184px;
-    padding: 18px 16px 32px 8px;
   }
 
   :host([small-format]) #title {
-    height: 60px;
-    max-width: 136px;
-    padding: 18px 16px 32px 16px;
+    -webkit-line-clamp: 4;
+    height: 80px;
+    line-height: 20px;
   }
 
   #info-container {
@@ -103,18 +110,17 @@
     display: flex;
     flex-direction: row;
     font-size: 11px;
-    margin-bottom: 24px;
+    height: 20px;
     margin-inline: 16px;
   }
 
-  :host([medium-format]) #info-container {
-    margin-bottom: 14px;
-    margin-inline-start: 8px;
+  :host([large-format]) #info-container {
+    margin-bottom: 24px;
   }
 
-  :host([small-format]) #info-container {
-    height: 20px;
-    margin-bottom: 14px;
+  :host([medium-format]) #info-container {
+    margin-bottom: 12px;
+    margin-inline-start: 8px;
   }
 
   #label,
