@@ -165,6 +165,11 @@ TEST_P(HoldingSpaceItemTest, IsScreenCapture) {
       EXPECT_TRUE(HoldingSpaceItem::IsScreenCapture(type));
       return;
     case HoldingSpaceItem::Type::kArcDownload:
+    case HoldingSpaceItem::Type::kCameraAppPhoto:
+    case HoldingSpaceItem::Type::kCameraAppScanJpg:
+    case HoldingSpaceItem::Type::kCameraAppScanPdf:
+    case HoldingSpaceItem::Type::kCameraAppVideoGif:
+    case HoldingSpaceItem::Type::kCameraAppVideoMp4:
     case HoldingSpaceItem::Type::kDiagnosticsLog:
     case HoldingSpaceItem::Type::kDownload:
     case HoldingSpaceItem::Type::kDriveSuggestion:

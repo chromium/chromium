@@ -68,6 +68,7 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
       mojo::PendingReceiver<crosapi::mojom::HoldingSpaceService> receiver);
 
   // crosapi::mojom::HoldingSpaceKeyedService:
+  // TODO(http://b/274477308): Remove one-off API.
   void AddPrintedPdf(const base::FilePath& printed_pdf_path,
                      bool from_incognito_profile) override;
 
@@ -89,9 +90,11 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // files system URLs as GURLs.
   std::vector<GURL> GetPinnedFiles() const;
 
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a diagnostics log item backed by the provided absolute file path.
   void AddDiagnosticsLog(const base::FilePath& diagnostics_log_path);
 
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a download item of the specified `type` backed by the provided
   // absolute file path. Returns the id of the added holding space item or an
   // empty string if the item was not added due to de-duplication checks.
@@ -103,9 +106,11 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
       HoldingSpaceImage::PlaceholderImageSkiaResolver
           placeholder_image_skia_resolver = base::NullCallback());
 
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a photo or video downloaded from a connected Android phone via
   // PhoneHub. Returns the id of the added holding space item or an empty string
   // if the item was not added due to de-duplication checks.
@@ -113,9 +118,11 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
       const base::FilePath& item_path,
       const HoldingSpaceProgress& progress);
 
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a scanned item backed by the provided absolute file path.
   void AddScan(const base::FilePath& file_path);
 
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a screen capture item of the specified `type` backed by the provided
   // absolute file path. NOTE: `type` must refer to a screen capture type.
   void AddScreenCapture(HoldingSpaceItem::Type type,

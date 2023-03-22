@@ -50230,6 +50230,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="kDriveSuggestion"/>
   <int value="12" label="kLocalSuggestion"/>
   <int value="13" label="kScreenRecordingGif"/>
+  <int value="14" label="kCameraAppPhoto"/>
+  <int value="15" label="kCameraAppScanJpg"/>
+  <int value="16" label="kCameraAppScanPdf"/>
+  <int value="17" label="kCameraAppVideoGif"/>
+  <int value="18" label="kCameraAppVideoMp4"/>
 </enum>
 
 <enum name="HoldingSpacePodAction">

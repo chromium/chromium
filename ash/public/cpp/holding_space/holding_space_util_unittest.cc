@@ -25,6 +25,21 @@ TEST_F(HoldingSpaceUtilTest, ToString) {
       case HoldingSpaceItem::Type::kArcDownload:
         expected_string = "ArcDownload";
         break;
+      case HoldingSpaceItem::Type::kCameraAppPhoto:
+        expected_string = "CameraAppPhoto";
+        break;
+      case HoldingSpaceItem::Type::kCameraAppScanJpg:
+        expected_string = "CameraAppScanJpg";
+        break;
+      case HoldingSpaceItem::Type::kCameraAppScanPdf:
+        expected_string = "CameraAppScanPdf";
+        break;
+      case HoldingSpaceItem::Type::kCameraAppVideoGif:
+        expected_string = "CameraAppVideoGif";
+        break;
+      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
+        expected_string = "CameraAppVideoMp4";
+        break;
       case HoldingSpaceItem::Type::kDiagnosticsLog:
         expected_string = "DiagnosticsLog";
         break;

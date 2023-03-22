@@ -39,6 +39,16 @@ chromium-metrics-reviews@google.com.
 <variants name="HoldingSpaceItemType">
   <variant name="All" summary="Includes all item types."/>
   <variant name="ArcDownload" summary="Items backed by an ARC download file."/>
+  <variant name="CameraAppPhoto"
+      summary="Items backed by a camera app photo file."/>
+  <variant name="CameraAppScanJpg"
+      summary="Items backed by a JPG camera app scan file."/>
+  <variant name="CameraAppScanPdf"
+      summary="Items backed by a PDF camera app scan file."/>
+  <variant name="CameraAppVideoGif"
+      summary="Items backed by a GIF camera app video file."/>
+  <variant name="CameraAppVideoMp4"
+      summary="Items backed by a MP4 camera app video file."/>
   <variant name="DiagnosticsLog"
       summary="Items backed by a diagnostics log file."/>
   <variant name="Download"

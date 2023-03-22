@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -103,6 +104,39 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddDiagnosticsLog) {
   EXPECT_EQ(diagnostics_log_item->type(),
             HoldingSpaceItem::Type::kDiagnosticsLog);
   EXPECT_EQ(diagnostics_log_item->file_path(), log_path);
+}
+
+// Verifies that `HoldingSpaceClient::AddItemOfType()` works as intended.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
+  using Type = HoldingSpaceItem::Type;
+
+  // Verify existence of controller, `client`, and `model`.
+  ASSERT_TRUE(HoldingSpaceController::Get());
+  auto* client = HoldingSpaceController::Get()->client();
+  ASSERT_TRUE(client);
+  auto* model = HoldingSpaceController::Get()->model();
+  ASSERT_TRUE(model);
+
+  // Verify `model` is initially empty.
+  size_t expected_count = 0u;
+  EXPECT_EQ(model->items().size(), expected_count);
+
+  // Verify client API works for every item type.
+  for (size_t i = 0u; i <= static_cast<int>(Type::kMaxValue); ++i) {
+    // Create the item of the `expected_type` using the client API.
+    const HoldingSpaceItem::Type expected_type = static_cast<Type>(i);
+    const base::FilePath expected_file_path =
+        TestFile(GetProfile(), kTextFilePath);
+    const std::string& expected_id =
+        client->AddItemOfType(expected_type, expected_file_path);
+
+    // Verify the item was created as expected.
+    ASSERT_EQ(model->items().size(), ++expected_count);
+    const HoldingSpaceItem* item = model->items().back().get();
+    EXPECT_EQ(item->id(), expected_id);
+    EXPECT_EQ(item->type(), expected_type);
+    EXPECT_EQ(item->file_path(), expected_file_path);
+  }
 }
 
 // Verifies that `HoldingSpaceClient::CopyImageToClipboard()` works as intended

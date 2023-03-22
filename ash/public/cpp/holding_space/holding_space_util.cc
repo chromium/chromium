@@ -13,6 +13,11 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
   gfx::Size max_size;
   switch (type) {
     case HoldingSpaceItem::Type::kArcDownload:
+    case HoldingSpaceItem::Type::kCameraAppPhoto:
+    case HoldingSpaceItem::Type::kCameraAppScanJpg:
+    case HoldingSpaceItem::Type::kCameraAppScanPdf:
+    case HoldingSpaceItem::Type::kCameraAppVideoGif:
+    case HoldingSpaceItem::Type::kCameraAppVideoMp4:
     case HoldingSpaceItem::Type::kDiagnosticsLog:
     case HoldingSpaceItem::Type::kDownload:
     case HoldingSpaceItem::Type::kDriveSuggestion:
@@ -75,6 +80,16 @@ std::string ToString(HoldingSpaceItem::Type type) {
   switch (type) {
     case HoldingSpaceItem::Type::kArcDownload:
       return "ArcDownload";
+    case HoldingSpaceItem::Type::kCameraAppPhoto:
+      return "CameraAppPhoto";
+    case HoldingSpaceItem::Type::kCameraAppScanJpg:
+      return "CameraAppScanJpg";
+    case HoldingSpaceItem::Type::kCameraAppScanPdf:
+      return "CameraAppScanPdf";
+    case HoldingSpaceItem::Type::kCameraAppVideoGif:
+      return "CameraAppVideoGif";
+    case HoldingSpaceItem::Type::kCameraAppVideoMp4:
+      return "CameraAppVideoMp4";
     case HoldingSpaceItem::Type::kDiagnosticsLog:
       return "DiagnosticsLog";
     case HoldingSpaceItem::Type::kDownload:

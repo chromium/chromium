@@ -86,7 +86,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kDriveSuggestion = 11,
     kLocalSuggestion = 12,
     kScreenRecordingGif = 13,
-    kMaxValue = kScreenRecordingGif,
+    kCameraAppPhoto = 14,
+    kCameraAppScanJpg = 15,
+    kCameraAppScanPdf = 16,
+    kCameraAppVideoGif = 17,
+    kCameraAppVideoMp4 = 18,
+    kMaxValue = kCameraAppVideoMp4,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;

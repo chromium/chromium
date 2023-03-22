@@ -115,6 +115,11 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
     case Type::kDownload:
     case Type::kLacrosDownload:
       return true;
+    case Type::kCameraAppPhoto:
+    case Type::kCameraAppScanJpg:
+    case Type::kCameraAppScanPdf:
+    case Type::kCameraAppVideoGif:
+    case Type::kCameraAppVideoMp4:
     case Type::kDiagnosticsLog:
     case Type::kDriveSuggestion:
     case Type::kLocalSuggestion:
@@ -138,6 +143,11 @@ bool HoldingSpaceItem::IsScreenCapture(HoldingSpaceItem::Type type) {
     case Type::kScreenshot:
       return true;
     case Type::kArcDownload:
+    case Type::kCameraAppPhoto:
+    case Type::kCameraAppScanJpg:
+    case Type::kCameraAppScanPdf:
+    case Type::kCameraAppVideoGif:
+    case Type::kCameraAppVideoMp4:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
     case Type::kDriveSuggestion:
@@ -159,6 +169,11 @@ bool HoldingSpaceItem::IsSuggestion(HoldingSpaceItem::Type type) {
     case Type::kLocalSuggestion:
       return true;
     case Type::kArcDownload:
+    case Type::kCameraAppPhoto:
+    case Type::kCameraAppScanJpg:
+    case Type::kCameraAppScanPdf:
+    case Type::kCameraAppVideoGif:
+    case Type::kCameraAppVideoMp4:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
     case Type::kLacrosDownload:

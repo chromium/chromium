@@ -572,9 +572,18 @@ TEST_P(HoldingSpaceModelTest, EnforcesMaxItemCountsPerSection) {
   EXPECT_EQ(model().items().size(), 0u);
 
   // Cache the section to which the parameterized type belongs.
-  const HoldingSpaceSection* section =
-      GetHoldingSpaceSection(GetHoldingSpaceItemType());
-  ASSERT_TRUE(section);
+  const HoldingSpaceItem::Type type = GetHoldingSpaceItemType();
+  const HoldingSpaceSection* section = GetHoldingSpaceSection(type);
+
+  if (!section) {
+    // TODO(http://b/274484210): Update views for camera app types.
+    EXPECT_TRUE(type == HoldingSpaceItem::Type::kCameraAppPhoto ||
+                type == HoldingSpaceItem::Type::kCameraAppScanJpg ||
+                type == HoldingSpaceItem::Type::kCameraAppScanPdf ||
+                type == HoldingSpaceItem::Type::kCameraAppVideoGif ||
+                type == HoldingSpaceItem::Type::kCameraAppVideoMp4);
+    return;
+  }
 
   // Add the maximum count of items allowed for the section or some high number
   // if the section does not specify a maximum item count restriction.

@@ -2586,6 +2586,13 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
         EXPECT_EQ(holding_space_model->ContainsItem(type, file_path),
                   holding_space_service->AddDownload(type, file_path).empty());
         break;
+      case HoldingSpaceItem::Type::kCameraAppPhoto:
+      case HoldingSpaceItem::Type::kCameraAppScanJpg:
+      case HoldingSpaceItem::Type::kCameraAppScanPdf:
+      case HoldingSpaceItem::Type::kCameraAppVideoGif:
+      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
+        holding_space_service->AddItemOfType(type, file_path);
+        break;
       case HoldingSpaceItem::Type::kDiagnosticsLog:
         holding_space_service->AddDiagnosticsLog(file_path);
         break;

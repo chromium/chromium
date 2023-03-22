@@ -204,6 +204,15 @@ void HoldingSpaceModel::AddItems(
       [](std::map<HoldingSpaceSectionId, size_t>& item_counts_per_section_id,
          const HoldingSpaceItem* item) {
         const auto* section = GetHoldingSpaceSection(item->type());
+        if (!section) {
+          // TODO(http://b/274484210): Update views for camera app types.
+          DCHECK(item->type() == HoldingSpaceItem::Type::kCameraAppPhoto ||
+                 item->type() == HoldingSpaceItem::Type::kCameraAppScanJpg ||
+                 item->type() == HoldingSpaceItem::Type::kCameraAppScanPdf ||
+                 item->type() == HoldingSpaceItem::Type::kCameraAppVideoGif ||
+                 item->type() == HoldingSpaceItem::Type::kCameraAppVideoMp4);
+          return false;
+        }
         const auto item_count = ++item_counts_per_section_id[section->id];
         return section->max_item_count && item_count > *section->max_item_count;
       },

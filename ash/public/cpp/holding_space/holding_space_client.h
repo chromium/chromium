@@ -24,9 +24,17 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
 
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a diagnostics log item backed by the provided `file_path`.
   virtual void AddDiagnosticsLog(const base::FilePath& file_path) = 0;
 
+  // Adds an item of the specified `type` backed by the specified `file_path`.
+  // Returns the id of the added item or an empty string if the item was not
+  // added due to de-duplication checks.
+  virtual const std::string& AddItemOfType(HoldingSpaceItem::Type type,
+                                           const base::FilePath& file_path) = 0;
+
+  // TODO(http://b/274477308): Remove one-off API.
   // Adds a screen capture item backed by the provided `file_path`.
   // NOTE: `type` must refer to a screen capture type.
   virtual void AddScreenCapture(HoldingSpaceItem::Type type,

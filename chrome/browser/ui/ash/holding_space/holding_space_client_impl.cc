@@ -98,6 +98,12 @@ void HoldingSpaceClientImpl::AddDiagnosticsLog(
   GetHoldingSpaceKeyedService(profile_)->AddDiagnosticsLog(file_path);
 }
 
+const std::string& HoldingSpaceClientImpl::AddItemOfType(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path) {
+  return GetHoldingSpaceKeyedService(profile_)->AddItemOfType(type, file_path);
+}
+
 void HoldingSpaceClientImpl::AddScreenCapture(HoldingSpaceItem::Type type,
                                               const base::FilePath& file_path) {
   GetHoldingSpaceKeyedService(profile_)->AddScreenCapture(type, file_path);

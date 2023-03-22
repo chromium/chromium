@@ -3940,7 +3940,16 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
 
   // Expect and cache a single holding space item view.
   std::vector<views::View*> item_views = test_api()->GetHoldingSpaceItemViews();
-  ASSERT_EQ(item_views.size(), 1u);
+  if (item_views.size() != 1u) {
+    // TODO(http://b/274484210): Update views for camera app types.
+    EXPECT_EQ(item_views.size(), 0u);
+    EXPECT_TRUE(item->type() == HoldingSpaceItem::Type::kCameraAppPhoto ||
+                item->type() == HoldingSpaceItem::Type::kCameraAppScanJpg ||
+                item->type() == HoldingSpaceItem::Type::kCameraAppScanPdf ||
+                item->type() == HoldingSpaceItem::Type::kCameraAppVideoGif ||
+                item->type() == HoldingSpaceItem::Type::kCameraAppVideoMp4);
+    return;
+  }
 
   // Initially a primary and secondary action should not be shown as the holding
   // space item is not being hovered over.

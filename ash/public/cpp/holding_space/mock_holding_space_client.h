@@ -27,6 +27,10 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               AddDiagnosticsLog,
               (const base::FilePath& file_path),
               (override));
+  MOCK_METHOD(const std::string&,
+              AddItemOfType,
+              (HoldingSpaceItem::Type type, const base::FilePath& file_path),
+              (override));
   MOCK_METHOD(void,
               AddScreenCapture,
               (HoldingSpaceItem::Type, const base::FilePath& file_path),
