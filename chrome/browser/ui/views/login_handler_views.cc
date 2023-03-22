@@ -24,10 +24,8 @@ namespace chrome {
 
 namespace {
 
-// This class simply forwards the authentication from the LoginView (on
-// the UI thread) to the net::URLRequest (on the I/O thread).
-// This class uses ref counting to ensure that it lives until all InvokeLaters
-// have been called.
+// This class prompts the user for credentials and returns the result to
+// `auth_required_callback`.
 class LoginHandlerViews : public LoginHandler {
  public:
   LoginHandlerViews(const net::AuthChallengeInfo& auth_info,
