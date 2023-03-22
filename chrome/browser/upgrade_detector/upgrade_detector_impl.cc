@@ -251,7 +251,7 @@ void UpgradeDetectorImpl::DetectOutdatedInstall() {
   }
 
   if (network_time.is_null() || build_date_.is_null() ||
-      build_date_ > network_time) {
+      (!simulating_outdated_ && build_date_ > network_time)) {
     // TODO(crbug.com/1407664): Figure out why this is failing and either fix it
     // and turn the conditional above into a CHECK or document how this can fail
     // in the wild and either keep the DumpWithoutCrashing() or remove it.
