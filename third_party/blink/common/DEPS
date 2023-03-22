@@ -17,6 +17,7 @@ include_rules = [
     "+services/metrics/public/mojom/ukm_interface.mojom.h",
     "+services/network/public/cpp",
     "+services/network/public/mojom/content_security_policy.mojom.h",
+    "+services/network/public/mojom/content_security_policy.mojom-forward.h",
     "+services/network/public/mojom/fetch_api.mojom-shared.h",
     "+services/network/public/mojom/parsed_headers.mojom.h",
     "+services/network/public/mojom/referrer_policy.mojom.h",

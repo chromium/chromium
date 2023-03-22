@@ -8,6 +8,7 @@
 #include <map>
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/common/permissions_policy/policy_value_mojom_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
@@ -18,20 +19,35 @@
 namespace mojo {
 
 template <>
-class BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
-                 blink::OriginWithPossibleWildcards> {
+class BLINK_COMMON_EXPORT StructTraits<network::mojom::CSPSourceDataView,
+                                       blink::OriginWithPossibleWildcards> {
  public:
-  static const url::Origin& origin(const blink::OriginWithPossibleWildcards&
+  static const std::string& scheme(const blink::OriginWithPossibleWildcards&
                                        origin_with_possible_wildcards) {
-    return origin_with_possible_wildcards.origin;
+    return origin_with_possible_wildcards.origin.scheme();
   }
-  static bool has_subdomain_wildcard(const blink::OriginWithPossibleWildcards&
-                                         origin_with_possible_wildcards) {
+  static const std::string& host(const blink::OriginWithPossibleWildcards&
+                                     origin_with_possible_wildcards) {
+    return origin_with_possible_wildcards.origin.host();
+  }
+  static int port(const blink::OriginWithPossibleWildcards&
+                      origin_with_possible_wildcards) {
+    return origin_with_possible_wildcards.origin.port();
+  }
+  static const std::string path(const blink::OriginWithPossibleWildcards&
+                                    origin_with_possible_wildcards) {
+    return std::string();
+  }
+  static bool is_host_wildcard(const blink::OriginWithPossibleWildcards&
+                                   origin_with_possible_wildcards) {
     return origin_with_possible_wildcards.has_subdomain_wildcard;
   }
+  static bool is_port_wildcard(const blink::OriginWithPossibleWildcards&
+                                   origin_with_possible_wildcards) {
+    return false;
+  }
 
-  static bool Read(blink::mojom::OriginWithPossibleWildcardsDataView in,
+  static bool Read(network::mojom::CSPSourceDataView in,
                    blink::OriginWithPossibleWildcards* out);
 };
 
