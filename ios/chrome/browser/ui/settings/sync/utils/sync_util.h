@@ -23,6 +23,10 @@ class WebState;
 NSString* GetSyncErrorDescriptionForSyncService(
     syncer::SyncService* syncService);
 
+// Gets the title of the Sync error info bar.
+std::u16string GetSyncErrorInfoBarTitleForBrowserState(
+    ChromeBrowserState* browserState);
+
 // Gets the string message associated with the sync error state of
 // `browserState`. The returned error message does not contain any links.
 // Returns nil if there is no sync error.

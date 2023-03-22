@@ -48,6 +48,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // ConfirmInfoBarDelegate implementation.
   std::u16string GetMessageText() const override;
+  std::u16string GetTitleText() const override;
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool UseIconBackgroundTint() const override;
@@ -64,6 +65,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   gfx::Image icon_;
   ChromeBrowserState* browser_state_;
   syncer::SyncService::UserActionableError error_state_;
+  std::u16string title_;
   std::u16string message_;
   std::u16string button_text_;
   id<SyncPresenter> presenter_;

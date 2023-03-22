@@ -4301,6 +4301,24 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_HAS_TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault recoverability degraded for passwords. [iOS only]">
         To make sure you can always use the passwords in your Google Account, verify it's you.
       </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_PASSPHRASE_TITLE" desc="The title of the identity error info bar when the passphrase is required. [iOS only]">
+        Enter your passphrase
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_ITS_YOU_TITLE" desc="The title of the identity error info bar when identity verification is needed. [iOS only]">
+        Verify it's you
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_PASSWORDS_MESSAGE" desc="The error message in the identity error info bar related to keep using passwords. [iOS only]">
+        Keep using the passwords in your Google Account
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_MAKE_SURE_YOU_CAN_ALWAYS_USE_PASSWORDS_MESSAGE" desc="The error message in the identity error info bar related to making sure you can always use your passwords. [iOS only]">
+        Make sure you can always use the passwords in your Google Account
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
+        Enter
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL" desc="The label of the verify your account action button in the identity error info bar. [iOS only]">
+        Verify
+      </message>
     </messages>
   </release>
 </grit>

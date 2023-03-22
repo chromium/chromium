@@ -79,6 +79,7 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
   // Set all of the UI based on the sync state at the same time to ensure
   // they all correspond to the same sync error.
   error_state_ = sync_service->GetUserActionableError();
+  title_ = GetSyncErrorInfoBarTitleForBrowserState(browser_state_);
   message_ = base::SysNSStringToUTF16(
       GetSyncErrorMessageForBrowserState(browser_state_));
   button_text_ = base::SysNSStringToUTF16(
@@ -101,6 +102,10 @@ SyncErrorInfoBarDelegate::GetIdentifier() const {
 
 std::u16string SyncErrorInfoBarDelegate::GetMessageText() const {
   return message_;
+}
+
+std::u16string SyncErrorInfoBarDelegate::GetTitleText() const {
+  return title_;
 }
 
 int SyncErrorInfoBarDelegate::GetButtons() const {

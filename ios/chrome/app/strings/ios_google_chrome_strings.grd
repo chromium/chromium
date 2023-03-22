@@ -620,6 +620,12 @@ Things to consider:
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_HAS_TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_MESSAGE" desc="The error message to show in the account table when there is an error related to trusted vault recoverability degraded for everything. [iOS only]">
         To use and save Chrome data in your Google Account, verify it's you.
       </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_YOUR_CHROME_DATA_MESSAGE" desc="The error message in the identity error info bar related to keep using your Chromium data in your Google account. [iOS only]">
+        Keep using the Chrome data in your Google Account
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_MAKE_SURE_YOU_CAN_ALWAYS_USE_CHROME_DATA_MESSAGE" desc="The error message in the identity error info bar related to making sure your can always use Chromium data in your Google account. [iOS only]">
+        Make sure you can always use the Chrome data in your Google Account
+      </message>
     </messages>
   </release>
 </grit>
