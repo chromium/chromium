@@ -106,15 +106,12 @@ bool CheckForDuplicates(
   if (_consumer == consumer)
     return;
   _consumer = consumer;
-  // TODO(crbug.com/1392699): This logic keeps showing up, there should be a
-  // helper IsSavingPasswordsToAccount(), or GetAccountSavingPasswords().
-  if (password_manager::sync_util::IsPasswordSyncEnabled(_syncService) ||
-      password_manager::features_util::IsOptedInForAccountStorage(
-          _prefService, _syncService)) {
-    CoreAccountInfo account = _syncService->GetAccountInfo();
-    DCHECK(!account.IsEmpty());
-    [_consumer
-        setAccountSavingPasswords:base::SysUTF8ToNSString(account.email)];
+  absl::optional<std::string> account =
+      password_manager::sync_util::GetAccountForSaving(_prefService,
+                                                       _syncService);
+  if (account) {
+    CHECK(!account->empty());
+    [_consumer setAccountSavingPasswords:base::SysUTF8ToNSString(*account)];
   } else {
     [_consumer setAccountSavingPasswords:nil];
   }
