@@ -37,6 +37,8 @@ const CGFloat kSwitchTrailingPadding = 22;
 // Constraints that are used when the preferred content size is *not* an
 // "accessibility" category.
 @property(nonatomic, strong) NSArray* standardConstraints;
+// Custom label defined via the setter, if any.
+@property(nonatomic, strong) NSString* customAccessibilityLabel;
 
 @end
 
@@ -258,11 +260,19 @@ const CGFloat kSwitchTrailingPadding = 22;
 }
 
 - (NSString*)accessibilityLabel {
+  if (self.customAccessibilityLabel) {
+    return self.customAccessibilityLabel;
+  }
+
   if (!self.detailTextLabel.text) {
     return self.textLabel.text;
   }
   return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
                                     self.detailTextLabel.text];
+}
+
+- (void)setAccessibilityLabel:(NSString*)label {
+  self.customAccessibilityLabel = [label copy];
 }
 
 - (NSString*)accessibilityValue {

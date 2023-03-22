@@ -259,6 +259,11 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
                        [NSAttributedString
                            attributedStringWithAttachment:iconAttachment]];
       switchCell.textLabel.attributedText = textAndIcon;
+      switchCell.accessibilityLabel = [NSString
+          stringWithFormat:@"%@, %@, %@", switchCell.textLabel.text,
+                           l10n_util::GetNSString(
+                               IDS_IOS_NEW_FEATURE_ACCESSIBILITY_LABEL),
+                           switchCell.detailTextLabel.text];
       break;
     }
     case ItemTypeManagedSavePasswords: {
