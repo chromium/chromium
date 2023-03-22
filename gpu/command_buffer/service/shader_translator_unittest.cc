@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/service/shader_translator.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_version_info.h"
@@ -22,6 +23,9 @@ class ShaderTranslatorTest : public testing::Test {
 
  protected:
   void SetUp() override {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+    GTEST_SKIP() << "Angle doesn't support OpenGL on Windows";
+#else
     ShBuiltInResources resources;
     sh::InitBuiltInResources(&resources);
     resources.MaxExpressionComplexity = 32;
@@ -36,6 +40,7 @@ class ShaderTranslatorTest : public testing::Test {
     ASSERT_TRUE(fragment_translator_->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC,
                                            &resources, shader_output_language_,
                                            {}, false));
+#endif  //  BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   }
   void TearDown() override {
     vertex_translator_ = nullptr;
@@ -59,6 +64,9 @@ class ES3ShaderTranslatorTest : public testing::Test {
 
  protected:
   void SetUp() override {
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+    GTEST_SKIP() << "Angle doesn't support OpenGL on Windows";
+#else
     ShBuiltInResources resources;
     sh::InitBuiltInResources(&resources);
     resources.MaxExpressionComplexity = 32;
@@ -73,6 +81,7 @@ class ES3ShaderTranslatorTest : public testing::Test {
     ASSERT_TRUE(fragment_translator_->Init(GL_FRAGMENT_SHADER, SH_GLES3_SPEC,
                                            &resources, shader_output_language_,
                                            {}, false));
+#endif  //  BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   }
   void TearDown() override {
     vertex_translator_ = nullptr;
@@ -429,6 +438,12 @@ TEST_F(ShaderTranslatorTest, OptionsString) {
 
 class ShaderTranslatorOutputVersionTest
     : public testing::TestWithParam<testing::tuple<const char*, const char*>> {
+ public:
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  void SetUp() override {
+    GTEST_SKIP() << "Angle doesn't support OpenGL on Windows";
+  }
+#endif
 };
 
 // crbug.com/540543
