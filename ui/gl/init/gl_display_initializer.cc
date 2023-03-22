@@ -56,16 +56,6 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
       (!command_line->HasSwitch(switches::kUseANGLE) ||
        requested_renderer == kANGLEImplementationDefaultName);
 
-  // If we're already requesting an ANGLE implementation, use it instead of the
-  // default.
-  // if ((requested_renderer.empty() ||
-  //      requested_renderer == kANGLEImplementationDefaultName) &&
-  //     gl::GetGLImplementationParts().gl == gl::kGLImplementationEGLANGLE) {
-  //   use_angle_default = false;
-  //   requested_renderer =
-  //       GetGLImplementationANGLEName(gl::GetGLImplementationParts());
-  // }
-
   if (supports_angle_null &&
       (requested_renderer == kANGLEImplementationNullName ||
        gl::GetANGLEImplementation() == ANGLEImplementation::kNull)) {
