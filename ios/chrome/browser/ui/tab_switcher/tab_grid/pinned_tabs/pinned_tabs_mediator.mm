@@ -421,7 +421,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   // asynchronous drops.
   if ([dragItem.localObject isKindOfClass:[TabInfo class]]) {
     TabInfo* tabInfo = static_cast<TabInfo*>(dragItem.localObject);
-    [self dropOperationForTabInfo:tabInfo];
+    return [self dropOperationForTabInfo:tabInfo];
   }
 
   // All URLs originating from Chrome create a new tab (as opposed to moving a
@@ -531,7 +531,7 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
   if (_dragItemID == tabInfo.tabID) {
     const BOOL tabExists =
         GetTabIndex(self.webStateList, tabInfo.tabID,
-                    /*pinned=*/YES) == WebStateList::kInvalidIndex;
+                    /*pinned=*/YES) != WebStateList::kInvalidIndex;
     if (!tabExists) {
       return UIDropOperationCancel;
     }
