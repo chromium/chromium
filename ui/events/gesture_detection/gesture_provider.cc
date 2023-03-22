@@ -373,9 +373,11 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   }
 
   // GestureListener implementation.
-  bool OnDown(const MotionEvent& e) override {
+  bool OnDown(const MotionEvent& e, int tap_down_count) override {
+    DCHECK_GE(tap_down_count, 0);
     GestureEventDetails tap_details(ET_GESTURE_TAP_DOWN);
     tap_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    tap_details.set_tap_down_count(tap_down_count);
     tap_details.set_primary_unique_touch_event_id(
         current_down_action_unique_touch_event_id_);
     Send(CreateGesture(tap_details, e));

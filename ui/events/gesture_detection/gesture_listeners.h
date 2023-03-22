@@ -15,7 +15,7 @@ class MotionEvent;
 class GESTURE_DETECTION_EXPORT GestureListener {
  public:
   virtual ~GestureListener() {}
-  virtual bool OnDown(const MotionEvent& e) = 0;
+  virtual bool OnDown(const MotionEvent& e, int tap_down_count) = 0;
   virtual void OnShowPress(const MotionEvent& e) = 0;
   virtual bool OnSingleTapUp(const MotionEvent& e, int tap_count) = 0;
   virtual void OnShortPress(const MotionEvent& e) = 0;
@@ -56,7 +56,7 @@ class GESTURE_DETECTION_EXPORT SimpleGestureListener
       public DoubleTapListener {
  public:
   // GestureListener implementation.
-  bool OnDown(const MotionEvent& e) override;
+  bool OnDown(const MotionEvent& e, int tap_down_count) override;
   void OnShowPress(const MotionEvent& e) override;
   bool OnSingleTapUp(const MotionEvent& e, int tap_count) override;
   void OnShortPress(const MotionEvent& e) override;

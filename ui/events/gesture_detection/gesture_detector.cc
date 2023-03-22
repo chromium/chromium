@@ -261,7 +261,13 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
         timeout_handler_->StartTimeout(SHORT_PRESS);
         timeout_handler_->StartTimeout(LONG_PRESS);
       }
-      handled |= listener_->OnDown(ev);
+
+      // Number of complete taps that have occurred in the current tap sequence.
+      int previous_tap_count = is_down_candidate_for_repeated_single_tap_
+                                   ? (1 + current_single_tap_repeat_count_) %
+                                         single_tap_repeat_interval_
+                                   : 0;
+      handled |= listener_->OnDown(ev, 1 + previous_tap_count);
     } break;
 
     case MotionEvent::Action::MOVE: {

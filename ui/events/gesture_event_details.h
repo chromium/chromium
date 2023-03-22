@@ -168,6 +168,17 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     data_.tap_count = tap_count;
   }
 
+  int tap_down_count() const {
+    DCHECK_EQ(ET_GESTURE_TAP_DOWN, type_);
+    return data_.tap_down_count;
+  }
+
+  void set_tap_down_count(int tap_down_count) {
+    DCHECK_GE(tap_down_count, 0);
+    DCHECK_EQ(ET_GESTURE_TAP_DOWN, type_);
+    data_.tap_down_count = tap_down_count;
+  }
+
   void set_scale(float scale) {
     DCHECK_GE(scale, 0.0f);
     DCHECK_EQ(type_, ET_GESTURE_PINCH_UPDATE);
@@ -224,9 +235,14 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
       bool down;
     } swipe;
 
-    // Tap information must be set for ET_GESTURE_TAP,
-    // ET_GESTURE_TAP_UNCONFIRMED, and ET_GESTURE_DOUBLE_TAP events.
-    int tap_count;  // TAP repeat count.
+    // Number of taps that have occurred in the current repeated tap sequence.
+    // Should be set for ET_GESTURE_TAP, ET_GESTURE_TAP_UNCONFIRMED, and
+    // ET_GESTURE_DOUBLE_TAP events.
+    int tap_count;
+
+    // Number of tap downs that have occurred in the current repeated tap
+    // sequence. Should be set for ET_GESTURE_TAP_DOWN events.
+    int tap_down_count;
   } data_;
 
   GestureDeviceType device_type_;

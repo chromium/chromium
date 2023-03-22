@@ -743,10 +743,16 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_TAP:
       RequestFocusForGesture(event->details());
       if (controller_ && controller_->HandleGestureEvent(this, *event)) {
+        selection_dragging_state_ = SelectionDraggingState::kNone;
         event->SetHandled();
         return;
       }
-      if (event->details().tap_count() == 1) {
+      if (selection_dragging_state_ != SelectionDraggingState::kNone) {
+        // Selection has already been set in the preceding ET_GESTURE_TAP_DOWN
+        // event, so handles should be shown without changing the selection.
+        // Just need to cancel selection dragging.
+        selection_dragging_state_ = SelectionDraggingState::kNone;
+      } else if (event->details().tap_count() == 1) {
         // If tap is on the selection and touch handles are not present,
         // handles should be shown without changing selection. Otherwise,
         // cursor should be moved to the tap location.
@@ -768,6 +774,28 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       CreateTouchSelectionControllerAndNotifyIt();
       event->SetHandled();
       break;
+#if BUILDFLAG(IS_CHROMEOS)
+    case ui::ET_GESTURE_TAP_DOWN: {
+      if (::features::IsTouchTextEditingRedesignEnabled() && HasFocus()) {
+        if (event->details().tap_down_count() == 2) {
+          OnBeforeUserAction();
+          SelectWordAt(event->location());
+          OnAfterUserAction();
+        } else if (event->details().tap_down_count() == 3) {
+          OnBeforeUserAction();
+          SelectAll(false);
+          OnAfterUserAction();
+        } else {
+          break;
+        }
+        DestroyTouchSelection();
+        selection_dragging_state_ =
+            SelectionDraggingState::kDraggingSelectionExtent;
+        event->SetHandled();
+      }
+      break;
+    }
+#endif
     case ui::ET_GESTURE_LONG_PRESS:
       if (!GetRenderText()->IsPointInSelection(event->location())) {
         // If long-press happens outside selection, select word and try to
@@ -867,6 +895,9 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         selection_dragging_state_ = SelectionDraggingState::kNone;
         event->SetHandled();
       }
+      break;
+    case ui::ET_GESTURE_END:
+      selection_dragging_state_ = SelectionDraggingState::kNone;
       break;
     default:
       return;

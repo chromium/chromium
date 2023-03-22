@@ -6,7 +6,7 @@
 
 namespace ui {
 
-bool SimpleGestureListener::OnDown(const MotionEvent& e) {
+bool SimpleGestureListener::OnDown(const MotionEvent& e, int tap_down_count) {
   return false;
 }
 

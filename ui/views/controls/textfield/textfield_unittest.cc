@@ -4017,6 +4017,107 @@ TEST_F(TextfieldTest, LongPressDragRTL_Backward) {
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(13, 0));
 }
+
+TEST_F(TextfieldTest, DoubleTapDown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"Hello string world");
+  gfx::Range range;
+
+  // Second tap down in a repeated tap sequence should select word but not show
+  // touch selection handles.
+  ui::GestureEventDetails tap_down_details(ui::ET_GESTURE_TAP_DOWN);
+  tap_down_details.set_tap_down_count(2);
+  ui::GestureEvent tap_down = CreateTestGestureEvent(
+      GetCursorPositionX(2), GetCursorYForTesting(), tap_down_details);
+  textfield_->OnGestureEvent(&tap_down);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0, 5));
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+
+  // After tap, word should still be selected and touch selection handles should
+  // appear.
+  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
+  tap_details.set_tap_count(2);
+  ui::GestureEvent tap = CreateTestGestureEvent(
+      GetCursorPositionX(2), GetCursorYForTesting(), tap_details);
+  textfield_->OnGestureEvent(&tap);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0, 5));
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+}
+
+TEST_F(TextfieldTest, TripleTapDown) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"Hello string world");
+  gfx::Range range;
+
+  // Third tap down in a repeated tap sequence should select all text.
+  ui::GestureEventDetails tap_down_details(ui::ET_GESTURE_TAP_DOWN);
+  tap_down_details.set_tap_down_count(3);
+  ui::GestureEvent tap_down = CreateTestGestureEvent(
+      GetCursorPositionX(2), GetCursorYForTesting(), tap_down_details);
+  textfield_->OnGestureEvent(&tap_down);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0, 18));
+  EXPECT_FALSE(test_api_->touch_selection_controller());
+
+  // After tap, text should still be selected and touch selection handles should
+  // appear.
+  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
+  tap_details.set_tap_count(3);
+  ui::GestureEvent tap = CreateTestGestureEvent(
+      GetCursorPositionX(2), GetCursorYForTesting(), tap_details);
+  textfield_->OnGestureEvent(&tap);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0, 18));
+  EXPECT_TRUE(test_api_->touch_selection_controller());
+}
+
+// TODO(b/271058426): Rewrite these gesture tests using
+// ui::test::EventGenerator.
+TEST_F(TextfieldTest, DoubleTapDrag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"Hello string world");
+  gfx::Range range;
+
+  // Second tap down in a repeated tap sequence should select word.
+  ui::GestureEventDetails tap_down_details(ui::ET_GESTURE_TAP_DOWN);
+  tap_down_details.set_tap_down_count(2);
+  ui::GestureEvent tap_down = CreateTestGestureEvent(
+      GetCursorPositionX(2), GetCursorYForTesting(), tap_down_details);
+  textfield_->OnGestureEvent(&tap_down);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0, 5));
+
+  // Dragging should expand the selection.
+  ui::GestureEvent scroll_begin = CreateTestGestureEvent(
+      GetCursorPositionX(2), GetCursorYForTesting(),
+      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 1, 0));
+  textfield_->OnGestureEvent(&scroll_begin);
+  EXPECT_EQ(range, gfx::Range(0, 5));
+
+  ui::GestureEvent scroll_update = CreateTestGestureEvent(
+      GetCursorPositionX(10), GetCursorYForTesting(),
+      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE));
+  textfield_->OnGestureEvent(&scroll_update);
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(0, 12));
+}
 #endif
 
 TEST_F(TextfieldTest, GetTextfieldBaseline_FontFallbackTest) {
