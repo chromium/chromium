@@ -2347,10 +2347,8 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
