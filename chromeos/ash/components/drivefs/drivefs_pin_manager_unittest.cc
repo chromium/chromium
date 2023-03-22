@@ -86,9 +86,6 @@ struct DriveItem {
   FileMetadata::Type type = FileMetadata::Type::kFile;
   bool pinned = false;
   bool available_offline = false;
-  // Whether to send a status update for this drive item. If false this will get
-  // filtered out when converting `DriveItem` in `MakeSyncingStatus`.
-  bool status_update = true;
 };
 
 int64_t DriveItem::counter = 0;
@@ -204,47 +201,12 @@ class DriveFsPinManagerTest : public testing::Test {
  protected:
   ~DriveFsPinManagerTest() override {
     logging::SetMinLogLevel(original_log_level_);
-    logging::SetLogMessageHandler(original_log_handler_);
   }
 
   DriveFsPinManagerTest() {
-    logging::SetLogMessageHandler(&LogMessageHandler);
     logging::SetMinLogLevel(-3);
     CHECK(temp_dir_.CreateUniqueTempDir());
     gcache_dir_ = temp_dir_.GetPath().Append("GCache");
-  }
-
-  // A no-op log message handler. This is put in place in order to force the
-  // generation of log messages and exercise more code in unit tests.
-  static bool LogMessageHandler([[maybe_unused]] const int severity,
-                                [[maybe_unused]] const char* const file,
-                                [[maybe_unused]] const int line,
-                                [[maybe_unused]] const size_t message_start,
-                                [[maybe_unused]] const std::string& str) {
-    return false;
-  }
-
-  static SyncingStatusPtr MakeSyncingStatus(
-      const vector<DriveItem>& items,
-      ItemEvent::State state = ItemEvent::State::kQueued) {
-    SyncingStatusPtr status = SyncingStatus::New();
-
-    vector<ItemEventPtr> events;
-    for (const DriveItem& item : items) {
-      if (item.pinned || !item.status_update) {
-        continue;
-      }
-      ItemEventPtr event = ItemEvent::New();
-      event->is_download = true;
-      event->stable_id = item.stable_id;
-      event->path = item.path.value();
-      event->state = state;
-      event->bytes_to_transfer = item.size;
-      events.push_back(std::move(event));
-    }
-
-    status->item_events = std::move(events);
-    return status;
   }
 
   static void SetState(vector<ItemEventPtr>& events,
@@ -260,8 +222,6 @@ class DriveFsPinManagerTest : public testing::Test {
                                base::Unretained(&space_getter_));
   }
 
-  const logging::LogMessageHandlerFunction original_log_handler_ =
-      logging::GetLogMessageHandler();
   const int original_log_level_ = logging::GetMinLogLevel();
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
