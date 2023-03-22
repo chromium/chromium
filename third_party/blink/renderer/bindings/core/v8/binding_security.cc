@@ -123,6 +123,11 @@ bool CanAccessWindowInternal(
   DCHECK_EQ(DOMWindow::CrossDocumentAccessPolicy::kAllowed,
             *cross_document_access);
 
+  // Allow cross-origin accesses from the replaying script installed to inspect
+  // DOM state. Events are disallowed when running replaying specific scripts.
+  if (recordreplay::IsReplaying() && recordreplay::AreEventsDisallowed())
+    return true;
+
   // It's important to check that target_window is a LocalDOMWindow: it's
   // possible for a remote frame and local frame to have the same security
   // origin, depending on the model being used to allocate Frames between
@@ -382,6 +387,11 @@ bool ShouldAllowAccessToV8ContextInternal(
     ExceptionStateOrErrorReportOption& error_report) {
   // Workers and worklets do not support multiple contexts, so both of
   // |accessing_context| and |target_context| must be windows at this point.
+
+  // Allow cross-origin accesses from the replaying script installed to inspect
+  // DOM state. Events are disallowed when running replaying specific scripts.
+  if (recordreplay::IsReplaying() && recordreplay::AreEventsDisallowed())
+    return true;
 
   // remote_object->GetCreationContext() returns the empty handle. Remote
   // contexts are unconditionally treated as cross origin.
