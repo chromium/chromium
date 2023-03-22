@@ -95,6 +95,8 @@ const CGFloat kVerticalPadding = 8;
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
     _textView.linkTextAttributes =
         @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
+    _textView.textContainer.lineFragmentPadding = 0;
+    _textView.textContainerInset = UIEdgeInsetsZero;
 
     [self.contentView addSubview:_textView];
 
