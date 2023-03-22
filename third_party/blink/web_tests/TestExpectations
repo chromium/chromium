@@ -4011,7 +4011,7 @@ crbug.com/922951 virtual/threaded/http/tests/devtools/tracing/timeline-layout/ti
 # Flaky devtools test for recalculating styles.
 crbug.com/1018177 http/tests/devtools/tracing/timeline-style/timeline-recalculate-styles.js [ Failure Pass ]
 
-crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Failure Pass ]
+crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Crash Failure Pass Timeout ]
 
 # Sheriff 2019-02-01, 2019-02-19
 # These are crashy on Win10, and seem to leave processes lying around, causing the swarming
