@@ -6039,6 +6039,21 @@
             ]
         }
     ],
+    "HideNonDisplayableAccountEmail": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HideNonDisplayableAccountEmail"
+                    ]
+                }
+            ]
+        }
+    ],
     "HighlightManagedPrefDisclaimerAndroid": [
         {
             "platforms": [
