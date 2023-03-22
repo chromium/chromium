@@ -226,7 +226,7 @@ DeviceActivityController::DeviceActivityController(
     LOG(ERROR) << "Setting value for |churn_active_status_ptr_| to 0.";
   }
 
-  churn_active_status_.InitializeValue(churn_active_value);
+  churn_active_status_.SetValue(churn_active_value);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

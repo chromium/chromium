@@ -44,14 +44,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   int GetValueAsInt() const;
 
-  // Updates the |value_| to reflect current month is active.
-  absl::optional<std::bitset<kChurnBitSize>> UpdateValue(base::Time ts);
+  // Returns a copy of the 28 bit updated value which reflects the current
+  // month is also active.
+  absl::optional<std::bitset<kChurnBitSize>> CalculateValue(base::Time ts);
 
-  // Initialize the underlying |value_| field.
-  // This method should be called if the device loses the |value_| over restarts
-  // and powerwash. Value can be initialized after being recovered from the
-  // local_state or preserved file active status value.
-  void InitializeValue(int value);
+  // Set the |value_| field of the object.
+  // This value represents the 28 bit active status value that is shared across
+  // churn cohort and observation use cases.
+  //
+  // This method can be passed an integer representing the 28 bit value that is
+  // being set. This will do an implicit conversion using the
+  // unsigned long long constructor of the std::bitset class.
+  void SetValue(std::bitset<kChurnBitSize> val);
+
+  // Update the |value_| to reflect the new 28 bits after the check in request
+  // is successful.
+  absl::optional<std::bitset<kChurnBitSize>> UpdateValue(base::Time ts);
 
   // Returns the base::Time object representing the defined inception date.
   const base::Time GetInceptionMonth() const;
@@ -61,15 +69,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   // Uses the inception month and months since inception in order to return
   // a new timestamp representing the current active month.
-  // TODO(hirthanan): Compare against UpdateValue parameter ts month and year to
-  // see accuracy and correctness of this method.
+  //
+  // TODO(hirthanan): Compare against CalculateValue parameter ts month and year
+  // to see accuracy and correctness of this method.
   const base::Time GetCurrentActiveMonth() const;
 
   // Returns the int representation of the known active months in |value_|.
   int GetActiveMonthBits();
-
-  // Set the value for testing.
-  void SetValueForTesting(std::bitset<kChurnBitSize> val);
 
   const base::Time GetFirstActiveWeek() const;
 

@@ -308,6 +308,23 @@ TEST_F(ChurnActiveStatusAtInceptionDate, GetDefaultConstructorValue) {
   EXPECT_EQ(GetChurnActiveStatus()->GetValueAsInt(), 0);
 }
 
+TEST_F(ChurnActiveStatusAtInceptionDate, SetValueWithInt) {
+  GetChurnActiveStatus()->SetValue(1);
+
+  EXPECT_EQ(GetChurnActiveStatus()->GetActiveMonthBits(), 1);
+  EXPECT_EQ(GetChurnActiveStatus()->GetMonthsSinceInception(), 0);
+}
+
+TEST_F(ChurnActiveStatusAtInceptionDate, SetValueWithMax28BitValAsInt) {
+  int max_28_bit_as_int = 268435455;
+  GetChurnActiveStatus()->SetValue(max_28_bit_as_int);
+
+  // Months since inception and Active months bits should be set correctly.
+  EXPECT_EQ(GetChurnActiveStatus()->GetMonthsSinceInception(),
+            std::pow(2, 10) - 1);
+  EXPECT_EQ(GetChurnActiveStatus()->GetActiveMonthBits(), std::pow(2, 18) - 1);
+}
+
 TEST_F(ChurnActiveStatusAtInceptionDate, ValidateTimestampForInceptionDate) {
   base::Time month;
   EXPECT_TRUE(base::Time::FromString(kInceptionTimeString, &month));
@@ -322,7 +339,7 @@ TEST_F(ChurnActiveStatusAtInceptionDate, SetMaxActiveStatusValueAsInt) {
   EXPECT_EQ(ConvertBitSetToInt(max_28_bits), max_28_bits_as_int);
 
   ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
-  churn_active_status->SetValueForTesting(max_28_bits);
+  churn_active_status->SetValue(max_28_bits);
 
   // Validate the max months since inception is:
   // 2^10 - 1, which is equal to 10 bits all turned on..
@@ -341,7 +358,7 @@ TEST_F(ChurnActiveStatusAtInceptionDate, GetMinActiveStatusValueAsInt) {
   EXPECT_EQ(ConvertBitSetToInt(min_28_bits), min_28_bits_as_int);
 
   ChurnActiveStatus* churn_active_status = GetChurnActiveStatus();
-  churn_active_status->SetValueForTesting(min_28_bits);
+  churn_active_status->SetValue(min_28_bits);
 
   // Validate the months since inception and active months are both 0.
   EXPECT_EQ(churn_active_status->GetMonthsSinceInception(), 0);

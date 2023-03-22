@@ -117,7 +117,7 @@ int ChurnActiveStatus::GetValueAsInt() const {
 }
 
 absl::optional<std::bitset<ChurnActiveStatus::kChurnBitSize>>
-ChurnActiveStatus::UpdateValue(base::Time ts) {
+ChurnActiveStatus::CalculateValue(base::Time ts) {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);
 
@@ -137,6 +137,10 @@ ChurnActiveStatus::UpdateValue(base::Time ts) {
     LOG(ERROR) << "Failed to update churn active status value_. "
                << "New months from inception is smaller than the previous "
                   "number of months from inception.";
+    LOG(ERROR) << "Previous months from inception = "
+               << previous_months_from_inception;
+    LOG(ERROR) << "New months from inception = " << new_months_from_inception;
+
     return absl::nullopt;
   }
 
@@ -156,13 +160,27 @@ ChurnActiveStatus::UpdateValue(base::Time ts) {
   updated_value <<= kActiveMonthsBitSize;
   updated_value |= static_cast<int>(new_active_months.to_ulong());
 
-  value_ = updated_value;
   return updated_value;
 }
 
-void ChurnActiveStatus::InitializeValue(int value) {
-  DCHECK_EQ(value_, 0);
-  value_ = value;
+void ChurnActiveStatus::SetValue(
+    std::bitset<ChurnActiveStatus::kChurnBitSize> val) {
+  value_ = val;
+}
+
+absl::optional<std::bitset<ChurnActiveStatus::kChurnBitSize>>
+ChurnActiveStatus::UpdateValue(base::Time ts) {
+  absl::optional<std::bitset<ChurnActiveStatus::kChurnBitSize>> active_bits =
+      CalculateValue(ts);
+
+  if (!active_bits.has_value()) {
+    LOG(ERROR) << "Active bits was not updated since CalculateValue returned "
+               << "absl::nullopt.";
+    return absl::nullopt;
+  }
+
+  SetValue(active_bits.value());
+  return active_bits.value();
 }
 
 const base::Time ChurnActiveStatus::GetInceptionMonth() const {
@@ -225,11 +243,6 @@ int ChurnActiveStatus::GetActiveMonthBits() {
 
   return static_cast<int>(
       std::bitset<kActiveMonthsBitSize>(active_months).to_ulong());
-}
-
-void ChurnActiveStatus::SetValueForTesting(
-    std::bitset<ChurnActiveStatus::kChurnBitSize> val) {
-  value_ = val;
 }
 
 const base::Time ChurnActiveStatus::GetFirstActiveWeek() const {

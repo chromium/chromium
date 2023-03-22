@@ -19,6 +19,11 @@ namespace psm_rlwe = private_membership::rlwe;
 
 namespace {
 
+// Convert the 28 length bitset to an integer value.
+int GetBitSetAsInt(std::bitset<ChurnActiveStatus::kChurnBitSize> value) {
+  return static_cast<int>(value.to_ulong());
+}
+
 bool IsFirstActiveInCohort(base::Time first_active_week,
                            base::Time cohort_active_ts) {
   base::Time::Exploded exploded;
@@ -67,6 +72,16 @@ std::string ChurnCohortUseCaseImpl::GenerateWindowIdentifier(
 
 absl::optional<FresnelImportDataRequest>
 ChurnCohortUseCaseImpl::GenerateImportRequestBody() {
+  // Calculate a temporary active status value for this new cohort month.
+  auto new_active_bits =
+      churn_active_status_ptr_->CalculateValue(GetActiveTs());
+
+  if (!new_active_bits.has_value()) {
+    LOG(ERROR) << "Cohort import request failed because CalculateValue did not "
+               << "represent a new month.";
+    return absl::nullopt;
+  }
+
   // Generate Fresnel PSM import request body.
   FresnelImportDataRequest import_request;
 
@@ -90,8 +105,12 @@ ChurnCohortUseCaseImpl::GenerateImportRequestBody() {
 
   ChurnCohortMetadata* cohort_metadata =
       import_data->mutable_churn_cohort_metadata();
+
+  // Calculate the active status value for the current month.
+  // Only update the active status value officially if the cohort import request
+  // successfully sends this import request.
   cohort_metadata->set_active_status_value(
-      churn_active_status_ptr_->GetValueAsInt());
+      GetBitSetAsInt(new_active_bits.value()));
   base::Time first_active_week = churn_active_status_ptr_->GetFirstActiveWeek();
   // Only when we can get the ActivateDate from VPD then set whether the
   // device is first active during the churn cohort period. If we cannot

@@ -159,7 +159,7 @@ TEST_F(ChurnObservationUseCaseImplTest, GetFirstActiveDuringCohortStatus) {
   // Initialize active status object with fake value.
   std::bitset<ChurnActiveStatus::kChurnBitSize> max_28_bits(
       "1111111111111111111111111111");
-  churn_active_status_->SetValueForTesting(max_28_bits);
+  churn_active_status_->SetValue(max_28_bits);
   churn_observation_use_case_impl_->GenerateImportRequestBody();
 }
 
@@ -831,7 +831,7 @@ TEST_F(ChurnObservationUseCaseImplTest,
 }
 
 TEST_F(ChurnObservationUseCaseImplTest, EmptyActiveStatusIsInvalid) {
-  churn_active_status_->SetValueForTesting(0);
+  churn_active_status_->SetValue(0);
 
   auto observation_req =
       churn_observation_use_case_impl_->GenerateImportRequestBody();
@@ -843,7 +843,7 @@ TEST_F(ChurnObservationUseCaseImplTest, ValueGreaterThanCurrentActiveMonth) {
   // Initialize active status object with fake value.
   std::bitset<ChurnActiveStatus::kChurnBitSize> max_28_bits(
       "1111111111111111111111111111");
-  churn_active_status_->SetValueForTesting(max_28_bits);
+  churn_active_status_->SetValue(max_28_bits);
 
   auto observation_req =
       churn_observation_use_case_impl_->GenerateImportRequestBody();

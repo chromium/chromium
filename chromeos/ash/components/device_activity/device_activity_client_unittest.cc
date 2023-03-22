@@ -592,6 +592,9 @@ class DeviceActivityClientTest : public testing::Test {
         prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1);
     local_state_.RemoveUserPref(
         prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2);
+
+    // On device powerwash, the churn active status value will get erased.
+    churn_active_status_->SetValue(0);
   }
 
   void SimulateOprfResponse(const std::string& serialized_response_body,
@@ -1598,7 +1601,7 @@ TEST_F(DeviceActivityClientTest,
   }
 
   // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
-  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeBeforeChurnActiveStatus);
 
   // Last Churn Cohort month is: 2022-10, months is 273
   // Current Churn Cohort month is: 2023-01, months is 276
@@ -1640,7 +1643,7 @@ TEST_F(DeviceActivityClientTest, ChurnActiveStatusTest) {
   }
 
   // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
-  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeBeforeChurnActiveStatus);
 
   // Last Churn Cohort month is: 2022-10, months is 273
   // Current Churn Cohort month is: 2023-01, months is 276
@@ -1699,7 +1702,7 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterThreeMonths) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
 
   // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
-  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeBeforeChurnActiveStatus);
 
   // Last Churn Cohort month is: 2022-10, months is 273
   // Current Churn Cohort month is: 2023-01, months is 276
@@ -1792,7 +1795,7 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterTwoMonths) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
 
   // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
-  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeBeforeChurnActiveStatus);
 
   // Last Churn Cohort month is: 2022-11, months is 274
   // Current Churn Cohort month is: 2023-01, months is 276
@@ -1885,7 +1888,7 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterOneMonth) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
 
   // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
-  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeBeforeChurnActiveStatus);
 
   // Last Churn Cohort month is: 2022-12, months is 275
   // Current Churn Cohort month is: 2023-01, months is 276
@@ -1979,7 +1982,7 @@ TEST_F(DeviceActivityClientTest,
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
 
   // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
-  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeBeforeChurnActiveStatus);
 
   // Last Churn Cohort month is: 2022-12, months is 275
   // Current Churn Cohort month is: 2023-01, months is 276
@@ -2071,7 +2074,7 @@ TEST_F(DeviceActivityClientTest, ValidateObservationPeriodForUnsetLocalState) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
 
   // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
-  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeBeforeChurnActiveStatus);
 
   // Last Churn Cohort month is: 2022-12, months is 275
   // Current Churn Cohort month is: 2023-01, months is 276

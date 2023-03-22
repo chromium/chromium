@@ -148,7 +148,7 @@ class ChurnCohortUseCaseImplEmptyFirstActiveTest : public testing::Test {
 };
 
 TEST_F(ChurnCohortUseCaseImplTest, ValidateChurnMetadataWithFirstActiveIsTrue) {
-  churn_active_status_->InitializeValue(kFakeChurnActiveStatus);
+  churn_active_status_->SetValue(kFakeChurnActiveStatus);
   base::Time new_daily_ts;
   EXPECT_TRUE(
       base::Time::FromString("01 Dec 2022 23:59:59 GMT", &new_daily_ts));

@@ -515,7 +515,7 @@ void DeviceActivityClient::ReadChurnPreservedFile(
     if (local_state_->GetInteger(
             prefs::kDeviceActiveLastKnownChurnActiveStatus) == 0 &&
         churn_status_value != 0) {
-      churn_active_status_ptr_->InitializeValue(churn_status_value);
+      churn_active_status_ptr_->SetValue(churn_status_value);
       local_state_->SetInteger(prefs::kDeviceActiveLastKnownChurnActiveStatus,
                                churn_status_value);
     }
