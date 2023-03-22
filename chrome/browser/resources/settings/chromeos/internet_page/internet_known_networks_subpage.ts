@@ -20,7 +20,7 @@ import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome:
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {ConfigProperties, CrosNetworkConfigRemote, FilterType, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConfigProperties, CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -154,6 +154,20 @@ class SettingsInternetKnownNetworksPageElement extends
   /** CrosNetworkConfigObserver impl */
   override onNetworkStateListChanged(): void {
     this.refreshNetworks_();
+  }
+
+  /** CrosNetworkConfigObserver impl */
+  override onNetworkStateChanged(network: NetworkStateProperties): void {
+    // Force refresh the networks if we are missing the network state properties
+    // or the signal strength is one (WiFi network signal strength is non-zero
+    // by convention) since these could indicate the network is not active and
+    // would not independently trigger a list update.
+    if (!network ||
+        (network.type === NetworkType.kWiFi &&
+         (!network.typeState.wifi?.signalStrength ||
+          network.typeState.wifi?.signalStrength === 1))) {
+      this.refreshNetworks_();
+    }
   }
 
   private networkTypeChanged_(): void {
@@ -297,7 +311,6 @@ class SettingsInternetKnownNetworksPageElement extends
     if (!response.success) {
       console.warn('Forget network failed for: ' + this.selectedGuid_);
     }
-    this.refreshNetworks_();
   }
 
   /**
