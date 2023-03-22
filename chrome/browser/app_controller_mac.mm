@@ -109,6 +109,7 @@
 #include "components/handoff/handoff_utility.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/download_manager.h"
@@ -1779,7 +1780,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   _profilePrefRegistrar = std::make_unique<PrefChangeRegistrar>();
   _profilePrefRegistrar->Init(_lastProfile->GetPrefs());
   _profilePrefRegistrar->Add(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       base::BindRepeating(&chrome::BrowserCommandController::
                               UpdateSharedCommandsForIncognitoAvailability,
                           _menuState.get(), _lastProfile));

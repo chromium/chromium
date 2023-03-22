@@ -59,6 +59,7 @@ source_set("unit_tests") {
     "resources:move_folder",
     "//base",
     "//base/test:test_support",
+    "//components/policy/core/common:common_constants",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",

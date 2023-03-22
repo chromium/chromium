@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
@@ -248,7 +249,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewTabAction) {
   EXPECT_EQ(0U, action.attributes);
 
   chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kForced)));
 
@@ -274,7 +275,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewIncognitoTabAction) {
   EXPECT_EQ(0U, action.attributes);
 
   chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
 
@@ -352,7 +353,7 @@ TEST_F(BrowserActionFactoryTest, StartNewSearchAction) {
   EXPECT_EQ(0U, action.attributes);
 
   chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kForced)));
 
@@ -378,7 +379,7 @@ TEST_F(BrowserActionFactoryTest, NewIncognitoSearchAction) {
   EXPECT_EQ(0U, action.attributes);
 
   chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
 

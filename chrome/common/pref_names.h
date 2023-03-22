@@ -159,7 +159,6 @@ extern const char kWebKitPasswordEchoEnabled[];
 #endif
 extern const char kSSLErrorOverrideAllowed[];
 extern const char kSSLErrorOverrideAllowedForOrigins[];
-extern const char kIncognitoModeAvailability[];
 extern const char kSearchSuggestEnabled[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kContextualSearchEnabled[];

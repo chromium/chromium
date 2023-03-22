@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -95,7 +95,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
       identity_manager->FindExtendedAccountInfo(account).is_child_account;
 
   int incognito_mode_availability =
-      prefs->GetInteger(prefs::kIncognitoModeAvailability);
+      prefs->GetInteger(policy::policy_prefs::kIncognitoModeAvailability);
 #if BUILDFLAG(IS_ANDROID)
   incognito_mode_availability =
       incognito_enabled_

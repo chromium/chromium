@@ -41,12 +41,12 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_icon_resources_win.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/install_static/install_util.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/session_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -269,7 +269,7 @@ JumpList::JumpList(Profile* profile)
   // base::Unretained is safe since |this| is guaranteed to outlive
   // pref_change_registrar_.
   pref_change_registrar_->Add(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       base::BindRepeating(&JumpList::OnIncognitoAvailabilityChanged,
                           base::Unretained(this)));
 }
