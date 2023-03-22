@@ -9817,6 +9817,12 @@ const FeatureEntry kFeatureEntries[] = {
          chromeos::features::kExperimentalWebAppStoragePartitionIsolation)},
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-desk-button", flag_descriptions::kDeskButtonName,
+     flag_descriptions::kDeskButtonDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDeskButton)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

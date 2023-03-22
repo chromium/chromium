@@ -497,6 +497,10 @@ BASE_FEATURE(kCryptohomeRecovery,
              "CryptohomeRecovery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Adds a desk button to the shelf that the user can use to navigate between
+// desks.
+BASE_FEATURE(kDeskButton, "DeskButton", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Sync for desk templates on ChromeOS.
 BASE_FEATURE(kDeskTemplateSync,
              "DeskTemplateSync",
@@ -2529,6 +2533,10 @@ bool IsCryptohomeRecoveryEnabled() {
 
 bool IsDarkLightModeEnabled() {
   return chromeos::features::IsDarkLightModeEnabled();
+}
+
+bool IsDeskButtonEnabled() {
+  return base::FeatureList::IsEnabled(kDeskButton);
 }
 
 bool IsDeskTemplateSyncEnabled() {

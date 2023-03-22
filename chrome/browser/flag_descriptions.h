@@ -2916,6 +2916,9 @@ extern const char kCaptureModeDemoToolsDescription[];
 extern const char kCaptureModeGifRecordingName[];
 extern const char kCaptureModeGifRecordingDescription[];
 
+extern const char kDeskButtonName[];
+extern const char kDeskButtonDescription[];
+
 extern const char kDesks16Name[];
 extern const char kDesks16Description[];
 

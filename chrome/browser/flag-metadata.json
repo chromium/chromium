@@ -2165,6 +2165,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-desk-button",
+    "owners": [ "yongshun", "benbecker", "andp", "catherinez" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "enable-desks-save-and-recall",
     "owners": [ "dandersson", "yongshun", "janetmac" ],
     "expiry_milestone": 120

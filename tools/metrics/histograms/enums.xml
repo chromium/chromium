@@ -58900,6 +58900,7 @@ from previous Chrome versions.
   <int value="-1872867546" label="EnumerateAudioDevices:disabled"/>
   <int value="-1872205507" label="ShelfNewUi:enabled"/>
   <int value="-1871552967" label="DesktopPWAsTabStrip:disabled"/>
+  <int value="-1871389939" label="DeskButton:enabled"/>
   <int value="-1871185948" label="VrLaunchIntents:disabled"/>
   <int value="-1870961970" label="enable-filemanager-mtp"/>
   <int value="-1869845022" label="force-show-update-menu-item"/>
@@ -60714,6 +60715,7 @@ from previous Chrome versions.
   <int value="-883694393" label="SyncPseudoUSSSupervisedUsers:disabled"/>
   <int value="-883608641" label="enable-cros-action-recorder"/>
   <int value="-882434910" label="EnableAggregatedMlSearchRanking:enabled"/>
+  <int value="-881903516" label="DeskButton:disabled"/>
   <int value="-881477103" label="PageInfoAboutThisSiteNonEn:enabled"/>
   <int value="-881447505" label="ash-disable-shelf-model-synchronization"/>
   <int value="-881054479" label="WebAssemblyStreaming:disabled"/>
