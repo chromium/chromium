@@ -288,9 +288,6 @@ public final class ProductionSupportedFlagList {
                     "Controls whether wake ups are possible for canceled tasks."),
             Flag.baseFeature(BaseFeatures.REMOVE_CANCELED_TASKS_IN_TASK_QUEUE,
                     "Controls whether or not canceled delayed tasks are removed from task queues."),
-            Flag.baseFeature(BaseFeatures.ALWAYS_ABANDON_SCHEDULED_TASK,
-                    "Controls whether or not the scheduled task is always abandoned when a timer "
-                            + "is stopped or resets."),
             Flag.baseFeature(BlinkFeatures.VIEW_TRANSITION,
                     "Enables the experimental View Transitions API."
                             + " See https://github.com/WICG/view-transitions/blob/main/explainer.md."),

@@ -39,10 +39,6 @@ BASE_FEATURE(kRemoveCanceledTasksInTaskQueue,
              "RemoveCanceledTasksInTaskQueue2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAlwaysAbandonScheduledTask,
-             "AlwaysAbandonScheduledTask",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDelayFirstWorkerWake,
              "DelayFirstWorkerWake",
              base::FEATURE_DISABLED_BY_DEFAULT);

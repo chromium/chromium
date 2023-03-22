@@ -21,29 +21,6 @@
 namespace base {
 namespace internal {
 
-namespace {
-
-// Cache of the state of the kAlwaysAbandonScheduledTask feature. This avoids
-// the need to constantly query its enabled state through
-// FeatureList::IsEnabled().
-bool g_is_always_abandon_scheduled_task_enabled = true;
-
-}  // namespace
-
-// static
-void TimerBase::InitializeFeatures() {
-  // Since kAlwaysAbandonScheduledTask is not constexpr (forbidden for
-  // Features), it cannot be used to initialize
-  // |g_is_always_abandon_scheduled_task_enabled| at compile time. At least
-  // DCHECK that its initial value matches the default value of the feature
-  // here.
-  DCHECK_EQ(
-      g_is_always_abandon_scheduled_task_enabled,
-      kAlwaysAbandonScheduledTask.default_state == FEATURE_ENABLED_BY_DEFAULT);
-  g_is_always_abandon_scheduled_task_enabled =
-      FeatureList::IsEnabled(kAlwaysAbandonScheduledTask);
-}
-
 TimerBase::TimerBase(const Location& posted_from) : posted_from_(posted_from) {
   // It is safe for the timer to be created on a different thread/sequence than
   // the one from which the timer APIs are called. The first call to the
@@ -59,19 +36,6 @@ TimerBase::~TimerBase() {
 
 bool TimerBase::IsRunning() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // When the `kAlwaysAbandonScheduledTask` feature is enabled, checking
-  // `delayed_task_handle_.IsValid()` is sufficient to determine if the
-  // timer is running. When the feature is disabled, the delayed task
-  // is not abandoned when the timer is stopped and the handle remains
-  // valid, so it's necessary to also check `is_running_` (set to false
-  // from `Stop()`).
-  //
-  // TODO(crbug.com/1262205): Remove the `is_running_` check once the
-  // "AlwaysAbandonScheduledTask" feature is launched.
-  if (!is_running_)
-    return false;
-
   return delayed_task_handle_.IsValid();
 }
 
@@ -89,7 +53,6 @@ scoped_refptr<SequencedTaskRunner> TimerBase::GetTaskRunner() {
 void TimerBase::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  is_running_ = false;
   AbandonScheduledTask();
 
   OnStop();
@@ -133,17 +96,7 @@ void DelayTimerBase::StartInternal(const Location& posted_from,
 }
 
 void DelayTimerBase::AbandonAndStop() {
-  // Note: Stop() is more or less re-implemented here because it cannot be
-  // called without rebinding the |sequence_checker_| to the current sequence
-  // after the call to AbandonScheduledTask().
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  is_running_ = false;
-
-  AbandonScheduledTask();
-
-  OnStop();
-  // No more member accesses here: |this| could be deleted at this point.
+  Stop();
 }
 
 void DelayTimerBase::Reset() {
@@ -151,49 +104,14 @@ void DelayTimerBase::Reset() {
 
   EnsureNonNullUserTask();
 
-  if (!g_is_always_abandon_scheduled_task_enabled) {
-    // If there's no pending task, start one up and return.
-    if (!delayed_task_handle_.IsValid()) {
-      ScheduleNewTask(delay_);
-      return;
-    }
-
-    // Set the new |desired_run_time_|.
-    if (delay_ > Microseconds(0))
-      desired_run_time_ = Now() + delay_;
-    else
-      desired_run_time_ = TimeTicks();
-
-    // We can use the existing scheduled task if it arrives before the new
-    // |desired_run_time_|.
-    if (desired_run_time_ >= scheduled_run_time_) {
-      is_running_ = true;
-      return;
-    }
-  }
-
   // We can't reuse the |scheduled_task_|, so abandon it and post a new one.
   AbandonScheduledTask();
   ScheduleNewTask(delay_);
 }
 
-// TODO(1262205): Merge with TimerBase::Stop() once the "always abandon
-// scheduled task" feature is launched.
-void DelayTimerBase::Stop() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  is_running_ = false;
-  if (g_is_always_abandon_scheduled_task_enabled)
-    AbandonScheduledTask();
-
-  OnStop();
-  // No more member accesses here: |this| could be deleted after Stop() call.
-}
-
 void DelayTimerBase::ScheduleNewTask(TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!delayed_task_handle_.IsValid());
-  is_running_ = true;
 
   // Ignore negative deltas.
   // TODO(pmonette): Fix callers providing negative deltas and ban passing them.
@@ -207,7 +125,7 @@ void DelayTimerBase::ScheduleNewTask(TimeDelta delay) {
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTask(
       base::subtle::PostDelayedTaskPassKey(), posted_from_, timer_callback_,
       delay);
-  scheduled_run_time_ = desired_run_time_ = Now() + delay;
+  desired_run_time_ = Now() + delay;
 }
 
 TimeTicks DelayTimerBase::Now() const {
@@ -218,24 +136,6 @@ TimeTicks DelayTimerBase::Now() const {
 void DelayTimerBase::OnScheduledTaskInvoked() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!delayed_task_handle_.IsValid()) << posted_from_.ToString();
-
-  // The timer may have been stopped.
-  if (!is_running_)
-    return;
-
-  // First check if we need to delay the task because of a new target time.
-  if (desired_run_time_ > scheduled_run_time_) {
-    // Now() can be expensive, so only call it if we know the user has changed
-    // the |desired_run_time_|.
-    TimeTicks now = Now();
-    // Task runner may have called us late anyway, so only post a continuation
-    // task if the |desired_run_time_| is in the future.
-    if (desired_run_time_ > now) {
-      // Post a new task to span the remaining time.
-      ScheduleNewTask(desired_run_time_ - now);
-      return;
-    }
-  }
 
   RunUserTask();
   // No more member accesses here: |this| could be deleted at this point.
@@ -308,6 +208,7 @@ void RepeatingTimer::Start(const Location& posted_from,
 }
 
 void RepeatingTimer::OnStop() {}
+
 void RepeatingTimer::RunUserTask() {
   // Make a local copy of the task to run in case the task destroy the timer
   // instance.
@@ -346,6 +247,7 @@ void RetainingOneShotTimer::Start(const Location& posted_from,
 }
 
 void RetainingOneShotTimer::OnStop() {}
+
 void RetainingOneShotTimer::RunUserTask() {
   // Make a local copy of the task to run in case the task destroys the timer
   // instance.
@@ -382,7 +284,6 @@ void DeadlineTimer::OnStop() {
 void DeadlineTimer::ScheduleNewTask(TimeTicks deadline,
                                     subtle::DelayPolicy delay_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_running_ = true;
 
   if (!timer_callback_) {
     timer_callback_ =
@@ -446,7 +347,6 @@ void MetronomeTimer::Reset() {
 
 void MetronomeTimer::ScheduleNewTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_running_ = true;
 
   // The next wake up is scheduled at the next aligned time which is at least
   // `interval_ / 2` after now. `interval_ / 2` is added to avoid playing

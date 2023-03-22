@@ -939,7 +939,6 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   }
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type);
 
-  base::internal::TimerBase::InitializeFeatures();
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

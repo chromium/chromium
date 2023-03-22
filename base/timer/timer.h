@@ -88,10 +88,6 @@ namespace internal {
 // This class wraps logic shared by all timers.
 class BASE_EXPORT TimerBase {
  public:
-  // Initializes the state of all the timer features. Must be invoked after
-  // FeatureList initialization and while Chrome is still single-threaded.
-  static void InitializeFeatures();
-
   TimerBase(const TimerBase&) = delete;
   TimerBase& operator=(const TimerBase&) = delete;
 
@@ -141,10 +137,6 @@ class BASE_EXPORT TimerBase {
   // Location in user code.
   Location posted_from_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // If true, |user_task_| is scheduled to run sometime in the future.
-  // TODO(1262205): Remove once kAlwaysAbandonScheduledTask is gone.
-  bool is_running_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-
   // The handle to the posted delayed task.
   DelayedTaskHandle delayed_task_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -170,12 +162,8 @@ class BASE_EXPORT DelayTimerBase : public TimerBase {
   // the timer is not running, this will start it by posting a task.
   virtual void Reset();
 
-  void Stop() override;
-
-  // Abandons the scheduled task (if any) and stops the timer (if running). Use
-  // this instead of Stop() only if the timer will need to be used or destroyed
-  // on another sequence.
-  // TODO(1262205): Remove once kAlwaysAbandonScheduledTask is gone.
+  // DEPRECATED. Call Stop() instead.
+  // TODO(1262205): Remove this method and all callers.
   void AbandonAndStop();
 
   TimeTicks desired_run_time() const {
@@ -199,8 +187,7 @@ class BASE_EXPORT DelayTimerBase : public TimerBase {
   virtual void RunUserTask() = 0;
 
   // Schedules |OnScheduledTaskInvoked()| to run on the current sequence with
-  // the given |delay|. |scheduled_run_time_| and |desired_run_time_| are reset
-  // to Now() + delay.
+  // the given |delay|. |desired_run_time_| is reset to Now() + delay.
   void ScheduleNewTask(TimeDelta delay);
 
   void StartInternal(const Location& posted_from, TimeDelta delay);
@@ -220,17 +207,9 @@ class BASE_EXPORT DelayTimerBase : public TimerBase {
   // Delay requested by user.
   TimeDelta delay_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The time at which the scheduled task is expected to fire. This time can be
-  // null if the task must be run immediately.
-  TimeTicks scheduled_run_time_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   // The desired run time of |user_task_|. The user may update this at any time,
-  // even if their previous request has not run yet. If |desired_run_time_| is
-  // greater than |scheduled_run_time_|, a continuation task will be posted to
-  // wait for the remaining time. This allows us to reuse the pending task so as
-  // not to flood the delayed queues with orphaned tasks when the user code
-  // excessively Stops and Starts the timer. This time can be a "zero" TimeTicks
-  // if the task must be run immediately.
+  // even if their previous request has not run yet. This time can be a "zero"
+  // TimeTicks if the task must be run immediately.
   TimeTicks desired_run_time_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The tick clock used to calculate the run time for scheduled tasks.
