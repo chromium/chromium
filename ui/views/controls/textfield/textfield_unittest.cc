@@ -2838,7 +2838,8 @@ TEST_F(TextfieldTest, SelectCommands) {
   EXPECT_FALSE(test_api_->touch_selection_controller());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+// No touch on desktop Mac.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(TextfieldTest, SelectCommandsFromTouchEvent) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -3715,7 +3716,8 @@ TEST_F(TextfieldTest, TwoFingerScroll) {
   EXPECT_FALSE(test_api_->touch_selection_controller());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+// No touch on desktop Mac.
+#if !BUILDFLAG(IS_MAC)
 TEST_F(TextfieldTest, ScrollToPlaceCursor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -4414,12 +4416,10 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtentToTextEnd) {
 }
 
 TEST_F(TextfieldTest, MoveRangeSelectionExtentByCharacter) {
-#if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{::features::kTouchTextEditingRedesign});
-#endif
 
   InitTextfield();
   textfield_->SetText(u"hello world");
@@ -4448,7 +4448,6 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtentByCharacter) {
   EXPECT_EQ(textfield_->GetSelectedText(), u"e");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TextfieldTest, MoveRangeSelectionExtentExpandByWord) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -4528,7 +4527,6 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtentShrinkByCharacter) {
   EXPECT_EQ(range, gfx::Range(2, 10));
   EXPECT_EQ(textfield_->GetSelectedText(), u"llo worl");
 }
-#endif
 
 TEST_F(TextfieldTest, SelectBetweenCoordinates) {
   InitTextfield();

@@ -774,7 +774,6 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       CreateTouchSelectionControllerAndNotifyIt();
       event->SetHandled();
       break;
-#if BUILDFLAG(IS_CHROMEOS)
     case ui::ET_GESTURE_TAP_DOWN: {
       if (::features::IsTouchTextEditingRedesignEnabled() && HasFocus()) {
         if (event->details().tap_down_count() == 2) {
@@ -795,7 +794,6 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     }
-#endif
     case ui::ET_GESTURE_LONG_PRESS:
       if (!GetRenderText()->IsPointInSelection(event->location())) {
         // If long-press happens outside selection, select word and try to
@@ -804,12 +802,10 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
         SelectWordAt(event->location());
         OnAfterUserAction();
         CreateTouchSelectionControllerAndNotifyIt();
-#if BUILDFLAG(IS_CHROMEOS)
         if (::features::IsTouchTextEditingRedesignEnabled()) {
           selection_dragging_state_ =
               SelectionDraggingState::kDraggingSelectionExtent;
         }
-#endif
         // If touch selection activated successfully, mark event as handled
         // so that the regular context menu is not shown.
         if (touch_selection_controller_)
@@ -833,11 +829,9 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       if (HasFocus()) {
-#if BUILDFLAG(IS_CHROMEOS)
         if (::features::IsTouchTextEditingRedesignEnabled()) {
           MaybeStartSelectionDragging(event);
         }
-#endif
         if (selection_dragging_state_ == SelectionDraggingState::kNone) {
           drag_start_location_x_ = event->location().x();
           drag_start_display_offset_ =
@@ -1285,7 +1279,6 @@ void Textfield::MoveRangeSelectionExtent(const gfx::Point& extent) {
   gfx::LogicalCursorDirection cursor_direction =
       new_extent_pos > base_pos ? gfx::CURSOR_FORWARD : gfx::CURSOR_BACKWARD;
 
-#if BUILDFLAG(IS_CHROMEOS)
   bool selection_shrinking = cursor_direction == gfx::CURSOR_FORWARD
                                  ? new_extent_pos < extent_pos
                                  : new_extent_pos > extent_pos;
@@ -1320,7 +1313,6 @@ void Textfield::MoveRangeSelectionExtent(const gfx::Point& extent) {
                   ? new_word_range.start()
                   : new_word_range.end();
   }
-#endif
 
   gfx::SelectionModel selection(gfx::Range(base_pos, end_pos),
                                 cursor_direction);
@@ -1471,14 +1463,12 @@ void Textfield::ExecuteCommand(int command_id, int event_flags) {
   Textfield::ExecuteTextEditCommand(
       GetTextEditCommandFromMenuCommand(command_id, HasSelection()));
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (::features::IsTouchTextEditingRedesignEnabled() &&
       (event_flags & ui::EF_FROM_TOUCH) &&
       (command_id == Textfield::kSelectAll ||
        command_id == Textfield::kSelectWord)) {
     CreateTouchSelectionControllerAndNotifyIt();
   }
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2868,7 +2858,6 @@ float Textfield::GetCornerRadius() {
       ShapeContextTokens::kTextfieldRadius, size());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 void Textfield::MaybeStartSelectionDragging(ui::GestureEvent* event) {
   DCHECK_EQ(event->type(), ui::ET_GESTURE_SCROLL_BEGIN);
   // Only start selection dragging if scrolling with one touch point.
@@ -2916,7 +2905,6 @@ void Textfield::MaybeStartSelectionDragging(ui::GestureEvent* event) {
     selection_dragging_state_ = SelectionDraggingState::kDraggingCursor;
   }
 }
-#endif
 
 BEGIN_METADATA(Textfield, View)
 ADD_PROPERTY_METADATA(bool, ReadOnly)

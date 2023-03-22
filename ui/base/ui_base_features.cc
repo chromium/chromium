@@ -285,10 +285,9 @@ bool IsDeprecateAltBasedSixPackEnabled() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(USE_AURA)
 // Whether to enable new touch text editing features such as extra touch
 // selection gestures and quick menu options. Planning to release for ChromeOS
-// first, then possibly also enable some parts for other aura platforms later.
+// first, then possibly also enable some parts for other platforms later.
 // TODO(b/262297017): Clean up after touch text editing redesign ships.
 BASE_FEATURE(kTouchTextEditingRedesign,
              "TouchTextEditingRedesign",
@@ -297,7 +296,6 @@ BASE_FEATURE(kTouchTextEditingRedesign,
 bool IsTouchTextEditingRedesignEnabled() {
   return base::FeatureList::IsEnabled(kTouchTextEditingRedesign);
 }
-#endif  // defined(USE_AURA)
 
 // Enables forced colors mode for web content.
 BASE_FEATURE(kForcedColors, "ForcedColors", base::FEATURE_ENABLED_BY_DEFAULT);

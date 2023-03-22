@@ -665,14 +665,12 @@ class VIEWS_EXPORT Textfield : public View,
   // Returns the corner radius of the text field.
   float GetCornerRadius();
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Checks and updates the selection dragging state for the upcoming scroll
   // sequence, if required. If the scroll sequence starts while long pressing,
   // it will be used for adjusting the text selection. Otherwise, if the scroll
   // begins horizontally it will be used for cursor placement. Otherwise, the
   // scroll sequence won't be used for selection dragging.
   void MaybeStartSelectionDragging(ui::GestureEvent* event);
-#endif
 
   // The text model.
   std::unique_ptr<TextfieldModel> model_;
