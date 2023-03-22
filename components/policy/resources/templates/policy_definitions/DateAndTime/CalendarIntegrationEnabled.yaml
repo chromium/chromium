@@ -12,8 +12,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:113-
 items:
 - caption: Enable <ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph> Integration.
   value: true
