@@ -398,6 +398,15 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
   return kPseudoIdNone;
 }
 
+void CSSSelector::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
+  if (GetPseudoType() == CSSSelector::kPseudoParent) {
+    DCHECK_EQ(old_parent, ParentRule());
+    data_.parent_rule_ = new_parent;
+  } else if (has_rare_data_ && data_.rare_data_->selector_list_) {
+    data_.rare_data_->selector_list_->Reparent(old_parent, new_parent);
+  }
+}
+
 // Could be made smaller and faster by replacing pointer with an
 // offset into a string buffer and making the bit fields smaller but
 // that could not be maintained by hand.

@@ -475,13 +475,8 @@ void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
 void StyleRuleBase::Reparent(StyleRule* old_parent, StyleRule* new_parent) {
   switch (GetType()) {
     case kStyle:
-      for (CSSSelector* s = DynamicTo<StyleRule>(this)->SelectorArray(); s;
-           s = CSSSelectorList::Next(*s)) {
-        if (s->Match() == CSSSelector::kPseudoClass &&
-            s->GetPseudoType() == CSSSelector::kPseudoParent) {
-          s->Reparent(old_parent, new_parent);
-        }
-      }
+      CSSSelectorList::Reparent(To<StyleRule>(this)->SelectorArray(),
+                                old_parent, new_parent);
       break;
     case kScope:
     case kLayerBlock:

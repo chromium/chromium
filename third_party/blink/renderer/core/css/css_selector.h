@@ -386,11 +386,11 @@ class CORE_EXPORT CSSSelector {
                                      const Document* document);
   static PseudoId GetPseudoId(PseudoType);
 
-  // See StyleRule::Reparent().
-  void Reparent(StyleRule* old_parent, StyleRule* new_parent) {
-    DCHECK_EQ(old_parent, ParentRule());
-    data_.parent_rule_ = new_parent;
-  }
+  // Replaces the parent pointer held by kPseudoParent selectors found
+  // within this simple selector (including inner selector lists).
+  //
+  // See also StyleRule::Reparent().
+  void Reparent(StyleRule* old_parent, StyleRule* new_parent);
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
