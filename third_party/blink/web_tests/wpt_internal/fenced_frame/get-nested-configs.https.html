@@ -76,7 +76,24 @@ promise_test(async (t) => {
 
   const response = await nextValueFromServer(key);
   assert_equals(response, 'PASS', 'The nested URL should load.');
-}, 'Nested configs created by FLEDGE should be navigable');
+}, 'Nested configs created by FLEDGE should be navigable by fenced frame');
+
+promise_test(async (t) => {
+  const key = token();
+
+  const nested_url = generateURL("resources/embeddee.html", [key]);
+
+  // Navigate a fenced frame to `navigate-nested-config.html`. That page will
+  // in turn create a nested fenced frame which will be navigated to the URN of
+  // the first item in the nested configs list, `nested_url`.
+  const urn = await generateURNFromFledge(
+      "resources/navigate-nested-config.html", [key],
+      [nested_url]);
+  attachIFrame(urn);
+
+  const response = await nextValueFromServer(key);
+  assert_equals(response, 'PASS', 'The nested URL should load.');
+}, 'Nested configs created by FLEDGE should be navigable by URN iframe');
 
 promise_test(async (t) => {
   const key = token();
