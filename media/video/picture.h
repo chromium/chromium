@@ -186,6 +186,14 @@ class MEDIA_EXPORT Picture {
 
   bool is_webgpu_compatible() { return is_webgpu_compatible_; }
 
+  SharedImageFormatType shared_image_format_type() const {
+    return shared_image_format_type_;
+  }
+
+  void set_shared_image_format_type(SharedImageFormatType type) {
+    shared_image_format_type_ = type;
+  }
+
  private:
   int32_t picture_buffer_id_;
   int32_t bitstream_buffer_id_;
@@ -198,6 +206,8 @@ class MEDIA_EXPORT Picture {
   bool texture_owner_;
   bool wants_promotion_hint_;
   bool is_webgpu_compatible_;
+  SharedImageFormatType shared_image_format_type_ =
+      SharedImageFormatType::kLegacy;
   std::array<scoped_refptr<ScopedSharedImage>, VideoFrame::kMaxPlanes>
       scoped_shared_images_;
 };

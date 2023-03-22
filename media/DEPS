@@ -4,6 +4,7 @@ include_rules = [
   "+cc/paint",
   "+components/crash/core/common/crash_key.h",
   "+components/system_media_controls/linux/buildflags",
+  "+components/viz/common/resources",
   "+crypto",
   "+device/udev_linux",
   "+gpu",

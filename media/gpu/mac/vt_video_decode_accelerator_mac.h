@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/media_log.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -275,8 +276,8 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // Format of the assigned picture buffers.
   VideoPixelFormat picture_format_ = PIXEL_FORMAT_UNKNOWN;
 
-  // Corresponding GpuMemoryBuffer format.
-  gfx::BufferFormat buffer_format_ = gfx::BufferFormat::YUV_420_BIPLANAR;
+  // Corresponding SharedImageFormat.
+  viz::SharedImageFormat si_format_ = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
 
   // Frames that have not yet been decoded, keyed by bitstream ID; maintains
   // ownership of Frame objects while they flow through VideoToolbox.

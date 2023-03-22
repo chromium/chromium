@@ -320,6 +320,8 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 
     frame->set_color_space(picture.color_space());
 
+    frame->set_shared_image_format_type(picture.shared_image_format_type());
+
     frame->metadata().allow_overlay = picture.allow_overlay();
     frame->metadata().read_lock_fences_enabled =
         picture.read_lock_fences_enabled();

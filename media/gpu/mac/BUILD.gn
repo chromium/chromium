@@ -40,6 +40,7 @@ source_set("mac") {
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",
+    "//components/viz/common:resource_format",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/service",
     "//media",

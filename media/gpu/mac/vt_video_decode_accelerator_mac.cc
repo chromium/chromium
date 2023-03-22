@@ -40,11 +40,11 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/version.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/limits.h"
 #include "media/base/mac/color_space_util_mac.h"
@@ -519,6 +519,29 @@ void OutputThunk(void* decompression_output_refcon,
   VTVideoDecodeAccelerator* vda =
       reinterpret_cast<VTVideoDecodeAccelerator*>(decompression_output_refcon);
   vda->Output(source_frame_refcon, status, image_buffer);
+}
+
+gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
+  DCHECK(format.is_multi_plane());
+  if (format == viz::MultiPlaneFormat::kYVU_420) {
+    return gfx::BufferFormat::YVU_420;
+  }
+  if (format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR) {
+    return gfx::BufferFormat::YUV_420_BIPLANAR;
+  }
+  if (format == viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR) {
+    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
+  }
+  if (format == viz::MultiPlaneFormat::kP010) {
+    return gfx::BufferFormat::P010;
+  }
+  NOTREACHED();
+  return gfx::BufferFormat::RGBA_8888;
+}
+
+bool MultiPlaneFormatForHardwareVideoEnabled() {
+  return base::FeatureList::IsEnabled(features::kPassthroughYuvRgbConversion) &&
+         base::FeatureList::IsEnabled(kUseMultiPlaneFormatForHardwareVideo);
 }
 
 }  // namespace
@@ -2173,15 +2196,15 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
     picture_size_ = frame.image_size;
 
     if (has_alpha_) {
-      buffer_format_ = gfx::BufferFormat::YUVA_420_TRIPLANAR;
+      si_format_ = viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR;
       picture_format_ = PIXEL_FORMAT_NV12A;
     } else if (config_.profile == VP9PROFILE_PROFILE2 ||
                config_.profile == HEVCPROFILE_MAIN10 ||
                config_.profile == HEVCPROFILE_REXT) {
-      buffer_format_ = gfx::BufferFormat::P010;
+      si_format_ = viz::MultiPlaneFormat::kP010;
       picture_format_ = PIXEL_FORMAT_P016LE;
     } else {
-      buffer_format_ = gfx::BufferFormat::YUV_420_BIPLANAR;
+      si_format_ = viz::MultiPlaneFormat::kYUV_420_BIPLANAR;
       picture_format_ = PIXEL_FORMAT_NV12;
     }
 
@@ -2212,20 +2235,24 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
   const gfx::ColorSpace color_space = GetImageBufferColorSpace(frame.image);
   std::vector<gfx::BufferPlane> planes;
-  switch (picture_format_) {
-    case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_P016LE:
-      planes.push_back(gfx::BufferPlane::Y);
-      planes.push_back(gfx::BufferPlane::UV);
-      break;
-    case PIXEL_FORMAT_NV12A:
-      planes.push_back(gfx::BufferPlane::Y);
-      planes.push_back(gfx::BufferPlane::UV);
-      planes.push_back(gfx::BufferPlane::A);
-      break;
-    default:
-      NOTREACHED();
-      break;
+  if (MultiPlaneFormatForHardwareVideoEnabled()) {
+    planes.push_back(gfx::BufferPlane::DEFAULT);
+  } else {
+    switch (picture_format_) {
+      case PIXEL_FORMAT_NV12:
+      case PIXEL_FORMAT_P016LE:
+        planes.push_back(gfx::BufferPlane::Y);
+        planes.push_back(gfx::BufferPlane::UV);
+        break;
+      case PIXEL_FORMAT_NV12A:
+        planes.push_back(gfx::BufferPlane::Y);
+        planes.push_back(gfx::BufferPlane::UV);
+        planes.push_back(gfx::BufferPlane::A);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
   }
   for (size_t plane = 0; plane < planes.size(); ++plane) {
     if (picture_info->uses_shared_images) {
@@ -2254,10 +2281,17 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
                               base::scoped_policy::RETAIN);
 
       gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
-      bool success = shared_image_stub->CreateSharedImage(
-          mailbox, std::move(handle), buffer_format_, planes[plane], frame_size,
-          color_space, kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-          shared_image_usage);
+      bool success;
+      if (MultiPlaneFormatForHardwareVideoEnabled()) {
+        success = shared_image_stub->CreateSharedImage(
+            mailbox, std::move(handle), si_format_, frame_size, color_space,
+            kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage);
+      } else {
+        success = shared_image_stub->CreateSharedImage(
+            mailbox, std::move(handle), ToBufferFormat(si_format_),
+            planes[plane], frame_size, color_space, kTopLeft_GrSurfaceOrigin,
+            kOpaque_SkAlphaType, shared_image_usage);
+      }
       if (!success) {
         DLOG(ERROR) << "Failed to create shared image";
         NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
@@ -2287,7 +2321,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
           CVPixelBufferGetWidthOfPlane(frame.image.get(), plane),
           CVPixelBufferGetHeightOfPlane(frame.image.get(), plane));
       gfx::BufferFormat plane_buffer_format =
-          gpu::GetPlaneBufferFormat(planes[plane], buffer_format_);
+          gpu::GetPlaneBufferFormat(planes[plane], ToBufferFormat(si_format_));
 
       scoped_refptr<GLImageIOSurface> gl_image(
           GLImageIOSurface::Create(plane_size));
@@ -2328,7 +2362,12 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   picture.set_read_lock_fences_enabled(true);
   if (frame.hdr_metadata)
     picture.set_hdr_metadata(frame.hdr_metadata);
+  if (MultiPlaneFormatForHardwareVideoEnabled()) {
+    picture.set_shared_image_format_type(
+        SharedImageFormatType::kSharedImageFormat);
+  }
   if (picture_info->uses_shared_images) {
+    // For multiplanar shared images, planes.size() is 1.
     for (size_t plane = 0; plane < planes.size(); ++plane) {
       picture.set_scoped_shared_image(picture_info->scoped_shared_images[plane],
                                       plane);
