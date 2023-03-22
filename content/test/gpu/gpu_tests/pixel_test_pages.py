@@ -620,6 +620,8 @@ class PixelTestPages():
   def ExperimentalCanvasFeaturesPages(base_name: str) -> List[PixelTestPage]:
     browser_args = [
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
+        # Temporarily force pixel tests to use AAA (https://crbug.com/1421297)
+        '--force-skia-analytic-aa',
     ]
     accelerated_args = [
         cba.DISABLE_SOFTWARE_COMPOSITING_FALLBACK,
@@ -627,9 +629,6 @@ class PixelTestPages():
     unaccelerated_args = [
         cba.DISABLE_ACCELERATED_2D_CANVAS,
         cba.DISABLE_GPU_COMPOSITING,
-        # Temporarily force unaccelerated (CPU) tests to use AAA
-        # (https://crbug.com/1421297)
-        '--force-skia-analytic-aa',
     ]
 
     return [
