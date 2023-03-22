@@ -248,6 +248,28 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 #endif
 }
 
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
+                       CloseChromeWithKeyboardShortcut) {
+  base::RunLoop run_loop;
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+  fre_service()->OpenFirstRunIfNeeded(
+      FirstRunService::EntryPoint::kOther,
+      ExpectProceed(false).Then(run_loop.QuitClosure()));
+  profiles::testing::WaitForPickerWidgetCreated();
+
+  ProfilePicker::GetViewForTesting()->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_Q, ui::EF_COMMAND_DOWN));
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kAbandonedFlow, 1);
+  profiles::testing::WaitForPickerClosed();
+  run_loop.Run();
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
                        OpenFirstRunIfNeededCalledTwice) {
   // When `OpenFirstRunIfNeeded` is called twice, the callback passed to it the

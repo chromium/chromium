@@ -813,6 +813,10 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
       break;
     case IDC_EXIT:
+      // Stop the browser from re-opening when we close Chrome while
+      // in the first run experience.
+      params_.NotifyFirstRunExited(
+          ProfilePicker::FirstRunExitStatus::kAbandonedFlow);
       chrome::AttemptUserExit();
       break;
     case IDC_FULLSCREEN:
