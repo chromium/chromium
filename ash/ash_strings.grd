@@ -6039,6 +6039,11 @@ New install
       <message name="IDS_APP_LIST_FOLDER_BUTTON_ACCESSIBILE_NAME" desc="The spoken feedback text for navigating to a folder button in top level app list">
         Folder <ph name="folder_name">$1<ex>OEM Apps</ex></ph>
       </message>
+      <message name="IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION" desc="The spoken feedback text that announces the number of apps in a folder when navigating to the folder button in top level app list">
+        {NUM_APPS, plural,
+         =1 {1 app}
+         other {# apps}}
+      </message>
       <message name="IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text for closing an app launcher folder">
         Close folder
       </message>

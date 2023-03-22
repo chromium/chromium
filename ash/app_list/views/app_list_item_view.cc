@@ -902,25 +902,46 @@ void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     return;
   }
 
+  // The list of descriptions to be announced.
+  std::vector<std::u16string> descriptions;
+
+  if (item_weak_->is_folder() &&
+      features::IsAppCollectionFolderRefreshEnabled()) {
+    // For folder items, announce the number of apps in the folder.
+    std::u16string app_count_announcement = l10n_util::GetPluralStringFUTF16(
+        IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION,
+        item_weak_->AsFolderItem()->ChildItemCount());
+    descriptions.push_back(app_count_announcement);
+  }
+
   auto app_status = item_weak_->app_status();
+  std::u16string app_status_description;
   switch (app_status) {
     case AppStatus::kBlocked:
-      node_data->SetDescription(
+      app_status_description =
           ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_APP_LIST_BLOCKED_APP));
+              IDS_APP_LIST_BLOCKED_APP);
       break;
     case AppStatus::kPaused:
-      node_data->SetDescription(
+      app_status_description =
           ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_APP_LIST_PAUSED_APP));
+              IDS_APP_LIST_PAUSED_APP);
       break;
     default:
       if (item_weak_->is_new_install()) {
-        node_data->SetDescription(
+        app_status_description =
             ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION);
       }
       break;
+  }
+  if (!app_status_description.empty()) {
+    descriptions.push_back(app_status_description);
+  }
+
+  // Set the concatenated descriptions.
+  if (!descriptions.empty()) {
+    node_data->SetDescription(base::JoinString(descriptions, u" "));
   }
 }
 
