@@ -118,15 +118,17 @@ class UnretainedWrapper {
   using DanglingRawPtrType = MayBeDangling<T, PtrTraits>;
 
  public:
-  // We want the getter type to be the exact same as the receiver parameter that
-  // it's passed into, to avoid having raw_ptr<T> -> T* -> raw_ptr<T> round
-  // trip, which could trigger the raw_ptr error detector if T* was dangling.
+  // We want the getter type to match the receiver parameter that it is passed
+  // into, to minimize `raw_ptr<T>` <-> `T*` conversions. We also would like to
+  // match `StorageType`, but sometimes we can't have both, as shown in
+  // https://docs.google.com/document/d/1dLM34aKqbNBfRdOYxxV_T-zQU4J5wjmXwIBJZr7JvZM/edit
+  // When we can't have both, prefer the former, mostly because
+  // `GetPtrType`=`raw_ptr<T>` would break if e.g. UnretainedWrapper() is
+  // constructed using `char*`, but the receiver is of type `std::string&`.
   // This is enforced by static_asserts in base::internal::AssertConstructible.
-  //
-  // Returning raw_ptr<T> would also break if e.g. UnretainedWrapper() is
-  // constructed using char*, but the receiver is of type std::string&.
   using GetPtrType = std::conditional_t<
-      std::is_same_v<UnretainedTrait, unretained_traits::MayDangle>,
+      raw_ptr_traits::IsSupportedType<T>::value &&
+          std::is_same_v<UnretainedTrait, unretained_traits::MayDangle>,
       DanglingRawPtrType,
       T*>;
 
@@ -182,9 +184,9 @@ class UnretainedWrapper {
                          DanglingRawPtrType,
                          T*>;
   // Avoid converting between different `raw_ptr` types when calling `get()`.
-  // See the comment by `GetPtrType` describing why this wouldn't be good.
+  // It is allowable to convert `raw_ptr<T>` -> `T*`, but not in the other
+  // direction. See the comment by `GetPtrType` describing for more details.
   static_assert(std::is_pointer_v<GetPtrType> ||
-                std::is_pointer_v<StorageType> ||
                 std::is_same_v<GetPtrType, StorageType>);
   StorageType ptr_;
 };
