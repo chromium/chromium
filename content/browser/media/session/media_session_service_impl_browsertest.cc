@@ -192,15 +192,9 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
   std::unique_ptr<MockMediaSessionPlayerObserver> player_;
 };
 
-#if defined(LEAK_SANITIZER)
-// TODO(crbug.com/850870) Plug the leaks.
-#define MAYBE_CrashMessageOnUnload DISABLED_CrashMessageOnUnload
-#else
-#define MAYBE_CrashMessageOnUnload CrashMessageOnUnload
-#endif
 // Two windows from the same BrowserContext.
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
-                       MAYBE_CrashMessageOnUnload) {
+                       CrashMessageOnUnload) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GetTestUrl("media/session", "embedder.html")));
   // Navigate to a chrome:// URL to avoid render process re-use.
@@ -214,11 +208,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
 // observers to wait for the message to be processed on the MediaSessionObserver
 // side.
 
-#if defined(LEAK_SANITIZER)
-// TODO(crbug.com/850870) Plug the leaks.
-#define MAYBE_ResetServiceWhenNavigatingAway \
-  DISABLED_ResetServiceWhenNavigatingAway
-#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_ANDROID)
 // crbug.com/927234.
 #define MAYBE_ResetServiceWhenNavigatingAway \
@@ -248,17 +238,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
   EXPECT_EQ(0u, GetService()->actions().size());
 }
 
-#if defined(LEAK_SANITIZER)
-// TODO(crbug.com/850870) Plug the leaks.
-#define MAYBE_DontResetServiceForSameDocumentNavigation \
-  DISABLED_DontResetServiceForSameDocumentNavigation
-#else
 // crbug.com/927234.
-#define MAYBE_DontResetServiceForSameDocumentNavigation \
-  DISABLED_DontResetServiceForSameDocumentNavigation
-#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
-                       MAYBE_DontResetServiceForSameDocumentNavigation) {
+                       DISABLED_DontResetServiceForSameDocumentNavigation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
