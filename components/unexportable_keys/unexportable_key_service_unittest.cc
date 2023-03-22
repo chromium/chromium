@@ -68,6 +68,8 @@ TEST_F(UnexportableKeyServiceTest, GenerateKey) {
   // Verify that we can get info about the generated key.
   EXPECT_TRUE(service().GetSubjectPublicKeyInfo(*key_id).has_value());
   EXPECT_TRUE(service().GetWrappedKey(*key_id).has_value());
+  EXPECT_THAT(kAcceptableAlgorithms,
+              testing::Contains(service().GetAlgorithm(*key_id)));
 }
 
 TEST_F(UnexportableKeyServiceTest, GenerateKeyMultiplePendingRequests) {

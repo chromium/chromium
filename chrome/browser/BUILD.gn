@@ -6727,7 +6727,11 @@ static_library("browser") {
       "signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h",
       "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.cc",
       "signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h",
+      "signin/bound_session_credentials/registration_token_helper.cc",
+      "signin/bound_session_credentials/registration_token_helper.h",
     ]
+
+    deps += [ "//components/unexportable_keys" ]
   }
 
   if (enable_media_remoting) {

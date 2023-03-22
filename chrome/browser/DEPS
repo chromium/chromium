@@ -350,6 +350,7 @@ include_rules = [
   "+components/ui_metrics",
   "+components/ukm",
   "+components/undo",
+  "+components/unexportable_keys",
   "+components/unified_consent",
   "+components/update_client",
   "+components/upload_list",

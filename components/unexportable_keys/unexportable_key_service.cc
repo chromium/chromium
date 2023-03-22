@@ -186,6 +186,15 @@ ServiceErrorOr<std::vector<uint8_t>> UnexportableKeyService::GetWrappedKey(
   return it->second->key().GetWrappedKey();
 }
 
+ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
+UnexportableKeyService::GetAlgorithm(UnexportableKeyId key_id) const {
+  auto it = key_by_key_id_.find(key_id);
+  if (it == key_by_key_id_.end()) {
+    return base::unexpected(ServiceError::kKeyNotFound);
+  }
+  return it->second->key().Algorithm();
+}
+
 void UnexportableKeyService::OnKeyGenerated(
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> client_callback,
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>

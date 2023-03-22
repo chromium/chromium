@@ -128,6 +128,13 @@ class UnexportableKeyService : public KeyedService {
   ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(
       UnexportableKeyId key_id) const;
 
+  // Returns the algorithm of a key that `key_id` refers to.
+  // Returns a `ServiceError` if `key_id` is not found.
+  // `key_id` must have resulted from calling `GenerateSigningKeySlowlyAsync()`
+  // or `FromWrappedSigningKeySlowlyAsync()`
+  ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> GetAlgorithm(
+      UnexportableKeyId key_id) const;
+
  private:
   // Comparator object that allows comparing containers of different types that
   // are convertible to base::span<const uint8_t>.

@@ -6558,6 +6558,7 @@ test("unit_tests") {
       "../browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.cc",
       "../browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h",
+      "../browser/signin/bound_session_credentials/registration_token_helper_unittest.cc",
     ]
   }
 

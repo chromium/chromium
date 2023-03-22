@@ -30,6 +30,8 @@ static_library("base") {
     "multilogin_parameters.h",
     "persistent_repeating_timer.cc",
     "persistent_repeating_timer.h",
+    "session_binding_utils.cc",
+    "session_binding_utils.h",
     "signin_client.cc",
     "signin_client.h",
     "signin_metrics.cc",
@@ -76,6 +78,8 @@ static_library("test_support") {
   sources = [
     "list_accounts_test_utils.cc",
     "list_accounts_test_utils.h",
+    "session_binding_test_utils.cc",
+    "session_binding_test_utils.h",
     "test_signin_client.cc",
     "test_signin_client.h",
   ]
@@ -84,6 +88,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//components/prefs",
+    "//crypto",
     "//google_apis:test_support",
   ]
 
@@ -100,6 +105,7 @@ source_set("unit_tests") {
     "avatar_icon_util_unittest.cc",
     "device_id_helper_unittest.cc",
     "persistent_repeating_timer_unittest.cc",
+    "session_binding_utils_unittest.cc",
     "signin_metrics_unittest.cc",
   ]
 
