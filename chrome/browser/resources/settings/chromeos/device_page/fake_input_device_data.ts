@@ -179,6 +179,28 @@ export const fakeTouchpads: Touchpad[] = [
   },
 ];
 
+export const fakeTouchpads2: Touchpad[] = [
+  {
+    id: 11,
+    deviceKey: 'test:key',
+    name: 'Fake Default Touchpad',
+    isExternal: false,
+    isHaptic: true,
+    settings: {
+      sensitivity: 1,
+      reverseScrolling: false,
+      accelerationEnabled: false,
+      tapToClickEnabled: false,
+      threeFingerClickEnabled: false,
+      tapDraggingEnabled: false,
+      scrollSensitivity: 1,
+      scrollAcceleration: false,
+      hapticSensitivity: 1,
+      hapticEnabled: false,
+    },
+  },
+];
+
 export const fakeMice: Mouse[] = [
   {
     id: 4,

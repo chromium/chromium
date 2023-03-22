@@ -471,7 +471,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'per_device_pointing_stick_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
- ['PerDeviceTouchpad', 'per_device_touchpad_test.js'],
+ [
+   'PerDeviceTouchpad',
+   'per_device_touchpad_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']},
+ ],
  [
    'PerDeviceTouchpadSubsection', 'per_device_touchpad_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
