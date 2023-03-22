@@ -21,6 +21,7 @@
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/media/webrtc/webrtc_text_log_handler.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -146,6 +147,10 @@ class WebRtcLoggingController
       std::vector<chrome::mojom::WebRtcLoggingMessagePtr> messages) override;
   void OnStopped() override;
 
+  // Checks whether WebRTC text-logs is permitted by
+  // the relevant policy (prefs::kWebRtcTextLogCollectionAllowed).
+  static bool IsWebRtcTextLogAllowed(content::BrowserContext* browser_context);
+
  private:
   friend class base::RefCounted<WebRtcLoggingController>;
 
@@ -191,6 +196,8 @@ class WebRtcLoggingController
       WebRtcLoggingController::GenericDoneCallback callback,
       bool success,
       const std::string& error_message);
+
+  content::BrowserContext* GetBrowserContext() const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Grants the render process access to the 'WebRTC Logs' directory, and

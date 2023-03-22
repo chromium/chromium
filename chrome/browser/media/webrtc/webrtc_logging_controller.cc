@@ -19,8 +19,10 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/browser/media/webrtc/webrtc_rtp_dump_handler.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -140,6 +142,11 @@ void WebRtcLoggingController::UploadStoredLog(const std::string& log_id,
   upload_data.callback = std::move(callback);
   upload_data.local_log_id = log_id;
   upload_data.web_app_id = web_app_id_;
+
+  if (!IsWebRtcTextLogAllowed(GetBrowserContext())) {
+    log_uploader_->NotifyUploadDisabled(std::move(upload_data));
+    return;
+  }
 
   log_uploader_->background_task_runner()->PostTask(
       FROM_HERE,
@@ -521,11 +528,15 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
   CHECK(log_buffer.get()) << "State=" << text_log_handler_->GetState()
                           << ", uorc=" << upload_log_on_render_close_;
 
+  content::BrowserContext* browser_context = GetBrowserContext();
+  bool is_text_log_upload_allowed = IsWebRtcTextLogAllowed(browser_context);
+
   log_uploader_->background_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoUpload,
+      base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
                      base::Unretained(log_uploader_), std::move(log_buffer),
-                     std::move(meta_data), std::move(upload_done_data)));
+                     std::move(meta_data), std::move(upload_done_data),
+                     is_text_log_upload_allowed));
 }
 
 void WebRtcLoggingController::CreateRtpDumpHandlerAndStart(
@@ -582,7 +593,28 @@ void WebRtcLoggingController::FireGenericDoneCallback(
       FROM_HERE, base::BindOnce(std::move(callback), success, error_message));
 }
 
+content::BrowserContext* WebRtcLoggingController::GetBrowserContext() const {
+  content::RenderProcessHost* host =
+      content::RenderProcessHost::FromID(render_process_id_);
+
+  return host ? host->GetBrowserContext() : nullptr;
+}
+
 // static
+bool WebRtcLoggingController::IsWebRtcTextLogAllowed(
+    content::BrowserContext* browser_context) {
+  // Historically by default webrtc text logs are always uploaded.
+  if (!browser_context) {
+    return true;
+  }
+
+  const Profile* profile = Profile::FromBrowserContext(browser_context);
+  DCHECK(profile);
+
+  return profile->GetPrefs()->GetBoolean(
+      prefs::kWebRtcTextLogCollectionAllowed);
+}
+
 base::FilePath WebRtcLoggingController::GetLogDirectoryAndEnsureExists(
     const base::FilePath& browser_context_directory_path) {
   DCHECK(!browser_context_directory_path.empty());

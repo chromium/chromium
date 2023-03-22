@@ -263,7 +263,7 @@ Refer to README.md for content description and update process.
  <item id="web_history_service" added_in_milestone="65" type="completing" content_hash_code="00f6470d" os_list="linux,windows,chromeos,android" semantics_fields="1,5" policy_fields="-1,3" file_path="components/history/core/browser/web_history_service.cc" />
  <item id="web_push_message" added_in_milestone="77" content_hash_code="068f740a" os_list="linux,windows,chromeos,android" file_path="chrome/browser/sharing/web_push/web_push_sender.cc" />
  <item id="webrtc_event_log_uploader" added_in_milestone="67" content_hash_code="00a7ed3d" os_list="linux,windows,chromeos,android" file_path="chrome/browser/media/webrtc/webrtc_event_log_uploader.cc" />
- <item id="webrtc_log_upload" added_in_milestone="62" content_hash_code="0201a0f1" os_list="linux,windows,chromeos,android" file_path="chrome/browser/media/webrtc/webrtc_log_uploader.cc" />
+ <item id="webrtc_log_upload" added_in_milestone="62" content_hash_code="0158bc9c" os_list="linux,windows,chromeos,android" file_path="chrome/browser/media/webrtc/webrtc_log_uploader.cc" />
  <item id="webrtc_peer_connection" added_in_milestone="66" content_hash_code="039bf82b" os_list="linux,windows,chromeos,android" file_path="third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.cc" />
  <item id="websocket_basic_stream" added_in_milestone="66" content_hash_code="040f7353" os_list="linux,windows,chromeos,android" file_path="net/websockets/websocket_basic_stream.cc" />
  <item id="websocket_stream" added_in_milestone="62" content_hash_code="006ea358" os_list="linux,windows,chromeos,android" file_path="content/browser/websockets/websocket_connector_impl.cc" />

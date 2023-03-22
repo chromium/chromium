@@ -117,10 +117,11 @@ void WebRtcLogUploader::LoggingStoppedDontUpload() {
   DecreaseLogCount();
 }
 
-void WebRtcLogUploader::LoggingStoppedDoUpload(
+void WebRtcLogUploader::OnLoggingStopped(
     std::unique_ptr<WebRtcLogBuffer> log_buffer,
     std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
-    WebRtcLogUploader::UploadDoneData upload_done_data) {
+    WebRtcLogUploader::UploadDoneData upload_done_data,
+    bool is_text_log_upload_allowed) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(log_buffer.get());
   DCHECK(meta_data.get());
@@ -146,8 +147,16 @@ void WebRtcLogUploader::LoggingStoppedDoUpload(
   }
 
   upload_done_data.local_log_id = local_log_id;
-  PrepareMultipartPostData(compressed_log, std::move(meta_data),
-                           std::move(upload_done_data));
+
+  if (is_text_log_upload_allowed) {
+    PrepareMultipartPostData(compressed_log, std::move(meta_data),
+                             std::move(upload_done_data));
+  } else {
+    main_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WebRtcLogUploader::NotifyUploadDisabled,
+                       base::Unretained(this), std::move(upload_done_data)));
+  }
 }
 
 void WebRtcLogUploader::PrepareMultipartPostData(
@@ -481,8 +490,14 @@ void WebRtcLogUploader::UploadCompressedLog(
           setting:
             "This feature can be disabled by unchecking 'Report additional "
             "diagnostics to help improve Hangouts.' in Hangouts settings."
-          policy_exception_justification:
-            "Not implemented, it would be good to do so."
+            "This feature is enabled by default."
+          chrome_policy {
+            subProto1 {
+              WebRtcTextLogCollectionAllowed {
+                WebRtcTextLogCollectionAllowed: false
+              }
+            }
+          }
         })");
 
   constexpr char kUploadURL[] = "https://clients2.google.com/cr/report";
@@ -630,4 +645,16 @@ void WebRtcLogUploader::NotifyUploadDoneAndLogStats(
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(upload_done_data).callback, success,
                                 report_id, error_message));
+}
+
+void WebRtcLogUploader::NotifyUploadDisabled(UploadDoneData upload_done_data) {
+  DecreaseLogCount();
+  if (upload_done_data.callback.is_null()) {
+    return;
+  }
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(upload_done_data).callback,
+                     /*is_upload_successful=*/false, /*report_id=*/"",
+                     /*error_msg=*/WebRtcLogUploader::kLogUploadDisabledMsg));
 }

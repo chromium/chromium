@@ -6869,6 +6869,7 @@ test("unit_tests") {
       "../browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h",
       "../browser/media/webrtc/webrtc_event_log_uploader_impl_unittest.cc",
       "../browser/media/webrtc/webrtc_log_uploader_unittest.cc",
+      "../browser/media/webrtc/webrtc_logging_controller_unittest.cc",
       "../browser/media/webrtc/webrtc_rtp_dump_handler_unittest.cc",
       "../browser/media/webrtc/webrtc_rtp_dump_writer_unittest.cc",
       "../browser/media_galleries/fileapi/native_media_file_util_unittest.cc",
