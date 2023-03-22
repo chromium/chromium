@@ -75,16 +75,14 @@ void PasswordManagerInteractiveTestBase::WaitForElementValue(
       value_check_function +
       base::StringPrintf(
           "if (valueCheck()) {"
-          "  /* Spin the event loop with setTimeout. */"
-          "  setTimeout(window.domAutomationController.send(%d), 0);"
+          "  window.domAutomationController.send(%d);"
           "} else {"
           "  var element = document.getElementById('%s');"
           "  if (!element)"
           "    window.domAutomationController.send(%d);"
           "  element.oninput = function() {"
           "    if (valueCheck()) {"
-          "      /* Spin the event loop with setTimeout. */"
-          "      setTimeout(window.domAutomationController.send(%d), 0);"
+          "      window.domAutomationController.send(%d);"
           "      element.oninput = undefined;"
           "    }"
           "  };"
