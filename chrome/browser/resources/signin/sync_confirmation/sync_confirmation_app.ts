@@ -166,9 +166,8 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   }
 
 
-  private getSigninInterceptDesignClass_(isSigninInterceptFre: boolean):
-      string {
-    return isSigninInterceptFre ? 'signin-intercept-design' : '';
+  private getSigninInterceptDesignClass_(): string {
+    return this.isSigninInterceptFre_ ? 'signin-intercept-design' : '';
   }
 
   private getAnimationClass_() {

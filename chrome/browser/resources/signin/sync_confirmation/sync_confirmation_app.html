@@ -447,7 +447,8 @@
   which user clicks to indicate consent.
 -->
 
-<template is="dom-if" if="[[isModalDialogWithoutTangibleSync_()]]">
+<template is="dom-if" if="[[isModalDialogWithoutTangibleSync_(
+    isModalDialog_, isTangibleSync_)]]">
   <template is="dom-if" if="[[!isSigninInterceptFre_]]">
     <div id="illustration-container">
       <div id="grey-banner"></div>
@@ -465,7 +466,8 @@
       </div>
     </div>
   </template>
-  <div id="content-container" class$="[[getSigninInterceptDesignClass_(isSigninInterceptFre_)]]">
+  <div id="content-container" class$="[[getSigninInterceptDesignClass_(
+      isSigninInterceptFre_)]]">
     <h1 id="syncConfirmationHeading" class="heading" consent-description>
       $i18n{syncConfirmationTitle}
     </h1>
@@ -511,7 +513,8 @@
   </div>
 </template>
 
-<template is="dom-if" if="[[isWindowVersionWithoutTangibleSync_()]]">
+<template is="dom-if" if="[[isWindowVersionWithoutTangibleSync_(
+    isModalDialog_, isTangibleSync_)]]">
   <div id="confirmationContainer">
     <div id="headerContainer">
       <div id="syncPromoBanner"></div>
@@ -616,7 +619,8 @@
           $i18n{syncConfirmationSettingsLabel}
         </cr-button>
       </if>
-      <cr-button id="notNowButton" on-click="onUndo_" disabled="[[anyButtonClicked_]]">
+      <cr-button id="notNowButton" on-click="onUndo_"
+          disabled="[[anyButtonClicked_]]">
         $i18n{syncConfirmationUndoLabel}
       </cr-button>
       <if expr="not (is_macosx or is_linux or chromeos_ash or chromeos_lacros)">
