@@ -4073,6 +4073,16 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     return blink::StorageKey::CreateWithNonce(new_rfh_origin, *nonce);
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder) &&
+      GetContentClient()->browser()->ShouldUseFirstPartyStorageKey(
+          new_rfh_origin)) {
+    // Extension subframes should not take their top-level site into account
+    // when determining storage access. Thus, we construct all extension frame
+    // StorageKeys as first-party using the extension origin.
+    return blink::StorageKey::CreateFirstParty(new_rfh_origin);
+  }
+
   std::vector<RenderFrameHostImpl*> ancestor_chain;
   RenderFrameHostImpl* current = this;
   while (current) {

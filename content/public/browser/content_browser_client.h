@@ -2401,6 +2401,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // can be bypassed via admin policy.
   virtual bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
       WebContents* web_contents);
+
+  // Checks if `origin` should always receive a first-party StorageKey
+  // in RenderFrameHostImpl. Currently in Chrome, this is true for all
+  // extension origins.
+  virtual bool ShouldUseFirstPartyStorageKey(const url::Origin& origin);
 };
 
 }  // namespace content

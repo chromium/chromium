@@ -1449,4 +1449,9 @@ bool ContentBrowserClient::
   return true;
 }
 
+bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
+    const url::Origin& origin) {
+  return false;
+}
+
 }  // namespace content

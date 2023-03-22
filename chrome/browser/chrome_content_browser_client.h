@@ -868,6 +868,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
       content::WebContents* web_contents) override;
 
+  bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

@@ -75,6 +75,20 @@ class RenderFrameHostImplTest : public RenderViewHostImplTestHarness {
   }
 };
 
+// TODO(https://crbug.com/1425337): This set-up is temporary. Eventually, all
+// tests that reference extensions will be moved to chrome/browser/ and this
+// class can be deleted.
+class FirstPartyOverrideContentBrowserClient : public ContentBrowserClient {
+ public:
+  FirstPartyOverrideContentBrowserClient() = default;
+  ~FirstPartyOverrideContentBrowserClient() override = default;
+
+ private:
+  bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override {
+    return origin.scheme() == "chrome-extension";
+  }
+};
+
 TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   GURL initial_url = GURL("https://initial.example.test/");
   GURL final_url = GURL("https://final.example.test/");
@@ -637,7 +651,57 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
                 grandchild_frame->GetLastCommittedOrigin(), nullptr));
 }
 
-// TODO(crbug.com/1425337): This test should be migrated to //chrome.
+// TODO(https://crbug.com/1425337): Eventually, this test will be moved to
+// chrome/browser/ so that we no longer need to override the
+// ContentBrowserClient, and we can test using real extension URLs.
+TEST_F(RenderFrameHostImplTest, CalculateStorageKeyFirstPartyOverride) {
+  // Enable third-party storage partitioning.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  // Temporarily enable FirstPartyOverrideContentBrowserClient. This allows us
+  // to mock ShouldUseFirstPartyStorageKey() to check the origin scheme (as done
+  // in the ChromeContentBrowserClient) rather than indiscriminately return
+  // false (as written in the ContentBrowserClient implementation).
+  FirstPartyOverrideContentBrowserClient modified_client;
+  ContentBrowserClient* regular_client =
+      SetBrowserClientForTesting(&modified_client);
+
+  // Register extension scheme for testing.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  // Navigate and commit to a non-extension URL.
+  GURL initial_url("https://initial.example.test");
+  NavigationSimulator::CreateRendererInitiated(initial_url, main_rfh())
+      ->Commit();
+
+  // Create a child extension frame and navigate to it.
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+
+  // TODO(https://crbug.com/1425337): once this test is moved to chrome/browser/
+  // replace with a legitimate chrome-extension URL. But for the purposes of
+  // this test, it is sufficient to check that it has a chrome-extension scheme.
+  GURL child_url = GURL("chrome-extension://childframeid");
+  child_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(child_url,
+                                                         child_frame));
+
+  // Subframes that contain extension URLs should have first-party StorageKeys.
+  EXPECT_EQ(child_frame->GetLastCommittedOrigin().GetURL(), child_url);
+  blink::StorageKey expected_storage_key = blink::StorageKey::CreateFirstParty(
+      child_frame->GetLastCommittedOrigin());
+
+  EXPECT_EQ(expected_storage_key,
+            child_frame->CalculateStorageKey(
+                child_frame->GetLastCommittedOrigin(), /*nonce=*/nullptr));
+
+  SetBrowserClientForTesting(regular_client);
+}
+
 TEST_F(RenderFrameHostImplTest,
        CalculateStorageKeyWhenPassedOriginIsNotCurrentFrame) {
   // Register extension scheme for testing.

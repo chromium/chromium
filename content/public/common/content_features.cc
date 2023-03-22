@@ -1129,6 +1129,12 @@ BASE_FEATURE(kSharedArrayBufferOnDesktop,
              "SharedArrayBufferOnDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for creating first-party StorageKeys in
+// RenderFrameHostImpl::CalculateStorageKey for frames with extension URLs.
+BASE_FEATURE(kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder,
+             "ShouldAllowFirstPartyStorageKeyOverrideFromEmbedder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Signed Exchange Reporting for distributors
 // https://www.chromestatus.com/feature/5687904902840320
 BASE_FEATURE(kSignedExchangeReportingForDistributors,

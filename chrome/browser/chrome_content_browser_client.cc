@@ -7642,3 +7642,12 @@ base::FilePath ChromeContentBrowserClient::GetChildProcessPath(
   return {};
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+bool ChromeContentBrowserClient::ShouldUseFirstPartyStorageKey(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  return origin.scheme() == extensions::kExtensionScheme;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
