@@ -5,6 +5,7 @@
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 
 AccessCodeCastMetrics::AccessCodeCastMetrics() = default;
 AccessCodeCastMetrics::~AccessCodeCastMetrics() = default;
@@ -28,6 +29,8 @@ const char AccessCodeCastMetrics::kHistogramDialogOpenLocation[] =
     "AccessCodeCast.Ui.DialogOpenLocation";
 const char AccessCodeCastMetrics::kHistogramRememberedDevicesCount[] =
     "AccessCodeCast.Discovery.RememberedDevicesCount";
+const char AccessCodeCastMetrics::kHistogramRouteDiscoveryTypeAndSource[] =
+    "AccessCodeCast.Session.RouteDiscoveryTypeAndSource";
 const char AccessCodeCastMetrics::kHistogramRouteDuration[] =
     "AccessCodeCast.Session.RouteDuration";
 const char AccessCodeCastMetrics::kHistogramUiTabSwitcherUsageType[] =
@@ -54,11 +57,62 @@ void AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(int count) {
 
 // static
 void AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
-    base::TimeDelta duration) {
+    base::TimeDelta duration,
+    bool is_saved,
+    AccessCodeCastCastMode mode) {
   int64_t duration_seconds = duration.InSeconds();
   // Duration can take one of five values, ranging from zero (0 sec), up to
   // a year (31536000 sec). So, recording as a sparse histogram is best.
   base::UmaHistogramSparse(kHistogramDeviceDurationOnRoute, duration_seconds);
+
+  AccessCodeCastDiscoveryTypeAndSource discovery_type_and_source =
+      AccessCodeCastDiscoveryTypeAndSource::kUnknown;
+  if (is_saved) {
+    switch (mode) {
+      case AccessCodeCastCastMode::kPresentation:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kSavedDevicePresentation;
+        break;
+      case AccessCodeCastCastMode::kTabMirror:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kSavedDeviceTabMirror;
+        break;
+      case AccessCodeCastCastMode::kDesktopMirror:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kSavedDeviceDesktopMirror;
+        break;
+      case AccessCodeCastCastMode::kRemotePlayback:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kSavedDeviceRemotePlayback;
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  } else { /* is_saved == false (A new device just added by access code) */
+    switch (mode) {
+      case AccessCodeCastCastMode::kPresentation:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kNewDevicePresentation;
+        break;
+      case AccessCodeCastCastMode::kTabMirror:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kNewDeviceTabMirror;
+        break;
+      case AccessCodeCastCastMode::kDesktopMirror:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kNewDeviceDesktopMirror;
+        break;
+      case AccessCodeCastCastMode::kRemotePlayback:
+        discovery_type_and_source =
+            AccessCodeCastDiscoveryTypeAndSource::kNewDeviceRemotePlayback;
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  base::UmaHistogramEnumeration(kHistogramRouteDiscoveryTypeAndSource,
+                                discovery_type_and_source);
 }
 
 // static

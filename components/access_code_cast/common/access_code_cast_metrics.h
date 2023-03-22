@@ -74,6 +74,24 @@ enum class AccessCodeCastDialogOpenLocation {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class AccessCodeCastDiscoveryTypeAndSource {
+  kUnknown = 0,
+  kSavedDevicePresentation = 1,
+  kSavedDeviceTabMirror = 2,
+  kSavedDeviceDesktopMirror = 3,
+  kSavedDeviceRemotePlayback = 4,
+  kNewDevicePresentation = 5,
+  kNewDeviceTabMirror = 6,
+  kNewDeviceDesktopMirror = 7,
+  kNewDeviceRemotePlayback = 8,
+
+  // NOTE: Do not reorder existing entries, and add entries only immediately
+  // above this line.
+  kMaxValue = kNewDeviceRemotePlayback
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AccessCodeCastUiTabSwitcherUsage {
   kTabSwitcherUiShownAndNotUsed = 0,
   kTabSwitcherUiShownAndUsedToSwitchTabs = 1,
@@ -98,6 +116,7 @@ class AccessCodeCastMetrics {
   static const char kHistogramDialogLoadTime[];
   static const char kHistogramDialogOpenLocation[];
   static const char kHistogramRememberedDevicesCount[];
+  static const char kHistogramRouteDiscoveryTypeAndSource[];
   static const char kHistogramRouteDuration[];
   static const char kHistogramUiTabSwitcherUsageType[];
   static const char kHistogramUiTabSwitchingCount[];
@@ -111,8 +130,10 @@ class AccessCodeCastMetrics {
   static void RecordAccessCodeNotFoundCount(int count);
 
   // Records the value of the device duration pref on successful creation of
-  // an access code route.
-  static void RecordAccessCodeRouteStarted(base::TimeDelta duration);
+  // an access code route. Also records the discovery type and cast source.
+  static void RecordAccessCodeRouteStarted(base::TimeDelta duration,
+                                           bool is_saved,
+                                           AccessCodeCastCastMode mode);
 
   // Records the result of adding an access code sink.
   static void RecordAddSinkResult(bool is_remembered,

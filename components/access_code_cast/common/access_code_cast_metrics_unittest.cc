@@ -122,22 +122,72 @@ TEST(AccessCodeCastMetricsTest, RecordAccessCodeNotFoundCount) {
 TEST(AccessCodeCastMetricsTest, RecordAccessCodeRouteStarted) {
   base::HistogramTester histogram_tester;
 
-  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(base::Seconds(0));
+  AccessCodeCastCastMode cast_mode = AccessCodeCastCastMode::kPresentation;
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(base::Seconds(0), false,
+                                                      cast_mode);
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0, 1);
 
   // Ensure the functions properly converts duration to seconds
-  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
-      base::Milliseconds(10000));
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(base::Milliseconds(10000),
+                                                      false, cast_mode);
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
-  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
-      base::Milliseconds(20000));
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(base::Milliseconds(20000),
+                                                      false, cast_mode);
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 20, 1);
 
   histogram_tester.ExpectTotalCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 3);
+}
+
+TEST(AccessCodeCastMetricsTest, RecordAccessCodeRouteStartedRouteInfo) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), true, AccessCodeCastCastMode::kPresentation);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 1, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), true, AccessCodeCastCastMode::kTabMirror);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 2, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), true, AccessCodeCastCastMode::kDesktopMirror);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 3, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), true, AccessCodeCastCastMode::kRemotePlayback);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 4, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), false, AccessCodeCastCastMode::kPresentation);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 5, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), false, AccessCodeCastCastMode::kTabMirror);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 6, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), false, AccessCodeCastCastMode::kDesktopMirror);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 7, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
+      base::Seconds(0), false, AccessCodeCastCastMode::kRemotePlayback);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 8, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "AccessCodeCast.Session.RouteDiscoveryTypeAndSource", 8);
 }
 
 TEST(AccessCodeCastMetricsTest, RecordDialogLoadTime) {
@@ -253,6 +303,16 @@ TEST(AccessCodeCastMetricsTest, CheckMetricsEnums) {
   EXPECT_TRUE(dialog_open_locations->size() ==
       static_cast<int>(AccessCodeCastDialogOpenLocation::kMaxValue) + 1)
       << "'AccessCodeCastDialogOpenLocation' enum was changed in "
+         "access_code_cast_metrics.h. Please update the entry in "
+         "enums.xml to match.";
+
+  // DiscoveryTypeAndSource
+  absl::optional<base::HistogramEnumEntryMap> discovery_types_and_sources =
+      base::ReadEnumFromEnumsXml("AccessCodeCastDiscoveryTypeAndSource");
+  EXPECT_TRUE(
+      discovery_types_and_sources->size() ==
+      static_cast<int>(AccessCodeCastDiscoveryTypeAndSource::kMaxValue) + 1)
+      << "'AccessCodeCastDicoveryTypeAndSource' enum was changed in "
          "access_code_cast_metrics.h. Please update the entry in "
          "enums.xml to match.";
 }

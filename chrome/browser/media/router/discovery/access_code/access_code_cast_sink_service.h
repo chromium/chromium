@@ -237,6 +237,7 @@ class AccessCodeCastSinkService : public KeyedService,
   // Reports to metrics whenever the added route is to an access code sink.
   void HandleMediaRouteAdded(const MediaRoute::Id route_id,
                              const bool is_route_local,
+                             const MediaSource media_source,
                              const MediaSinkInternal* sink);
 
   void OnAccessCodeRouteRemoved(const MediaSinkInternal* sink);

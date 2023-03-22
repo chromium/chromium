@@ -254,6 +254,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Session.RouteDiscoveryTypeAndSource"
+    enum="AccessCodeCastDiscoveryTypeAndSource" expires_after="2023-08-20">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The discovery type of the associated sink and the cast media source for an
+    access code route. Recorded when at the start of a local access code route.
+    Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Session.RouteDuration" units="ms"
     expires_after="2023-08-13">
   <owner>bzielinski@google.com</owner>

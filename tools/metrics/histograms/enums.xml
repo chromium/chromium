@@ -176,6 +176,18 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="2" label="ChromeOS quick settings cast menu"/>
 </enum>
 
+<enum name="AccessCodeCastDiscoveryTypeAndSource">
+  <int value="0" label="Unknown discovery type or source"/>
+  <int value="1" label="Saved device and Presentation source"/>
+  <int value="2" label="Saved device and Tab mirror source"/>
+  <int value="3" label="Saved device and Desktop mirror source"/>
+  <int value="4" label="Saved device and Remote playback source"/>
+  <int value="5" label="New device and Presentation source"/>
+  <int value="6" label="New device and Tab mirror source"/>
+  <int value="7" label="New device and Desktop mirror source"/>
+  <int value="8" label="New device and Remote playback source"/>
+</enum>
+
 <enum name="AccessCodeCastUiTabSwitcherUsage">
   <int value="0" label="Tab switcher UI shown and not used"/>
   <int value="1" label="Tab switcher UI shown and used to switch tabs"/>

@@ -1464,22 +1464,22 @@ TEST_F(AccessCodeCastSinkServiceTest, HandleMediaRouteAdded) {
   histogram_tester.ExpectTotalCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0);
 
-  access_code_cast_sink_service_->HandleMediaRouteAdded(fake_route_1, true,
-                                                        &cast_sink1);
+  access_code_cast_sink_service_->HandleMediaRouteAdded(
+      fake_route_1, true, MediaSource::ForAnyTab(), &cast_sink1);
 
   // The histogram should not be logged to after a non access code route starts.
   histogram_tester.ExpectTotalCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 0);
 
-  access_code_cast_sink_service_->HandleMediaRouteAdded(fake_route_2, true,
-                                                        &cast_sink2);
+  access_code_cast_sink_service_->HandleMediaRouteAdded(
+      fake_route_2, true, MediaSource::ForAnyTab(), &cast_sink2);
 
   // The histogram should log when a route starts to a new access code device.
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
 
-  access_code_cast_sink_service_->HandleMediaRouteAdded(fake_route_3, true,
-                                                        &cast_sink3);
+  access_code_cast_sink_service_->HandleMediaRouteAdded(
+      fake_route_3, true, MediaSource::ForAnyTab(), &cast_sink3);
 
   // The histogram should log when a route starts to a saved access code device.
   histogram_tester.ExpectBucketCount(
@@ -1487,14 +1487,14 @@ TEST_F(AccessCodeCastSinkServiceTest, HandleMediaRouteAdded) {
 
   // Ensure various pref values are can be logged.
   SetDeviceDurationPrefForTest(base::Seconds(100));
-  access_code_cast_sink_service_->HandleMediaRouteAdded(fake_route_2, true,
-                                                        &cast_sink2);
+  access_code_cast_sink_service_->HandleMediaRouteAdded(
+      fake_route_2, true, MediaSource::ForAnyTab(), &cast_sink2);
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 100, 1);
 
   SetDeviceDurationPrefForTest(base::Seconds(1000));
-  access_code_cast_sink_service_->HandleMediaRouteAdded(fake_route_2, true,
-                                                        &cast_sink2);
+  access_code_cast_sink_service_->HandleMediaRouteAdded(
+      fake_route_2, true, MediaSource::ForAnyTab(), &cast_sink2);
   histogram_tester.ExpectBucketCount(
       "AccessCodeCast.Discovery.DeviceDurationOnRoute", 1000, 1);
 

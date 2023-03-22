@@ -182,9 +182,11 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
 
     // Only record the start time for local routes
     bool is_route_local = false;
+    MediaSource source = MediaSource::ForAnyTab();
     for (const auto& route : routes) {
       if (route.media_route_id() == new_route_id && route.is_local()) {
         is_route_local = true;
+        source = route.media_source();
       }
     }
 
@@ -199,7 +201,7 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
                 MediaRoute::GetSinkIdFromMediaRouteId(new_route_id)),
             base::BindOnce(&AccessCodeCastSinkService::HandleMediaRouteAdded,
                            access_code_sink_service_->GetWeakPtr(),
-                           new_route_id, is_route_local));
+                           new_route_id, is_route_local, source));
   }
 
   // No routes were removed.
@@ -274,6 +276,7 @@ void AccessCodeCastSinkService::HandleMediaRouteRemovedByAccessCode(
 void AccessCodeCastSinkService::HandleMediaRouteAdded(
     const MediaRoute::Id route_id,
     const bool is_route_local,
+    const MediaSource media_source,
     const MediaSinkInternal* sink) {
   if (!IsSinkValidAccessCodeSink(sink))
     return;
@@ -282,8 +285,19 @@ void AccessCodeCastSinkService::HandleMediaRouteAdded(
     current_route_start_times_[route_id] = base::Time::Now();
   }
 
+  bool is_saved = sink->cast_data().discovery_type ==
+                  CastDiscoveryType::kAccessCodeRememberedDevice;
+  AccessCodeCastCastMode source_type = AccessCodeCastCastMode::kPresentation;
+  if (media_source.IsTabMirroringSource()) {
+    source_type = AccessCodeCastCastMode::kTabMirror;
+  } else if (media_source.IsDesktopMirroringSource()) {
+    source_type = AccessCodeCastCastMode::kDesktopMirror;
+  } else if (media_source.IsRemotePlaybackSource()) {
+    source_type = AccessCodeCastCastMode::kRemotePlayback;
+  }
+
   AccessCodeCastMetrics::RecordAccessCodeRouteStarted(
-      GetAccessCodeDeviceDurationPref(profile_));
+      GetAccessCodeDeviceDurationPref(profile_), is_saved, source_type);
 }
 
 void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
