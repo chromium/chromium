@@ -97,6 +97,9 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
     case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+    // TODO(crbug.com/1420194): Change the value when the signin promo will be
+    // supported in reading list.
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -121,6 +124,11 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
       base::UmaHistogramCounts100(
           "MobileSignInPromo.NTPFeedTop.ImpressionsTilSigninButtons",
+          displayed_count);
+      break;
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.ReadingList.ImpressionsTilSigninButtons",
           displayed_count);
       break;
     case signin_metrics::AccessPoint::
@@ -195,6 +203,11 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
           "MobileSignInPromo.NTPFeedTop.ImpressionsTilDismiss",
           displayed_count);
       break;
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.ReadingList.ImpressionsTilDismiss",
+          displayed_count);
+      break;
     case signin_metrics::AccessPoint::
         ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
@@ -267,6 +280,11 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
           "MobileSignInPromo.NTPFeedTop.ImpressionsTilXButton",
           displayed_count);
       break;
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+      base::UmaHistogramCounts100(
+          "MobileSignInPromo.ReadingList.ImpressionsTilXButton",
+          displayed_count);
+      break;
     case signin_metrics::AccessPoint::
         ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
@@ -328,6 +346,8 @@ const char* DisplayedCountPreferenceKey(
       return prefs::kIosSettingsSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
       return prefs::kIosNtpFeedTopSigninPromoDisplayedCount;
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+      return prefs::kIosReadingListSigninPromoDisplayedCount;
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
@@ -387,6 +407,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
       return prefs::kIosSettingsPromoAlreadySeen;
     case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
       return prefs::kIosNtpFeedTopPromoAlreadySeen;
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+      return prefs::kIosReadingListPromoAlreadySeen;
     case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
     case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
@@ -493,6 +515,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
   // NTP Feed
   registry->RegisterBooleanPref(prefs::kIosNtpFeedTopPromoAlreadySeen, false);
   registry->RegisterIntegerPref(prefs::kIosNtpFeedTopSigninPromoDisplayedCount,
+                                0);
+  // Reading List
+  registry->RegisterBooleanPref(prefs::kIosReadingListPromoAlreadySeen, false);
+  registry->RegisterIntegerPref(prefs::kIosReadingListSigninPromoDisplayedCount,
                                 0);
 }
 

@@ -30752,6 +30752,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromReadingList" not_user_triggered="true">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded when showing sign in entry in the reading list.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromRecentTabs" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -31422,6 +31430,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromReadingList">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST.
   </description>
 </action>
 

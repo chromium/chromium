@@ -1157,6 +1157,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MobileSignInPromo.ReadingList.ImpressionsTilDismiss"
+    units="impressions" expires_after="2024-04-01">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times the signin promo is implicitly dismissed (by closing
+    the reading list) per impression. Recorded when the sign-in promo is removed
+    from the reading list view without being used. If the promo is removed by
+    user authentication (eg. sign-in from another view), the histogram is not
+    recorded.
+  </summary>
+</histogram>
+
+<histogram name="MobileSignInPromo.ReadingList.ImpressionsTilSigninButtons"
+    units="impressions" expires_after="2024-04-01">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times one of the &quot;sign in&quot; buttons (any of the
+    signed-out &quot;Sign in to Chrome&quot; button, the &quot;Continue as
+    |name|&quot; button, or the &quot;Not |email|?&quot; button) is clicked per
+    impression in the reading list. Recorded when one of those buttons from the
+    reading list sign-in promo is clicked.
+  </summary>
+</histogram>
+
+<histogram name="MobileSignInPromo.ReadingList.ImpressionsTilXButton"
+    units="impressions" expires_after="2024-04-01">
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Counts how many times the explicit &quot;X&quot;-to-close button is clicked
+    per impression in the reading list. Recorded when the &quot;X&quot;-to-close
+    button from the reading list sign-in promo is clicked.
+  </summary>
+</histogram>
+
 <histogram name="MobileSignInPromo.SettingsManager.ImpressionsTilDismiss"
     units="impressions" expires_after="2023-04-01">
   <owner>jlebel@chromium.org</owner>

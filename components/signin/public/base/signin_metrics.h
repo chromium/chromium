@@ -180,6 +180,9 @@ enum class AccessPoint : int {
   // button is tapped while in a signed-out state.
   ACCESS_POINT_CREATOR_FEED_FOLLOW = 46,
 
+  // Access point for the reading list sign-in promo (launch/4231282).
+  ACCESS_POINT_READING_LIST = 47,
+
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.

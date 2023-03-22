@@ -48,6 +48,8 @@ extern const char kIosSettingsPromoAlreadySeen[];
 extern const char kIosSettingsSigninPromoDisplayedCount[];
 extern const char kIosNtpFeedTopPromoAlreadySeen[];
 extern const char kIosNtpFeedTopSigninPromoDisplayedCount[];
+extern const char kIosReadingListPromoAlreadySeen[];
+extern const char kIosReadingListSigninPromoDisplayedCount[];
 extern const char kLinkPreviewEnabled[];
 extern const char kNTPContentSuggestionsEnabled[];
 extern const char kNTPContentSuggestionsForSupervisedUserEnabled[];
