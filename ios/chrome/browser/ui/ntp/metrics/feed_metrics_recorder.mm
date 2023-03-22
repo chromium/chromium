@@ -87,6 +87,9 @@ using feed::FeedUserActionType;
 // YES if the NTP is visible.
 @property(nonatomic, assign) BOOL isNTPVisible;
 
+// YES if the feed is toggled on in the feed header menu.
+@property(nonatomic, assign) BOOL isFeedVisible;
+
 @end
 
 @implementation FeedMetricsRecorder
@@ -306,6 +309,7 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible {
+  self.isFeedVisible = visible;
   if (visible) {
     [self
         recordDiscoverFeedUserActionHistogram:FeedUserActionType::kTappedTurnOn
@@ -643,6 +647,12 @@ using feed::FeedUserActionType;
                                 FeedSortType::kUnspecifiedSortType);
       return;
   }
+}
+
+#pragma mark - FeedStateTracker
+
+- (BOOL)isNTPAndFeedVisible {
+  return self.isNTPVisible && self.isFeedVisible;
 }
 
 #pragma mark - Follow
@@ -1275,18 +1285,16 @@ using feed::FeedUserActionType;
   self.sessionEndTimer = [NSTimer
       scheduledTimerWithTimeInterval:GetFeedSessionEndTimerTimeoutInSeconds()
                               target:weakSelf
-                            selector:@selector
-                            (refreshFeedIfSessionConditionsAreMet)
+                            selector:@selector(sessionEndTimerEnded)
                             userInfo:nil
                              repeats:NO];
 }
 
-// Refresh the feed if session conditions are met. See implementation for which
-// specific conditions are used.
-- (void)refreshFeedIfSessionConditionsAreMet {
+// Signals that the session end timer ended.
+- (void)sessionEndTimerEnded {
   [self.sessionEndTimer invalidate];
   self.sessionEndTimer = nil;
-  if (!self.isNTPVisible) {
+  if (![self isNTPAndFeedVisible]) {
     // The feed refresher checks feed engagement criteria.
     self.feedRefresher->RefreshFeed(
         FeedRefreshTrigger::kForegroundFeedNotVisible);
