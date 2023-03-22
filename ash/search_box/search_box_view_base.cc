@@ -36,7 +36,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -347,11 +346,7 @@ SearchBoxViewBase::SearchBoxViewBase()
   const int between_child_spacing =
       kInnerPadding - views::LayoutProvider::Get()->GetDistanceMetric(
                           views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
-  iph_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
-  iph_container_->SetOrientation(views::BoxLayout::Orientation::kVertical);
-
-  content_container_ =
-      iph_container_->AddChildView(std::make_unique<views::BoxLayoutView>());
+  content_container_ = AddChildView(std::make_unique<views::BoxLayoutView>());
   content_container_->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   content_container_->SetMinimumCrossAxisSize(kSearchBoxPreferredHeight);
@@ -500,20 +495,6 @@ views::ImageButton* SearchBoxViewBase::close_button() {
 
 views::ImageView* SearchBoxViewBase::search_icon() {
   return search_icon_;
-}
-
-void SearchBoxViewBase::SetIphView(std::unique_ptr<views::View> view) {
-  if (iph_view()) {
-    DCHECK(false) << "SetIphView gets called with an IPH view being shown.";
-
-    DeleteIphView();
-  }
-
-  iph_view_tracker_.SetView(iph_container_->AddChildView(std::move(view)));
-}
-
-void SearchBoxViewBase::DeleteIphView() {
-  iph_container_->RemoveChildViewT(iph_view());
 }
 
 void SearchBoxViewBase::MaybeSetAutocompleteGhostText(

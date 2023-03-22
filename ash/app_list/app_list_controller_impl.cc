@@ -11,8 +11,6 @@
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/app_list/app_list_view_delegate.h"
-#include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
@@ -21,7 +19,6 @@
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
-#include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/assistant/util/deep_link_util.h"
@@ -327,26 +324,18 @@ AppListNotifier* AppListControllerImpl::GetNotifier() {
   return client_->GetNotifier();
 }
 
-std::unique_ptr<ScopedIphSession>
-AppListControllerImpl::CreateLauncherSearchIphSession() {
-  if (!client_) {
-    return nullptr;
-  }
-  return client_->CreateLauncherSearchIphSession();
-}
-
 void AppListControllerImpl::SetActiveModel(int profile_id,
                                            AppListModel* model,
                                            SearchModel* search_model) {
   profile_id_ = profile_id;
   model_provider_->SetActiveModel(model, search_model);
-  UpdateSearchBoxUiVisibilities();
+  UpdateAssistantVisibility();
 }
 
 void AppListControllerImpl::ClearActiveModel() {
   profile_id_ = kAppListInvalidProfileID;
   model_provider_->ClearActiveModel();
-  UpdateSearchBoxUiVisibilities();
+  UpdateAssistantVisibility();
 }
 
 void AppListControllerImpl::DismissAppList() {
@@ -859,16 +848,16 @@ void AppListControllerImpl::OnKeyboardVisibilityChanged(const bool is_visible) {
 
 void AppListControllerImpl::OnAssistantStatusChanged(
     assistant::AssistantStatus status) {
-  UpdateSearchBoxUiVisibilities();
+  UpdateAssistantVisibility();
 }
 
 void AppListControllerImpl::OnAssistantSettingsEnabled(bool enabled) {
-  UpdateSearchBoxUiVisibilities();
+  UpdateAssistantVisibility();
 }
 
 void AppListControllerImpl::OnAssistantFeatureAllowedChanged(
     assistant::AssistantAllowedState state) {
-  UpdateSearchBoxUiVisibilities();
+  UpdateAssistantVisibility();
 }
 
 void AppListControllerImpl::OnDisplayConfigurationChanged() {
@@ -894,7 +883,7 @@ void AppListControllerImpl::OnDisplayConfigurationChanged() {
 }
 
 void AppListControllerImpl::OnAssistantReady() {
-  UpdateSearchBoxUiVisibilities();
+  UpdateAssistantVisibility();
 }
 
 void AppListControllerImpl::OnUiVisibilityChanged(
@@ -1198,7 +1187,7 @@ void AppListControllerImpl::InvokeSearchResultAction(
 }
 
 void AppListControllerImpl::ViewShown(int64_t display_id) {
-  UpdateSearchBoxUiVisibilities();
+  UpdateAssistantVisibility();
 
   if (client_)
     client_->ViewShown(display_id);
@@ -1619,15 +1608,9 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
   return model_provider_->search_model();
 }
 
-void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
+void AppListControllerImpl::UpdateAssistantVisibility() {
   GetSearchModel()->search_box()->SetShowAssistantButton(
       IsAssistantAllowedAndEnabled());
-
-  if (!client_) {
-    return;
-  }
-
-  client_->QueryWouldTriggerLauncherSearchIph();
 }
 
 int64_t AppListControllerImpl::GetDisplayIdToShowAppListOn() {

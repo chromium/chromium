@@ -16,7 +16,6 @@
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
@@ -145,8 +144,6 @@ class ASH_EXPORT AppListControllerImpl
 
   // AppListViewDelegate:
   AppListNotifier* GetNotifier() override;
-  std::unique_ptr<ash::ScopedIphSession> CreateLauncherSearchIphSession()
-      override;
   void StartAssistant() override;
   void StartSearch(const std::u16string& raw_query) override;
   void StartZeroStateSearch(base::OnceClosure callback,
@@ -350,9 +347,8 @@ class ASH_EXPORT AppListControllerImpl
 
   std::unique_ptr<AppListItem> CreateAppListItem(
       std::unique_ptr<AppListItemMetadata> metadata);
-
-  // Update the visibility of UIs controlled by `SearchBoxModel`.
-  void UpdateSearchBoxUiVisibilities();
+  // Update the visibility of Assistant functionality.
+  void UpdateAssistantVisibility();
 
   int64_t GetDisplayIdToShowAppListOn();
 

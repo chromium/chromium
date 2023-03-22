@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/app_list/model/search/search_box_model_observer.h"
-#include "ash/public/cpp/app_list/app_list_client.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 
@@ -23,18 +22,6 @@ void SearchBoxModel::SetShowAssistantButton(bool show) {
   show_assistant_button_ = show;
   for (auto& observer : observers_)
     observer.ShowAssistantChanged();
-}
-
-void SearchBoxModel::SetWouldTriggerIph(bool would_trigger_iph) {
-  if (would_trigger_iph_ == would_trigger_iph) {
-    return;
-  }
-
-  would_trigger_iph_ = would_trigger_iph;
-
-  for (auto& observer : observers_) {
-    observer.OnWouldTriggerIphChanged();
-  }
 }
 
 void SearchBoxModel::SetSearchEngineIsGoogle(bool is_google) {

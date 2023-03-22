@@ -10,12 +10,10 @@
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_model.h"
-#include "ash/app_list/views/launcher_search_iph_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -235,8 +233,6 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->SetAccessibleName(assistant_button_label);
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
-
-  UpdateIphViewVisibility();
 }
 
 SearchBoxView::~SearchBoxView() {
@@ -297,11 +293,6 @@ void SearchBoxView::OnActiveAppListModelsChanged(AppListModel* model,
   ResetForShow();
   UpdateSearchIcon();
   ShowAssistantChanged();
-
-  // `UpdateIphViewVisibility` expect that `AppListModelProvider` returns the
-  // new model.
-  CHECK(search_model == AppListModelProvider::Get()->search_model());
-  UpdateIphViewVisibility();
 }
 
 void SearchBoxView::UpdateKeyboardVisibility() {
@@ -799,16 +790,6 @@ int SearchBoxView::GetSearchBoxButtonSize() {
   return kBubbleLauncherSearchBoxButtonSizeDip;
 }
 
-void SearchBoxView::SetIsIphAllowed(bool iph_allowed) {
-  if (is_iph_allowed_ == iph_allowed) {
-    return;
-  }
-
-  is_iph_allowed_ = iph_allowed;
-
-  UpdateIphViewVisibility();
-}
-
 void SearchBoxView::CloseButtonPressed() {
   delegate_->CloseButtonPressed();
 }
@@ -1212,36 +1193,6 @@ void SearchBoxView::ShowAssistantChanged() {
                              ->search_model()
                              ->search_box()
                              ->show_assistant_button());
-}
-
-void SearchBoxView::UpdateIphViewVisibility() {
-  const bool would_trigger_iph =
-      AppListModelProvider::Get()->search_model()->would_trigger_iph();
-  const bool is_iph_showing = iph_view() != nullptr;
-
-  const bool should_show_iph =
-      is_iph_allowed_ && (would_trigger_iph || is_iph_showing);
-
-  if (should_show_iph == is_iph_showing) {
-    return;
-  }
-
-  if (should_show_iph) {
-    std::unique_ptr<ScopedIphSession> scoped_iph_session =
-        view_delegate_->CreateLauncherSearchIphSession();
-    if (!scoped_iph_session) {
-      return;
-    }
-
-    SetIphView(
-        std::make_unique<LauncherSearchIphView>(std::move(scoped_iph_session)));
-  } else {
-    DeleteIphView();
-  }
-}
-
-void SearchBoxView::OnWouldTriggerIphChanged() {
-  UpdateIphViewVisibility();
 }
 
 bool SearchBoxView::ShouldProcessAutocomplete() {

@@ -200,7 +200,6 @@ BASE_DECLARE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_DECLARE_FEATURE(kIPHGoogleOneOfferNotificationFeature);
-BASE_DECLARE_FEATURE(kIPHLauncherSearchHelpUiFeature);
 #endif
 
 }  // namespace feature_engagement
