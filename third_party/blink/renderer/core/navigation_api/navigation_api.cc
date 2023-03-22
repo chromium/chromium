@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -22,7 +21,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_transition.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_update_current_entry_options.h"
-#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
@@ -47,72 +45,6 @@
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
-
-class NavigateReaction final : public ScriptFunction::Callable {
- public:
-  enum class ResolveType { kFulfill, kReject };
-  static void React(ScriptState* script_state, NavigateEvent* navigate_event) {
-    navigate_event->GetReactionPromiseAll(script_state)
-        .Then(MakeGarbageCollected<ScriptFunction>(
-                  script_state, MakeGarbageCollected<NavigateReaction>(
-                                    navigate_event, ResolveType::kFulfill)),
-              MakeGarbageCollected<ScriptFunction>(
-                  script_state, MakeGarbageCollected<NavigateReaction>(
-                                    navigate_event, ResolveType::kReject)));
-
-    if (navigate_event->HasNavigationActions()) {
-      auto* window = LocalDOMWindow::From(script_state);
-      CHECK(window);
-      if (AXObjectCache* cache = window->document()->ExistingAXObjectCache())
-        cache->HandleLoadStart(window->document());
-    }
-  }
-
-  NavigateReaction(NavigateEvent* navigate_event, ResolveType resolve_type)
-      : navigate_event_(navigate_event), resolve_type_(resolve_type) {}
-
-  void Trace(Visitor* visitor) const final {
-    ScriptFunction::Callable::Trace(visitor);
-    visitor->Trace(navigate_event_);
-  }
-
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
-    auto* window = LocalDOMWindow::From(script_state);
-    CHECK(window);
-    if (navigate_event_->signal()->aborted()) {
-      return ScriptValue();
-    }
-
-    NavigationApi* navigation_api = window->navigation();
-    navigation_api->ongoing_navigate_event_ = nullptr;
-
-    navigate_event_->Finish(resolve_type_ == ResolveType::kFulfill);
-
-    if (resolve_type_ == ResolveType::kFulfill) {
-      navigation_api->DidFinishOngoingNavigation();
-    } else {
-      navigation_api->DidFailOngoingNavigation(value);
-    }
-
-    if (navigate_event_->HasNavigationActions()) {
-      if (LocalFrame* frame = window->GetFrame()) {
-        frame->Loader().DidFinishNavigation(
-            resolve_type_ == ResolveType::kFulfill
-                ? FrameLoader::NavigationFinishState::kSuccess
-                : FrameLoader::NavigationFinishState::kFailure);
-      }
-      if (AXObjectCache* cache = window->document()->ExistingAXObjectCache()) {
-        cache->HandleLoadComplete(window->document());
-      }
-    }
-
-    return ScriptValue();
-  }
-
- private:
-  Member<NavigateEvent> navigate_event_;
-  ResolveType resolve_type_;
-};
 
 template <typename... DOMExceptionArgs>
 NavigationResult* EarlyErrorResult(ScriptState* script_state,
@@ -853,7 +785,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   if (navigate_event->HasNavigationActions() ||
       params->event_type != NavigateEventType::kCrossDocument) {
-    NavigateReaction::React(script_state, navigate_event);
+    navigate_event->React(script_state);
   }
 
   // Note: we cannot clean up ongoing_navigation_ for cross-document
