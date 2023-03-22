@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -234,8 +235,18 @@ absl::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
 }
 
 void AppDeduplicationService::GetDeduplicateDataFromServer() {
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      profile_->GetURLLoaderFactory();
+  if (!url_loader_factory.get()) {
+    // `url_loader_factory` should only be null if we are in a non-dedupe
+    // related test. Tests that use profile builder to create their profile
+    // won't have `url_loader_factory` set up by default, so we bypass dedupes
+    // code being called for those tests.
+    CHECK_IS_TEST();
+    return;
+  }
   server_connector_->GetDeduplicateAppsFromServer(
-      profile_->GetURLLoaderFactory(),
+      url_loader_factory,
       base::BindOnce(
           &AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted,
           weak_ptr_factory_.GetWeakPtr()));
