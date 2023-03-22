@@ -581,6 +581,10 @@ void ClientSideDetectionHost::PhishingDetectionDone(
             cached_csd_type ==
                 safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
             IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
+        if (force_request_from_rt_url_lookup) {
+          verdict->set_client_side_detection_type(
+              safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+        }
       }
 
       base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",

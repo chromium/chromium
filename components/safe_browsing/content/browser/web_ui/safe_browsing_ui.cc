@@ -632,6 +632,16 @@ std::string AddFullHashCacheInfo(
 
 #endif
 
+std::string SerializeClientSideDetectionType(ClientSideDetectionType csd_type) {
+  switch (csd_type) {
+    case ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
+      return "CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED";
+    case ClientSideDetectionType::FORCE_REQUEST:
+      return "FORCE_REQUEST";
+  }
+  return "UNKNOWN_ENUM_SPECIFIED";
+}
+
 base::Value::Dict SerializeChromeUserPopulation(
     const ChromeUserPopulation& population) {
   base::Value::Dict population_dict;
@@ -1073,6 +1083,11 @@ std::string SerializeClientPhishingRequest(
     dict.Set("model_version", cpr.model_version());
   if (cpr.has_dom_model_version())
     dict.Set("dom_model_version", cpr.dom_model_version());
+  if (cpr.has_client_side_detection_type()) {
+    dict.Set(
+        "client_side_detection_type",
+        SerializeClientSideDetectionType(cpr.client_side_detection_type()));
+  }
 
   base::Value::List features;
   for (const auto& feature : cpr.feature_map()) {
