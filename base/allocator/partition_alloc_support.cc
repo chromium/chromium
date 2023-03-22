@@ -876,23 +876,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
         // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
-#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-  if (process_affected_by_brp_flag) {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(
-            base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),
-        base::EnableExtractionCheck(
-            base::features::kBackupRefPtrAsanEnableExtractionCheckParam.Get()),
-        base::EnableInstantiationCheck(
-            base::features::kBackupRefPtrAsanEnableInstantiationCheckParam
-                .Get()));
-  } else {
-    base::RawPtrAsanService::GetInstance().Configure(
-        base::EnableDereferenceCheck(false), base::EnableExtractionCheck(false),
-        base::EnableInstantiationCheck(false));
-  }
-#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (process_affected_by_brp_flag) {
@@ -1045,6 +1028,23 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   DCHECK_NE(process_type, switches::kZygoteProcess);
   [[maybe_unused]] BrpConfiguration brp_config =
       GetBrpConfiguration(process_type);
+
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  if (brp_config.process_affected_by_brp_flag) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(
+            base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),
+        base::EnableExtractionCheck(
+            base::features::kBackupRefPtrAsanEnableExtractionCheckParam.Get()),
+        base::EnableInstantiationCheck(
+            base::features::kBackupRefPtrAsanEnableInstantiationCheckParam
+                .Get()));
+  } else {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(false), base::EnableExtractionCheck(false),
+        base::EnableInstantiationCheck(false));
+  }
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   allocator_shim::ConfigurePartitions(
