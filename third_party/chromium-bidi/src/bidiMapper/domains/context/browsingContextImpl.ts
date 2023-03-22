@@ -445,7 +445,7 @@ export class BrowsingContextImpl {
     return {
       result: {
         navigation: cdpNavigateResult.loaderId || null,
-        url: url,
+        url,
       },
     };
   }

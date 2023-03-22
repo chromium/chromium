@@ -56,6 +56,7 @@ module.exports = {
     'no-return-await': 'error',
     'no-undef': 'error',
     'no-underscore-dangle': 'error',
+    'object-shorthand': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-template': 'error',
     eqeqeq: 'error',
