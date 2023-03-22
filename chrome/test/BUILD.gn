@@ -487,6 +487,8 @@ static_library("test_support") {
       "../browser/badging/test_badge_manager_delegate.h",
       "../browser/banners/test_app_banner_manager_desktop.cc",
       "../browser/banners/test_app_banner_manager_desktop.h",
+      "../browser/download/download_browsertest_utils.cc",
+      "../browser/download/download_browsertest_utils.h",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.cc",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.h",
       "../browser/performance_manager/test_support/fake_high_efficiency_mode_toggle_delegate.cc",
@@ -1850,7 +1852,6 @@ if (!is_android) {
       "../browser/dom_distiller/test_distillation_observers.h",
       "../browser/domain_reliability/browsertest.cc",
       "../browser/download/download_browsertest.cc",
-      "../browser/download/download_browsertest.h",
       "../browser/download/download_danger_prompt_browsertest.cc",
       "../browser/download/download_frame_policy_browsertest.cc",
       "../browser/download/download_started_animation_browsertest.cc",
@@ -9973,6 +9974,7 @@ if (!is_android) {
         ]
       } else {
         sources += [
+          "../browser/ui/views/download/bubble/download_bubble_interactive_uitest.cc",
           "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop_browsertest.cc",
         ]
