@@ -677,27 +677,42 @@ testcase.searchFromMyFiles = async () => {
  * search.
  */
 testcase.selectionPath = async () => {
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, NESTED_ENTRY_SET.concat([
+        ENTRIES.hello,
+        ENTRIES.desktop,
+        ENTRIES.deeplyBurriedSmallJpeg,
+      ]));
   // Search for files containing 'e'; should be three of those.
   await remoteCall.typeSearchText(appId, 'e');
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
     ENTRIES.hello,
     ENTRIES.desktop,
-    ENTRIES.beautiful,
+    ENTRIES.deeplyBurriedSmallJpeg,
   ]));
   await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
   const singleSelectionPath = await remoteCall.waitForElement(appId, [
     'xf-path-display',
   ]);
   chrome.test.assertEq(
-      'My files/Downloads/hello.txt', singleSelectionPath.attributes.path);
-  // Select now the desktop entry, too.
+      'My files/Downloads', singleSelectionPath.attributes.path);
+  // Select now the desktop entry, too. Both are in the same
+  // directory, so the path should not change.
   await remoteCall.waitAndClickElement(
       appId, `#file-list [file-name="${ENTRIES.desktop.nameText}"]`,
-      {shift: true});
-  const multiSelectionPath = await remoteCall.waitForElement(appId, [
+      {ctrl: true});
+  const twoFilesOneFolderPath = await remoteCall.waitForElement(appId, [
     'xf-path-display',
   ]);
   chrome.test.assertEq(
-      'Multiple file locations', multiSelectionPath.attributes.path);
+      'My files/Downloads', twoFilesOneFolderPath.attributes.path);
+  await remoteCall.waitAndClickElement(
+      appId,
+      `#file-list [file-name="${ENTRIES.deeplyBurriedSmallJpeg.nameText}"]`,
+      {ctrl: true});
+  const threeFilesTwoFolderPath = await remoteCall.waitForElement(appId, [
+    'xf-path-display',
+  ]);
+  chrome.test.assertEq(
+      'Multiple file locations', threeFilesTwoFolderPath.attributes.path);
 };
