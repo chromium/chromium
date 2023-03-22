@@ -60,6 +60,8 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file, author=None):
                    ' {} bytes).<br>').format(
                        package_name, growth['compressed'][package_name],
                        growth['uncompressed'][package_name]))
+      summary += ('Note that this bot compares growth against trunk, and is '
+                  'not aware of CL chaining.<br>')
 
   # Allow rollers to pass even with size increases. See crbug.com/1355914.
   if author and '-autoroll' in author and status_code == SIZE_FAILURE:
