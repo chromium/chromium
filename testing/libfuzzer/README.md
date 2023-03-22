@@ -44,6 +44,7 @@ Started Guide].
 * [AFL integration] with Chromium and ClusterFuzz.
 * [Detailed references] for other integration parts.
 * Writing fuzzers for the [non-browser parts of Chrome OS].
+* [Fuzzing browsertests] if you need to fuzz multiple Chrome subsystems.
 
 ## Trophies
 * [Issues automatically filed] by ClusterFuzz.
@@ -66,6 +67,7 @@ Started Guide].
 [Creating a fuzz target that expects a protobuf]: libprotobuf-mutator.md
 [Detailed references]: reference.md
 [Fuzzing]: https://en.wikipedia.org/wiki/Fuzzing
+[Fuzzing browsertests]: fuzzing_browsertests.md
 [Fuzzing mojo interfaces]: ../../mojo/docs/mojolpm.md
 [Getting Started Guide]: getting_started.md
 [Guided in-process fuzzing of Chrome components]: https://security.googleblog.com/2016/08/guided-in-process-fuzzing-of-chrome.html

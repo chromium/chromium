@@ -66,6 +66,7 @@ if (is_android) {
 # into the build.
 group("test") {
   testonly = true
+  deps = [ "fuzzing:test" ]
 }
 
 if (is_android) {

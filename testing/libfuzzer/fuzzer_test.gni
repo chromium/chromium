@@ -26,6 +26,7 @@ import("//testing/test.gni")
 # - seed_corpus - a directory with seed corpus.
 # - seed_corpus_deps - dependencies for generating the seed corpus.
 # - grammar_options - defines a grammar used by a grammar based mutator.
+# - exclude_main - if you're going to provide your own 'main' function
 #
 # If use_libfuzzer gn flag is defined, then proper fuzzer would be build.
 # Without use_libfuzzer or use_afl a unit-test style binary would be built on
@@ -39,7 +40,12 @@ template("fuzzer_test") {
   if (!disable_libfuzzer && use_fuzzing_engine) {
     assert(defined(invoker.sources), "Need sources in $target_name.")
 
-    test_deps = [ "//testing/libfuzzer:fuzzing_engine_main" ]
+    test_deps = []
+    if (defined(invoker.exclude_main) && invoker.exclude_main) {
+      test_deps += [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
+    } else {
+      test_deps += [ "//testing/libfuzzer:fuzzing_engine_main" ]
+    }
     test_data_deps = []
 
     if (defined(invoker.deps)) {

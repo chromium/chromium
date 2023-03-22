@@ -1,0 +1,38 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chrome/test/fuzzing/in_process_fuzz_test.gni")
+
+# This target exists to reference other test executables to bring these files
+# into the build.
+group("test") {
+  testonly = true
+}
+
+if (fuzzing_engine_supports_custom_main) {
+  static_library("in_process_fuzz_test_runner") {
+    testonly = true
+    sources = [
+      "in_process_fuzz_test.cc",
+      "in_process_fuzz_test.h",
+    ]
+    deps = [
+      ":in_process_fuzzing_buildflags",
+      "//testing/libfuzzer:fuzzing_engine_no_main",
+    ]
+    public_deps = [ "//chrome/test:test_support" ]
+  }
+
+  buildflag_header("in_process_fuzzing_buildflags") {
+    header = "in_process_fuzzing_buildflags.h"
+    flags = [ "AVOID_SINGLE_PROCESS_MODE=$use_libfuzzer" ]
+  }
+}
+
+if (!is_android) {
+  in_process_fuzz_test("html_in_process_fuzz_tests") {
+    sources = [ "html_in_process_fuzz_test.cc" ]
+  }
+}
