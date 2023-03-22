@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -75,7 +76,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
     /**
      *
-     * @param context The Context for retrieving resources, launching preference activiy, etc.
+     * @param context The Context for retrieving resources, launching preference activity, etc.
      * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g. native
      *         initialization completing.
      */
@@ -355,7 +356,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                 R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
     }
 
-    private void onClick() {
+    @VisibleForTesting
+    void onClick() {
+        if (!mNativeIsInitialized) {
+            return;
+        }
         recordIdentityDiscUsed();
 
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
@@ -369,6 +374,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
     }
 
+    @VisibleForTesting
     boolean isProfileDataCacheEmpty() {
         return mProfileDataCache == null;
     }
