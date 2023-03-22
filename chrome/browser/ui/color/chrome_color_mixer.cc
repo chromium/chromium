@@ -4,11 +4,17 @@
 
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
 
+#include <string>
+
+#include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -78,6 +84,77 @@ ui::ColorTransform GetToolbarTopSeparatorColorTransform(
 
 // Alpha of 61 = 24% opacity. Opacity of tab group chips in the bookmarks bar.
 constexpr SkAlpha kTabGroupChipAlpha = 61;
+
+// Apply updates to the Omnibox background color tokens per GM3 spec.
+void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
+                                    const ui::ColorProviderManager::Key& key) {
+  const bool gm3_background_color_enabled =
+      features::IsChromeRefresh2023() ||
+      base::FeatureList::IsEnabled(omnibox::kOmniboxSteadyStateBackgroundColor);
+
+  // Apply omnibox background color updates only to non-themed clients.
+  if (gm3_background_color_enabled && !key.custom_theme) {
+    // Retrieve GM3 omnibox background color params (Dark Mode).
+    const std::string dark_background_color_param =
+        omnibox::kOmniboxDarkBackgroundColor.Get();
+    const std::string dark_background_color_hovered_param =
+        omnibox::kOmniboxDarkBackgroundColorHovered.Get();
+
+    // Retrieve GM3 omnibox background color params (Light Mode).
+    const std::string light_background_color_param =
+        omnibox::kOmniboxLightBackgroundColor.Get();
+    const std::string light_background_color_hovered_param =
+        omnibox::kOmniboxLightBackgroundColorHovered.Get();
+
+    const auto string_to_skcolor = [](const std::string& rgb_str,
+                                      SkColor* result) {
+      // Valid color strings are of the form 0xRRGGBB or 0xAARRGGBB.
+      const bool valid =
+          result && (rgb_str.size() == 8 || rgb_str.size() == 10);
+      if (!valid) {
+        return false;
+      }
+
+      uint32_t parsed = 0;
+      const bool success = base::HexStringToUInt(rgb_str, &parsed);
+      if (success) {
+        *result = SkColorSetA(static_cast<SkColor>(parsed), SK_AlphaOPAQUE);
+      }
+      return success;
+    };
+
+    SkColor dark_background_color = 0;
+    SkColor dark_background_color_hovered = 0;
+
+    SkColor light_background_color = 0;
+    SkColor light_background_color_hovered = 0;
+
+    const bool success = string_to_skcolor(dark_background_color_param,
+                                           &dark_background_color) &&
+                         string_to_skcolor(dark_background_color_hovered_param,
+                                           &dark_background_color_hovered) &&
+                         string_to_skcolor(light_background_color_param,
+                                           &light_background_color) &&
+                         string_to_skcolor(light_background_color_hovered_param,
+                                           &light_background_color_hovered);
+
+    if (!success) {
+      return;
+    }
+
+    const auto selected_background_color = ui::SelectBasedOnDarkInput(
+        kColorToolbar, dark_background_color, light_background_color);
+
+    mixer[kColorLocationBarBackground] = {selected_background_color};
+
+    const auto selected_background_color_hovered =
+        ui::SelectBasedOnDarkInput(kColorToolbar, dark_background_color_hovered,
+                                   light_background_color_hovered);
+
+    mixer[kColorLocationBarBackgroundHovered] = {
+        selected_background_color_hovered};
+  }
+}
 
 }  // namespace
 
@@ -229,9 +306,16 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorIntentPickerItemBackgroundSelected] = ui::BlendForMinContrast(
       ui::kColorDialogBackground, ui::kColorDialogBackground,
       ui::kColorAccentWithGuaranteedContrastAtopPrimaryBackground, 1.2);
+
+  // By default, the Omnibox background color will be determined by the toolbar
+  // color.
   mixer[kColorLocationBarBackground] = {kColorToolbarBackgroundSubtleEmphasis};
   mixer[kColorLocationBarBackgroundHovered] = {
       kColorToolbarBackgroundSubtleEmphasisHovered};
+
+  // Override Omnibox background color tokens per GM3 spec when appropriate.
+  ApplyGM3OmniboxBackgroundColor(mixer, key);
+
   mixer[kColorLocationBarBorder] = {SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorLocationBarBorderOpaque] =
       ui::GetResultingPaintColor(kColorLocationBarBorder, kColorToolbar);
