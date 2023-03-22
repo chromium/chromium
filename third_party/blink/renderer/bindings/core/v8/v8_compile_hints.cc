@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints.h"
 
+#if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -488,3 +490,5 @@ void V8CompileHints::AddNoise(unsigned* data) {
 }
 
 }  // namespace blink
+
+#endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)

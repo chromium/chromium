@@ -137,6 +137,8 @@ blink_core_sources_bindings =
                     "core/v8/v8_binding_for_core.h",
                     "core/v8/v8_code_cache.cc",
                     "core/v8/v8_code_cache.h",
+                    "core/v8/v8_compile_hints.cc",
+                    "core/v8/v8_compile_hints.h",
                     "core/v8/v8_context_snapshot.cc",
                     "core/v8/v8_context_snapshot.h",
                     "core/v8/v8_ctype_traits.h",
@@ -185,14 +187,6 @@ declare_args() {
   # Enable V8 to produce & consume hints regarding which functions to compile
   # eagerly.
   enable_v8_compile_hints = true
-}
-
-if (enable_v8_compile_hints) {
-  blink_core_sources_bindings += get_path_info([
-                                                 "core/v8/v8_compile_hints.cc",
-                                                 "core/v8/v8_compile_hints.h",
-                                               ],
-                                               "abspath")
 }
 
 # Source files to be part of

@@ -5,6 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_H_
 
+#include "third_party/blink/renderer/bindings/buildflags.h"
+
+#if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
@@ -55,5 +59,22 @@ class V8CompileHints {
 };
 
 }  // namespace blink
+
+#else
+
+namespace blink {
+
+// A minimal implementation for platforms which don't enable compile hints.
+class V8CompileHints {
+ public:
+  V8CompileHints() = default;
+
+  V8CompileHints(const V8CompileHints&) = delete;
+  V8CompileHints& operator=(const V8CompileHints&) = delete;
+};
+
+}  // namespace blink
+
+#endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_H_
