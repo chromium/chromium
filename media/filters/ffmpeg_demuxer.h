@@ -260,6 +260,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
                                    base::TimeDelta curr_time,
                                    TrackChangeCB change_completed_cb) override;
+  void SetPlaybackRate(double rate) override {}
 
   // The lowest demuxed timestamp.  If negative, DemuxerStreams must use this to
   // adjust packet timestamps such that external clients see a zero-based

@@ -486,6 +486,11 @@ void PipelineImpl::RendererWrapper::SetPlaybackRate(double playback_rate) {
   playback_rate_ = playback_rate;
   if (state_ == kPlaying)
     shared_state_.renderer->SetPlaybackRate(playback_rate_);
+
+  if (state_ != kCreated && state_ != kStopping && state_ != kStopped) {
+    DCHECK(demuxer_);
+    demuxer_->SetPlaybackRate(playback_rate);
+  }
 }
 
 void PipelineImpl::RendererWrapper::SetVolume(float volume) {

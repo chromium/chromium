@@ -69,6 +69,7 @@ class StreamProvider final : public Demuxer {
   void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
                                    base::TimeDelta curr_time,
                                    TrackChangeCB change_completed_cb) override;
+  void SetPlaybackRate(double rate) override {}
 
  protected:
   // Deletion is only allowed via Destroy().

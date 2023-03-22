@@ -186,6 +186,10 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
       const std::vector<MediaTrack::Id>& track_ids,
       base::TimeDelta curr_time,
       TrackChangeCB change_completed_cb) = 0;
+
+  // Allows a demuxer to change behavior based on the playback rate, including
+  // but not limited to changing the amount of buffer space.
+  virtual void SetPlaybackRate(double rate) = 0;
 };
 
 }  // namespace media

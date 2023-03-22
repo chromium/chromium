@@ -785,6 +785,7 @@ TEST_F(PipelineImplTest, DemuxerErrorDuringSeek) {
 
   double playback_rate = 1.0;
   EXPECT_CALL(*renderer_, SetPlaybackRate(playback_rate));
+  EXPECT_CALL(*demuxer_, SetPlaybackRate(playback_rate));
   pipeline_->SetPlaybackRate(playback_rate);
   base::RunLoop().RunUntilIdle();
 

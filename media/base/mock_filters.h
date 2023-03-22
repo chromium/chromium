@@ -206,6 +206,8 @@ class MockDemuxer : public Demuxer {
                base::TimeDelta,
                TrackChangeCB),
               (override));
+
+  MOCK_METHOD(void, SetPlaybackRate, (double), (override));
 };
 
 class MockDemuxerStream : public DemuxerStream {

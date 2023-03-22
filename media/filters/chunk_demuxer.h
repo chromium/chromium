@@ -309,6 +309,8 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                                    base::TimeDelta curr_time,
                                    TrackChangeCB change_completed_cb) override;
 
+  void SetPlaybackRate(double rate) override {}
+
   // Appends media data to the source buffer's stream parser associated with
   // `id`. No parsing is done, just buffering the media data for future parsing
   // via RunSegmentParserLoop calls. Returns true on success. Returns false if

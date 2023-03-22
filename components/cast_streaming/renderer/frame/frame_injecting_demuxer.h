@@ -69,6 +69,7 @@ class FrameInjectingDemuxer final : public media::Demuxer {
       const std::vector<media::MediaTrack::Id>& track_ids,
       base::TimeDelta curr_time,
       TrackChangeCB change_completed_cb) override;
+  void SetPlaybackRate(double rate) override {}
 
   // The number of initialized streams that have yet to call
   // OnStreamInitializationComplete().

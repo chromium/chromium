@@ -52,6 +52,7 @@ class MEDIA_EXPORT HlsDemuxer final : public Demuxer {
   base::TimeDelta GetStartTime() const override;
   base::Time GetTimelineOffset() const override;
   int64_t GetMemoryUsage() const override;
+  void SetPlaybackRate(double rate) override {}
 
   absl::optional<container_names::MediaContainerName> GetContainerForMetrics()
       const override;
