@@ -608,10 +608,14 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
             RecordSkipReason(
                 FetchHandlerSkipReason::
                     kBypassFetchHandlerForAllOnlyIfServiceWorkerNotStarted_Status_Stop);
-            MaybeStartServiceWorker(
-                std::move(active_version),
-                ServiceWorkerMetrics::EventType::
-                    BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED);
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(&ServiceWorkerControlleeRequestHandler::
+                                   MaybeStartServiceWorker,
+                               weak_factory_.GetWeakPtr(),
+                               std::move(active_version),
+                               ServiceWorkerMetrics::EventType::
+                                   BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED));
             return;
           case EmbeddedWorkerStatus::STARTING:
             // If the status is STARTING, the Serviceworker is not actually
