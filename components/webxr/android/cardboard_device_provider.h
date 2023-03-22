@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_ANDROID_CARDBOARD_CARDBOARD_DEVICE_PROVIDER_H_
-#define DEVICE_VR_ANDROID_CARDBOARD_CARDBOARD_DEVICE_PROVIDER_H_
+#ifndef COMPONENTS_WEBXR_ANDROID_CARDBOARD_DEVICE_PROVIDER_H_
+#define COMPONENTS_WEBXR_ANDROID_CARDBOARD_DEVICE_PROVIDER_H_
 
 #include <memory>
 
@@ -12,11 +12,12 @@
 
 namespace device {
 class CardboardDevice;
+}
+namespace webxr {
 
-class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDeviceProvider
-    : public device::VRDeviceProvider {
+class CardboardDeviceProvider : public device::VRDeviceProvider {
  public:
-  explicit CardboardDeviceProvider();
+  CardboardDeviceProvider();
   ~CardboardDeviceProvider() override;
 
   CardboardDeviceProvider(const CardboardDeviceProvider&) = delete;
@@ -30,6 +31,6 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDeviceProvider
   bool initialized_ = false;
 };
 
-}  // namespace device
+}  // namespace webxr
 
-#endif  // DEVICE_VR_ANDROID_CARDBOARD_CARDBOARD_DEVICE_PROVIDER_H_
+#endif  // COMPONENTS_WEBXR_ANDROID_CARDBOARD_DEVICE_PROVIDER_H_

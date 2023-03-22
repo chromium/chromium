@@ -37,6 +37,13 @@ source_set("android") {
       ]
     }
 
+    if (enable_cardboard) {
+      sources += [
+        "cardboard_device_provider.cc",
+        "cardboard_device_provider.h",
+      ]
+    }
+
     deps = [
       ":android_utils",
       ":xr_jni_headers",
@@ -53,6 +60,10 @@ source_set("android") {
 
     if (enable_arcore) {
       deps += [ "//device/vr/android/arcore" ]
+    }
+
+    if (enable_cardboard) {
+      deps += [ "//device/vr/android/cardboard:vr_cardboard" ]
     }
 
     libs = [ "android" ]

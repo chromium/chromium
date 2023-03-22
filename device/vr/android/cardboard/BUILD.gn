@@ -12,8 +12,6 @@ component("vr_cardboard") {
   sources = [
     "cardboard_device.cc",
     "cardboard_device.h",
-    "cardboard_device_provider.cc",
-    "cardboard_device_provider.h",
     "cardboard_sdk.h",
     "cardboard_sdk_impl.cc",
     "cardboard_sdk_impl.h",

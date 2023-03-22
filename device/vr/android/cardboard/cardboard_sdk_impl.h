@@ -7,6 +7,8 @@
 
 #include "device/vr/android/cardboard/cardboard_sdk.h"
 
+#include "base/component_export.h"
+
 namespace device {
 
 class COMPONENT_EXPORT(VR_CARDBOARD) CardboardSdkImpl : public CardboardSdk {
