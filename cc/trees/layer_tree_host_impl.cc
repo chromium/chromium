@@ -234,12 +234,12 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
                          bool gpu_compositing,
                          scoped_refptr<RasterContextProviderWrapper>
                              worker_context_provider_wrapper,
-                         viz::ResourceFormat tile_format,
+                         viz::SharedImageFormat tile_format,
                          size_t decoded_image_working_set_budget_bytes,
                          int max_texture_size,
                          RasterDarkModeFilter* dark_mode_filter) {
     if (use_gpu_rasterization) {
-      auto color_type = viz::ResourceFormatToClosestSkColorType(
+      auto color_type = viz::ToClosestSkColorType(
           /*gpu_compositing=*/true, tile_format);
       if (enable_shared_image_cache_for_gpu) {
         image_decode_cache_ptr_ =
@@ -254,7 +254,7 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
       }
     } else {
       image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
-          viz::ResourceFormatToClosestSkColorType(gpu_compositing, tile_format),
+          viz::ToClosestSkColorType(gpu_compositing, tile_format),
           decoded_image_working_set_budget_bytes);
     }
 
@@ -3606,8 +3606,7 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
       settings_.enable_shared_image_cache_for_gpu, use_gpu_rasterization_,
       gpu_compositing,
-      layer_tree_frame_sink_->worker_context_provider_wrapper(),
-      tile_format.resource_format(),
+      layer_tree_frame_sink_->worker_context_provider_wrapper(), tile_format,
       settings_.decoded_image_working_set_budget_bytes, max_texture_size_,
       dark_mode_filter_);
 
@@ -4752,7 +4751,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
 
   UIResourceData data;
   data.opaque = bitmap.GetOpaque();
-  data.format = format.resource_format();
+  data.format = format;
   data.shared_bitmap_id = shared_bitmap_id;
   data.shared_mapping = std::move(shm.mapping);
   data.mailbox = mailbox;
