@@ -4,6 +4,7 @@
 
 package org.chromium.components.webxr;
 
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
@@ -102,5 +103,10 @@ public class ArOverlayDelegate implements XrImmersiveOverlay.Delegate {
         if (mUseOverlay) {
             mArCompositorDelegate.dispatchTouchEvent(ev);
         }
+    }
+
+    @Override
+    public int getDesiredOrientation() {
+        return Configuration.ORIENTATION_UNDEFINED;
     }
 }

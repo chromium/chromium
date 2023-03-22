@@ -7,6 +7,7 @@ package org.chromium.components.webxr;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -75,6 +76,15 @@ public class XrImmersiveOverlay
          * otherwise been consumed by the XrImmersiveOverlay; e.g. to the compositor.
          */
         void maybeForwardTouchEvent(MotionEvent ev);
+
+        /**
+         * Returns the desired @{link android.content.res.Configuration} int representing the
+         * orientation that the OverlayDelegate desires the device to be in. Should be one of:
+         * Configuration.ORIENTATION_LANDSCAPE
+         * Configuration.ORIENTATION_PORTRAIT
+         * Configuration.ORIENTATION_UNDEFINED
+         */
+        int getDesiredOrientation();
     }
 
     private static final String TAG = "XrImmersiveOverlay";
@@ -448,7 +458,18 @@ public class XrImmersiveOverlay
         if (mRestoreOrientation == null) {
             mRestoreOrientation = mActivity.getRequestedOrientation();
         }
-        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+
+        int desiredOrientation = mOverlayDelegate.getDesiredOrientation();
+        int currentOrientation = mActivity.getResources().getConfiguration().orientation;
+
+        int requestOrientation = configurationToActivityInfoOrientation(desiredOrientation);
+
+        // If we have a desired orientation and it does not equal the current orientation, then we
+        // will need to swap dimensions.
+        boolean swapScreenDimensions = desiredOrientation != Configuration.ORIENTATION_UNDEFINED
+                && desiredOrientation != currentOrientation;
+
+        mActivity.setRequestedOrientation(requestOrientation);
 
         // While it would be preferable to wait until the surface is at the desired fullscreen
         // resolution, i.e. via mActivity.getFullscreenManager().getPersistentFullscreenMode(), that
@@ -457,8 +478,10 @@ public class XrImmersiveOverlay
         // after the session starts, but the session doesn't start until we report the drawing
         // surface being ready (including a configured size), so we use the reported size of the
         // display assuming that's what the fullscreen mode will use.
-        int screenWidth = display.getDisplayWidth();
-        int screenHeight = display.getDisplayHeight();
+        int screenWidth =
+                !swapScreenDimensions ? display.getDisplayWidth() : display.getDisplayHeight();
+        int screenHeight =
+                !swapScreenDimensions ? display.getDisplayHeight() : display.getDisplayWidth();
 
         if (width < screenWidth || height < screenHeight) {
             if (DEBUG_LOGS) {
@@ -514,5 +537,30 @@ public class XrImmersiveOverlay
         ScreenOrientationProvider.getInstance().setOrientationDelegate(null);
         if (mRestoreOrientation != null) mActivity.setRequestedOrientation(mRestoreOrientation);
         mRestoreOrientation = null;
+    }
+
+    /**
+     * Translates the provided int, which is expected to be of the result of
+     * @{link Delegate.getDesiredOrientation} and thus one of:
+     * Configuration.ORIENTATION_UNDEFINED,
+     * Configuration.ORIENTATION_LANDSCAPE,
+     * Configuration.ORIENTATION_PORTRAIT
+     * and translates it to a corresponding "ActivityInfo" value that can then be passed on to
+     * setRequestedOrientation.
+     */
+    private int configurationToActivityInfoOrientation(int configurationOrientation) {
+        switch (configurationOrientation) {
+            case Configuration.ORIENTATION_UNDEFINED:
+                return ActivityInfo.SCREEN_ORIENTATION_LOCKED;
+            case Configuration.ORIENTATION_LANDSCAPE:
+                return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            case Configuration.ORIENTATION_PORTRAIT:
+                return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+            default:
+                Log.e(TAG,
+                        "Unexpected configurationOrientation: " + configurationOrientation
+                                + " using default of 'Locked'.");
+                return ActivityInfo.SCREEN_ORIENTATION_LOCKED;
+        }
     }
 }
