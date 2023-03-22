@@ -493,7 +493,7 @@ const CGFloat kSymbolSize = 18;
             _webStateList, _webStateObserver.get());
     _style = style;
 
-    _pinnedTabCount = _webStateList->GetIndexOfFirstNonPinnedWebState();
+    [self updatePinnedTabCount];
 
     // `self.view` setup.
     _useTabStacking = [self shouldUseTabStacking];
@@ -949,6 +949,11 @@ const CGFloat kSymbolSize = 18;
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
 }
 
+// Updates pinned tab count.
+- (void)updatePinnedTabCount {
+  _pinnedTabCount = _webStateList->GetIndexOfFirstNonPinnedWebState();
+}
+
 #pragma mark - TabStripContextMenuDelegate
 
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
@@ -1341,7 +1346,7 @@ const CGFloat kSymbolSize = 18;
   [_closingTabs addObject:view];
   _targetFrames.RemoveFrame(view);
 
-  _pinnedTabCount = _webStateList->GetIndexOfFirstNonPinnedWebState();
+  [self updatePinnedTabCount];
 
   // Adjust the content size now that the tab has been removed from the model.
   [self updateContentSizeAndRepositionViews];
@@ -1382,6 +1387,7 @@ const CGFloat kSymbolSize = 18;
   TabView* view = [self createTabViewForWebState:webState
                                       isSelected:activating];
   [_tabArray insertObject:view atIndex:[self indexForWebStateListIndex:index]];
+  [self updatePinnedTabCount];
   [[self tabStripView] addSubview:view];
 
   [self updateContentSizeAndRepositionViews];
@@ -1402,7 +1408,7 @@ const CGFloat kSymbolSize = 18;
     didChangePinnedStateForWebState:(web::WebState*)webState
                             atIndex:(int)index {
   DCHECK_EQ(_webStateList, webStateList);
-  _pinnedTabCount = webStateList->GetIndexOfFirstNonPinnedWebState();
+  [self updatePinnedTabCount];
 
   [self layoutTabStripSubviews];
 }
