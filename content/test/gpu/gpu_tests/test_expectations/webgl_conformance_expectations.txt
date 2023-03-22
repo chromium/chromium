@@ -570,6 +570,9 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBG
 crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1426593 [ android android-pixel-6 no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426535 [ android android-pixel-6 ] conformance/state/gl-enable-enum-test.html [ RetryOnFailure ]
+crbug.com/1426535 [ android android-pixel-6 ] conformance/state/gl-get-calls.html [ RetryOnFailure ]
 
 # finder:group-start crbug.com/1383180 failures happen in many tests, so can be classified as stale for one specific test
 crbug.com/1383180 [ android android-pixel-6 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
@@ -577,8 +580,6 @@ crbug.com/1383180 [ android android-pixel-6 target-cpu-64 ] conformance/textures
 crbug.com/1383180 [ android android-pixel-6 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/1383180 [ android android-pixel-6 angle-opengles passthrough ] conformance/textures/video/* [ RetryOnFailure ]
 # finder:group-end
-
-crbug.com/1426593 [ android android-pixel-6 no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 ## Misc failures ##
 
