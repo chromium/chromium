@@ -4,34 +4,313 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job.h"
 
+#include <algorithm>
+#include <memory>
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/json/json_reader.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/syslog_logging.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
+#include "chrome/browser/support_tool/data_collector.h"
+#include "chrome/browser/support_tool/support_tool_util.h"
+#include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+
+// The directory that the support packets will be stored.
+constexpr char kTargetDir[] = "/var/spool/support";
+
+// JSON keys used in the remote command payload.
+constexpr char kSupportPacketDetailsKey[] = "supportPacketDetails";
+constexpr char kIssueCaseIdKey[] = "issueCaseId";
+constexpr char kIssueDescriptionKey[] = "issueDescription";
+constexpr char kRequestedDataCollectorsKey[] = "requestedDataCollectors";
+constexpr char kRequestedPiiTypesKey[] = "requestedPiiTypes";
+
+std::set<support_tool::DataCollectorType> GetDataCollectorTypes(
+    const base::Value::List& requested_data_collectors) {
+  std::set<support_tool::DataCollectorType> data_collectors;
+  for (const auto& data_collector_value : requested_data_collectors) {
+    if (!support_tool::DataCollectorType_IsValid(
+            data_collector_value.GetInt())) {
+      continue;
+    }
+    data_collectors.emplace(static_cast<support_tool::DataCollectorType>(
+        data_collector_value.GetInt()));
+  }
+  return data_collectors;
+}
+
+redaction::PIIType GetPiiTypeFromProtoEnum(support_tool::PiiType pii_type) {
+  switch (pii_type) {
+    case support_tool::PiiType::ANDROID_APP_STORAGE_PATH:
+      return redaction::PIIType::kAndroidAppStoragePath;
+    case support_tool::PiiType::EMAIL:
+      return redaction::PIIType::kEmail;
+    case support_tool::PiiType::GAIA_ID:
+      return redaction::PIIType::kGaiaID;
+    case support_tool::PiiType::IPP_ADDRESS:
+      return redaction::PIIType::kIPPAddress;
+    case support_tool::PiiType::IP_ADDRESS:
+      return redaction::PIIType::kIPAddress;
+    case support_tool::PiiType::LOCATION_INFO:
+      return redaction::PIIType::kLocationInfo;
+    case support_tool::PiiType::MAC_ADDRESS:
+      return redaction::PIIType::kMACAddress;
+    case support_tool::PiiType::UI_HIEARCHY_WINDOW_TITLE:
+      return redaction::PIIType::kUIHierarchyWindowTitles;
+    case support_tool::PiiType::URL:
+      return redaction::PIIType::kURL;
+    case support_tool::PiiType::SERIAL:
+      return redaction::PIIType::kSerial;
+    case support_tool::PiiType::SSID:
+      return redaction::PIIType::kSSID;
+    case support_tool::PiiType::STABLE_IDENTIFIER:
+      return redaction::PIIType::kStableIdentifier;
+    case support_tool::PiiType::VOLUME_LABEL:
+      return redaction::PIIType::kVolumeLabel;
+    case support_tool::PiiType::EAP:
+      return redaction::PIIType::kEAP;
+    default:
+      return redaction::PIIType::kNone;
+  }
+}
+
+std::set<redaction::PIIType> GetPiiTypes(
+    const base::Value::List& requested_pii_types) {
+  std::set<redaction::PIIType> pii_types;
+  for (const auto& pii_type_value : requested_pii_types) {
+    if (!support_tool::PiiType_IsValid(pii_type_value.GetInt())) {
+      continue;
+    }
+    pii_types.emplace(GetPiiTypeFromProtoEnum(
+        static_cast<support_tool::PiiType>(pii_type_value.GetInt())));
+  }
+  return pii_types;
+}
+
+std::string ErrorsToString(const std::set<SupportToolError>& errors) {
+  std::vector<base::StringPiece> error_messages;
+  error_messages.reserve(errors.size());
+  for (const auto& error : errors) {
+    error_messages.push_back(error.error_message);
+  }
+  return base::JoinString(error_messages, ", ");
+}
+
+}  // namespace
 
 namespace policy {
 
-DeviceCommandFetchSupportPacketJob::DeviceCommandFetchSupportPacketJob() =
-    default;
+const char kCommandNotEnabledForUserMessage[] =
+    "FETCH_SUPPORT_PACKET command is not enabled for this user type.";
 
-DeviceCommandFetchSupportPacketJob::~DeviceCommandFetchSupportPacketJob() =
-    default;
+DeviceCommandFetchSupportPacketJob::DeviceCommandFetchSupportPacketJob()
+    : target_dir_(kTargetDir) {}
+
+DeviceCommandFetchSupportPacketJob::~DeviceCommandFetchSupportPacketJob() {
+  // Clean-up `login_waiter_`.
+  login_waiter_.reset();
+}
+
+SupportPacketDetails::SupportPacketDetails() = default;
+SupportPacketDetails::~SupportPacketDetails() = default;
+
+DeviceCommandFetchSupportPacketJob::LoginWaiter::LoginWaiter() {
+  CHECK(ash::LoginState::IsInitialized());
+  ash::LoginState::Get()->AddObserver(this);
+}
+DeviceCommandFetchSupportPacketJob::LoginWaiter::~LoginWaiter() {
+  ash::LoginState::Get()->RemoveObserver(this);
+}
+
+void DeviceCommandFetchSupportPacketJob::LoginWaiter::WaitForLogin(
+    base::OnceClosure on_user_logged_in_callback) {
+  if (ash::LoginState::Get()->IsUserLoggedIn()) {
+    std::move(on_user_logged_in_callback).Run();
+    return;
+  }
+  on_user_logged_in_callback_ = std::move(on_user_logged_in_callback);
+}
+
+void DeviceCommandFetchSupportPacketJob::LoginWaiter::LoggedInStateChanged() {
+  if (!on_user_logged_in_callback_) {
+    return;
+  }
+  std::move(on_user_logged_in_callback_).Run();
+}
 
 enterprise_management::RemoteCommand_Type
 DeviceCommandFetchSupportPacketJob::GetType() const {
   return enterprise_management::RemoteCommand_Type_FETCH_SUPPORT_PACKET;
 }
 
+bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
+    const std::string& command_payload) {
+  bool parse_success = ParseCommandPayloadImpl(command_payload);
+  if (!parse_success) {
+    SYSLOG(ERROR) << "Can't parse command payload for FETCH_SUPPORT_PACKET "
+                     "command. Payload is: "
+                  << command_payload;
+  }
+  return parse_success;
+}
+
+bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
+    const std::string& command_payload) {
+  absl::optional<base::Value> value = base::JSONReader::Read(command_payload);
+  if (!value.has_value() || !value->is_dict()) {
+    return false;
+  }
+
+  const base::Value::Dict& dict = value->GetDict();
+  const base::Value::Dict* details_dict =
+      dict.FindDict(kSupportPacketDetailsKey);
+  if (!details_dict) {
+    return false;
+  }
+
+  const std::string* case_id = details_dict->FindString(kIssueCaseIdKey);
+  support_packet_details_.issue_case_id = case_id ? *case_id : std::string();
+
+  const std::string* description =
+      details_dict->FindString(kIssueDescriptionKey);
+  support_packet_details_.issue_description =
+      description ? *description : std::string();
+
+  const base::Value::List* requested_data_collectors =
+      details_dict->FindList(kRequestedDataCollectorsKey);
+  if (!requested_data_collectors) {
+    return false;
+  }
+  support_packet_details_.requested_data_collectors =
+      GetDataCollectorTypes(*requested_data_collectors);
+  // Requested data collectors can't be empty.
+  if (support_packet_details_.requested_data_collectors.empty()) {
+    return false;
+  }
+
+  const base::Value::List* requested_pii_types =
+      details_dict->FindList(kRequestedPiiTypesKey);
+  if (requested_pii_types) {
+    support_packet_details_.requested_pii_types =
+        GetPiiTypes(*requested_pii_types);
+  }
+
+  return true;
+}
+
+// static
+bool DeviceCommandFetchSupportPacketJob::CommandEnabledForUser() {
+  return ash::LoginState::Get()->IsKioskSession();
+}
+
 void DeviceCommandFetchSupportPacketJob::RunImpl(
     CallbackWithResult result_callback) {
   result_callback_ = std::move(result_callback);
-  // TODO(b/264399756): The contents will be filled in the follow-up CL.
+
+  // Wait for a user to login to start the execution.
+  CHECK(!login_waiter_.has_value());
+  login_waiter_.emplace();
+  login_waiter_->WaitForLogin(
+      base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnUserLoggedIn,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
-    const std::string& command_payload) {
-  return support_packet_details_.ParseFromString(command_payload);
+void DeviceCommandFetchSupportPacketJob::OnUserLoggedIn() {
+  // Clean up the `login_waiter_`.
+  login_waiter_.reset();
+
+  StartJobExecution();
+}
+
+void DeviceCommandFetchSupportPacketJob::StartJobExecution() {
+  // Check if the command is enabled for the user type.
+  if (!CommandEnabledForUser()) {
+    SYSLOG(ERROR) << kCommandNotEnabledForUserMessage;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(result_callback_), ResultType::kFailure,
+                       kCommandNotEnabledForUserMessage));
+    return;
+  }
+
+  // Initialize SupportToolHandler with the requested details.
+  support_tool_handler_ =
+      GetSupportToolHandler(support_packet_details_.issue_case_id,
+                            // Leave the email address empty since data
+                            // collection is triggered by the admin remotely.
+                            /*email_address=*/std::string(),
+                            support_packet_details_.issue_description,
+                            ProfileManager::GetActiveUserProfile(),
+                            support_packet_details_.requested_data_collectors);
+
+  // Start data collection.
+  support_tool_handler_->CollectSupportData(
+      base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnDataCollected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeviceCommandFetchSupportPacketJob::OnDataCollected(
+    const PIIMap& detected_pii,
+    std::set<SupportToolError> errors) {
+  // Log the errors for information. We don't return any error for the command
+  // job, we just continue the operation with as much data as we could collect.
+  if (!errors.empty()) {
+    SYSLOG(ERROR) << "Got errors when collecting data for FETCH_SUPPORT_PACKET "
+                     "device command: "
+                  << ErrorsToString(errors);
+  }
+
+  // TODO(iremuguz): Update GetDefaultFileToExport function to get the filename
+  // prefix as parameter. We'll want a filename in "admin-generated_<case
+  // id>_<timestamp>" format.
+  base::FilePath target_file = GetDefaultFileToExport(
+      target_dir_, support_tool_handler_->GetCaseId(), base::Time::Now());
+
+  support_tool_handler_->ExportCollectedData(
+      support_packet_details_.requested_pii_types, target_file,
+      base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnDataExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeviceCommandFetchSupportPacketJob::OnDataExported(
+    base::FilePath exported_path,
+    std::set<SupportToolError> errors) {
+  const auto export_error =
+      base::ranges::find(errors, SupportToolErrorCode::kDataExportError,
+                         &SupportToolError::error_code);
+
+  if (export_error != errors.end()) {
+    std::string error_message = base::StringPrintf(
+        "The device couldn't export the collected data "
+        "into local storage: %s",
+        export_error->error_message.c_str());
+    SYSLOG(ERROR) << error_message;
+    std::move(result_callback_).Run(ResultType::kFailure, error_message);
+    return;
+  }
+
+  exported_path_ = exported_path;
+
+  std::move(result_callback_).Run(ResultType::kSuccess, absl::nullopt);
 }
 
 }  // namespace policy
