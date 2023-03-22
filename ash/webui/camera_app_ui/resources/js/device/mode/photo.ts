@@ -139,6 +139,7 @@ export class Photo extends ModeBase {
           blob,
           metadata: null,
         });
+        return;
       }
       let photoSettings: PhotoSettings;
       if (this.captureResolution) {
