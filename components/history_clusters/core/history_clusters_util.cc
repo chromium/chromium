@@ -304,13 +304,15 @@ void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters,
 void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters) {
   constexpr size_t kMaxRelatedSearches = 5;
 
-  for (auto& cluster : clusters) {
+  base::ranges::for_each(clusters, [](auto& cluster) {
     for (const auto& visit : cluster.visits) {
       // Coalesce the unique related searches of this visit into the cluster
       // until the cap is reached.
       for (const auto& search_query :
            visit.annotated_visit.content_annotations.related_searches) {
         if (cluster.related_searches.size() >= kMaxRelatedSearches) {
+          // This return is safe to use because this it's within a lambda.
+          // Don't refactor it to use an outer loop. See crbug.com/1426657.
           return;
         }
 
@@ -319,7 +321,7 @@ void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters) {
         }
       }
     }
-  }
+  });
 }
 
 void SortClusters(std::vector<history::Cluster>* clusters) {

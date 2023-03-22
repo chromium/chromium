@@ -364,6 +364,32 @@ TEST(HistoryClustersUtilTest, CoalesceRelatedSearches) {
                                    "search5"));
 }
 
+// Verifies crbug.com/1426657.
+TEST(HistoryClustersUtilTest,
+     CoalesceRelatedSearchesHandlesMultipleClustersTruncation) {
+  history::ClusterVisit visit = GetHardcodedClusterVisit(1);
+  visit.annotated_visit.content_annotations.related_searches = {
+      "search1", "search2", "search3", "search4",
+      "search5", "search6", "search7"};
+
+  history::Cluster cluster;
+  cluster.visits = {visit};
+
+  // Deliberately push two instances of the same cluster into the vector.
+  std::vector<history::Cluster> clusters;
+  clusters.push_back(cluster);
+  clusters.push_back(cluster);
+
+  // Verify that we correctly coalesce searches for BOTH clusters.
+  CoalesceRelatedSearches(clusters);
+  EXPECT_THAT(clusters[0].related_searches,
+              testing::ElementsAre("search1", "search2", "search3", "search4",
+                                   "search5"));
+  EXPECT_THAT(clusters[1].related_searches,
+              testing::ElementsAre("search1", "search2", "search3", "search4",
+                                   "search5"));
+}
+
 TEST(HistoryClustersUtilTest, SortClusters) {
   std::vector<history::Cluster> clusters;
   // This first cluster is meant to validate that the higher scoring "visit 1"
