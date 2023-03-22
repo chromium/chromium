@@ -57,6 +57,7 @@ class SaveUpdateAddressProfileFlowManager {
       content::WebContents* web_contents,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   void OnPromptWithDetailsDismissed();

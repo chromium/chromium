@@ -133,6 +133,20 @@ public class SaveUpdateAddressProfilePrompt {
     }
 
     /**
+     * Displays an optional notification for the user in case the autofill profile is going
+     * to be saved in account storage.
+     *
+     * @param sourceNotice the footer notification for the user.
+     */
+    @CalledByNative
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void setSourceNotice(String sourceNotice) {
+        showTextIfNotEmpty(
+                mDialogView.findViewById(R.id.autofill_save_update_address_profile_prompt_footer),
+                sourceNotice);
+    }
+
+    /**
      * Displays the details in case a new address to be saved.
      *
      * @param address the address details to be saved.

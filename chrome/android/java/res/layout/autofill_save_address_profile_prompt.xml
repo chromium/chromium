@@ -93,5 +93,7 @@ found in the LICENSE file.
           android:singleLine="true"
           android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <include layout="@layout/autofill_save_update_address_profile_prompt_footer"/>
   </RelativeLayout>
 </ScrollView>

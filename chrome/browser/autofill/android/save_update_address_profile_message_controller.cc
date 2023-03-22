@@ -86,7 +86,7 @@ bool SaveUpdateAddressProfileMessageController::IsMessageDisplayed() {
 void SaveUpdateAddressProfileMessageController::OnPrimaryAction() {
   std::move(primary_action_callback_)
       .Run(web_contents_.get(), profile_, original_profile_.get(),
-           std::move(save_address_profile_callback_));
+           is_migration_to_account_, std::move(save_address_profile_callback_));
 }
 
 void SaveUpdateAddressProfileMessageController::OnMessageDismissed(

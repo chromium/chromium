@@ -240,7 +240,8 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest,
        ProceedOnActionClickWhenSave) {
   EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
 
-  EXPECT_CALL(action_callback_, Run(_, profile_, nullptr, _));
+  EXPECT_CALL(action_callback_,
+              Run(_, profile_, nullptr, is_migration_to_account(), _));
   TriggerActionClick();
 
   EXPECT_CALL(save_callback_, Run(_, profile_)).Times(0);
@@ -254,7 +255,7 @@ TEST_P(SaveUpdateAddressProfileMessageControllerTest,
   EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
                        action_callback_.Get());
 
-  EXPECT_CALL(action_callback_, Run(_, profile_, &original_profile_, _));
+  EXPECT_CALL(action_callback_, Run(_, profile_, &original_profile_, _, _));
   TriggerActionClick();
 
   EXPECT_CALL(save_callback_, Run(_, profile_)).Times(0);

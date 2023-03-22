@@ -16,6 +16,10 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace autofill {
 
 // Android implementation of the modal prompt for saving new/updating existing
@@ -28,6 +32,7 @@ class SaveUpdateAddressProfilePromptController {
       std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback decision_callback,
       base::OnceCallback<void()> dismissal_callback);
   SaveUpdateAddressProfilePromptController(
@@ -39,6 +44,7 @@ class SaveUpdateAddressProfilePromptController {
   void DisplayPrompt();
 
   std::u16string GetTitle();
+  std::u16string GetSourceNotice(signin::IdentityManager* profile);
   std::u16string GetPositiveButtonText();
   std::u16string GetNegativeButtonText();
   // For save prompt:
@@ -79,6 +85,9 @@ class SaveUpdateAddressProfilePromptController {
   AutofillProfile profile_;
   // The profile (if exists) which will be updated if the user confirms.
   absl::optional<AutofillProfile> original_profile_;
+  // The option which specifies whether the autofill profile is going to be
+  // migrated to user's Google Account.
+  bool is_migration_to_account_;
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback decision_callback_;
   // The callback guaranteed to be run once the prompt is dismissed.

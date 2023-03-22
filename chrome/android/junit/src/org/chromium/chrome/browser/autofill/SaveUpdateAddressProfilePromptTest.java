@@ -169,6 +169,11 @@ public class SaveUpdateAddressProfilePromptTest {
                 propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         Assert.assertEquals("negative button text",
                 propertyModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+
+        mPrompt.setSourceNotice("source notice");
+        validateTextView(
+                dialog.findViewById(R.id.autofill_save_update_address_profile_prompt_footer),
+                "source notice");
     }
 
     @Test

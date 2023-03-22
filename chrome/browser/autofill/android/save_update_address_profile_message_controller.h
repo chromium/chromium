@@ -37,6 +37,7 @@ class SaveUpdateAddressProfileMessageController {
       content::WebContents*,
       const AutofillProfile&,
       const AutofillProfile* original_profile,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback)>;
 
   // Triggers a message for saving the `profile` using the given

@@ -226,6 +226,9 @@
   <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE" desc="The notice/warning message for the user that this address is going to be migrated in their account.">
     Save address in your Google Account, <ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>
   </message>
+  <message name="IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE" desc="The footer message in the 'Save address' prompt informing the user that this address will be stored in their account.">
+    You can use saved addresses across Google products. This address is saved in your Google Account (<ph name="ACCOUNT">$1<ex>alexpark@gmail.com</ex></ph>).
+  </message>
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR" desc="The form error message shown to the user in case of a single required field missing.">
     A required field is empty. Fill it before saving.
   </message>
@@ -342,6 +345,9 @@
   <!-- Common on all platforms (platform-specific defined later): -->
   <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to save a new address.">
     Save
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to migrate a new address to their Google account.">
+    Save in account
   </message>
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to update an existing address.">
     Update

@@ -78,13 +78,14 @@ void SaveUpdateAddressProfileFlowManager::ShowPromptWithDetails(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
+    bool is_migration_to_account,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   auto prompt_view_android =
       std::make_unique<SaveUpdateAddressProfilePromptViewAndroid>(web_contents);
   save_update_address_profile_prompt_controller_ = std::make_unique<
       SaveUpdateAddressProfilePromptController>(
       std::move(prompt_view_android), profile, original_profile,
-      std::move(callback),
+      is_migration_to_account, std::move(callback),
       /*dismissal_callback=*/
       base::BindOnce(
           &SaveUpdateAddressProfileFlowManager::OnPromptWithDetailsDismissed,

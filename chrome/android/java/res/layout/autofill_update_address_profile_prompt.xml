@@ -108,4 +108,6 @@ found in the LICENSE file.
           tools:text="Alex Park" />
     </LinearLayout>
   </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
+
+  <include layout="@layout/autofill_save_update_address_profile_prompt_footer"/>
 </LinearLayout>

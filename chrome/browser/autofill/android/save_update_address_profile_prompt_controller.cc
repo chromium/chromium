@@ -8,15 +8,20 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -27,11 +32,13 @@ SaveUpdateAddressProfilePromptController::
         std::unique_ptr<SaveUpdateAddressProfilePromptView> prompt_view,
         const AutofillProfile& profile,
         const AutofillProfile* original_profile,
+        bool is_migration_to_account,
         AutofillClient::AddressProfileSavePromptCallback decision_callback,
         base::OnceCallback<void()> dismissal_callback)
     : prompt_view_(std::move(prompt_view)),
       profile_(profile),
       original_profile_(base::OptionalFromPtr(original_profile)),
+      is_migration_to_account_(is_migration_to_account),
       decision_callback_(std::move(decision_callback)),
       dismissal_callback_(std::move(dismissal_callback)) {
   DCHECK(prompt_view_);
@@ -59,16 +66,44 @@ void SaveUpdateAddressProfilePromptController::DisplayPrompt() {
 }
 
 std::u16string SaveUpdateAddressProfilePromptController::GetTitle() {
+  if (original_profile_) {
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+  }
+
   return l10n_util::GetStringUTF16(
-      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE
-                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+      is_migration_to_account_
+          ? IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE
+          : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+}
+
+std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
+    signin::IdentityManager* identity_manager) {
+  if (!is_migration_to_account_ &&
+      profile_.source() != AutofillProfile::Source::kAccount) {
+    return std::u16string();
+  }
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  CHECK(!account_info.IsEmpty())
+      << "User must be logged in when address profile is going to be saved to "
+         "user's Google Account";
+
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+      base::UTF8ToUTF16(account_info.email));
 }
 
 std::u16string
 SaveUpdateAddressProfilePromptController::GetPositiveButtonText() {
+  if (original_profile_) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
+
   return l10n_util::GetStringUTF16(
-      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
-                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+      is_migration_to_account_
+          ? IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL
+          : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
 }
 
 std::u16string

@@ -12,6 +12,8 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -68,13 +70,15 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
   if (!java_object_)
     return false;
 
-  SetContent(controller, is_update);
+  SetContent(controller, IdentityManagerFactory::GetForProfile(browser_profile),
+             is_update);
   Java_SaveUpdateAddressProfilePrompt_show(env, java_object_);
   return true;
 }
 
 void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
     SaveUpdateAddressProfilePromptController* controller,
+    signin::IdentityManager* identity_manager,
     bool is_update) {
   DCHECK(controller);
   DCHECK(java_object_);
@@ -82,6 +86,9 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> title =
       base::android::ConvertUTF16ToJavaString(env, controller->GetTitle());
+  ScopedJavaLocalRef<jstring> source_notice =
+      base::android::ConvertUTF16ToJavaString(
+          env, controller->GetSourceNotice(identity_manager));
   ScopedJavaLocalRef<jstring> positive_button_text =
       base::android::ConvertUTF16ToJavaString(
           env, controller->GetPositiveButtonText());
@@ -90,6 +97,8 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
           env, controller->GetNegativeButtonText());
   Java_SaveUpdateAddressProfilePrompt_setDialogDetails(
       env, java_object_, title, positive_button_text, negative_button_text);
+  Java_SaveUpdateAddressProfilePrompt_setSourceNotice(env, java_object_,
+                                                      source_notice);
 
   if (is_update) {
     ScopedJavaLocalRef<jstring> subtitle =
