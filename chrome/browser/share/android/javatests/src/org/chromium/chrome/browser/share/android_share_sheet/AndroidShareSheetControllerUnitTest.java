@@ -52,13 +52,14 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
+import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowBuildCompatForU;
+import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetControllerUnitTest.ShadowChooserActionHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.components.feature_engagement.Tracker;
@@ -76,7 +77,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.DisableFeatures(
         {ChromeFeatureList.WEBNOTES_STYLIZE, ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
-@Config(shadows = ShadowBuildCompatForU.class)
 public class AndroidShareSheetControllerUnitTest {
     private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
@@ -141,8 +141,6 @@ public class AndroidShareSheetControllerUnitTest {
 
     @After
     public void tearDown() {
-        AndroidShareSheetController.resetForTesting();
-        ShareHelper.TargetChosenReceiver.resetForTesting();
         mWindow.destroy();
         TrackerFactory.setTrackerForTests(null);
     }
@@ -151,11 +149,14 @@ public class AndroidShareSheetControllerUnitTest {
      * Test whether custom actions are attached to the intent.
      */
     @Test
+    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
     public void shareWithCustomAction() {
-        ShareParams params = new ShareParams.Builder(mWindow, "", "")
+        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
                                      .setBypassFixingDomDistillerUrl(true)
+                                     .setFileContentType("text/plain")
                                      .build();
-        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
@@ -177,7 +178,7 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(shadows = ShadowChooserActionHelper.class)
+    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
     public void choosePrintAction() throws CanceledException {
         CallbackHelper callbackHelper = new CallbackHelper();
         TargetChosenCallback callback = new TargetChosenCallback() {
@@ -252,7 +253,7 @@ public class AndroidShareSheetControllerUnitTest {
     /**
      * Test implementation to build a ChooserAction.
      */
-    @Implements(AndroidCustomActionProvider.ChooserActionHelper.class)
+    @Implements(ShareHelper.ChooserActionHelper.class)
     static class ShadowChooserActionHelper {
         @Implementation
         protected static boolean isSupported() {

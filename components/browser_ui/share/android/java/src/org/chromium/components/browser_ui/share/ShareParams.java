@@ -369,11 +369,13 @@ public class ShareParams {
      */
     public static interface TargetChosenCallback {
         /**
-         * Called when the user chooses a target in the share dialog.
+         * Called when the user chooses a target in the share dialog. When this is called when a
+         * custom action is selected on the system share sheet (e.g. Copy, Edit), the
+         * |chosenComponent| can be null.
          *
          * Note that if the user cancels the share dialog, this callback is never called.
          */
-        public void onTargetChosen(ComponentName chosenComponent);
+        public void onTargetChosen(@Nullable ComponentName chosenComponent);
 
         /**
          * Called when the user cancels the share dialog.

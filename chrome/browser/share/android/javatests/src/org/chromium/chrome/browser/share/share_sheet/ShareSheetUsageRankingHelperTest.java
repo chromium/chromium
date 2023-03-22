@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -100,6 +101,7 @@ public class ShareSheetUsageRankingHelperTest {
 
         mActivity = Robolectric.setupActivity(Activity.class);
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mWindow.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenReturn(JUnitTestGURLs.getGURL(MOCK_URL));
         when(mContentTypes.contains(ShareContentTypeHelper.ContentType.IMAGE)).thenReturn(true);

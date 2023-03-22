@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.android_share_sheet;
 
 import android.app.Activity;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -16,6 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ChromeCustomShareAction;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
-
-import java.util.List;
 
 /**
  * Share sheet controller used to display Android share sheet.
@@ -97,20 +95,23 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         Profile profile = mProfileSupplier.get();
         boolean isIncognito = mTabModelSelectorSupplier.hasValue()
                 && mTabModelSelectorSupplier.get().isIncognitoSelected();
-        List<Parcelable> customActions = null;
-        if (showCustomActions) {
-            var customActionHandler = new AndroidCustomActionProvider(
-                    params.getWindow().getActivity().get(), params.getWindow(), mTabProvider,
-                    mController, params, mPrintCallback, isIncognito, this,
-                    TrackerFactory.getTrackerForProfile(profile), params.getUrl(), profile);
+        ChromeCustomShareAction.Provider provider = null;
 
+        if (showCustomActions) {
             Activity activity = params.getWindow().getActivity().get();
             boolean isInMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
-            customActions = customActionHandler.createCustomActions(
-                    params, chromeShareExtras, isInMultiWindow);
+            var actionProvider =
+                    new AndroidCustomActionProvider(params.getWindow().getActivity().get(),
+                            params.getWindow(), mTabProvider, mController, params, mPrintCallback,
+                            isIncognito, this, TrackerFactory.getTrackerForProfile(profile),
+                            params.getUrl(), profile, chromeShareExtras, isInMultiWindow);
+            if (actionProvider.getCustomActions().size() > 0) {
+                provider = actionProvider;
+            }
         }
 
-        if (customActions == null || customActions.size() == 0) {
+        // TODO(https://crbug.com/1421783): Maybe fallback to Chrome's share sheet properly.
+        if (provider == null || provider.getCustomActions().size() == 0) {
             Log.i(TAG, "No custom actions provided.");
         }
 
@@ -121,12 +122,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             params.setUrl(imageUrlToShare);
         }
         ShareHelper.shareWithSystemShareSheetUi(
-                params, profile, chromeShareExtras.saveLastUsed(), customActions);
-    }
-
-    @VisibleForTesting
-    public static void resetForTesting() {
-        AndroidCustomActionProvider.unregisterBroadcastReceiver();
+                params, profile, chromeShareExtras.saveLastUsed(), provider);
     }
 
     private static String getImageUrlToShare(

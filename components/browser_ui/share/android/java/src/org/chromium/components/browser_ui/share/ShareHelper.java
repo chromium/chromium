@@ -20,6 +20,7 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -29,16 +30,22 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.UnownedUserData;
+import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
+import java.lang.ref.WeakReference;
+
 /**
  * A helper class that helps to start an intent to share titles and URLs.
  */
 public class ShareHelper {
+    private static final String TAG = "AndroidShare";
     /** The task ID of the activity that triggered the share action. */
     private static final String EXTRA_TASK_ID = "org.chromium.chrome.extra.TASK_ID";
 
@@ -126,19 +133,22 @@ public class ShareHelper {
     }
 
     /**
-     * Receiver to record the chosen component when sharing an Intent.
+     * BroadcastReceiver to record the chosen component when sharing an Intent.
      */
-    public static class TargetChosenReceiver extends BroadcastReceiver implements IntentCallback {
-        private static final Object LOCK = new Object();
-
-        private static String sTargetChosenReceiveAction;
-        private static TargetChosenReceiver sLastRegisteredReceiver;
-
+    public static class TargetChosenReceiver
+            extends BroadcastReceiver implements IntentCallback, UnownedUserData {
+        private static final UnownedUserDataKey<TargetChosenReceiver> TARGET_CHOSEN_RECEIVER_KEY =
+                new UnownedUserDataKey<>(TargetChosenReceiver.class);
         @Nullable
         private TargetChosenCallback mCallback;
+        private WeakReference<Context> mAttachedContext;
+        private WeakReference<WindowAndroid> mAttachedWindow;
+        private String mReceiverAction;
 
         protected TargetChosenReceiver(@Nullable TargetChosenCallback callback) {
             mCallback = callback;
+            mAttachedContext = new WeakReference<>(null);
+            mAttachedWindow = new WeakReference<>(null);
         }
 
         /**
@@ -149,37 +159,40 @@ public class ShareHelper {
          */
         protected void sendChooserIntent(WindowAndroid window, Intent sharingIntent) {
             ThreadUtils.assertOnUiThread();
-            final Context context = ContextUtils.getApplicationContext();
-            final String packageName = context.getPackageName();
-            synchronized (LOCK) {
-                if (sTargetChosenReceiveAction == null) {
-                    sTargetChosenReceiveAction =
-                            packageName + "/" + TargetChosenReceiver.class.getName() + "_ACTION";
-                }
-                if (sLastRegisteredReceiver != null) {
-                    context.unregisterReceiver(sLastRegisteredReceiver);
-                    // Must cancel the callback (to satisfy guarantee that exactly one method of
-                    // TargetChosenCallback is called).
-                    sLastRegisteredReceiver.cancel();
-                }
-                sLastRegisteredReceiver = this;
-                ContextUtils.registerNonExportedBroadcastReceiver(context, sLastRegisteredReceiver,
-                        new IntentFilter(sTargetChosenReceiveAction));
-            }
+            Activity activity = window.getActivity().get();
+            assert activity != null;
+            final String packageName = activity.getPackageName();
+            mReceiverAction = packageName + "/" + TargetChosenReceiver.class.getName()
+                    + activity.getTaskId() + "_ACTION";
 
-            Intent chooserIntent =
-                    getChooserIntent(window, sharingIntent, sTargetChosenReceiveAction);
-            ShareHelper.fireIntent(window, chooserIntent, sLastRegisteredReceiver);
+            TargetChosenReceiver prevReceiver = TARGET_CHOSEN_RECEIVER_KEY.retrieveDataFromHost(
+                    window.getUnownedUserDataHost());
+            if (prevReceiver != null) {
+                Log.e(TAG, "Another BroadcastReceiver already exists in the window.");
+                // In case where the receiver is not unregistered correctly, cancel the callback
+                // (to satisfy guarantee that exactly one method of TargetChosenCallback is called).
+                prevReceiver.cancel();
+                prevReceiver.detach();
+            }
+            TARGET_CHOSEN_RECEIVER_KEY.attachToHost(window.getUnownedUserDataHost(), this);
+            mAttachedWindow = new WeakReference<>(window);
+
+            ContextUtils.registerNonExportedBroadcastReceiver(
+                    activity, this, new IntentFilter(mReceiverAction));
+            mAttachedContext = new WeakReference<>(activity);
+
+            Intent chooserIntent = getChooserIntent(window, sharingIntent);
+            ShareHelper.fireIntent(window, chooserIntent, this);
         }
 
         /** Create the chooser intent via {@link android.content.Intent.createChooser} */
-        protected Intent getChooserIntent(
-                WindowAndroid window, Intent sharingIntent, String targetChosenAction) {
-            Intent intent = createSendBackIntentWithFilteredAction(targetChosenAction);
+        protected Intent getChooserIntent(WindowAndroid window, Intent sharingIntent) {
+            Intent intent = createSendBackIntentWithFilteredAction();
             Activity activity = window.getActivity().get();
-            final PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-                            | IntentUtils.getPendingIntentMutabilityFlag(true));
+            final PendingIntent pendingIntent =
+                    PendingIntent.getBroadcast(activity, activity.getTaskId(), intent,
+                            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
+                                    | IntentUtils.getPendingIntentMutabilityFlag(true));
             return Intent.createChooser(sharingIntent,
                     activity.getString(R.string.share_link_chooser_title),
                     pendingIntent.getIntentSender());
@@ -190,32 +203,34 @@ public class ShareHelper {
          * received after the PendingIntent is sent. The input action is used to match
          * the {@link IntentFilter} that this broadcast receiver is interested with.
          */
-        private Intent createSendBackIntentWithFilteredAction(String filteredAction) {
+        protected Intent createSendBackIntentWithFilteredAction() {
             final Context context = ContextUtils.getApplicationContext();
-            Intent intent = new Intent(filteredAction);
+            Intent intent = new Intent(mReceiverAction);
             intent.setPackage(context.getPackageName());
-            IntentUtils.addTrustedIntentExtras(intent);
+            // Adding intent extras since non-exported broadcast listener does not exist pre-T.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                IntentUtils.addTrustedIntentExtras(intent);
+            }
             return intent;
         }
+
+        protected void onReceiveInternal(Context context, Intent intent) {}
 
         @Override
         public void onReceive(Context context, Intent intent) {
             ThreadUtils.assertOnUiThread();
             // Ignore intents that's not initiated from Chrome.
-            if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
-
-            synchronized (LOCK) {
-                if (sLastRegisteredReceiver != this) {
-                    return;
-                }
-                ContextUtils.getApplicationContext().unregisterReceiver(sLastRegisteredReceiver);
-                sLastRegisteredReceiver = null;
+            if (isUntrustedIntent(intent)) {
+                return;
             }
+
+            onReceiveInternal(context, intent);
             ComponentName target = intent.getParcelableExtra(Intent.EXTRA_CHOSEN_COMPONENT);
             if (mCallback != null) {
                 mCallback.onTargetChosen(target);
                 mCallback = null;
             }
+            detach();
         }
 
         @Override
@@ -236,19 +251,28 @@ public class ShareHelper {
             if (resultCode == Activity.RESULT_CANCELED) {
                 cancel();
             }
+
+            // Always detach this receiver from the attaching context, since the current sharing
+            // journey is completed.
+            detach();
         }
 
-        @VisibleForTesting
-        public static void resetForTesting() {
-            ThreadUtils.assertOnUiThread();
-            synchronized (LOCK) {
-                sTargetChosenReceiveAction = null;
-                if (sLastRegisteredReceiver != null) {
-                    ContextUtils.getApplicationContext().unregisterReceiver(
-                            sLastRegisteredReceiver);
-                    sLastRegisteredReceiver.cancel();
-                }
-                sLastRegisteredReceiver = null;
+        private boolean isUntrustedIntent(Intent intent) {
+            return Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                    && !IntentUtils.isTrustedIntentFromSelf(intent);
+        }
+
+        private void detach() {
+            assert mCallback == null : "Callback is never called before this receiver is detached.";
+
+            if (mAttachedContext.get() != null) {
+                mAttachedContext.get().unregisterReceiver(this);
+                mAttachedContext.clear();
+            }
+            if (mAttachedWindow.get() != null) {
+                TARGET_CHOSEN_RECEIVER_KEY.detachFromHost(
+                        mAttachedWindow.get().getUnownedUserDataHost());
+                mAttachedWindow.clear();
             }
         }
 
