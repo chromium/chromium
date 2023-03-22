@@ -706,11 +706,13 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
   const blink::ParsedPermissionsPolicy policy = {
       {blink::mojom::PermissionsPolicyFeature::kGyroscope,
-       {},
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/true},
       {blink::mojom::PermissionsPolicyFeature::kGeolocation,
-       {},
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
@@ -720,6 +722,7 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
          /*has_subdomain_wildcard=*/true},
         {url::Origin::Create(GURL("https://*.example.net")),
          /*has_subdomain_wildcard=*/false}},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
   };
@@ -733,11 +736,13 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
   const blink::ParsedPermissionsPolicy policy = {
       {blink::mojom::PermissionsPolicyFeature::kGyroscope,
-       {},
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/true},
       {blink::mojom::PermissionsPolicyFeature::kGeolocation,
-       {},
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
@@ -747,6 +752,7 @@ TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
          /*has_subdomain_wildcard=*/true},
         {url::Origin::Create(GURL("https://*.example.net")),
          /*has_subdomain_wildcard=*/false}},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
   };

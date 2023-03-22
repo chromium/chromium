@@ -20,9 +20,11 @@ namespace {
 
 // Extracts an Allowlist from a ParsedPermissionsPolicyDeclaration.
 PermissionsPolicy::Allowlist AllowlistFromDeclaration(
-    const ParsedPermissionsPolicyDeclaration& parsed_declaration,
-    const PermissionsPolicyFeatureList& feature_list) {
+    const ParsedPermissionsPolicyDeclaration& parsed_declaration) {
   auto result = PermissionsPolicy::Allowlist();
+  if (parsed_declaration.self_if_matches) {
+    result.AddSelf(parsed_declaration.self_if_matches);
+  }
   if (parsed_declaration.matches_all_origins)
     result.AddAll();
   if (parsed_declaration.matches_opaque_src)
@@ -46,6 +48,10 @@ void PermissionsPolicy::Allowlist::Add(
   allowed_origins_.push_back(origin);
 }
 
+void PermissionsPolicy::Allowlist::AddSelf(absl::optional<url::Origin> self) {
+  self_if_matches_ = std::move(self);
+}
+
 void PermissionsPolicy::Allowlist::AddAll() {
   matches_all_origins_ = true;
 }
@@ -55,6 +61,9 @@ void PermissionsPolicy::Allowlist::AddOpaqueSrc() {
 }
 
 bool PermissionsPolicy::Allowlist::Contains(const url::Origin& origin) const {
+  if (origin == self_if_matches_) {
+    return true;
+  }
   for (const auto& allowed_origin : allowed_origins_) {
     if (allowed_origin.DoesMatchOrigin(origin))
       return true;
@@ -62,6 +71,11 @@ bool PermissionsPolicy::Allowlist::Contains(const url::Origin& origin) const {
   if (origin.opaque())
     return matches_opaque_src_;
   return matches_all_origins_;
+}
+
+const absl::optional<url::Origin>& PermissionsPolicy::Allowlist::SelfIfMatches()
+    const {
+  return self_if_matches_;
 }
 
 bool PermissionsPolicy::Allowlist::MatchesAll() const {
@@ -254,8 +268,7 @@ void PermissionsPolicy::SetHeaderPolicy(
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
-    allowlists_.emplace(
-        feature, AllowlistFromDeclaration(parsed_declaration, *feature_list_));
+    allowlists_.emplace(feature, AllowlistFromDeclaration(parsed_declaration));
   }
 }
 
@@ -266,8 +279,7 @@ void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
-    const auto header_allowlist =
-        AllowlistFromDeclaration(parsed_declaration, *feature_list_);
+    const auto header_allowlist = AllowlistFromDeclaration(parsed_declaration);
     auto& isolated_app_allowlist = allowlists_.at(feature);
 
     // If the header does not specify further restrictions we do not need to
@@ -283,6 +295,7 @@ void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
       // clone() is implemented.
       isolated_app_allowlist.SetAllowedOrigins(header_allowed_origins);
       isolated_app_allowlist.RemoveMatchesAll();
+      isolated_app_allowlist.AddSelf(header_allowlist.SelfIfMatches());
       continue;
     }
 
@@ -306,8 +319,7 @@ void PermissionsPolicy::OverwriteHeaderPolicyForClientHints(
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(GetPolicyFeatureToClientHintMap().contains(feature));
-    allowlists_[feature] =
-        AllowlistFromDeclaration(parsed_declaration, *feature_list_);
+    allowlists_[feature] = AllowlistFromDeclaration(parsed_declaration);
   }
 }
 
@@ -450,7 +462,7 @@ bool PermissionsPolicy::InheritedValueForFeature(
       // 9.8 5.1: If the allowlist for feature in container policy matches
       // origin, return "Enabled".
       // 9.8 5.2: Otherwise return "Disabled".
-      return AllowlistFromDeclaration(decl, *feature_list_).Contains(origin_);
+      return AllowlistFromDeclaration(decl).Contains(origin_);
     }
   }
   // 9.8 6: If feature’s default allowlist is *, return "Enabled".

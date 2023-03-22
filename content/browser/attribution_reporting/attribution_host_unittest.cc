@@ -681,6 +681,7 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
             {blink::OriginWithPossibleWildcards(
                 url::Origin::Create(GURL(kAllowedOriginUrl)),
                 /*has_subdomain_wildcard=*/false)},
+            /*self_if_matches=*/absl::nullopt,
             /*matches_all_origins=*/false, /*matches_opaque_src=*/false)});
     simulator->Commit();
     fenced_frame = simulator->GetFinalRenderFrameHost();
@@ -713,10 +714,8 @@ TEST_F(AttributionHostTest, ImpressionNavigation_FeaturePolicyChecked) {
     simulator1->SetPermissionsPolicyHeader(
         {blink::ParsedPermissionsPolicyDeclaration(
             blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
-            /*allowed_origins=*/
-            {blink::OriginWithPossibleWildcards(
-                url::Origin::Create(GURL(kAllowedOriginUrl)),
-                /*has_subdomain_wildcard=*/false)},
+            /*allowed_origins=*/{},
+            /*self_if_matches*/ url::Origin::Create(GURL(kAllowedOriginUrl)),
             /*matches_all_origins=*/false, /*matches_opaque_src=*/false)});
     simulator1->Commit();
 

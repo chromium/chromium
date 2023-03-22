@@ -48,6 +48,10 @@ class BLINK_COMMON_EXPORT
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.allowed_origins;
   }
+  static const absl::optional<url::Origin>& self_if_matches(
+      const blink::ParsedPermissionsPolicyDeclaration& policy) {
+    return policy.self_if_matches;
+  }
   static bool matches_all_origins(
       const blink::ParsedPermissionsPolicyDeclaration& policy) {
     return policy.matches_all_origins;

@@ -255,7 +255,9 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       parsed_origins.emplace_back(url::Origin::Create(GURL(origin)),
                                   /*has_subdomain_wildcard=*/false);
     navigation->SetPermissionsPolicyHeader(
-        {{feature, parsed_origins, false, false}});
+        {{feature, parsed_origins, /*self_if_matches=*/absl::nullopt,
+          /*matches_all_origins=*/false,
+          /*matches_opaque_src=*/false}});
     navigation->Commit();
     *rfh = navigation->GetFinalRenderFrameHost();
   }
@@ -271,7 +273,9 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                                   blink::OriginWithPossibleWildcards(
                                       url::Origin::Create(origin),
                                       /*has_subdomain_wildcard=*/false)},
-                              false, false});
+                              /*self_if_matches=*/absl::nullopt,
+                              /*matches_all_origins=*/false,
+                              /*matches_opaque_src=*/false});
     }
     content::RenderFrameHost* result =
         content::RenderFrameHostTester::For(parent)->AppendChildWithPolicy(

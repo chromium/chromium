@@ -24,6 +24,7 @@ struct OriginWithPossibleWildcards {
 struct ParsedPermissionsPolicyDeclaration {
   PermissionsPolicyFeature feature;
   array<OriginWithPossibleWildcards> allowed_origins;
+  url.mojom.Origin? self_if_matches;
   bool matches_all_origins;
   bool matches_opaque_src;
 };

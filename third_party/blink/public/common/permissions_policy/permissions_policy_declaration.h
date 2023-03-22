@@ -26,6 +26,7 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   ParsedPermissionsPolicyDeclaration(
       mojom::PermissionsPolicyFeature feature,
       const std::vector<OriginWithPossibleWildcards>& allowed_origins,
+      const absl::optional<url::Origin>& self_if_matches,
       bool matches_all_origins,
       bool matches_opaque_src);
   ParsedPermissionsPolicyDeclaration(
@@ -43,8 +44,10 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
 
   mojom::PermissionsPolicyFeature feature;
 
-  // An list of all the origins/wildcards allowed.
+  // An list of all the origins/wildcards allowed (none can be opaque).
   std::vector<OriginWithPossibleWildcards> allowed_origins;
+  // An origin that matches self if 'self' is in the allowlist.
+  absl::optional<url::Origin> self_if_matches;
   // Fallback value is used when feature is enabled for all or disabled for all.
   bool matches_all_origins{false};
   // This flag is set true for a declared policy on an <iframe sandbox>
@@ -52,6 +55,7 @@ struct BLINK_COMMON_EXPORT ParsedPermissionsPolicyDeclaration {
   // document. Usually, the 'src' keyword in a declaration will cause the origin
   // of the iframe to be present in |origins|, but for sandboxed iframes, this
   // flag is set instead.
+  // TODO(crbug.com/1418009): Consider merging into `self_if_matches`.
   bool matches_opaque_src{false};
 
   // Indicates that the parsed policy is deprecated.

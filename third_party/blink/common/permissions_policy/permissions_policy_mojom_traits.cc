@@ -16,8 +16,8 @@ bool StructTraits<blink::mojom::OriginWithPossibleWildcardsDataView,
   if (!in.ReadOrigin(&out->origin))
     return false;
 
-  // An opaque origin cannot have a wildcard.
-  return !out->origin.opaque() || !out->has_subdomain_wildcard;
+  // Origins cannot be opaque.
+  return !out->origin.opaque();
 }
 
 bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
@@ -27,7 +27,8 @@ bool StructTraits<blink::mojom::ParsedPermissionsPolicyDeclarationDataView,
   out->matches_all_origins = in.matches_all_origins();
   out->matches_opaque_src = in.matches_opaque_src();
   return in.ReadFeature(&out->feature) &&
-         in.ReadAllowedOrigins(&out->allowed_origins);
+         in.ReadAllowedOrigins(&out->allowed_origins) &&
+         in.ReadSelfIfMatches(&out->self_if_matches);
 }
 
 }  // namespace mojo

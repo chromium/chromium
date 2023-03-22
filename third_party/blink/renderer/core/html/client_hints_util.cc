@@ -78,7 +78,8 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
         policy_name,
         std::vector<blink::OriginWithPossibleWildcards>(origin_set.begin(),
                                                         origin_set.end()),
-        allow_list.MatchesAll(), allow_list.MatchesOpaqueSrc());
+        allow_list.SelfIfMatches(), allow_list.MatchesAll(),
+        allow_list.MatchesOpaqueSrc());
     container_policy.push_back(declaration);
   }
   auto new_policy = PermissionsPolicy::CopyStateFrom(current_policy);
@@ -137,6 +138,8 @@ void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
 
     // Now we apply the changes from the parent policy to ensure any changes
     // since it was set are respected;
+    merged_policy.self_if_matches =
+        maybe_window_allow_list.value().SelfIfMatches();
     merged_policy.matches_all_origins |=
         maybe_window_allow_list.value().MatchesAll();
     merged_policy.matches_opaque_src |=

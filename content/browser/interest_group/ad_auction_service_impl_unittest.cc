@@ -6453,6 +6453,7 @@ function reportResult() {
       std::vector<blink::OriginWithPossibleWildcards>{
           blink::OriginWithPossibleWildcards(kOriginA,
                                              /*has_subdomain_wildcard=*/false)},
+      /*self_if_matches=*/absl::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
   simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -6664,6 +6665,7 @@ function scoreAd(
             blink::OriginWithPossibleWildcards(
                 kOriginA,
                 /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -6694,6 +6696,7 @@ function scoreAd(
             blink::OriginWithPossibleWildcards(
                 kOriginC,
                 /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -6755,6 +6758,7 @@ function scoreAd(
             blink::OriginWithPossibleWildcards(
                 kOriginA,
                 /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -6785,6 +6789,7 @@ function scoreAd(
             blink::OriginWithPossibleWildcards(
                 kOriginC,
                 /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/absl::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));

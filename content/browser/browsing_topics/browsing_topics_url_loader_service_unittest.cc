@@ -172,6 +172,7 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
                             blink::OriginWithPossibleWildcards(
                                 url::Origin::Create(GURL("https://foo3.com")),
                                 /*has_subdomain_wildcard=*/false)},
+                        /*self_if_matches=*/absl::nullopt,
                         /*matches_all_origins=*/false,
                         /*matches_opaque_src=*/false);
 

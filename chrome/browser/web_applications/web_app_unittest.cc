@@ -358,11 +358,13 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
                            GURL("https://example.com"))};
   app.SetPermissionsPolicy({
       {blink::mojom::PermissionsPolicyFeature::kGyroscope,
-       {},
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/true},
       {blink::mojom::PermissionsPolicyFeature::kGeolocation,
-       {},
+       /*allowed_origins=*/{},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/true,
        /*matches_opaque_src=*/false},
       {blink::mojom::PermissionsPolicyFeature::kGamepad,
@@ -372,6 +374,7 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
          /*has_subdomain_wildcard=*/true},
         {url::Origin::Create(GURL("https://*.example.net")),
          /*has_subdomain_wildcard=*/false}},
+       /*self_if_matches=*/absl::nullopt,
        /*matches_all_origins=*/false,
        /*matches_opaque_src=*/false},
   });

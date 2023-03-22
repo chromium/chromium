@@ -17,8 +17,8 @@ OriginWithPossibleWildcards::OriginWithPossibleWildcards(
     const url::Origin& origin,
     bool has_subdomain_wildcard)
     : origin(origin), has_subdomain_wildcard(has_subdomain_wildcard) {
-  // Origins that do have wildcards cannot be opaque.
-  DCHECK(!origin.opaque() || !has_subdomain_wildcard);
+  // Origins cannot be opaque.
+  DCHECK(!origin.opaque());
 }
 
 OriginWithPossibleWildcards::OriginWithPossibleWildcards(
@@ -30,7 +30,7 @@ OriginWithPossibleWildcards& OriginWithPossibleWildcards::operator=(
 OriginWithPossibleWildcards::~OriginWithPossibleWildcards() = default;
 
 // static
-OriginWithPossibleWildcards OriginWithPossibleWildcards::Parse(
+absl::optional<OriginWithPossibleWildcards> OriginWithPossibleWildcards::Parse(
     const std::string& allowlist_entry,
     const NodeType type) {
   auto wildcard_pos = std::string::npos;
@@ -50,7 +50,7 @@ OriginWithPossibleWildcards OriginWithPossibleWildcards::Parse(
     if (parsed_origin.opaque()) {
       // We early return here assuming even with the `*.` the origin parses
       // opaque.
-      return OriginWithPossibleWildcards();
+      return absl::nullopt;
     } else if (
         net::registry_controlled_domains::HostHasRegistryControlledDomain(
             parsed_origin.host(),
@@ -64,7 +64,7 @@ OriginWithPossibleWildcards OriginWithPossibleWildcards::Parse(
   // valid. Invalid strings will produce an opaque origin.
   const auto parsed_origin = url::Origin::Create(GURL(allowlist_entry));
   if (parsed_origin.opaque()) {
-    return OriginWithPossibleWildcards();
+    return absl::nullopt;
   } else {
     return OriginWithPossibleWildcards(parsed_origin,
                                        /*has_subdomain_wildcard=*/false);
@@ -72,6 +72,7 @@ OriginWithPossibleWildcards OriginWithPossibleWildcards::Parse(
 }
 
 std::string OriginWithPossibleWildcards::Serialize() const {
+  DCHECK(!origin.opaque());
   auto wildcard_pos = std::string::npos;
   auto serialized_origin = origin.Serialize();
   if (has_subdomain_wildcard &&
@@ -86,6 +87,7 @@ std::string OriginWithPossibleWildcards::Serialize() const {
 
 bool OriginWithPossibleWildcards::DoesMatchOrigin(
     const url::Origin& match_origin) const {
+  DCHECK(!origin.opaque());
   if (has_subdomain_wildcard) {
     // This function won't match https://*.foo.com with https://foo.com.
     if (origin == match_origin) {

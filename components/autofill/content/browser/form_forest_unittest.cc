@@ -384,14 +384,18 @@ class FormForestTest : public content::RenderViewHostTestHarness {
         blink::mojom::PermissionsPolicyFeature::kSharedAutofill,
         {blink::OriginWithPossibleWildcards(origin,
                                             /*has_subdomain_wildcard=*/false)},
-        false, false)};
+        /*self_if_matches=*/absl::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false)};
   }
 
   // Explicitly disallows shared-autofill on all origins.
   static blink::ParsedPermissionsPolicy DisallowSharedAutofill() {
     return {blink::ParsedPermissionsPolicyDeclaration(
-        blink::mojom::PermissionsPolicyFeature::kSharedAutofill, {}, false,
-        false)};
+        blink::mojom::PermissionsPolicyFeature::kSharedAutofill,
+        /*allowed_origins=*/{}, /*self_if_matches=*/absl::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false)};
   }
 
   MockContentAutofillDriver* NavigateFrame(content::RenderFrameHost* rfh,

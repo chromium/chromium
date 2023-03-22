@@ -371,10 +371,14 @@ blink::ParsedPermissionsPolicyDeclaration
 CreateParsedPermissionsPolicyDeclaration(
     blink::mojom::PermissionsPolicyFeature feature,
     const std::vector<GURL>& origins,
-    bool match_all_origins = false) {
+    bool match_all_origins = false,
+    const absl::optional<GURL> self_if_matches = absl::nullopt) {
   blink::ParsedPermissionsPolicyDeclaration declaration;
 
   declaration.feature = feature;
+  if (self_if_matches.has_value()) {
+    declaration.self_if_matches = url::Origin::Create(*self_if_matches);
+  }
   declaration.matches_all_origins = match_all_origins;
   declaration.matches_opaque_src = match_all_origins;
 
@@ -391,13 +395,20 @@ CreateParsedPermissionsPolicyDeclaration(
 blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicy(
     const std::vector<blink::mojom::PermissionsPolicyFeature>& features,
     const std::vector<GURL>& origins,
-    bool match_all_origins = false) {
+    bool match_all_origins = false,
+    const absl::optional<GURL> self_if_matches = absl::nullopt) {
   blink::ParsedPermissionsPolicy result;
   result.reserve(features.size());
   for (const auto& feature : features)
     result.push_back(CreateParsedPermissionsPolicyDeclaration(
-        feature, origins, match_all_origins));
+        feature, origins, match_all_origins, self_if_matches));
   return result;
+}
+
+blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesSelf(
+    const std::vector<blink::mojom::PermissionsPolicyFeature>& features,
+    const GURL& self_if_matches) {
+  return CreateParsedPermissionsPolicy(features, {}, false, self_if_matches);
 }
 
 blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicyMatchesAll(
@@ -6800,9 +6811,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_EQ(CreateParsedPermissionsPolicy(
+  EXPECT_EQ(CreateParsedPermissionsPolicyMatchesSelf(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation},
-                {url.DeprecatedGetOriginAsURL()}),
+                url.DeprecatedGetOriginAsURL()),
             root->current_replication_state().permissions_policy_header);
 }
 
@@ -6817,10 +6828,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_EQ(CreateParsedPermissionsPolicy(
+  EXPECT_EQ(CreateParsedPermissionsPolicyMatchesSelf(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
-                {start_url.DeprecatedGetOriginAsURL()}),
+                start_url.DeprecatedGetOriginAsURL()),
             root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page with a new policy, it should
@@ -6849,10 +6860,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), start_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_EQ(CreateParsedPermissionsPolicy(
+  EXPECT_EQ(CreateParsedPermissionsPolicyMatchesSelf(
                 {blink::mojom::PermissionsPolicyFeature::kGeolocation,
                  blink::mojom::PermissionsPolicyFeature::kPayment},
-                {start_url.DeprecatedGetOriginAsURL()}),
+                start_url.DeprecatedGetOriginAsURL()),
             root->current_replication_state().permissions_policy_header);
 
   // When the main frame navigates to a page with a new policy, it should
@@ -6883,18 +6894,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  EXPECT_EQ(
-      CreateParsedPermissionsPolicy(
-          {blink::mojom::PermissionsPolicyFeature::kGeolocation,
-           blink::mojom::PermissionsPolicyFeature::kPayment},
-          {main_url.DeprecatedGetOriginAsURL(), GURL("http://example.com/")}),
-      root->current_replication_state().permissions_policy_header);
+  EXPECT_EQ(CreateParsedPermissionsPolicy(
+                {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+                 blink::mojom::PermissionsPolicyFeature::kPayment},
+                {GURL("http://example.com/")}, /*match_all_origins=*/false,
+                main_url.DeprecatedGetOriginAsURL()),
+            root->current_replication_state().permissions_policy_header);
   EXPECT_EQ(1UL, root->child_count());
   EXPECT_EQ(
-      CreateParsedPermissionsPolicy(
+      CreateParsedPermissionsPolicyMatchesSelf(
           {blink::mojom::PermissionsPolicyFeature::kGeolocation,
            blink::mojom::PermissionsPolicyFeature::kPayment},
-          {main_url.DeprecatedGetOriginAsURL()}),
+          main_url.DeprecatedGetOriginAsURL()),
       root->child_at(0)->current_replication_state().permissions_policy_header);
 
   // Navigate the iframe cross-site.

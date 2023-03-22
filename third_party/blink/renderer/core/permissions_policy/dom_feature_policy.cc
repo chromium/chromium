@@ -122,6 +122,13 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
         return Vector<String>({"*"});
     }
     Vector<String> result;
+    result.reserve(
+        static_cast<wtf_size_t>(allowed_origins.size()) +
+        static_cast<wtf_size_t>(allowlist.SelfIfMatches().has_value()));
+    if (allowlist.SelfIfMatches()) {
+      result.push_back(
+          WTF::String::FromUTF8(allowlist.SelfIfMatches()->Serialize()));
+    }
     for (const auto& origin_with_possible_wildcards : allowed_origins) {
       result.push_back(
           WTF::String::FromUTF8(origin_with_possible_wildcards.Serialize()));

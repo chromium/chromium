@@ -33,8 +33,10 @@ struct BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
   // This constructs a OriginWithPossibleWildcards from an allowlist_entry which
   // might or might not have a subdomain wildcard (only if the type is kHeader).
   // This does not support special types like *, 'self', 'src', or 'none'.
-  static OriginWithPossibleWildcards Parse(const std::string& allowlist_entry,
-                                           const NodeType type);
+  // If the entry cannot be parsed then absl::nullopt is returned.
+  static absl::optional<OriginWithPossibleWildcards> Parse(
+      const std::string& allowlist_entry,
+      const NodeType type);
 
   // This should neatly undo the work of Parse, which is to say it
   // serializes the origin and inserts a *. back into the front of the host

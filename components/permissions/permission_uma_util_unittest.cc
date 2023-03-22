@@ -50,7 +50,8 @@ blink::ParsedPermissionsPolicy CreatePermissionsPolicy(
     allow_origins.emplace_back(url::Origin::Create(GURL(origin)),
                                /*has_subdomain_wildcard=*/false);
   }
-  return {{feature, allow_origins, matches_all_origins,
+  return {{feature, allow_origins, /*self_if_matches=*/absl::nullopt,
+           matches_all_origins,
            /*matches_opaque_src*/ false}};
 }
 

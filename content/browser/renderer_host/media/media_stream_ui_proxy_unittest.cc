@@ -555,7 +555,10 @@ class MediaStreamUIProxyPermissionsPolicyTest
       blink::mojom::PermissionsPolicyFeature feature) {
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         main_rfh()->GetLastCommittedURL(), main_rfh());
-    navigation->SetPermissionsPolicyHeader({{feature, {}, false, false}});
+    navigation->SetPermissionsPolicyHeader(
+        {{feature, /*allowed_origins=*/{}, /*self_if_matches=*/absl::nullopt,
+          /*matches_all_origins=*/false,
+          /*matches_opaque_src=*/false}});
     navigation->Commit();
   }
 

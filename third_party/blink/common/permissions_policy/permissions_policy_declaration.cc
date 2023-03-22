@@ -22,10 +22,12 @@ ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
 ParsedPermissionsPolicyDeclaration::ParsedPermissionsPolicyDeclaration(
     mojom::PermissionsPolicyFeature feature,
     const std::vector<blink::OriginWithPossibleWildcards>& allowed_origins,
+    const absl::optional<url::Origin>& self_if_matches,
     bool matches_all_origins,
     bool matches_opaque_src)
     : feature(feature),
-      allowed_origins(allowed_origins),
+      allowed_origins(std::move(allowed_origins)),
+      self_if_matches(std::move(self_if_matches)),
       matches_all_origins(matches_all_origins),
       matches_opaque_src(matches_opaque_src) {}
 
@@ -39,6 +41,9 @@ ParsedPermissionsPolicyDeclaration::operator=(
 bool ParsedPermissionsPolicyDeclaration::Contains(
     const url::Origin& origin) const {
   if (matches_all_origins || (matches_opaque_src && origin.opaque())) {
+    return true;
+  }
+  if (origin == self_if_matches) {
     return true;
   }
   for (const auto& origin_with_possible_wildcards : allowed_origins) {

@@ -952,6 +952,10 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
       }
       json_decl.Set("feature", feature_name->second);
       base::Value::List allowlist_json;
+      // TODO(crbug.com/1418009): Consolidate code and filter opaque origins.
+      if (decl.self_if_matches) {
+        allowlist_json.Append(decl.self_if_matches->Serialize());
+      }
       for (const auto& origin_with_possible_wildcards : decl.allowed_origins) {
         allowlist_json.Append(origin_with_possible_wildcards.Serialize());
       }

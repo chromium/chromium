@@ -831,6 +831,7 @@ ShellContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
       blink::mojom::PermissionsPolicyFeature::kDirectSockets,
       {blink::OriginWithPossibleWildcards(app_origin,
                                           /*has_subdomain_wildcard=*/false)},
+      /*self_if_matches=*/absl::nullopt,
       /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
   return {{decl}};
 }

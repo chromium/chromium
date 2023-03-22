@@ -491,9 +491,8 @@ TEST_F(SerialTest, RejectOpaqueOriginEmbeddedFrame) {
           ->AppendChildWithPolicy(
               "embedded_frame",
               {{blink::mojom::PermissionsPolicyFeature::kSerial,
-                std::vector{blink::OriginWithPossibleWildcards(
-                    url::Origin::Create(kEmbeddedUrl),
-                    /*has_subdomain_wildcard=*/false)},
+                /*allowed_origins=*/{},
+                /*self_if_matches=*/url::Origin::Create(kEmbeddedUrl),
                 /*matches_all_origins=*/false, /*matches_opaque_src=*/true}});
   embedded_rfh = NavigationSimulator::NavigateAndCommitFromDocument(
       kEmbeddedUrl, embedded_rfh);

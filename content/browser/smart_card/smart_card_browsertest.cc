@@ -172,10 +172,9 @@ SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
   blink::ParsedPermissionsPolicy out;
   blink::ParsedPermissionsPolicyDeclaration decl(
       blink::mojom::PermissionsPolicyFeature::kSmartCard,
-      /*allowed_origins=*/
-      {blink::OriginWithPossibleWildcards(app_origin,
-                                          /*has_subdomain_wildcard=*/false)},
-      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+      /*allowed_origins=*/{},
+      /*self_if_matches=*/app_origin, /*matches_all_origins=*/false,
+      /*matches_opaque_src=*/false);
   out.push_back(decl);
   return out;
 }

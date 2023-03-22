@@ -120,6 +120,7 @@ class ParsingContext {
   struct ParsedAllowlist {
     std::vector<blink::OriginWithPossibleWildcards> allowed_origins
         ALLOW_DISCOURAGED_TYPE("Permission policy uses STL for code sharing");
+    absl::optional<url::Origin> self_if_matches;
     bool matches_all_origins{false};
     bool matches_opaque_src{false};
 
@@ -242,8 +243,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     //       |src_origin| is not null), |src_origin| is not opaque; or
     //     c. the opaque origin of the frame, if |src_origin| is opaque.
     if (!src_origin_) {
-      allowlist.allowed_origins.emplace_back(self_origin_->ToUrlOrigin(),
-                                             /*has_subdomain_wildcard=*/false);
+      allowlist.self_if_matches = self_origin_->ToUrlOrigin();
     } else if (!src_origin_->IsOpaque()) {
       allowlist.allowed_origins.emplace_back(src_origin_->ToUrlOrigin(),
                                              /*has_subdomain_wildcard=*/false);
@@ -273,12 +273,13 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // adding an origin to the allowlist.
       bool target_is_opaque = false;
       bool target_is_all = false;
+      bool target_is_self = false;
+      url::Origin self;
 
       // 'self' origin is used if the origin is exactly 'self'.
       if (EqualIgnoringASCIICase(origin_string, "'self'")) {
-        origin_with_possible_wildcards =
-            OriginWithPossibleWildcards(self_origin_->ToUrlOrigin(),
-                                        /*has_subdomain_wildcard=*/false);
+        target_is_self = true;
+        self = self_origin_->ToUrlOrigin();
       }
       // 'src' origin is used if |src_origin| is available and the
       // origin is a match for 'src'. |src_origin| is only set
@@ -300,9 +301,13 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // valid. Invalid strings will produce an opaque origin, which will
       // result in an error message.
       else {
-        origin_with_possible_wildcards =
-            OriginWithPossibleWildcards::Parse(origin_string.Utf8(), type);
-        if (origin_with_possible_wildcards.origin.opaque()) {
+        absl::optional<OriginWithPossibleWildcards>
+            maybe_origin_with_possible_wildcards =
+                OriginWithPossibleWildcards::Parse(origin_string.Utf8(), type);
+        if (maybe_origin_with_possible_wildcards) {
+          origin_with_possible_wildcards =
+              *maybe_origin_with_possible_wildcards;
+        } else {
           logger_.Warn("Unrecognized origin: '" + origin_string + "'.");
           continue;
         }
@@ -313,6 +318,8 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
         allowlist.matches_opaque_src = true;
       } else if (target_is_opaque) {
         allowlist.matches_opaque_src = true;
+      } else if (target_is_self) {
+        allowlist.self_if_matches = self;
       } else {
         allowlist.allowed_origins.emplace_back(origin_with_possible_wildcards);
       }
@@ -349,6 +356,7 @@ absl::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
 
   ParsedPermissionsPolicyDeclaration parsed_feature(*feature);
   parsed_feature.allowed_origins = std::move(parsed_allowlist.allowed_origins);
+  parsed_feature.self_if_matches = parsed_allowlist.self_if_matches;
   parsed_feature.matches_all_origins = parsed_allowlist.matches_all_origins;
   parsed_feature.matches_opaque_src = parsed_allowlist.matches_opaque_src;
 

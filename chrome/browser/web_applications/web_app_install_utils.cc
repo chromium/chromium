@@ -721,6 +721,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   for (const auto& decl : manifest.permissions_policy) {
     blink::ParsedPermissionsPolicyDeclaration copy;
     copy.feature = decl.feature;
+    copy.self_if_matches = decl.self_if_matches;
     for (const auto& origin : decl.allowed_origins)
       copy.allowed_origins.push_back(origin);
     copy.matches_all_origins = decl.matches_all_origins;

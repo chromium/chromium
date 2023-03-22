@@ -109,7 +109,9 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
            std::vector{blink::OriginWithPossibleWildcards(
                url::Origin::Create(kEmbeddedUrl),
                /*has_subdomain_wildcard=*/false)},
-           false, false});
+           /*self_if_matches=*/absl::nullopt,
+           /*matches_all_origins=*/false,
+           /*matches_opaque_src=*/false});
     }
     RenderFrameHost* embedded_rfh =
         RenderFrameHostTester::For(main_rfh())

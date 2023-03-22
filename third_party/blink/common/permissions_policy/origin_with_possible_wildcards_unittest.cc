@@ -33,14 +33,9 @@ TEST(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
       std::make_tuple(url::Origin::Create(GURL("https://foo.com")),
                       url::Origin::Create(GURL("https://bar.foo.com")), false,
                       false, "Different subdomain, no wildcard"),
-      std::make_tuple(url::Origin::Create(GURL("https://foo.com")),
-                      url::Origin(), false, false,
-                      "Origin to opaque, no wildcard"),
       std::make_tuple(url::Origin(),
                       url::Origin::Create(GURL("https://foo.com")), false,
                       false, "Opaque to origin, no wildcard"),
-      std::make_tuple(url::Origin(), url::Origin(), false, false,
-                      "Opaque to opaque, no wildcard"),
       std::make_tuple(url::Origin::Create(GURL("file:///test")),
                       url::Origin::Create(GURL("file:///test")), false, true,
                       "File, no wildcard"),
@@ -119,10 +114,10 @@ TEST(OriginWithPossibleWildcardsTest, Parse) {
                       "https://%2A.foo.com", false,
                       "Origin with subdomain wildcard in attribute"),
       std::make_tuple("*://foo.com",
-                      OriginWithPossibleWildcards::NodeType::kHeader, "null",
-                      false, "Origin with scheme wildcard in header"),
+                      OriginWithPossibleWildcards::NodeType::kHeader, "", false,
+                      "Origin with scheme wildcard in header"),
       std::make_tuple("*://foo.com",
-                      OriginWithPossibleWildcards::NodeType::kAttribute, "null",
+                      OriginWithPossibleWildcards::NodeType::kAttribute, "",
                       false, "Origin with scheme wildcard in attribute"),
       std::make_tuple(
           "https://*", OriginWithPossibleWildcards::NodeType::kHeader,
@@ -164,10 +159,10 @@ TEST(OriginWithPossibleWildcardsTest, Parse) {
                       "https://%2A.example.test", false,
                       "Origin with unknown tld host wildcard in attribute"),
       std::make_tuple("https://foo.com:*",
-                      OriginWithPossibleWildcards::NodeType::kHeader, "null",
-                      false, "Origin with port wildcard in header"),
+                      OriginWithPossibleWildcards::NodeType::kHeader, "", false,
+                      "Origin with port wildcard in header"),
       std::make_tuple("https://foo.com:*",
-                      OriginWithPossibleWildcards::NodeType::kAttribute, "null",
+                      OriginWithPossibleWildcards::NodeType::kAttribute, "",
                       false, "Origin with port wildcard in attribute"),
       std::make_tuple("https://bar.*.foo.com",
                       OriginWithPossibleWildcards::NodeType::kHeader,
@@ -191,10 +186,14 @@ TEST(OriginWithPossibleWildcardsTest, Parse) {
         OriginWithPossibleWildcards::Parse(std::get<0>(value),
                                            std::get<1>(value));
     SCOPED_TRACE(std::get<4>(value));
-    EXPECT_EQ(std::get<2>(value),
-              origin_with_possible_wildcards.origin.Serialize());
-    EXPECT_EQ(std::get<3>(value),
-              origin_with_possible_wildcards.has_subdomain_wildcard);
+    if (strlen(std::get<2>(value))) {
+      EXPECT_EQ(std::get<2>(value),
+                origin_with_possible_wildcards->origin.Serialize());
+      EXPECT_EQ(std::get<3>(value),
+                origin_with_possible_wildcards->has_subdomain_wildcard);
+    } else {
+      EXPECT_FALSE(origin_with_possible_wildcards);
+    }
   }
 }
 
@@ -209,7 +208,6 @@ TEST(OriginWithPossibleWildcardsTest, Serialize) {
                       "Origin with improper subdomain wildcard"),
       std::make_tuple("https://%2A.com", false, "https://%2A.com",
                       "Origin with non-registerable subdomain wildcard"),
-      std::make_tuple("null", false, "null", "Opaque origin"),
   };
   for (const auto& value : values) {
     const auto& origin_with_possible_wildcards = OriginWithPossibleWildcards(
@@ -220,21 +218,26 @@ TEST(OriginWithPossibleWildcardsTest, Serialize) {
 }
 
 TEST(OriginWithPossibleWildcardsTest, Constructors) {
-  OriginWithPossibleWildcards a;
-  OriginWithPossibleWildcards b(url::Origin(), false);
-  OriginWithPossibleWildcards c(b);
+  OriginWithPossibleWildcards a(url::Origin::Create(GURL("https://google.com")),
+                                false);
+  OriginWithPossibleWildcards b(
+      url::Origin::Create(GURL("https://google.com:443")), false);
+  OriginWithPossibleWildcards c(url::Origin::Create(GURL("https://google.com")),
+                                true);
   OriginWithPossibleWildcards d = c;
-  EXPECT_NE(a, b);
-  EXPECT_EQ(b, c);
+  EXPECT_EQ(a, b);
+  EXPECT_NE(b, c);
   EXPECT_EQ(c, d);
-  mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(a, b);
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(
+          a, b));
   EXPECT_EQ(a, b);
 }
 
 TEST(OriginWithPossibleWildcardsTest, Opaque) {
   EXPECT_DCHECK_DEATH(OriginWithPossibleWildcards(url::Origin(), true));
-  OriginWithPossibleWildcards original(url::Origin(), false);
-  original.has_subdomain_wildcard = true;
+  EXPECT_DCHECK_DEATH(OriginWithPossibleWildcards(url::Origin(), false));
+  OriginWithPossibleWildcards original;
   OriginWithPossibleWildcards copy;
   EXPECT_FALSE(
       mojo::test::SerializeAndDeserialize<mojom::OriginWithPossibleWildcards>(
