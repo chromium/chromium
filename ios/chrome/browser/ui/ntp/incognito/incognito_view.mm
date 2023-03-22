@@ -83,7 +83,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   // Use a regular expression to find and remove all leading whitespace from the
   // lines which contain the "<li>" tag.  This un-indents the bulleted lines.
   listString = [listString
-      stringByReplacingOccurrencesOfString:@"\n +<li>"
+      stringByReplacingOccurrencesOfString:@"\n *<li>"
                                 withString:@"\n\u2022  "
                                    options:NSRegularExpressionSearch
                                      range:NSMakeRange(0, [listString length])];
