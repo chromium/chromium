@@ -511,6 +511,7 @@
       'linux-rel-cft': {
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+	  '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
         ],
         'swarming': {
           'shards': 8,
@@ -527,6 +528,9 @@
         },
       },
       'mac-rel-cft': {
+       "args": [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
+        ],
         'swarming': {
           'dimension_sets': [
             {
@@ -578,6 +582,7 @@
         'args': [
           '--target',
           'Release_x64',
+	  '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
         ],
         'swarming': {
           "shards": 12,
@@ -615,6 +620,9 @@
       'Win10 Tests x64 (dbg)',
       'devtools_frontend_linux_blink_light_rel',
       'devtools_frontend_linux_blink_light_rel_fastbuild',
+      'linux-rel-cft',
+      'mac-rel-cft',
+      'win-rel-cft',
     ],
     'modifications': {
       'Linux Tests': {
