@@ -92854,6 +92854,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="Throttle prevented the prefetch"/>
 </enum>
 
+<enum name="SearchPrefetchResponseDataReaderStatus">
+  <int value="0" label="kCreated"/>
+  <int value="1" label="kStarted"/>
+  <int value="2" label="kCompleted"/>
+  <int value="3" label="kFailedWithErrorCode"/>
+  <int value="4" label="kDataWritingFailure"/>
+  <int value="5" label="kCanceledByClient"/>
+  <int value="6" label="kCanceledByLoader"/>
+</enum>
+
 <enum name="SearchPrefetchServingReason">
   <int value="0" label="Served a prefetch response"/>
   <int value="1" label="Search engine not set"/>

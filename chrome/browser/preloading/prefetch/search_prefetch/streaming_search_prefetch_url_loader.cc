@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/c/system/data_pipe.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -84,6 +85,11 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::OnStatusCodeReady(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK(!url_loader_completion_status_);
   url_loader_completion_status_ = status;
+  if (url_loader_completion_status_->error_code != net::OK) {
+    // TODO(https://crbug.com/1400881): This status should only be kStarted
+    // after discarding the prerendered page upon pipeline creation failure.
+    status_ = ResponseDataReaderStatus::kFailedWithErrorCode;
+  }
   MaybeSendCompletionSignal();
 }
 
@@ -97,6 +103,8 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
     // TODO(https://crbug.com/1400881): Discard prerender.
     return;
   }
+  CHECK_EQ(status_, ResponseDataReaderStatus::kCreated);
+  status_ = ResponseDataReaderStatus::kStarted;
   forwarding_client_->OnReceiveResponse(resource_response->Clone(),
                                         std::move(consumer_handle),
                                         /*cached_metadata=*/absl::nullopt);
@@ -120,7 +128,9 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData(
     }
 
     if (result != MOJO_RESULT_OK) {
-      // Failed it;
+      CHECK_EQ(status_, ResponseDataReaderStatus::kStarted);
+      // This case is usually caused by the client stopping loading.
+      status_ = ResponseDataReaderStatus::kDataWritingFailure;
       return;
     }
 
@@ -148,12 +158,49 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::
     return;
   }
   if (producer_handle_) {
+    if (url_loader_completion_status_->error_code == net::OK) {
+      CHECK_EQ(status_, ResponseDataReaderStatus::kStarted);
+      status_ = ResponseDataReaderStatus::kCompleted;
+    }
     forwarding_client_->OnComplete(*url_loader_completion_status_);
   }
   producer_handle_.reset();
 }
 
-StreamingSearchPrefetchURLLoader::ResponseReader::~ResponseReader() = default;
+void StreamingSearchPrefetchURLLoader::ResponseReader::OnDestroyed(
+    bool canceled_by_client) {
+  switch (status_) {
+    // Used to track the data pipe construction error. Do not care about client.
+    case ResponseDataReaderStatus::kCreated:
+    // Has completed serving.
+    case ResponseDataReaderStatus::kCompleted:
+    // For tracking reader failures.
+    case ResponseDataReaderStatus::kFailedWithErrorCode:
+    case ResponseDataReaderStatus::kDataWritingFailure:
+    // Has recorded the reason.
+    case ResponseDataReaderStatus::kCanceledByClient:
+    case ResponseDataReaderStatus::kCanceledByLoader:
+      return;
+    // The `StreamingSearchPrefetchURLLoader` is destroyed, so this instance
+    // is destroyed.
+    case ResponseDataReaderStatus::kStarted:
+      status_ = canceled_by_client
+                    ? ResponseDataReaderStatus::kCanceledByClient
+                    : ResponseDataReaderStatus::kCanceledByLoader;
+      return;
+  }
+}
+
+StreamingSearchPrefetchURLLoader::ResponseReader::~ResponseReader() {
+  // Always ensure we recorded something on destruction.
+  OnDestroyed(/*canceled_by_client=*/false);
+
+  // TODO(crbug.com/1400881): For now prerender is the only use case. After
+  // refactoring it should specify the client type.
+  base::UmaHistogramEnumeration(
+      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender", status_);
+}
+
 void StreamingSearchPrefetchURLLoader::ResponseReader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
@@ -334,6 +381,9 @@ void StreamingSearchPrefetchURLLoader::CreateResponseReaderForPrerender(
     mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client) {
   DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
   DCHECK(streaming_prefetch_request_);
+  if (response_reader_for_prerender_) {
+    response_reader_for_prerender_->OnDestroyed(/* canceled_by_client=*/false);
+  }
   response_reader_for_prerender_ = std::make_unique<ResponseReader>(
       std::move(receiver), std::move(forwarding_client),
       base::BindOnce(
@@ -349,6 +399,8 @@ void StreamingSearchPrefetchURLLoader::CreateResponseReaderForPrerender(
 
 void StreamingSearchPrefetchURLLoader::OnPrerenderForwardingDisconnect() {
   DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
+  DCHECK(response_reader_for_prerender_);
+  response_reader_for_prerender_->OnDestroyed(/*canceled_by_client=*/true);
   response_reader_for_prerender_.reset();
   if (self_pointer_) {
     MaybeDeleteItself();
@@ -615,6 +667,10 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
     OnForwardingComplete();
     return;
   }
+  status_ = status;
+  if (response_reader_for_prerender_) {
+    response_reader_for_prerender_->OnStatusCodeReady(status);
+  }
 
   if (streaming_prefetch_request_) {
     DCHECK(!forwarding_client_);
@@ -625,11 +681,6 @@ void StreamingSearchPrefetchURLLoader::OnComplete(
       streaming_prefetch_request_->ErrorEncountered();
       return;
     }
-  }
-
-  status_ = status;
-  if (response_reader_for_prerender_) {
-    response_reader_for_prerender_->OnStatusCodeReady(status);
   }
 }
 
