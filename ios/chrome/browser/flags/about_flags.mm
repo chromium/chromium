@@ -427,10 +427,16 @@ const FeatureEntry::FeatureVariation kFeedBackgroundRefreshVariations[] = {
 // Feed Foreground Refresh Feature Params.
 const FeatureEntry::FeatureParam kFeedSessionCloseForegroundRefresh[] = {
     {kEnableFeedSessionCloseForegroundRefresh, "true"},
-    {kEnableFeedAppCloseForegroundRefresh, "false"}};
+    {kEnableFeedAppCloseForegroundRefresh, "false"},
+    {kEnableFeedAppCloseBackgroundRefresh, "false"}};
 const FeatureEntry::FeatureParam kFeedAppCloseForegroundRefresh[] = {
     {kEnableFeedSessionCloseForegroundRefresh, "false"},
-    {kEnableFeedAppCloseForegroundRefresh, "true"}};
+    {kEnableFeedAppCloseForegroundRefresh, "true"},
+    {kEnableFeedAppCloseBackgroundRefresh, "false"}};
+const FeatureEntry::FeatureParam kFeedAppCloseBackgroundRefresh[] = {
+    {kEnableFeedSessionCloseForegroundRefresh, "false"},
+    {kEnableFeedAppCloseForegroundRefresh, "false"},
+    {kEnableFeedAppCloseBackgroundRefresh, "true"}};
 
 // Feed Invisible Foreground Refresh Feature Variations.
 const FeatureEntry::FeatureVariation
@@ -439,6 +445,8 @@ const FeatureEntry::FeatureVariation
          std::size(kFeedSessionCloseForegroundRefresh), nullptr},
         {"app close foreground refresh", kFeedAppCloseForegroundRefresh,
          std::size(kFeedAppCloseForegroundRefresh), nullptr},
+        {"app close background refresh", kFeedAppCloseBackgroundRefresh,
+         std::size(kFeedAppCloseBackgroundRefresh), nullptr},
 };
 
 const FeatureEntry::FeatureParam kTrendingQueriesEnableAllUsers[] = {

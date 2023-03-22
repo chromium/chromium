@@ -78,6 +78,10 @@ const char kEnableFeedSessionCloseForegroundRefresh[] =
     "EnableFeedSessionCloseForegroundRefresh";
 const char kEnableFeedAppCloseForegroundRefresh[] =
     "EnableFeedAppCloseForegroundRefresh";
+const char kEnableFeedAppCloseBackgroundRefresh[] =
+    "EnableFeedAppCloseBackgroundRefresh";
+const char kAppCloseBackgroundRefreshIntervalInSeconds[] =
+    "AppCloseBackgroundRefreshIntervalInSeconds";
 const char kFeedSessionEndTimerTimeoutInSeconds[] =
     "FeedSessionEndTimerTimeoutInSeconds";
 const char kFeedSeenRefreshThresholdInSeconds[] =
@@ -198,6 +202,10 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
       /*default=*/0);
 }
 
+bool IsFeedInvisibleForegroundRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedInvisibleForegroundRefresh);
+}
+
 bool IsFeedSessionCloseForegroundRefreshEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedInvisibleForegroundRefresh,
@@ -210,6 +218,20 @@ bool IsFeedAppCloseForegroundRefreshEnabled() {
       kEnableFeedInvisibleForegroundRefresh,
       kEnableFeedAppCloseForegroundRefresh,
       /*default=*/false);
+}
+
+bool IsFeedAppCloseBackgroundRefreshEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedInvisibleForegroundRefresh,
+      kEnableFeedAppCloseBackgroundRefresh,
+      /*default=*/false);
+}
+
+double GetAppCloseBackgroundRefreshIntervalInSeconds() {
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      kEnableFeedInvisibleForegroundRefresh,
+      kAppCloseBackgroundRefreshIntervalInSeconds,
+      /*default=*/base::Minutes(5).InSecondsF());
 }
 
 double GetFeedSessionEndTimerTimeoutInSeconds() {

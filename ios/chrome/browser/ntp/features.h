@@ -72,6 +72,14 @@ extern const char kEnableFeedSessionCloseForegroundRefresh[];
 // on app backgrounding.
 extern const char kEnableFeedAppCloseForegroundRefresh[];
 
+// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
+// soon after the app is backgrounded.
+extern const char kEnableFeedAppCloseBackgroundRefresh[];
+
+// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
+// background refresh interval in seconds.
+extern const char kAppCloseBackgroundRefreshIntervalInSeconds[];
+
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` for the time
 // interval used to set the session end timer.
 extern const char kFeedSessionEndTimerTimeoutInSeconds[];
@@ -138,6 +146,9 @@ double GetBackgroundRefreshIntervalInSeconds();
 // Returns the background refresh max age in seconds.
 double GetBackgroundRefreshMaxAgeInSeconds();
 
+// Whether feed can be refreshed while not visible.
+bool IsFeedInvisibleForegroundRefreshEnabled();
+
 // Whether feed is refreshed after the user ends a Feed session, but while the
 // app is still in the foreground (e.g., user switches tabs, user navigates away
 // from Feed in current tab).
@@ -146,6 +157,14 @@ bool IsFeedSessionCloseForegroundRefreshEnabled();
 // Whether feed is refreshed at the moment the app is backgrounding. This is
 // different from background refresh.
 bool IsFeedAppCloseForegroundRefreshEnabled();
+
+// Whether feed is refreshed in the background soon after the app is
+// backgrounded.
+bool IsFeedAppCloseBackgroundRefreshEnabled();
+
+// The earliest interval to refresh in the background after app enters the
+// background in app close background refresh.
+double GetAppCloseBackgroundRefreshIntervalInSeconds();
 
 // Returns the time interval used to set the session end timer.
 double GetFeedSessionEndTimerTimeoutInSeconds();

@@ -82,7 +82,9 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   if (IsFeedBackgroundRefreshEnabled()) {
     [self scheduleBackgroundRefresh];
   }
-  if (IsFeedAppCloseForegroundRefreshEnabled()) {
+  if (IsFeedAppCloseBackgroundRefreshEnabled()) {
+    [self scheduleBackgroundRefresh];
+  } else if (IsFeedAppCloseForegroundRefreshEnabled()) {
     [self feedService]->RefreshFeed(FeedRefreshTrigger::kForegroundAppClose);
   }
 }
@@ -138,7 +140,8 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   // Do not DCHECK IsFeedBackgroundRefreshEnabled() because this is also called
   // from the background task handler, and the value could have changed during a
   // cold start.
-  if (!IsFeedBackgroundRefreshEnabled()) {
+  if (!IsFeedBackgroundRefreshEnabled() ||
+      !IsFeedAppCloseBackgroundRefreshEnabled()) {
     return;
   }
   BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
@@ -158,6 +161,10 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   if (IsFeedOverrideDefaultsEnabled()) {
     earliestBeginDate = [NSDate
         dateWithTimeIntervalSinceNow:GetBackgroundRefreshIntervalInSeconds()];
+  } else if (IsFeedAppCloseBackgroundRefreshEnabled()) {
+    earliestBeginDate =
+        [NSDate dateWithTimeIntervalSinceNow:
+                    GetAppCloseBackgroundRefreshIntervalInSeconds()];
   } else {
     // This is expected to crash if FeedService is not available.
     earliestBeginDate =
