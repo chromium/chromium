@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -21,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
@@ -2389,7 +2391,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // The registration should not have been stored, so we shouldn't cache the
   // extension version.
   base::Version stored_version =
-      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersionForTest(
+      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersion(
           extension->id());
   EXPECT_FALSE(stored_version.IsValid());
 }
@@ -2840,24 +2842,47 @@ class ServiceWorkerTestWithEarlyReadyMesssage
 // Regression test for crbug.com/1271154.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
                        PRE_MissingRegistrationMitigated) {
-  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
-      "service_worker/worker_based_background/activate_ensures_register"));
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII(
+          "service_worker/worker_based_background/activate_ensures_register"),
+      {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
-  EXPECT_TRUE(WaitForMessage());
+  ASSERT_TRUE(WaitForMessage());
+  base::RunLoop().RunUntilIdle();
 
-  // Unregister the extension service worker.
+  // Since we wait for the registration to be stored (and run until idle,
+  // guaranteeing all observers see the result), we should now have a stored
+  // version for the service worker in the extensions system.
+  ServiceWorkerTaskQueue* service_worker_task_queue =
+      ServiceWorkerTaskQueue::Get(browser()->profile());
+  base::Version stored_version =
+      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersion(
+          extension->id());
+
   {
+    // Bypass our unregistration protections to unregister the worker. Though
+    // we largely prevent this, it could still happen by means of e.g.
+    // disk or pref corruption.
     base::RunLoop run_loop;
     content::ServiceWorkerContext* context = GetServiceWorkerContext(profile());
-
     // The service worker is registered at the root scope.
+    const GURL& scope = extension->url();
+    base::AutoReset<const GURL*> allow_worker_unregistration =
+        ChromeContentBrowserClientExtensionsPart::
+            AllowServiceWorkerUnregistrationForScopeForTesting(&scope);
+
     context->UnregisterServiceWorker(
-        extension->url(),
-        blink::StorageKey::CreateFirstParty(extension->origin()),
+        scope, blink::StorageKey::CreateFirstParty(extension->origin()),
         base::BindLambdaForTesting(
-            [&run_loop](bool success) { run_loop.Quit(); }));
+            [&run_loop](bool success) { run_loop.QuitWhenIdle(); }));
     run_loop.Run();
   }
+
+  // The version should still be stored in the extension system.
+  stored_version =
+      service_worker_task_queue->RetrieveRegisteredServiceWorkerVersion(
+          extension->id());
+  EXPECT_TRUE(stored_version.IsValid());
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,

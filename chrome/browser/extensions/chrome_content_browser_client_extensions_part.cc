@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -64,6 +65,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
+#include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
@@ -95,6 +97,9 @@ using content::WebContents;
 namespace extensions {
 
 namespace {
+
+// If non-null, a scope of a service worker to always allow to be unregistered.
+const GURL* g_allow_service_worker_unregistration_scope = nullptr;
 
 // Used by the GetPrivilegeRequiredByUrl() and GetProcessPrivilege() functions
 // below.  Extensions and hosted apps require different privileges to be
@@ -574,6 +579,53 @@ bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
   return ::extensions::AllowServiceWorker(scope, script_url, extension);
 }
 
+bool ChromeContentBrowserClientExtensionsPart::
+    MayDeleteServiceWorkerRegistration(
+        const GURL& scope,
+        content::BrowserContext* browser_context) {
+  // We only care about extension urls.
+  if (!scope.SchemeIs(kExtensionScheme)) {
+    return true;
+  }
+
+  // Check if we're allowed to unregister this worker for testing purposes.
+  if (g_allow_service_worker_unregistration_scope &&
+      *g_allow_service_worker_unregistration_scope == scope) {
+    return true;
+  }
+
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetExtensionOrAppByURL(scope);
+  if (!extension) {
+    return true;
+  }
+
+  // We only consider service workers that are root-scoped and for service
+  // worker-based extensions.
+  if (scope != extension->url() ||
+      !BackgroundInfo::IsServiceWorkerBased(extension)) {
+    return true;
+  }
+
+  base::Version registered_version =
+      ServiceWorkerTaskQueue::Get(browser_context)
+          ->RetrieveRegisteredServiceWorkerVersion(extension->id());
+  // The service worker was never fully registered; this can happen in the case
+  // of e.g. throwing errors in response to installation events (where the
+  // worker is registered, but then immediately unregistered).
+  if (!registered_version.IsValid()) {
+    return true;
+  }
+
+  // Don't allow the unregistration of a valid, enabled service worker-based
+  // extension's background service worker. Doing so would put the extension in
+  // a broken state. The service worker registration is instead tied to the
+  // extension's enablement; it is unregistered when the extension is disabled
+  // or uninstalled.
+  return registered_version != extension->version();
+}
+
 // static
 std::vector<url::Origin> ChromeContentBrowserClientExtensionsPart::
     GetOriginsRequiringDedicatedProcess() {
@@ -627,10 +679,18 @@ bool ChromeContentBrowserClientExtensionsPart::IsBuiltinComponent(
       ->Exists(extension_id);
 }
 
+// static
 bool ChromeContentBrowserClientExtensionsPart::AreExtensionsDisabledForProfile(
     content::BrowserContext* browser_context) {
   return AreKeyedServicesDisabledForProfileByDefault(
       Profile::FromBrowserContext(browser_context));
+}
+
+// static
+base::AutoReset<const GURL*> ChromeContentBrowserClientExtensionsPart::
+    AllowServiceWorkerUnregistrationForScopeForTesting(const GURL* scope) {
+  return base::AutoReset<const GURL*>(
+      &g_allow_service_worker_unregistration_scope, scope);
 }
 
 void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(

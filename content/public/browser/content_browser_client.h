@@ -725,6 +725,14 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& script_url,
       BrowserContext* context);
 
+  // Returns true if the service worker associated with the given `scope` may be
+  // deleted. This can return false if the service worker is tied to another
+  // service that fundamentally should not be allowed to be removed (today, this
+  // is limited to extensions).
+  virtual bool MayDeleteServiceWorkerRegistration(
+      const GURL& scope,
+      BrowserContext* browser_context);
+
   // Allows the embedder to enable process-wide blink features before starting a
   // service worker. This is similar to
   // `blink.mojom.CommitNavigationParams.force_enabled_origin_trials` but for

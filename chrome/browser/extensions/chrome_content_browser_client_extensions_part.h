@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -81,6 +82,9 @@ class ChromeContentBrowserClientExtensionsPart
                                  const GURL& first_party_url,
                                  const GURL& script_url,
                                  content::BrowserContext* context);
+  static bool MayDeleteServiceWorkerRegistration(
+      const GURL& scope,
+      content::BrowserContext* browser_context);
   static std::vector<url::Origin> GetOriginsRequiringDedicatedProcess();
 
   // Helper function to call InfoMap::SetSigninProcess().
@@ -103,6 +107,12 @@ class ChromeContentBrowserClientExtensionsPart
   // Checks if the given context support extensions, based on the profile type.
   static bool AreExtensionsDisabledForProfile(
       content::BrowserContext* browser_context);
+
+  // Temporarily allows unregistration of the service worker with the given
+  // `scope` for testing purposes; unregistration is allowed while the returned
+  // AutoReset remains in scope.
+  static base::AutoReset<const GURL*>
+  AllowServiceWorkerUnregistrationForScopeForTesting(const GURL* scope);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeContentBrowserClientExtensionsPartTest,
