@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -13,11 +14,13 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("android_webview")
 public class AwHttpAuthHandler {
+    private static final String TAG = "AwHttpAuthHandler";
 
     private long mNativeAwHttpAuthHandler;
     private final boolean mFirstAttempt;
 
     public void proceed(String username, String password) {
+        checkOnUiThread();
         if (mNativeAwHttpAuthHandler != 0) {
             AwHttpAuthHandlerJni.get().proceed(
                     mNativeAwHttpAuthHandler, AwHttpAuthHandler.this, username, password);
@@ -26,6 +29,7 @@ public class AwHttpAuthHandler {
     }
 
     public void cancel() {
+        checkOnUiThread();
         if (mNativeAwHttpAuthHandler != 0) {
             AwHttpAuthHandlerJni.get().cancel(mNativeAwHttpAuthHandler, AwHttpAuthHandler.this);
             mNativeAwHttpAuthHandler = 0;
@@ -33,6 +37,7 @@ public class AwHttpAuthHandler {
     }
 
     public boolean isFirstAttempt() {
+        checkOnUiThread();
         return mFirstAttempt;
     }
 
@@ -44,6 +49,13 @@ public class AwHttpAuthHandler {
     private AwHttpAuthHandler(long nativeAwHttpAuthHandler, boolean firstAttempt) {
         mNativeAwHttpAuthHandler = nativeAwHttpAuthHandler;
         mFirstAttempt = firstAttempt;
+    }
+
+    private void checkOnUiThread() {
+        if (!ThreadUtils.runningOnUiThread()) {
+            throw new IllegalStateException(
+                    "Either proceed(), cancel, or isFirstAttempt() should be called on UI thread");
+        }
     }
 
     @CalledByNative
