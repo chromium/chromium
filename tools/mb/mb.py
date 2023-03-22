@@ -1183,6 +1183,10 @@ class MetaBuildWrapper:
       gn_runtime_deps_path = self.ToAbsPath(build_dir, 'runtime_deps')
       self.WriteFile(gn_runtime_deps_path, '\n'.join(labels) + '\n')
       cmd.append('--runtime-deps-list-file=%s' % gn_runtime_deps_path)
+      # Write all generated targets to a JSON file called project.json
+      # in the build dir.
+      cmd.append('--ide=json')
+      cmd.append('--json-file-name=project.json')
 
     ret, output, _ = self.Run(cmd)
     if ret != 0:
