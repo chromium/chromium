@@ -12772,6 +12772,24 @@
             ]
         }
     ],
+    "UPMStringsExperimentAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_v2_20230302",
+                    "params": {
+                        "syncing_string_version": "2"
+                    },
+                    "enable_features": [
+                        "ExploratorySaveUpdatePasswordStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "USSMigrationEnabled": [
         {
             "platforms": [
