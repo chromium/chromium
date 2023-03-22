@@ -27,7 +27,6 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -2262,10 +2261,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mStartSurfaceSupplier.hasValue() && mStartSurfaceSupplier.get().isHomepageShown();
         final Tab currentTab = isStartSurfaceHomepageShowing ? null : getActivityTab();
         if (currentTab == null) {
-            BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
-            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
-            assertOnLastBackPress();
-            moveTaskToBack(true);
+            minimizeAppAndCloseTabOnBackPress(null);
             return true;
         }
 
@@ -2313,7 +2309,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return false;
     }
 
-    private boolean minimizeAppAndCloseTabOnBackPress(@NonNull Tab currentTab) {
+    private boolean minimizeAppAndCloseTabOnBackPress(@Nullable Tab currentTab) {
+        if (currentTab == null) {
+            BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+            MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
+            assertOnLastBackPress();
+            moveTaskToBack(true);
+            return true;
+        }
         final boolean shouldCloseTab = backShouldCloseTab(currentTab);
         final WebContents webContents = currentTab.getWebContents();
 
