@@ -26,9 +26,7 @@ let windowProxy: TestMock<MostVisitedWindowProxy>&MostVisitedWindowProxy;
 let handler: TestMock<MostVisitedPageHandlerRemote>&
     MostVisitedPageHandlerRemote;
 let callbackRouterRemote: MostVisitedPageRemote;
-let mediaListenerWideWidth: FakeMediaQueryList;
-let mediaListenerMediumWidth: FakeMediaQueryList;
-let mediaListener: Function;
+const mediaListenerLists: Map<number, FakeMediaQueryList> = new Map();
 
 function queryAll<E extends Element = Element>(q: string): E[] {
   return Array.from(mostVisited.shadowRoot!.querySelectorAll<E>(q));
@@ -106,10 +104,7 @@ class FakeMediaQueryList extends EventTarget implements MediaQueryList {
     this.media = query;
   }
 
-  addListener(listener: () => void) {
-    mediaListener = listener;
-  }
-
+  addListener() {}
   removeListener() {}
   onchange() {}
 }
@@ -117,25 +112,25 @@ class FakeMediaQueryList extends EventTarget implements MediaQueryList {
 function createWindowProxy() {
   windowProxy = TestMock.fromClass(MostVisitedWindowProxy);
   windowProxy.setResultMapperFor('matchMedia', (query: string) => {
+    const result = query.match(/\(min-width: (\d+)px\)/);
+    assertTrue(!!result);
     const mediaListenerList = new FakeMediaQueryList(query);
-    if (query === '(min-width: 672px)') {
-      mediaListenerWideWidth = mediaListenerList;
-    } else if (query === '(min-width: 560px)') {
-      mediaListenerMediumWidth = mediaListenerList;
-    } else {
-      assertTrue(false);
-    }
+    mediaListenerLists.set(parseInt(result![1]!), mediaListenerList);
     return mediaListenerList;
   });
   MostVisitedWindowProxy.setInstance(windowProxy);
 }
 
 function updateScreenWidth(isWide: boolean, isMedium: boolean) {
+  mediaListenerLists.forEach(list => list.matches = false);
+  const mediaListenerWideWidth =
+      mediaListenerLists.get(Math.max(...mediaListenerLists.keys()));
+  const mediaListenerMediumWidth = mediaListenerLists.get(560);
   assertTrue(!!mediaListenerWideWidth);
   assertTrue(!!mediaListenerMediumWidth);
-  mediaListenerWideWidth.matches = isWide;
-  mediaListenerMediumWidth.matches = isMedium;
-  mediaListener();
+  mediaListenerWideWidth!.matches = isWide;
+  mediaListenerMediumWidth!.matches = isMedium;
+  mediaListenerMediumWidth!.dispatchEvent(new Event('change'));
 }
 
 function wide() {
@@ -146,18 +141,22 @@ function leaveUrlInput() {
   $$(mostVisited, '#dialogInputUrl').dispatchEvent(new Event('blur'));
 }
 
+function setUpTest(singleRow: boolean) {
+  document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+  createBrowserProxy();
+  createWindowProxy();
+
+  mostVisited = new MostVisitedElement();
+  mostVisited.singleRow = singleRow;
+  document.body.appendChild(mostVisited);
+  assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
+  wide();
+}
+
 suite('General', () => {
   setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    createBrowserProxy();
-    createWindowProxy();
-
-    mostVisited = new MostVisitedElement();
-    document.body.appendChild(mostVisited);
-    assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
-    assertEquals(2, windowProxy.getCallCount('matchMedia'));
-    wide();
+    setUpTest(/*singleRow=*/ false);
   });
 
   test('empty shows add shortcut only', async () => {
@@ -189,6 +188,12 @@ suite('General', () => {
         new KeyboardEvent('keyup', {key: ' '}));
     assertTrue(mostVisited.$.dialog.open);
   });
+});
+
+function createLayoutsSuite(singleRow: boolean) {
+  setup(() => {
+    setUpTest(singleRow);
+  });
 
   test('four tiles fit on one line with addShortcut', async () => {
     await addTiles(4);
@@ -202,7 +207,7 @@ suite('General', () => {
     });
   });
 
-  test('five tiles are displayed on two rows with addShortcut', async () => {
+  test('five tiles are displayed with addShortcut', async () => {
     await addTiles(5);
     assertEquals(5, queryTiles().length);
     assertAddShortcutShown();
@@ -211,7 +216,11 @@ suite('General', () => {
     assertEquals(6, tops.length);
     const firstRowTop = tops[0];
     const secondRowTop = tops[3];
-    assertNotEquals(firstRowTop, secondRowTop);
+    if (singleRow) {
+      assertEquals(firstRowTop, secondRowTop);
+    } else {
+      assertNotEquals(firstRowTop, secondRowTop);
+    }
     tops.slice(0, 3).forEach(top => {
       assertEquals(firstRowTop, top);
     });
@@ -220,7 +229,7 @@ suite('General', () => {
     });
   });
 
-  test('nine tiles are displayed on two rows with addShortcut', async () => {
+  test('nine tiles are displayed with addShortcut', async () => {
     await addTiles(9);
     assertEquals(9, queryTiles().length);
     assertAddShortcutShown();
@@ -229,7 +238,11 @@ suite('General', () => {
     assertEquals(10, tops.length);
     const firstRowTop = tops[0];
     const secondRowTop = tops[5];
-    assertNotEquals(firstRowTop, secondRowTop);
+    if (singleRow) {
+      assertEquals(firstRowTop, secondRowTop);
+    } else {
+      assertNotEquals(firstRowTop, secondRowTop);
+    }
     tops.slice(0, 5).forEach(top => {
       assertEquals(firstRowTop, top);
     });
@@ -238,7 +251,7 @@ suite('General', () => {
     });
   });
 
-  test('ten tiles are displayed on two rows without addShortcut', async () => {
+  test('ten tiles are displayed without addShortcut', async () => {
     await addTiles(10);
     assertEquals(10, queryTiles().length);
     assertAddShortcutHidden();
@@ -246,7 +259,11 @@ suite('General', () => {
     assertEquals(10, tops.length);
     const firstRowTop = tops[0];
     const secondRowTop = tops[5];
-    assertNotEquals(firstRowTop, secondRowTop);
+    if (singleRow) {
+      assertEquals(firstRowTop, secondRowTop);
+    } else {
+      assertNotEquals(firstRowTop, secondRowTop);
+    }
     tops.slice(0, 5).forEach(top => {
       assertEquals(firstRowTop, top);
     });
@@ -311,56 +328,64 @@ suite('General', () => {
       updateScreenWidth(false, false);
     }
 
-    test('six is max for narrow', async () => {
+    test('six / three is max for narrow', async () => {
       await addTiles(7);
       medium();
       assertTileLength(7);
-      assertHiddenTileLength(0);
+      assertHiddenTileLength(singleRow ? 3 : 0);
       narrow();
       assertTileLength(7);
-      assertHiddenTileLength(1);
+      assertHiddenTileLength(singleRow ? 4 : 1);
       medium();
       assertTileLength(7);
-      assertHiddenTileLength(0);
+      assertHiddenTileLength(singleRow ? 3 : 0);
     });
 
-    test('eight is max for medium', async () => {
+    test('eight / four is max for medium', async () => {
       await addTiles(8);
       narrow();
       assertTileLength(8);
-      assertHiddenTileLength(2);
+      assertHiddenTileLength(singleRow ? 5 : 2);
       medium();
       assertTileLength(8);
-      assertHiddenTileLength(0);
+      assertHiddenTileLength(singleRow ? 4 : 0);
       narrow();
       assertTileLength(8);
-      assertHiddenTileLength(2);
+      assertHiddenTileLength(singleRow ? 5 : 2);
     });
 
     test('eight is max for wide', async () => {
       await addTiles(8);
       narrow();
       assertTileLength(8);
-      assertHiddenTileLength(2);
+      assertHiddenTileLength(singleRow ? 5 : 2);
       wide();
       assertTileLength(8);
       assertHiddenTileLength(0);
       narrow();
       assertTileLength(8);
-      assertHiddenTileLength(2);
+      assertHiddenTileLength(singleRow ? 5 : 2);
     });
 
-    test('hide add shortcut if on third row (narrow)', async () => {
+    test('hide add shortcut (narrow)', async () => {
       await addTiles(6);
       medium();
-      assertAddShortcutShown();
+      if (singleRow) {
+        assertAddShortcutHidden();
+      } else {
+        assertAddShortcutShown();
+      }
       narrow();
       assertAddShortcutHidden();
       medium();
-      assertAddShortcutShown();
+      if (singleRow) {
+        assertAddShortcutHidden();
+      } else {
+        assertAddShortcutShown();
+      }
     });
 
-    test('hide add shortcut if on third row (medium)', async () => {
+    test('hide add shortcut with 8 tiles (medium)', async () => {
       await addTiles(8);
       wide();
       assertAddShortcutShown();
@@ -370,13 +395,43 @@ suite('General', () => {
       assertAddShortcutShown();
     });
 
-    test('hide add shortcut if on third row (medium)', async () => {
+    test('hide add shortcut with 9 tiles (medium)', async () => {
       await addTiles(9);
       wide();
       assertAddShortcutShown();
       await addTiles(10);
       assertAddShortcutHidden();
     });
+
+    if (singleRow) {
+      test('shows correct number of tiles for all widths', async () => {
+        await addTiles(12);
+        mediaListenerLists.forEach(list => list.matches = false);
+        [...mediaListenerLists.keys()]
+            .sort((a, b) => a - b)
+            .forEach((width, i) => {
+              const list = mediaListenerLists.get(width)!;
+              list.matches = true;
+              list.dispatchEvent(new Event('change'));
+              assertHiddenTileLength(6 - i);
+            });
+      });
+    }
+  });
+}
+
+suite('Layouts', () => {
+  suite('double row', () => {
+    createLayoutsSuite(false);
+  });
+  suite('single row', () => {
+    createLayoutsSuite(true);
+  });
+});
+
+suite('LoggingAndUpdates', () => {
+  setup(() => {
+    setUpTest(/*singleRow=*/ false);
   });
 
   test('rendering tiles logs event', async () => {
@@ -458,16 +513,7 @@ suite('Modification', () => {
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    createBrowserProxy();
-    createWindowProxy();
-
-    mostVisited = new MostVisitedElement();
-    document.body.appendChild(mostVisited);
-    assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
-    assertEquals(2, windowProxy.getCallCount('matchMedia'));
-    wide();
+    setUpTest(/*singleRow=*/ false);
   });
 
   suite('add dialog', () => {
@@ -918,6 +964,13 @@ suite('Modification', () => {
     await wait;
     assertFalse(toast.open);
   });
+});
+
+
+function createDragAndDropSuite(singleRow: boolean) {
+  setup(() => {
+    setUpTest(singleRow);
+  });
 
   test('drag first tile to second position', async () => {
     await addTiles(2);
@@ -1002,20 +1055,20 @@ suite('Modification', () => {
     assertEquals('https://a/', newFirst!.href);
     assertEquals('https://b/', newSecond!.href);
   });
+}
+
+suite('DragAndDrop', () => {
+  suite('double row', () => {
+    createDragAndDropSuite(false);
+  });
+  suite('single row', () => {
+    createDragAndDropSuite(true);
+  });
 });
 
 suite('Theming', () => {
   setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    createBrowserProxy();
-    createWindowProxy();
-
-    mostVisited = new MostVisitedElement();
-    document.body.appendChild(mostVisited);
-    assertEquals(1, handler.getCallCount('updateMostVisitedInfo'));
-    assertEquals(2, windowProxy.getCallCount('matchMedia'));
-    wide();
+    setUpTest(/*singleRow=*/ false);
   });
 
   test('RIGHT_TO_LEFT tile title text direction', async () => {

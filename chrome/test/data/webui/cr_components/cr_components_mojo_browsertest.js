@@ -86,6 +86,14 @@ TEST_F('CrComponentsMostVisitedTest', 'General', function() {
   runMochaSuite('General');
 });
 
+TEST_F('CrComponentsMostVisitedTest', 'Layouts', function() {
+  runMochaSuite('Layouts');
+});
+
+TEST_F('CrComponentsMostVisitedTest', 'LoggingAndUpdates', function() {
+  runMochaSuite('LoggingAndUpdates');
+});
+
 // crbug.com/1226996
 GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
 GEN('#define MAYBE_Modification DISABLED_Modification');
@@ -94,6 +102,10 @@ GEN('#define MAYBE_Modification Modification');
 GEN('#endif');
 TEST_F('CrComponentsMostVisitedTest', 'MAYBE_Modification', function() {
   runMochaSuite('Modification');
+});
+
+TEST_F('CrComponentsMostVisitedTest', 'DragAndDrop', function() {
+  runMochaSuite('DragAndDrop');
 });
 
 TEST_F('CrComponentsMostVisitedTest', 'Theming', function() {

@@ -32,12 +32,6 @@ import {getTemplate} from './most_visited.html.js';
 import {MostVisitedInfo, MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from './window_proxy.js';
 
-enum ScreenWidth {
-  NARROW = 0,
-  MEDIUM = 1,
-  WIDE = 2,
-}
-
 function resetTilePosition(tile: HTMLElement) {
   tile.style.position = '';
   tile.style.left = '';
@@ -98,6 +92,16 @@ export class MostVisitedElement extends MostVisitedElementBase {
       theme: Object,
 
       /**
+       * If true, renders MV tiles in a single row up to 10 columns wide.
+       * If false, renders MV tiles in up to 2 rows up to 5 columns wide.
+       */
+      singleRow: {
+        type: Boolean,
+        value: false,
+        observer: 'onSingleRowChange_',
+      },
+
+      /**
        * When the tile icon background is dark, the icon color is white for
        * contrast. This can be used to determine the color of the tile hover as
        * well.
@@ -119,12 +123,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
       columnCount_: {
         type: Number,
-        computed: `computeColumnCount_(tiles_, screenWidth_, maxTiles_)`,
+        computed:
+            `computeColumnCount_(singleRow, tiles_, maxVisibleColumnCount_, maxTiles_)`,
       },
 
       rowCount_: {
         type: Number,
-        computed: 'computeRowCount_(columnCount_, tiles_)',
+        computed: 'computeRowCount_(singleRow, columnCount_, tiles_)',
       },
 
       customLinksEnabled_: {
@@ -198,7 +203,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
       showToastButtons_: Boolean,
 
-      screenWidth_: Number,
+      maxVisibleColumnCount_: Number,
 
       tiles_: Array,
 
@@ -211,7 +216,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
     };
   }
 
-  private theme: MostVisitedTheme|null;
+  public theme: MostVisitedTheme|null;
+  public singleRow: boolean;
   private useWhiteTileIcon_: boolean;
   private useTitlePill_: boolean;
   private columnCount_: number;
@@ -230,7 +236,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private maxVisibleTiles_: number;
   private showAdd_: boolean;
   private showToastButtons_: boolean;
-  private screenWidth_: ScreenWidth;
+  private maxVisibleColumnCount_: number;
   private tiles_: MostVisitedTile[];
   private toastContent_: string;
   private visible_: boolean;
@@ -244,10 +250,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private dragOffset_: {x: number, y: number}|null;
   private tileRects_: DOMRect[] = [];
   private isRtl_: boolean;
+  private mediaEventTracker_: EventTracker;
   private eventTracker_: EventTracker;
-  private boundOnWidthChange_: () => void;
-  private mediaListenerWideWidth_: MediaQueryList;
-  private mediaListenerMediumWidth_: MediaQueryList;
   private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void;
 
   private get tileElements_() {
@@ -273,13 +277,17 @@ export class MostVisitedElement extends MostVisitedElementBase {
      * of the tile being dragged.
      */
     this.dragOffset_ = null;
+
+    this.mediaEventTracker_ = new EventTracker();
+    this.eventTracker_ = new EventTracker();
   }
 
   override connectedCallback() {
     super.connectedCallback();
 
     this.isRtl_ = window.getComputedStyle(this)['direction'] === 'rtl';
-    this.eventTracker_ = new EventTracker();
+
+    this.onSingleRowChange_();
 
     this.setMostVisitedInfoListenerId_ =
         this.callbackRouter_.setMostVisitedInfo.addListener(
@@ -305,25 +313,15 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    assert(this.boundOnWidthChange_);
-    this.mediaListenerWideWidth_.removeListener(this.boundOnWidthChange_);
-    this.mediaListenerMediumWidth_.removeListener(this.boundOnWidthChange_);
+    this.mediaEventTracker_.removeAll();
+    this.eventTracker_.removeAll();
     this.ownerDocument.removeEventListener(
         'keydown', this.boundOnDocumentKeyDown_);
-    this.eventTracker_.removeAll();
   }
 
   override ready() {
     super.ready();
 
-    this.boundOnWidthChange_ = this.updateScreenWidth_.bind(this);
-    this.mediaListenerWideWidth_ =
-        this.windowProxy_.matchMedia('(min-width: 672px)');
-    this.mediaListenerWideWidth_.addListener(this.boundOnWidthChange_);
-    this.mediaListenerMediumWidth_ =
-        this.windowProxy_.matchMedia('(min-width: 560px)');
-    this.mediaListenerMediumWidth_.addListener(this.boundOnWidthChange_);
-    this.updateScreenWidth_();
     this.boundOnDocumentKeyDown_ = e => this.onDocumentKeyDown_(e);
     this.ownerDocument.addEventListener(
         'keydown', this.boundOnDocumentKeyDown_);
@@ -343,26 +341,25 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private computeColumnCount_(): number {
-    let maxColumns = 3;
-    if (this.screenWidth_ === ScreenWidth.WIDE) {
-      maxColumns = 5;
-    } else if (this.screenWidth_ === ScreenWidth.MEDIUM) {
-      maxColumns = 4;
-    }
-
     const shortcutCount = this.tiles_ ? this.tiles_.length : 0;
     const canShowAdd = this.maxTiles_ > shortcutCount;
     const tileCount =
         Math.min(this.maxTiles_, shortcutCount + (canShowAdd ? 1 : 0));
-    const columnCount = tileCount <= maxColumns ?
+    const columnCount = tileCount <= this.maxVisibleColumnCount_ ?
         tileCount :
-        Math.min(maxColumns, Math.ceil(tileCount / 2));
+        Math.min(
+            this.maxVisibleColumnCount_,
+            Math.ceil(tileCount / (this.singleRow ? 1 : 2)));
     return columnCount || 3;
   }
 
   private computeRowCount_(): number {
     if (this.columnCount_ === 0) {
       return 0;
+    }
+
+    if (this.singleRow) {
+      return 1;
     }
 
     const shortcutCount = this.tiles_ ? this.tiles_.length : 0;
@@ -567,6 +564,27 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   private isHidden_(index: number): boolean {
     return index >= this.maxVisibleTiles_;
+  }
+
+  private onSingleRowChange_() {
+    if (!this.isConnected) {
+      return;
+    }
+    this.mediaEventTracker_.removeAll();
+    const queryLists: MediaQueryList[] = [];
+    const updateCount = () => {
+      const index = queryLists.findIndex(listener => listener.matches);
+      this.maxVisibleColumnCount_ =
+          3 + (index > -1 ? queryLists.length - index : 0);
+    };
+    const maxColumnCount = this.singleRow ? 10 : 5;
+    for (let i = maxColumnCount; i >= 4; i--) {
+      const query = `(min-width: ${112 * (i + 1)}px)`;
+      const queryList = this.windowProxy_.matchMedia(query);
+      this.mediaEventTracker_.add(queryList, 'change', updateCount);
+      queryLists.push(queryList);
+    }
+    updateCount();
   }
 
   private onAdd_() {
@@ -820,16 +838,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
         'linkRemovedMsg',
         /* showButtons= */ this.customLinksEnabled_ || !isQueryTile);
     this.tileFocus_(index);
-  }
-
-  private updateScreenWidth_() {
-    if (this.mediaListenerWideWidth_.matches) {
-      this.screenWidth_ = ScreenWidth.WIDE;
-    } else if (this.mediaListenerMediumWidth_.matches) {
-      this.screenWidth_ = ScreenWidth.MEDIUM;
-    } else {
-      this.screenWidth_ = ScreenWidth.NARROW;
-    }
   }
 
   private onTilesRendered_() {
