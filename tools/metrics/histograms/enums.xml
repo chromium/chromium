@@ -53874,6 +53874,75 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="4-Critical"/>
 </enum>
 
+<enum name="IOSEditMenuActions">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="NativeCut"/>
+  <int value="2" label="NativeCopy"/>
+  <int value="3" label="NativePaste"/>
+  <int value="4" label="NativeDelete"/>
+  <int value="5" label="NativeSelect"/>
+  <int value="6" label="NativeSelectAll"/>
+  <int value="7" label="NativeReplace"/>
+  <int value="8" label="NativeTransliterateChinese"/>
+  <int value="9" label="NativeInsertDrawing"/>
+  <int value="10" label="NativeScanText"/>
+  <int value="11" label="NativeStyleBold"/>
+  <int value="12" label="NativeStyleItalic"/>
+  <int value="13" label="NativeStyleUnderline"/>
+  <int value="14" label="NativeRTL"/>
+  <int value="15" label="NativeLTR"/>
+  <int value="16" label="NativeFindSelection"/>
+  <int value="17" label="NativeDefine"/>
+  <int value="18" label="NativeTranslate"/>
+  <int value="19" label="NativeLearn"/>
+  <int value="20" label="NativeSpeak"/>
+  <int value="21" label="NativeSpeakMore"/>
+  <int value="22" label="NativePause"/>
+  <int value="23" label="NativeShare"/>
+  <int value="24" label="ChromeLinkToText"/>
+  <int value="25" label="ChromePartialTranslate"/>
+  <int value="26" label="CommandOther"/>
+  <int value="27" label="SearchWeb"/>
+  <int value="28" label="CreateEvent"/>
+  <int value="29" label="CreateReminder"/>
+  <int value="30" label="ShowCalendar"/>
+  <int value="31" label="SendMail"/>
+  <int value="32" label="SendMessage"/>
+  <int value="33" label="AddToContacts"/>
+  <int value="34" label="Call"/>
+  <int value="35" label="GetDirections"/>
+  <int value="36" label="OpenMaps"/>
+  <int value="37" label="UnitConversion"/>
+  <int value="38" label="OtherDataDetector"/>
+  <int value="39" label="ActionOther"/>
+  <int value="40" label="UnknownMenuAction"/>
+</enum>
+
+<enum name="IOSEditMenuPage">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="1 out of 1"/>
+  <int value="2" label="1 out of 2"/>
+  <int value="3" label="2 out of 2"/>
+  <int value="4" label="1 out of 3"/>
+  <int value="5" label="2 out of 3"/>
+  <int value="6" label="3 out of 3"/>
+  <int value="7" label="1 out of 4"/>
+  <int value="8" label="2 out of 4"/>
+  <int value="9" label="3 out of 4"/>
+  <int value="10" label="4 out of 4"/>
+  <int value="11" label="1 out of N"/>
+  <int value="12" label="2 out of N"/>
+  <int value="13" label="3 out of N"/>
+  <int value="14" label="4 out of N"/>
+  <int value="15" label="5 out of N"/>
+  <int value="16" label="6 out of N"/>
+  <int value="17" label="7 out of N"/>
+  <int value="18" label="8 out of N"/>
+  <int value="19" label="9 out of N"/>
+  <int value="20" label="10 out of N"/>
+  <int value="21" label="More Than Ten"/>
+</enum>
+
 <enum name="IOSExternalURLRequestStatus">
   <int value="0" label="MainFrameAllowed"/>
   <int value="1" label="SubframeAllowed"/>

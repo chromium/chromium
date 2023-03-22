@@ -635,6 +635,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.EditMenu.DismissedMenuOnPage" enum="IOSEditMenuPage"
+    expires_after="2024-03-21">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Page on which the iOS web edit menu is dismissed.</summary>
+</histogram>
+
+<histogram name="IOS.EditMenu.SelectedAction" enum="IOSEditMenuActions"
+    expires_after="2024-03-21">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    The action that was triggered by the user on the iOS web edit menu.
+  </summary>
+</histogram>
+
+<histogram name="IOS.EditMenu.SelectedActionOnPage" enum="IOSEditMenuPage"
+    expires_after="2024-03-21">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Page on which an iOS web edit menu action is triggered.</summary>
+</histogram>
+
+<histogram name="IOS.EditMenu.UpdatingSelectionOnPage" enum="IOSEditMenuPage"
+    expires_after="2024-03-21">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Page on which the iOS web edit menu is dismissed by updating the selection.
+  </summary>
+</histogram>
+
 <histogram name="IOS.EnterTabSwitcherSnapshotResult"
     enum="EnterTabSwitcherSnapshotResult" expires_after="2021-08-01">
   <owner>edchin@chromium.org</owner>
