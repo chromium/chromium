@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
 
 #include "third_party/blink/renderer/core/html/html_table_col_element.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
@@ -129,10 +130,131 @@ void LayoutNGTableColumn::UpdateFromElement() {
   }
 }
 
-// TODO(crbug.com/1371882): Table columns should have physical fragments,
-// and this function should refer to the fragment sizes.
 LayoutSize LayoutNGTableColumn::Size() const {
-  return frame_size_;
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    return frame_size_;
+  }
+
+  auto* table = Table();
+  DCHECK(table);
+  if (table->PhysicalFragmentCount() == 0) {
+    return LayoutSize();
+  }
+
+  WritingDirectionMode direction = StyleRef().GetWritingDirection();
+
+  LogicalSize size;
+  bool found_geometries = false;
+
+  for (auto& fragment : table->PhysicalFragments()) {
+    if (!found_geometries && fragment.TableColumnGeometries()) {
+      // If there was a table relayout, and this column box doesn't have a
+      // corresponding column in the table anymore, the column_idx_ will not
+      // have been updated. Therefore if it is greater or equal to the number of
+      // table column geometries, or if the geometry at that index doesn't point
+      // to this layout box, we return early.
+      if (column_idx_ >= fragment.TableColumnGeometries()->size()) {
+        return LayoutSize();
+      }
+      const auto& geometry = (*fragment.TableColumnGeometries())[column_idx_];
+      if (geometry.node.GetLayoutBox() != this) {
+        return LayoutSize();
+      }
+
+      found_geometries = true;
+      size.inline_size = geometry.inline_size;
+      size.block_size -=
+          table->StyleRef().TableBorderSpacing().block_size * 2 +
+          fragment.Padding().ConvertToLogical(direction).BlockSum() +
+          fragment.Borders().ConvertToLogical(direction).BlockSum();
+    }
+
+    size.block_size += fragment.TableGridRect().size.block_size;
+  }
+
+  return ToPhysicalSize(size, table->StyleRef().GetWritingMode())
+      .ToLayoutSize();
+}
+
+LayoutPoint LayoutNGTableColumn::Location() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    return frame_location_;
+  }
+
+  auto* table = Table();
+  DCHECK(table);
+  if (table->PhysicalFragmentCount() == 0) {
+    return LayoutPoint();
+  }
+
+  WritingDirectionMode direction = StyleRef().GetWritingDirection();
+  LayoutNGTableColumn* parent_colgroup = nullptr;
+  if (IsColumn()) {
+    parent_colgroup = DynamicTo<LayoutNGTableColumn>(Parent());
+    DCHECK(!parent_colgroup || parent_colgroup->IsColumnGroup());
+  }
+
+  LogicalOffset offset;
+  LogicalSize size;
+  LayoutUnit parent_colgroup_inline_size;
+  bool found_geometries = false;
+
+  for (auto& fragment : table->PhysicalFragments()) {
+    if (!found_geometries && fragment.TableColumnGeometries()) {
+      // If there was a table relayout, and this column box doesn't have a
+      // corresponding column in the table anymore, the column_idx_ will not
+      // have been updated. Therefore if it is greater or equal to the number of
+      // table column geometries, or if the geometry at that index doesn't point
+      // to this layout box, we return early.
+      if (column_idx_ >= fragment.TableColumnGeometries()->size()) {
+        return LayoutPoint();
+      }
+      const auto& geometry = (*fragment.TableColumnGeometries())[column_idx_];
+      if (geometry.node.GetLayoutBox() != this) {
+        return LayoutPoint();
+      }
+
+      found_geometries = true;
+      offset.inline_offset = geometry.inline_offset;
+      if (parent_colgroup) {
+        const auto& parent_geometry =
+            (*fragment.TableColumnGeometries())[parent_colgroup->column_idx_];
+        offset.inline_offset -= parent_geometry.inline_offset;
+        parent_colgroup_inline_size = parent_geometry.inline_size;
+      }
+      size.inline_size = geometry.inline_size;
+
+      NGBoxStrut fragment_bp =
+          (fragment.Padding() + fragment.Borders()).ConvertToLogical(direction);
+      LogicalSize table_border_spacing = table->StyleRef().TableBorderSpacing();
+      size.block_size -=
+          table_border_spacing.block_size * 2 + fragment_bp.BlockSum();
+      if (!parent_colgroup) {
+        offset.inline_offset +=
+            fragment_bp.inline_start + table_border_spacing.inline_size;
+        offset.block_offset += fragment_bp.block_start +
+                               table_border_spacing.block_size +
+                               fragment.TableGridRect().offset.block_offset;
+      }
+    }
+
+    size.block_size += fragment.TableGridRect().size.block_size;
+  }
+
+  PhysicalSize outer_size;
+  if (!parent_colgroup) {
+    outer_size = PhysicalSize(table->Size());
+  } else {
+    DCHECK_EQ(parent_colgroup->StyleRef().GetWritingDirection(), direction);
+    outer_size = ToPhysicalSize(
+        LogicalSize(parent_colgroup_inline_size, size.block_size),
+        direction.GetWritingMode());
+  }
+  PhysicalSize inner_size = ToPhysicalSize(size, direction.GetWritingMode());
+  return offset.ConvertToPhysical(direction, outer_size, inner_size)
+      .ToLayoutPoint();
 }
 
 }  // namespace blink

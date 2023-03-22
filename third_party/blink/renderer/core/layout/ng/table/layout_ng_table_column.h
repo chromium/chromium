@@ -41,6 +41,8 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
 
   LayoutSize Size() const override;
 
+  LayoutPoint Location() const override;
+
   // LayoutObject methods start.
 
   const char* GetName() const override {
@@ -68,6 +70,11 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
   bool VisualRectRespectsVisibility() const final {
     NOT_DESTROYED();
     return false;
+  }
+
+  void SetColumnIndex(wtf_size_t column_idx) {
+    NOT_DESTROYED();
+    column_idx_ = column_idx;
   }
 
  protected:
@@ -110,6 +117,7 @@ class CORE_EXPORT LayoutNGTableColumn : public LayoutBox {
  private:
   unsigned span_ = 1;
   LayoutObjectChildList children_;
+  wtf_size_t column_idx_;
 };
 
 // wtf/casting.h helper.
