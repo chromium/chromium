@@ -372,8 +372,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(prefs::kNewTabPageLocationOverride,
                                std::string());
 
-  registry->RegisterIntegerPref(prefs::kIncognitoModeAvailability,
-                                static_cast<int>(IncognitoModePrefs::kEnabled));
+  registry->RegisterIntegerPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      static_cast<int>(IncognitoModePrefs::kEnabled));
 
   registry->RegisterBooleanPref(prefs::kPrintingEnabled, true);
 

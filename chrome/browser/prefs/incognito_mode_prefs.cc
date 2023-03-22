@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
@@ -54,15 +55,16 @@ IncognitoModePrefs::Availability IncognitoModePrefs::GetAvailability(
 // static
 void IncognitoModePrefs::SetAvailability(PrefService* prefs,
                                          const Availability availability) {
-  prefs->SetInteger(prefs::kIncognitoModeAvailability,
+  prefs->SetInteger(policy::policy_prefs::kIncognitoModeAvailability,
                     static_cast<int>(availability));
 }
 
 // static
 void IncognitoModePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterIntegerPref(prefs::kIncognitoModeAvailability,
-                                static_cast<int>(kDefaultAvailability));
+  registry->RegisterIntegerPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      static_cast<int>(kDefaultAvailability));
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kIncognitoReauthenticationForAndroid,
                                 false);
@@ -124,7 +126,8 @@ IncognitoModePrefs::Availability IncognitoModePrefs::GetAvailabilityInternal(
     const PrefService* pref_service,
     GetAvailabilityMode mode) {
   DCHECK(pref_service);
-  int pref_value = pref_service->GetInteger(prefs::kIncognitoModeAvailability);
+  int pref_value = pref_service->GetInteger(
+      policy::policy_prefs::kIncognitoModeAvailability);
   Availability result = kDefaultAvailability;
   bool valid = IntToAvailability(pref_value, &result);
   DCHECK(valid);

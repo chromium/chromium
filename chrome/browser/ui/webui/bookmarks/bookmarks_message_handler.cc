@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
@@ -32,7 +32,7 @@ void BookmarksMessageHandler::OnJavascriptAllowed() {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       base::BindRepeating(&BookmarksMessageHandler::UpdateIncognitoAvailability,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
@@ -47,7 +47,7 @@ void BookmarksMessageHandler::OnJavascriptDisallowed() {
 
 int BookmarksMessageHandler::GetIncognitoAvailability() {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  return prefs->GetInteger(prefs::kIncognitoModeAvailability);
+  return prefs->GetInteger(policy::policy_prefs::kIncognitoModeAvailability);
 }
 
 void BookmarksMessageHandler::HandleGetIncognitoAvailability(

@@ -330,12 +330,6 @@ const char kSSLErrorOverrideAllowed[] = "ssl.error_override_allowed";
 const char kSSLErrorOverrideAllowedForOrigins[] =
     "ssl.error_override_allowed_for_origins";
 
-// Enum that specifies whether Incognito mode is:
-// 0 - Enabled. Default behaviour. Default mode is available on demand.
-// 1 - Disabled. User cannot browse pages in Incognito mode.
-// 2 - Forced. All pages/sessions are forced into Incognito.
-const char kIncognitoModeAvailability[] = "incognito.mode_availability";
-
 // Boolean that is true when Suggest support is enabled.
 const char kSearchSuggestEnabled[] = "search.suggest_enabled";
 

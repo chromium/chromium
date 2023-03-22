@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 
 #import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -15,18 +15,21 @@
 bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
     return NO;
-  return pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability);
+  return pref_service->IsManagedPreference(
+      policy::policy_prefs::kIncognitoModeAvailability);
 }
 
 bool IsIncognitoModeDisabled(PrefService* pref_service) {
   return IsIncognitoPolicyApplied(pref_service) &&
-         pref_service->GetInteger(prefs::kIncognitoModeAvailability) ==
+         pref_service->GetInteger(
+             policy::policy_prefs::kIncognitoModeAvailability) ==
              static_cast<int>(IncognitoModePrefs::kDisabled);
 }
 
 bool IsIncognitoModeForced(PrefService* pref_service) {
   return IsIncognitoPolicyApplied(pref_service) &&
-         pref_service->GetInteger(prefs::kIncognitoModeAvailability) ==
+         pref_service->GetInteger(
+             policy::policy_prefs::kIncognitoModeAvailability) ==
              static_cast<int>(IncognitoModePrefs::kForced);
 }
 

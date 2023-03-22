@@ -5,7 +5,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 
 #include "base/test/gtest_util.h"
-#include "chrome/common/pref_names.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,19 +38,19 @@ TEST_F(IncognitoModePrefsTest, IntToAvailability) {
 }
 
 TEST_F(IncognitoModePrefsTest, GetAvailability) {
-  prefs_.SetUserPref(prefs::kIncognitoModeAvailability,
+  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
                      std::make_unique<base::Value>(static_cast<int>(
                          IncognitoModePrefs::Availability::kEnabled)));
   EXPECT_EQ(IncognitoModePrefs::Availability::kEnabled,
             IncognitoModePrefs::GetAvailability(&prefs_));
 
-  prefs_.SetUserPref(prefs::kIncognitoModeAvailability,
+  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
                      std::make_unique<base::Value>(static_cast<int>(
                          IncognitoModePrefs::Availability::kDisabled)));
   EXPECT_EQ(IncognitoModePrefs::Availability::kDisabled,
             IncognitoModePrefs::GetAvailability(&prefs_));
 
-  prefs_.SetUserPref(prefs::kIncognitoModeAvailability,
+  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
                      std::make_unique<base::Value>(static_cast<int>(
                          IncognitoModePrefs::Availability::kForced)));
   EXPECT_EQ(IncognitoModePrefs::Availability::kForced,
@@ -60,7 +60,7 @@ TEST_F(IncognitoModePrefsTest, GetAvailability) {
 typedef IncognitoModePrefsTest IncognitoModePrefsDeathTest;
 
 TEST_F(IncognitoModePrefsDeathTest, GetAvailabilityBadValue) {
-  prefs_.SetUserPref(prefs::kIncognitoModeAvailability,
+  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
                      std::make_unique<base::Value>(-1));
   EXPECT_DCHECK_DEATH({
     IncognitoModePrefs::Availability availability =

@@ -20,11 +20,11 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
   // Disable incognito mode for this profile.
   PrefService* pref_service = browser()->profile()->GetPrefs();
   pref_service->SetInteger(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
   EXPECT_EQ(IncognitoModePrefs::Availability::kDisabled,
             IncognitoModePrefs::GetAvailability(pref_service));

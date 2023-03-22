@@ -12,11 +12,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   // Incognito is always disabled for child accounts.
   PrefService* prefs = profile->GetPrefs();
   prefs->SetInteger(
-      prefs::kIncognitoModeAvailability,
+      policy::policy_prefs::kIncognitoModeAvailability,
       static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
   ASSERT_EQ(1, signin::PROFILE_MODE_INCOGNITO_DISABLED);
 

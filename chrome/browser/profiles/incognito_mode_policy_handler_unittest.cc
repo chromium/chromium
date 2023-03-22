@@ -6,9 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 
@@ -50,7 +50,8 @@ class IncognitoModePolicyHandlerTest
 
   void VerifyValues(IncognitoModePrefs::Availability availability) {
     const base::Value* value = nullptr;
-    EXPECT_TRUE(store_->GetValue(prefs::kIncognitoModeAvailability, &value));
+    EXPECT_TRUE(store_->GetValue(
+        policy::policy_prefs::kIncognitoModeAvailability, &value));
     EXPECT_EQ(base::Value(static_cast<int>(availability)), *value);
   }
 };
@@ -83,7 +84,8 @@ TEST_F(IncognitoModePolicyHandlerTest,
        NoObsoletePolicyAndNoIncognitoAvailability) {
   SetPolicies(INCOGNITO_ENABLED_UNKNOWN, kIncognitoModeAvailabilityNotSet);
   const base::Value* value = nullptr;
-  EXPECT_FALSE(store_->GetValue(prefs::kIncognitoModeAvailability, &value));
+  EXPECT_FALSE(store_->GetValue(
+      policy::policy_prefs::kIncognitoModeAvailability, &value));
 }
 
 // Checks that if the obsolete IncognitoEnabled policy is set, if sets
