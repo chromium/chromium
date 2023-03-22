@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -172,6 +173,7 @@ class EnterpriseWelcomeUIWindowPixelTest
 
     if (GetParam().use_tangible_sync_style) {
       enabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
+      enabled_features.push_back(switches::kTangibleSync);
     } else {
       disabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
     }
@@ -254,6 +256,7 @@ class EnterpriseWelcomeUIDialogPixelTest
 
     if (GetParam().use_tangible_sync_style) {
       enabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
+      enabled_features.push_back(switches::kTangibleSync);
     } else {
       disabled_features.push_back(kEnterpriseWelcomeTangibleSyncStyle);
     }

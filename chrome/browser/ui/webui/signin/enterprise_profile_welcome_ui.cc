@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -78,7 +80,8 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
   source->AddBoolean("isModalDialog", false);
   source->AddBoolean(
       "isTangibleSyncStyleEnabled",
-      base::FeatureList::IsEnabled(kEnterpriseWelcomeTangibleSyncStyle));
+      base::FeatureList::IsEnabled(kEnterpriseWelcomeTangibleSyncStyle) &&
+          base::FeatureList::IsEnabled(switches::kTangibleSync));
   source->AddString(
       "chromeRefresh2023Attribute",
       features::IsChromeRefresh2023() ? "chrome-refresh-2023" : "");

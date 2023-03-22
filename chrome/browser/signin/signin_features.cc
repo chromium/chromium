@@ -56,7 +56,7 @@ const base::FeatureParam<std::string> kForYouFreStudyGroup{
 
 BASE_FEATURE(kEnterpriseWelcomeTangibleSyncStyle,
              "EnterpriseWelcomeTangibleSyncStyle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 // Enables the client-side processing of the HTTP response header
