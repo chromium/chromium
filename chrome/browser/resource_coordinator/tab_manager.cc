@@ -222,13 +222,6 @@ void TabManager::RemoveObserver(TabLifecycleObserver* observer) {
   TabLifecycleUnitExternal::RemoveTabLifecycleObserver(observer);
 }
 
-int TabManager::GetTabCount() const {
-  int tab_count = 0;
-  for (auto* browser : *BrowserList::GetInstance())
-    tab_count += browser->tab_strip_model()->count();
-  return tab_count;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // TabManager, private:
 

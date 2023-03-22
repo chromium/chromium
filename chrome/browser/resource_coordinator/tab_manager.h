@@ -100,9 +100,6 @@ class TabManager : public LifecycleUnitObserver,
   void AddObserver(TabLifecycleObserver* observer);
   void RemoveObserver(TabLifecycleObserver* observer);
 
-  // Returns the number of tabs open in all browser instances.
-  int GetTabCount() const;
-
   UsageClock* usage_clock() { return &usage_clock_; }
 
  private:
