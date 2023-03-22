@@ -50,6 +50,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -83,6 +84,8 @@
 #import "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
+#include "chrome/browser/ui/startup/launch_mode_recorder.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -178,9 +181,46 @@ Browser* ActivateBrowser(Profile* profile) {
   return browser;
 }
 
+// Launches a browser window associated with |profile|. Checks if we are in the
+// first run of Chrome to decide if we need to launch a browser or not.
+// The profile can be `nullptr` and in that case the last-used profile will be
+// used.
+void LaunchBrowserStartup(Profile* profile) {
+  if (StartupProfileModeFromReason(ProfilePicker::GetStartupModeReason()) ==
+      StartupProfileMode::kProfilePicker) {
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+    return;
+  }
+
+  auto perform_launch = base::BindOnce([](Profile* profile) {
+    base::AutoReset<bool> auto_reset_in_run(&g_is_opening_new_window, true);
+    StartupBrowserCreator browser_creator;
+    browser_creator.LaunchBrowser(*base::CommandLine::ForCurrentProcess(),
+                                  profile, base::FilePath(),
+                                  chrome::startup::IsProcessStartup::kNo,
+                                  chrome::startup::IsFirstRun::kYes, nullptr);
+  });
+
+  if (profile) {
+    std::move(perform_launch).Run(profile);
+  } else {
+    // Asynchronously load profile first if needed.
+    app_controller_mac::RunInLastProfileSafely(
+        std::move(perform_launch),
+        app_controller_mac::kShowProfilePickerOnFailure);
+  }
+}
+
 // Creates an empty browser window with the given profile and returns a pointer
 // to the new |Browser|.
 Browser* CreateBrowser(Profile* profile) {
+  // Closes the first run if we open a new window.
+  if (auto* fre_service =
+          FirstRunServiceFactory::GetForBrowserContext(profile)) {
+    fre_service->FinishFirstRunWithoutResumeTask();
+  }
+
   {
     base::AutoReset<bool> auto_reset_in_run(&g_is_opening_new_window, true);
     chrome::NewEmptyWindow(profile);
@@ -213,15 +253,8 @@ void AttemptSessionRestore(Profile* profile) {
     // Session was restored.
     return;
   }
-
   // No session to restore, proceed with normal startup.
-  if (StartupProfileModeFromReason(ProfilePicker::GetStartupModeReason()) ==
-      StartupProfileMode::kProfilePicker) {
-    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
-  } else {
-    CreateBrowser(profile);
-  }
+  LaunchBrowserStartup(profile);
 }
 
 CFStringRef BaseBundleID_CFString() {
@@ -1406,16 +1439,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   }
 
   // Open the profile picker (for multi-profile users) or a new window.
-  if (StartupProfileModeFromReason(ProfilePicker::GetStartupModeReason()) ==
-      StartupProfileMode::kProfilePicker) {
-    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
-  } else {
-    // Asynchronously load profile first if needed.
-    app_controller_mac::RunInLastProfileSafely(
-        base::BindOnce(base::IgnoreResult(&CreateBrowser)),
-        app_controller_mac::kShowProfilePickerOnFailure);
-  }
+  LaunchBrowserStartup(nullptr);
 
   // We've handled the reopen event, so return NO to tell AppKit not
   // to do anything.

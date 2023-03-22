@@ -248,6 +248,40 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 #endif
 }
 
+IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
+                       OpenFirstRunIfNeededCalledTwice) {
+  // When `OpenFirstRunIfNeeded` is called twice, the callback passed to it the
+  // first time should be aborted (called with false) and replaced by the
+  // callback passed to it the second time, which will be later called with
+  // true on DICE and false on Lacros because it will quit early in the process.
+  base::RunLoop first_run_loop;
+  base::RunLoop second_run_loop;
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+  fre_service()->OpenFirstRunIfNeeded(
+      FirstRunService::EntryPoint::kOther,
+      ExpectProceed(false).Then(first_run_loop.QuitClosure()));
+  profiles::testing::WaitForPickerWidgetCreated();
+
+  bool second_proceed = true;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  second_proceed = false;
+#endif
+  fre_service()->OpenFirstRunIfNeeded(
+      FirstRunService::EntryPoint::kOther,
+      ExpectProceed(second_proceed).Then(second_run_loop.QuitClosure()));
+  first_run_loop.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kAbortTask, 1);
+
+  ProfilePicker::Hide();
+  profiles::testing::WaitForPickerClosed();
+  second_run_loop.Run();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
                        FinishedSilentlyAlreadySyncing) {
