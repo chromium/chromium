@@ -340,6 +340,9 @@ void PrefetchStreamingURLLoader::BindAndStart(
   DCHECK(!serving_url_loader_receiver_.is_bound());
   DCHECK(!self || self.get() == this);
 
+  // Once the prefetch is served, stop the timeout timer.
+  timeout_timer_.AbandonAndStop();
+
   status_ =
       completion_status_.has_value()
           ? PrefetchStreamingURLLoaderStatus::kSuccessfulServedAfterCompletion
