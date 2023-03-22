@@ -258,11 +258,11 @@ class GCM_EXPORT MCSClient {
   uint64_t security_token_;
 
   // Factory for creating new connections and connection handlers.
-  raw_ptr<ConnectionFactory> connection_factory_;
+  raw_ptr<ConnectionFactory, DanglingUntriaged> connection_factory_;
 
   // Connection handler to handle all over-the-wire protocol communication
   // with the mobile connection server.
-  raw_ptr<ConnectionHandler> connection_handler_;
+  raw_ptr<ConnectionHandler, DanglingUntriaged> connection_handler_;
 
   // -----  Reliablie Message Queue section -----
   // Note: all queues/maps are ordered from oldest (front/begin) message to

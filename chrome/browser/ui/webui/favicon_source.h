@@ -66,7 +66,7 @@ class FaviconSource : public content::URLDataSource {
   virtual base::RefCountedMemory* LoadIconBytes(float scale_factor,
                                                 int resource_id);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
  private:
   // Defines the allowed pixel sizes for requested favicons.

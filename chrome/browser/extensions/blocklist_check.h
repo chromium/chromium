@@ -32,7 +32,7 @@ class BlocklistCheck : public PreloadCheck {
  private:
   void OnBlocklistedStateRetrieved(BlocklistState blocklist_state);
 
-  raw_ptr<Blocklist> blocklist_;
+  raw_ptr<Blocklist, DanglingUntriaged> blocklist_;
   ResultCallback callback_;
   base::WeakPtrFactory<BlocklistCheck> weak_ptr_factory_{this};
 };

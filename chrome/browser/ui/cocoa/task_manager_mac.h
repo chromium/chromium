@@ -32,8 +32,10 @@ class TaskManagerMac;
  @private
   NSTableView* _tableView;
   NSButton* _endProcessButton;
-  raw_ptr<task_manager::TaskManagerMac> _taskManagerMac;     // weak
-  raw_ptr<task_manager::TaskManagerTableModel> _tableModel;  // weak
+  raw_ptr<task_manager::TaskManagerMac, DanglingUntriaged>
+      _taskManagerMac;  // weak
+  raw_ptr<task_manager::TaskManagerTableModel, DanglingUntriaged>
+      _tableModel;  // weak
 
   base::scoped_nsobject<WindowSizeAutosaver> _size_saver;
 

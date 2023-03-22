@@ -149,7 +149,7 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 }  // namespace
 
 @implementation BookmarkMenuCocoaController {
-  raw_ptr<BookmarkMenuBridge> _bridge;  // Weak. Owns |self|.
+  raw_ptr<BookmarkMenuBridge, DanglingUntriaged> _bridge;  // Weak. Owns |self|.
 }
 
 + (NSString*)tooltipForNode:(const BookmarkNode*)node {

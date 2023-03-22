@@ -134,7 +134,7 @@ class ColorProvider;
   BOOL _tabRestoreWasEnabled;
 
   // The color provider associated with the last active browser view.
-  raw_ptr<const ui::ColorProvider> _lastActiveColorProvider;
+  raw_ptr<const ui::ColorProvider, DanglingUntriaged> _lastActiveColorProvider;
 }
 
 @property(readonly, nonatomic) BOOL startupComplete;
