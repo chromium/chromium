@@ -417,10 +417,13 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
- /*
-   Flaky failures: https://crbug.com/1373052
-   ['OsSettingsUi2', 'os_settings_ui_test_2.js'],
- */
+ ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],
+ ['OsSettingsUiMenu', 'os_settings_ui/os_settings_ui_menu_test.js'],
+ ['OsSettingsUiToolbar', 'os_settings_ui/os_settings_ui_toolbar_test.js'],
+ [
+   'OsSettingsUiUserActionRecorder',
+   'os_settings_ui/user_action_recorder_test.js'
+ ],
  ['OsSettingsMain', 'os_settings_main_test.js'],
  ['OsSearchPage', 'os_search_page_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
