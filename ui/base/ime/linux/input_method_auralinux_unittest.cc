@@ -100,6 +100,10 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   bool should_do_learning() const { return should_do_learning_; }
   TextInputClient* old_client() { return old_client_; }
   TextInputClient* new_client() { return new_client_; }
+  void DropClients() {
+    new_client_ = nullptr;
+    old_client_ = nullptr;
+  }
 
  protected:
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override {
@@ -321,6 +325,17 @@ class InputMethodAuraLinuxTest : public testing::Test {
   InputMethodAuraLinuxTest(const InputMethodAuraLinuxTest&) = delete;
   InputMethodAuraLinuxTest& operator=(const InputMethodAuraLinuxTest&) = delete;
 
+  void InstallFirstClient(TextInputClientForTesting* client) {
+    input_method_auralinux_->SetFocusedTextInputClient(client);
+    input_method_auralinux_->OnTextInputTypeChanged(client);
+  }
+
+  // Used for removing dangling references before locals go out of scope.
+  void RemoveLastClient(TextInputClientForTesting* client) {
+    input_method_auralinux_->DetachTextInputClient(client);
+    context_->DropClients();
+  }
+
  protected:
   InputMethodAuraLinuxTest() {
     GetInputMethodContextFactoryForTest() =
@@ -363,10 +378,9 @@ TEST_F(InputMethodAuraLinuxTest, BasicSyncModeTest) {
   context_->SetEatKey(true);
   context_->AddCommitAction("a");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client1 =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client1.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -378,29 +392,31 @@ TEST_F(InputMethodAuraLinuxTest, BasicSyncModeTest) {
   test_result_->ExpectAction("keypress:97");
   test_result_->Verify();
 
-  input_method_auralinux_->DetachTextInputClient(client.get());
-  client =
+  input_method_auralinux_->DetachTextInputClient(client1.get());
+
+  auto client2 =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_PASSWORD);
   context_->SetEatKey(false);
 
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  input_method_auralinux_->SetFocusedTextInputClient(client2.get());
+  input_method_auralinux_->OnTextInputTypeChanged(client2.get());
   key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
 
   test_result_->ExpectAction("keydown:65");
   test_result_->ExpectAction("keypress:97");
   test_result_->Verify();
+
+  RemoveLastClient(client2.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, BasicAsyncModeTest) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client1 =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client1.get());
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
@@ -419,29 +435,30 @@ TEST_F(InputMethodAuraLinuxTest, BasicAsyncModeTest) {
   test_result_->ExpectAction("textinput:foo");
   test_result_->Verify();
 
-  input_method_auralinux_->DetachTextInputClient(client.get());
-  client =
+  input_method_auralinux_->DetachTextInputClient(client1.get());
+  auto client2 =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_PASSWORD);
   context_->SetEatKey(false);
 
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  input_method_auralinux_->SetFocusedTextInputClient(client2.get());
+  input_method_auralinux_->OnTextInputTypeChanged(client2.get());
   key = key_new;
   input_method_auralinux_->DispatchKeyEvent(&key);
 
   test_result_->ExpectAction("keydown:65");
   test_result_->ExpectAction("keypress:97");
   test_result_->Verify();
+
+  RemoveLastClient(client2.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, IBusUSTest) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
   KeyEvent key = key_new;
@@ -467,16 +484,17 @@ TEST_F(InputMethodAuraLinuxTest, IBusUSTest) {
 
   test_result_->ExpectAction("keyup:65");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
   KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -503,16 +521,17 @@ TEST_F(InputMethodAuraLinuxTest, IBusPinyinTest) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:A");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, FcitxPinyinTest) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
   KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -531,6 +550,8 @@ TEST_F(InputMethodAuraLinuxTest, FcitxPinyinTest) {
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("keypress:97");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, Fcitx5PinyinTest) {
@@ -539,10 +560,9 @@ TEST_F(InputMethodAuraLinuxTest, Fcitx5PinyinTest) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
   KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -567,21 +587,21 @@ TEST_F(InputMethodAuraLinuxTest, Fcitx5PinyinTest) {
   input_method_auralinux_->OnPreeditChanged(comp);
   input_method_auralinux_->OnPreeditEnd();
 
-
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:a");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, JapaneseCommit) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
   KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
@@ -612,20 +632,21 @@ TEST_F(InputMethodAuraLinuxTest, JapaneseCommit) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:a");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, EmptyCommit) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
+
   KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
   key.set_character(L'a');
   input_method_auralinux_->DispatchKeyEvent(&key);
-
   input_method_auralinux_->OnPreeditStart();
   CompositionText comp;
   comp.text = u"a";
@@ -644,6 +665,8 @@ TEST_F(InputMethodAuraLinuxTest, EmptyCommit) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 // crbug.com/463491
@@ -696,6 +719,10 @@ void DeadKeyTest(TextInputType text_input_type,
   test_result->ExpectAction("keydown:65");
   test_result->ExpectAction("keypress:88");
   test_result->Verify();
+
+  // Remove dangling references before locals go out of scope.
+  input_method_auralinux->DetachTextInputClient(client.get());
+  context->DropClients();
 }
 
 TEST_F(InputMethodAuraLinuxTest, DeadKeyTest) {
@@ -733,10 +760,9 @@ TEST_F(InputMethodAuraLinuxTest, MultiCommitsTest) {
   context_->AddCommitAction("b");
   context_->AddCommitAction("c");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key(ET_KEY_PRESSED, VKEY_A, 0);
   key.set_character(L'a');
@@ -745,6 +771,8 @@ TEST_F(InputMethodAuraLinuxTest, MultiCommitsTest) {
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("textinput:abc");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, MixedCompositionAndCommitTest) {
@@ -756,10 +784,9 @@ TEST_F(InputMethodAuraLinuxTest, MixedCompositionAndCommitTest) {
   context_->AddCommitAction("c");
   context_->AddCompositionUpdateAction("d");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -780,6 +807,8 @@ TEST_F(InputMethodAuraLinuxTest, MixedCompositionAndCommitTest) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:e");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, CompositionEndWithoutCommitTest) {
@@ -788,10 +817,9 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithoutCommitTest) {
   context_->AddCompositionStartAction();
   context_->AddCompositionUpdateAction("a");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -810,6 +838,8 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithoutCommitTest) {
   test_result_->ExpectAction("keydown:229");
   test_result_->ExpectAction("compositionend");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, CompositionEndWithEmptyCommitTest) {
@@ -818,10 +848,9 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithEmptyCommitTest) {
   context_->AddCompositionStartAction();
   context_->AddCompositionUpdateAction("a");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -842,6 +871,8 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithEmptyCommitTest) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, CompositionEndWithCommitTest) {
@@ -850,10 +881,9 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithCommitTest) {
   context_->AddCompositionStartAction();
   context_->AddCompositionUpdateAction("a");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -876,6 +906,8 @@ TEST_F(InputMethodAuraLinuxTest, CompositionEndWithCommitTest) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:b");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, CompositionUpdateWithCommitTest) {
@@ -885,10 +917,9 @@ TEST_F(InputMethodAuraLinuxTest, CompositionUpdateWithCommitTest) {
   context_->AddCompositionUpdateAction("a");
   context_->AddCommitAction("b");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -913,16 +944,17 @@ TEST_F(InputMethodAuraLinuxTest, CompositionUpdateWithCommitTest) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:c");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, MixedAsyncAndSyncTest) {
   context_->SetSyncMode(false);
   context_->SetEatKey(true);
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -948,6 +980,8 @@ TEST_F(InputMethodAuraLinuxTest, MixedAsyncAndSyncTest) {
   test_result_->ExpectAction("compositionend");
   test_result_->ExpectAction("textinput:b");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, MixedSyncAndAsyncTest) {
@@ -956,10 +990,9 @@ TEST_F(InputMethodAuraLinuxTest, MixedSyncAndAsyncTest) {
   context_->AddCompositionStartAction();
   context_->AddCompositionUpdateAction("a");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'a');
@@ -990,6 +1023,8 @@ TEST_F(InputMethodAuraLinuxTest, MixedSyncAndAsyncTest) {
   test_result_->ExpectAction("keydown:65");
   test_result_->ExpectAction("keypress:99");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest) {
@@ -997,10 +1032,9 @@ TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest) {
   context_->SetEatKey(true);
   context_->AddCompositionUpdateAction("a");
 
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   KeyEvent key_new(ET_KEY_PRESSED, VKEY_A, 0);
   key_new.set_character(L'A');
@@ -1031,6 +1065,8 @@ TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest) {
   test_result_->ExpectAction("keydown:65");
   test_result_->ExpectAction("keypress:65");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest_PeekKey) {
@@ -1046,10 +1082,9 @@ TEST_F(InputMethodAuraLinuxTest, ReleaseKeyTest_PeekKey) {
 }
 
 TEST_F(InputMethodAuraLinuxTest, SurroundingText_NoSelectionTest) {
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   client->surrounding_text = u"abcdef";
   client->text_range = gfx::Range(0, 6);
@@ -1063,13 +1098,15 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_NoSelectionTest) {
   test_result_->ExpectAction("selectionrangestart:3");
   test_result_->ExpectAction("selectionrangeend:3");
   test_result_->Verify();
+
+  input_method_auralinux_->DetachTextInputClient(client.get());
+  context_->DropClients();
 }
 
 TEST_F(InputMethodAuraLinuxTest, SurroundingText_SelectionTest) {
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   client->surrounding_text = u"abcdef";
   client->text_range = gfx::Range(0, 6);
@@ -1083,13 +1120,14 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_SelectionTest) {
   test_result_->ExpectAction("selectionrangestart:2");
   test_result_->ExpectAction("selectionrangeend:5");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   client->surrounding_text = u"abcdefghij";
   client->text_range = gfx::Range(5, 10);
@@ -1103,13 +1141,14 @@ TEST_F(InputMethodAuraLinuxTest, SurroundingText_PartialText) {
   test_result_->ExpectAction("selectionrangestart:7");
   test_result_->ExpectAction("selectionrangeend:9");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionSingleCharTest) {
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   client->surrounding_text = u"a";
   client->text_range = gfx::Range(0, 1);
@@ -1131,13 +1170,14 @@ TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionSingleCharTest) {
   // instead of InsertChar.
   test_result_->ExpectAction("textinput:a");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionCompositionEndTest) {
-  std::unique_ptr<TextInputClientForTesting> client(
-      new TextInputClientForTesting(TEXT_INPUT_TYPE_TEXT));
-  input_method_auralinux_->SetFocusedTextInputClient(client.get());
-  input_method_auralinux_->OnTextInputTypeChanged(client.get());
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  InstallFirstClient(client.get());
 
   input_method_auralinux_->OnCommit(u"a");
 
@@ -1163,6 +1203,8 @@ TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionCompositionEndTest) {
 
   test_result_->ExpectAction("compositionend");
   test_result_->Verify();
+
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, OnSetVirtualKeyboardOccludedBounds) {
@@ -1174,6 +1216,7 @@ TEST_F(InputMethodAuraLinuxTest, OnSetVirtualKeyboardOccludedBounds) {
   input_method_auralinux_->OnSetVirtualKeyboardOccludedBounds(kBounds);
 
   EXPECT_EQ(client->caret_not_in_rect, kBounds);
+  RemoveLastClient(client.get());
 }
 
 TEST_F(InputMethodAuraLinuxTest, GetVirtualKeyboardController) {
@@ -1213,6 +1256,8 @@ TEST_F(InputMethodAuraLinuxTest, SetContentTypeWithUpdateFocus) {
   EXPECT_EQ(context_->input_type(), TEXT_INPUT_TYPE_NONE);
   EXPECT_EQ(context_->old_client(), client1.get());
   EXPECT_EQ(context_->new_client(), nullptr);
+
+  RemoveLastClient(client1.get());
 }
 
 }  // namespace
