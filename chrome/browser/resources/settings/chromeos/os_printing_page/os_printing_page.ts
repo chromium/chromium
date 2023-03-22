@@ -23,7 +23,8 @@ import {getTemplate} from './os_printing_page.html.js';
 const OsSettingsPrintingPageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
-class OsSettingsPrintingPageElement extends OsSettingsPrintingPageElementBase {
+export class OsSettingsPrintingPageElement extends
+    OsSettingsPrintingPageElementBase {
   static get is(): string {
     return 'os-settings-printing-page';
   }
