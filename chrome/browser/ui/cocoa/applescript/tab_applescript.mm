@@ -282,15 +282,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }
 
 - (void)handlesViewSourceScriptCommand:(NSScriptCommand*)command {
-  NavigationEntry* entry =
-      _webContents->GetController().GetLastCommittedEntry();
-  if (entry) {
-    _webContents->OpenURL(
-        OpenURLParams(GURL(content::kViewSourceScheme + std::string(":") +
-                           entry->GetURL().spec()),
-                      Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                      ui::PAGE_TRANSITION_LINK, false));
-  }
+  _webContents->GetPrimaryMainFrame()->ViewSource();
 }
 
 - (id)handlesExecuteJavascriptScriptCommand:(NSScriptCommand*)command {
