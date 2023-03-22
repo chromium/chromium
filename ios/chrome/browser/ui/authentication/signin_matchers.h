@@ -27,11 +27,6 @@ id<GREYMatcher> WebSigninSkipButtonMatcher();
 // dialog.
 id<GREYMatcher> WebSigninPrimaryButtonMatcher();
 
-// Returns a matcher for the same as WebSigninPrimaryButtonMatcher().
-// TODO(crbug.com/1426293): deprecate this, and update all callers of this
-// function to call WebSigninPrimaryButtonMatcher().
-id<GREYMatcher> WebSigninContinueButtonMatcher();
-
 // Returns matcher for the Google Sync Settings button on the main Settings
 // screen.
 id<GREYMatcher> GoogleSyncSettingsButton();
