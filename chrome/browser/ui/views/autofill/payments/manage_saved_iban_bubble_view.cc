@@ -111,7 +111,7 @@ void ManageSavedIbanBubbleView::Init() {
           views::TableLayout::kFixedSize,
           provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL))
       .AddColumn(views::LayoutAlignment::kStretch,
-                 views::LayoutAlignment::kCenter, 1.0,
+                 views::LayoutAlignment::kStretch, 1.0,
                  views::TableLayout::ColumnSize::kFixed, 0, 0)
       // Add a row for IBAN label and the value of IBAN. It might happen that
       // the revealed IBAN value is too long to fit in a single line while the
