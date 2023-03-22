@@ -219,6 +219,14 @@ void PhoneHubUiController::HandleBubbleOpened() {
   if (feature_status == FeatureStatus::kEnabledButDisconnected)
     phone_hub_manager_->GetConnectionScheduler()->ScheduleConnectionNow();
 
+  if (features::IsEcheNetworkConnectionStateEnabled() &&
+      feature_status == FeatureStatus::kEnabledAndConnected) {
+    if (phone_hub_manager_->GetEcheConnectionStatusHandler()) {
+      phone_hub_manager_->GetEcheConnectionStatusHandler()
+          ->CheckConnectionStatusForUi();
+    }
+  }
+
   phone_hub_manager_->GetBrowserTabsModelProvider()->TriggerRefresh();
   RecordStatusOnBubbleOpened();
 

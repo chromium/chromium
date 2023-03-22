@@ -105,6 +105,11 @@ class FakePhoneHubManager : public PhoneHubManager {
     host_last_seen_timestamp_ = timestamp;
   }
 
+  void set_eche_connection_hander(
+      eche_app::EcheConnectionStatusHandler* handler) {
+    eche_connection_status_handler_ = handler;
+  }
+
  private:
   // PhoneHubManager:
   BrowserTabsModelProvider* GetBrowserTabsModelProvider() override;
@@ -129,6 +134,11 @@ class FakePhoneHubManager : public PhoneHubManager {
       base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
   IconDecoder* GetIconDecoder() override;
   AppStreamManager* GetAppStreamManager() override;
+  eche_app::EcheConnectionStatusHandler* GetEcheConnectionStatusHandler()
+      override;
+  void SetEcheConnectionStatusHandler(
+      eche_app::EcheConnectionStatusHandler* eche_connection_status_handler)
+      override;
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
@@ -149,6 +159,8 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakePingManager fake_ping_manager_;
   FakeIconDecoder fake_icon_decoder_;
   AppStreamManager app_stream_manager_;
+  eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
+      nullptr;
   absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
 };
 
