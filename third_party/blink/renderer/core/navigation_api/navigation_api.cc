@@ -835,11 +835,11 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   DispatchEvent(*navigate_event);
 
   if (navigate_event->defaultPrevented()) {
+    if (params->frame_load_type == WebFrameLoadType::kBackForward &&
+        window_->GetFrame()) {
+      window_->GetFrame()->ConsumeHistoryUserActivation();
+    }
     if (!navigate_event->signal()->aborted()) {
-      if (params->frame_load_type == WebFrameLoadType::kBackForward &&
-          window_->GetFrame()) {
-        window_->GetFrame()->ConsumeHistoryUserActivation();
-      }
       AbortOngoingNavigation(script_state);
     }
     return DispatchResult::kAbort;

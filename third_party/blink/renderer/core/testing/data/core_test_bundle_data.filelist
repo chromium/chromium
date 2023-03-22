@@ -299,6 +299,7 @@ testing/data/move_range_selection_extent.html
 testing/data/move_range_selection_extent_input_field.html
 testing/data/navigate_to_same.html
 testing/data/navigation-api/onnavigate-preventDefault.html
+testing/data/navigation-api/onnavigate-window-stop.html
 testing/data/no_scale_for_you.html
 testing/data/no_viewport_tag.html
 testing/data/nodeimage.html
