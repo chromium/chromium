@@ -214,6 +214,17 @@ std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
   return browsers;
 }
 
+std::vector<Browser*> FindAllBrowsersWithProfile(Profile* profile) {
+  std::vector<Browser*> browsers;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, kMatchAny,
+                       display::kInvalidDisplayId)) {
+      browsers.emplace_back(browser);
+    }
+  }
+  return browsers;
+}
+
 Browser* FindBrowserWithID(SessionID desired_id) {
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->session_id() == desired_id)
