@@ -10,6 +10,7 @@
 #include "ash/components/arc/session/arc_session_runner.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -35,9 +36,11 @@ constexpr char kGaiaId[] = "1234567890";
 
 constexpr char kNotificationId[] = "arc_vm_data_migration_notification";
 
-class ArcVmDataMigrationNotifierTest : public testing::Test {
+class ArcVmDataMigrationNotifierTest : public ash::AshTestBase {
  public:
-  ArcVmDataMigrationNotifierTest() {
+  ArcVmDataMigrationNotifierTest()
+      : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>())) {
     base::CommandLine::ForCurrentProcess()->InitFromArgv(
         {"", "--arc-availability=officially-supported", "--enable-arcvm"});
   }
@@ -50,6 +53,7 @@ class ArcVmDataMigrationNotifierTest : public testing::Test {
       const ArcVmDataMigrationNotifierTest&) = delete;
 
   void SetUp() override {
+    ash::AshTestBase::SetUp();
     ash::ConciergeClient::InitializeFake();
     ArcSessionManager::SetUiEnabledForTesting(false);
     arc_session_manager_ =
@@ -88,6 +92,7 @@ class ArcVmDataMigrationNotifierTest : public testing::Test {
     arc_vm_data_migration_notifier_.reset();
     arc_session_manager_.reset();
     ash::ConciergeClient::Shutdown();
+    ash::AshTestBase::TearDown();
   }
 
   ArcSessionManager* arc_session_manager() {
@@ -101,7 +106,6 @@ class ArcVmDataMigrationNotifierTest : public testing::Test {
   TestingProfile* profile() { return testing_profile_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
@@ -140,13 +144,7 @@ TEST_F(ArcVmDataMigrationNotifierTest, AccountManaged) {
 
 // Tests that a notification is shown when the migration is enabled but not
 // started nor finished yet.
-// TODO(https://crbug.com/1426616): Fix test failure and re-enable
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_MigrationEnabled DISABLED_MigrationEnabled
-#else
-#define MAYBE_MigrationEnabled MigrationEnabled
-#endif
-TEST_F(ArcVmDataMigrationNotifierTest, MAYBE_MigrationEnabled) {
+TEST_F(ArcVmDataMigrationNotifierTest, MigrationEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableArcVmDataMigration);
 
