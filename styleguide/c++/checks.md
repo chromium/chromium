@@ -15,9 +15,9 @@ being violated. All invariant failures should be seen as P1 bugs, regardless of
 their crash rate. Continuing past an invariant failure can cause crashes and
 incorrect behaviour for our users, but also frequently presents security
 vulnerabilities as attackers may leverage the unexpected state to take control
-of the program. We also reserve the right to let the compiler assume and
-optimize around `DCHECK()`s holding true in non-DCHECK builds using
-`__builtin_assume()`, which even further formalizes undefined behavior.
+of the program. In the future we may let the compiler assume and optimize around
+`DCHECK()`s holding true in non-DCHECK builds using `__builtin_assume()`, which
+further formalizes undefined behavior.
 
 Prefer `CHECK()` and `NOTREACHED_NORETURN()` as they ensure that if an invariant
 fails, the program does not continue in an unexpected state, and we hear about
@@ -46,9 +46,6 @@ unreachable, however it disappears in production builds and we have observed
 that these are in fact commonly reached. Prefer `NOTREACHED_NORETURN()` in new
 code, while we migrate the preexisting cases to it with care. See
 https://crbug.com/851128.
-
-We reserve the right to make any `DCHECK()` or `NOTREACHED()` statements fatal
-in production builds, subject to performance and code-size constraints.
 
 Below are some examples to explore the choice of `CHECK()` and its variants:
 
