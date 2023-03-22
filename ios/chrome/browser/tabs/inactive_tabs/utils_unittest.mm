@@ -8,18 +8,24 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -390,4 +396,61 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   // (0).
   std::vector<int> expected_last_activity_order = {18, 0, 10, 30, 2, 16, 0, 0};
   CheckOrder(active_web_state_list, expected_last_activity_order);
+}
+
+TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
+  // No inactive tabs on iPad.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters[kTabInactivityThresholdParameterName] =
+      kTabInactivityThresholdOneWeekParam;
+  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
+                                                  parameters);
+
+  // Needed to use the NewTabPageTabHelper and ensure that the tab is an NTP.
+  std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =
+      std::make_unique<web::FakeNavigationManager>();
+
+  std::unique_ptr<web::NavigationItem> pending_item =
+      web::NavigationItem::Create();
+  pending_item->SetURL(GURL(kChromeUIAboutNewTabURL));
+  fake_navigation_manager->SetPendingItem(pending_item.get());
+
+  // Create a New Tab Page (NTP) tab with the last activity at 30 days ago.
+  std::unique_ptr<web::FakeWebState> fake_web_state =
+      std::make_unique<web::FakeWebState>();
+  GURL url(kChromeUINewTabURL);
+  fake_web_state->SetVisibleURL(url);
+  fake_web_state->SetNavigationManager(std::move(fake_navigation_manager));
+  fake_web_state->SetLastActiveTime(base::Time::Now() - base::Days(30));
+
+  // Ensure this is an ntp web state.
+  id delegate = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
+  NewTabPageTabHelper::CreateForWebState(fake_web_state.get());
+  NewTabPageTabHelper* ntp_helper =
+      NewTabPageTabHelper::FromWebState(fake_web_state.get());
+  ntp_helper->SetDelegate(delegate);
+  ASSERT_TRUE(ntp_helper->IsActive());
+
+  WebStateList* active_web_state_list = browser_active_->GetWebStateList();
+  WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();
+
+  EXPECT_EQ(active_web_state_list->count(), 0);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  // Add the created ntp in the active browser.
+  active_web_state_list->InsertWebState(0, std::move(fake_web_state),
+                                        WebStateList::INSERT_ACTIVATE,
+                                        WebStateOpener());
+
+  EXPECT_EQ(active_web_state_list->count(), 1);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
+
+  MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
+
+  EXPECT_EQ(active_web_state_list->count(), 1);
+  EXPECT_EQ(inactive_web_state_list->count(), 0);
 }
