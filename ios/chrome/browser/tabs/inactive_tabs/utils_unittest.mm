@@ -8,9 +8,12 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
+#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -23,12 +26,30 @@
 #error "This file requires ARC support."
 #endif
 
+// Fake WebStateList delegate that attaches the required tab helper.
+class InactiveTabsFakeWebStateListDelegate : public FakeWebStateListDelegate {
+ public:
+  InactiveTabsFakeWebStateListDelegate() {}
+  ~InactiveTabsFakeWebStateListDelegate() override {}
+
+  // WebStateListDelegate implementation.
+  void WillAddWebState(web::WebState* web_state) override {
+    SnapshotTabHelper::CreateForWebState(web_state);
+  }
+};
+
 class InactiveTabsUtilsTest : public PlatformTest {
  public:
   InactiveTabsUtilsTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_active_ = std::make_unique<TestBrowser>(browser_state_.get());
-    browser_inactive_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_active_ = std::make_unique<TestBrowser>(
+        browser_state_.get(),
+        std::make_unique<InactiveTabsFakeWebStateListDelegate>());
+    browser_inactive_ = std::make_unique<TestBrowser>(
+        browser_state_.get(),
+        std::make_unique<InactiveTabsFakeWebStateListDelegate>());
+    SnapshotBrowserAgent::CreateForBrowser(browser_active_.get());
+    SnapshotBrowserAgent::CreateForBrowser(browser_inactive_.get());
   }
 
  protected:

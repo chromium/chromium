@@ -11,6 +11,22 @@
 
 class Browser;
 
+// Move the web state from `source_browser` at `source_tab_index` to
+// `destination_browser` web state list at `destination_tab_index` with the
+// given flag.
+void MoveTabFromBrowserToBrowser(Browser* source_browser,
+                                 int source_tab_index,
+                                 Browser* destination_browser,
+                                 int destination_tab_index,
+                                 WebStateList::InsertionFlags flags);
+
+// Move the web state from `source_browser` at `source_tab_index` to
+// `destination_browser` web state list at `destination_tab_index`.
+void MoveTabFromBrowserToBrowser(Browser* source_browser,
+                                 int source_tab_index,
+                                 Browser* destination_browser,
+                                 int destination_tab_index);
+
 // Moves the tab to the `destination_tab_index` in `destination_browser` with
 // the given flag. It is an error to try to move a tab across profiles
 // (incognito <-> regular).

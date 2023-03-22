@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -35,7 +36,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
@@ -1090,11 +1090,7 @@
   WebStateList* regularWebStateList = self.regularBrowser->GetWebStateList();
   int toInsertIndex = regularWebStateList->count();
 
-  WebStateList* inactiveWebStateList = _inactiveBrowser->GetWebStateList();
-  int toRemoveIndex = GetTabIndex(inactiveWebStateList, itemID, /*pinned=*/NO);
-
-  MoveTab(inactiveWebStateList, toRemoveIndex, regularWebStateList,
-          toInsertIndex);
+  MoveTabToBrowser(itemID, self.regularBrowser, toInsertIndex);
 
   // TODO(crbug.com/1420938): Adapt the animation so the grid animation is
   // coming from the inactive panel.

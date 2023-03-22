@@ -48,7 +48,6 @@ source_set("tab_grid") {
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/tabs:tabs_internal",
-    "//ios/chrome/browser/tabs/inactive_tabs",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/tabs_search",
     "//ios/chrome/browser/tabs_search:tabs_search_factory",

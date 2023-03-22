@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
@@ -475,12 +474,8 @@ void RecordTabGridCloseTabsCount(int count) {
     }
 
     if (browser->IsInactive()) {
-      WebStateList* inactiveWebStateList = browser->GetWebStateList();
-      int selectedInactiveTabIndex =
-          GetTabIndex(inactiveWebStateList, itemID, /*pinned=*/NO);
       index = itemWebStateList->count();
-      MoveTab(inactiveWebStateList, selectedInactiveTabIndex, itemWebStateList,
-              index);
+      MoveTabToBrowser(itemID, self.browser, index);
     } else {
       // Other windows case.
       itemWebStateList = browser->GetWebStateList();

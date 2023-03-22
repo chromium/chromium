@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -43,43 +44,21 @@ bool IsInactive(const base::TimeDelta& threshold, web::WebState* web_state) {
 
 }  // namespace
 
-void MoveTab(WebStateList* source,
-             int source_index,
-             WebStateList* destination,
-             int destination_index) {
-  std::unique_ptr<web::WebState> removed_web_state =
-      source->DetachWebStateAt(source_index);
-  destination->InsertWebState(destination_index, std::move(removed_web_state),
-                              WebStateList::InsertionFlags::INSERT_FORCE_INDEX,
-                              WebStateOpener());
-}
-
 void MoveTabsFromActiveToInactive(Browser* active_browser,
                                   Browser* inactive_browser) {
   DCHECK(IsInactiveTabsEnabled());
   WebStateList* active_web_state_list = active_browser->GetWebStateList();
-  WebStateList* inactive_web_state_list = inactive_browser->GetWebStateList();
   const base::TimeDelta inactivity_threshold = InactiveTabsTimeThreshold();
 
   for (int index = active_web_state_list->GetIndexOfFirstNonPinnedWebState();
        index < active_web_state_list->count();) {
-    web::WebState* current_web_state =
-        active_web_state_list->GetWebStateAt(index);
-
-    if (IsInactive(inactivity_threshold, current_web_state)) {
-      MoveTab(active_web_state_list, index, inactive_web_state_list,
-              inactive_web_state_list->count());
+    if (IsInactive(inactivity_threshold,
+                   active_web_state_list->GetWebStateAt(index))) {
+      MoveTabFromBrowserToBrowser(active_browser, index, inactive_browser,
+                                  inactive_browser->GetWebStateList()->count());
     } else {
       ++index;
     }
-  }
-
-  // Ensure to have an active web state so the save can be performed.
-  // TODO(crbug.com/1264451): Remove this workaround when it will not be longer
-  // required to have an active WebState in the WebStateList.
-  if (inactive_web_state_list->count() > 0) {
-    inactive_web_state_list->ActivateWebStateAt(
-        inactive_web_state_list->count() - 1);
   }
 }
 
@@ -92,15 +71,13 @@ void MoveTabsFromInactiveToActive(Browser* inactive_browser,
   int removed_web_state_number = 0;
 
   for (int index = 0; index < inactive_web_state_list->count();) {
-    web::WebState* current_web_state =
-        inactive_web_state_list->GetWebStateAt(index);
-
-    if (!IsInactive(inactivity_threshold, current_web_state)) {
+    if (!IsInactive(inactivity_threshold,
+                    inactive_web_state_list->GetWebStateAt(index))) {
       int insertion_index =
           active_web_state_list->GetIndexOfFirstNonPinnedWebState() +
           removed_web_state_number++;
-      MoveTab(inactive_web_state_list, index, active_web_state_list,
-              insertion_index);
+      MoveTabFromBrowserToBrowser(inactive_browser, index, active_browser,
+                                  insertion_index);
     } else {
       ++index;
     }
@@ -117,7 +94,8 @@ void RestoreAllInactiveTabs(Browser* inactive_browser,
   base::UmaHistogramCounts100("Tabs.RestoredFromInactiveCount",
                               inactive_web_state_list->count());
   for (int index = inactive_web_state_list->count() - 1; index >= 0; index--) {
-    MoveTab(inactive_web_state_list, index, active_web_state_list,
-            active_web_state_list->GetIndexOfFirstNonPinnedWebState());
+    MoveTabFromBrowserToBrowser(
+        inactive_browser, index, active_browser,
+        active_web_state_list->GetIndexOfFirstNonPinnedWebState());
   }
 }
