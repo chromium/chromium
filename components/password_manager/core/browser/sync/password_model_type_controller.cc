@@ -15,7 +15,9 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -43,6 +45,16 @@ void PasswordStoreClearDone(bool cleared) {
                              ? ClearedOnStartup::kNotOptedInAndHadToClear
                              : ClearedOnStartup::kNotOptedInAndWasAlreadyEmpty);
 }
+
+#if BUILDFLAG(IS_IOS)
+// Master kill switch that can be used to disable enabling PASSWORDS transport
+// mode for users using non-standard encryption passphrase types (explicit
+// passphrase or kTrustedVaultPassphrase). Note that this is necessary but not
+// sufficient to enable PASSWORDS in transport mode.
+BASE_FEATURE(kSyncAllowTransportModeWithNonStandardEncryption,
+             "SyncAllowTransportModeWithNonStandardEncryption",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -142,9 +154,27 @@ bool PasswordModelTypeController::ShouldRunInTransportOnlyMode() const {
   if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
     return false;
   }
+#if BUILDFLAG(IS_IOS)
+  // Non-standard passphrase types require UI support to deal with error cases.
+  // On iOS, these UI changes (for transport mode) are guarded behind
+  // kIndicateAccountStorageErrorInAccountCell.
+  if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() ||
+      sync_service_->GetUserSettings()->GetPassphraseType() ==
+          syncer::PassphraseType::kTrustedVaultPassphrase) {
+    if (!base::FeatureList::IsEnabled(
+            syncer::kIndicateAccountStorageErrorInAccountCell) ||
+        !base::FeatureList::IsEnabled(
+            kSyncAllowTransportModeWithNonStandardEncryption)) {
+      return false;
+    }
+  }
+#else
+  // Outside iOS, passphrase errors aren't reported in the UI, so it doesn't
+  // make sense to enable this datatype.
   if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()) {
     return false;
   }
+#endif  // BUILDFLAG(IS_IOS)
   return true;
 }
 
