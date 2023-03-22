@@ -416,6 +416,7 @@ enum LaunchSource {
   [MinVersion=10] kFromOsLogin,                  // Run on OS login.
   [MinVersion=10] kFromProtocolHandler,          // Protocol handler.
   [MinVersion=10] kFromUrlHandler,               // Url handler.
+  [MinVersion=11] kFromSysTrayCalendar,          // System Tray Calendar.
 };
 
 [Stable, Extensible]

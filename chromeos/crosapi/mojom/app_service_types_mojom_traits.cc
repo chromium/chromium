@@ -906,6 +906,8 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
       return crosapi::mojom::LaunchSource::kFromProtocolHandler;
     case apps::LaunchSource::kFromUrlHandler:
       return crosapi::mojom::LaunchSource::kFromUrlHandler;
+    case apps::LaunchSource::kFromSysTrayCalendar:
+      return crosapi::mojom::LaunchSource::kFromSysTrayCalendar;
     // TODO(crbug.com/1343692): Make lock screen apps use lacros browser.
     case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromCommandLine:
@@ -1012,6 +1014,9 @@ bool EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::FromMojom(
       return true;
     case crosapi::mojom::LaunchSource::kFromUrlHandler:
       *output = apps::LaunchSource::kFromUrlHandler;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromSysTrayCalendar:
+      *output = apps::LaunchSource::kFromSysTrayCalendar;
       return true;
   }
 

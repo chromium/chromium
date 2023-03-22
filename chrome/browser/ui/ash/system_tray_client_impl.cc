@@ -61,6 +61,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -87,7 +88,6 @@ SystemTrayClientImpl* g_system_tray_client_instance = nullptr;
 // calendar web app.
 constexpr char kOfficialCalendarUrlPrefix[] =
     "https://calendar.google.com/calendar/";
-constexpr char kGoogleMeetSubDomain[] = "meet.google.com";
 
 void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -757,24 +757,11 @@ void SystemTrayClientImpl::ShowCalendarEvent(
 // one for each call to `LaunchAppWithUrl`.
 void SystemTrayClientImpl::ShowVideoConference(
     const GURL& video_conference_url) {
-  const bool is_google_meet =
-      video_conference_url.DomainIs(kGoogleMeetSubDomain);
-
-  if (!is_google_meet || !IsAppInstalled(web_app::kGoogleMeetAppId)) {
-    OpenInBrowser(video_conference_url);
-    return;
+  if (auto* profile = ProfileManager::GetActiveUserProfile()) {
+    apps::MaybeLaunchPreferredAppForUrl(
+        profile, video_conference_url,
+        apps::LaunchSource::kFromSysTrayCalendar);
   }
-
-  apps::AppServiceProxyAsh* proxy = GetActiveUserAppServiceProxyAsh();
-  if (!proxy) {
-    LOG(ERROR) << __FUNCTION__
-               << " failed to get active user AppServiceProxyAsh";
-    OpenInBrowser(video_conference_url);
-    return;
-  }
-
-  proxy->LaunchAppWithUrl(web_app::kGoogleMeetAppId, ui::EF_NONE,
-                          video_conference_url, apps::LaunchSource::kFromShelf);
 }
 
 void SystemTrayClientImpl::ShowChannelInfoAdditionalDetails() {

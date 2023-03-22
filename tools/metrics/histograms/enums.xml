@@ -56923,6 +56923,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="34" label="Reparenting"/>
   <int value="35"
       label="Profile menu of installable chrome://password-manager WebUI)"/>
+  <int value="36" label="Launch from system tray Calendar"/>
 </enum>
 
 <enum name="LaunchType">

@@ -2191,6 +2191,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FromShelf" summary="From shelf."/>
     <variant name=".FromSmartTextContextMenu"
         summary="From Smart text selection context menu."/>
+    <variant name=".FromSysTrayCalendar" summary="From system tray Calendar."/>
     <variant name=".FromUrlHandler" summary="From URL handler."/>
   </token>
 </histogram>

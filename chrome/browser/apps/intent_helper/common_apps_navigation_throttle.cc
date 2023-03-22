@@ -216,34 +216,33 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
-  std::vector<std::string> app_ids =
-      proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true);
+  AppIdsToLaunchForUrl app_id_to_launch = FindAppIdsToLaunchForUrl(proxy, url);
 
-  if (app_ids.empty())
-    return false;
-
-  if (ShouldOnlyCaptureLinks(app_ids) && !navigate_from_link())
-    return false;
-
-  absl::optional<std::string> preferred_app_id =
-      proxy->PreferredAppsList().FindPreferredAppForUrl(url);
-  if (!preferred_app_id.has_value() ||
-      !base::Contains(app_ids, preferred_app_id.value())) {
+  if (app_id_to_launch.candidates.empty()) {
     return false;
   }
 
+  if (ShouldOnlyCaptureLinks(app_id_to_launch.candidates) &&
+      !navigate_from_link()) {
+    return false;
+  }
+
+  if (!app_id_to_launch.preferred) {
+    return false;
+  }
+
+  const std::string& preferred_app_id = *app_id_to_launch.preferred;
   // Only automatically launch supported app types.
-  auto app_type =
-      proxy->AppRegistryCache().GetAppType(preferred_app_id.value());
+  auto app_type = proxy->AppRegistryCache().GetAppType(preferred_app_id);
   if (app_type != AppType::kArc && app_type != AppType::kWeb &&
-      !IsSystemWebApp(profile, preferred_app_id.value())) {
+      !IsSystemWebApp(profile, preferred_app_id)) {
     return false;
   }
 
   // Don't capture if already inside the target app scope.
   if (app_type == AppType::kWeb &&
       base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
-                             &preferred_app_id.value())) {
+                             &preferred_app_id)) {
     return false;
   }
 
@@ -285,7 +284,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   auto launch_source = navigate_from_link() ? LaunchSource::kFromLink
                                             : LaunchSource::kFromOmnibox;
   GURL redirected_url =
-      RedirectUrlIfSwa(profile, preferred_app_id.value(), url, clock_);
+      RedirectUrlIfSwa(profile, preferred_app_id, url, clock_);
   // The tab may have been closed, which runs async and causes the browser
   // window to be refocused. Post a task to launch the app to ensure launching
   // happens after the tab closed, otherwise the opened app window might be
@@ -294,7 +293,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
       FROM_HERE,
       base::BindOnce(
           &AppServiceProxy::LaunchAppWithUrl, proxy->GetWeakPtr(),
-          preferred_app_id.value(),
+          preferred_app_id,
           GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                         /*prefer_container=*/true),
           redirected_url, launch_source,

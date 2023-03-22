@@ -108,6 +108,31 @@ crosapi::mojom::LaunchParamsPtr CreateCrosapiLaunchParamsWithEventFlags(
     int event_flags,
     LaunchSource launch_source,
     int64_t display_id);
+
+// Container for holding possible app IDs that can launch a PWA for a given URL.
+struct AppIdsToLaunchForUrl {
+  AppIdsToLaunchForUrl();
+  AppIdsToLaunchForUrl(AppIdsToLaunchForUrl&&);
+  ~AppIdsToLaunchForUrl();
+
+  // Apps that can handle a given URL.
+  std::vector<std::string> candidates;
+  // The users preference for an app to handle a given URL.
+  absl::optional<std::string> preferred;
+};
+
+// Takes a `url` and returns a vector of app IDs and the users preferred choice
+// of app that can launch a PWA for the given `url`.
+AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
+                                              const GURL& url);
+
+// Checks to see if any apps handle `url` and is selected as the users
+// preference. If so, launches the preferred app, otherwise opens `url` in a
+// browser tab.
+void MaybeLaunchPreferredAppForUrl(Profile* profile,
+                                   const GURL& url,
+                                   LaunchSource launch_source);
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

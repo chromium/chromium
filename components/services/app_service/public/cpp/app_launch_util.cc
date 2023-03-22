@@ -92,6 +92,9 @@ ApplicationLaunchSource ConvertLaunchSourceToProtoApplicationLaunchSource(
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_REPARENTING;
     case LaunchSource::kFromProfileMenu:
       return ApplicationLaunchSource::APPLICATION_LAUNCH_SOURCE_PROFILE_MENU;
+    case LaunchSource::kFromSysTrayCalendar:
+      return ApplicationLaunchSource::
+          APPLICATION_LAUNCH_SOURCE_SYSTEM_TRAY_CALENDAR;
   }
 }
 
