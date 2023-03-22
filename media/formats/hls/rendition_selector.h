@@ -85,7 +85,8 @@ class MEDIA_EXPORT RenditionSelector {
     raw_ptr<const VariantStream> selected_variant;
 
     // Use this variant for audio content if it is not nullptr.
-    raw_ptr<const AudioRendition> audio_override;
+    raw_ptr<const VariantStream> audio_override_variant;
+    raw_ptr<const AudioRendition> audio_override_rendition;
   };
 
   RenditionSelector(scoped_refptr<MultivariantPlaylist> playlist,

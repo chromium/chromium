@@ -63,11 +63,12 @@ void CheckSelections(const RenditionSelector& selector,
   }
 
   if (audio_override.has_value()) {
-    ASSERT_NE(variants.audio_override, nullptr);
-    ASSERT_NE(variants.audio_override->GetUri(), absl::nullopt);
-    ASSERT_EQ(*variants.audio_override->GetUri(), GURL(*audio_override));
+    ASSERT_NE(variants.audio_override_rendition, nullptr);
+    ASSERT_NE(variants.audio_override_rendition->GetUri(), absl::nullopt);
+    ASSERT_EQ(*variants.audio_override_rendition->GetUri(),
+              GURL(*audio_override));
   } else {
-    ASSERT_EQ(variants.audio_override, nullptr);
+    ASSERT_EQ(variants.audio_override_rendition, nullptr);
   }
 }
 
@@ -133,8 +134,7 @@ TEST(HlsRenditionSelectorTest, SimpleAudioOnlyStreamSelection) {
 
   // There are no variants that we've detected as having video, so we end up
   // with the fallback to selecting from a bunch of audio-only variants. There
-  // aren't any renditions either, so there shouldn't be an audio-override
-  // rendition selected either.
+  // aren't any renditions either, so this will count as a primary variant.
   CheckSelections(rs,
                   /*video_prefs=*/{absl::nullopt, absl::nullopt},
                   /*audio_prefs=*/{absl::nullopt, absl::nullopt},

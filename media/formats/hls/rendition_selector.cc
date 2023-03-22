@@ -236,27 +236,31 @@ RenditionSelector::PreferredVariants RenditionSelector::GetPreferredVariants(
       return result;
     }
     result.selected_variant = acceptable_audio[0];
-
-    // If our primary variant is audio, but we have a preferred rendition, we
-    // should then only provide audio override, and not a default variant.
-    result.audio_override =
+    result.audio_override_rendition =
         TryFindAudioOverride(audio_preferences, result.selected_variant);
 
-    if (result.audio_override != nullptr) {
+    // If our selected variant is audio, but we got a rendition that overrides
+    // this, then this selected variant won't actually be selected, since it
+    // would be overridden by the audio.
+    if (result.audio_override_rendition != nullptr) {
+      result.audio_override_variant = result.selected_variant;
       result.selected_variant = nullptr;
     }
 
     return result;
   }
 
+  // For now, since we only select a potential override from the selected
+  // variant, the audio override variant is always the same.
   result.selected_variant = acceptable_resolutions[0];
+  result.audio_override_variant = acceptable_resolutions[0];
 
   // If our selected variant is an audio/video stream, we should use its audio
   // group to determine what rendition to pick as an override, if it has an
   // audio group. If we don't suspect it of being an audio stream, then we have
   // to decide what to do - most implementations just end up with silent video.
   // Should we consider finding the best audio variant as well?
-  result.audio_override =
+  result.audio_override_rendition =
       TryFindAudioOverride(audio_preferences, result.selected_variant);
   return result;
 }
