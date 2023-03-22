@@ -57,6 +57,10 @@ SearchCompanionSidePanelCoordinator::CreateCompanionWebView() {
       std::make_unique<SidePanelWebUIViewT<CompanionSidePanelUntrustedUI>>(
           base::RepeatingClosure(), base::RepeatingClosure(),
           std::move(wrapper));
+
+  // Observe on the webcontents for opening links in new tab.
+  Observe(companion_web_view->GetWebContents());
+
   // Need to set browser after SidePanelWebUIViewT is constructed since it
   // creates the WebUIController. The WebUI needs a Browser pointer in order
   // to observe changes to the tab strip model.
@@ -106,6 +110,40 @@ SearchCompanionSidePanelCoordinator::CreateCompanionEntry() {
       base::BindRepeating(
           &SearchCompanionSidePanelCoordinator::CreateCompanionWebView,
           base::Unretained(this)));
+}
+
+// This method is called when the WebContents wants to open a link in a new
+// tab. This delegate does not override AddNewContents(), so the webcontents
+// is not actually created. Instead it forwards the parameters to the real
+// browser.
+void SearchCompanionSidePanelCoordinator::DidOpenRequestedURL(
+    content::WebContents* new_contents,
+    content::RenderFrameHost* source_render_frame_host,
+    const GURL& url,
+    const content::Referrer& referrer,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    bool started_from_context_menu,
+    bool renderer_initiated) {
+  content::OpenURLParams params(url, referrer, disposition, transition,
+                                renderer_initiated);
+
+  // If the navigation is initiated by the renderer process, we must set an
+  // initiator origin.
+  if (renderer_initiated) {
+    params.initiator_origin = url::Origin::Create(url);
+  }
+
+  // Open the new tab in the foreground.
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  auto* browser_view = GetBrowserView();
+  if (!browser_view) {
+    return;
+  }
+
+  // Open the url in a new tab.
+  browser_view->browser()->OpenURL(params);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchCompanionSidePanelCoordinator);
