@@ -11,6 +11,9 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -123,6 +126,11 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
       consumer.WaitForResult();
 
   return credentials.size();
+}
+
++ (void)setAccountStorageNoticeShown:(BOOL)shown {
+  chrome_test_util::GetOriginalBrowserState()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kAccountStorageNoticeShown, shown);
 }
 
 @end
