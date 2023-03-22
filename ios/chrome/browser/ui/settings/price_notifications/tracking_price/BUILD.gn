@@ -13,9 +13,13 @@ source_set("tracking_price") {
   deps = [
     ":constants",
     ":tracking_price_ui",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service",
+    "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce:shopping_service",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service",
     "//ios/chrome/browser/push_notification:push_notification_browser_state_service_factory",
@@ -25,6 +29,7 @@ source_set("tracking_price") {
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ui/base",
   ]

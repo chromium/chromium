@@ -13,4 +13,7 @@ extern NSString* const kTrackingPriceTableViewId;
 // The accessibility identifier of the Tracking Price mobile notifications cell.
 extern NSString* const kSettingsTrackingPriceMobileNotificationsCellId;
 
+// The accessibility identifier of the Tracking Price email notifications cell.
+extern NSString* const kSettingsTrackingPriceEmailNotificationsCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRICE_NOTIFICATIONS_TRACKING_PRICE_TRACKING_PRICE_CONSTANTS_H_

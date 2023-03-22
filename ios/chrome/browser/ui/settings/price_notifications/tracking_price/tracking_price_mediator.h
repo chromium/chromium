@@ -10,17 +10,24 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_view_controller_delegate.h"
 
+class AuthenticationService;
+class PrefService;
+@class TableViewSwitchItem;
 @protocol TrackingPriceAlertPresenter;
 @protocol TrackingPriceConsumer;
-class ChromeBrowserState;
-@class TableViewSwitchItem;
+
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
 
 // Mediator for the Tracking Price.
 @interface TrackingPriceMediator
     : NSObject <TrackingPriceViewControllerDelegate>
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithShoppingService:(commerce::ShoppingService*)shoppingService
+      authenticationService:(AuthenticationService*)authenticationService
+                prefService:(PrefService*)prefService NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -29,6 +36,9 @@ class ChromeBrowserState;
 
 // Mobile notification item.
 @property(nonatomic, strong) TableViewSwitchItem* mobileNotificationItem;
+
+// Email notification item.
+@property(nonatomic, strong) TableViewSwitchItem* emailNotificationItem;
 
 // Handler for displaying price tracking related alerts.
 @property(nonatomic, weak) id<TrackingPriceAlertPresenter> presenter;

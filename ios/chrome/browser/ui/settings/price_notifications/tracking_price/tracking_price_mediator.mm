@@ -6,8 +6,12 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/pref_names.h"
+#import "components/commerce/core/price_tracking_utils.h"
+#import "components/commerce/core/shopping_service.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_browser_state_service.h"
@@ -18,6 +22,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_alert_presenter.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_consumer.h"
@@ -32,24 +37,42 @@
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeMobileNotifications = kItemTypeEnumZero,
   ItemTypeTrackPriceHeader,
+  ItemTypeEmailNotifications,
 };
 
-@interface TrackingPriceMediator () {
-  base::WeakPtr<ChromeBrowserState> _browserState;
-}
+@interface TrackingPriceMediator ()
 
 // Header item.
 @property(nonatomic, strong)
     TableViewLinkHeaderFooterItem* trackPriceHeaderItem;
 
+// The service responsible for interacting with commerce's price data
+// infrastructure.
+@property(nonatomic, assign) commerce::ShoppingService* shoppingService;
+
+// Responsible for retrieving the relevant information about the currently
+// signed-in user.
+@property(nonatomic, assign) AuthenticationService* authService;
+
+//
+@property(nonatomic, assign) PrefService* prefService;
+
 @end
 
 @implementation TrackingPriceMediator
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browser_state {
+- (instancetype)
+    initWithShoppingService:(commerce::ShoppingService*)shoppingService
+      authenticationService:(AuthenticationService*)authenticationService
+                prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
-    _browserState = browser_state->AsWeakPtr();
+    DCHECK(shoppingService);
+    DCHECK(authenticationService);
+    DCHECK(prefService);
+    _shoppingService = shoppingService;
+    _authService = authenticationService;
+    _prefService = prefService;
   }
 
   return self;
@@ -72,6 +95,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _mobileNotificationItem;
 }
 
+- (TableViewSwitchItem*)emailNotificationItem {
+  if (!_emailNotificationItem) {
+    id<SystemIdentity> identity =
+        _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    _emailNotificationItem =
+        [[TableViewSwitchItem alloc] initWithType:ItemTypeEmailNotifications];
+    _emailNotificationItem.text = l10n_util::GetNSString(
+        IDS_IOS_TRACKING_PRICE_EMAIL_NOTIFICATIONS_TITLE);
+    _emailNotificationItem.detailText = l10n_util::GetNSStringF(
+        IDS_IOS_TRACKING_PRICE_EMAIL_NOTIFICATIONS_DETAILS,
+        base::SysNSStringToUTF16(identity.userEmail));
+    _emailNotificationItem.accessibilityIdentifier =
+        kSettingsTrackingPriceEmailNotificationsCellId;
+    _shoppingService->FetchPriceEmailPref();
+    _emailNotificationItem.on =
+        _prefService->GetBoolean(commerce::kPriceEmailNotificationsEnabled);
+  }
+
+  return _emailNotificationItem;
+}
+
 - (TableViewLinkHeaderFooterItem*)trackPriceHeaderItem {
   if (!_trackPriceHeaderItem) {
     _trackPriceHeaderItem = [[TableViewLinkHeaderFooterItem alloc]
@@ -88,6 +132,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   _consumer = consumer;
   [_consumer setMobileNotificationItem:self.mobileNotificationItem];
+  [_consumer setEmailNotificationItem:self.emailNotificationItem];
   [_consumer setTrackPriceHeaderItem:self.trackPriceHeaderItem];
 }
 
@@ -116,6 +161,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
           }];
       break;
     }
+    case ItemTypeEmailNotifications: {
+      _prefService->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
+                               value);
+      self.emailNotificationItem.on = value;
+      break;
+    }
     default:
       // Not a switch.
       NOTREACHED();
@@ -128,19 +179,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Returns whether the push notification enabled feature's, `client_id`,
 // permission status is enabled or disabled for the current user.
 - (BOOL)prefValueForClient:(PushNotificationClientId)clientID {
-  ChromeBrowserState* browser_state = _browserState.get();
-
-  if (!browser_state) {
-    return NO;
-  }
-
-  const PushNotificationAccountContext* account_context =
-      PushNotificationBrowserStateServiceFactory::GetForBrowserState(
-          browser_state)
-          ->GetAccountContext();
-  return
-      [account_context.preferenceMap[@(static_cast<int>(clientID)).stringValue]
-          boolValue];
+  // TODO (crbug.com/1369616): This function is being re-implemented by CL
+  // (crrev.com/c/4133444).
+  return YES;
 }
 
 @end

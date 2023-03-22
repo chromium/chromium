@@ -22,6 +22,9 @@
 - (void)setTrackPriceHeaderItem:
     (TableViewHeaderFooterItem*)trackPriceHeaderItem;
 
+// Initializes 'emailNotificationItem'.
+- (void)setEmailNotificationItem:(TableViewItem*)emailNotificationItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRICE_NOTIFICATIONS_TRACKING_PRICE_TRACKING_PRICE_CONSUMER_H_

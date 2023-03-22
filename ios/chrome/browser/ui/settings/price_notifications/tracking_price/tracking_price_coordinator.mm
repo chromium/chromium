@@ -7,9 +7,13 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_mediator.h"
 #import "ios/chrome/browser/ui/settings/price_notifications/tracking_price/tracking_price_view_controller.h"
@@ -50,8 +54,16 @@
   self.viewController = [[TrackingPriceViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
+  commerce::ShoppingService* shoppingService =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   self.mediator = [[TrackingPriceMediator alloc]
-      initWithBrowserState:self.browser->GetBrowserState()];
+      initWithShoppingService:shoppingService
+        authenticationService:authService
+                  prefService:self.browser->GetBrowserState()->GetPrefs()];
   self.mediator.consumer = self.viewController;
   self.mediator.presenter = self;
   self.viewController.modelDelegate = self.mediator;

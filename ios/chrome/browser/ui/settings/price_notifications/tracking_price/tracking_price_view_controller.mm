@@ -24,6 +24,7 @@ namespace {
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierTrackingPriceContent = kSectionIdentifierEnumZero,
+  SectionIdentifierTrackingPriceEmailNotifications,
 };
 
 }  // namespace
@@ -34,6 +35,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 @property(nonatomic, strong) TableViewItem* mobileNotificationItem;
 // Tracking price header received by mediator.
 @property(nonatomic, strong) TableViewHeaderFooterItem* trackPriceHeaderItem;
+// Email notification table view item received by mediator.
+@property(nonatomic, strong) TableViewItem* emailNotificationItem;
 
 @end
 
@@ -66,8 +69,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierTrackingPriceContent];
+  [model addSectionWithIdentifier:
+             SectionIdentifierTrackingPriceEmailNotifications];
   [model addItem:self.mobileNotificationItem
       toSectionWithIdentifier:SectionIdentifierTrackingPriceContent];
+  [model addItem:self.emailNotificationItem
+      toSectionWithIdentifier:SectionIdentifierTrackingPriceEmailNotifications];
   [model setHeader:self.trackPriceHeaderItem
       forSectionWithIdentifier:SectionIdentifierTrackingPriceContent];
 }

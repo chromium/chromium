@@ -1907,6 +1907,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TRACKING_PRICE_MOBILE_NOTIFICATIONS_TITLE" desc="Title for Tracking Price mobile notifications row.">
         Mobile Notifications
       </message>
+      <message name="IDS_IOS_TRACKING_PRICE_EMAIL_NOTIFICATIONS_TITLE" desc="Title for Tracking Price email notifications row.">
+        Email Notifications
+      </message>
+      <message name="IDS_IOS_TRACKING_PRICE_EMAIL_NOTIFICATIONS_DETAILS" desc="Subtitle that describes to which email address price tracking notifications would be sent.">
+        Send to <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
+      </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
         Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
       </message>

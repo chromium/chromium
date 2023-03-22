@@ -12,3 +12,6 @@ NSString* const kTrackingPriceTableViewId = @"kTrackingPriceTableViewId";
 
 NSString* const kSettingsTrackingPriceMobileNotificationsCellId =
     @"kSettingsTrackingPriceMobileNotificationsCellId";
+
+NSString* const kSettingsTrackingPriceEmailNotificationsCellId =
+    @"kSettingsTrackingPriceMobileNotificationsCellId";
