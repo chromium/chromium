@@ -2699,20 +2699,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // opaque origin instead).
   void SetOriginDependentStateOfNewFrame(RenderFrameHostImpl* creator_frame);
 
-  // Indicates whether `this` main frame has third-party storage partitioning
-  // enabled. This depends on the deprecation trial (which can block), content
-  // browser client (which can block), and base feature (which can allow).
-  bool IsMainFrameThirdPartyStoragePartitioningEnabled();
-
   // Calculates the storage key for this RenderFrameHostImpl using the passed
-  // `new_rfh_origin`, and `nonce`, and
-  // `is_third_party_storage_partitioning_allowed` and deriving the storage
-  // key's top_level_site` and `ancestor_bit` parameters. This takes into
-  // account possible host permissions of the top_level RenderFrameHostImpl.
-  blink::StorageKey CalculateStorageKey(
-      const url::Origin& new_rfh_origin,
-      const base::UnguessableToken* nonce,
-      bool is_third_party_storage_partitioning_allowed);
+  // `new_rfh_origin`, and `nonce`, and deriving the storage key's
+  // top_level_site` and `ancestor_bit` parameters. If
+  // `is_third_party_storage_partitioning_allowed` is provided then that value
+  // is used for allowing third-party storage partitioning, if it is
+  // absl::nullopt then the value is calculated using the top frame's
+  // RuntimeFeatureStateReadContext, the enterprise policy, and the
+  // base::feature. This also takes into account special embedding cases, such
+  // as extensions embedding web iframes, where the top-level frame is not the
+  // same as the top-level site for the purposes of calculating the storage key.
+  // See the implementation for more details.
+  blink::StorageKey CalculateStorageKey(const url::Origin& new_rfh_origin,
+                                        const base::UnguessableToken* nonce);
 
   // Returns the BrowsingContextState associated with this RenderFrameHostImpl.
   // See class comments in BrowsingContextState for a more detailed description.
@@ -3890,6 +3889,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::FencedFrame::ReportingDestination destination,
       bool from_renderer,
       absl::optional<int64_t> navigation_id = absl::nullopt);
+
+  // Indicates whether this frame has third-party storage
+  // partitioning enabled. This depends on the deprecation trial (which can
+  // block), content browser client (which can block), and base feature (which
+  // can allow/block). `main_frame_for_storage_partitioning` indicates the top
+  // most frame that third-party storage partitioning is affected by (this can
+  // be the real main frame or it could be a subframe when taking into account
+  // special embedding cases, see CalculateStorageKey's implementation for more
+  // information.)
+  bool IsThirdPartyStoragePartitioningEnabled(
+      RenderFrameHostImpl* main_frame_for_storage_partitioning);
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

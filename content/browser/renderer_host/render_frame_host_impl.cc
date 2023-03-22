@@ -4033,14 +4033,17 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   return frame_tree_node_->GetFencedFrameNonce();
 }
 
-bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
+bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
+    RenderFrameHostImpl* main_frame_for_storage_partitioning) {
   // If we're in the main frame the state of third-party storage partitioning
   // doesn't matter as the StorageKey will be first-party no matter what.
-  if (is_main_frame()) {
+  if (main_frame_for_storage_partitioning == this) {
     return false;
   }
+
   RuntimeFeatureStateDocumentData* rfs_document_data_for_storage_key =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(GetMainFrame());
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          main_frame_for_storage_partitioning);
 
   DCHECK(rfs_document_data_for_storage_key);
 
@@ -4055,7 +4058,8 @@ bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
   // We can safely read the last comitted-origin (even during navigation)
   // as we know we are not in the main-frame since that case is filtered above.
   if (!GetContentClient()->browser()->IsThirdPartyStoragePartitioningAllowed(
-          GetBrowserContext(), GetMainFrame()->GetLastCommittedOrigin())) {
+          GetBrowserContext(),
+          main_frame_for_storage_partitioning->GetLastCommittedOrigin())) {
     return false;
   }
   return blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
@@ -4063,8 +4067,7 @@ bool RenderFrameHostImpl::IsMainFrameThirdPartyStoragePartitioningEnabled() {
 
 blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     const url::Origin& new_rfh_origin,
-    const base::UnguessableToken* nonce,
-    bool is_third_party_storage_partitioning_allowed) {
+    const base::UnguessableToken* nonce) {
   if (nonce) {
     // If the nonce isn't null, we can use the simpler form of the constructor.
     return blink::StorageKey::CreateWithNonce(new_rfh_origin, *nonce);
@@ -4087,6 +4090,8 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   // When the top level RenderFrameHost is a Chrome extension, with host
   // permissions to its child in the ancestor chain, then behave "as-if" the
   // child was the top-level one computing the StorageKey.
+  //
+  // https://github.com/wanderview/quota-storage-partitioning/blob/main/explainer.md#interaction-with-extension-pages
   //
   // Sites with host permissions are saved in
   // `browser_context->GetSharedCorsOriginAccessList()` because they are also
@@ -4123,6 +4128,11 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   } else {
     ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
   }
+
+  // We want the RuntimeFeatureStateReadContext from the effective main frame
+  // (keeping in mind `ignore_top_level_extension`).
+  bool is_third_party_storage_partitioning_allowed =
+      IsThirdPartyStoragePartitioningEnabled(ancestor_chain.back());
 
   return blink::StorageKey::Create(new_rfh_origin, top_level_site,
                                    ancestor_chain_bit,
@@ -4172,8 +4182,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   // For the StorageKey, we want the main frame's
   // RuntimeFeatureStateReadContext.
   SetStorageKey(CalculateStorageKey(
-      new_frame_origin, base::OptionalToPtr(isolation_info_.nonce()),
-      IsMainFrameThirdPartyStoragePartitioningEnabled()));
+      new_frame_origin, base::OptionalToPtr(isolation_info_.nonce())));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecureLocalNetworkRequests(
@@ -12559,8 +12568,7 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
 
   url::Origin origin = GetLastCommittedOrigin();
   blink::StorageKey storage_key_to_commit = CalculateStorageKey(
-      origin, base::OptionalToPtr(provisional_storage_key.nonce()),
-      IsMainFrameThirdPartyStoragePartitioningEnabled());
+      origin, base::OptionalToPtr(provisional_storage_key.nonce()));
   SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();

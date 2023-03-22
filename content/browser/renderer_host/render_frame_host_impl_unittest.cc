@@ -50,6 +50,23 @@
 
 namespace content {
 
+namespace {
+
+void AddHostPermissions(const std::string& host, RenderFrameHost* rfh) {
+  std::vector<network::mojom::CorsOriginPatternPtr> patterns;
+  base::RunLoop run_loop;
+  patterns.push_back(network::mojom::CorsOriginPattern::New(
+      "https", host, 0, network::mojom::CorsDomainMatchMode::kAllowSubdomains,
+      network::mojom::CorsPortMatchMode::kAllowAnyPort,
+      network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
+  CorsOriginPatternSetter::Set(rfh->GetBrowserContext(),
+                               rfh->GetLastCommittedOrigin(),
+                               std::move(patterns), {}, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+}  // namespace
+
 class RenderFrameHostImplTest : public RenderViewHostImplTestHarness {
  public:
   void SetUp() override {
@@ -541,10 +558,8 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptShowLoadingUi) {
   EXPECT_TRUE(contents()->ShouldShowLoadingUI());
 }
 
+// TODO(crbug.com/1425337): This test should be migrated to //chrome.
 TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
-  bool partitioning_allowed =
-      blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
-
   // Register extension scheme for testing.
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
@@ -583,45 +598,23 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
 
   EXPECT_EQ(expected_grandchild_no_permissions_storage_key,
             grandchild_frame->CalculateStorageKey(
-                grandchild_frame->GetLastCommittedOrigin(), nullptr,
-                partitioning_allowed));
+                grandchild_frame->GetLastCommittedOrigin(), nullptr));
 
   // Give extension host permissions to `grandchild_frame`. Since
   // `grandchild_frame` is not the root non-extension frame
   // `CalculateStorageKey` should still create a storage key that has the
   // extension as the `top_level_site`.
-  std::vector<network::mojom::CorsOriginPatternPtr> patterns;
-  base::RunLoop run_loop;
-  patterns.push_back(network::mojom::CorsOriginPattern::New(
-      "https", "grandchildframe.com", 0,
-      network::mojom::CorsDomainMatchMode::kAllowSubdomains,
-      network::mojom::CorsPortMatchMode::kAllowAnyPort,
-      network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
-  CorsOriginPatternSetter::Set(main_rfh()->GetBrowserContext(),
-                               main_rfh()->GetLastCommittedOrigin(),
-                               std::move(patterns), {}, run_loop.QuitClosure());
-  run_loop.Run();
+  AddHostPermissions("grandchildframe.com", main_rfh());
 
   EXPECT_EQ(expected_grandchild_no_permissions_storage_key,
             grandchild_frame->CalculateStorageKey(
-                grandchild_frame->GetLastCommittedOrigin(), nullptr,
-                partitioning_allowed));
+                grandchild_frame->GetLastCommittedOrigin(), nullptr));
 
   // Now give extension host permissions to `child_frame`. Since the root
   // extension rfh has host permissions to`child_frame` calling
   // `CalculateStorageKey` should create a storage key with the `child_origin`
   // as the `top_level_site`.
-  base::RunLoop run_loop_update;
-  std::vector<network::mojom::CorsOriginPatternPtr> patterns2;
-  patterns2.push_back(network::mojom::CorsOriginPattern::New(
-      "https", "childframe.com", 0,
-      network::mojom::CorsDomainMatchMode::kAllowSubdomains,
-      network::mojom::CorsPortMatchMode::kAllowAnyPort,
-      network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
-  CorsOriginPatternSetter::Set(
-      main_rfh()->GetBrowserContext(), main_rfh()->GetLastCommittedOrigin(),
-      std::move(patterns2), {}, run_loop_update.QuitClosure());
-  run_loop_update.Run();
+  AddHostPermissions("childframe.com", main_rfh());
 
   // Child host should now have a storage key that is same site and uses the
   // `child_origin` as the `top_level_site`.
@@ -630,10 +623,9 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
           child_frame->GetLastCommittedOrigin(),
           net::SchemefulSite(child_frame->GetLastCommittedOrigin()),
           blink::mojom::AncestorChainBit::kSameSite);
-  EXPECT_EQ(
-      expected_child_with_permissions_storage_key,
-      child_frame->CalculateStorageKey(child_frame->GetLastCommittedOrigin(),
-                                       nullptr, partitioning_allowed));
+  EXPECT_EQ(expected_child_with_permissions_storage_key,
+            child_frame->CalculateStorageKey(
+                child_frame->GetLastCommittedOrigin(), nullptr));
 
   blink::StorageKey expected_grandchild_with_permissions_storage_key =
       blink::StorageKey::Create(
@@ -642,15 +634,12 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKey) {
           blink::mojom::AncestorChainBit::kCrossSite);
   EXPECT_EQ(expected_grandchild_with_permissions_storage_key,
             grandchild_frame->CalculateStorageKey(
-                grandchild_frame->GetLastCommittedOrigin(), nullptr,
-                partitioning_allowed));
+                grandchild_frame->GetLastCommittedOrigin(), nullptr));
 }
 
+// TODO(crbug.com/1425337): This test should be migrated to //chrome.
 TEST_F(RenderFrameHostImplTest,
        CalculateStorageKeyWhenPassedOriginIsNotCurrentFrame) {
-  bool partitioning_allowed =
-      blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
-
   // Register extension scheme for testing.
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
@@ -670,17 +659,7 @@ TEST_F(RenderFrameHostImplTest,
                                                          child_frame));
 
   // Give extension host permissions to `child_url`.
-  std::vector<network::mojom::CorsOriginPatternPtr> patterns;
-  base::RunLoop run_loop;
-  patterns.push_back(network::mojom::CorsOriginPattern::New(
-      "https", "childframe.com", 0,
-      network::mojom::CorsDomainMatchMode::kAllowSubdomains,
-      network::mojom::CorsPortMatchMode::kAllowAnyPort,
-      network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
-  CorsOriginPatternSetter::Set(main_rfh()->GetBrowserContext(),
-                               main_rfh()->GetLastCommittedOrigin(),
-                               std::move(patterns), {}, run_loop.QuitClosure());
-  run_loop.Run();
+  AddHostPermissions("childframe.com", main_rfh());
 
   // The top level document has host permssions to the child_url so the top
   // level document should be excluded from storage key calculations and a first
@@ -690,10 +669,9 @@ TEST_F(RenderFrameHostImplTest,
           child_frame->GetLastCommittedOrigin(),
           net::SchemefulSite(child_frame->GetLastCommittedOrigin()),
           blink::mojom::AncestorChainBit::kSameSite);
-  EXPECT_EQ(
-      expected_child_with_permissions_storage_key,
-      child_frame->CalculateStorageKey(child_frame->GetLastCommittedOrigin(),
-                                       nullptr, partitioning_allowed));
+  EXPECT_EQ(expected_child_with_permissions_storage_key,
+            child_frame->CalculateStorageKey(
+                child_frame->GetLastCommittedOrigin(), nullptr));
 
   // CalculateStorageKey is called with an origin that the top level document
   // does not have host permissions to. A cross-site storage key is expected and
@@ -707,8 +685,7 @@ TEST_F(RenderFrameHostImplTest,
           blink::mojom::AncestorChainBit::kCrossSite);
   EXPECT_EQ(expected_storage_key_no_permissions,
             child_frame->CalculateStorageKey(
-                url::Origin::Create(no_host_permissions_url), nullptr,
-                partitioning_allowed));
+                url::Origin::Create(no_host_permissions_url), nullptr));
 }
 
 // Test that the correct StorageKey is calculated when a RFH takes its document
@@ -851,6 +828,97 @@ TEST_F(RenderFrameHostImplTest,
   grandchild_frame = NavigateFrame(grandchild_navigation.get());
 
   EXPECT_EQ(grandchild_frame_key_1p, grandchild_frame->storage_key());
+}
+
+// Tests that the StorageKey calculated for a frame under an extension main
+// frame has storage partitioning enabled/disabled as expected via the
+// RuntimeFeatureStateReadContext when the extension has host permissions.
+// TODO(crbug.com/1425337): This test should be migrated to //chrome.
+TEST_F(RenderFrameHostImplTest,
+       CalculateStorageKeyStoragePartitioningCorrectFrameWithExtension) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Because the StorageKey's (and Storage Partitioning's) usage of
+  // RuntimeFeatureState is only meant to disable partitioning (i.e.:
+  // first-party only), we need the make sure the net::features is always
+  // enabled.
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  // Register extension scheme for testing.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  GURL initial_url_ext = GURL("chrome-extension://initial.example.test/");
+  NavigationSimulator::CreateRendererInitiated(initial_url_ext, main_rfh())
+      ->Commit();
+
+  // Create a child frame, disable Storage Partitioning, and navigate to
+  // `child_url`.
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+
+  GURL child_url = GURL("https://childframe.com");
+  auto child_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(child_url, child_frame);
+
+  // This lamdba performs the navigation and disables Storage Partitioning for
+  // the navigation if `disable_sp` is true. It returns the new
+  // TestRenderFrameHost* to the navigated frame.
+  auto NavigateFrame = [](NavigationSimulator* navigation,
+                          bool disable_sp = false) -> TestRenderFrameHost* {
+    navigation->Start();
+
+    if (disable_sp) {
+      NavigationRequest* request =
+          NavigationRequest::From(navigation->GetNavigationHandle());
+      request->GetMutableRuntimeFeatureStateContext()
+          .SetDisableThirdPartyStoragePartitioningEnabled(true);
+    }
+
+    navigation->Commit();
+    return static_cast<TestRenderFrameHost*>(
+        navigation->GetFinalRenderFrameHost());
+  };
+
+  child_frame = NavigateFrame(child_navigation.get(), /*disable_sp=*/true);
+
+  // Create a grandchild frame and navigate to `grandchild_url`.
+  auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(child_frame)
+          ->AppendChild("grandchild"));
+
+  GURL grandchild_url = GURL("https://grandchildframe.com/");
+  grandchild_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(grandchild_url,
+                                                         grandchild_frame));
+
+  // At this point the extension doesn't have host permissions for the
+  // child_frame, so the child_frame's RuntimeFeatureStateReadContext's state
+  // isn't used and therefore any StorageKeys created for the grandchild_frame
+  // will be third-party.
+  url::Origin grandchild_origin = url::Origin::Create(grandchild_url);
+  blink::StorageKey grandchild_frame_key = blink::StorageKey::Create(
+      grandchild_origin, net::SchemefulSite(initial_url_ext),
+      blink::mojom::AncestorChainBit::kCrossSite);
+
+  EXPECT_EQ(grandchild_frame_key,
+            grandchild_frame->CalculateStorageKey(
+                grandchild_frame->GetLastCommittedOrigin(), nullptr));
+
+  // Now give extension host permissions to `child_frame`. Since the root
+  // extension rfh has host permissions to`child_frame` calling
+  // `CalculateStorageKey` should use the RuntimeFeatureStateReadContext in
+  // child_frame thereby creating a first-party StorageKey in grandchild_frame
+  // (since we disabled storage partitioning).
+  AddHostPermissions("childframe.com", main_rfh());
+
+  blink::StorageKey grandchild_frame_key_1P =
+      blink::StorageKey::CreateFirstParty(grandchild_origin);
+
+  EXPECT_EQ(grandchild_frame_key_1P,
+            grandchild_frame->CalculateStorageKey(
+                grandchild_frame->GetLastCommittedOrigin(), nullptr));
 }
 
 // Test that CalculateStorageKey creates a first-party or third-party key

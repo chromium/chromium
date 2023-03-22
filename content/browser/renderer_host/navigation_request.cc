@@ -1474,12 +1474,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
     }
 
-    // Because this is a synchronous commit from the renderer the RFH won't
-    // change meaning we can always query the main frame RFH for the status of
-    // storage partitioning.
-    navigation_request->commit_params_->storage_key = blink::StorageKey::Create(
-        origin, top_level_site, ancestor_chain_bit,
-        render_frame_host->IsMainFrameThirdPartyStoragePartitioningEnabled());
+    navigation_request->commit_params_->storage_key =
+        blink::StorageKey::Create(origin, top_level_site, ancestor_chain_bit);
   }
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(
@@ -5382,21 +5378,8 @@ void NavigationRequest::CommitNavigation() {
       GetRenderFrameHost()->ComputeNonce(is_credentialless(),
                                          ComputeFencedFrameNonce());
 
-  // Determine if we should allow partitioned StorageKeys.
-  //
-  // If this is a main frame navigation then the value of
-  // third_party_storage_partitioning_enabled is irrelevant because main frames
-  // are always first-party by definition. If this is a subframe navigation
-  // then the main frame will have the correct value.
-  bool third_party_storage_partitioning_enabled = false;
-  if (!IsInMainFrame()) {
-    third_party_storage_partitioning_enabled =
-        GetRenderFrameHost()->IsMainFrameThirdPartyStoragePartitioningEnabled();
-  }
-
   commit_params_->storage_key = GetRenderFrameHost()->CalculateStorageKey(
-      GetOriginToCommit().value(), base::OptionalToPtr(nonce),
-      third_party_storage_partitioning_enabled);
+      GetOriginToCommit().value(), base::OptionalToPtr(nonce));
   commit_params_->session_storage_key =
       frame_tree_node()->frame_tree().GetSessionStorageKey(
           commit_params_->storage_key);
