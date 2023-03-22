@@ -1088,7 +1088,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)settingsDestinationButton {
-  return grey_accessibilityID(kToolsMenuSettingsId);
+  // The settings button could have a dot or something on it, changing its ID to
+  // "kToolsMenuSettingsId - Dot" or something else. The matcher needs to be
+  // adapted to match both.
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    return [[element accessibilityIdentifier] hasPrefix:kToolsMenuSettingsId];
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description appendText:[NSString stringWithFormat:@"starts with('%@')",
+                                                       kToolsMenuSettingsId]];
+  };
+  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                              descriptionBlock:describe];
 }
 
 + (id<GREYMatcher>)siteInfoDestinationButton {
