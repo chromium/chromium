@@ -44876,12 +44876,6 @@ Called by update_permissions_policy_enum.py.-->
              (Lacros only)"/>
   <int value="2"
       label="Quit at end: window closed, experience considered 'finished'"/>
-  <int value="3"
-      label="Abort task: user runs experience while it's already running.
-             Experience not considered 'finished'"/>
-  <int value="4"
-      label="Abandon flow: user does something to abandon the FRE (open a new
-             window etc..), experience is considered 'finished'"/>
 </enum>
 
 <enum name="FirstRunLaunchSource">
