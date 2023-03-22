@@ -110,6 +110,10 @@ class ReadingListModelImpl : public ReadingListModel {
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> storage_token_;
   };
 
+  // If an entry exists with `url` and is unseen, it gets marked as seen (but
+  // unread).
+  void MarkEntrySeenIfExists(const GURL& url);
+
   // Same as BeginBatchUpdates(), but returns specifically
   // ReadingListModelImpl's ScopedReadingListBatchUpdateImpl.
   std::unique_ptr<ScopedReadingListBatchUpdateImpl>
@@ -150,6 +154,8 @@ class ReadingListModelImpl : public ReadingListModel {
 
   // Returns the |storage_layer_| of the model.
   ReadingListModelStorage* StorageLayer();
+
+  void MarkEntrySeenImpl(ReadingListEntry* entry);
 
   // Add |entry| to the model, which must not exist before, and notify the sync
   // bridge if |source| is not ADDED_VIA_SYNC.
