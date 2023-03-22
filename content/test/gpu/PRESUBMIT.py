@@ -14,7 +14,7 @@ PRESUBMIT_VERSION = '2.0.0'
 
 EXTRA_PATHS_COMPONENTS = [
     ('build', ),
-    ('build', 'fuchsia'),
+    ('build', 'fuchsia', 'test'),
     ('build', 'util'),
     ('testing', ),
     ('third_party', 'catapult', 'common', 'py_utils'),

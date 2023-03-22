@@ -19,7 +19,7 @@ from pytype_common import pytype_runner  # pylint: disable=wrong-import-position
 # This list should be kept in sync with EXTRA_PATH_COMPONENTS in PRESUBMIT.py
 EXTRA_PATHS_COMPONENTS = [
     ('build', ),
-    ('build', 'fuchsia'),
+    ('build', 'fuchsia', 'test'),
     ('build', 'util'),
     ('testing', ),
     ('third_party', 'catapult', 'common', 'py_utils'),
