@@ -16,8 +16,21 @@ generate_grd("build_grdp") {
   # Add local test files.
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
-    "shared/fake_nearby_share_settings.js",
+    "fake_mojo_interfaces.js",
+    "nearby_confirmation_page_test.js",
+    "nearby_discovery_page_test.js",
+    "nearby_share_app_test.js",
     "shared/fake_nearby_contact_manager.js",
+    "shared/fake_nearby_share_settings.js",
+    "shared/nearby_contact_visibility_test.js",
+    "shared/nearby_device_icon_test.js",
+    "shared/nearby_device_test.js",
+    "shared/nearby_onboarding_one_page_test.js",
+    "shared/nearby_onboarding_page_test.js",
+    "shared/nearby_page_template_test.js",
+    "shared/nearby_preview_test.js",
+    "shared/nearby_progress_test.js",
+    "shared/nearby_visibility_page_test.js",
   ]
 }
 
