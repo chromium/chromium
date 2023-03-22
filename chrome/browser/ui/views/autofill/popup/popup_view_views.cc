@@ -44,9 +44,11 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -385,8 +387,7 @@ void PopupViewViews::CreateChildViews() {
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
 
   // `content_view` wraps the full content of the popup and provides vertical
-  // padding. This is similar to `padding_wrapper` used in the scroll area, but
-  // it allows to add a padding below the footer.
+  // padding.
   raw_ptr<views::BoxLayoutView> content_view =
       AddChildView(views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -422,7 +423,7 @@ void PopupViewViews::CreateChildViews() {
                   kSuggestions[current_line_number])));
           break;
 
-        // The default section contains most all selectable rows and includes
+        // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
           rows_.push_back(body_container->AddChildView(
@@ -585,6 +586,21 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
   popup_bounds.Inset(-GetWidget()->GetRootView()->GetInsets());
   GetWidget()->SetBounds(popup_bounds);
   UpdateClipPath();
+
+  // If `kUiCompositorScrollWithLayers` is enabled, then a ScrollView performs
+  // scrolling by using layers. These layers are not affected by the clip path
+  // of the widget. If the corner radius of the popup is larger than the
+  // vertical padding that separates the widget's top border and the
+  // ScrollView, this will cause pixel artifacts.
+  // To avoid these, set a corner radius for the ScrollView's ViewPort if layer
+  // scrolling is enabled.
+  const int kPaddingCornerDelta =
+      GetCornerRadius() - GetContentsVerticalPadding();
+  if (kPaddingCornerDelta > 0 && scroll_view_ &&
+      base::FeatureList::IsEnabled(::features::kUiCompositorScrollWithLayers)) {
+    scroll_view_->SetViewportRoundedCornerRadius(
+        gfx::RoundedCornersF(kPaddingCornerDelta));
+  }
 
   SchedulePaint();
   return true;
