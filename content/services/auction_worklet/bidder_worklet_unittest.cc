@@ -3652,7 +3652,24 @@ TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
           R"("ad")", 7, /*ad_cost=*/absl::nullopt,
           blink::AdDescriptor(GURL("https://response.test/")),
           /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
-      7u);
+      /*expected_data_version=*/7u);
+}
+
+// Even with no trustedBiddingSignalsKeys, the data version should be available.
+TEST_F(BidderWorkletTest, GenerateBidDataVersionNoKeys) {
+  interest_group_trusted_bidding_signals_url_ = GURL("https://signals.test/");
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL("https://signals.test/"
+           "?hostname=top.window.test&interestGroupNames=Fred"),
+      R"({})", /*data_version=*/7u);
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "ad", bid:browserSignals.dataVersion, render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New(
+          R"("ad")", 7, /*ad_cost=*/absl::nullopt,
+          blink::AdDescriptor(GURL("https://response.test/")),
+          /*ad_component_descriptors=*/absl::nullopt, base::TimeDelta()),
+      /*expected_data_version=*/7u);
 }
 
 // Even though the script had set an intermediate result with setBid, the

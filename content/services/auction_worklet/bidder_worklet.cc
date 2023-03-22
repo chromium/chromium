@@ -908,7 +908,6 @@ BidderWorklet::V8State::GenerateSingleBid(
   }
 
   v8::Local<v8::Value> trusted_signals;
-  absl::optional<uint32_t> bidding_signals_data_version;
   if (!trusted_bidding_signals_result ||
       !bidder_worklet_non_shared_params.trusted_bidding_signals_keys ||
       bidder_worklet_non_shared_params.trusted_bidding_signals_keys->empty()) {
@@ -917,10 +916,14 @@ BidderWorklet::V8State::GenerateSingleBid(
     trusted_signals = trusted_bidding_signals_result->GetBiddingSignals(
         v8_helper_.get(), context,
         *bidder_worklet_non_shared_params.trusted_bidding_signals_keys);
+  }
+  args.push_back(trusted_signals);
+
+  absl::optional<uint32_t> bidding_signals_data_version;
+  if (trusted_bidding_signals_result) {
     bidding_signals_data_version =
         trusted_bidding_signals_result->GetDataVersion();
   }
-  args.push_back(trusted_signals);
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
@@ -1255,13 +1258,7 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
   }
 
   task->trusted_bidding_signals_error_msg = std::move(error_msg);
-  // Only hold onto `result` if it has information that needs to be passed to
-  // generateBid().
-  if (task->bidder_worklet_non_shared_params->trusted_bidding_signals_keys &&
-      !task->bidder_worklet_non_shared_params->trusted_bidding_signals_keys
-           ->empty()) {
-    task->trusted_bidding_signals_result = std::move(result);
-  }
+  task->trusted_bidding_signals_result = std::move(result);
   task->trusted_bidding_signals_request.reset();
 
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus

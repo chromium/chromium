@@ -312,28 +312,46 @@ TEST_F(TrustedSignalsTest, ScoringSignalsNetworkError) {
       error_msg_.value());
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsResponseNotJson) {
-  EXPECT_FALSE(FetchBiddingSignalsWithResponse(
-      GURL("https://url.test/"
-           "?hostname=publisher&keys=key1&interestGroupNames=name1"),
-      "Not Json", {"name1"}, {"key1"}, kHostname,
-      /*experiment_group_id=*/absl::nullopt));
-  ASSERT_TRUE(error_msg_.has_value());
-  EXPECT_EQ("https://url.test/ Unable to parse as a JSON object.",
-            error_msg_.value());
+TEST_F(TrustedSignalsTest, BiddingSignalsResponseNotJsonObject) {
+  const char* kTestCases[] = {
+      "",     "Not JSON",           "null",
+      "5",    R"("Not an object")", R"(["Also not an object"])",
+      "{} {}"};
+
+  for (const char* test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+
+    EXPECT_FALSE(FetchBiddingSignalsWithResponse(
+        GURL("https://url.test/"
+             "?hostname=publisher&keys=key1&interestGroupNames=name1"),
+        test_case, {"name1"}, {"key1"}, kHostname,
+        /*experiment_group_id=*/absl::nullopt));
+    ASSERT_TRUE(error_msg_.has_value());
+    EXPECT_EQ("https://url.test/ Unable to parse as a JSON object.",
+              error_msg_.value());
+  }
 }
 
-TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotJson) {
-  EXPECT_FALSE(FetchScoringSignalsWithResponse(
-      GURL("https://url.test/"
-           "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
-      "Not Json",
-      /*render_urls=*/{"https://foo.test/"},
-      /*ad_component_render_urls=*/{}, kHostname,
-      /*experiment_group_id=*/absl::nullopt));
-  ASSERT_TRUE(error_msg_.has_value());
-  EXPECT_EQ("https://url.test/ Unable to parse as a JSON object.",
-            error_msg_.value());
+TEST_F(TrustedSignalsTest, ScoringSignalsResponseNotJsonObject) {
+  const char* kTestCases[] = {
+      "",     "Not JSON",           "null",
+      "5",    R"("Not an object")", R"(["Also not an object"])",
+      "{} {}"};
+
+  for (const char* test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+
+    EXPECT_FALSE(FetchScoringSignalsWithResponse(
+        GURL("https://url.test/"
+             "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
+        test_case,
+        /*render_urls=*/{"https://foo.test/"},
+        /*ad_component_render_urls=*/{}, kHostname,
+        /*experiment_group_id=*/absl::nullopt));
+    ASSERT_TRUE(error_msg_.has_value());
+    EXPECT_EQ("https://url.test/ Unable to parse as a JSON object.",
+              error_msg_.value());
+  }
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
