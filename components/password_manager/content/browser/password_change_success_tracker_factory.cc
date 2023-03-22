@@ -46,4 +46,10 @@ KeyedService* PasswordChangeSuccessTrackerFactory::BuildServiceInstanceFor(
   return tracker;
 }
 
+content::BrowserContext*
+PasswordChangeSuccessTrackerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return context;
+}
+
 }  // namespace password_manager

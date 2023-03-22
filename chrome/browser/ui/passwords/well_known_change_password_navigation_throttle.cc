@@ -69,6 +69,14 @@ bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
 std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
 WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
+  auto* profile = Profile::FromBrowserContext(
+      handle->GetWebContents()->GetBrowserContext());
+  // Create WellKnownChangePasswordNavigationThrottle only for regular or
+  // incognito profiles.
+  if (!profile->IsRegularProfile() && !profile->IsIncognitoProfile()) {
+    return nullptr;
+  }
+
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. portals, fenced frames)
   if (handle->IsInOutermostMainFrame() &&
@@ -95,6 +103,7 @@ WellKnownChangePasswordNavigationThrottle::
   affiliation_service_ =
       AffiliationServiceFactory::GetForProfile(Profile::FromBrowserContext(
           handle->GetWebContents()->GetBrowserContext()));
+  CHECK(affiliation_service_);
   if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
     well_known_change_password_state_.PrefetchChangePasswordURLs(
         affiliation_service_, {request_url_});

@@ -28,6 +28,8 @@ class PasswordChangeSuccessTrackerFactory
  private:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* browser_context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
 };
 }  // namespace password_manager
 
