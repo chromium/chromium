@@ -7,6 +7,7 @@
 #include "base/test/launcher/test_launcher.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "chrome/test/base/chrome_test_suite.h"
+#include "content/public/common/content_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "ui/base/test/ui_controls.h"
 
@@ -51,6 +52,10 @@ int main(int argc, char** argv) {
   // (e.g. Chrome OS). Browser tests exercising this feature re-enable it with a
   // custom system tracing service.
   tracing::PerfettoTracedProcess::SetSystemProducerEnabledForTesting(false);
+
+  // Temporarily force the CPU backend to use AAA. (https://crbug.com/1421297)
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kForceSkiaAnalyticAntialiasing);
 
   return LaunchChromeTests(parallel_jobs, &delegate, argc, argv);
 }
