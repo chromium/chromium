@@ -39,6 +39,7 @@ struct SupportPacketDetails {
   std::string issue_description;
   std::set<support_tool::DataCollectorType> requested_data_collectors;
   std::set<redaction::PIIType> requested_pii_types;
+  std::string requester_metadata;
 
   SupportPacketDetails();
   ~SupportPacketDetails();

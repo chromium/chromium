@@ -44,6 +44,7 @@ constexpr char kIssueCaseIdKey[] = "issueCaseId";
 constexpr char kIssueDescriptionKey[] = "issueDescription";
 constexpr char kRequestedDataCollectorsKey[] = "requestedDataCollectors";
 constexpr char kRequestedPiiTypesKey[] = "requestedPiiTypes";
+constexpr char kRequesterId[] = "requesterMetadata";
 
 std::set<support_tool::DataCollectorType> GetDataCollectorTypes(
     const base::Value::List& requested_data_collectors) {
@@ -214,6 +215,11 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
     support_packet_details_.requested_pii_types =
         GetPiiTypes(*requested_pii_types);
   }
+
+  const std::string* requester_metadata =
+      details_dict->FindString(kRequesterId);
+  support_packet_details_.requester_metadata =
+      requester_metadata ? *requester_metadata : std::string();
 
   return true;
 }

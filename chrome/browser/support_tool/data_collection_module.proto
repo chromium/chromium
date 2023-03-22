@@ -76,4 +76,7 @@ message SupportPacketDetails {
   optional string issue_description = 2;
   repeated DataCollectorType requested_data_collectors = 3;
   repeated PiiType requested_pii_types = 4;
+  // Metadata that will be echoed back to the server with the remote command
+  // response. The client should not attempt to parse it.
+  optional string requester_metadata = 5;
 }

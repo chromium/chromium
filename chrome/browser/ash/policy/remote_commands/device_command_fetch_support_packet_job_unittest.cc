@@ -39,7 +39,8 @@ constexpr char kCommandPayload[] =
         "issueCaseId": "issue_case_id",
         "issueDescription": "issue description",
         "requestedDataCollectors": [17],
-        "requestedPiiTypes": [1]
+        "requestedPiiTypes": [1],
+        "requesterMetadata": "obfuscated123"
       }
     })";
 
@@ -137,7 +138,8 @@ TEST_F(DeviceCommandFetchSupportPacketTest, FailWithWrongPayload) {
         "issueCaseId": "issue_case_id",
         "issueDescription": "issue description",
         "requestedDataCollectors": [],
-        "requestedPiiTypes": [1]
+        "requestedPiiTypes": [1],
+        "requesterMetadata": "obfuscated123"
       }
     })";
 
