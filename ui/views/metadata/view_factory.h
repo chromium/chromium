@@ -25,6 +25,7 @@ template <typename Builder>
 class BaseViewBuilderT : public internal::ViewBuilderCore {
  public:
   using ViewClass_ = typename internal::ViewClassTrait<Builder>::ViewClass_;
+  using AfterBuildCallback = base::OnceCallback<void(ViewClass_*)>;
   using ConfigureCallback = base::OnceCallback<void(ViewClass_*)>;
   BaseViewBuilderT() { view_ = std::make_unique<ViewClass_>(); }
   explicit BaseViewBuilderT(std::unique_ptr<ViewClass_> view) {
@@ -34,6 +35,26 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   BaseViewBuilderT(BaseViewBuilderT&&) = default;
   BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
   ~BaseViewBuilderT() override = default;
+
+  Builder& AfterBuild(AfterBuildCallback after_build_callback) & {
+    // Allow multiple after build callbacks by chaining them.
+    if (after_build_callback_) {
+      after_build_callback_ = base::BindOnce(
+          [](AfterBuildCallback previous_callback,
+             AfterBuildCallback current_callback, ViewClass_* root_view) {
+            std::move(previous_callback).Run(root_view);
+            std::move(current_callback).Run(root_view);
+          },
+          std::move(after_build_callback_), std::move(after_build_callback));
+    } else {
+      after_build_callback_ = std::move(after_build_callback);
+    }
+    return *static_cast<Builder*>(this);
+  }
+
+  Builder&& AfterBuild(AfterBuildCallback after_build_callback) && {
+    return std::move(this->AfterBuild(std::move(after_build_callback)));
+  }
 
   template <typename ViewPtr>
   Builder& CopyAddressTo(ViewPtr* view_address) & {
@@ -104,6 +125,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     SetProperties(view_.get());
     DoCustomConfigure(view_.get());
     CreateChildren(view_.get());
+    DoAfterBuild(view_.get());
     return std::move(view_);
   }
 
@@ -113,6 +135,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     SetProperties(root_view_);
     DoCustomConfigure(root_view_);
     CreateChildren(root_view_);
+    DoAfterBuild(root_view_);
   }
 
   template <typename T>
@@ -188,12 +211,24 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return *static_cast<Builder*>(this);
   }
 
+  void DoAfterBuild(ViewClass_* view) {
+    if (after_build_callback_) {
+      std::move(after_build_callback_).Run(view);
+    }
+  }
+
   void DoCustomConfigure(ViewClass_* view) {
     if (configure_callback_)
       std::move(configure_callback_).Run(view);
   }
 
   std::unique_ptr<View> DoBuild() override { return std::move(*this).Build(); }
+
+  // Optional callback invoked right after calling `CreateChildren()`. This
+  // allows additional configuration of the view not easily covered by the
+  // builder after all addresses have been copied, properties have been set,
+  // and children have themselves been built and added.
+  AfterBuildCallback after_build_callback_;
 
   // Optional callback invoked right before calling CreateChildren. This allows
   // any additional configuration of the view not easily covered by the builder.

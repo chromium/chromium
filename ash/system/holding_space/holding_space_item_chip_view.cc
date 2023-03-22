@@ -330,7 +330,18 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                               .SetID(kHoldingSpaceItemSecondaryChipLabelId)
                               .SetStyle(TypographyToken::kCrosLabel1)
                               .SetElideBehavior(gfx::FADE_TAIL)
-                              .SetCallback(paint_label_mask_callback)))
+                              .SetCallback(paint_label_mask_callback))
+                      .AfterBuild(base::BindOnce(
+                          [](HoldingSpaceItemChipView* self,
+                             views::BoxLayoutView* box_layout_view) {
+                            // Synchronize line heights between primary and
+                            // secondary labels so that text will be vertically
+                            // centered when both are shown despite differences
+                            // in font sizes.
+                            self->secondary_label_->SetLineHeight(
+                                self->primary_label_->GetLineHeight());
+                          },
+                          base::Unretained(this))))
               .AddChild(views::Builder<views::BoxLayoutView>()
                             .SetOrientation(Orientation::kHorizontal)
                             .SetMainAxisAlignment(MainAxisAlignment::kEnd)

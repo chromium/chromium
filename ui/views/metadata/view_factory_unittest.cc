@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -238,19 +239,59 @@ TEST_F(ViewFactoryTest, TestViewBuilderAddChildAtIndex) {
   EXPECT_EQ(cancel_button, view->children()[1]);
 }
 
-TEST_F(ViewFactoryTest, TestCustomConfigureChaining) {
-  int callback_count = 0;
-  std::unique_ptr<views::View> view =
-      views::Builder<views::View>()
-          .CustomConfigure(
-              base::BindOnce([](int* callback_count,
-                                views::View* view) { ++(*callback_count); },
-                             &callback_count))
-          .CustomConfigure(
-              base::BindOnce([](int* callback_count,
-                                views::View* view) { ++(*callback_count); },
-                             &callback_count))
-          .Build();
-  // Make sure both callbacks have been called.
-  EXPECT_EQ(callback_count, 2);
+TEST_F(ViewFactoryTest, TestOrderOfOperations) {
+  using ViewCallback = base::OnceCallback<void(views::View*)>;
+
+  views::View* view = nullptr;
+  base::MockCallback<ViewCallback> custom_configure_callback;
+  base::MockCallback<ViewCallback> after_build_callback;
+
+  EXPECT_CALL(custom_configure_callback, Run).Times(0);
+  EXPECT_CALL(after_build_callback, Run).Times(0);
+
+  views::Builder<views::View> builder;
+  builder.CopyAddressTo(&view)
+      .SetID(1)
+      .AddChild(views::Builder<views::View>())
+      .CustomConfigure(custom_configure_callback.Get())
+      .CustomConfigure(custom_configure_callback.Get())
+      .AfterBuild(after_build_callback.Get())
+      .AfterBuild(after_build_callback.Get());
+
+  // Addresses should be copied *before* build but properties shouldn't be set,
+  // children shouldn't be added, and callbacks shouldn't be run until *after*.
+  ASSERT_NE(view, nullptr);
+  EXPECT_EQ(view->GetID(), 0);
+  EXPECT_EQ(view->children().size(), 0u);
+  testing::Mock::VerifyAndClearExpectations(&custom_configure_callback);
+  testing::Mock::VerifyAndClearExpectations(&after_build_callback);
+
+  {
+    testing::InSequence sequence;
+
+    // Expect that two custom configure callbacks will be run *before* any
+    // after build callbacks. The order of the custom configure callbacks is
+    // not guaranteed by the builder.
+    EXPECT_CALL(custom_configure_callback, Run(testing::Pointer(view)))
+        .Times(2)
+        .WillRepeatedly(testing::Invoke([](views::View* view) {
+          // Properties should be set *before* but children shouldn't be added
+          // until *after* custom callbacks are run.
+          EXPECT_EQ(view->GetID(), 1);
+          EXPECT_EQ(view->children().size(), 0u);
+        }));
+
+    // Expect that two after build callbacks will be run *after* any custom
+    // configure callbacks. The order of the after build callbacks is not
+    // guaranteed by the builder.
+    EXPECT_CALL(after_build_callback, Run(testing::Pointer(view)))
+        .Times(2)
+        .WillRepeatedly(testing::Invoke([](views::View* view) {
+          // Children should be added *before* after build callbacks are run.
+          EXPECT_EQ(view->children().size(), 1u);
+        }));
+  }
+
+  // Build the view and verify order of operations.
+  std::ignore = std::move(builder).Build();
 }
