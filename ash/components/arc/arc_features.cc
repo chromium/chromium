@@ -32,9 +32,7 @@ BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
 
 // Controls whether an Android VPN (ArcHostVpn) should be started when a host
 // VPN is started.
-BASE_FEATURE(kEnableArcHostVpn,
-             "ArcHostVpn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableArcHostVpn, "ArcHostVpn", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we automatically send ARCVM into Doze mode
 // when it is mostly idle - even if Chrome is still active.

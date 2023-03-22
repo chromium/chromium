@@ -575,22 +575,6 @@
             ]
         }
     ],
-    "ArcHostVpn": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcHostVpn"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcLazyWebViewInit": [
         {
             "platforms": [
