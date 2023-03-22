@@ -4,24 +4,26 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CURRENT_SCREEN;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.HOME_SCREEN;
 import static org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState.FULL;
 import static org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState.HALF;
 import static org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState.HIDDEN;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.autofill.bottom_sheet_utils.DetailScreenScrollListener;
 import org.chromium.chrome.browser.ui.fast_checkout.R;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -30,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * of the Fast Checkout bottom sheet.
  */
 public class DetailScreenCoordinator {
+    private final PropertyModel mModel;
     private final RecyclerView mRecyclerView;
     private final BottomSheetController mBottomSheetController;
     private final DetailScreenScrollListener mScrollListener;
@@ -43,6 +46,30 @@ public class DetailScreenCoordinator {
             } else if (state == HALF && mScrollListener.isScrolledToTop()) {
                 mRecyclerView.suppressLayout(/*suppress=*/true);
             }
+
+            // The details screen's accessibility overlay is supposed to be (accessibility-)focused
+            // when leaving the home screen. The {@link BottomSheet} programmatically requests both
+            // focuses so they need to be taken back. Otherwise the bottom sheet announcement would
+            // be made instead of the detail screen's one; or Tab key navigation focus order would
+            // be not as expected. This event is emitted after the bottom sheet's focus-taking
+            // actions.
+            if (mModel.get(CURRENT_SCREEN) != HOME_SCREEN) {
+                View toolbarA11yOverlay =
+                        mBottomSheetController.getCurrentSheetContent()
+                                .getContentView()
+                                .findViewById(R.id.fast_checkout_toolbar_a11y_overlay_view);
+                if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                    // Request "accessibility-focus" for TalkBack.
+                    toolbarA11yOverlay.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                }
+                if (ChromeAccessibilityUtil.isHardwareKeyboardAttached(
+                            ContextUtils.getApplicationContext()
+                                    .getResources()
+                                    .getConfiguration())) {
+                    // Request focus for keyboard navigation.
+                    toolbarA11yOverlay.requestFocus();
+                }
+            }
         }
     };
 
@@ -53,16 +80,9 @@ public class DetailScreenCoordinator {
      */
     public DetailScreenCoordinator(Context context, View view, PropertyModel model,
             BottomSheetController bottomSheetController) {
+        mModel = model;
         mBottomSheetController = bottomSheetController;
         mScrollListener = new DetailScreenScrollListener(bottomSheetController);
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.action_bar);
-        assert toolbar != null;
-        toolbar.inflateMenu(R.menu.fast_checkout_toolbar_menu);
-        Drawable tintedBackIcon = TintedDrawable.constructTintedDrawable(toolbar.getContext(),
-                R.drawable.ic_arrow_back_white_24dp, R.color.default_icon_color_tint_list);
-        toolbar.setNavigationIcon(tintedBackIcon);
-        toolbar.setNavigationContentDescription(
-                R.string.fast_checkout_back_to_home_screen_icon_description);
 
         mRecyclerView = view.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
         LinearLayoutManager layoutManager =

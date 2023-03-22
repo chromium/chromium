@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
-import android.view.MenuItem;
-
 import androidx.annotation.MainThread;
-import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
@@ -305,11 +302,10 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                     R.string.fast_checkout_autofill_profile_sheet_title_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_autofill_profile_settings_button_description);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-                    createSettingsOnClickListener(() -> {
-                        mDelegate.openAutofillProfileSettings();
-                        FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_ICON.log();
-                    }));
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, () -> {
+                mDelegate.openAutofillProfileSettings();
+                FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_ICON.log();
+            });
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST));
         } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
@@ -319,11 +315,10 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
                     R.string.fast_checkout_credit_card_sheet_title_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_credit_card_settings_button_description);
-            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-                    createSettingsOnClickListener(() -> {
-                        mDelegate.openCreditCardSettings();
-                        FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_ICON.log();
-                    }));
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, () -> {
+                mDelegate.openCreditCardSettings();
+                FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_ICON.log();
+            });
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST));
         }
@@ -331,24 +326,6 @@ public class FastCheckoutMediator implements FastCheckoutSheetState {
         mModel.set(FastCheckoutProperties.CURRENT_SCREEN, screenType);
         // Sets bottom sheet to half height, if enabled. Otherwise to full.
         mBottomSheetController.expandSheet();
-    }
-
-    /**
-     * Creates and returns an {@link Toolbar.OnMenuItemClickListener} that
-     * executes a Runnable if and only if the Settings MenuItem was clicked.
-     * @param runnable The Runnable to execute.
-     */
-    static OnMenuItemClickListener createSettingsOnClickListener(Runnable runnable) {
-        return new OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.settings_menu_id) {
-                    runnable.run();
-                    return true;
-                }
-                return false;
-            }
-        };
     }
 
     /**

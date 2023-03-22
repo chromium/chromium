@@ -37,6 +37,7 @@ android_library("java") {
     "//chrome/browser/autofill/android:bottom_sheet_utils_java",
     "//chrome/browser/ui/android/fast_checkout:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/util:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java",
@@ -58,6 +59,7 @@ android_library("java") {
 android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
     "//ui/android:ui_java_resources",
   ]
   sources = [
@@ -72,7 +74,6 @@ android_resources("java_resources") {
     "java/res/layout/fast_checkout_detail_screen_sheet.xml",
     "java/res/layout/fast_checkout_footer_item.xml",
     "java/res/layout/fast_checkout_home_screen_sheet.xml",
-    "java/res/menu/fast_checkout_toolbar_menu.xml",
     "java/res/values/dimens.xml",
   ]
   custom_package = "org.chromium.chrome.browser.ui.fast_checkout"

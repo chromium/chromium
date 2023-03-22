@@ -14,10 +14,10 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.HOME_SCREEN;
 
 import android.content.Context;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,8 +35,10 @@ public class DetailScreenViewBinder {
     /** A ViewHolder that inflates the toolbar and provides easy item look-up. */
     static class ViewHolder {
         final Context mContext;
-        final Toolbar mToolbar;
-        final MenuItem mSettingsMenuItem;
+        final ImageButton mToolbarBackImageButton;
+        final TextView mToolbarTitleTextView;
+        final ImageButton mToolbarSettingsImageButton;
+        final View mToolbarA11yOverlayView;
         final RecyclerView mRecyclerView;
         final DetailScreenScrollListener mScrollListener;
 
@@ -44,8 +46,15 @@ public class DetailScreenViewBinder {
             mContext = context;
             mRecyclerView =
                     contentView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
-            mToolbar = contentView.findViewById(R.id.action_bar);
-            mSettingsMenuItem = mToolbar.getMenu().findItem(R.id.settings_menu_id);
+            mToolbarBackImageButton =
+                    contentView.findViewById(R.id.fast_checkout_toolbar_back_image_button);
+            mToolbarTitleTextView =
+                    contentView.findViewById(R.id.fast_checkout_toolbar_title_text_view);
+            mToolbarSettingsImageButton =
+                    contentView.findViewById(R.id.fast_checkout_toolbar_settings_image_button);
+            mToolbarA11yOverlayView =
+                    contentView.findViewById(R.id.fast_checkout_toolbar_a11y_overlay_view);
+
             mScrollListener = scrollListener;
         }
 
@@ -61,19 +70,23 @@ public class DetailScreenViewBinder {
      */
     public static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
         if (propertyKey == DETAIL_SCREEN_BACK_CLICK_HANDLER) {
-            view.mToolbar.setNavigationOnClickListener(
+            view.mToolbarBackImageButton.setOnClickListener(
                     (v) -> model.get(DETAIL_SCREEN_BACK_CLICK_HANDLER).run());
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_CLICK_HANDLER) {
-            view.mToolbar.setOnMenuItemClickListener(
-                    model.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
+            view.mToolbarSettingsImageButton.setOnClickListener(
+                    (v) -> model.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).run());
         } else if (propertyKey == DETAIL_SCREEN_TITLE) {
-            view.mToolbar.setTitle(model.get(DETAIL_SCREEN_TITLE));
+            String titleText =
+                    view.mContext.getResources().getString(model.get(DETAIL_SCREEN_TITLE));
+            view.mToolbarTitleTextView.setText(titleText);
         } else if (propertyKey == DETAIL_SCREEN_TITLE_DESCRIPTION) {
-            String text = view.mContext.getResources().getString(
+            String titleContentDescription = view.mContext.getResources().getString(
                     model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
-            view.mToolbar.setContentDescription(text);
+            view.mToolbarA11yOverlayView.setContentDescription(titleContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
-            view.mSettingsMenuItem.setTitle(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
+            String settingsContentDescription = view.mContext.getResources().getString(
+                    model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
+            view.mToolbarSettingsImageButton.setContentDescription(settingsContentDescription);
         } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {
             SimpleRecyclerViewAdapter adapter =
                     new SimpleRecyclerViewAdapter(model.get(DETAIL_SCREEN_MODEL_LIST));

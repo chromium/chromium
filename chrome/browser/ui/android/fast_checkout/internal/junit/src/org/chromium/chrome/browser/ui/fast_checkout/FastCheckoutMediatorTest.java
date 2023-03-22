@@ -11,10 +11,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CREDIT_CARD_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CURRENT_SCREEN;
@@ -29,9 +27,6 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.SELECTED_PROFILE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.VISIBLE;
 
-import android.view.MenuItem;
-
-import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
@@ -148,8 +143,7 @@ public class FastCheckoutMediatorTest {
         assertThat(mModel.get(DETAIL_SCREEN_MODEL_LIST), is(mModel.get(PROFILE_MODEL_LIST)));
 
         assertNotNull(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
-        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER),
-                instanceOf(OnMenuItemClickListener.class));
+        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER), instanceOf(Runnable.class));
 
         mMediator.setCurrentScreen(ScreenType.CREDIT_CARD_SCREEN);
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.CREDIT_CARD_SCREEN));
@@ -160,8 +154,7 @@ public class FastCheckoutMediatorTest {
         assertThat(mModel.get(DETAIL_SCREEN_MODEL_LIST), is(mModel.get(CREDIT_CARD_MODEL_LIST)));
 
         assertNotNull(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
-        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER),
-                instanceOf(OnMenuItemClickListener.class));
+        assertThat(mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER), instanceOf(Runnable.class));
     }
 
     @Test
@@ -179,11 +172,8 @@ public class FastCheckoutMediatorTest {
         mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.AUTOFILL_PROFILE_SCREEN));
 
-        // Simulate the proper MenuItem.
-        MenuItem settingsItem = mock(MenuItem.class);
-        when(settingsItem.getItemId()).thenReturn(R.id.settings_menu_id);
+        mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).run();
 
-        mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).onMenuItemClick(settingsItem);
         verify(mMockDelegate).openAutofillProfileSettings();
         assertActionRecorded(FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_ICON);
     }
@@ -193,11 +183,8 @@ public class FastCheckoutMediatorTest {
         mMediator.setCurrentScreen(ScreenType.CREDIT_CARD_SCREEN);
         assertThat(mModel.get(CURRENT_SCREEN), is(ScreenType.CREDIT_CARD_SCREEN));
 
-        // Simulate the proper MenuItem.
-        MenuItem settingsItem = mock(MenuItem.class);
-        when(settingsItem.getItemId()).thenReturn(R.id.settings_menu_id);
+        mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).run();
 
-        mModel.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER).onMenuItemClick(settingsItem);
         verify(mMockDelegate).openCreditCardSettings();
         assertActionRecorded(FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_ICON);
     }

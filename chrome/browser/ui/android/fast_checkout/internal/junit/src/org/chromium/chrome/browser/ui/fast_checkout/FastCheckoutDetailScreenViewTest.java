@@ -22,10 +22,10 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
@@ -108,8 +108,7 @@ public class FastCheckoutDetailScreenViewTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> {
             mModel = FastCheckoutProperties.createDefaultModel();
-            mModel.set(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-                    FastCheckoutMediator.createSettingsOnClickListener(mSettingsClickHandler));
+            mModel.set(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, mSettingsClickHandler);
             mModel.set(DETAIL_SCREEN_BACK_CLICK_HANDLER, mBackClickHandler);
 
             // Create the view.
@@ -127,23 +126,11 @@ public class FastCheckoutDetailScreenViewTest {
     @SmallTest
     public void testBackArrowClickCallsHandler() {
         assertNotNull(mView);
-        Toolbar toolbar = mView.findViewById(R.id.action_bar);
-        assertNotNull(toolbar);
+        ImageButton backImageButton =
+                mView.findViewById(R.id.fast_checkout_toolbar_back_image_button);
+        assertNotNull(backImageButton);
 
-        // Find the navigation button. Toolbar does not expose a method to get
-        // the navigation button and Espresso does not work in this setup.
-        // TODO(crbug.com/1355310): Move to integration test once that exists.
-        View backButton = null;
-        for (int index = 0; index < toolbar.getChildCount(); ++index) {
-            View candidateView = toolbar.getChildAt(index);
-            if (candidateView.getContentDescription() != null
-                    && candidateView.getContentDescription().equals(
-                            toolbar.getNavigationContentDescription())) {
-                backButton = candidateView;
-            }
-        }
-        assertNotNull(backButton);
-        backButton.performClick();
+        backImageButton.performClick();
 
         ShadowLooper.shadowMainLooper().idle();
         verify(mBackClickHandler).run();
@@ -153,9 +140,10 @@ public class FastCheckoutDetailScreenViewTest {
     @SmallTest
     public void testOpenSettingsClickCallsHandler() {
         // Click on the settings element.
-        View settingsMenuElement = mView.findViewById(R.id.settings_menu_id);
-        assertNotNull(settingsMenuElement);
-        settingsMenuElement.performClick();
+        View settingsImageButton =
+                mView.findViewById(R.id.fast_checkout_toolbar_settings_image_button);
+        assertNotNull(settingsImageButton);
+        settingsImageButton.performClick();
 
         ShadowLooper.shadowMainLooper().idle();
         verify(mSettingsClickHandler).run();

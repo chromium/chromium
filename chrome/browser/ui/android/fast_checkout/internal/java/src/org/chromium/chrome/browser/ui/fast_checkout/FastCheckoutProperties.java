@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.fast_checkout;
 
 import androidx.annotation.IntDef;
-import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
@@ -101,9 +100,8 @@ public class FastCheckoutProperties {
             new WritableObjectPropertyKey<>("detail_screen_back_click_handler");
 
     /** The handler for the settings icon on the autofill profile screen. */
-    public static final WritableObjectPropertyKey<OnMenuItemClickListener>
-            DETAIL_SCREEN_SETTINGS_CLICK_HANDLER =
-                    new WritableObjectPropertyKey<>("detail_screen_settings_click_handler");
+    public static final WritableObjectPropertyKey<Runnable> DETAIL_SCREEN_SETTINGS_CLICK_HANDLER =
+            new WritableObjectPropertyKey<>("detail_screen_settings_click_handler");
 
     /**
      * The models that are displayed on the detail screen. This will either point to
