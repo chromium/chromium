@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../resources/text-based-repaint.js"></script>
+<svg style="width: 400px; height: 400px">
+  <clipPath id="clip">
+    <rect width="500" height="500"/>
+  </clipPath>
+  <rect id="rect" x="150" width="100" height="50" fill="green"
+        style="clip-path: url(#clip); filter: drop-shadow(0 50px 0 green)"/>
+</svg>
+<script>
+function repaintTest() {
+  rect.setAttribute("x", "0");
+}
+onload = runRepaintAndPixelTest;
+</script>
