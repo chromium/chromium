@@ -168,6 +168,25 @@ failing, as by default GPU tests do not retry on failure. This is preferred if
 the test fails occasionally, but not enough to warrant marking it as failing
 consistently.
 
+#### Slow
+
+Only has an effect in a subset of test suites. Currently, those are suites that
+use a heartbeat mechanism instead of a fixed timeout:
+
+* `webgpu_cts`
+* `webgl1_conformance`
+* `webgl2_conformance`
+
+Since these tests use a relatively short timeout that gets refreshed as long as
+the test does not hang, they are more susceptible to timeouts if the test does a
+lot of work or other parallel tests are using a large number of resources. In
+these cases, the `Slow` expectation can be used to increase the heartbeat
+timeout for a test, reducing the chance that one of these timeouts is hit.
+
+If the reported failure for a test is along the lines of "Timed out waiting for
+websocket message", prefer to use a `Slow` expectation first over a `Failure` or
+`RetryOnFailure` one.
+
 ## Extensions
 
 In addition to the normal expectation functionality, Chromium has several
