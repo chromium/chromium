@@ -302,6 +302,12 @@ BASE_DECLARE_FEATURE(kEcheLauncherIconsInMoreAppsButton);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEcheNetworkConnectionState);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta>
+    kEcheBackgroundConnectionAttemptThrottleTimeout;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<base::TimeDelta>
+    kEcheConnectionStatusResetTimeout;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kForceEnableServerSideSpeechRecognitionForDev);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kForceReSyncDrive);
 COMPONENT_EXPORT(ASH_CONSTANTS)

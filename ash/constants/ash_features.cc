@@ -1424,6 +1424,18 @@ BASE_FEATURE(kEcheNetworkConnectionState,
              "EcheNetworkConnectionState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Time limit before re-attempting a background connection to check if the
+// network is suitable.
+const base::FeatureParam<base::TimeDelta>
+    kEcheBackgroundConnectionAttemptThrottleTimeout{
+        &kEcheNetworkConnectionState,
+        "EcheBackgroundConnectionAttemptThrottleTimeout", base::Seconds(10)};
+
+// Time limit before requiring a new connection check to show apps UI.
+const base::FeatureParam<base::TimeDelta> kEcheConnectionStatusResetTimeout{
+    &kEcheNetworkConnectionState, "EcheConnectionStatusResetTimeout",
+    base::Minutes(10)};
+
 // Enables multi-zone rgb keyboard customization.
 BASE_FEATURE(kMultiZoneRgbKeyboard,
              "MultiZoneRgbKeyboard",

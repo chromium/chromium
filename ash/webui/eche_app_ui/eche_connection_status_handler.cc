@@ -102,14 +102,14 @@ void EcheConnectionStatusHandler::CheckConnectionStatusForUi() {
     return;
   }
 
-  // TODO(b/271478560): Make the time conditionals configurable through feature
-  // flags in order to tune them in the future.
   base::TimeDelta time_since_last_check =
       base::Time::Now() - last_update_timestamp_;
-  if (time_since_last_check > base::Seconds(10)) {
+  if (time_since_last_check >
+      features::kEcheBackgroundConnectionAttemptThrottleTimeout.Get()) {
     NotifyRequestBackgroundConnectionAttempt();
   }
-  if (time_since_last_check > base::Minutes(10)) {
+  if (time_since_last_check >
+      features::kEcheConnectionStatusResetTimeout.Get()) {
     connection_status_for_ui_ =
         mojom::ConnectionStatus::kConnectionStatusConnecting;
   }

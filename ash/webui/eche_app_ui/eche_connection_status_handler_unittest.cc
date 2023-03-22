@@ -247,6 +247,45 @@ TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
 }
 
+TEST_F(EcheConnectionStatusHandlerTest,
+       CheckConnectionStatusForUi_TimeSinceLastCheckIncreases) {
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+  handler().CheckConnectionStatusForUi();
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+  EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 0u);
+
+  // After more than 10 seconds pass, extra calls should happen.
+  SetFeatureStatus(FeatureStatus::kConnected);
+  task_environment_.FastForwardBy(base::Seconds(11));
+  handler().CheckConnectionStatusForUi();
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+  EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
+
+  // Reset to Disconnected
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
+  EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+
+  // After more than 10 minutes pass, state should go back to Connecting.
+  task_environment_.FastForwardBy(base::Minutes(11));
+  handler().CheckConnectionStatusForUi();
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
+  EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 2u);
+}
+
 TEST_F(EcheConnectionStatusHandlerTest, SetConnectionStatusForUi) {
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusDisconnected);
