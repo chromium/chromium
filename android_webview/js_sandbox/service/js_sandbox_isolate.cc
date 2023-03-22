@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
@@ -33,6 +34,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/function_template.h"
@@ -43,6 +45,8 @@
 #include "js_sandbox_isolate.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-function.h"
+#include "v8/include/v8-inspector.h"
+#include "v8/include/v8-isolate.h"
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-statistics.h"
 #include "v8/include/v8-template.h"
@@ -113,6 +117,47 @@ std::string GetStackTrace(v8::TryCatch& try_catch, v8::Isolate* isolate) {
   return GetStackTrace(message, isolate);
 }
 
+jint remapConsoleMessageErrorLevel(const v8::Isolate::MessageErrorLevel level) {
+  // Converted level should match the values specified in the
+  // org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient AIDL
+  // file (in AndroidX).
+  //
+  // These will probably remain identical to the underlying v8 enums/constants,
+  // but are mapped explicitly here to ensure we can maintain compatibility even
+  // if there are changes or additions.
+  switch (level) {
+    case v8::Isolate::MessageErrorLevel::kMessageLog:
+      return 1 << 0;
+    case v8::Isolate::MessageErrorLevel::kMessageDebug:
+      return 1 << 1;
+    case v8::Isolate::MessageErrorLevel::kMessageInfo:
+      return 1 << 2;
+    case v8::Isolate::MessageErrorLevel::kMessageError:
+      return 1 << 3;
+    case v8::Isolate::MessageErrorLevel::kMessageWarning:
+      return 1 << 4;
+    case v8::Isolate::MessageErrorLevel::kMessageAll:
+      NOTREACHED_NORETURN();
+  }
+}
+
+// Converts a V8 inspector (UTF-8 or UTF-16) StringView to a jstring.
+base::android::ScopedJavaLocalRef<jstring> StringViewToJavaString(
+    JNIEnv* const env,
+    const v8_inspector::StringView& string_view) {
+  if (string_view.is8Bit()) {
+    return base::android::ConvertUTF8ToJavaString(
+        env, base::StringPiece(
+                 reinterpret_cast<const char*>(string_view.characters8()),
+                 string_view.length()));
+  } else {
+    return base::android::ConvertUTF16ToJavaString(
+        env, base::StringPiece16(
+                 reinterpret_cast<const char16_t*>(string_view.characters16()),
+                 string_view.length()));
+  }
+}
+
 void WasmAsyncResolvePromiseCallback(v8::Isolate* isolate,
                                      v8::Local<v8::Context> context,
                                      v8::Local<v8::Promise::Resolver> resolver,
@@ -126,6 +171,17 @@ void WasmAsyncResolvePromiseCallback(v8::Isolate* isolate,
     CHECK(resolver->Reject(context, compilation_result).FromJust());
   }
 }
+
+class NoopInspectorChannel final : public v8_inspector::V8Inspector::Channel {
+ public:
+  ~NoopInspectorChannel() override = default;
+  void sendResponse(
+      int callId,
+      std::unique_ptr<v8_inspector::StringBuffer> message) override {}
+  void sendNotification(
+      std::unique_ptr<v8_inspector::StringBuffer> message) override {}
+  void flushProtocolNotifications() override {}
+};
 
 }  // namespace
 
@@ -147,8 +203,69 @@ FdWithLength::FdWithLength(int fd_input, ssize_t len) {
   length = len;
 }
 
-JsSandboxIsolate::JsSandboxIsolate(const size_t max_heap_size_bytes)
-    : isolate_max_heap_size_bytes_(max_heap_size_bytes),
+// This class must only be constructed, destructed, and used from the isolate
+// thread.
+class JsSandboxIsolate::InspectorClient final
+    : public v8_inspector::V8InspectorClient {
+ public:
+  explicit InspectorClient(JsSandboxIsolate& isolate) : isolate_(isolate) {}
+
+  ~InspectorClient() override = default;
+
+  void consoleAPIMessage(const int context_group_id,
+                         const v8::Isolate::MessageErrorLevel level,
+                         const v8_inspector::StringView& message,
+                         const v8_inspector::StringView& url,
+                         const unsigned int line_number,
+                         const unsigned int column_number,
+                         v8_inspector::V8StackTrace* const trace) override {
+    if (!isolate_->console_enabled_) {
+      return;
+    }
+
+    JNIEnv* env = base::android::AttachCurrentThread();
+    const jint converted_level = remapConsoleMessageErrorLevel(level);
+    base::android::ScopedJavaLocalRef<jstring> java_string_message =
+        StringViewToJavaString(env, message);
+    // url is actually just the source (file/expression) identifier.
+    base::android::ScopedJavaLocalRef<jstring> java_string_source =
+        StringViewToJavaString(env, url);
+    base::android::ScopedJavaLocalRef<jstring> java_string_trace;
+    if (trace && !trace->isEmpty()) {
+      StringViewToJavaString(env, trace->toString()->string());
+    }
+
+    android_webview::Java_JsSandboxIsolate_consoleMessage(
+        env, isolate_->j_isolate_, static_cast<jint>(context_group_id),
+        converted_level, java_string_message, java_string_source,
+        base::saturated_cast<jint>(line_number),
+        base::saturated_cast<jint>(column_number), java_string_trace);
+  }
+
+  void consoleClear(const int context_group_id) override {
+    if (!isolate_->console_enabled_) {
+      return;
+    }
+    JNIEnv* env = base::android::AttachCurrentThread();
+    android_webview::Java_JsSandboxIsolate_consoleClear(
+        env, isolate_->j_isolate_, static_cast<jint>(context_group_id));
+  }
+
+  double currentTimeMS() override {
+    // Note: although this is not monotonically increasing time, this reflects
+    // the behaviour of Blink code.
+    return base::Time::Now().ToDoubleT() * 1000.0;
+  }
+
+ private:
+  const base::raw_ref<JsSandboxIsolate> isolate_;
+};
+
+JsSandboxIsolate::JsSandboxIsolate(
+    const base::android::JavaParamRef<jobject>& j_isolate,
+    const size_t max_heap_size_bytes)
+    : j_isolate_(j_isolate),
+      isolate_max_heap_size_bytes_(max_heap_size_bytes),
       array_buffer_allocator_(std::make_unique<JsSandboxArrayBufferAllocator>(
           *gin::ArrayBufferAllocator::SharedInstance(),
           max_heap_size_bytes > 0
@@ -242,6 +359,17 @@ jboolean JsSandboxIsolate::ProvideNamedData(
   FdWithLength fd_with_length(fd, length);
   return named_fd_.insert(std::make_pair(name, std::move(fd_with_length)))
       .second;
+}
+
+// Called from Binder thread.
+void JsSandboxIsolate::SetConsoleEnabled(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const jboolean enable) {
+  control_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&JsSandboxIsolate::SetConsoleEnabledOnControlThread,
+                     base::Unretained(this), enable));
 }
 
 // Called from control sequence.
@@ -722,6 +850,53 @@ v8::MaybeLocal<v8::ArrayBuffer> JsSandboxIsolate::tryAllocateArrayBuffer(
       isolate_holder_->isolate(), std::move(backing_store)));
 }
 
+// Called from isolate thread.
+void JsSandboxIsolate::EnableOrDisableInspectorAsNeeded() {
+  const bool needed = console_enabled_;
+  const bool already_enabled = bool{inspector_client_};
+
+  if (already_enabled && !needed) {
+    inspector_session_.reset();
+    inspector_channel_.reset();
+    inspector_.reset();
+    inspector_client_.reset();
+  } else if (!already_enabled && needed) {
+    v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
+    v8::HandleScope handle_scope(isolate_holder_->isolate());
+    v8::Context::Scope scope(context_holder_->context());
+
+    constexpr int context_group_id = 1;
+    inspector_client_ = std::make_unique<InspectorClient>(*this);
+    inspector_ = v8_inspector::V8Inspector::create(isolate_holder_->isolate(),
+                                                   inspector_client_.get());
+    inspector_channel_ =
+        static_cast<std::unique_ptr<v8_inspector::V8Inspector::Channel>>(
+            std::make_unique<NoopInspectorChannel>());
+    inspector_session_ =
+        inspector_->connect(context_group_id, inspector_channel_.get(),
+                            /*state=*/v8_inspector::StringView(),
+                            v8_inspector::V8Inspector::kFullyTrusted,
+                            v8_inspector::V8Inspector::kNotWaitingForDebugger);
+    inspector_->contextCreated(v8_inspector::V8ContextInfo(
+        context_holder_->context(), context_group_id,
+        /*humanReadableName=*/v8_inspector::StringView()));
+  }
+}
+
+// Called from control sequence.
+void JsSandboxIsolate::SetConsoleEnabledOnControlThread(const bool enable) {
+  cancelable_task_tracker_->PostTask(
+      isolate_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&JsSandboxIsolate::SetConsoleEnabledOnIsolateThread,
+                     base::Unretained(this), enable));
+}
+
+// Called from isolate thread.
+void JsSandboxIsolate::SetConsoleEnabledOnIsolateThread(const bool enable) {
+  console_enabled_ = enable;
+  EnableOrDisableInspectorAsNeeded();
+}
+
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("JsSandboxIsolate");
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
@@ -733,10 +908,11 @@ static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
 
 static jlong JNI_JsSandboxIsolate_CreateNativeJsSandboxIsolateWrapper(
     JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_sandbox_isolate,
     jlong max_heap_size_bytes) {
   CHECK_GE(max_heap_size_bytes, 0);
-  JsSandboxIsolate* processor =
-      new JsSandboxIsolate(base::saturated_cast<size_t>(max_heap_size_bytes));
+  JsSandboxIsolate* processor = new JsSandboxIsolate(
+      j_sandbox_isolate, base::saturated_cast<size_t>(max_heap_size_bytes));
   return reinterpret_cast<intptr_t>(processor);
 }
 
