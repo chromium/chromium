@@ -14,8 +14,7 @@ THIS_DIR = os.path.dirname(__file__)
 sys.path.append(
     os.path.join(os.path.dirname(THIS_DIR), '..', 'clang', 'scripts'))
 
-from build_rust import (RUST_TOOLCHAIN_OUT_DIR, THIRD_PARTY_DIR,
-                        VERSION_STAMP_PATH)
+from build_rust import (RUST_TOOLCHAIN_OUT_DIR, THIRD_PARTY_DIR)
 from update_rust import (GetPackageVersionForBuild)
 from package import (MaybeUpload, TeeCmd)
 from update import (CHROMIUM_DIR)

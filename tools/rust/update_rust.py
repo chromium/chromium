@@ -98,7 +98,7 @@ def GetDownloadPackageVersion():
 
 # Get the version of the toolchain package we already have.
 def GetStampVersion():
-    if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
+    if os.path.exists(VERSION_STAMP_PATH):
         with open(VERSION_STAMP_PATH) as version_file:
             existing_stamp = version_file.readline().rstrip()
         version_re = re.compile(r'rustc [0-9.]+ [0-9a-f]+ \((.+?) chromium\)')
