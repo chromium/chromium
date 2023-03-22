@@ -79,6 +79,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
+#include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -5077,17 +5078,24 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        NetworkRequest_Wins) {
   // Register the ServiceWorker and navigate to the in scope URL.
   SetupAndRegisterServiceWorker();
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(),
-      embedded_test_server()->GetURL(
-          "/service_worker/"
-          "race_network_request.html?timeout&respond_from_fetch_handler"),
-      1);
+  // Capture the response head.
+  const GURL test_url = embedded_test_server()->GetURL(
+      "/service_worker/"
+      "race_network_request.html?timeout&respond_from_fetch_handler");
+
+  NavigationHandleObserver observer(web_contents(), test_url);
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  EXPECT_TRUE(observer.has_committed());
 
   // ServiceWorker will respond after the delay, so we expect the response from
   // the network request initiated by the RaceNetworkRequest mode comes first.
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
             GetInnerText());
+
+  // Check the response header. "X-Response-From: fetch-handler" is returned
+  // when the result from the fetch handler is used.
+  EXPECT_NE("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5134,11 +5142,19 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   // Need to navigate to the page with slow response.
   const GURL slow_url = embedded_test_server()->GetURL(
       "/service_worker/slow?respond_from_fetch_handler");
+
+  NavigationHandleObserver observer(web_contents(), slow_url);
   NavigateToURLBlockUntilNavigationsComplete(shell(), slow_url, 1);
+  EXPECT_TRUE(observer.has_committed());
   // RaceNetworkRequest takes long time, but the fetch handler should respond
   // from the cache.
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
             GetInnerText());
+
+  // Check the response header. "X-Response-From: fetch-handler" is returned
+  // when the result from the fetch handler is used.
+  EXPECT_EQ("fetch-handler",
+            observer.GetNormalizedResponseHeader("X-Response-From"));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,

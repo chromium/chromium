@@ -150,9 +150,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       const network::mojom::URLResponseHeadPtr& response_head);
 
   // Calls url_loader_client_->OnReceiveResponse() with
-  // |response_body| and |cached_metadata|.
-  void CommitResponseBody(mojo::ScopedDataPipeConsumerHandle response_body,
-                          absl::optional<mojo_base::BigBuffer> cached_metadata);
+  // |response_head|, |response_body| and |cached_metadata|.
+  void CommitResponseBody(
+      const network::mojom::URLResponseHeadPtr& response_head,
+      mojo::ScopedDataPipeConsumerHandle response_body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata);
 
   // Creates and sends an empty response's body with the net::OK status.
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.

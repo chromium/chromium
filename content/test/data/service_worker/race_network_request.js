@@ -8,7 +8,16 @@ self.addEventListener('install', e => {
   e.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
-      await cache.add(new Request(OFFLINE_URL));
+      const response = await fetch(OFFLINE_URL);
+
+      const customHeaders = new Headers(response.headers);
+      customHeaders.append('X-Response-From', 'fetch-handler');
+
+      await cache.put(OFFLINE_URL, new Response(response.body, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        headers: customHeaders
+                      }));
     })()
   );
   self.skipWaiting();

@@ -202,7 +202,8 @@ class ServiceWorkerMainResourceLoader::RaceNetworkRequestURLLoaderClient final
 
     head_ = std::move(head);
     owner_->CommitResponseHeaders(head_);
-    owner_->CommitResponseBody(std::move(body), std::move(cached_metadata));
+    owner_->CommitResponseBody(head_, std::move(body),
+                               std::move(cached_metadata));
   }
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {
@@ -416,10 +417,11 @@ void ServiceWorkerMainResourceLoader::CommitResponseHeaders(
 }
 
 void ServiceWorkerMainResourceLoader::CommitResponseBody(
+    const network::mojom::URLResponseHeadPtr& response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
     absl::optional<mojo_base::BigBuffer> cached_metadata) {
   TransitionToStatus(Status::kSentBody);
-  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+  url_loader_client_->OnReceiveResponse(response_head.Clone(),
                                         std::move(response_body),
                                         std::move(cached_metadata));
 }
@@ -435,7 +437,7 @@ void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
   }
 
   producer_handle.reset();  // The data pipe is empty.
-  CommitResponseBody(std::move(consumer_handle), absl::nullopt);
+  CommitResponseBody(response_head_, std::move(consumer_handle), absl::nullopt);
   CommitCompleted(net::OK, "No body exists.");
 }
 
@@ -645,7 +647,8 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         "stream response");
     stream_waiter_ = std::make_unique<StreamWaiter>(
         this, std::move(body_as_stream->callback_receiver));
-    CommitResponseBody(std::move(body_as_stream->stream), absl::nullopt);
+    CommitResponseBody(response_head_, std::move(body_as_stream->stream),
+                       absl::nullopt);
     // StreamWaiter will call CommitCompleted() when done.
     return;
   }
@@ -669,7 +672,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
         "blob response");
 
-    CommitResponseBody(std::move(data_pipe), absl::nullopt);
+    CommitResponseBody(response_head_, std::move(data_pipe), absl::nullopt);
     // We continue in OnBlobReadingComplete().
     return;
   }
