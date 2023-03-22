@@ -115,10 +115,8 @@ void AppendResponse(std::vector<GURL>* responses, const GURL& image_url) {
   responses->push_back(image_url);
 }
 
-TEST_F(ImageServiceTest, RegisteredSalientImageType) {
-  ASSERT_EQ(test_opt_guide_->registered_optimization_types().size(), 1U);
-  EXPECT_EQ(test_opt_guide_->registered_optimization_types()[0],
-            optimization_guide::proto::SALIENT_IMAGE);
+TEST_F(ImageServiceTest, DoesNotRegisterForNavigationRelatedMetadata) {
+  ASSERT_EQ(test_opt_guide_->registered_optimization_types().size(), 0U);
 }
 
 TEST_F(ImageServiceTest, GetConsentToFetchImage) {

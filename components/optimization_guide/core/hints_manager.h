@@ -109,6 +109,18 @@ class HintsManager : public OptimizationHintsComponentObserver,
       proto::OptimizationType optimization_type,
       OptimizationMetadata* optimization_metadata);
 
+  // Returns the OptimizationTypeDecision based on the given parameters.
+  // |optimization_metadata| will be populated, if applicable. The decision will
+  // be computed on |url_keyed_hint| or |host_keyed_hint| if possible.
+  // |skip_cache| will be used to determine if the decision is unknown.
+  OptimizationTypeDecision CanApplyOptimization(
+      const GURL& navigation_url,
+      proto::OptimizationType optimization_type,
+      const proto::Hint* url_keyed_hint,
+      const proto::Hint* host_keyed_hint,
+      bool skip_cache,
+      OptimizationMetadata* optimization_metadata);
+
   // Invokes |callback| with the decision for the URL contained in |url| and
   // |optimization_type|, when sufficient information has been collected to
   // make the decision.
@@ -303,6 +315,14 @@ class HintsManager : public OptimizationHintsComponentObserver,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback);
 
+  // Invokes |callback| for |requested_urls| and |optimization_types| based on
+  // what is contained in |response|.
+  void ProcessAndInvokeOnDemandHintsCallbacks(
+      std::unique_ptr<proto::GetHintsResponse> response,
+      const base::flat_set<GURL> requested_urls,
+      const base::flat_set<proto::OptimizationType> optimization_types,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback);
+
   // Called when the hints for a navigation have been fetched from the remote
   // Optimization Guide Service and are ready for parsing. This is used when
   // fetching hints in real-time. |navigation_url| is the URL associated with
@@ -402,6 +422,12 @@ class HintsManager : public OptimizationHintsComponentObserver,
     return active_tabs_batch_update_hints_fetcher_.get();
   }
 
+  // The logger that plumbs the debug logs to the optimization guide
+  // internals page. Not owned. Guaranteed to outlive |this|, since the logger
+  // and |this| are owned by the optimization guide keyed service.
+  raw_ptr<OptimizationGuideLogger, DanglingUntriaged>
+      optimization_guide_logger_;
+
   // The information of the latest component delivered by
   // |optimization_guide_service_|.
   absl::optional<HintsComponentInfo> hints_component_info_;
@@ -486,12 +512,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The class that handles push notification processing and informs |this| of
   // what to do through the implemented Delegate above.
   std::unique_ptr<PushNotificationManager> push_notification_manager_;
-
-  // The logger that plumbs the debug logs to the optimization guide
-  // internals page. Not owned. Guaranteed to outlive |this|, since the logger
-  // and |this| are owned by the optimization guide keyed service.
-  raw_ptr<OptimizationGuideLogger, DanglingUntriaged>
-      optimization_guide_logger_;
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.

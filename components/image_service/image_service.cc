@@ -159,9 +159,6 @@ ImageService::ImageService(
   if (opt_guide && base::FeatureList::IsEnabled(
                        kImageServiceOptimizationGuideSalientImages)) {
     opt_guide_ = opt_guide;
-    // OptimizationGuide requires registering all desired types in advance.
-    opt_guide_->RegisterOptimizationTypes(
-        {optimization_guide::proto::SALIENT_IMAGE});
   }
 }
 

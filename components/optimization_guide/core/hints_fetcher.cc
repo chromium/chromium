@@ -106,6 +106,11 @@ HintsFetcher::~HintsFetcher() {
   if (active_url_loader_) {
     if (hints_fetched_callback_)
       std::move(hints_fetched_callback_).Run(absl::nullopt);
+
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::HINTS,
+        optimization_guide_logger_,
+        "No hints fetched: HintsFetcher ActiveRequestCanceled");
     base::UmaHistogramExactLinear(
         "OptimizationGuide.HintsFetcher.GetHintsRequest."
         "ActiveRequestCanceled." +
@@ -177,6 +182,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
         optimization_types,
     optimization_guide::proto::RequestContext request_context,
     const std::string& locale,
+    bool skip_cache,
     HintsFetchedCallback hints_fetched_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(optimization_types.size(), 0u);
@@ -194,7 +200,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   }
 
   std::vector<std::string> filtered_hosts =
-      GetSizeLimitedHostsDueForHintsRefresh(hosts);
+      GetSizeLimitedHostsDueForHintsRefresh(hosts, skip_cache);
   std::vector<GURL> valid_urls = GetSizeLimitedURLsForFetching(urls);
   if (filtered_hosts.empty() && valid_urls.empty()) {
     OPTIMIZATION_GUIDE_LOG(optimization_guide_common::mojom::LogSource::HINTS,
@@ -308,7 +314,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
   // |active_url_loader_| is destroyed.
   active_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&HintsFetcher::OnURLLoadComplete, base::Unretained(this)));
+      base::BindOnce(&HintsFetcher::OnURLLoadComplete, base::Unretained(this),
+                     skip_cache));
 
   hints_fetched_callback_ = std::move(hints_fetched_callback);
   hosts_fetched_ = filtered_hosts;
@@ -317,7 +324,8 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
 void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
                                   int net_status,
-                                  int response_code) {
+                                  int response_code,
+                                  bool skip_cache) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<proto::GetHintsResponse> get_hints_response =
@@ -346,6 +354,15 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
         "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency." +
             GetStringNameForRequestContext(request_context_),
         fetch_latency);
+    if (skip_cache) {
+      RecordRequestStatusHistogram(request_context_,
+                                   HintsFetcherRequestStatus::kSuccess);
+      std::move(hints_fetched_callback_).Run(std::move(get_hints_response));
+
+      return;
+    }
+
+    // Check cache duration and update.
     base::TimeDelta valid_duration =
         features::StoredFetchedHintsFreshnessDuration();
     if (get_hints_response->has_max_cache_duration()) {
@@ -421,6 +438,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
 
 // Callback is only invoked if |active_url_loader_| is bound and still alive.
 void HintsFetcher::OnURLLoadComplete(
+    bool skip_cache,
     std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -435,7 +453,8 @@ void HintsFetcher::OnURLLoadComplete(
   // handling may destroy |this|.
   active_url_loader_.reset();
 
-  HandleResponse(response_body ? *response_body : "", net_error, response_code);
+  HandleResponse(response_body ? *response_body : "", net_error, response_code,
+                 skip_cache);
 }
 
 // Returns the subset of URLs from |urls| for which the URL is considered
@@ -473,7 +492,8 @@ std::vector<GURL> HintsFetcher::GetSizeLimitedURLsForFetching(
 }
 
 std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
-    const std::vector<std::string>& hosts) const {
+    const std::vector<std::string>& hosts,
+    bool skip_cache) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value::Dict& hosts_fetched =
@@ -504,6 +524,10 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
           optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_,
           base::StrCat({"Skipped adding invalid host:", host}));
+      continue;
+    }
+    if (skip_cache) {
+      target_hosts.push_back(host);
       continue;
     }
 

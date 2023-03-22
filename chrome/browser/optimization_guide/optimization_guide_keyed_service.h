@@ -196,6 +196,10 @@ class OptimizationGuideKeyedService
   // The store of hints.
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
 
+  // The logger that plumbs the debug logs to the optimization guide
+  // internals page. Must outlive `prediction_manager_` and `hints_manager_`.
+  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+
   // Manages the storing, loading, and fetching of hints.
   std::unique_ptr<optimization_guide::ChromeHintsManager> hints_manager_;
 
@@ -204,10 +208,6 @@ class OptimizationGuideKeyedService
   // The store of optimization target prediction models and features.
   std::unique_ptr<optimization_guide::OptimizationGuideStore>
       prediction_model_and_features_store_;
-
-  // The logger that plumbs the debug logs to the optimization guide
-  // internals page. Must outlive `prediction_manager_`.
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.

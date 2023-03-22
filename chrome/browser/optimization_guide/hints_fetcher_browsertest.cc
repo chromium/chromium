@@ -1005,11 +1005,10 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
             run_loop.get()));
     run_loop->Run();
 
-    // Second time should not refetch since no hosts or urls match.
+    // Second time should refetch since on-demand always fetches.
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
-        optimization_guide::HintsFetcherRequestStatus::kNoHostsOrURLsToFetch,
-        1);
+        optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
   }
 }
 

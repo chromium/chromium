@@ -83,12 +83,13 @@ class HintsFetcher {
   // |hints_fetched_callback| is run once when the outcome of this request is
   // determined (whether a request was actually sent or not). Virtualized for
   // testing. Hints fetcher may fetch hints for only a subset of the provided
-  // |hosts|. |hosts| should be an ordered list in descending order of
-  // probability that the hints are needed for that host. Only supported |urls|
-  // will be included in the fetch. |urls| is an ordered list in descending
-  // order of probability that a hint will be needed for the URL. The supplied
-  // optimization types will be included in the request, if empty no fetch will
-  // be made.
+  // |hosts|. A host may be skipped when too many are requested, or when it
+  // already has a result cached, unless |skip_cache| is specified. |hosts|
+  // should be an ordered list in descending order of probability that the hints
+  // are needed for that host. Only supported |urls| will be included in the
+  // fetch. |urls| is an ordered list in descending order of probability that a
+  // hint will be needed for the URL. The supplied optimization types will be
+  // included in the request, if empty no fetch will be made.
   virtual bool FetchOptimizationGuideServiceHints(
       const std::vector<std::string>& hosts,
       const std::vector<GURL>& urls,
@@ -96,6 +97,7 @@ class HintsFetcher {
           optimization_types,
       optimization_guide::proto::RequestContext request_context,
       const std::string& locale,
+      bool skip_cache,
       HintsFetchedCallback hints_fetched_callback);
 
   // Set |time_clock_| for testing.
@@ -125,7 +127,8 @@ class HintsFetcher {
 
  private:
   // URL loader completion callback.
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(bool skip_cache,
+                         std::unique_ptr<std::string> response_body);
 
   // Handles the response from the remote Optimization Guide Service.
   // |response| is the response body, |status| is the
@@ -133,7 +136,8 @@ class HintsFetcher {
   // response code (if available).
   void HandleResponse(const std::string& response,
                       int status,
-                      int response_code);
+                      int response_code,
+                      bool skip_cache);
 
   // Stores the hosts in |hosts_fetched_| in the
   // HintsFetcherHostsSuccessfullyFetched dictionary pref. The value stored for
@@ -151,7 +155,8 @@ class HintsFetcher {
   // refreshed. The count of returned hosts is limited to
   // features::MaxHostsForOptimizationGuideServiceHintsFetch().
   std::vector<std::string> GetSizeLimitedHostsDueForHintsRefresh(
-      const std::vector<std::string>& hosts) const;
+      const std::vector<std::string>& hosts,
+      bool skip_cache) const;
 
   // Used to hold the callback while the SimpleURLLoader performs the request
   // asynchronously.
