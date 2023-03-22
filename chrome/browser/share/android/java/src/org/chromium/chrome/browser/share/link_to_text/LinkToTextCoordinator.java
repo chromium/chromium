@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.TextFragmentReceiver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -17,7 +18,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 /**
@@ -144,7 +144,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             }
         }
 
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> timeout(), getTimeout());
         requestSelector();
     }
 
@@ -156,7 +156,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> timeout(), getTimeout());
         mRemoteRequestStatus = RemoteRequestStatus.REQUESTED;
         LinkToTextHelper.extractTextFragmentsMatches(mProducer, (matches) -> {
             mSelectedText = String.join(",", matches);

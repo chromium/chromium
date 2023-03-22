@@ -28,12 +28,12 @@ import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -113,7 +113,7 @@ public class VisualStateTest {
         public InputStream getData() {
             final DelayedInputStream stream = (DelayedInputStream) super.getData();
             PostTask.postDelayedTask(
-                    UiThreadTaskTraits.DEFAULT, () -> stream.allowReads(), IMAGE_LOADING_DELAY_MS);
+                    TaskTraits.UI_DEFAULT, () -> stream.allowReads(), IMAGE_LOADING_DELAY_MS);
             return stream;
         }
     }
@@ -428,7 +428,7 @@ public class VisualStateTest {
         // JS will notify this observer once it has changed the background color of the page.
         final Object pageChangeNotifier = new Object() {
             public void onPageChanged() {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                PostTask.postTask(TaskTraits.UI_DEFAULT,
                         () -> awContents.insertVisualStateCallback(20, new VisualStateCallback() {
                             @Override
                             public void onComplete(long id) {

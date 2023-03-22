@@ -37,7 +37,6 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -445,7 +444,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public static void from(Tab tab, Callback<ShoppingPersistedTabData> callback) {
         if (tab == null || tab.isDestroyed()) {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
             return;
         }
         if (sDelayedInitFinished) {
@@ -454,7 +453,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             @DelayedInitMethod
             int delayedInitMethod = getDelayedInitMethod();
             if (delayedInitMethod == DelayedInitMethod.EMPTY_RESPONSES_UNTIL_INIT) {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+                PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
             } else if (delayedInitMethod == DelayedInitMethod.DELAY_RESPONSES_UNTIL_INIT) {
                 sShoppingDataRequests.add(new ShoppingDataRequest(tab, callback));
             } else {
@@ -468,20 +467,20 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         // Shopping related data is not available for incognito or Custom Tabs. For example,
         // for incognito Tabs it is not possible to call a backend service with the user's URL.
         if (tab.isIncognito() || tab.isCustomTab()) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
             return;
         }
         PersistedTabData.from(tab,
                 (data, storage, id, factoryCallback)
                         -> {
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                         ShoppingPersistedTabData shoppingPersistedTabData =
                                 tab.isDestroyed() ? null : ShoppingPersistedTabData.from(tab);
                         PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
                             if (shoppingPersistedTabData != null) {
                                 shoppingPersistedTabData.deserializeAndLog(data);
                             }
-                            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                            PostTask.postTask(TaskTraits.UI_DEFAULT,
                                     () -> { factoryCallback.onResult(shoppingPersistedTabData); });
                         });
                     });
@@ -1181,8 +1180,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             // If Tab was destroyed we should just return null and not try and
             // create and associate {@link ShoppingPersistedTabData} with a
             // destroyed {@link Tab}.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    () -> { shoppingDataRequest.callback.onResult(null); });
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT, () -> { shoppingDataRequest.callback.onResult(null); });
             processNextItemOnQueue();
             return;
         }

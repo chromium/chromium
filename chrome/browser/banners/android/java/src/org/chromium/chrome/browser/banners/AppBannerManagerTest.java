@@ -59,6 +59,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -111,7 +112,6 @@ import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.bottomsheet.PwaInstallBottomSheetView;
 import org.chromium.components.webapps.installable.InstallableAmbientBadgeInfoBar;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -200,8 +200,8 @@ public class AppBannerManagerTest {
             mAppData = new AppData(url, packageName);
             mAppData.setPackageInfo(NATIVE_APP_TITLE, mTestServer.getURL(NATIVE_ICON_PATH), 4.5f,
                     NATIVE_APP_INSTALL_TEXT, null, mInstallIntent);
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                    () -> { mObserver.onAppDetailsRetrieved(mAppData); });
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT, () -> { mObserver.onAppDetailsRetrieved(mAppData); });
         }
 
         @Override

@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +89,7 @@ public class MockMediaRouteProvider implements MediaRouteProvider {
         final ArrayList<MediaSink> sinks = new ArrayList<MediaSink>();
         sinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         sinks.add(new MediaSink(SINK_ID2, SINK_NAME2, null));
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                 ()
                         -> mManager.onSinksReceived(sourceId, MockMediaRouteProvider.this, sinks),
                 mSinksObservedDelayMillis);
@@ -110,7 +110,7 @@ public class MockMediaRouteProvider implements MediaRouteProvider {
         if (mCreateRouteDelayMillis == 0) {
             doCreateRoute(sourceId, sinkId, presentationId, origin, tabId, nativeRequestId);
         } else {
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                     ()
                             -> doCreateRoute(sourceId, sinkId, presentationId, origin, tabId,
                                     nativeRequestId),

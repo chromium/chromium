@@ -10,6 +10,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -18,7 +19,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.RenderCoordinates;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
@@ -153,7 +153,7 @@ public class FullscreenManagerTestUtils {
 
     public static void fling(ChromeActivityTestRule testRule, final int vx, final int vy) {
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> {
+                TaskTraits.UI_DEFAULT, () -> {
                     testRule.getWebContents().getEventForwarder().startFling(
                             SystemClock.uptimeMillis(), vx, vy, /*synthetic_scroll*/ false,
                             /*prevent_boosting*/ false);

@@ -34,6 +34,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -66,7 +67,6 @@ import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -295,7 +295,7 @@ public class FeedStream implements Stream {
             // This postTask is necessary so that other click-handlers have a chance
             // to run before we begin navigating. On start surface, navigation immediately
             // triggers unbind, which can break event handling.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 mActionDelegate.openSuggestionUrl(disposition, params, inGroup, /*onPageLoaded=*/
                         ()
                                 -> FeedStreamJni.get().reportPageLoaded(
@@ -342,7 +342,7 @@ public class FeedStream implements Stream {
         /** postTask to call runnable after all in-progress work is complete. */
         void postTaskAfterWorkComplete(Runnable runnable) {
             if (!mWorkPending.get()) {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, runnable);
+                PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
             } else {
                 new DoneWatcher(runnable);
             }
@@ -360,7 +360,7 @@ public class FeedStream implements Stream {
             @Override
             public void onResult(Boolean workPending) {
                 if (!workPending) {
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, mDelegate);
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, mDelegate);
                     mWorkPending.removeObserver(this);
                 };
             }
@@ -412,7 +412,7 @@ public class FeedStream implements Stream {
             // FEEDBACK_REPORT_TYPE: Reports for Chrome mobile must have a contextTag of the form
             // com.chrome.feed.USER_INITIATED_FEEDBACK_REPORT, or they will be discarded for not
             // matching an allow list rule.
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                     ()
                             -> mHelpAndFeedbackLauncher.showFeedback(
                                     mActivity, url, FEEDBACK_REPORT_TYPE, productSpecificDataMap),
@@ -981,7 +981,7 @@ public class FeedStream implements Stream {
             // The native loadMore() call may immediately result in onStreamUpdated(), which can
             // result in a crash if maybeLoadMore() is being called in response to certain events.
             // Use postTask to avoid this.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     ()
                             -> FeedStreamJni.get().loadMore(mNativeFeedStream, FeedStream.this,
                                     (Boolean success) -> { mIsLoadingMoreContent = false; }));

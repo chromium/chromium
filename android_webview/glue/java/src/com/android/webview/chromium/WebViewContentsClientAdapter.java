@@ -52,8 +52,8 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.ref.WeakReference;
 import java.security.Principal;
@@ -439,7 +439,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             // no further updates after onPageStarted, we'll fail the test by timing
             // out waiting for a Picture.
             if (mPictureListener != null) {
-                PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+                PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
                     if (mPictureListener != null) {
                         if (TRACE) Log.i(TAG, "onNewPicture - from onPageFinished workaround.");
                         mPictureListener.onNewPicture(

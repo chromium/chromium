@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.enterprise.util;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class FakeEnterpriseInfo extends EnterpriseInfo {
     @Override
     public void getDeviceEnterpriseInfo(Callback<OwnedState> callback) {
         if (mInitialized) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(mOwnedState));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(mOwnedState));
         } else {
             mCallbackList.add(callback);
         }
@@ -41,7 +41,7 @@ public class FakeEnterpriseInfo extends EnterpriseInfo {
         mInitialized = true;
         mOwnedState = ownedState;
         for (Callback<OwnedState> callback : mCallbackList) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(mOwnedState));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(mOwnedState));
         }
         mCallbackList.clear();
     }

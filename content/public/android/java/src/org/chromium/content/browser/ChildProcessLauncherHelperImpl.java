@@ -38,11 +38,11 @@ import org.chromium.base.process_launcher.ChildProcessConstants;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 
@@ -652,7 +652,7 @@ public final class ChildProcessLauncherHelperImpl {
 
         if (!ApplicationStatus.isInitialized()) return;
         if (sAppStateListener != null) return;
-        PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
+        PostTask.postTask(TaskTraits.UI_BEST_EFFORT, () -> {
             if (sAppStateListener != null) return;
             sApplicationInForegroundOnUiThread = ApplicationStatus.hasVisibleActivities();
             sAppStateListener = newState -> {
@@ -699,7 +699,7 @@ public final class ChildProcessLauncherHelperImpl {
         String exceptionString = connection.getExceptionDuringInit();
         if (exceptionString != null && !mReportedException) {
             mReportedException = true;
-            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
+            PostTask.postTask(TaskTraits.UI_BEST_EFFORT,
                     () -> JavaExceptionReporter.reportStackTrace(exceptionString));
         }
         ChildProcessLauncherHelperImplJni.get().setTerminationInfo(terminationInfoPtr,

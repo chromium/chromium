@@ -13,10 +13,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -113,7 +113,7 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
         int oldHeight = oldBottom - oldTop;
         int newHeight = bottom - top;
         if (newHeight == oldHeight) return;
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             mModel.set(ILLUSTRATION_VISIBLE, hasSufficientSpaceForIllustration(newHeight));
         });
     }

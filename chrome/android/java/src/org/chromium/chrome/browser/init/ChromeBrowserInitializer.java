@@ -47,7 +47,6 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.SpeechRecognition;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.io.File;
@@ -245,15 +244,15 @@ public class ChromeBrowserInitializer {
         // launch its required components.
         if (!delegate.startMinimalBrowser()
                 && !ProcessInitializationHandler.getInstance().postNativeInitializationComplete()) {
-            tasks.add(UiThreadTaskTraits.DEFAULT,
+            tasks.add(TaskTraits.UI_DEFAULT,
                     () -> ProcessInitializationHandler.getInstance().initializePostNative());
         }
 
         if (!mNetworkChangeNotifierInitializationComplete) {
-            tasks.add(UiThreadTaskTraits.DEFAULT, this::initNetworkChangeNotifier);
+            tasks.add(TaskTraits.UI_DEFAULT, this::initNetworkChangeNotifier);
         }
 
-        tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+        tasks.add(TaskTraits.UI_DEFAULT, () -> {
             // This is not broken down as a separate task, since this:
             // 1. Should happen as early as possible
             // 2. Only submits asynchronous work
@@ -266,33 +265,33 @@ public class ChromeBrowserInitializer {
             onStartNativeInitialization();
         });
 
-        tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+        tasks.add(TaskTraits.UI_DEFAULT, () -> {
             if (delegate.isActivityFinishingOrDestroyed()) return;
             delegate.initializeCompositor();
         });
 
-        tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+        tasks.add(TaskTraits.UI_DEFAULT, () -> {
             if (delegate.isActivityFinishingOrDestroyed()) return;
             delegate.initializeState();
         });
 
-        tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+        tasks.add(TaskTraits.UI_DEFAULT, () -> {
             if (delegate.isActivityFinishingOrDestroyed()) return;
             // Some tasks posted by this are on the critical path.
             delegate.startNativeInitialization();
         });
 
         if (!mNativeInitializationComplete) {
-            tasks.add(UiThreadTaskTraits.DEFAULT, this::onFinishNativeInitialization);
+            tasks.add(TaskTraits.UI_DEFAULT, this::onFinishNativeInitialization);
         }
 
         if (!delegate.startMinimalBrowser()) {
-            tasks.add(UiThreadTaskTraits.DEFAULT, this::onFinishFullBrowserInitialization);
+            tasks.add(TaskTraits.UI_DEFAULT, this::onFinishFullBrowserInitialization);
         }
 
         int startupMode =
                 getBrowserStartupController().getStartupMode(delegate.startMinimalBrowser());
-        tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+        tasks.add(TaskTraits.UI_DEFAULT, () -> {
             BackgroundTaskSchedulerFactory.getUmaReporter().reportStartupMode(startupMode);
         });
 

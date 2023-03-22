@@ -16,6 +16,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -24,7 +25,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.version_info.VersionInfo;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -271,7 +271,7 @@ public class PartnerBrowserCustomizations {
 
         // Cancel the initialization if it reaches timeout.
         PostTask.postDelayedTask(
-                UiThreadTaskTraits.DEFAULT, () -> initializeAsyncTask.cancel(true), timeoutMs);
+                TaskTraits.UI_DEFAULT, () -> initializeAsyncTask.cancel(true), timeoutMs);
     }
 
     @VisibleForTesting
@@ -335,7 +335,7 @@ public class PartnerBrowserCustomizations {
      */
     public void setOnInitializeAsyncFinished(final Runnable callback) {
         if (mIsInitialized) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback);
+            PostTask.postTask(TaskTraits.UI_DEFAULT, callback);
         } else {
             mInitializeAsyncCallbacks.add(callback);
         }
@@ -351,7 +351,7 @@ public class PartnerBrowserCustomizations {
     public void setOnInitializeAsyncFinished(final Runnable callback, long timeoutMs) {
         mInitializeAsyncCallbacks.add(callback);
 
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
             if (mInitializeAsyncCallbacks.remove(callback)) {
                 if (!mIsInitialized) {
                     Log.w(TAG, "mInitializeAsyncCallbacks executed as timeout expired.");

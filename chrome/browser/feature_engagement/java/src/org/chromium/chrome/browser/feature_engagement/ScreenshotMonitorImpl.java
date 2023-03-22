@@ -23,7 +23,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -68,7 +68,7 @@ public class ScreenshotMonitorImpl extends ScreenshotMonitor {
                 return;
             }
 
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 // Unit tests do not have a media database to query, so skip if necessary.
                 if (!doesChangeLookLikeScreenshot(uri)) return;
                 mScreenshotMonitor.notifyDelegate();

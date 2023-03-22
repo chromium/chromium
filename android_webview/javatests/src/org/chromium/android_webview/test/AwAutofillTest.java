@@ -45,6 +45,7 @@ import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -64,7 +65,6 @@ import org.chromium.components.autofill.AutofillProviderUMA;
 import org.chromium.components.autofill.TestViewStructure;
 import org.chromium.components.autofill_public.ViewType;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -390,7 +390,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testTouchingFormWithAdjustResize() throws Throwable {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mRule.getActivity().getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         });
@@ -401,7 +401,7 @@ public class AwAutofillTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testTouchingFormWithAdjustPan() throws Throwable {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mRule.getActivity().getWindow().setSoftInputMode(
                     WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         });

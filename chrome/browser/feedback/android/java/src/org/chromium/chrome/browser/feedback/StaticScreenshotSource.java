@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.feedback;
 import android.graphics.Bitmap;
 
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 /** A implementation of {@link ScreenshotSource} that returns back a {@link Bitmap} given to it. */
 class StaticScreenshotSource implements ScreenshotSource {
@@ -24,7 +24,7 @@ class StaticScreenshotSource implements ScreenshotSource {
     // ScreenshotSource implementation.
     @Override
     public void capture(Runnable callback) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, callback);
     }
 
     @Override

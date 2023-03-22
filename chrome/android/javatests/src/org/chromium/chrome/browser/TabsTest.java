@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -79,7 +80,6 @@ import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.Sc
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
 import org.chromium.content_public.browser.SelectionPopupController;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -830,7 +830,7 @@ public class TabsTest {
                 sActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
                         sActivityTestRule.getActivity(), urlBar));
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             swipeHandler.onSwipeStarted(ScrollDirection.RIGHT, createMotionEvent(0, 0));
             float swipeXChange = mTabsViewWidthDp / 2.f;
             swipeHandler.onSwipeUpdated(createMotionEvent(swipeXChange / mPxToDp, 0.f),
@@ -844,7 +844,7 @@ public class TabsTest {
                             .shouldDisplayContentOverlay();
         });
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             Assert.assertFalse("Keyboard should be hidden while swiping",
                     sActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
                             sActivityTestRule.getActivity(), urlBar));

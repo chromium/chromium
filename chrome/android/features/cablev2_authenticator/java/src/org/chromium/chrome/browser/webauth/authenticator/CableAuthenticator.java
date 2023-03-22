@@ -24,6 +24,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SingleThreadTaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -31,7 +32,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCall;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
 
 import java.nio.ByteBuffer;
@@ -105,7 +105,7 @@ class CableAuthenticator {
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
-        mTaskRunner = PostTask.createSingleThreadTaskRunner(UiThreadTaskTraits.USER_VISIBLE);
+        mTaskRunner = PostTask.createSingleThreadTaskRunner(TaskTraits.UI_USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
         CableAuthenticatorJni.get().setup(registration, networkContext, secret);

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -30,7 +31,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.webapps.WebappsIconUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.test.EmbeddedTestServerRule;
 /**
  * Tests the WebApkUpdateDataFetcher.
@@ -142,7 +142,7 @@ public class WebApkUpdateDataFetcherTest {
     private void startWebApkUpdateDataFetcher(final WebApkIntentDataProviderBuilder builder,
             final WebApkUpdateDataFetcher.Observer observer) {
         final WebApkUpdateDataFetcher fetcher = new WebApkUpdateDataFetcher();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> { fetcher.start(mTab, WebappInfo.create(builder.build()), observer); });
     }
 

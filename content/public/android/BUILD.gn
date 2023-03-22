@@ -110,7 +110,6 @@ android_library("content_main_dex_java") {
     "java/src/org/chromium/content_public/browser/ChildProcessCreationParams.java",
     "java/src/org/chromium/content_public/browser/DeviceUtils.java",
     "java/src/org/chromium/content_public/browser/TracingControllerAndroid.java",
-    "java/src/org/chromium/content_public/browser/UiThreadTaskTraits.java",
     "java/src/org/chromium/content_public/common/ContentProcessInfo.java",
     "java/src/org/chromium/content_public/common/ContentUrlConstants.java",
     "java/src/org/chromium/content_public/common/Referrer.java",

@@ -12,7 +12,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omaha.OmahaBase.UpdateStatus;
 import org.chromium.chrome.browser.omaha.OmahaService;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.ref.WeakReference;
 
@@ -67,7 +66,7 @@ public class SafetyCheckUpdatesDelegateImpl implements SafetyCheckUpdatesDelegat
             @UpdateStatus
             int status = mOmaha.checkForUpdates();
             // Post the results back to the UI thread.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 Callback<Integer> strongRef = statusCallback.get();
                 if (strongRef != null) {
                     strongRef.onResult(convertOmahaUpdateStatus(status));

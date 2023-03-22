@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.CommandLine;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.AnnotationRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -57,7 +58,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
@@ -248,7 +248,7 @@ public class TrustedCdnPublisherUrlTest {
                         ChromeTabbedActivity.class.getName(), /* result = */ null, false);
         CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
         final Tab tab = customTabActivity.getActivityTab();
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             Assert.assertEquals(publisherUrl, TrustedCdn.getPublisherUrl(tab));
             customTabActivity.getComponent().resolveNavigationController()
                     .openCurrentUrlInBrowser(true);
@@ -298,7 +298,7 @@ public class TrustedCdnPublisherUrlTest {
 
         // Wait until the offline page model has been loaded.
         CallbackHelper callback = new CallbackHelper();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (offlinePageBridge.isOfflinePageModelLoaded()) {
                 callback.notifyCalled();
                 return;
@@ -314,7 +314,7 @@ public class TrustedCdnPublisherUrlTest {
         callback.waitForCallback(0);
 
         CallbackHelper callback2 = new CallbackHelper();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             CustomTabActivity customTabActivity = mCustomTabActivityTestRule.getActivity();
             Tab tab = customTabActivity.getActivityTab();
             String pageUrl = tab.getUrl().getSpec();

@@ -10,8 +10,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.autofill.AutofillExpirationDateFixFlowPrompt.AutofillExpirationDateFixFlowPromptDelegate;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
@@ -80,7 +80,7 @@ final class AutofillExpirationDateFixFlowBridge
         if (activity == null) {
             // Clean up the native counterpart. Post the dismissal to allow the native
             // caller to finish execution before we attempt to delete it.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::onPromptDismissed);
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::onPromptDismissed);
             return;
         }
 

@@ -29,7 +29,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.installedapp.mojom.InstalledAppProvider;
 import org.chromium.installedapp.mojom.RelatedApplication;
 import org.chromium.mojo.system.MojoException;
@@ -214,7 +213,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         }
 
         mLastDelayForTesting = delayMs;
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                 () -> callback.call(installedAppsArray), mIsInTest ? 0 : delayMs);
     }
 
@@ -511,7 +510,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     private static void postResultOnUiThread(
             ResultHolder resultHolder, RelatedApplication app, int taskIdx, int delayMs) {
         PostTask.postTask(
-                UiThreadTaskTraits.DEFAULT, () -> resultHolder.onResult(app, taskIdx, delayMs));
+                TaskTraits.UI_DEFAULT, () -> resultHolder.onResult(app, taskIdx, delayMs));
     }
 
     @NativeMethods

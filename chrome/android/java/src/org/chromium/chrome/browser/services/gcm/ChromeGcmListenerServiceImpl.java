@@ -12,6 +12,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.ProcessInitializationHandler;
@@ -23,7 +24,6 @@ import org.chromium.components.gcm_driver.GCMMessage;
 import org.chromium.components.gcm_driver.InstanceIDFlags;
 import org.chromium.components.gcm_driver.LazySubscriptionsManager;
 import org.chromium.components.gcm_driver.SubscriptionFlagManager;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Receives Downstream messages and status of upstream messages from GCM.
@@ -42,7 +42,7 @@ public class ChromeGcmListenerServiceImpl extends ChromeGcmListenerService.Impl 
         GcmUma.recordDataMessageReceived(ContextUtils.getApplicationContext());
 
         // Dispatch the message to the GCM Driver for native features.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             GCMMessage message = null;
             try {
                 message = new GCMMessage(from, data);

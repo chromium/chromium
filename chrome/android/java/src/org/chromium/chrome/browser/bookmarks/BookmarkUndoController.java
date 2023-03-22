@@ -8,12 +8,12 @@ import android.content.Context;
 
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel.BookmarkDeleteObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Locale;
 
@@ -37,7 +37,7 @@ public class BookmarkUndoController extends BookmarkModelObserver implements
             Context context, BookmarkModel model, SnackbarManager snackbarManager) {
         BookmarkUndoController controller = new BookmarkUndoController(
                 context, model, snackbarManager, /*destroyAfterFirstAction=*/true);
-        PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
+        PostTask.postDelayedTask(TaskTraits.UI_BEST_EFFORT,
                 () -> { controller.destroyIfNecessary(); }, SNACKBAR_DURATION_MS + 1000);
     }
 

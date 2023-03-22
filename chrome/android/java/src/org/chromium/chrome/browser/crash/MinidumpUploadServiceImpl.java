@@ -24,6 +24,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -34,7 +35,6 @@ import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobService;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -146,7 +146,7 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
         if (ThreadUtils.runningOnUiThread()) {
             ApplicationStatus.registerApplicationStateListener(appStateListener);
         } else {
-            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
+            PostTask.postTask(TaskTraits.UI_BEST_EFFORT, () -> {
                 ApplicationStatus.registerApplicationStateListener(appStateListener);
             });
         }

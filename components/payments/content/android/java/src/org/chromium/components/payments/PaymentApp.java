@@ -9,8 +9,8 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.autofill.EditableOption;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -246,7 +246,7 @@ public abstract class PaymentApp extends EditableOption {
      * @param callback The callback to return abort result.
      */
     public void abortPaymentApp(AbortCallback callback) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 callback.onInstrumentAbortResult(false);

@@ -104,7 +104,6 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.SmartClipProvider;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -940,7 +939,7 @@ public class AwContents implements SmartClipProvider {
                 mRecalculationTime += RECALCULATION_DELAY_MS;
             }
 
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
                 recalculate();
                 mPendingRecalculation = false;
             }, mRecalculationTime - time);
@@ -1702,7 +1701,7 @@ public class AwContents implements SmartClipProvider {
             onDetachedFromWindow();
         }
         mIsDestroyed = true;
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> destroyNatives());
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> destroyNatives());
     }
 
     /**
@@ -1959,7 +1958,7 @@ public class AwContents implements SmartClipProvider {
                 }
             }
 
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                 if (!isDestroyed(NO_WARN)) {
                     AwContentsJni.get().addVisitedLinks(mNativeAwContents, value);
                 }
@@ -2178,8 +2177,8 @@ public class AwContents implements SmartClipProvider {
         // This is a workaround for an issue with PlzNavigate and one of Samsung's OEM mail apps.
         // See http://crbug.com/781535.
         if (isSamsungMailApp() && SAMSUNG_WORKAROUND_BASE_URL.equals(loadUrlParams.getBaseUrl())) {
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
-                    () -> loadUrl(loadUrlParams), SAMSUNG_WORKAROUND_DELAY);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT, () -> loadUrl(loadUrlParams), SAMSUNG_WORKAROUND_DELAY);
             return;
         }
         loadUrl(loadUrlParams);
@@ -3316,7 +3315,7 @@ public class AwContents implements SmartClipProvider {
         // To prevent this flip of CVC visibility, post the task to update CVC
         // visibility during attach, detach and window visibility change.
         mIsUpdateVisibilityTaskPending = true;
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, mUpdateVisibilityRunnable);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, mUpdateVisibilityRunnable);
     }
 
     private void updateWebContentsVisibility() {

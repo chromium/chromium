@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.SysUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -143,7 +143,7 @@ public class BrandColorTest {
     @Feature({"StatusBar", "Omnibox"})
     public void testBrandColorWithLoadStarted() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             RewindableIterator<TabObserver> observers = TabTestUtils.getTabObservers(tab);
             while (observers.hasNext()) {
@@ -183,10 +183,10 @@ public class BrandColorTest {
         mActivityTestRule.loadUrl("about:blank");
         checkForBrandColor(mDefaultColor);
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> mActivityTestRule.getActivity().onBackPressed());
+                TaskTraits.UI_DEFAULT, () -> mActivityTestRule.getActivity().onBackPressed());
         checkForBrandColor(Color.parseColor(BRAND_COLOR_1));
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> mActivityTestRule.getActivity().onBackPressed());
+                TaskTraits.UI_DEFAULT, () -> mActivityTestRule.getActivity().onBackPressed());
         checkForBrandColor(mDefaultColor);
     }
 }

@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.components.version_info.VersionConstants;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Provides logging and context for all surfaces.
@@ -84,7 +83,7 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         int traits;
         switch (taskType) {
             case ProcessScopeDependencyProvider.TASK_TYPE_UI_THREAD:
-                traits = UiThreadTaskTraits.DEFAULT;
+                traits = TaskTraits.UI_DEFAULT;
                 break;
             case ProcessScopeDependencyProvider.TASK_TYPE_BACKGROUND_MAY_BLOCK:
                 traits = TaskTraits.BEST_EFFORT_MAY_BLOCK;

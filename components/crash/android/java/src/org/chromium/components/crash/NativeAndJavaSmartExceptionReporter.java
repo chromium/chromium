@@ -8,7 +8,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * This is an exception reporter which will delegate to a pure Java reporter until native is loaded.
@@ -25,7 +24,7 @@ public class NativeAndJavaSmartExceptionReporter {
             pureJavaReport.onResult(exception);
         } else {
             // The native exception reporter requires to be called on the UI thread.
-            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT,
+            PostTask.postTask(TaskTraits.UI_BEST_EFFORT,
                     () -> JavaExceptionReporter.reportException(exception));
         }
     }

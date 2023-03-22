@@ -24,12 +24,12 @@ import org.junit.Assert;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -107,7 +107,7 @@ public class CustomTabsTestUtils {
     }
 
     public static void openAppMenuAndAssertMenuShown(CustomTabActivity activity) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> { activity.onMenuOrKeyboardAction(R.id.show_menu, false); });
 
         CriteriaHelper.pollUiThread(activity.getRootUiCoordinatorForTesting()

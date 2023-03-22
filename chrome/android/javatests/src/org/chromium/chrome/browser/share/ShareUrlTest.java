@@ -21,11 +21,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -59,7 +59,7 @@ public class ShareUrlTest {
     }
 
     private void assertCorrectUrl(final String originalUrl, final String sharedUrl) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             ShareParams params =
                     new ShareParams.Builder(mWindow, "", sharedUrl).setText("").build();
             Intent intent = ShareHelper.getShareIntent(params);

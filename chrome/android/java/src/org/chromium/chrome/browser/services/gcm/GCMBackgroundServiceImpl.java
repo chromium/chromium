@@ -9,8 +9,8 @@ import android.os.Bundle;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.gcm_driver.GCMMessage;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Service that dispatches a GCM message in the background. Launched from ChromeGcmListenerService
@@ -29,7 +29,7 @@ public class GCMBackgroundServiceImpl extends GCMBackgroundService.Impl {
             return;
         }
 
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
+        PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
                 () -> ChromeGcmListenerServiceImpl.dispatchMessageToDriver(message));
     }
 }

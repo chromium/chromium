@@ -22,10 +22,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.HashMap;
@@ -184,22 +184,20 @@ public abstract class OriginVerifier {
             Log.i(TAG, "Verification failed for %s as not https or localhost.", origin);
             recordResultMetrics(VerifierResult.HTTPS_FAILURE);
             PostTask.runOrPostTask(
-                    UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, false, null));
+                    TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, false, null));
             return;
         }
 
         if (mVerificationResultStore.shouldOverride(mPackageName, origin, mRelation)) {
             Log.i(TAG, "Verification succeeded for %s, it was overridden.", origin);
-            PostTask.runOrPostTask(
-                    UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, true, null));
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
             return;
         }
 
         if (isAllowlisted(mPackageName, origin, mRelation)) {
             Log.i(TAG, "Verification succeeded for %s, %s, it was allowlisted.", mPackageName,
                     origin);
-            PostTask.runOrPostTask(
-                    UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, true, null));
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
             return;
         }
 
@@ -216,7 +214,7 @@ public abstract class OriginVerifier {
         if (!requestSent) {
             recordResultMetrics(VerifierResult.REQUEST_FAILURE);
             PostTask.runOrPostTask(
-                    UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, false, false));
+                    TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, false, false));
         }
     }
 

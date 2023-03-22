@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.url.GURL;
@@ -440,8 +439,8 @@ public class TabContentManager {
         TraceEvent.startAsync("GetTabThumbnailFromDisk", tabId);
         PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, () -> {
             Bitmap bitmap = getJpegForTab(tabId, thumbnailSize);
-            PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE,
-                    () -> { onBitmapRead(tabId, bitmap, callback); });
+            PostTask.postTask(
+                    TaskTraits.UI_USER_VISIBLE, () -> { onBitmapRead(tabId, bitmap, callback); });
         });
     }
 

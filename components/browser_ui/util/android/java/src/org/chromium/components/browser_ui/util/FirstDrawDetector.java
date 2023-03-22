@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.lang.ref.WeakReference;
 
@@ -61,7 +61,7 @@ public class FirstDrawDetector {
                 onFirstDraw();
                 // The draw listener can't be removed from within the callback, so remove it
                 // asynchronously.
-                PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
+                PostTask.postTask(TaskTraits.UI_BEST_EFFORT, () -> {
                     if (mView.get() == null) return;
                     mView.get().getViewTreeObserver().removeOnDrawListener(this);
                 });

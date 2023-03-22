@@ -19,7 +19,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ import java.util.Map;
  *
  * Threading model note: all calls from C++ must happen on the UI thread.
  * Callbacks from Android may happen on a different thread, so we always
- * use PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, ...)  when calling back to C++.
+ * use PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, ...)  when calling back to C++.
  */
 @JNINamespace("content")
 class TtsPlatformImpl {
@@ -91,7 +91,7 @@ class TtsPlatformImpl {
             mInitialized = false;
             mTextToSpeech = new TextToSpeech(ContextUtils.getApplicationContext(), status -> {
                 if (status == TextToSpeech.SUCCESS) {
-                    PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> initializeDefault());
+                    PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> initializeDefault());
                 }
             });
         }
@@ -366,7 +366,7 @@ class TtsPlatformImpl {
      * Post a task to the UI thread to send the TTS "end" event.
      */
     private void sendEndEventOnUiThread(final String utteranceId) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (mNativeTtsPlatformImplAndroid != 0) {
                 TtsPlatformImplJni.get().onEndEvent(
                         mNativeTtsPlatformImplAndroid, Integer.parseInt(utteranceId));
@@ -378,7 +378,7 @@ class TtsPlatformImpl {
      * Post a task to the UI thread to send the TTS "error" event.
      */
     private void sendErrorEventOnUiThread(final String utteranceId) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (mNativeTtsPlatformImplAndroid != 0) {
                 TtsPlatformImplJni.get().onErrorEvent(
                         mNativeTtsPlatformImplAndroid, Integer.parseInt(utteranceId));
@@ -390,7 +390,7 @@ class TtsPlatformImpl {
      * Post a task to the UI thread to send the TTS "start" event.
      */
     private void sendStartEventOnUiThread(final String utteranceId) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (mNativeTtsPlatformImplAndroid != 0) {
                 TtsPlatformImplJni.get().onStartEvent(
                         mNativeTtsPlatformImplAndroid, Integer.parseInt(utteranceId));

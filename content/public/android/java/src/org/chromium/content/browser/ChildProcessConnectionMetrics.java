@@ -13,7 +13,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.Random;
 import java.util.Set;
@@ -98,7 +98,7 @@ public class ChildProcessConnectionMetrics {
     }
 
     private void registerActivityStateListenerAndStartEmitting() {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             assert ThreadUtils.runningOnUiThread();
             mApplicationInForegroundOnUiThread = ApplicationStatus.getStateForApplication()
                             == ApplicationState.HAS_RUNNING_ACTIVITIES

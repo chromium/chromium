@@ -10,10 +10,10 @@ import android.content.Intent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Service that handles the actions on tracing notifications.
@@ -70,7 +70,7 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             // Clear the notification but don't do anything else if the TracingController went away.
             if (!TracingController.isInitialized()) {
                 TracingNotificationManager.dismissNotification();

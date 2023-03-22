@@ -25,7 +25,6 @@ import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -344,7 +343,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                 @Override
                 protected void onPostExecute(Void result) {
                     mExecutingSaveRequest = null;
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    PostTask.postTask(TaskTraits.UI_DEFAULT,
                             () -> { mCallback.onResult(DECREMENT_SEMAPHORE_VAL); });
                     processNextItemOnQueue();
                 }
@@ -415,7 +414,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
                 @Override
                 protected void onPostExecute(Void result) {
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                    PostTask.postTask(TaskTraits.UI_DEFAULT,
                             () -> { mCallback.onResult(DECREMENT_SEMAPHORE_VAL); });
                     processNextItemOnQueue();
                 }
@@ -498,7 +497,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
                 @Override
                 protected void onPostExecute(ByteBuffer res) {
                     PostTask.runOrPostTask(
-                            UiThreadTaskTraits.DEFAULT, () -> { mCallback.onResult(res); });
+                            TaskTraits.UI_DEFAULT, () -> { mCallback.onResult(res); });
                     processNextItemOnQueue();
                 }
             };
@@ -564,8 +563,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
                 @Override
                 protected void onPostExecute(U res) {
-                    PostTask.postTask(
-                            UiThreadTaskTraits.DEFAULT, () -> { mCallback.onResult(res); });
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { mCallback.onResult(res); });
                     processNextItemOnQueue();
                 }
             };

@@ -14,6 +14,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -22,7 +23,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.content_public.browser.RenderCoordinates;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 
 import java.io.File;
@@ -164,12 +164,10 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
             ids = new int[] {id};
         }
         mAuditRunnable = () -> auditArtifacts(ids);
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
-                () -> {
-                    mAuditRunnable.run();
-                    mAuditRunnable = null;
-                },
-                AUDIT_START_DELAY_MS);
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
+            mAuditRunnable.run();
+            mAuditRunnable = null;
+        }, AUDIT_START_DELAY_MS);
     }
 
     @VisibleForTesting

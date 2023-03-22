@@ -13,8 +13,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;
 
@@ -260,7 +260,7 @@ public class ConnectivityTask {
 
         private void postCallbackResult() {
             if (mCallback == null) return;
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                 @Override
                 public void run() {
                     mCallback.onResult(get());

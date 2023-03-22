@@ -13,8 +13,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 
@@ -94,7 +94,7 @@ public final class ConnectivityChecker {
     }
 
     private static void postResult(final ConnectivityCheckerCallback callback, final int result) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 callback.onResult(result);

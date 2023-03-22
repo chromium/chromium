@@ -13,9 +13,9 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 /**
@@ -42,7 +42,7 @@ public class InstalledWebappGeolocationBridge {
                 @Override
                 public void onExtraCallback(String callbackName, @Nullable Bundle bundle) {
                     // Hop back over to the UI thread to deal with the result.
-                    PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+                    PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> {
                         if (TextUtils.equals(callbackName, EXTRA_NEW_LOCATION_AVAILABLE_CALLBACK)) {
                             notifyNewGeoposition(bundle);
                         } else if (TextUtils.equals(

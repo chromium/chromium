@@ -16,6 +16,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
@@ -24,7 +25,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabWebContentsUserData;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
@@ -135,7 +135,7 @@ public class SwipeRefreshHandler
 
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             cancelStopRefreshingRunnable();
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, getStopRefreshingRunnable(),
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, getStopRefreshingRunnable(),
                     MAX_REFRESH_ANIMATION_DURATION_MS);
             if (mAccessibilityRefreshString == null) {
                 int resId = R.string.accessibility_swipe_refresh;
@@ -151,7 +151,7 @@ public class SwipeRefreshHandler
                 mDetachRefreshLayoutRunnable = null;
                 detachSwipeRefreshLayoutIfNecessary();
             };
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, mDetachRefreshLayoutRunnable);
+            PostTask.postTask(TaskTraits.UI_DEFAULT, mDetachRefreshLayoutRunnable);
         });
     }
 

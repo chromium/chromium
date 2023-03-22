@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -47,7 +48,6 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -243,7 +243,7 @@ public class DetachedResourceRequestTest {
         CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
         CustomTabsTestUtils.warmUpAndWait();
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             Assert.assertEquals(status,
                     mConnection.handleParallelRequest(
                             session, prepareIntent(url, Uri.parse("http://not-the-right-origin"))));
@@ -270,7 +270,7 @@ public class DetachedResourceRequestTest {
                         Math.abs(NetError.ERR_EMPTY_RESPONSE));
         CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> mConnection.onHandledIntent(session, prepareIntent(url, ORIGIN)));
         CustomTabsTestUtils.warmUpAndWait();
         customTabsCallback.waitForRequest(0, 1);
@@ -296,7 +296,7 @@ public class DetachedResourceRequestTest {
         List<Uri> urls = Arrays.asList(Uri.parse(mServer.getURL("/echo-raw?a=1")),
                 Uri.parse(mServer.getURL("/echo-raw?a=2")),
                 Uri.parse(mServer.getURL("/echo-raw?a=3")));
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             Assert.assertEquals(urls.size(),
                     mConnection.maybePrefetchResources(
                             session, prepareIntentForResourcePrefetch(urls, ORIGIN)));
@@ -522,7 +522,7 @@ public class DetachedResourceRequestTest {
         CustomTabsSessionToken session = prepareSession(ORIGIN, customTabsCallback);
 
         if (afterNative) CustomTabsTestUtils.warmUpAndWait();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> mConnection.onHandledIntent(session, prepareIntent(url, ORIGIN)));
         if (!afterNative) CustomTabsTestUtils.warmUpAndWait();
 

@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.paint_preview;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.paintpreview.player.PlayerManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -41,7 +41,7 @@ public class DemoPaintPreview implements PlayerManager.Listener {
         PaintPreviewCompositorUtils.warmupCompositor();
         mTabbedPaintPreview.capture(success
                 -> PostTask.runOrPostTask(
-                        UiThreadTaskTraits.USER_VISIBLE, () -> onCapturedPaintPreview(success)));
+                        TaskTraits.UI_USER_VISIBLE, () -> onCapturedPaintPreview(success)));
     }
 
     private void onCapturedPaintPreview(boolean captureSuccess) {

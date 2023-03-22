@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -97,7 +96,7 @@ public class CachedImageFetcher extends ImageFetcher {
             // Try to read the gif from disk, then post back to the ui thread.
             String filePath = getImageFetcherBridge().getFilePath(params.url);
             BaseGifImage cachedGif = mImageLoader.tryToLoadGifFromDisk(filePath);
-            PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+            PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> {
                 continueFetchGifAfterDisk(params, callback, cachedGif, startTimeMillis);
             });
         });
@@ -126,7 +125,7 @@ public class CachedImageFetcher extends ImageFetcher {
             // Try to read the bitmap from disk, then post back to the ui thread.
             String filePath = getImageFetcherBridge().getFilePath(params.url);
             Bitmap bitmap = mImageLoader.tryToLoadImageFromDisk(filePath);
-            PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+            PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> {
                 continueFetchImageAfterDisk(params, callback, bitmap, startTimeMillis);
             });
         });

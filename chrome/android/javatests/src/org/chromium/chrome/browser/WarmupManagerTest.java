@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -32,7 +33,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -134,7 +134,7 @@ public class WarmupManagerTest {
         final AtomicBoolean isRenderFrameLive = new AtomicBoolean();
         final AtomicReference<WebContents> webContentsReference = new AtomicReference<>();
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mWarmupManager.createSpareWebContents();
             Assert.assertTrue(mWarmupManager.hasSpareWebContents());
             WebContents webContents = mWarmupManager.takeSpareWebContents(false, false);
@@ -156,8 +156,7 @@ public class WarmupManagerTest {
         });
         CriteriaHelper.pollUiThread(
                 () -> isRenderFrameLive.get(), "Spare renderer is not initialized");
-        PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> webContentsReference.get().destroy());
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> webContentsReference.get().destroy());
     }
 
     /** Tests that taking a spare WebContents makes it unavailable to subsequent callers. */
@@ -236,7 +235,7 @@ public class WarmupManagerTest {
             server.start();
 
             final String url = server.getURL("/hello_world.html");
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                     () -> { mWarmupManager.maybePreconnectUrlAndSubResources(profile, url); });
             boolean isAcquired = connectionsSemaphore.tryAcquire(5, TimeUnit.SECONDS);
             if (profileType == ProfileType.REGULAR_PROFILE && !isAcquired) {

@@ -33,6 +33,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.BackPressHelper;
@@ -61,7 +62,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -335,7 +335,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         // A change to Preference state hasn't been applied yet. Defer
         // updateSyncStateFromSelectedTypes so it gets the updated state from
         // isChecked().
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncStateFromSelectedTypes);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncStateFromSelectedTypes);
         return true;
     }
 
@@ -349,7 +349,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     public void syncStateChanged() {
         // This is invoked synchronously from SyncService.setSelectedTypes, postpone the
         // update to let updateSyncStateFromSelectedTypes finish saving the state.
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncPreferences);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
     }
 
     /**
@@ -387,7 +387,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                 || (mSyncPaymentsIntegration.isChecked() && mSyncAutofill.isChecked()));
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::updateSyncPreferences);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
     }
 
     /**

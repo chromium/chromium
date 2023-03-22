@@ -50,6 +50,7 @@ import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -79,7 +80,6 @@ import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -488,7 +488,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         onView(withText("page 3")).check(matches(isDisplayed())).perform(ViewActions.longClick());
         onView(withText("page 4")).check(matches(isDisplayed())).perform(ViewActions.longClick());
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
             toolbar.getMenu().performIdentifierAction(R.id.selection_mode_delete_menu_id, 0);
         });

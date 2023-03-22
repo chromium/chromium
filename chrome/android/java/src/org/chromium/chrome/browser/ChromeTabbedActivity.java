@@ -53,6 +53,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -208,7 +209,6 @@ import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -967,30 +967,30 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                     ChromeFeatureList.SPLIT_COMPOSITOR_TASK, "enable_on_tablet",
                                     false))) {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                PostTask.postTask(TaskTraits.UI_DEFAULT,
                         mCallbackController.makeCancelable(this::initializeCompositorContent));
             } else {
                 initializeCompositorContent();
             }
 
             // All this initialization can be expensive so it's split into multiple tasks.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                    mCallbackController.makeCancelable(this::refreshSignIn));
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refreshSignIn));
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::initializeToolbarManager));
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::maybeCreateIncognitoTabSnapshotController));
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::onAccessibilityTabSwitcherModeChanged));
 
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(
                             this::maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver));
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::initJourneyManager));
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     mCallbackController.makeCancelable(this::finishNativeInitialization));
             ChromeAccessibilityUtil.get().addObserver(this);
         }

@@ -25,8 +25,8 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.download.DirectoryOption.DownloadLocationDirectoryType;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -214,7 +214,7 @@ public class DownloadDirectoryProvider {
     public void getAllDirectoriesOptions(Callback<ArrayList<DirectoryOption>> callback) {
         // Use cache value.
         if (!mNeedsUpdate && mDirectoriesReady) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(mDirectoryOptions));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(mDirectoryOptions));
             return;
         }
 

@@ -21,9 +21,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient.ExecutionCallback;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -35,7 +35,7 @@ import java.util.concurrent.Executor;
 public class TrustedWebActivityClientWrappers {
     private static final String TAG = "TWAClient";
     private static final Executor UI_THREAD_EXECUTOR =
-            (Runnable r) -> PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, r);
+            (Runnable r) -> PostTask.postTask(TaskTraits.UI_USER_VISIBLE, r);
 
     /** Wrapper around {@link TrustedWebActivityServiceConnection}. */
     public interface Connection {

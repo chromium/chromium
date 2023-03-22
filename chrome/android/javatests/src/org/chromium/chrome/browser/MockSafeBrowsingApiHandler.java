@@ -9,8 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
     public void startUriLookup(final long callbackId, String uri, int[] threatsOfInterest) {
         final String metadata = getMetadata(uri, threatsOfInterest);
         // clang-format off
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 (Runnable) () -> mObserver.onUrlCheckDone(
                         callbackId, SafeBrowsingResult.SUCCESS, metadata, DEFAULT_CHECK_DELTA_US));
         // clang-format on

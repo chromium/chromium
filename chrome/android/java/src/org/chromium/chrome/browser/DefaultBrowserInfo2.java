@@ -18,7 +18,7 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.HashSet;
 import java.util.List;
@@ -125,15 +125,14 @@ public final class DefaultBrowserInfo2 {
                 }
 
                 final DefaultInfo postInfo = info;
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(postInfo));
+                PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(postInfo));
             } else {
                 if (getStatus() == Status.PENDING) {
                     try {
                         executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     } catch (RejectedExecutionException e) {
                         // Fail silently here since this is not a critical task.
-                        PostTask.postTask(
-                                UiThreadTaskTraits.DEFAULT, () -> callback.onResult(null));
+                        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(null));
                         return;
                     }
                 }

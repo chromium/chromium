@@ -35,7 +35,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -302,7 +302,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                     }
 
                     mState = State.ENABLE_BLUETOOTH_WAITING;
-                    PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
                         onEvent(Event.TIMEOUT_COMPLETE);
                     }, BLE_SCREEN_DELAY_SECS * 1000);
                     break;

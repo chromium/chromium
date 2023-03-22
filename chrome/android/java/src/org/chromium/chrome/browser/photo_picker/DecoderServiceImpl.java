@@ -12,10 +12,10 @@ import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.MainDex;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * A service to accept requests to take image file contents and decode them.
@@ -37,7 +37,7 @@ public class DecoderServiceImpl extends DecoderService.Impl {
         }
 
         // The decoder service relies on PathUtils.
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             PathUtils.setPrivateDataDirectorySuffix(
                     SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
         });

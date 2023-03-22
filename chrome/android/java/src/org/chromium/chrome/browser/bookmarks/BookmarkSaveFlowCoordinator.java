@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
@@ -29,7 +30,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -167,7 +167,7 @@ public class BookmarkSaveFlowCoordinator {
     }
 
     private void setupAutodismiss() {
-        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE, this::close, AUTODISMISS_TIME_MS);
+        PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE, this::close, AUTODISMISS_TIME_MS);
     }
 
     private void destroy() {

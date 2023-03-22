@@ -12,9 +12,9 @@ import org.junit.Assert;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashSet;
@@ -81,7 +81,7 @@ public class Utils {
         final AtomicBoolean accelerated = new AtomicBoolean();
         final CallbackHelper listenerCalled = new CallbackHelper();
 
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 final Dialog dialog = new Dialog(activity);

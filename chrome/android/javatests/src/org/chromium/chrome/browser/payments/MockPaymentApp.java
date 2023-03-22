@@ -10,10 +10,10 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppType;
 import org.chromium.components.payments.SupportedDelegations;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -80,8 +80,8 @@ import java.util.Set;
             Map<String, PaymentDetailsModifier> modifiers, PaymentOptions paymentOptions,
             List<PaymentShippingOption> shippingOptions,
             PaymentApp.InstrumentDetailsCallback callback) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                () -> callback.onInstrumentDetailsError("Not implemented"));
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT, () -> callback.onInstrumentDetailsError("Not implemented"));
     }
 
     @Override

@@ -19,9 +19,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Represents the MessageChannel MessagePort object. Inspired from
@@ -138,7 +138,7 @@ public class AppWebMessagePort implements MessagePort {
         }
         if (isClosed()) return;
         mClosed = true;
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (mNativeAppWebMessagePort == 0L) return;
             AppWebMessagePortJni.get().closeAndDestroy(mNativeAppWebMessagePort);
         });
@@ -165,7 +165,7 @@ public class AppWebMessagePort implements MessagePort {
             throw new IllegalStateException("Port is already closed or transferred");
         }
         mStarted = true;
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (mNativeAppWebMessagePort == 0L) return;
             mMessageHandler =
                     messageCallback == null ? null : new MessageHandler(messageCallback, handler);
@@ -198,7 +198,7 @@ public class AppWebMessagePort implements MessagePort {
             }
         }
         mStarted = true;
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (mNativeAppWebMessagePort == 0L) return;
             AppWebMessagePortJni.get().postMessage(
                     mNativeAppWebMessagePort, messagePayload, sentPorts);
@@ -221,7 +221,7 @@ public class AppWebMessagePort implements MessagePort {
         try {
             if (mNativeAppWebMessagePort == 0L) return;
             Log.d(TAG, "AppWebMessagePort was not closed before finalization");
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 if (mNativeAppWebMessagePort == 0L) return;
                 mClosed = true;
                 AppWebMessagePortJni.get().closeAndDestroy(mNativeAppWebMessagePort);

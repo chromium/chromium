@@ -19,7 +19,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +115,7 @@ public class AwContentsStatics {
         // API.
         Callback<Boolean> wrapperCallback = b -> {
             if (callback != null) {
-                PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, callback.bind(b));
+                PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, callback.bind(b));
             }
         };
 

@@ -12,11 +12,11 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabDataObserver;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -142,7 +142,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
                 } else {
                     if (mPendingLowPrioritySave) return;
                     mPendingLowPrioritySave = true;
-                    PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
                         assert mPendingLowPrioritySave;
                         if (mDirtinessState == DirtinessState.UNTIDY) {
                             updateIsDirty(DirtinessState.DIRTY);

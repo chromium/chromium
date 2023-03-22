@@ -18,9 +18,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -214,6 +214,6 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
         if (mPendingRunnableOnInputConnection == null) return;
         Runnable runnable = mPendingRunnableOnInputConnection;
         mPendingRunnableOnInputConnection = null;
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, runnable);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
     }
 }

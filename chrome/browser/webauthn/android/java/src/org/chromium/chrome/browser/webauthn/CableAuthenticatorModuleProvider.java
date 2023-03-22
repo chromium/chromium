@@ -34,11 +34,11 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.modules.cablev2_authenticator.Cablev2AuthenticatorModule;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Provides a UI that attempts to install the caBLEv2 Authenticator module. If already installed, or
@@ -100,7 +100,7 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
                     // If it happens synchronously then `onCreateView` hasn't
                     // completed and there's no `View` to update. Thus
                     // post a task to ensure an asynchronous context.
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                         final ViewGroup v = (ViewGroup) getView();
                         v.removeAllViews();
                         v.addView(mErrorView);

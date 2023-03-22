@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 /**
  * A bound service responsible for receiving change payment method, shipping option, and shipping
@@ -28,7 +28,7 @@ public class PaymentDetailsUpdateService extends Service {
                 public void changePaymentMethod(Bundle paymentHandlerMethodData,
                         IPaymentDetailsUpdateServiceCallback callback) {
                     int callingUid = Binder.getCallingUid();
-                    PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                         if (!PaymentDetailsUpdateServiceHelper.getInstance().isCallerAuthorized(
                                     callingUid)) {
                             return;
@@ -41,7 +41,7 @@ public class PaymentDetailsUpdateService extends Service {
                 public void changeShippingOption(
                         String shippingOptionId, IPaymentDetailsUpdateServiceCallback callback) {
                     int callingUid = Binder.getCallingUid();
-                    PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                         if (!PaymentDetailsUpdateServiceHelper.getInstance().isCallerAuthorized(
                                     callingUid)) {
                             return;
@@ -54,7 +54,7 @@ public class PaymentDetailsUpdateService extends Service {
                 public void changeShippingAddress(
                         Bundle shippingAddress, IPaymentDetailsUpdateServiceCallback callback) {
                     int callingUid = Binder.getCallingUid();
-                    PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                         if (!PaymentDetailsUpdateServiceHelper.getInstance().isCallerAuthorized(
                                     callingUid)) {
                             return;

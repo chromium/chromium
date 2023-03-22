@@ -21,6 +21,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,7 +38,6 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.ref.WeakReference;
@@ -289,7 +289,7 @@ public class TileRenderer {
             // Problem is, the TileView is likely not attached yet and the update would not be
             // properly reflected. Yield.
             final Runnable iconCallback = setupDelegate.createIconLoadCallback(tile);
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 setTileIconFromRes(tile, R.drawable.ic_suggestion_magnifier);
                 if (iconCallback != null) iconCallback.run();
             });

@@ -17,8 +17,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -110,18 +110,17 @@ public abstract class PersistedTabData implements UserData {
                 tabDataCreator.onResult((tabData) -> {
                     if (tab.isDestroyed()) {
                         PostTask.postTask(
-                                UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+                                TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
                         return;
                     }
                     updateLastUpdatedMs(tabData);
                     if (tabData != null) {
                         setUserData(tab, clazz, tabData);
                     }
-                    PostTask.postTask(
-                            UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(tabData); });
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(tabData); });
                 });
             } else {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                PostTask.postTask(TaskTraits.UI_DEFAULT,
                         () -> { callback.onResult(persistedTabDataFromTab); });
             }
             return;
@@ -186,7 +185,7 @@ public abstract class PersistedTabData implements UserData {
         }
         for (Callback cachedCallback : sCachedCallbacks.get(key)) {
             PostTask.postTask(
-                    UiThreadTaskTraits.DEFAULT, () -> cachedCallback.onResult(persistedTabData));
+                    TaskTraits.UI_DEFAULT, () -> cachedCallback.onResult(persistedTabData));
         }
         sCachedCallbacks.remove(key);
     }

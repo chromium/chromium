@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeNativeBackgroundTaskDelegate;
@@ -34,7 +35,6 @@ import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.components.offlinepages.PrefetchBackgroundTaskRescheduleType;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;
@@ -89,7 +89,7 @@ public class PrefetchBackgroundTaskTest {
         }
 
         public void setTaskRescheduling(int rescheduleType) {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                     () -> { setTaskReschedulingForTesting(rescheduleType); });
         }
 
@@ -111,7 +111,7 @@ public class PrefetchBackgroundTaskTest {
         @Override
         public boolean schedule(final Context context, final TaskInfo taskInfo) {
             mAddCount++;
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                 TestPrefetchBackgroundTask task = new TestPrefetchBackgroundTask(taskInfo);
                 mTasks.put(taskInfo.getTaskId(), task);
                 task.startTask(context, new TaskFinishedCallback() {

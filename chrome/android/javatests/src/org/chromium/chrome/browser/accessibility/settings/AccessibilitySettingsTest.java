@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,7 +41,6 @@ import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.TextScalePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
 
@@ -244,13 +244,13 @@ public class AccessibilitySettingsTest {
 
     private static void userSetTextScale(final AccessibilitySettings accessibilitySettings,
             final TextScalePreference textScalePref, final float textScale) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> accessibilitySettings.onPreferenceChange(textScalePref, textScale));
     }
 
     private static void userSetForceEnableZoom(final AccessibilitySettings accessibilitySettings,
             final ChromeSwitchPreference forceEnableZoomPref, final boolean enabled) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> accessibilitySettings.onPreferenceChange(forceEnableZoomPref, enabled));
     }
 }

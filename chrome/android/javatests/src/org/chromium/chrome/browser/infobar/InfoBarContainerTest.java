@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,7 +44,6 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -127,7 +127,7 @@ public class InfoBarContainerTest {
         int previousCount = infoBars.size();
 
         final TestListener testListener = new TestListener();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             SimpleConfirmInfoBarBuilder.create(
                     sActivityTestRule.getActivity().getActivityTab().getWebContents(), testListener,
                     InfoBarIdentifier.TEST_INFOBAR, null, 0, MESSAGE_TEXT, null, null, null,

@@ -20,7 +20,7 @@ import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.List;
 
@@ -65,14 +65,14 @@ public class SharedStatics {
 
     public void clearClientCertPreferences(Runnable onCleared) {
         // clang-format off
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () ->
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () ->
                 AwContentsStatics.clearClientCertPreferences(onCleared));
         // clang-format on
     }
 
     public void freeMemoryForTests() {
         if (ActivityManager.isRunningInTestHarness()) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 // This variable is needed to prevent weird formatting by "git cl format".
                 MemoryPressureMonitor pressureMonitor = MemoryPressureMonitor.INSTANCE;
                 pressureMonitor.notifyPressure(MemoryPressureLevel.CRITICAL);
@@ -96,14 +96,14 @@ public class SharedStatics {
      */
     public void initSafeBrowsing(Context context, Callback<Boolean> callback) {
         // clang-format off
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> AwContentsStatics.initSafeBrowsing(context, callback));
         // clang-format on
     }
 
     public void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
         // clang-format off
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> AwContentsStatics.setSafeBrowsingAllowlist(urls, callback));
         // clang-format on
     }
@@ -115,8 +115,8 @@ public class SharedStatics {
      * to users.
      */
     public Uri getSafeBrowsingPrivacyPolicyUrl() {
-        return PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
-                () -> AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl());
+        return PostTask.runSynchronously(
+                TaskTraits.UI_DEFAULT, () -> AwContentsStatics.getSafeBrowsingPrivacyPolicyUrl());
     }
 
     public boolean isMultiProcessEnabled() {

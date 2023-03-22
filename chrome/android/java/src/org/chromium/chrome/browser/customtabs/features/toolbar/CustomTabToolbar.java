@@ -52,6 +52,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
@@ -88,7 +89,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.UiUtils;
@@ -836,7 +836,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 if (!wasShowingUrl) setUrlBarHidden(true);
                 runAfterBrandingRunnables();
             });
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, hideBranding, BRANDING_DELAY_MS);
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, hideBranding, BRANDING_DELAY_MS);
         }
 
         @Override
@@ -879,7 +879,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mAnimDelegate.setUseRotationSecurityButtonTransition(false);
 
             int token = mBrowserControlsVisibilityDelegate.showControlsPersistent();
-            PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
+            PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE,
                     ()
                             -> mBrowserControlsVisibilityDelegate.releasePersistentShowingToken(
                                     token),
@@ -1174,7 +1174,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     && !title.equals(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)) {
                 // Delay the title animation until security icon animation finishes.
                 // If this is updated after branding, we don't need to wait.
-                PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, mTitleAnimationStarter,
+                PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mTitleAnimationStarter,
                         mBrandingStarted ? 0 : TITLE_ANIM_DELAY_MS);
             }
 

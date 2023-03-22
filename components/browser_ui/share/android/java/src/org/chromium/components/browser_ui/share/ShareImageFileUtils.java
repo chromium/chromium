@@ -35,7 +35,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
@@ -316,7 +315,7 @@ public class ShareImageFileUtils {
             OnImageSaveListener listener, FileOutputStreamWriter writer, boolean isTemporary,
             String fileExtension) {
         Callback<Uri> saveImageCallback = (Uri uri) -> {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 if (uri == null) {
                     listener.onImageSaveError(fileName);
                     return;

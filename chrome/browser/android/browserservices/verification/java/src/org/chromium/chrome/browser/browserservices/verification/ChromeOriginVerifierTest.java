@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -25,7 +26,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -105,7 +105,7 @@ public class ChromeOriginVerifierTest {
     @Test
     @SmallTest
     public void testOnlyHttpsAllowed() throws InterruptedException {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postTask(TaskTraits.UI_DEFAULT,
                 ()
                         -> mHandleAllUrlsVerifier.start(
                                 new TestOriginVerificationListener(), mHttpOrigin));
@@ -117,11 +117,11 @@ public class ChromeOriginVerifierTest {
     @Test
     @SmallTest
     public void testMultipleRelationships() throws Exception {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postTask(TaskTraits.UI_DEFAULT,
                 ()
                         -> ChromeOriginVerifier.addVerificationOverride(PACKAGE_NAME, mHttpsOrigin,
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postTask(TaskTraits.UI_DEFAULT,
                 ()
                         -> mUseAsOriginVerifier.start(
                                 new TestOriginVerificationListener(), mHttpsOrigin));
@@ -150,7 +150,7 @@ public class ChromeOriginVerifierTest {
         ChromeOriginVerifier verifier = mFactory.create(
                 PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null, mExternalAuthUtils);
 
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postTask(TaskTraits.UI_DEFAULT,
                 () -> verifier.start(new TestOriginVerificationListener(), mHttpsOrigin));
         Assert.assertTrue(
                 mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
@@ -158,7 +158,7 @@ public class ChromeOriginVerifierTest {
 
         // Try again, but this time allowlist the package/origin.
         mExternalAuthUtils.addToAllowlist(PACKAGE_NAME, mHttpsOrigin);
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postTask(TaskTraits.UI_DEFAULT,
                 () -> verifier.start(new TestOriginVerificationListener(), mHttpsOrigin));
         Assert.assertTrue(
                 mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));

@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -33,7 +34,6 @@ import org.chromium.content.browser.input.ImeTestUtils;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -89,8 +89,7 @@ public class ContentTextSelectionTest {
                 result = new SelectionClient.Result();
             }
 
-            PostTask.postTask(
-                    UiThreadTaskTraits.DEFAULT, () -> mResultCallback.onClassified(result));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mResultCallback.onClassified(result));
             return true;
         }
 

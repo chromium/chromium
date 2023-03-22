@@ -26,6 +26,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -40,7 +41,6 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
@@ -184,9 +184,8 @@ public class WebApkIntegrationTest {
                 res.getIdentifier("notification_badge", "drawable", "org.chromium.webapk.test");
 
         CallbackHelper callbackHelper = new CallbackHelper();
-        WebApkServiceConnectionManager connectionManager =
-                new WebApkServiceConnectionManager(UiThreadTaskTraits.DEFAULT,
-                        WebApkServiceClient.CATEGORY_WEBAPK_API, null /* action */);
+        WebApkServiceConnectionManager connectionManager = new WebApkServiceConnectionManager(
+                TaskTraits.UI_DEFAULT, WebApkServiceClient.CATEGORY_WEBAPK_API, null /* action */);
         connectionManager.connect(InstrumentationRegistry.getTargetContext(),
                 "org.chromium.webapk.test",
                 new WebApkServiceConnectionManager.ConnectionCallback() {

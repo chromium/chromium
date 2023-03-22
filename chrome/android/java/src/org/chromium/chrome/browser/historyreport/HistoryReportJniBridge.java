@@ -13,7 +13,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.io.PrintWriter;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,7 +36,7 @@ public class HistoryReportJniBridge implements SearchJniBridge {
         if (observer == null) return false;
         if (mNativeHistoryReportJniBridge != 0) return true;
         mDataChangeObserver = observer;
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             mNativeHistoryReportJniBridge =
                     HistoryReportJniBridgeJni.get().init(HistoryReportJniBridge.this);
         });

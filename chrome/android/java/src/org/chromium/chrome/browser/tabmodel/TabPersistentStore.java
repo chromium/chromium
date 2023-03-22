@@ -53,7 +53,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 import java.io.BufferedInputStream;
@@ -1468,7 +1467,7 @@ public class TabPersistentStore {
         for (TabPersistentStoreObserver observer : mObservers) {
             // mergeState() starts an AsyncTask to call this and this calls
             // onTabStateInitialized which should be called from the UI thread.
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> observer.onStateLoaded());
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> observer.onStateLoaded());
         }
     }
 
@@ -1484,7 +1483,7 @@ public class TabPersistentStore {
             // TabPersistentStore and delete the metadata file for the other instance, then notify
             // observers.
             if (mPersistencePolicy.isMergeInProgress()) {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                     @Override
                     public void run() {
                         // This eventually calls serializeTabModelSelector() which much be called

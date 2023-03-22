@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.download;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.ArrayList;
 
@@ -24,6 +24,6 @@ public class TestDownloadDirectoryProvider extends DownloadDirectoryProvider {
     // DownloadDirectoryProvider implementation.
     @Override
     public void getAllDirectoriesOptions(Callback<ArrayList<DirectoryOption>> callback) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(mDirectoryOptions));
+        PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(mDirectoryOptions));
     }
 }

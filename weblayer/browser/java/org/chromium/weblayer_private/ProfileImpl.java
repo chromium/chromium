@@ -18,10 +18,10 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowsingDataType;
 import org.chromium.weblayer_private.interfaces.IBrowser;
@@ -262,7 +262,7 @@ public final class ProfileImpl
 
         // onBrowserDestroyed() is called from the destructor of Browser. This is a rather fragile
         // time to destroy the profile. Delay.
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             if (!mBeingDeleted && canDestroyNow()) {
                 destroyAndDeleteDataFromDiskImpl(null);
             }

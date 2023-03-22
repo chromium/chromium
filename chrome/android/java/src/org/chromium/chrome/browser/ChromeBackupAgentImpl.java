@@ -21,6 +21,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
@@ -32,7 +33,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentProcessInfo;
 
 import java.io.FileInputStream;
@@ -182,7 +182,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final AtomicReference<CoreAccountInfo> syncAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
-        Boolean nativePrefsRead = PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        Boolean nativePrefsRead = PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             // Start the browser if necessary, so that Chrome can access the native
             // preferences. Although Chrome requests the backup, it doesn't happen
             // immediately, so by the time it does Chrome may not be running.
@@ -317,7 +317,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // if it were called from the UI thread the broadcast would not be received until after it
         // exited.
         final CountDownLatch latch = new CountDownLatch(1);
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             // Chrome library loading depends on PathUtils.
             PathUtils.setPrivateDataDirectorySuffix(
                     SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
@@ -336,7 +336,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
         // Chrome has to be running before it can check if the account exists. Because the native
         // library is already loaded Chrome startup should be fast.
-        boolean browserStarted = PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        boolean browserStarted = PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             // Start the browser if necessary.
             return initializeBrowser();
         });
@@ -354,7 +354,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         }
 
         // Restore the native preferences on the UI thread
-        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             ArrayList<String> nativeBackupNames = new ArrayList<>();
             boolean[] nativeBackupValues = new boolean[backupNames.size()];
             int count = 0;
@@ -416,7 +416,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     }
 
     private boolean accountExistsOnDevice(String accountName) {
-        return PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+        return PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
             List<Account> accounts = AccountUtils.getAccountsIfFulfilledOrEmpty(
                     AccountManagerFacadeProvider.getInstance().getAccounts());
             return accountName != null

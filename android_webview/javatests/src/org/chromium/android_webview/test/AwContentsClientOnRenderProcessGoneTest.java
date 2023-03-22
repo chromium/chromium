@@ -21,10 +21,10 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
@@ -85,7 +85,7 @@ public class AwContentsClientOnRenderProcessGoneTest {
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         // Terminate the renderer.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> terminator.terminate());
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> terminator.terminate());
 
         // Assert that onRenderProcessGone is called once.
         int callCount = helper.getCallCount();

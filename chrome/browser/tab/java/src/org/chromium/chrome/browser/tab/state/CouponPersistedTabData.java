@@ -17,6 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,7 +27,6 @@ import org.chromium.chrome.browser.tab.proto.CouponPersistedTabData.CouponPersis
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.nio.ByteBuffer;
@@ -303,7 +303,7 @@ public class CouponPersistedTabData extends PersistedTabData {
      */
     public static void from(Tab tab, Callback<CouponPersistedTabData> callback) {
         if (tab == null || tab.isDestroyed() || tab.isIncognito() || tab.isCustomTab()) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> { callback.onResult(null); });
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> { callback.onResult(null); });
             return;
         }
         PersistedTabData.from(tab,

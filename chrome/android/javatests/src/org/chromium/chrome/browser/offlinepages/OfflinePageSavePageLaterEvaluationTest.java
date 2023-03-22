@@ -22,6 +22,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Manual;
 import org.chromium.base.test.util.TimeoutScale;
@@ -32,7 +33,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.offlinepages.BackgroundSavePageResult;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -132,7 +132,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
                         Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         final Semaphore mClearingSemaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             assert mBridge != null;
             mBridge.getRequestsInQueue(new Callback<SavePageRequest[]>() {
                 @Override
@@ -226,7 +226,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
     private void initializeBridgeForProfile(final boolean useTestingScheduler)
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             // TODO (https://crbug.com/714249):  Add incognito mode tests to check that
             // OfflinePageEvaluationBridge is null for incognito.
             Profile profile = Profile.getLastUsedRegularProfile();
@@ -318,7 +318,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
      * @param namespace The namespace this request belongs to.
      */
     private void savePageLater(final String url, final String namespace) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> { mBridge.savePageLater(url, namespace, mIsUserRequested); });
     }
 

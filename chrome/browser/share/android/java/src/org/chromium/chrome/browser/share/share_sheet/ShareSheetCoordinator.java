@@ -21,6 +21,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
@@ -43,7 +44,6 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
@@ -328,7 +328,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             Set<Integer> contentTypes, boolean saveLastUsed,
             Callback<List<PropertyModel>> callback) {
         if (params == null) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(null));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(null));
             return;
         }
 

@@ -19,9 +19,9 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
@@ -212,7 +212,7 @@ public class ClientOnPageStartedTest {
         int shouldOverrideUrlLoadingCount =
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mAwContents.evaluateJavaScript(
                     "window.location.assign(\"" + downloadUrl + "\");", null);
         });
@@ -248,7 +248,7 @@ public class ClientOnPageStartedTest {
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
         int hangingRequestCount = mHangingRequestCallbackHelper.getCallCount();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mAwContents.evaluateJavaScript(
                     "window.location.assign(\"" + mHangingUrl + "\");", null);
         });
@@ -319,7 +319,7 @@ public class ClientOnPageStartedTest {
                 mContentsClient.getShouldOverrideUrlLoadingHelper().getCallCount();
         int onLoadResourceCount = mContentsClient.getOnLoadResourceHelper().getCallCount();
         int hangingRequestCount = mHangingRequestCallbackHelper.getCallCount();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mAwContents.evaluateJavaScript(
                     "window.location.assign(\"" + mRedirectToHangingUrl + "\");", null);
         });

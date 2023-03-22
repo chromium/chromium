@@ -25,6 +25,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.VerificationResult;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,7 +34,6 @@ import org.chromium.components.content_relationship_verification.Relationship;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -120,8 +120,7 @@ public class ChromeOriginVerifier extends OriginVerifier {
                 ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION);
         if (!TextUtils.isEmpty(disableDalUrl) && origin.equals(Origin.create(disableDalUrl))) {
             Log.i(TAG, "Verification skipped for %s due to command line flag.", origin);
-            PostTask.runOrPostTask(
-                    UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, true, null));
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, new VerifiedCallback(origin, true, null));
             return;
         }
         validate(origin);

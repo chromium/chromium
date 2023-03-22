@@ -24,7 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.concurrent.Executor;
 
@@ -100,7 +100,7 @@ class DeviceAuthenticatorBridge {
             return;
         }
         mCancellationSignal = new CancellationSignal();
-        Executor callbackExecutor = (r) -> PostTask.postTask(UiThreadTaskTraits.DEFAULT, r);
+        Executor callbackExecutor = (r) -> PostTask.postTask(TaskTraits.UI_DEFAULT, r);
 
         mBiometricPrompt.authenticate(mCancellationSignal, callbackExecutor,
                 new BiometricPrompt.AuthenticationCallback() {

@@ -16,9 +16,9 @@ import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -162,7 +162,7 @@ public class ThumbnailProviderImpl implements ThumbnailProvider, ThumbnailStorag
     }
 
     private void processQueue() {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, this::processNextRequest);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, this::processNextRequest);
     }
 
     private String getKey(String contentId, int bitmapSizePx) {

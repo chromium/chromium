@@ -97,7 +97,7 @@ public class PostTask {
      * posts it.
      *
      * It should be executed only for tasks with traits corresponding to
-     * executors backed by a SingleThreadTaskRunner, like UiThreadTaskTraits.
+     * executors backed by a SingleThreadTaskRunner, like TaskTraits.UI_*.
      *
      * Use this only for trivial tasks as it ignores task priorities.
      *
@@ -126,7 +126,7 @@ public class PostTask {
      * posts it and blocks until the task finishes.
      *
      * It should be executed only for tasks with traits corresponding to
-     * executors backed by a SingleThreadTaskRunner, like UiThreadTaskTraits.
+     * executors backed by a SingleThreadTaskRunner, like TaskTraits.UI_*.
      *
      * Use this only for trivial tasks as it ignores task priorities.
      *
@@ -150,7 +150,7 @@ public class PostTask {
      * posts it and blocks until the task finishes.
      *
      * It should be executed only for tasks with traits corresponding to
-     * executors backed by a SingleThreadTaskRunner, like UiThreadTaskTraits.
+     * executors backed by a SingleThreadTaskRunner, like TaskTraits.UI_*.
      *
      * Use this only for trivial tasks as it ignores task priorities.
      *

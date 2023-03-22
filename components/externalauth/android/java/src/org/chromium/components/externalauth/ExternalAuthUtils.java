@@ -23,8 +23,8 @@ import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.gms.ChromiumPlayServicesAvailability;
 
 /**
@@ -200,7 +200,7 @@ public class ExternalAuthUtils {
                     errorHandler.handleError(context, resultCode);
                 }
             };
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, errorHandlerTask);
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, errorHandlerTask);
         }
         return false;
     }

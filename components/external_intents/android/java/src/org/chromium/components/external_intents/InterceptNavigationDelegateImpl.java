@@ -15,6 +15,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -23,7 +24,6 @@ import org.chromium.components.navigation_interception.InterceptNavigationDelega
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ConsoleMessageLevel;
@@ -407,7 +407,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         if (shouldCloseTab) {
             // Defer closing a tab (and the associated WebContents) until the navigation
             // request and the throttle finishes the job with it.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                 @Override
                 public void run() {
                     // Tab was destroyed before this task ran.
@@ -473,7 +473,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // Loading URL will start a new navigation which cancels the current one
         // that this clobbering is being done for. It leads to UAF. To avoid that,
         // we're loading URL asynchronously. See https://crbug.com/732260.
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 mClient.loadUrlIfPossible(loadUrlParams);

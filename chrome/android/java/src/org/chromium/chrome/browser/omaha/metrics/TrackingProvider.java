@@ -12,7 +12,6 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omaha.OmahaBase;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /** A helper class to manage retrieving and storing a persisted instance of {@link Tracking}. */
 class TrackingProvider {
@@ -42,7 +41,7 @@ class TrackingProvider {
             }
 
             final Tracking finalState = state;
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> promise.fulfill(finalState));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> promise.fulfill(finalState));
         });
 
         return promise;

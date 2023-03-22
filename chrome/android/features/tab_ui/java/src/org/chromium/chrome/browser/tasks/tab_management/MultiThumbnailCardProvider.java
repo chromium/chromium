@@ -19,6 +19,7 @@ import android.util.Size;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -28,7 +29,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -263,8 +263,8 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
         private void drawFaviconThenMaybeSendBack(Drawable favicon, int index) {
             drawFaviconDrawableOnCanvasWithFrame(favicon, index);
             if (mThumbnailsToFetch.decrementAndGet() == 0) {
-                PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE,
-                        mFinalCallback.bind(mMultiThumbnailBitmap));
+                PostTask.postTask(
+                        TaskTraits.UI_USER_VISIBLE, mFinalCallback.bind(mMultiThumbnailBitmap));
             }
         }
 

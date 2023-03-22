@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -24,7 +25,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.background.UpdateRequestResult;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 
@@ -55,7 +55,7 @@ public class RequestCoordinatorBridgeTest {
 
     private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mRequestCoordinatorBridge = RequestCoordinatorBridge.getForProfile(mProfile);
             semaphore.release();
         });
@@ -171,7 +171,7 @@ public class RequestCoordinatorBridgeTest {
     private void savePageLater(final String url, final String namespace)
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mRequestCoordinatorBridge.savePageLater(url, namespace, true /* userRequested */,
                     new OfflinePageOrigin(), new Callback<Integer>() {
                         @Override
@@ -190,7 +190,7 @@ public class RequestCoordinatorBridgeTest {
         final AtomicReference<List<RequestCoordinatorBridge.RequestRemovedResult>> ref =
                 new AtomicReference<>();
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mRequestCoordinatorBridge.removeRequestsFromQueue(requestsToRemove,
                     new Callback<List<RequestCoordinatorBridge.RequestRemovedResult>>() {
                         @Override

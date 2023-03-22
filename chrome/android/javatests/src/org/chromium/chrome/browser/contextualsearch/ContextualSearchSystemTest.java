@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
@@ -34,7 +35,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -120,7 +120,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         Assert.assertEquals(SEARCH_NODE_TERM, getSelectedText());
         waitForPanelToPeek();
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             ChromeTabUtils.simulateRendererKilledForTesting(
                     sActivityTestRule.getActivity().getActivityTab());
         });
@@ -157,7 +157,7 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
         Assert.assertEquals(SEARCH_NODE_TERM, getSelectedText());
         waitForPanelToPeek();
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> { ChromeTabUtils.simulateRendererKilledForTesting(tab2); });
 
         waitForPanelToPeek();

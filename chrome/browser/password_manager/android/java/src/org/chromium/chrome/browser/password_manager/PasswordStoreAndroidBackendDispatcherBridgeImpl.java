@@ -11,6 +11,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -22,7 +23,6 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Optional;
 
@@ -108,7 +108,7 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
         // - by the GMS Core on the UI thread
         // - by the password store downstream backend on the operation thread
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> mBackendReceiverBridge.handleAndroidBackendException(jobId, exception));
     }
 
@@ -122,7 +122,7 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     // Operation is reposted on the default UI sequence for execution.
     @CalledByNative
     private void showErrorUi() {
-        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> showErrorUiOnMainThread());
+        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> showErrorUiOnMainThread());
     }
 
     private void showErrorUiOnMainThread() {

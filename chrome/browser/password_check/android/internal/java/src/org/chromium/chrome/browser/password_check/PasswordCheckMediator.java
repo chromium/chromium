@@ -30,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -159,7 +159,7 @@ class PasswordCheckMediator
 
         if (shouldDelayStatusChange(status, currentTime)) {
             mLastStatusUpdate += sStatusUpdateDelayMillis;
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                     () -> changePasswordCheckStatus(status), mLastStatusUpdate - currentTime);
         } else {
             mLastStatusUpdate = currentTime;

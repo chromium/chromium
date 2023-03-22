@@ -36,6 +36,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -56,7 +57,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -212,7 +212,7 @@ public class CustomTabActivityAppMenuTest {
         IntentUtils.addTrustedIntentExtras(intent);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mCustomTabActivityTestRule.getActivity().onMenuOrKeyboardAction(R.id.show_menu, false);
             Assert.assertNull(mCustomTabActivityTestRule.getAppMenuCoordinator());
         });
@@ -383,7 +383,7 @@ public class CustomTabActivityAppMenuTest {
         getCustomTabIntentDataProvider().setPendingIntentOnFinishedForTesting(onFinished);
 
         openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             int itemId = ((CustomTabAppMenuPropertiesDelegate)
                                   AppMenuTestSupport.getAppMenuPropertiesDelegate(
                                           mCustomTabActivityTestRule.getAppMenuCoordinator()))
@@ -444,7 +444,7 @@ public class CustomTabActivityAppMenuTest {
         final Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
         openAppMenuAndAssertMenuShown();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                     mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.open_in_browser_id));
             mCustomTabActivityTestRule.getActivity().onMenuOrKeyboardAction(

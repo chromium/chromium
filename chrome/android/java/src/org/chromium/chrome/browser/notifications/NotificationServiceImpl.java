@@ -15,10 +15,10 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.TaskIds;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * The Notification service receives intents fired as responses to user actions issued on Android
@@ -73,8 +73,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             return;
         }
 
-        PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { dispatchIntentOnUIThread(intent); });
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { dispatchIntentOnUIThread(intent); });
     }
 
     /**

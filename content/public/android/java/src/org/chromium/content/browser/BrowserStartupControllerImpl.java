@@ -23,10 +23,10 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.content.app.ContentMain;
 import org.chromium.content.browser.ServicificationStartupUma.ServicificationStartup;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -132,7 +132,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         if (BuildInfo.isDebugAndroid() && !ContextUtils.isSdkSandboxProcess()) {
             // Only set up the tracing broadcast receiver on debug builds of the OS and
             // non-SdkSandbox process. Normal tracing should use the DevTools API.
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                 @Override
                 public void run() {
                     addStartupCompletedObserver(new StartupCallback() {
@@ -412,12 +412,11 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
     // Post a task to tell the callbacks that startup failed. Since the execution clears the
     // callback lists, it is safe to call this more than once.
     private void enqueueCallbackExecutionOnStartupFailure() {
-        PostTask.postTask(
-                UiThreadTaskTraits.DEFAULT, () -> executeEnqueuedCallbacks(STARTUP_FAILURE));
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> executeEnqueuedCallbacks(STARTUP_FAILURE));
     }
 
     private void postStartupCompleted(final StartupCallback callback) {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 if (mStartupSuccess) {
@@ -458,7 +457,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         }
 
         if (deferrableTask != null) {
-            PostTask.postTask(UiThreadTaskTraits.USER_BLOCKING, deferrableTask);
+            PostTask.postTask(TaskTraits.UI_USER_BLOCKING, deferrableTask);
         }
     }
 

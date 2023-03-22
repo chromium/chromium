@@ -31,6 +31,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -40,7 +41,6 @@ import org.chromium.components.content_relationship_verification.OriginVerifier.
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.installedapp.InstalledAppProviderImpl;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
@@ -546,8 +546,8 @@ class ClientManager {
         params.originVerifier = mOriginVerifierFactory.create(params.getPackageName(), relation,
                 /* webContents= */ null, /* externalAuthUtils= */ null);
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> { params.originVerifier.start(listener, origin); });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> { params.originVerifier.start(listener, origin); });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
                 && mInstalledAppProviderWrapper.isAppInstalledAndAssociatedWithOrigin(
                         params.getPackageName(), origin)) {

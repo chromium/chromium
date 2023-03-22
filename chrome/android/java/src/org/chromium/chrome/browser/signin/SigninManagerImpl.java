@@ -22,6 +22,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
@@ -46,7 +47,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SigninReason;
 import org.chromium.components.signin.metrics.SignoutDelete;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -231,7 +231,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     private void notifySignInAllowedChanged() {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             for (SignInStateObserver observer : mSignInStateObservers) {
                 observer.onSignInAllowedChanged();
             }
@@ -239,7 +239,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     private void notifySignOutAllowedChanged() {
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             for (SignInStateObserver observer : mSignInStateObservers) {
                 observer.onSignOutAllowedChanged();
             }
@@ -385,7 +385,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
             mCallbacksWaitingForPendingOperation.add(runnable);
             return;
         }
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, runnable);
+        PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
     }
 
     /**
@@ -409,7 +409,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         while (!mCallbacksWaitingForPendingOperation.isEmpty()) {
             if (isOperationInProgress()) return;
             Runnable callback = mCallbacksWaitingForPendingOperation.remove(0);
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback);
+            PostTask.postTask(TaskTraits.UI_DEFAULT, callback);
         }
     }
 

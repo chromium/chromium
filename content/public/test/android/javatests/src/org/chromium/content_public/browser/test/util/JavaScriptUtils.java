@@ -8,7 +8,7 @@ import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 
@@ -45,8 +45,8 @@ public class JavaScriptUtils {
         Assert.assertFalse("Executing JavaScript should be done from the test thread, "
                         + " not the UI thread",
                 ThreadUtils.runningOnUiThread());
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> helper.evaluateJavaScriptForTests(webContents, code));
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> helper.evaluateJavaScriptForTests(webContents, code));
         helper.waitUntilHasValue(timeout, timeoutUnits);
         Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", helper.hasValue());
         return helper.getJsonResultAndClear();
@@ -78,7 +78,7 @@ public class JavaScriptUtils {
         Assert.assertFalse("Executing JavaScript should be done from the test thread, "
                         + " not the UI thread",
                 ThreadUtils.runningOnUiThread());
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> helper.evaluateJavaScriptWithUserGestureForTests(webContents, code));
         helper.waitUntilHasValue(timeout, timeoutUnits);
         Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", helper.hasValue());
@@ -115,7 +115,7 @@ public class JavaScriptUtils {
      * Executes the given snippet of JavaScript code but does not wait for the result.
      */
     public static void executeJavaScript(final WebContents webContents, final String code) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> webContents.evaluateJavaScriptForTests(code, null));
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> webContents.evaluateJavaScriptForTests(code, null));
     }
 }

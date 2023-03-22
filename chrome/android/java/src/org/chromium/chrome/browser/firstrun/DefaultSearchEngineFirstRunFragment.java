@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,7 +23,6 @@ import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelpe
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /** A {@link Fragment} that presents a set of search engines for the user to choose from. */
 public class DefaultSearchEngineFirstRunFragment extends Fragment implements FirstRunFragment {
@@ -73,7 +73,7 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
 
         if (isVisibleToUser) {
             if (mSearchEnginePromoDialogType == SearchEnginePromoType.DONT_SHOW) {
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                     @Override
                     public void run() {
                         getPageDelegate().advanceToNextPage();

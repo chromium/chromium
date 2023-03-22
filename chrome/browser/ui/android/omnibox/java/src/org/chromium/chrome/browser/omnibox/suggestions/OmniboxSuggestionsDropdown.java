@@ -28,6 +28,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
@@ -35,7 +36,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.annotation.Retention;
@@ -456,7 +456,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                     if (mInitialResizeState == InitialResizeState.IGNORING_SHRINKING) return;
 
                     mInitialResizeState = InitialResizeState.IGNORING_SHRINKING;
-                    PostTask.postDelayedTask(UiThreadTaskTraits.USER_BLOCKING, () -> {
+                    PostTask.postDelayedTask(TaskTraits.UI_USER_BLOCKING, () -> {
                         if (mInitialResizeState != InitialResizeState.IGNORING_SHRINKING) return;
                         ViewUtils.requestLayout(this, "OmniboxSuggestionsDropdown.onMeasure");
                         mInitialResizeState = InitialResizeState.HANDLED_INITIAL_SIZING;
@@ -500,7 +500,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         mListViewMaxHeight = availableViewportHeight;
         if (mHeightChangeListener != null) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 // Detect if there was another change since this task posted.
                 // This indicates a subsequent task being posted too.
                 if (mListViewMaxHeight != availableViewportHeight) return;
@@ -595,7 +595,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // does trigger a second layout pass, measurement caches aren't properly reset,
             // resulting in stale sizing. Absent a way to abort the current pass and start over the
             // simplest solution is to wait until the current pass is over to request relayout.
-            PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+            PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> {
                 ViewUtils.requestLayout(OmniboxSuggestionsDropdown.this,
                         "OmniboxSuggestionsDropdown.onOmniboxAlignmentChanged");
             });
@@ -618,7 +618,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     public void emitWindowContentChanged() {
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
             announceForAccessibility(getContext().getString(
                     R.string.accessibility_omnibox_suggested_items, mAdapter.getItemCount()));
         }, LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS);

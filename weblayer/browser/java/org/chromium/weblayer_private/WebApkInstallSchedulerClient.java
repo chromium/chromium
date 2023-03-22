@@ -14,10 +14,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.webapk_install.IOnFinishInstallCallback;
 import org.chromium.components.webapk_install.IWebApkInstallCoordinatorService;
 import org.chromium.components.webapps.WebApkInstallResult;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Contains functionality to connect to the {@link WebApkInstallCoordinatorService} in Chrome using
@@ -44,8 +44,8 @@ public class WebApkInstallSchedulerClient {
             public void handleOnFinishInstall(int result) {
                 // Post the task back to the main thread as promises have to be accessed from a
                 // single thread.
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT,
-                        () -> { whenInstallTaskCompleted.fulfill(result); });
+                PostTask.postTask(
+                        TaskTraits.UI_DEFAULT, () -> { whenInstallTaskCompleted.fulfill(result); });
             }
         };
 

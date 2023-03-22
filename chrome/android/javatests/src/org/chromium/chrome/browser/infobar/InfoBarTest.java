@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -41,7 +42,6 @@ import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.infobars.InfoBar;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -294,7 +294,7 @@ public class InfoBarTest {
         InfoBarTestAnimationListener removeListener = new InfoBarTestAnimationListener();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> sActivityTestRule.getInfoBarContainer().addAnimationListener(removeListener));
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             WebContents newContents = WebContentsFactory.createWebContents(
                     Profile.getLastUsedRegularProfile(), false);
             TabTestUtils.swapWebContents(

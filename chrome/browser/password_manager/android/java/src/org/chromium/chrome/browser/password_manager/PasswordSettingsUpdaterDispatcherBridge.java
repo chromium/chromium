@@ -13,8 +13,8 @@ import android.accounts.Account;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Optional;
 
@@ -115,7 +115,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
         // - by the GMS Core on the UI thread
         // - by the downstream backend on the operation thread if preconditions are not met
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> mReceiverBridge.handleFetchingException(setting, exception, metricsRecorder));
     }
 
@@ -125,7 +125,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
         // - by the GMS Core on the UI thread
         // - by the downstream backend on the operation thread if preconditions are not met
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> mReceiverBridge.handleSettingException(setting, exception, metricsRecorder));
     }
 

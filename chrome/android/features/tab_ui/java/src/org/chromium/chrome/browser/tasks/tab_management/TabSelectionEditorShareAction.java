@@ -26,7 +26,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -168,7 +167,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                             R.string.tab_selection_editor_share_sheet_preview_thumbnail),
                     bitmap, uri -> {
                         bitmap.recycle();
-                        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                             shareIntent.setClipData(ClipData.newRawUri("", uri));
                             mContext.startActivity(Intent.createChooser(shareIntent, null));
                             TabUiMetricsHelper.recordSelectionEditorActionMetrics(actionId);

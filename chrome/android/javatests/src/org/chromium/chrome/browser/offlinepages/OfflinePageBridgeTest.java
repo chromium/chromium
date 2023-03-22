@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -37,7 +38,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -83,7 +83,7 @@ public class OfflinePageBridgeTest {
 
     private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             // Ensure we start in an offline state.
             mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
             if (mOfflinePageBridge == null || mOfflinePageBridge.isOfflinePageModelLoaded()) {
@@ -104,7 +104,7 @@ public class OfflinePageBridgeTest {
     private OfflinePageBridge getBridgeForProfileKey() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         AtomicReference<OfflinePageBridge> offlinePageBridgeRef = new AtomicReference<>();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             ProfileKey profileKey = mProfile.getProfileKey();
             // Ensure we start in an offline state.
             OfflinePageBridge offlinePageBridge = OfflinePageBridge.getForProfileKey(profileKey);
@@ -500,7 +500,7 @@ public class OfflinePageBridgeTest {
 
     private void deletePages(final List<Long> offlineIds) throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mOfflinePageBridge.deletePagesByOfflineId(offlineIds, new Callback<Integer>() {
                 @Override
                 public void onResult(Integer deletePageResult) {
@@ -532,7 +532,7 @@ public class OfflinePageBridgeTest {
             throws InterruptedException {
         final List<OfflinePageItem> result = new ArrayList<OfflinePageItem>();
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mOfflinePageBridge.getPagesByNamespace(
                     namespace, new Callback<List<OfflinePageItem>>() {
                         @Override
@@ -569,7 +569,7 @@ public class OfflinePageBridgeTest {
             throws InterruptedException {
         final AtomicReference<LoadUrlParams> ref = new AtomicReference<>();
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             mOfflinePageBridge.getLoadUrlParamsForOpeningMhtmlFileOrContent(
                     url, (loadUrlParams) -> {
                         ref.set(loadUrlParams);

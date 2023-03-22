@@ -31,10 +31,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.display.DisplayAndroid;
@@ -249,7 +249,7 @@ public class ScreenshotMonitorTest {
     private void startMonitoringOnUiThreadBlocking() {
         final Semaphore semaphore = new Semaphore(0);
 
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 mTestScreenshotMonitor.startMonitoring();
@@ -267,7 +267,7 @@ public class ScreenshotMonitorTest {
     private void stopMonitoringOnUiThreadBlocking() {
         final Semaphore semaphore = new Semaphore(0);
 
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 mTestScreenshotMonitor.stopMonitoring();
@@ -286,7 +286,7 @@ public class ScreenshotMonitorTest {
     private void assertScreenshotShowUiCountOnUiThreadBlocking(int expectedCount) {
         final Semaphore semaphore = new Semaphore(0);
 
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 semaphore.release();

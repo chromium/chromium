@@ -12,10 +12,10 @@ import androidx.annotation.IntDef;
 import org.junit.Assert;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.vr.UiTestOperationResult;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -69,7 +69,7 @@ public class NativeUiUtils {
      */
     public static void waitNumFrames(int numFrames) {
         final CountDownLatch frameLatch = new CountDownLatch(numFrames);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             final Choreographer.FrameCallback callback = new Choreographer.FrameCallback() {
                 @Override
                 public void doFrame(long frameTimeNanos) {

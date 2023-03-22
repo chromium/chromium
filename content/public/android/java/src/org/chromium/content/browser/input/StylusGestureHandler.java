@@ -17,11 +17,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink.mojom.StylusWritingGestureGranularity;
 import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.gfx.mojom.Rect;
 import org.chromium.mojo_base.mojom.String16;
 
@@ -119,7 +119,7 @@ public class StylusGestureHandler implements InvocationHandler {
         Executor executor = (Executor) args[1];
         IntConsumer consumer = (IntConsumer) args[2];
         // Callback should be run on the UI thread.
-        PostTask.postTask(UiThreadTaskTraits.USER_BLOCKING, () -> {
+        PostTask.postTask(TaskTraits.UI_USER_BLOCKING, () -> {
             OngoingGesture gesture = new OngoingGesture(gestureData, executor, consumer);
             mOnGestureCallback.onResult(gesture);
         });

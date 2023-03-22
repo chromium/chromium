@@ -38,9 +38,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForQ;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -177,7 +177,7 @@ class PlatformNetworksManager {
         }
 
         requestCellInfoUpdate(telephonyManager, (cellInfos) -> {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postTask(TaskTraits.UI_DEFAULT,
                     () -> callback.onResult(getAllVisibleCellsFromCellInfo(cellInfos)));
         });
     }

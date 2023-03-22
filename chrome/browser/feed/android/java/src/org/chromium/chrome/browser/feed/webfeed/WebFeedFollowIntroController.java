@@ -17,6 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -39,7 +40,6 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
@@ -422,7 +422,7 @@ public class WebFeedFollowIntroController {
             request.callback = callback;
             request.fetchStartTime = System.nanoTime();
 
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                     ()
                             -> {
                         // Skip visit counts check if debug mode is enabled.

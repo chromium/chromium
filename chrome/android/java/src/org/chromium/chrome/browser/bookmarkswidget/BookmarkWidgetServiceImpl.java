@@ -26,6 +26,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -40,7 +41,6 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -344,7 +344,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         @BinderThread
         @Override
         public void onDestroy() {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                     () -> { SystemNightModeMonitor.getInstance().removeObserver(this); });
             deleteWidgetState(mWidgetId);
         }
@@ -371,7 +371,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             // A reference of BookmarkLoader is needed in binder thread to
             // prevent it from being garbage collected.
             final BookmarkLoader bookmarkLoader = new BookmarkLoader();
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                 bookmarkLoader.initialize(mContext, folderId, new BookmarkLoaderCallback() {
                     @Override
                     public void onBookmarksLoaded(BookmarkFolder folder) {
@@ -425,7 +425,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             if (mCurrentFolder == null
                     || !mPreferences.getString(PREF_CURRENT_FOLDER, "")
                                 .equals(mCurrentFolder.folder.id.toString())) {
-                PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> { refreshWidget(); });
+                PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> { refreshWidget(); });
             }
             if (mCurrentFolder == null) {
                 return 0;

@@ -12,6 +12,7 @@ import android.view.ViewGroup.LayoutParams;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -27,7 +28,6 @@ import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.components.query_tiles.QueryTileConstants;
 import org.chromium.components.query_tiles.TileProvider;
 import org.chromium.components.query_tiles.TileUmaLogger;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
@@ -156,7 +156,7 @@ public class QueryTileSection {
 
     private void fetchImage(QueryTile queryTile, int size, Callback<Bitmap> callback) {
         if (queryTile.urls.isEmpty()) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(null));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(null));
             return;
         }
 

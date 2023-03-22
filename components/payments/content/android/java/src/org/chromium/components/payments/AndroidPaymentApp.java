@@ -18,13 +18,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType;
 import org.chromium.components.payments.intent.WebPaymentIntentHelperTypeConverter;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
@@ -419,13 +419,13 @@ public class AndroidPaymentApp
     // IsReadyToPayServiceHelper.ResultHandler:
     @Override
     public void onIsReadyToPayServiceError() {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> respondToIsReadyToPayQuery(false));
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> respondToIsReadyToPayQuery(false));
     }
 
     @Override
     public void onIsReadyToPayServiceResponse(boolean isReadyToPay) {
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> respondToIsReadyToPayQuery(isReadyToPay));
+                TaskTraits.UI_DEFAULT, () -> respondToIsReadyToPayQuery(isReadyToPay));
     }
 
     @Override

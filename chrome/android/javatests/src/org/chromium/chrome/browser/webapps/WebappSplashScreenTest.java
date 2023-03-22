@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.webapk.lib.common.splash.R;
 
@@ -96,8 +96,9 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                ()
+                        -> TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
                                 mActivityTestRule.getActivity().getActivityTab()));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -110,8 +111,9 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> TabTestUtils.simulateCrash(
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                ()
+                        -> TabTestUtils.simulateCrash(
                                 mActivityTestRule.getActivity().getActivityTab(), true));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -124,8 +126,9 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> TabTestUtils.simulatePageLoadFinished(
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                ()
+                        -> TabTestUtils.simulatePageLoadFinished(
                                 mActivityTestRule.getActivity().getActivityTab()));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -138,8 +141,9 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> TabTestUtils.simulatePageLoadFailed(
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                ()
+                        -> TabTestUtils.simulatePageLoadFailed(
                                 mActivityTestRule.getActivity().getActivityTab(), 0));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -152,7 +156,7 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
             TabTestUtils.simulatePageLoadFinished(tab);

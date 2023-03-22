@@ -9,12 +9,9 @@ import android.os.Handler;
 import org.chromium.base.ThreadUtils;
 
 /**
- * This {@link TaskExecutor} is for tasks posted with {@link UiThreadTaskTraits}. It maps to
+ * This {@link TaskExecutor} is for tasks posted with UI Thread {@link TaskTraits}. It maps to
  * content::BrowserTaskExecutor in C++, except that in Java the UI thread is a base/ concept and
  * only UI thread posting is supported.
- *
- * NB if you wish to post to the thread pool then use {@link TaskTraits} instead of {@link
- * UiThreadTaskTraits}.
  */
 public class UiThreadTaskExecutor implements TaskExecutor {
     private static boolean sRegistered;

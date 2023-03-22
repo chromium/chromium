@@ -35,6 +35,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
@@ -50,7 +51,6 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.List;
 import java.util.Set;
@@ -276,7 +276,7 @@ public class TrustedWebActivityClient {
                     @Override
                     public void onExtraCallback(String callbackName, @Nullable Bundle bundle) {
                         // Hop back to the UI thread because we are on a binder thread.
-                        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> {
+                        PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> {
                             boolean granted = false;
                             if (TextUtils.equals(
                                         callbackName, CHECK_LOCATION_PERMISSION_COMMAND_NAME)

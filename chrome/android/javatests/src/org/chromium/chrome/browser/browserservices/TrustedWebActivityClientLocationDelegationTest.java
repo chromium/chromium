@@ -19,13 +19,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.concurrent.TimeoutException;
 
@@ -75,7 +75,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
         TrustedWebActivityClient.PermissionCallback callback =
                 (app, settingValue) -> locationPermission.notifyCalled();
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> mClient.checkLocationPermission(SCOPE.toString(), callback));
         locationPermission.waitForFirst();
     }
@@ -100,7 +100,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
                 }
             }
         };
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 ()
                         -> mClient.startListeningLocationUpdates(SCOPE.toString(),
                                 false /* highAccuracy */, locationUpdateCallback));
@@ -126,7 +126,7 @@ public class TrustedWebActivityClientLocationDelegationTest {
                 }
             }
         };
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 ()
                         -> mClient.startListeningLocationUpdates(otherOrigin.toString(),
                                 false /* highAccuracy */, locationUpdateCallback));

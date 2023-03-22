@@ -14,6 +14,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
@@ -23,7 +24,6 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.Link
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -243,7 +243,7 @@ public class ShareSheetUsageRankingHelper {
                         mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails));
             }
         }
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(models));
+        PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(models));
     }
 
     PropertyModel createMorePropertyModel(

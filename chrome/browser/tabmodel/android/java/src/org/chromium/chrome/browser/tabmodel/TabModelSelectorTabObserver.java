@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabDataObserver;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +86,7 @@ public class TabModelSelectorTabObserver
                     // Post the removal of the observer so that other tab events are
                     // notified before removing the tab observer (e.g. detach tab from
                     // activity).
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> performUnregister(tab));
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> performUnregister(tab));
                 }
                 TabModelSelectorTabObserver.this.onTabUnregistered(tab);
             }

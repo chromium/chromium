@@ -15,8 +15,8 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Tests for the WebViewClient.onScaleChanged.
@@ -50,7 +50,7 @@ public class AwContentsClientOnScaleChangedTest {
         CriteriaHelper.pollUiThread(() -> mAwContents.canZoomIn());
         int callCount = mContentsClient.getOnScaleChangedHelper().getCallCount();
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> Assert.assertTrue(mAwContents.zoomIn()));
+                TaskTraits.UI_DEFAULT, () -> Assert.assertTrue(mAwContents.zoomIn()));
         mContentsClient.getOnScaleChangedHelper().waitForCallback(callCount);
         Assert.assertTrue(
                 "Scale ratio:" + mContentsClient.getOnScaleChangedHelper().getLastScaleRatio(),

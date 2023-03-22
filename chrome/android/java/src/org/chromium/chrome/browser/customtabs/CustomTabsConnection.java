@@ -48,6 +48,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
@@ -77,7 +78,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -462,7 +462,7 @@ public class CustomTabsConnection {
 
         // (1)
         if (!initialized) {
-            tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+            tasks.add(TaskTraits.UI_DEFAULT, () -> {
                 try (TraceEvent e = TraceEvent.scoped("CustomTabsConnection.initializeBrowser()")) {
                     initializeBrowser(ContextUtils.getApplicationContext());
                     ChromeBrowserInitializer.getInstance().initNetworkChangeNotifier();
@@ -473,7 +473,7 @@ public class CustomTabsConnection {
 
         // (2)
         if (mayCreateSpareWebContents && !mHiddenTabHolder.hasHiddenTab()) {
-            tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+            tasks.add(TaskTraits.UI_DEFAULT, () -> {
                 // Temporary fix for https://crbug.com/797832.
                 // TODO(lizeb): Properly fix instead of papering over the bug, this code should
                 // not be scheduled unless startup is done. See https://crbug.com/797832.
@@ -485,7 +485,7 @@ public class CustomTabsConnection {
         }
 
         // (3)
-        tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+        tasks.add(TaskTraits.UI_DEFAULT, () -> {
             try (TraceEvent e = TraceEvent.scoped("InitializeViewHierarchy")) {
                 WarmupManager.getInstance().initializeViewHierarchy(
                         ContextUtils.getApplicationContext(),
@@ -494,7 +494,7 @@ public class CustomTabsConnection {
         });
 
         if (!initialized) {
-            tasks.add(UiThreadTaskTraits.DEFAULT, () -> {
+            tasks.add(TaskTraits.UI_DEFAULT, () -> {
                 try (TraceEvent e = TraceEvent.scoped("WarmupInternalFinishInitialization")) {
                     // (4)
                     Profile profile = Profile.getLastUsedRegularProfile();
@@ -509,7 +509,7 @@ public class CustomTabsConnection {
             });
         }
 
-        tasks.add(UiThreadTaskTraits.DEFAULT, () -> notifyWarmupIsDone(uid));
+        tasks.add(TaskTraits.UI_DEFAULT, () -> notifyWarmupIsDone(uid));
         tasks.start(false);
         mWarmupTasks = tasks;
         return true;
@@ -635,7 +635,7 @@ public class CustomTabsConnection {
             return false;
         }
 
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             doMayLaunchUrlOnUiThread(
                     lowConfidence, session, uid, urlString, extras, otherLikelyBundles, true);
         });
@@ -666,7 +666,7 @@ public class CustomTabsConnection {
             // once.
             if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
                 if (retryIfNotLoaded) {
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                         doMayLaunchUrlOnUiThread(lowConfidence, session, uid, urlString, extras,
                                 otherLikelyBundles, false);
                     });
@@ -758,7 +758,7 @@ public class CustomTabsConnection {
         }
 
         if (!ids.isEmpty()) {
-            result &= PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+            result &= PostTask.runSynchronously(TaskTraits.UI_DEFAULT, () -> {
                 boolean res = true;
                 for (int i = 0; i < ids.size(); i++) {
                     res &= handler.updateCustomButton(
@@ -775,7 +775,7 @@ public class CustomTabsConnection {
                     bundle, CustomTabsIntent.EXTRA_REMOTEVIEWS_VIEW_IDS);
             final PendingIntent pendingIntent = IntentUtils.safeGetParcelable(
                     bundle, CustomTabsIntent.EXTRA_REMOTEVIEWS_PENDINGINTENT);
-            result &= PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
+            result &= PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
                     () -> handler.updateRemoteViews(remoteViews, clickableIDs, pendingIntent));
         }
 
@@ -784,7 +784,7 @@ public class CustomTabsConnection {
                         CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION)) {
             PendingIntent pendingIntent = IntentUtils.safeGetParcelable(
                     bundle, CustomTabIntentDataProvider.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION);
-            result &= PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
+            result &= PostTask.runSynchronously(TaskTraits.UI_DEFAULT,
                     () -> handler.updateSecondaryToolbarSwipeUpPendingIntent(pendingIntent));
         }
         logCall("updateVisuals()", result);
@@ -811,7 +811,7 @@ public class CustomTabsConnection {
         if (!mClientManager.bindToPostMessageServiceForSession(session)) return false;
 
         final int uid = Binder.getCallingUid();
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
             // If the API is not enabled, we don't set the post message origin, which will avoid
             // PostMessageHandler initialization and disallow postMessage calls.
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_POST_MESSAGE_API)) return;
@@ -1694,8 +1694,7 @@ public class CustomTabsConnection {
      */
     @VisibleForTesting
     void cleanUpSession(final CustomTabsSessionToken session) {
-        PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> mClientManager.cleanupSession(session));
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> mClientManager.cleanupSession(session));
     }
 
     /**

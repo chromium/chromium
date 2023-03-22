@@ -20,12 +20,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.HashMap;
 import java.util.List;
@@ -215,7 +215,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
         final Callback<FeedbackCollector> callback = mCallback;
         mCallback = null;
 
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(this));
+        PostTask.postTask(TaskTraits.UI_DEFAULT, callback.bind(this));
     }
 
     private Iterable<FeedbackSource> getAllSources() {

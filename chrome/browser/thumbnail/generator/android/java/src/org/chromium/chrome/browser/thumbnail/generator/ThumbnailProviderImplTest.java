@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.Thumbna
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Instrumentation test for {@link ThumbnailProviderImpl}.
@@ -54,7 +54,7 @@ public class ThumbnailProviderImplTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             sReferencePool = new DiscardableReferencePool();
             sThumbnailProvider = new ThumbnailProviderImpl(
                     sReferencePool, ThumbnailProviderImpl.ClientType.NTP_SUGGESTIONS);
@@ -63,7 +63,7 @@ public class ThumbnailProviderImplTest {
 
     @AfterClass
     public static void tearDown() {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, sThumbnailProvider::destroy);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, sThumbnailProvider::destroy);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class ThumbnailProviderImplTest {
                 testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "a");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
+                TaskTraits.UI_DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -100,7 +100,7 @@ public class ThumbnailProviderImplTest {
                 testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "b");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
+                TaskTraits.UI_DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -121,7 +121,7 @@ public class ThumbnailProviderImplTest {
                 testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "c");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
+                TaskTraits.UI_DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -142,7 +142,7 @@ public class ThumbnailProviderImplTest {
                 testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "d");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
+                TaskTraits.UI_DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);
@@ -163,7 +163,7 @@ public class ThumbnailProviderImplTest {
                 testFilePath, requiredSize, thumbnailRetrievedCallbackHelper, "e");
 
         PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
+                TaskTraits.UI_DEFAULT, () -> { sThumbnailProvider.getThumbnail(request); });
 
         thumbnailRetrievedCallbackHelper.waitForCallback(
                 "Reached timeout when fetching a thumbnail for a downloaded image.", 0);

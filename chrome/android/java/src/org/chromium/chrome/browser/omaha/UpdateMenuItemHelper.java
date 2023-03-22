@@ -20,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Contains logic related to displaying app menu badge and a special menu item for information
@@ -98,7 +98,7 @@ public class UpdateMenuItemHelper {
         if (!mObservers.addObserver(observer)) return;
 
         if (mStatus != null) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 if (mObservers.hasObserver(observer)) observer.run();
             });
             return;

@@ -15,10 +15,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -197,7 +197,7 @@ public class FaviconFetcher {
                 return;
 
             case FaviconType.GENERATED:
-                PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                     Bitmap icon = mIconGenerator.generateIconForUrl(url);
                     callback.onFaviconFetchComplete(icon, faviconType);
                 });

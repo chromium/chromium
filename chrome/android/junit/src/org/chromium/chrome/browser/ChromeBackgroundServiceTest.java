@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler;
@@ -30,7 +31,6 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Tests {@link ChromeBackgroundService}.
@@ -61,7 +61,7 @@ public class ChromeBackgroundServiceTest {
         protected void checkExpectations(final boolean expectedLaunchBrowser,
                 final boolean expectedDidCallOnPersistentSchedulerWakeUp,
                 final boolean expectedDidCallOnBrowserUpgraded) {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                 Assert.assertEquals("StartedService", expectedLaunchBrowser, mDidLaunchBrowser);
                 Assert.assertEquals("OnPersistentSchedulerWakeUp",
                         expectedDidCallOnPersistentSchedulerWakeUp,
@@ -78,7 +78,7 @@ public class ChromeBackgroundServiceTest {
         }
 
         protected void checkBackgroundTaskSchedulerInvocation(int taskId) {
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                 verify(mTaskScheduler)
                         .schedule(any(Context.class),
                                 argThat(taskInfo -> taskInfo.getTaskId() == taskId));

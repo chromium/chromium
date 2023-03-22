@@ -34,6 +34,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -75,7 +76,6 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -547,7 +547,7 @@ class LocationBarMediator
 
         // TODO(crbug.com/1316461): enable by default and remove this feature.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.POST_TASK_FOCUS_TAB)) {
-            PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> focusCurrentTab());
+            PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> focusCurrentTab());
         } else {
             focusCurrentTab();
         }

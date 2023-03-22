@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -31,8 +31,8 @@ public class EmptyByteBufferPersistedTabDataStorage implements PersistedTabDataS
 
     @Override
     public void restore(int tabId, String tabDataId, Callback<ByteBuffer> callback) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> { callback.onResult(ByteBuffer.allocateDirect(0)); });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT, () -> { callback.onResult(ByteBuffer.allocateDirect(0)); });
     }
 
     // Unused

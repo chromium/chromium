@@ -27,11 +27,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.AsyncTask.Status;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -133,7 +133,7 @@ public class UpdateStatusProvider {
         mObservers.addObserver(observer);
 
         if (mStatus != null) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, observer.bind(mStatus));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, observer.bind(mStatus));
         } else {
             if (mOmahaQuery.getStatus() == Status.PENDING) {
                 mOmahaQuery.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -254,7 +254,7 @@ public class UpdateStatusProvider {
         @Override
         protected void onPostExecute(UpdateStatus result) {
             mStatus = result;
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, mCallback);
+            PostTask.postTask(TaskTraits.UI_DEFAULT, mCallback);
         }
 
         private UpdateStatus getTestStatus() {

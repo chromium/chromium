@@ -30,8 +30,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -397,7 +397,7 @@ public class DecoderServiceHost
         // As per the Android documentation, AIDL callbacks can (and will) happen on any thread, so
         // make sure the code runs on the UI thread, since further down the callchain the code will
         // end up creating UI objects.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             String filePath = "";
             List<Bitmap> bitmaps = null;
             Boolean fullWidth = false;

@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -55,7 +56,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
@@ -104,7 +104,7 @@ public class TabbedAppMenuTest {
 
         showAppMenuAndAssertMenuShown();
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> getListView().setSelection(0));
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> getListView().setSelection(0));
         CriteriaHelper.pollInstrumentationThread(
                 () -> Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0)));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -534,7 +534,7 @@ public class TabbedAppMenuTest {
 
     private void pressKey(final int keycode) {
         final View view = getListView();
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keycode));
             view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode));
         });

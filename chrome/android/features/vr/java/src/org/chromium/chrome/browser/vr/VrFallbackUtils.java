@@ -10,13 +10,13 @@ import android.content.Context;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /** Class providing utils for when the VR module is not installed. */
 /* package */ class VrFallbackUtils {
@@ -25,7 +25,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 
     /** Shows immersive notification informing the user that the VR browser is not ready yet. */
     public static void showFailureNotification(Context context) {
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
             NotificationManagerProxy notificationManager =
                     new NotificationManagerProxyImpl(context);
             Notification notification =
@@ -46,7 +46,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 
             // Close notification after a few seconds as it is only really relevant right after
             // accessing the VR browser failed.
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
                 notificationManager.cancel(NotificationConstants.NOTIFICATION_ID_PREPARING_VR);
             }, PREPARING_VR_NOTIFICATION_TIMEOUT_MS);
         }, PREPARING_VR_NOTIFICATION_DELAY_MS);

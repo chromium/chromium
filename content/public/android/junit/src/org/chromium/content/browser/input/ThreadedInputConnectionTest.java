@@ -38,9 +38,9 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.concurrent.Callable;
 
@@ -190,7 +190,7 @@ public class ThreadedInputConnectionTest {
     public void testRendererCannotUpdateState() {
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(true);
         // We found that renderer cannot update state, e.g., due to a crash.
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
             @Override
             public void run() {
                 try {

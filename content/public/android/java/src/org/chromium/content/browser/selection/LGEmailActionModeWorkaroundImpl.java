@@ -20,7 +20,7 @@ import android.widget.PopupWindow;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -102,7 +102,7 @@ public final class LGEmailActionModeWorkaroundImpl {
 
                 @Override
                 public void onDestroyActionMode(final ActionMode mode) {
-                    PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                         @Override
                         public void run() {
                             c.onDestroyActionMode(mode);
@@ -123,7 +123,7 @@ public final class LGEmailActionModeWorkaroundImpl {
                     null, contentContainer, 150, new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+                            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                                 @Override
                                 public void run() {
                                     popupWindow.dismiss();

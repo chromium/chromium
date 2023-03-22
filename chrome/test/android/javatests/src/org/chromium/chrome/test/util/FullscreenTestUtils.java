@@ -12,12 +12,12 @@ import android.view.WindowManager;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Static methods for use in tests that require toggling persistent fullscreen.
@@ -80,7 +80,7 @@ public class FullscreenTestUtils {
      */
     public static void togglePersistentFullscreen(final TabWebContentsDelegateAndroid delegate,
             final boolean state, boolean prefersNavigationBar, boolean prefersStatusBar) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             if (state) {
                 delegate.enterFullscreenModeForTab(prefersNavigationBar, prefersStatusBar);
             } else {

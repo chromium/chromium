@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -51,7 +52,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.SelectionPopupController;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -278,7 +278,7 @@ public class FullscreenManagerTest {
         // the test (See https://b/10387660)
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             View view = tab.getContentView();
             view.setSystemUiVisibility(
                     view.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_FULLSCREEN);
@@ -544,10 +544,10 @@ public class FullscreenManagerTest {
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, delegate::rendererUnresponsive);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererUnresponsive);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(mActivityTestRule, 0);
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, delegate::rendererResponsive);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererResponsive);
 
         // TODO(tedchoc): This is running into timing issues with the renderer offset logic.
         // waitForBrowserControlsToBeMoveable(getActivity().getActivityTab());
@@ -572,12 +572,12 @@ public class FullscreenManagerTest {
         setTabSwitcherModeAndWait(true);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, delegate::rendererUnresponsive);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererUnresponsive);
         setTabSwitcherModeAndWait(false);
 
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(mActivityTestRule, 0);
 
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, delegate::rendererResponsive);
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererResponsive);
     }
 
     @Test

@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.components.crash.PureJavaExceptionReporter;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
@@ -134,7 +133,7 @@ public class BrandingController {
         // Start the task to timeout the branding check. If mBrandingChecker already finished,
         // canceling the task does nothing. Does not interrupt if the task is running, since the
         // BrandingChecker#doInBackground will collect metrics at the end.
-        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
+        PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE,
                 mCallbackController.makeCancelable(
                         () -> mBrandingChecker.cancel(/*mayInterruptIfRunning*/ false)),
                 MAX_BLANK_TOOLBAR_TIMEOUT_MS.getValue());
@@ -185,7 +184,7 @@ public class BrandingController {
             mIsBrandingShowing = false;
             mToolbarBrandingDelegate.showRegularToolbar();
         };
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                 mCallbackController.makeCancelable(hideToolbarBranding), durationMs);
     }
 

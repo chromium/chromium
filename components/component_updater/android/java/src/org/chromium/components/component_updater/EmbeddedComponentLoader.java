@@ -18,7 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -102,7 +102,7 @@ public class EmbeddedComponentLoader implements ServiceConnection {
 
     @Override
     public void onServiceConnected(ComponentName className, IBinder service) {
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             try {
                 IComponentsProviderService providerService =
                         IComponentsProviderService.Stub.asInterface(service);

@@ -17,6 +17,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator;
@@ -31,7 +32,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.Closeable;
@@ -155,7 +155,7 @@ class DownloadManagerCoordinatorImpl
     @Override
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+        PostTask.postTask(TaskTraits.UI_DEFAULT,
                 () -> observer.onUrlChanged(Filters.toUrl(mListCoordinator.getSelectedFilter())));
     }
 

@@ -34,7 +34,7 @@ import androidx.core.math.MathUtils;
 import androidx.core.view.GestureDetectorCompat;
 
 import org.chromium.base.task.PostTask;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 
@@ -819,7 +819,7 @@ public class PickerVideoPlayer
     }
 
     private void startPlaybackMonitorTask() {
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> updateProgress(), 250);
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> updateProgress(), 250);
     }
 
     private void stopPlaybackMonitor() {

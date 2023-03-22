@@ -34,6 +34,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -57,7 +58,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -1336,7 +1336,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // 6. Schedule next tab selection. Skip auto scroll so users don't lose track of their
         // location in the tab strip after closing a tab.
         if (nextTab != null) {
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT,
                     ()
                             -> tabSelected(
                                     SystemClock.uptimeMillis(), nextTab.getId(), tabId, true),
@@ -2321,8 +2321,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * This method checks whether or not interacting tab has met the conditions to be moved out of 
-     * its tab group. It moves tab out of group if so and returns the new index for the interacting 
+     * This method checks whether or not interacting tab has met the conditions to be moved out of
+     * its tab group. It moves tab out of group if so and returns the new index for the interacting
      * tab.
      *
      * @param offset The distance the interacting tab has been dragged from its ideal x-position.
@@ -2351,8 +2351,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * This method checks whether or not interacting tab has met the conditions to be merged into a 
-     * neighbouring tab group. It merges tab to group if so and returns the new index for the 
+     * This method checks whether or not interacting tab has met the conditions to be merged into a
+     * neighbouring tab group. It merges tab to group if so and returns the new index for the
      * interacting tab.
      *
      * @param offset The distance the interacting tab has been dragged from its ideal x-position.

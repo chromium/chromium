@@ -21,6 +21,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -42,7 +43,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -341,8 +341,8 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             // memory consumption, as the current renderer goes away. We create a renderer as a lot
             // of users open several Custom Tabs in a row. The delay is there to avoid jank in the
             // transition animation when closing the tab.
-            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
-                    CustomTabsConnection::createSpareWebContents, 500);
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT, CustomTabsConnection::createSpareWebContents, 500);
         }
 
         if (mFinishHandler != null) {

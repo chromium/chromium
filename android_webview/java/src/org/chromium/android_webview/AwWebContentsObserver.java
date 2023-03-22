@@ -6,10 +6,10 @@ package org.chromium.android_webview;
 
 import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -148,7 +148,7 @@ public class AwWebContentsObserver extends WebContentsObserver {
         // Only invoke the onPageCommitVisible callback when navigating to a different document,
         // but not when navigating to a different fragment within the same document.
         if (!navigation.isSameDocument()) {
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
                 AwContents awContents = mAwContents.get();
                 if (awContents != null) {
                     awContents.insertVisualStateCallbackIfNotDestroyed(

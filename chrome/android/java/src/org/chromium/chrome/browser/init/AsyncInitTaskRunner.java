@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.concurrent.Executor;
 
@@ -62,7 +61,7 @@ public abstract class AsyncInitTaskRunner {
         @Override
         public void run() {
             VariationsSeedFetcher.get().fetchSeed(mRestrictMode, mMilestone, mChannel);
-            PostTask.postTask(UiThreadTaskTraits.DEFAULT, new Runnable() {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
                 @Override
                 public void run() {
                     tasksPossiblyComplete(null);

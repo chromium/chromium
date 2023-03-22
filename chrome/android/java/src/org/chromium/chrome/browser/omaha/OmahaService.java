@@ -14,12 +14,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Manages scheduling and running of the Omaha client code.
@@ -30,7 +30,7 @@ public class OmahaService extends OmahaBase implements BackgroundTask {
         @Override
         public void scheduleService(long currentTimestampMs, long nextTimestampMs) {
             final long delay = nextTimestampMs - currentTimestampMs;
-            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
                 if (scheduleJobService(delay)) {
                     Log.i(OmahaBase.TAG, "Scheduled using JobService");
                 } else {
