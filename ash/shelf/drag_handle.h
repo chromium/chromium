@@ -60,7 +60,8 @@ class ASH_EXPORT DragHandle : public views::Button,
 
   // Immediately begins the animation to return the drag handle back to its
   // original position and hide the tooltip.
-  void HideDragHandleNudge(contextual_tooltip::DismissNudgeReason reason);
+  void HideDragHandleNudge(contextual_tooltip::DismissNudgeReason reason,
+                           bool animate);
 
   // Called when the window drag from shelf starts or ends. The drag handle
   // contextual nudge will remain visible while the gesture is in progress.
@@ -130,7 +131,7 @@ class ASH_EXPORT DragHandle : public views::Button,
 
   // Helper function to hide the drag handle nudge. Called by
   // |hide_drag_handle_nudge_timer_|.
-  void HideDragHandleNudgeHelper(bool hidden_by_tap);
+  void HideDragHandleNudgeHelper(bool hidden_by_tap, bool animate);
 
   // Helper function to animate the drag handle for the drag handle gesture
   // contextual nudge.

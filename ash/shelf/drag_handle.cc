@@ -167,7 +167,8 @@ void DragHandle::ShowDragHandleNudge() {
     hide_drag_handle_nudge_timer_.Start(
         FROM_HERE, nudge_duration,
         base::BindOnce(&DragHandle::HideDragHandleNudge, base::Unretained(this),
-                       contextual_tooltip::DismissNudgeReason::kTimeout));
+                       contextual_tooltip::DismissNudgeReason::kTimeout,
+                       /*animate=*/true));
   }
   contextual_tooltip::HandleNudgeShown(
       pref, contextual_tooltip::TooltipType::kInAppToHome);
@@ -192,7 +193,8 @@ void DragHandle::ScheduleShowDragHandleNudge() {
 }
 
 void DragHandle::HideDragHandleNudge(
-    contextual_tooltip::DismissNudgeReason reason) {
+    contextual_tooltip::DismissNudgeReason reason,
+    bool animate) {
   StopDragHandleNudgeShowTimer();
   if (!gesture_nudge_target_visibility())
     return;
@@ -206,8 +208,9 @@ void DragHandle::HideDragHandleNudge(
         contextual_tooltip::TooltipType::kInAppToHome);
   }
 
-  HideDragHandleNudgeHelper(/*hidden_by_tap=*/reason ==
-                            contextual_tooltip::DismissNudgeReason::kTap);
+  HideDragHandleNudgeHelper(
+      /*hidden_by_tap=*/reason == contextual_tooltip::DismissNudgeReason::kTap,
+      animate);
   gesture_nudge_target_visibility_ = false;
 }
 
@@ -230,7 +233,8 @@ void DragHandle::SetWindowDragFromShelfInProgress(bool gesture_in_progress) {
     hide_drag_handle_nudge_timer_.Stop();
   } else {
     HideDragHandleNudge(
-        contextual_tooltip::DismissNudgeReason::kPerformedGesture);
+        contextual_tooltip::DismissNudgeReason::kPerformedGesture,
+        /*animate=*/true);
   }
 }
 
@@ -336,7 +340,8 @@ void DragHandle::OnSplitViewStateChanged(
     SplitViewController::State state) {
   if (SplitViewController::Get(shelf_->shelf_widget()->GetNativeWindow())
           ->InSplitViewMode()) {
-    HideDragHandleNudge(contextual_tooltip::DismissNudgeReason::kOther);
+    HideDragHandleNudge(contextual_tooltip::DismissNudgeReason::kOther,
+                        /*animate=*/true);
   }
 }
 
@@ -431,7 +436,15 @@ void DragHandle::ShowDragHandleTooltip() {
   }
 }
 
-void DragHandle::HideDragHandleNudgeHelper(bool hidden_by_tap) {
+void DragHandle::HideDragHandleNudgeHelper(bool hidden_by_tap, bool animate) {
+  if (!animate) {
+    ScheduleDragHandleTranslationAnimation(
+        0, base::TimeDelta(), gfx::Tween::ZERO,
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    drag_handle_nudge_->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+    return;
+  }
   ScheduleDragHandleTranslationAnimation(
       0,
       hidden_by_tap ? kInAppToHomeHideOnTapAnimationDuration
@@ -495,7 +508,8 @@ void DragHandle::ScheduleDragHandleTranslationAnimation(
 void DragHandle::HandleTapOnNudge() {
   if (!drag_handle_nudge_)
     return;
-  HideDragHandleNudge(contextual_tooltip::DismissNudgeReason::kTap);
+  HideDragHandleNudge(contextual_tooltip::DismissNudgeReason::kTap,
+                      /*animate=*/true);
 }
 
 void DragHandle::StopDragHandleNudgeShowTimer() {

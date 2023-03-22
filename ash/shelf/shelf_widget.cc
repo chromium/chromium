@@ -739,7 +739,7 @@ void ShelfWidget::ScheduleShowDragHandleNudge() {
 
 void ShelfWidget::HideDragHandleNudge(
     contextual_tooltip::DismissNudgeReason context) {
-  delegate_view_->drag_handle()->HideDragHandleNudge(context);
+  delegate_view_->drag_handle()->HideDragHandleNudge(context, /*animate=*/true);
 }
 
 void ShelfWidget::SetLoginShelfButtonOpacity(float target_opacity) {

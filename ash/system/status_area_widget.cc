@@ -15,6 +15,7 @@
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/drag_handle.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
@@ -276,6 +277,21 @@ void StatusAreaWidget::UpdateCollapseState() {
 
   status_area_widget_delegate_->OnStatusAreaCollapseStateChanged(
       collapse_state_);
+
+  bool overlap =
+      shelf_->shelf_widget()->GetDragHandle()->GetBoundsInScreen().Intersects(
+          status_area_widget_delegate_->GetBoundsInScreen());
+
+  if (collapse_state_ == CollapseState::EXPANDED && overlap) {
+    // Hide the drag handle if the status_area_widget_delegate_ overlaps
+    // expected drag handle bounds. Otherwise show the drag handle.
+    shelf_->shelf_widget()->GetDragHandle()->HideDragHandleNudge(
+        contextual_tooltip::DismissNudgeReason::kOther,
+        /*animate*/ false);
+    shelf_->shelf_widget()->GetDragHandle()->SetVisible(false);
+  } else if (collapse_state_ == CollapseState::COLLAPSED) {
+    shelf_->shelf_widget()->GetDragHandle()->SetVisible(true);
+  }
 }
 
 void StatusAreaWidget::LogVisiblePodCountMetric() {
