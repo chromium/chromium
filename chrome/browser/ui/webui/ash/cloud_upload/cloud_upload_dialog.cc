@@ -17,9 +17,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
@@ -36,6 +39,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ash::cloud_upload {
 namespace {
@@ -230,9 +234,10 @@ bool HasPowerPointFile(const std::vector<storage::FileSystemURL>& file_urls) {
 bool CloudOpenTask::Execute(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls,
-    const CloudProvider cloud_provider) {
-  scoped_refptr<CloudOpenTask> upload_task =
-      WrapRefCounted(new CloudOpenTask(profile, file_urls, cloud_provider));
+    const CloudProvider cloud_provider,
+    gfx::NativeWindow modal_parent) {
+  scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(
+      new CloudOpenTask(profile, file_urls, cloud_provider, modal_parent));
   // Keep `upload_task` alive until `TaskFinished` executes.
   bool status = upload_task->ExecuteInternal();
   return status;
@@ -240,10 +245,12 @@ bool CloudOpenTask::Execute(
 
 CloudOpenTask::CloudOpenTask(Profile* profile,
                              std::vector<storage::FileSystemURL> file_urls,
-                             const CloudProvider cloud_provider)
+                             const CloudProvider cloud_provider,
+                             gfx::NativeWindow modal_parent)
     : profile_(profile),
       file_urls_(file_urls),
-      cloud_provider_(cloud_provider) {}
+      cloud_provider_(cloud_provider),
+      modal_parent_(modal_parent) {}
 
 CloudOpenTask::~CloudOpenTask() = default;
 
@@ -611,7 +618,14 @@ void CloudOpenTask::ShowDialog(
       dialog_page,
       file_manager::file_tasks::OfficeMoveConfirmationShown(profile_));
 
-  dialog->ShowSystemDialog();
+  if (!modal_parent_) {
+    // Create a files app window and use it as the modal parent.
+    file_manager::util::ShowItemInFolder(
+        profile_, file_urls_.at(0).path(),
+        base::BindOnce(&CloudOpenTask::FilesAppWindowCreated, this, dialog));
+  } else {
+    dialog->ShowSystemDialog(modal_parent_);
+  }
 }
 
 // Stores constructed tasks into `args->tasks` and `local_tasks_`.
@@ -620,9 +634,9 @@ void CloudOpenTask::SetTaskArgs(
     std::unique_ptr<::file_manager::file_tasks::ResultingTasks>
         resulting_tasks) {
   if (resulting_tasks) {
-    for (int i = 0; static_cast<size_t>(i) < resulting_tasks->tasks.size();
-         i++) {
-      auto task = resulting_tasks->tasks[i];
+    int nextPosition = 0;
+    for (const file_manager::file_tasks::FullTaskDescriptor& task :
+         resulting_tasks->tasks) {
       // Ignore Google Docs and MS Office tasks as they are already
       // set up to show in the dialog. And ignore QuickOffice.
       if (IsWebDriveOfficeTask(task.task_descriptor) ||
@@ -634,7 +648,7 @@ void CloudOpenTask::SetTaskArgs(
       // The (unique and positive) `position` of the task in the `tasks` vector.
       // If the user responds with the `position`, the task will be launched via
       // `LaunchLocalFileTask()`.
-      dialog_task->position = i;
+      dialog_task->position = nextPosition++;
       dialog_task->title = task.task_title;
       dialog_task->icon_url = task.icon_url.spec();
       dialog_task->app_id = task.task_descriptor.app_id;
@@ -644,6 +658,25 @@ void CloudOpenTask::SetTaskArgs(
       local_tasks_.push_back(std::move(task.task_descriptor));
     }
   }
+}
+
+void CloudOpenTask::FilesAppWindowCreated(
+    CloudUploadDialog* dialog,
+    platform_util::OpenOperationResult result) {
+  if (result != platform_util::OpenOperationResult::OPEN_SUCCEEDED) {
+    // We keep going even if we failed to launch files app. The dialog
+    // just won't be modal in this case.
+    dialog->ShowSystemDialog();
+    return;
+  }
+  Browser* browser =
+      FindSystemWebAppBrowser(profile_, SystemWebAppType::FILE_MANAGER);
+  if (!browser) {
+    dialog->ShowSystemDialog();
+    return;
+  }
+  modal_parent_ = browser->window()->GetNativeWindow();
+  dialog->ShowSystemDialog(modal_parent_);
 }
 
 // Receive user's dialog response and acts accordingly. `user_response` is
@@ -711,7 +744,7 @@ void CloudOpenTask::LaunchLocalFileTask(
   // Launch the task.
   file_manager::file_tasks::TaskDescriptor& task = local_tasks_[task_position];
   file_manager::file_tasks::ExecuteFileTask(
-      profile_, task, file_urls_,
+      profile_, task, file_urls_, nullptr,
       base::BindOnce(&CloudOpenTask::LocalTaskExecuted, this, task));
 }
 
@@ -839,6 +872,10 @@ CloudUploadDialog::CloudUploadDialog(mojom::DialogArgsPtr args,
       office_move_confirmation_shown_(office_move_confirmation_shown) {}
 
 CloudUploadDialog::~CloudUploadDialog() = default;
+
+ui::ModalType CloudUploadDialog::GetDialogModalType() const {
+  return ui::MODAL_TYPE_WINDOW;
+}
 
 bool CloudUploadDialog::ShouldCloseDialogOnEscape() const {
   // The One Drive setup dialog handles escape in the webui as it needs to

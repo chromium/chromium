@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
@@ -28,6 +29,7 @@
 #include "extensions/browser/entry_info.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace extensions {
 namespace {
@@ -128,8 +130,11 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
     urls.push_back(url);
   }
 
+  gfx::NativeWindow modal_parent =
+      ChromeExtensionFunctionDetails(this).GetNativeWindowForUI();
+
   const bool result = file_manager::file_tasks::ExecuteFileTask(
-      profile, task, urls,
+      profile, task, urls, modal_parent,
       base::BindOnce(
           &FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted,
           this));

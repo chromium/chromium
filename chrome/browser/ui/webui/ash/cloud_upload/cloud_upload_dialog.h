@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -62,6 +63,8 @@ enum class CloudProvider {
   kOneDrive,
 };
 
+class CloudUploadDialog;
+
 // The business logic for running setup, moving files to a cloud provider, and
 // opening files on cloud providers. Spawns instances of `CloudUploadDialog` if
 // necessary to run setup or get confirmation from the user.
@@ -79,7 +82,8 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
   // in the closures used for async steps.
   static bool Execute(Profile* profile,
                       const std::vector<storage::FileSystemURL>& file_urls,
-                      const CloudProvider cloud_provider);
+                      const CloudProvider cloud_provider,
+                      gfx::NativeWindow modal_parent);
 
   // Set the local tasks that are passed to the File Handler dialog. Normally
   // tasks are calculated internally by this class before displaying this
@@ -118,7 +122,8 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
 
   CloudOpenTask(Profile* profile,
                 std::vector<storage::FileSystemURL> file_urls,
-                const CloudProvider cloud_provider);
+                const CloudProvider cloud_provider,
+                gfx::NativeWindow modal_parent);
 
   ~CloudOpenTask();
 
@@ -148,6 +153,8 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
   void SetTaskArgs(mojom::DialogArgsPtr& args,
                    std::unique_ptr<::file_manager::file_tasks::ResultingTasks>
                        resulting_tasks);
+  void FilesAppWindowCreated(CloudUploadDialog* dialog,
+                             platform_util::OpenOperationResult result);
 
   void OnDialogComplete(const std::string& user_response);
   void LaunchLocalFileTask(const std::string& string_task_position);
@@ -171,6 +178,7 @@ class CloudOpenTask : public base::RefCounted<CloudOpenTask> {
   Profile* profile_;
   std::vector<storage::FileSystemURL> file_urls_;
   CloudProvider cloud_provider_;
+  gfx::NativeWindow modal_parent_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
   size_t pending_uploads_ = 0;
 };
@@ -233,6 +241,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
 
  protected:
   ~CloudUploadDialog() override;
+  ui::ModalType GetDialogModalType() const override;
   bool ShouldCloseDialogOnEscape() const override;
   bool ShouldShowCloseButton() const override;
   void GetDialogSize(gfx::Size* size) const override;
