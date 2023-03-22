@@ -676,6 +676,17 @@ const char* ProtoEnumToString(
   return "";
 }
 
+const char* ProtoEnumToString(sync_pb::WebApkIconInfo::Purpose purpose) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WebApkIconInfo, Purpose, UNSPECIFIED, MONOCHROME);
+  switch (purpose) {
+    ENUM_CASE(sync_pb::WebApkIconInfo, UNSPECIFIED);
+    ENUM_CASE(sync_pb::WebApkIconInfo, ANY);
+    ENUM_CASE(sync_pb::WebApkIconInfo, MASKABLE);
+    ENUM_CASE(sync_pb::WebApkIconInfo, MONOCHROME);
+  }
+  NOTREACHED_NORETURN();
+}
+
 const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose) {
   ASSERT_ENUM_BOUNDS(sync_pb::WebAppIconInfo, Purpose, UNSPECIFIED, MONOCHROME);
   switch (purpose) {

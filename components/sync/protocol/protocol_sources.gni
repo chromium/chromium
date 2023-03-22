@@ -73,6 +73,7 @@ sync_protocol_sources = [
   "user_consent_types.proto",
   "user_event_specifics.proto",
   "vault.proto",
+  "web_apk_specifics.proto",
   "web_app_specifics.proto",
   "webauthn_credential_specifics.proto",
   "wifi_configuration_specifics.proto",

@@ -23,6 +23,7 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
+#include "components/sync/protocol/web_apk_specifics.pb.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
@@ -148,6 +149,8 @@ const char* ProtoEnumToString(sync_pb::CardIssuer::Issuer issuer);
 
 const char* ProtoEnumToString(
     sync_pb::WalletMetadataSpecifics::Type wallet_metadata_type);
+
+const char* ProtoEnumToString(sync_pb::WebApkIconInfo::Purpose purpose);
 
 const char* ProtoEnumToString(sync_pb::WebAppIconInfo::Purpose purpose);
 

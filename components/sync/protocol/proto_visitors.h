@@ -53,6 +53,7 @@
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
+#include "components/sync/protocol/web_apk_specifics.pb.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
@@ -1412,6 +1413,21 @@ VISIT_PROTO_FIELDS(const sync_pb::WalletCreditCardCloudTokenData& proto) {
   VISIT(exp_year);
   VISIT(art_fife_url);
   VISIT(instrument_token);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WebApkIconInfo& proto) {
+  VISIT(size_in_px);
+  VISIT(url);
+  VISIT_ENUM(purpose);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::WebApkSpecifics& proto) {
+  VISIT(manifest_id);
+  VISIT(start_url);
+  VISIT(name);
+  VISIT(theme_color);
+  VISIT(scope);
+  VISIT_REP(icon_infos);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WebAppIconInfo& proto) {
