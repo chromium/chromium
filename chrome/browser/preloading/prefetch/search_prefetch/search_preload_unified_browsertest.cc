@@ -20,7 +20,6 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_preload_test_response_utils.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -1644,9 +1643,10 @@ class SearchPreloadUnifiedFallbackBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests cancelling prerenders should not delete the prefetched responses.
+// Tests prerender is cancelled after SearchPrefetchService cancels prefetch
+// requests.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
-                       PrefetchSucceedAfterPrerenderFailed) {
+                       FetchPrerenderFetch) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
@@ -1693,6 +1693,10 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
           GetCanonicalSearchURL(expected_prerender_url));
   EXPECT_TRUE(prefetch_status.has_value());
 
+  // TODO: Use another metric to trigger whether prerender takes a prefetched
+  // response.
+
+  // Navigate away to flush the metrics.
   ASSERT_TRUE(
       content::NavigateToURL(GetActiveWebContents(), expected_prerender_url));
   histogram_tester.ExpectUniqueSample(
@@ -1700,8 +1704,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
       SearchPrefetchStatus::kPrefetchServedForRealNavigation, 1);
 }
 
-// Tests that prefetched response can be served to prerender client
-// successfully.
+// Tests prerender is cancelled after SearchPrefetchService cancels prefetch
+// requests.
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
                        FetchPrerenderActivated) {
   base::HistogramTester histogram_tester;
@@ -1737,16 +1741,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   EXPECT_TRUE(prefetch_status.has_value());
   EXPECT_NE(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
 
+  // TODO: Use another metric to trigger whether prerender takes a prefetched
+  // response.
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
   NavigateToPrerenderedResult(expected_prerender_url);
   prerender_observer.WaitForActivation();
-  WaitForActivatedPageLoaded();
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
-      StreamingSearchPrefetchURLLoader::ResponseReader::
-          ResponseDataReaderStatus::kCompleted,
-      1);
 }
 
 // Tests that the SearchSuggestionService can trigger prerendering if it
@@ -1800,16 +1800,10 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
                                                         expected_prerender_url);
   NavigateToPrerenderedResult(expected_prerender_url);
   prerender_observer.WaitForActivation();
-  WaitForActivatedPageLoaded();
 
   // No prerender requests went through network.
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
-      StreamingSearchPrefetchURLLoader::ResponseReader::
-          ResponseDataReaderStatus::kCompleted,
-      1);
 }
 
 // Tests that once prefetch encountered error, prerender would be canceled as
@@ -1857,11 +1851,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   prerender_observer.WaitForDestroyed();
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prefetch_url),
                            {SearchPrefetchStatus::kRequestFailed});
+  // TODO(crbug.com/1400881): We should have another metric to track the
+  // cancellation reason.
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
-      StreamingSearchPrefetchURLLoader::ResponseReader::
-          ResponseDataReaderStatus::kFailedWithErrorCode,
-      1);
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "DefaultSearchEngine",
+      /*SearchPrefetchStatus::kPrefetchServedForRealNavigation*/ 16, 1);
 }
 
 // Edge case: when the prerendering navigation is still reading from the cache,
@@ -1931,11 +1926,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedFallbackBrowserTest,
   // Prerender should not retry the request.
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
-  histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
-      StreamingSearchPrefetchURLLoader::ResponseReader::
-          ResponseDataReaderStatus::kCompleted,
-      1);
 }
 
 class NoCancelSearchPreloadUnifiedFallbackBrowserTest
@@ -1965,7 +1955,7 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
 // prefetched result in another tab and activate the prefetched response
 // successfully.
 IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
-                       OpenPrefetchedResponseInBackgroundedTab) {
+                       ServingToPrerenderingUntilCompletion) {
   base::HistogramTester histogram_tester;
   set_service_deferral_type(
       SearchPreloadTestResponseDeferralType::kDeferChunkedResponseBody);
@@ -2017,7 +2007,6 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           /*is_renderer_initiated=*/false));
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url), {});
-
   // TODO(crbug.com/1423259): Ideally we should open the tab with the
   // prerendered result.
   prerender_observer.WaitForDestroyed();
@@ -2055,17 +2044,6 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedFallbackBrowserTest,
   EXPECT_TRUE(base::Contains(prefetch_inner_html, "PREFETCH"));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   EXPECT_EQ(2, prerender_helper().GetRequestCount(expected_prefetch_url));
-
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
-      StreamingSearchPrefetchURLLoader::ResponseReader::
-          ResponseDataReaderStatus::kDataWritingFailure,
-      1);
-  histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPreload.ResponseDataReaderFinalStatus.Prerender",
-      StreamingSearchPrefetchURLLoader::ResponseReader::
-          ResponseDataReaderStatus::kCompleted,
-      1);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)

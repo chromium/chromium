@@ -39,29 +39,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // `StreamingSearchPrefetchURLLoader`'s data cache.
   class ResponseReader : public network::mojom::URLLoader {
    public:
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused. Recorded as
-    // SearchPrefetchResponseDataReaderStatus in logs.
-    enum class ResponseDataReaderStatus {
-      kCreated = 0,
-      // After this reader built a data pipe with the URLLoader that it is
-      // serving to successfully.
-      kStarted = 1,
-      // For a success serving case.
-      kCompleted = 2,
-      // Its `StreamingSearchPrefetchURLLoader` failed to read response from the
-      // internet successfully.
-      kFailedWithErrorCode = 3,
-      // It failed to push data to its client.
-      kDataWritingFailure = 4,
-      // The client is destroyed, so this instance is destroyed.
-      kCanceledByClient = 5,
-      // The `StreamingSearchPrefetchURLLoader` is destroyed, so this instance
-      // is destroyed.
-      kCanceledByLoader = 6,
-      kMaxValue = kCanceledByLoader,
-    };
-
     ResponseReader(
         mojo::PendingReceiver<network::mojom::URLLoader> forward_receiver,
         mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
@@ -95,7 +72,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     void OnResponseDataComplete(int bytes_of_raw_data_to_transfer,
                                 const std::string& response_body);
     void OnStatusCodeReady(const network::URLLoaderCompletionStatus& status);
-    void OnDestroyed(bool canceled_by_client);
 
    private:
     // Checks if all data have be pushed to its consumer and the corresponding
@@ -112,9 +88,6 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
     // Sets upon the corresponding URLLoader has read all data from network.
     // Set to -1 when the URLLoader has not drained all data.
     int complete_size_bytes_to_transfer_ = -1;
-
-    // Tracking the current status.
-    ResponseDataReaderStatus status_ = ResponseDataReaderStatus::kCreated;
 
     // Data pipe for pushing the received response to the client.
     mojo::ScopedDataPipeProducerHandle producer_handle_;
@@ -284,7 +257,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // the navigation stack.
   raw_ptr<SearchPrefetchRequest> streaming_prefetch_request_;
 
-  // Whether we are serving from |body_content_|.
+  // Whether we are serving from |bdoy_content_|.
   bool serving_from_data_ = false;
 
   // The status returned from |network_url_loader_|.
