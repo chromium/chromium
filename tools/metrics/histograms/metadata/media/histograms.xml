@@ -2407,7 +2407,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Whether a MediaFoundationService process crash is within 2 seconds after
+    Whether a MediaFoundationService process crash is within 5 seconds after
     power or display change. Reported when the MediaFoundationService process
     crashes.
   </summary>
@@ -2420,7 +2420,7 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev@chromium.org</owner>
   <summary>
     HRESULTs associated with errors happened in the MediaFoundationService
-    process within 2 seconds after power or display change.
+    process within 5 seconds after power or display change.
   </summary>
 </histogram>
 
@@ -2432,6 +2432,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     HRESULTs associated with errors happened in the MediaFoundationService
     process NOT within 2 seconds after power or display change.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaFoundationService.HardwareContextReset"
+    enum="BooleanAfterPowerOrDisplayChange" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether a HardwareContextReset event happened in the MediaFoundationService
+    process within 5 seconds after power or display change. Reported whenever
+    such an event happens.
   </summary>
 </histogram>
 

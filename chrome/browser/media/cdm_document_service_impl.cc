@@ -45,6 +45,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -368,11 +369,15 @@ void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event,
   auto* monitor = MediaFoundationServiceMonitor::GetInstance();
 
   // Hardware context reset after power or display change is expected.
-  if (event == media::CdmEvent::kHardwareContextReset &&
-      monitor->HasRecentPowerOrDisplayChange()) {
-    DVLOG(2) << __func__
-             << ": HardwareContextReset ignored after power or display change";
-    return;
+  if (event == media::CdmEvent::kHardwareContextReset) {
+    bool has_change = monitor->HasRecentPowerOrDisplayChange();
+    base::UmaHistogramBoolean(
+        "Media.EME.MediaFoundationService.HardwareContextReset", has_change);
+    if (has_change) {
+      DVLOG(2) << __func__
+               << ": HardwareContextReset ignored after power/display change";
+      return;
+    }
   }
 
   // CdmDocumentServiceImpl is shared by all CDMs in the same RenderFrame.
