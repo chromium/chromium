@@ -225,7 +225,7 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
     throttle_ = BrowserURLLoaderThrottle::Create(
         std::move(url_checker_delegate_getter), mock_web_contents_getter.Get(),
         /*frame_tree_node_id=*/0, /*url_lookup_service=*/nullptr,
-        /*hash_realtime_service=*/nullptr);
+        /*hash_realtime_service=*/nullptr, /*ping_manager=*/nullptr);
 
     url_checker_delegate_ = base::MakeRefCounted<MockUrlCheckerDelegate>();
     throttle_delegate_ = std::make_unique<MockThrottleDelegate>();

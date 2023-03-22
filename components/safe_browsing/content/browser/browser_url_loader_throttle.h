@@ -32,6 +32,7 @@ class SafeBrowsingLookupMechanismExperimenter;
 
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
+class PingManager;
 
 // BrowserURLLoaderThrottle is used in the browser process to query
 // SafeBrowsing to determine whether a URL and also its redirect URLs are safe
@@ -73,6 +74,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
         std::string url_lookup_service_metric_suffix,
         base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
         base::WeakPtr<HashRealTimeService> hash_realtime_service,
+        base::WeakPtr<PingManager> ping_manager,
         bool is_mechanism_experiment_allowed);
 
     ~CheckerOnSB();
@@ -134,6 +136,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
     GURL last_committed_url_;
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
     base::WeakPtr<HashRealTimeService> hash_realtime_service_;
+    base::WeakPtr<PingManager> ping_manager_;
     bool is_mechanism_experiment_allowed_ = false;
     base::TimeTicks creation_time_;
   };
@@ -144,7 +147,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
           web_contents_getter,
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
-      base::WeakPtr<HashRealTimeService> hash_realtime_service);
+      base::WeakPtr<HashRealTimeService> hash_realtime_service,
+      base::WeakPtr<PingManager> ping_manager);
 
   BrowserURLLoaderThrottle(const BrowserURLLoaderThrottle&) = delete;
   BrowserURLLoaderThrottle& operator=(const BrowserURLLoaderThrottle&) = delete;
@@ -177,7 +181,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
           web_contents_getter,
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
-      base::WeakPtr<HashRealTimeService> hash_realtime_service);
+      base::WeakPtr<HashRealTimeService> hash_realtime_service,
+      base::WeakPtr<PingManager> ping_manager);
 
   // |slow_check| indicates whether it reports the result of a slow check.
   // (Please see comments of CheckerOnSB::OnCheckUrlResult() for what slow check

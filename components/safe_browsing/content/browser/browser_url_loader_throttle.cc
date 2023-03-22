@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
@@ -87,6 +88,7 @@ BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
     std::string url_lookup_service_metric_suffix,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
+    base::WeakPtr<PingManager> ping_manager,
     bool is_mechanism_experiment_allowed)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
@@ -99,6 +101,7 @@ BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
       url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
       url_lookup_service_(url_lookup_service),
       hash_realtime_service_(hash_realtime_service),
+      ping_manager_(ping_manager),
       is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
       creation_time_(base::TimeTicks::Now()) {
   content::WebContents* contents = web_contents_getter_.Run();
@@ -152,7 +155,9 @@ void BrowserURLLoaderThrottle::CheckerOnSB::Start(
       request_destination == network::mojom::RequestDestination::kDocument) {
     mechanism_experimenter_ =
         base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
-            /*is_prefetch=*/load_flags & net::LOAD_PREFETCH);
+            /*is_prefetch=*/load_flags & net::LOAD_PREFETCH,
+            /*ping_manager_on_ui=*/ping_manager_,
+            /*ui_task_runner=*/content::GetUIThreadTaskRunner({}));
   }
   if (url_checker_for_testing_) {
     url_checker_ = std::move(url_checker_for_testing_);
@@ -262,11 +267,12 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     int frame_tree_node_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
-    base::WeakPtr<HashRealTimeService> hash_realtime_service) {
+    base::WeakPtr<HashRealTimeService> hash_realtime_service,
+    base::WeakPtr<PingManager> ping_manager) {
   return base::WrapUnique<BrowserURLLoaderThrottle>(
-      new BrowserURLLoaderThrottle(std::move(delegate_getter),
-                                   web_contents_getter, frame_tree_node_id,
-                                   url_lookup_service, hash_realtime_service));
+      new BrowserURLLoaderThrottle(
+          std::move(delegate_getter), web_contents_getter, frame_tree_node_id,
+          url_lookup_service, hash_realtime_service, ping_manager));
 }
 
 BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
@@ -274,7 +280,8 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     int frame_tree_node_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
-    base::WeakPtr<HashRealTimeService> hash_realtime_service) {
+    base::WeakPtr<HashRealTimeService> hash_realtime_service,
+    base::WeakPtr<PingManager> ping_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decide whether to do real time URL lookups or not.
@@ -316,7 +323,7 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
       weak_factory_.GetWeakPtr(), real_time_lookup_enabled_,
       can_rt_check_subresource_url, can_check_db,
       can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
-      url_lookup_service, hash_realtime_service,
+      url_lookup_service, hash_realtime_service, ping_manager,
       is_mechanism_experiment_allowed);
 }
 

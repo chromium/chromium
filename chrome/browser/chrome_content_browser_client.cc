@@ -121,6 +121,7 @@
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -251,6 +252,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -5436,10 +5438,14 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     safe_browsing::RealTimeUrlLookupServiceBase* url_lookup_service =
         GetUrlLookupService(browser_context, is_enterprise_lookup_enabled,
                             is_consumer_lookup_enabled);
-
     safe_browsing::HashRealTimeService* hash_realtime_service =
         safe_browsing_service_
             ? safe_browsing_service_->GetHashRealTimeService(profile)
+            : nullptr;
+    safe_browsing::PingManager* ping_manager =
+        safe_browsing_service_
+            ? safe_browsing::ChromePingManagerFactory::GetForBrowserContext(
+                  profile)
             : nullptr;
 
     result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
@@ -5452,7 +5458,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
             safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
         wc_getter, frame_tree_node_id,
         url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
-        hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr));
+        hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr,
+        ping_manager ? ping_manager->GetWeakPtr() : nullptr));
   }
 #endif
 

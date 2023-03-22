@@ -137,7 +137,8 @@ SafeBrowsingService::CreateURLLoaderThrottle(
           base::Unretained(this)),
       wc_getter, frame_tree_node_id,
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
-      /*hash_realtime_service=*/nullptr);
+      /*hash_realtime_service=*/nullptr,
+      /*ping_manager=*/nullptr);
 }
 
 std::unique_ptr<content::NavigationThrottle>

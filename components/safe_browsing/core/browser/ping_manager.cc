@@ -383,4 +383,8 @@ void PingManager::SetTokenFetcherForTesting(
   token_fetcher_ = std::move(token_fetcher);
 }
 
+base::WeakPtr<PingManager> PingManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace safe_browsing

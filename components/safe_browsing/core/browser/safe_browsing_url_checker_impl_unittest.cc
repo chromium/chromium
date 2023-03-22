@@ -436,9 +436,10 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
     scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
         mechanism_experimenter = nullptr;
     if (is_lookup_mechanism_experiment_enabled) {
-      mechanism_experimenter =
-          base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
-              /*is_prefetch*/ false);
+      mechanism_experimenter = base::MakeRefCounted<
+          SafeBrowsingLookupMechanismExperimenter>(
+          /*is_prefetch=*/false, /*ping_manager_on_ui=*/nullptr,
+          /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
       // Tell the experimenter that WillProcessResponse has been reached so that
       // once the mechanisms complete, the experiment concludes and all memory
       // is cleaned up. Otherwise, this will cause memory leaks in the test.

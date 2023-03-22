@@ -155,7 +155,8 @@ class PretendCheckerOnIO {
                               bool is_prefetch) {
     mechanism_experimenter_ =
         base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
-            is_prefetch);
+            is_prefetch, /*ping_manager_on_ui=*/nullptr,
+            base::SequencedTaskRunner::GetCurrentDefault());
     safe_browsing_url_checker_impl_ =
         std::make_unique<PretendSafeBrowsingUrlCheckerImpl>(
             mechanism_experimenter_);
@@ -1352,7 +1353,8 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestGetDelayInformation) {
         test_case.mechanism_time_taken, /*had_warning=*/false,
         /*timed_out=*/false);
     auto experimenter = base::MakeRefCounted<Experimenter>(
-        /*is_prefetch=*/false);
+        /*is_prefetch=*/false, /*ping_manager_on_ui=*/nullptr,
+        /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
     experimenter->first_check_start_time_ = test_case.first_check_start_time;
     experimenter->will_process_response_reached_time_ =
         test_case.will_process_response_reached_time;

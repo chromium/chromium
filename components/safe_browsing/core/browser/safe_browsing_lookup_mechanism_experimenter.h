@@ -8,6 +8,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
@@ -31,7 +32,10 @@ namespace safe_browsing {
 class SafeBrowsingLookupMechanismExperimenter
     : public base::RefCounted<SafeBrowsingLookupMechanismExperimenter> {
  public:
-  explicit SafeBrowsingLookupMechanismExperimenter(bool is_prefetch);
+  SafeBrowsingLookupMechanismExperimenter(
+      bool is_prefetch,
+      base::WeakPtr<PingManager> ping_manager_on_ui,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
   SafeBrowsingLookupMechanismExperimenter(
       const SafeBrowsingLookupMechanismExperimenter&) = delete;
   SafeBrowsingLookupMechanismExperimenter& operator=(
@@ -58,7 +62,6 @@ class SafeBrowsingLookupMechanismExperimenter
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
       const GURL& last_committed_url,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
       base::WeakPtr<HashRealTimeService> hash_real_time_service_on_ui);
@@ -338,6 +341,13 @@ class SafeBrowsingLookupMechanismExperimenter
   // normally. Then, later requests within the experiment can benefit from those
   // cached results.
   bool is_prefetch_ = false;
+
+  // Reference to the profile's PingManager. Used for conditionally logging a
+  // CSBRR when the experiment ends for URL-level validation.
+  base::WeakPtr<PingManager> ping_manager_on_ui_;
+
+  // The task runner for the UI thread.
+  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<SafeBrowsingLookupMechanismExperimenter> weak_factory_{
       this};

@@ -97,6 +97,9 @@ class PingManager : public KeyedService {
   void SetTokenFetcherForTesting(
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
 
+  // Helper function to return a weak pointer.
+  base::WeakPtr<PingManager> GetWeakPtr();
+
  protected:
   friend class PingManagerTest;
   explicit PingManager(

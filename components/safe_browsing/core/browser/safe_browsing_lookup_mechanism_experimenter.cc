@@ -15,9 +15,13 @@
 
 namespace safe_browsing {
 SafeBrowsingLookupMechanismExperimenter::
-    SafeBrowsingLookupMechanismExperimenter(bool is_prefetch) {
-  is_prefetch_ = is_prefetch;
-}
+    SafeBrowsingLookupMechanismExperimenter(
+        bool is_prefetch,
+        base::WeakPtr<PingManager> ping_manager_on_ui,
+        scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : is_prefetch_(is_prefetch),
+      ping_manager_on_ui_(ping_manager_on_ui),
+      ui_task_runner_(ui_task_runner) {}
 SafeBrowsingLookupMechanismExperimenter::
     ~SafeBrowsingLookupMechanismExperimenter() = default;
 
@@ -34,20 +38,19 @@ SafeBrowsingLookupMechanismExperimenter::RunChecks(
     bool can_check_high_confidence_allowlist,
     std::string url_lookup_service_metric_suffix,
     const GURL& last_committed_url,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
     UrlRealTimeMechanism::WebUIDelegate* webui_delegate,
     base::WeakPtr<HashRealTimeService> hash_real_time_service_on_ui) {
   auto url_real_time_mechanism = std::make_unique<UrlRealTimeMechanism>(
       url, threat_types, request_destination, database_manager, can_check_db,
       can_check_high_confidence_allowlist, url_lookup_service_metric_suffix,
-      last_committed_url, ui_task_runner, url_lookup_service_on_ui,
+      last_committed_url, ui_task_runner_, url_lookup_service_on_ui,
       webui_delegate, MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly);
   auto hash_database_mechanism = std::make_unique<HashDatabaseMechanism>(
       url, threat_types, database_manager, can_check_db,
       MechanismExperimentHashDatabaseCache::kHashDatabaseOnly);
   auto hash_real_time_mechanism = std::make_unique<HashRealTimeMechanism>(
-      url, threat_types, database_manager, can_check_db, ui_task_runner,
+      url, threat_types, database_manager, can_check_db, ui_task_runner_,
       hash_real_time_service_on_ui,
       MechanismExperimentHashDatabaseCache::kHashRealTimeOnly);
 
