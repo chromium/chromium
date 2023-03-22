@@ -78,12 +78,6 @@ class TestAutofillClientTemplate : public T {
  public:
   static_assert(std::is_base_of_v<AutofillClient, T>);
 
-  TestAutofillClientTemplate() {
-    if (base::FeatureList::IsEnabled(features::test::kAutofillLogToTerminal)) {
-      log_router_.LogToTerminal();
-    }
-  }
-
   using T::T;
   TestAutofillClientTemplate(const TestAutofillClientTemplate&) = delete;
   TestAutofillClientTemplate& operator=(const TestAutofillClientTemplate&) =
@@ -723,6 +717,14 @@ class TestAutofillClientTemplate : public T {
 #endif
 
   LogRouter log_router_;
+  struct LogToTerminal {
+    explicit LogToTerminal(LogRouter& log_router) {
+      if (base::FeatureList::IsEnabled(
+              features::test::kAutofillLogToTerminal)) {
+        log_router.LogToTerminal();
+      }
+    }
+  } log_to_terminal_{log_router_};
   std::unique_ptr<LogManager> log_manager_ =
       LogManager::Create(&log_router_, base::NullCallback());
 };
