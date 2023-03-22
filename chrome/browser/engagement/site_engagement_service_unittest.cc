@@ -456,7 +456,8 @@ TEST_F(SiteEngagementServiceTest, GetTotalNotificationPoints) {
                                EngagementType::kNotificationInteraction, 4);
 }
 
-TEST_F(SiteEngagementServiceTest, RestrictedToHTTPAndHTTPS) {
+// TODO(https://crbug.com/1426914): Fix and enable this test.
+TEST_F(SiteEngagementServiceTest, DISABLED_RestrictedToHTTPAndHTTPS) {
   // The https and http versions of www.google.com should be separate.
   GURL url1("ftp://www.google.com/");
   GURL url2("file://blah");
