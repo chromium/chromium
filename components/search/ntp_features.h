@@ -63,6 +63,7 @@ BASE_DECLARE_FEATURE(kNtpRecipeTasksModule);
 BASE_DECLARE_FEATURE(kNtpRemoveScrim);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
+BASE_DECLARE_FEATURE(kNtpSingleRowShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModule);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration);

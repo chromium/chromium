@@ -372,7 +372,8 @@
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">
-        <cr-most-visited id="mostVisited" theme="[[theme_.mostVisited]]">
+        <cr-most-visited id="mostVisited" theme="[[theme_.mostVisited]]"
+            single-row="[[singleRowShortcutsEnabled_]]">
         </cr-most-visited>
       </template>
       <template is="dom-if" if="[[middleSlotPromoEnabled_]]">

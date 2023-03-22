@@ -4482,6 +4482,10 @@ const char kNtpSafeBrowsingModuleName[] = "NTP Safe Browsing Module";
 const char kNtpSafeBrowsingModuleDescription[] =
     "Shows the safe browsing module on the New Tab Page.";
 
+const char kNtpSingleRowShortcutsName[] = "NTP Single Row Shortcuts";
+const char kNtpSingleRowShortcutsDescription[] =
+    "Shows shortcuts in a single wide row on the New Tab Page.";
+
 const char kEnableReaderModeName[] = "Enable Reader Mode";
 const char kEnableReaderModeDescription[] =
     "Allows viewing of simplified web pages by selecting 'Customize and "

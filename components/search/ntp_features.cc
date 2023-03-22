@@ -233,6 +233,11 @@ BASE_FEATURE(kNtpSafeBrowsingModule,
 // If enabled, shortcuts will be shown.
 BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, shortcuts will be shown in a wide single row.
+BASE_FEATURE(kNtpSingleRowShortcuts,
+             "NtpSingleRowShortcuts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the History clusters module will be shown.
 BASE_FEATURE(kNtpHistoryClustersModule,
              "NtpHistoryClustersModule",

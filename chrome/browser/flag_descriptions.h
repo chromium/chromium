@@ -2575,6 +2575,9 @@ extern const char kNtpReducedLogoSpaceDescription[];
 extern const char kNtpSafeBrowsingModuleName[];
 extern const char kNtpSafeBrowsingModuleDescription[];
 
+extern const char kNtpSingleRowShortcutsName[];
+extern const char kNtpSingleRowShortcutsDescription[];
+
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
 

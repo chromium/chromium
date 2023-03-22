@@ -229,6 +229,11 @@ export class AppElement extends AppElementBase {
         value: () => loadTimeData.getBoolean('shortcutsEnabled'),
       },
 
+      singleRowShortcutsEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('singleRowShortcutsEnabled'),
+      },
+
       modulesFreShown: {
         type: Boolean,
         reflectToAttribute: true,

@@ -6067,6 +6067,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpReducedLogoSpaceDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpReducedLogoSpace)},
 
+    {"ntp-single-row-shortcuts", flag_descriptions::kNtpSingleRowShortcutsName,
+     flag_descriptions::kNtpSingleRowShortcutsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpSingleRowShortcuts)},
+
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,
      flag_descriptions::kNtpMiddleSlotPromoDismissalDescription, kOsDesktop,

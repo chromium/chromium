@@ -200,6 +200,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
+  source->AddBoolean(
+      "singleRowShortcutsEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpSingleRowShortcuts));
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
   source->AddBoolean(
