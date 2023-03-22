@@ -1638,12 +1638,12 @@
     },
     {
       "id": 174,
-      "description": "Disable canvas acceleration on some Haswell GPUs on ChromeOS",
+      "description": "Disable canvas acceleration on some Haswell and Crystal Well GPUs on ChromeOS",
       "os": {
         "type": "chromeos"
       },
       "vendor_id": "0x8086",
-      "device_id": ["0x0a16", "0x0a1e"],
+      "device_id": ["0x0a16", "0x0a1e", "0x0d26"],
       "features": [
         "accelerated_2d_canvas"
       ]
