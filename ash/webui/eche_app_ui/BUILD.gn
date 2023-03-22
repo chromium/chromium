@@ -22,6 +22,13 @@ static_library("eche_app_ui_pref") {
   deps = [ "//base:base" ]
 }
 
+static_library("feature_status") {
+  sources = [
+    "feature_status.cc",
+    "feature_status.h",
+  ]
+}
+
 static_library("eche_connection_status") {
   sources = [
     "eche_connection_status_handler.cc",
@@ -29,6 +36,7 @@ static_library("eche_connection_status") {
   ]
 
   deps = [
+    ":feature_status",
     "//ash/constants",
     "//ash/webui/eche_app_ui/mojom",
     "//base:base",
@@ -82,8 +90,6 @@ static_library("eche_app_ui") {
     "eche_tray_stream_status_observer.h",
     "eche_uid_provider.cc",
     "eche_uid_provider.h",
-    "feature_status.cc",
-    "feature_status.h",
     "feature_status_provider.cc",
     "feature_status_provider.h",
     "launch_app_helper.cc",
@@ -101,6 +107,7 @@ static_library("eche_app_ui") {
   deps = [
     ":eche_app_ui_pref",
     ":eche_connection_status",
+    ":feature_status",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
@@ -178,6 +185,7 @@ source_set("unit_tests") {
     ":eche_app_ui",
     ":eche_app_ui_pref",
     ":eche_connection_status",
+    ":feature_status",
     ":test_support",
     "//ash:test_support",
     "//ash/public/cpp",

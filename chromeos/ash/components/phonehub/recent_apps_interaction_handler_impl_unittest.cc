@@ -852,12 +852,13 @@ TEST_F(RecentAppsInteractionHandlerTest, GetUserIdSet) {
 
 TEST_F(RecentAppsInteractionHandlerTest, OnConnectionStatusChanged) {
   // Start in the Disconnected state.
+  // Handler will only change connection state for Connected and Failed.
   EXPECT_EQ(handler().connection_status_for_testing(),
             ConnectionStatus::kConnectionStatusDisconnected);
 
   NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnecting);
   EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusConnecting);
+            ConnectionStatus::kConnectionStatusDisconnected);
 
   NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(handler().connection_status_for_testing(),
@@ -870,7 +871,7 @@ TEST_F(RecentAppsInteractionHandlerTest, OnConnectionStatusChanged) {
   NotifyConnectionStatusChanged(
       ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusDisconnected);
+            ConnectionStatus::kConnectionStatusFailed);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,

@@ -22,8 +22,24 @@ class FakeObserver : public EcheConnectionStatusHandler::Observer {
     return num_connection_status_changed_calls_;
   }
 
+  size_t num_connection_status_for_ui_changed_calls() const {
+    return num_connection_status_for_ui_changed_calls_;
+  }
+
+  size_t num_request_background_connection_attempt_calls() const {
+    return num_request_background_connection_attempt_calls_;
+  }
+
+  size_t num_phone_hub_disconnected_calls() const {
+    return num_phone_hub_disconnected_calls_;
+  }
+
   mojom::ConnectionStatus last_connection_changed_status() const {
     return last_connection_changed_status_;
+  }
+
+  mojom::ConnectionStatus last_connection_for_ui_changed_status() const {
+    return last_connection_for_ui_changed_status_;
   }
 
   // EcheConnectionStatusHandler::Observer:
@@ -33,9 +49,28 @@ class FakeObserver : public EcheConnectionStatusHandler::Observer {
     last_connection_changed_status_ = connection_status;
   }
 
+  void OnConnectionStatusForUiChanged(
+      mojom::ConnectionStatus connection_status) override {
+    ++num_connection_status_for_ui_changed_calls_;
+    last_connection_for_ui_changed_status_ = connection_status;
+  }
+
+  void OnRequestBackgroundConnectionAttempt() override {
+    ++num_request_background_connection_attempt_calls_;
+  }
+
+  void OnPhoneHubDisconnected() override {
+    ++num_phone_hub_disconnected_calls_;
+  }
+
  private:
   size_t num_connection_status_changed_calls_ = 0;
+  size_t num_connection_status_for_ui_changed_calls_ = 0;
+  size_t num_request_background_connection_attempt_calls_ = 0;
+  size_t num_phone_hub_disconnected_calls_ = 0;
   mojom::ConnectionStatus last_connection_changed_status_ =
+      mojom::ConnectionStatus::kConnectionStatusDisconnected;
+  mojom::ConnectionStatus last_connection_for_ui_changed_status_ =
       mojom::ConnectionStatus::kConnectionStatusDisconnected;
 };
 
@@ -57,33 +92,62 @@ class EcheConnectionStatusHandlerTest : public testing::Test {
                               features::kEcheNetworkConnectionState},
         /*disabled_features=*/{});
 
-    observer_ = std::make_unique<EcheConnectionStatusHandler>();
-    observer_->AddObserver(&fake_observer_);
+    handler_ = std::make_unique<EcheConnectionStatusHandler>();
+    handler_->AddObserver(&fake_observer_);
   }
 
   void TearDown() override {
-    observer_->RemoveObserver(&fake_observer_);
-    observer_.reset();
+    handler_->RemoveObserver(&fake_observer_);
+    handler_.reset();
   }
+
+  EcheConnectionStatusHandler& handler() { return *handler_; }
 
   void NotifyConnectionStatusChanged(
       mojom::ConnectionStatus connection_status) {
-    observer_->OnConnectionStatusChanged(connection_status);
+    handler_->OnConnectionStatusChanged(connection_status);
+  }
+
+  void SetFeatureStatus(FeatureStatus feature_status) {
+    handler_->set_feature_status_for_test(feature_status);
   }
 
   size_t GetNumConnectionStatusChangedCalls() const {
     return fake_observer_.num_connection_status_changed_calls();
   }
 
+  size_t GetNumConnectionStatusForUiChangedCalls() const {
+    return fake_observer_.num_connection_status_for_ui_changed_calls();
+  }
+
+  size_t GetNumRequestBackgroundConnectionAttemptCalls() const {
+    return fake_observer_.num_request_background_connection_attempt_calls();
+  }
+
+  size_t GetNumPhoneHubDisconnectedCalls() const {
+    return fake_observer_.num_phone_hub_disconnected_calls();
+  }
+
   mojom::ConnectionStatus GetLastConnectionChangedStatus() const {
     return fake_observer_.last_connection_changed_status();
   }
 
+  mojom::ConnectionStatus GetLastConnectionForUiChangedStatus() const {
+    return fake_observer_.last_connection_for_ui_changed_status();
+  }
+
+  mojom::ConnectionStatus GetConnectionStatusForUi() const {
+    return handler_->get_connection_status_for_ui_for_test();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   FakeObserver fake_observer_;
-  std::unique_ptr<EcheConnectionStatusHandler> observer_;
+  std::unique_ptr<EcheConnectionStatusHandler> handler_;
 };
 
 TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChanged) {
@@ -150,6 +214,91 @@ TEST_F(EcheConnectionStatusHandlerTest, OnConnectionStatusChangedFlagDisabled) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 0u);
+}
+
+TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
+  SetFeatureStatus(FeatureStatus::kDisconnected);
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+
+  NotifyConnectionStatusChanged(
+      mojom::ConnectionStatus::kConnectionStatusConnecting);
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+
+  handler().CheckConnectionStatusForUi();
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+
+  SetFeatureStatus(FeatureStatus::kConnected);
+  handler().CheckConnectionStatusForUi();
+
+  EXPECT_EQ(GetLastConnectionChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 1u);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+}
+
+TEST_F(EcheConnectionStatusHandlerTest, SetConnectionStatusForUi) {
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
+
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusFailed);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusFailed);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
+
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 4u);
+}
+
+TEST_F(EcheConnectionStatusHandlerTest, OnFeatureStatusChanged) {
+  handler().OnFeatureStatusChanged(FeatureStatus::kDisconnected);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusDisconnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusConnected);
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+
+  handler().OnFeatureStatusChanged(FeatureStatus::kConnected);
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
 }
 
 }  // namespace ash::eche_app

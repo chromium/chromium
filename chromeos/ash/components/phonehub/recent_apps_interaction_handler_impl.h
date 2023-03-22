@@ -65,7 +65,7 @@ class RecentAppsInteractionHandlerImpl
   void OnAppsAccessChanged() override;
 
   // eche_app::EcheConnectionStatusHandler::Observer:
-  void OnConnectionStatusChanged(
+  void OnConnectionStatusForUiChanged(
       eche_app::mojom::ConnectionStatus connection_status) override;
 
   void SetStreamableApps(

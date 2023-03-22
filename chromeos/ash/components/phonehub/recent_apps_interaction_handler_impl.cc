@@ -204,7 +204,7 @@ void RecentAppsInteractionHandlerImpl::OnAppsAccessChanged() {
   ComputeAndUpdateUiState();
 }
 
-void RecentAppsInteractionHandlerImpl::OnConnectionStatusChanged(
+void RecentAppsInteractionHandlerImpl::OnConnectionStatusForUiChanged(
     eche_app::mojom::ConnectionStatus connection_status) {
   if (features::IsEcheNetworkConnectionStateEnabled() &&
       connection_status_ != connection_status) {

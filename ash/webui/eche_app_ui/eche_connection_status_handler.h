@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_HANDLER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTION_STATUS_HANDLER_H_
 
+#include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -21,8 +22,18 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
    public:
     ~Observer() override = default;
 
+    // Includes connection status changes for all connections (app stream +
+    // pre-warm).
     virtual void OnConnectionStatusChanged(
-        mojom::ConnectionStatus connection_status) = 0;
+        mojom::ConnectionStatus connection_status);
+
+    // For determining when app streaming is allowed in UI.
+    virtual void OnConnectionStatusForUiChanged(
+        mojom::ConnectionStatus connection_status);
+
+    virtual void OnRequestBackgroundConnectionAttempt();
+
+    virtual void OnPhoneHubDisconnected();
   };
 
   EcheConnectionStatusHandler();
@@ -39,12 +50,41 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Checks on the status of the connection to be used for deciding whether app
+  // streaming should be allowed on the current connection. Triggers
+  // OnConnectionStatusForUiChanged().
+  void CheckConnectionStatusForUi();
+  void SetConnectionStatusForUi(mojom::ConnectionStatus connection_status);
+
+  // TODO(b/274530047): Refactor to make this a real observer / actually
+  // override.
+  // EcheFeatureStatusProvider::Observer:
+  void OnFeatureStatusChanged(FeatureStatus feature_status);
+
   void Bind(mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver);
 
- protected:
-  void NotifyConnectionStatusChanged(mojom::ConnectionStatus connection_status);
-
  private:
+  friend class EcheConnectionStatusHandlerTest;
+
+  void NotifyConnectionStatusChanged(mojom::ConnectionStatus connection_status);
+  void NotifyConnectionStatusForUiChanged(
+      mojom::ConnectionStatus connection_status);
+  void NotifyRequestBackgroundConnectionAttempt();
+
+  void ResetConnectionStatus();
+
+  void set_feature_status_for_test(FeatureStatus feature_status) {
+    feature_status_ = feature_status;
+  }
+  mojom::ConnectionStatus get_connection_status_for_ui_for_test() const {
+    return connection_status_for_ui_;
+  }
+
+  mojom::ConnectionStatus connection_status_for_ui_ =
+      mojom::ConnectionStatus::kConnectionStatusDisconnected;
+  base::Time last_update_timestamp_ = base::Time();
+  std::unique_ptr<base::OneShotTimer> status_check_delay_timer_{};
+  FeatureStatus feature_status_ = FeatureStatus::kDisconnected;
   mojo::Receiver<mojom::ConnectionStatusObserver> connection_status_receiver_{
       this};
   base::ObserverList<Observer> observer_list_;
