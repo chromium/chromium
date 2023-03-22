@@ -9,9 +9,9 @@
     SecureContext
 ] interface GPUComputePassEncoder {
     void setPipeline(GPUComputePipeline pipeline);
-    void dispatchWorkgroups(GPUSize32 workgroupCountX,
-                            optional GPUSize32 workgroupCountY = 1,
-                            optional GPUSize32 workgroupCountZ = 1);
+    [NoAllocDirectCall] void dispatchWorkgroups(GPUSize32 workgroupCountX,
+                                                optional GPUSize32 workgroupCountY = 1,
+                                                optional GPUSize32 workgroupCountZ = 1);
     void dispatchWorkgroupsIndirect(GPUBuffer indirectBuffer,
                                     GPUSize64 indirectOffset);
     [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
