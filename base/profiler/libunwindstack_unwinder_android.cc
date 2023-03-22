@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Error.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
@@ -149,38 +150,37 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
       UnwindValues{unwinder.LastErrorCode(), /*unwinder.warnings()*/ 0,
                    unwinder.ConsumeFrames()};
 
-  // Check the result of either the first or second unwind. If we were
-  // successful transfer from libunwindstack format into base::Unwinder format.
-  if (values.error_code == unwindstack::ERROR_NONE) {
-    // The list of frames provided by Libunwindstack's Unwind() contains the
-    // executing frame. The executing frame is also added by
-    // StackSamplerImpl::WalkStack(). Ignore the frame from the latter to avoid
-    // duplication. In case a java method was being interpreted libunwindstack
-    // adds a dummy frame for it and then writes the corresponding native frame.
-    // In such a scenario we want to prefer the frames produced by
-    // libunwindstack.
-    DCHECK_EQ(stack->size(), 1u);
-    // Since libunwindstack completed unwinding without errors, so the frames
-    // list shouldn't be empty.
-    DCHECK(!values.frames.empty());
-    stack->clear();
-    for (const unwindstack::FrameData& frame : values.frames) {
-      const ModuleCache::Module* module =
-          module_cache()->GetModuleForAddress(frame.pc);
-      if (module == nullptr && frame.map_info != nullptr) {
-        auto module_for_caching =
-            std::make_unique<NonElfModule>(frame.map_info.get());
-        module = module_for_caching.get();
-        module_cache()->AddCustomNativeModule(std::move(module_for_caching));
-      }
-      stack->emplace_back(frame.pc, module, frame.function_name);
-    }
+  if (values.error_code != unwindstack::ERROR_NONE) {
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
+                        "TryUnwind Failure", "error", values.error_code,
+                        "warning", values.warnings, "num_frames",
+                        values.frames.size());
+  }
+  if (values.frames.empty()) {
     return UnwindResult::kCompleted;
   }
-  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
-                      "TryUnwind Failure", "error", values.error_code,
-                      "warning", values.warnings, "num_frames",
-                      values.frames.size());
-  return UnwindResult::kAborted;
+
+  // The list of frames provided by Libunwindstack's Unwind() contains the
+  // executing frame. The executing frame is also added by
+  // StackSamplerImpl::WalkStack(). Ignore the frame from the latter to avoid
+  // duplication. In case a java method was being interpreted libunwindstack
+  // adds a dummy frame for it and then writes the corresponding native frame.
+  // In such a scenario we want to prefer the frames produced by
+  // libunwindstack.
+  DCHECK_EQ(stack->size(), 1u);
+  stack->clear();
+
+  for (const unwindstack::FrameData& frame : values.frames) {
+    const ModuleCache::Module* module =
+        module_cache()->GetModuleForAddress(frame.pc);
+    if (module == nullptr && frame.map_info != nullptr) {
+      auto module_for_caching =
+          std::make_unique<NonElfModule>(frame.map_info.get());
+      module = module_for_caching.get();
+      module_cache()->AddCustomNativeModule(std::move(module_for_caching));
+    }
+    stack->emplace_back(frame.pc, module, frame.function_name);
+  }
+  return UnwindResult::kCompleted;
 }
 }  // namespace base

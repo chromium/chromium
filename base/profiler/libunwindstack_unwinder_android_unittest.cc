@@ -169,14 +169,8 @@ TEST(LibunwindstackUnwinderAndroidTest, DISABLED_OtherLibrary) {
                                scenario.GetOuterFunctionAddressRange()});
 }
 
-// TODO(crbug/1384173): investigate whether this test should pass on 32-bit ARM
-#if defined(ARCH_CPU_ARM_FAMILY) && !defined(ARCH_CPU_ARM64)
-#define MAYBE_JavaFunction DISABLED_JavaFunction
-#else
-#define MAYBE_JavaFunction JavaFunction
-#endif
 // Checks that java frames can be unwound through and have function names.
-TEST(LibunwindstackUnwinderAndroidTest, MAYBE_JavaFunction) {
+TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
   auto* build_info = base::android::BuildInfo::GetInstance();
   // Due to varying availability of compiled/JITed java unwind tables, unwinding
   // is only expected to reliably succeed on Android P+
@@ -220,13 +214,7 @@ TEST(LibunwindstackUnwinderAndroidTest, MAYBE_JavaFunction) {
                                     "callWithJavaFunction"});
 }
 
-// TODO(crbug/1384173): Investigate whether this test should pass on 32-bit ARM.
-#if defined(ARCH_CPU_ARM_FAMILY) && !defined(ARCH_CPU_ARM64)
-#define MAYBE_ReparsesMapsOnNewDynamicLibraryLoad DISABLED_ReparsesMapsOnNewDynamicLibraryLoad
-#else
-#define MAYBE_ReparsesMapsOnNewDynamicLibraryLoad ReparsesMapsOnNewDynamicLibraryLoad
-#endif
-TEST(LibunwindstackUnwinderAndroidTest, MAYBE_ReparsesMapsOnNewDynamicLibraryLoad) {
+TEST(LibunwindstackUnwinderAndroidTest, ReparsesMapsOnNewDynamicLibraryLoad) {
   // The current version of /proc/self/maps is used to create
   // memory_regions_map_ object.
   auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();
