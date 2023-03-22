@@ -198,14 +198,12 @@ bool GetDesktopShortcutsDirectories(
       !ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
                                   ShellUtil::CURRENT_USER,
                                   user_shortcuts_directory)) {
-    NOTREACHED();
     return false;
   }
   if (system_shortcuts_directory &&
       !ShellUtil::GetShortcutPath(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
                                   ShellUtil::SYSTEM_LEVEL,
                                   system_shortcuts_directory)) {
-    NOTREACHED();
     return false;
   }
   return true;
