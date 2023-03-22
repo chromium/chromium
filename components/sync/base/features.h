@@ -141,6 +141,11 @@ inline constexpr base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataType);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
+BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
+inline constexpr base::FeatureParam<bool>
+    kSyncEnableContactInfoDataTypeForDasherGoogleUsers{
+        &kSyncEnableContactInfoDataTypeForDasherUsers,
+        "enable_for_google_accounts", false};
 
 // If enabled, issues error and disables bookmarks sync when limit is crossed.
 BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);

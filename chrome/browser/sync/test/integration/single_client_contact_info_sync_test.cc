@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
@@ -328,6 +330,40 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                   HasContactInfoWithGuidAndUnknownFields(profile.guid(),
                                                          kUnsupportedField),
                   HasContactInfoWithGuidAndUnknownFields(profile2.guid(), "")));
+}
+
+// Overwrite the Sync test account with a non-gmail account. This treats it as a
+// Dasher account.
+// On Android, `switches::kSyncUserForTest` isn't supported, so it's currently
+// not possible to simulate a non-gmail account.
+class SingleClientContactInfoManagedAccountTest
+    : public SingleClientContactInfoSyncTest {
+ public:
+  SingleClientContactInfoManagedAccountTest() {
+    // This can't be done in `SetUpCommandLine()` because `SyncTest::SetUp()`
+    // already consumes the parameter.
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kSyncUserForTest, "user@managed-domain.com");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
+                       DisabledForManagedAccounts) {
+  ASSERT_TRUE(SetupClients());
+  // Sign in with a managed account.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile(0));
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+  signin::SimulateSuccessfulFetchOfAccountInfo(
+      identity_manager, account.account_id, account.email, account.gaia,
+      "managed-domain.com", "Full Name", "Given Name", "en-US",
+      /*picture_url=*/"");
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 }
 #endif
 
