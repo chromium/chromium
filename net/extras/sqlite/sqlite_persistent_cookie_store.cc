@@ -430,7 +430,7 @@ class SQLitePersistentCookieStore::Backend
   // cookies stored persistently).
   //
   // Not owned.
-  raw_ptr<CookieCryptoDelegate> crypto_;
+  raw_ptr<CookieCryptoDelegate, DanglingUntriaged> crypto_;
 };
 
 namespace {
