@@ -50,12 +50,32 @@ bool ParseIntHelper(base::StringPiece input,
   if (input.empty())
     return SetError(ParseIntError::FAILED_PARSE, optional_error);
 
+  bool is_non_negative = (format == ParseIntFormat::NON_NEGATIVE ||
+                          format == ParseIntFormat::STRICT_NON_NEGATIVE);
+  bool is_strict = (format == ParseIntFormat::STRICT_NON_NEGATIVE ||
+                    format == ParseIntFormat::STRICT_OPTIONALLY_NEGATIVE);
+
   bool starts_with_negative = input[0] == '-';
   bool starts_with_digit = base::IsAsciiDigit(input[0]);
 
   if (!starts_with_digit) {
-    if (format == ParseIntFormat::NON_NEGATIVE || !starts_with_negative)
+    // The length() < 2 check catches "-". It's needed here to prevent reading
+    // beyond the end of the array on line 70.
+    if (is_non_negative || !starts_with_negative || input.length() < 2) {
       return SetError(ParseIntError::FAILED_PARSE, optional_error);
+    }
+    // If the first digit after the negative is a 0, then either the number is
+    // -0 or it has an unnecessary leading 0. Either way, it violates the
+    // requirements of being "strict", so fail if strict.
+    if (is_strict && input[1] == '0') {
+      return SetError(ParseIntError::FAILED_PARSE, optional_error);
+    }
+  } else {
+    // Fail if the first character is a zero and the string has more than 1
+    // digit.
+    if (is_strict && input[0] == '0' && input.length() > 1) {
+      return SetError(ParseIntError::FAILED_PARSE, optional_error);
+    }
   }
 
   // Dispatch to the appropriate flavor of base::StringToXXX() by calling one of
@@ -110,17 +130,21 @@ bool ParseInt64(base::StringPiece input,
 }
 
 bool ParseUint32(base::StringPiece input,
+                 ParseIntFormat format,
                  uint32_t* output,
                  ParseIntError* optional_error) {
-  return ParseIntHelper(input, ParseIntFormat::NON_NEGATIVE, output,
-                        optional_error);
+  CHECK(format == ParseIntFormat::NON_NEGATIVE ||
+        format == ParseIntFormat::STRICT_NON_NEGATIVE);
+  return ParseIntHelper(input, format, output, optional_error);
 }
 
 bool ParseUint64(base::StringPiece input,
+                 ParseIntFormat format,
                  uint64_t* output,
                  ParseIntError* optional_error) {
-  return ParseIntHelper(input, ParseIntFormat::NON_NEGATIVE, output,
-                        optional_error);
+  CHECK(format == ParseIntFormat::NON_NEGATIVE ||
+        format == ParseIntFormat::STRICT_NON_NEGATIVE);
+  return ParseIntHelper(input, format, output, optional_error);
 }
 
 }  // namespace net

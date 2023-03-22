@@ -493,8 +493,9 @@ bool ParseCIDRBlock(base::StringPiece cidr_literal,
 
   // Parse the prefix length.
   uint32_t number_of_bits;
-  if (!ParseUint32(parts[1], &number_of_bits))
+  if (!ParseUint32(parts[1], ParseIntFormat::NON_NEGATIVE, &number_of_bits)) {
     return false;
+  }
 
   // Make sure the prefix length is in a valid range.
   if (number_of_bits > ip_address->size() * 8)

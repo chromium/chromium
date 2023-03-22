@@ -801,39 +801,52 @@ TEST_F(TrustedSignalsTest, ScoringSignalsDeleteBeforeCallback) {
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsWithDataVersion) {
-  AddVersionedJsonResponse(
-      &url_loader_factory_,
-      GURL("https://url.test/"
-           "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
-      kBaseScoringJson, 2u);
-  scoped_refptr<TrustedSignals::Result> signals =
-      FetchScoringSignals(/*render_urls=*/{"https://foo.test/"},
-                          /*ad_component_render_urls=*/{}, kHostname,
-                          /*experiment_group_id=*/absl::nullopt);
-  ASSERT_TRUE(signals);
-  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1}})",
-            ExtractScoringSignals(signals.get(),
-                                  /*render_url=*/GURL("https://foo.test/"),
-                                  /*ad_component_render_urls=*/{}));
-  EXPECT_FALSE(error_msg_.has_value());
-  EXPECT_EQ(2u, signals->GetDataVersion());
+  const uint32_t kTestCases[] = {0, 2, 42949, 4294967295};
+  for (uint32_t test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+
+    AddVersionedJsonResponse(
+        &url_loader_factory_,
+        GURL("https://url.test/"
+             "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
+        kBaseScoringJson, test_case);
+    scoped_refptr<TrustedSignals::Result> signals =
+        FetchScoringSignals(/*render_urls=*/{"https://foo.test/"},
+                            /*ad_component_render_urls=*/{}, kHostname,
+                            /*experiment_group_id=*/absl::nullopt);
+    ASSERT_TRUE(signals);
+    EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1}})",
+              ExtractScoringSignals(signals.get(),
+                                    /*render_url=*/GURL("https://foo.test/"),
+                                    /*ad_component_render_urls=*/{}));
+    EXPECT_FALSE(error_msg_.has_value());
+    EXPECT_EQ(test_case, signals->GetDataVersion());
+  }
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsWithInvalidDataVersion) {
-  AddResponse(&url_loader_factory_,
-              GURL("https://url.test/"
-                   "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
-              kJsonMimeType, absl::nullopt, kBaseScoringJson,
-              "X-Allow-FLEDGE: true\nData-Version: 2.0");
-  scoped_refptr<TrustedSignals::Result> signals =
-      FetchScoringSignals(/*render_urls=*/{"https://foo.test/"},
-                          /*ad_component_render_urls=*/{}, kHostname,
-                          /*experiment_group_id=*/absl::nullopt);
-  ASSERT_TRUE(error_msg_.has_value());
-  EXPECT_EQ(
-      "Rejecting load of https://url.test/ due to invalid Data-Version header: "
-      "2.0",
-      error_msg_.value());
+  const std::string kTestCases[] = {
+      "2.0", "03", "-1", "4294967296", "1 2", "0x4", "", "apple",
+  };
+  for (const std::string& test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+    AddResponse(
+        &url_loader_factory_,
+        GURL("https://url.test/"
+             "?hostname=publisher&renderUrls=https%3A%2F%2Ffoo.test%2F"),
+        kJsonMimeType, absl::nullopt, kBaseScoringJson,
+        "X-Allow-FLEDGE: true\nData-Version: " + test_case);
+    scoped_refptr<TrustedSignals::Result> signals =
+        FetchScoringSignals(/*render_urls=*/{"https://foo.test/"},
+                            /*ad_component_render_urls=*/{}, kHostname,
+                            /*experiment_group_id=*/absl::nullopt);
+    ASSERT_TRUE(error_msg_.has_value());
+    EXPECT_EQ(
+        "Rejecting load of https://url.test/ due to invalid Data-Version "
+        "header: " +
+            test_case,
+        error_msg_.value());
+  }
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsExperimentId) {

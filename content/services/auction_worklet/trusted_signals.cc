@@ -480,7 +480,9 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
   std::string data_version_string;
   if (headers &&
       headers->GetNormalizedHeader("Data-Version", &data_version_string) &&
-      !net::ParseUint32(data_version_string, &data_version)) {
+      !net::ParseUint32(data_version_string,
+                        net::ParseIntFormat::STRICT_NON_NEGATIVE,
+                        &data_version)) {
     std::string error = base::StringPrintf(
         "Rejecting load of %s due to invalid Data-Version header: %s",
         signals_url.spec().c_str(), data_version_string.c_str());

@@ -37,15 +37,27 @@ std::string CreateUnderflowString() {
   return result;
 }
 
-// These are valid inputs representing non-negative integers. Note that these
-// test inputs are re-used when constructing negative test cases, by simply
-// prepending a '-'.
+// These are potentially valid inputs, along with whether they're non-negative
+// or "strict" (minimal representations).
 const struct {
   const char* input;
   int expected_output;
-} kValidNonNegativeTests[] = {
-    {"0", 0},     {"00000", 0}, {"003", 3}, {"003", 3}, {"1234566", 1234566},
-    {"987", 987}, {"010", 10},
+  bool is_non_negative;
+  bool is_strict;
+} kAnnotatedTests[] = {
+    {"0", 0, /*is_non_negative=*/true, /*is_strict=*/true},
+    {"10", 10, /*is_non_negative=*/true, /*is_strict=*/true},
+    {"1234566", 1234566, /*is_non_negative=*/true, /*is_strict=*/true},
+    {"00", 0, /*is_non_negative=*/true, /*is_strict=*/false},
+    {"010", 10, /*is_non_negative=*/true, /*is_strict=*/false},
+    {"0010", 10, /*is_non_negative=*/true, /*is_strict=*/false},
+    {"-10", -10, /*is_non_negative=*/false, /*is_strict=*/true},
+    {"-1234566", -1234566, /*is_non_negative=*/false, /*is_strict=*/true},
+    {"-0", 0, /*is_non_negative=*/false, /*is_strict=*/false},
+    {"-00", 0, /*is_non_negative=*/false, /*is_strict=*/false},
+    {"-010", -10, /*is_non_negative=*/false, /*is_strict=*/false},
+    {"-0000000000000000000000000000000000001234566", -1234566,
+     /*is_non_negative=*/false, /*is_strict=*/false},
 };
 
 // These are invalid inputs that can not be parsed regardless of the format
@@ -111,30 +123,26 @@ void ExpectParseIntFailure(ParseFunc func,
 // should be passed as NON_NEGATIVE.
 template <typename T, typename ParseFunc>
 void TestParseIntUsingFormat(ParseFunc func, ParseIntFormat format) {
-  // Test valid non-negative inputs
-  for (const auto& test : kValidNonNegativeTests) {
-    ExpectParseIntSuccess<T>(func, test.input, format, test.expected_output);
+  bool is_format_non_negative = format == ParseIntFormat::NON_NEGATIVE ||
+                                format == ParseIntFormat::STRICT_NON_NEGATIVE;
+  bool is_format_strict = format == ParseIntFormat::STRICT_NON_NEGATIVE ||
+                          format == ParseIntFormat::STRICT_OPTIONALLY_NEGATIVE;
+  // Test annotated inputs, some of which may not be valid inputs when parsed
+  // using `format`.
+  for (const auto& test : kAnnotatedTests) {
+    SCOPED_TRACE(test.input);
+    if ((test.is_non_negative || !is_format_non_negative) &&
+        (test.is_strict || !is_format_strict)) {
+      ExpectParseIntSuccess<T>(func, test.input, format, test.expected_output);
+    } else {
+      ExpectParseIntFailure<T>(func, test.input, format,
+                               ParseIntError::FAILED_PARSE);
+    }
   }
 
   // Test invalid inputs (invalid regardless of parsing format)
   for (auto* input : kInvalidParseTests) {
     ExpectParseIntFailure<T>(func, input, format, ParseIntError::FAILED_PARSE);
-  }
-
-  // Test valid negative inputs (constructed from the valid non-negative test
-  // cases).
-  for (const auto& test : kValidNonNegativeTests) {
-    std::string negative_input = std::string("-") + test.input;
-    int expected_negative_output = -test.expected_output;
-
-    // The result depends on the format.
-    if (format == ParseIntFormat::NON_NEGATIVE) {
-      ExpectParseIntFailure<T>(func, negative_input, format,
-                               ParseIntError::FAILED_PARSE);
-    } else {
-      ExpectParseIntSuccess<T>(func, negative_input, format,
-                               expected_negative_output);
-    }
   }
 
   // Test parsing the largest possible value for output type.
@@ -167,7 +175,7 @@ void TestParseIntUsingFormat(ParseFunc func, ParseIntFormat format) {
 
     // The minimal value is necessarily negative, since this function is
     // testing only signed output types.
-    if (format == ParseIntFormat::NON_NEGATIVE) {
+    if (is_format_non_negative) {
       ExpectParseIntFailure<T>(func, str_value, format,
                                ParseIntError::FAILED_PARSE);
     } else {
@@ -177,9 +185,8 @@ void TestParseIntUsingFormat(ParseFunc func, ParseIntFormat format) {
 
   // Test parsing a number one less than the output type can accomodate
   // (underflow).
-  if (format == ParseIntFormat::OPTIONALLY_NEGATIVE) {
-    ExpectParseIntFailure<T>(func, CreateUnderflowString<T>(),
-                             ParseIntFormat::OPTIONALLY_NEGATIVE,
+  if (!is_format_non_negative) {
+    ExpectParseIntFailure<T>(func, CreateUnderflowString<T>(), format,
                              ParseIntError::FAILED_UNDERFLOW);
   }
 
@@ -191,13 +198,15 @@ void TestParseIntUsingFormat(ParseFunc func, ParseIntFormat format) {
 
 // Common tests to run for each of the versions of ParseInt*().
 //
-// The |func| parameter should be a function pointer to the particular
+// The `func` parameter should be a function pointer to the particular
 // ParseInt*() function to test.
 template <typename T, typename ParseFunc>
 void TestParseInt(ParseFunc func) {
   // Test using each of the possible formats.
   ParseIntFormat kFormats[] = {ParseIntFormat::NON_NEGATIVE,
-                               ParseIntFormat::OPTIONALLY_NEGATIVE};
+                               ParseIntFormat::OPTIONALLY_NEGATIVE,
+                               ParseIntFormat::STRICT_NON_NEGATIVE,
+                               ParseIntFormat::STRICT_OPTIONALLY_NEGATIVE};
 
   for (const auto& format : kFormats) {
     TestParseIntUsingFormat<T>(func, format);
@@ -206,20 +215,19 @@ void TestParseInt(ParseFunc func) {
 
 // Common tests to run for each of the versions of ParseUint*().
 //
-// The |func| parameter should be a function pointer to the particular
+// The `func` parameter should be a function pointer to the particular
 // ParseUint*() function to test.
 template <typename T, typename ParseFunc>
 void TestParseUint(ParseFunc func) {
-  // TestParseIntUsingFormat() expects a functor that has a |format|
-  // parameter. For ParseUint*() there is no such parameter. For all intents
-  // and purposes can just fix it to NON_NEGATIVE and re-use that test driver.
-  auto func_adapter = [&func](base::StringPiece input, ParseIntFormat format,
-                              T* output, ParseIntError* optional_error) {
-    EXPECT_EQ(ParseIntFormat::NON_NEGATIVE, format);
-    return func(input, output, optional_error);
+  // Test using each of the possible formats.
+  ParseIntFormat kFormats[] = {
+      ParseIntFormat::NON_NEGATIVE,
+      ParseIntFormat::STRICT_NON_NEGATIVE,
   };
 
-  TestParseIntUsingFormat<T>(func_adapter, ParseIntFormat::NON_NEGATIVE);
+  for (const auto& format : kFormats) {
+    TestParseIntUsingFormat<T>(func, format);
+  }
 }
 
 TEST(ParseNumberTest, ParseInt32) {

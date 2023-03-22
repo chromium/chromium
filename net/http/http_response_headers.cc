@@ -1217,7 +1217,7 @@ bool HttpResponseHeaders::GetAgeValue(base::TimeDelta* result) const {
   // Parse the delta-seconds as 1*DIGIT.
   uint32_t seconds;
   ParseIntError error;
-  if (!ParseUint32(value, &seconds, &error)) {
+  if (!ParseUint32(value, ParseIntFormat::NON_NEGATIVE, &seconds, &error)) {
     if (error == ParseIntError::FAILED_OVERFLOW) {
       // If the Age value cannot fit in a uint32_t, saturate it to a maximum
       // value. This is similar to what RFC 2616 says in section 14.6 for how

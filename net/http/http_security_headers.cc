@@ -27,7 +27,7 @@ enum MaxAgeParsing { REQUIRE_MAX_AGE, DO_NOT_REQUIRE_MAX_AGE };
 // within a 32-bit unsigned integer. False is returned on any parse error.
 bool MaxAgeToLimitedInt(base::StringPiece s, uint32_t limit, uint32_t* result) {
   ParseIntError error;
-  if (!ParseUint32(s, result, &error)) {
+  if (!ParseUint32(s, ParseIntFormat::NON_NEGATIVE, result, &error)) {
     if (error == ParseIntError::FAILED_OVERFLOW) {
       *result = limit;
     } else {
