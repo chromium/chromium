@@ -981,6 +981,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.DesktopCapture.Win.DirectXCursorEmbedded"
+    enum="BooleanActive" expires_after="2024-03-21">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    A boolean is recorded to this histogram for each captured video frame where
+    the desktop media source is the full screen and a change has been detected
+    in the mouse cursor position. The value is true when the cursor pointer is
+    embedded in the captured desktop image and false if not. It is expected that
+    most display adapters will report false. Only recorded when DirectX (DXGI)
+    is used on Windows.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.DesktopCapture.Win.WgcCapturerResult"
     enum="WebRtcWgcCapturerResult" expires_after="2023-08-20">
   <owner>alcooper@chromium.org</owner>
