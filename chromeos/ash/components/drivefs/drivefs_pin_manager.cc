@@ -971,10 +971,9 @@ void PinManager::OnUnmounted() {
 }
 
 void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
+  using Type = mojom::FileChange::Type;
   for (const mojom::FileChange& event : changes) {
     switch (event.type) {
-      using Type = mojom::FileChange::Type;
-
       case Type::kCreate:
         OnFileCreated(event);
         continue;

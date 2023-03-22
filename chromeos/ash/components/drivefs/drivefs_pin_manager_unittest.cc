@@ -135,10 +135,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   MockDriveFs(const MockDriveFs&) = delete;
   MockDriveFs& operator=(const MockDriveFs&) = delete;
 
-  mojom::DriveFs* GetForwardingInterface() override {
-    NOTREACHED();
-    return nullptr;
-  }
+  mojom::DriveFs* GetForwardingInterface() override { NOTREACHED_NORETURN(); }
 
   MOCK_METHOD(void, OnStartSearchQuery, (const mojom::QueryParameters&));
 
@@ -207,14 +204,6 @@ class DriveFsPinManagerTest : public testing::Test {
     logging::SetMinLogLevel(-3);
     CHECK(temp_dir_.CreateUniqueTempDir());
     gcache_dir_ = temp_dir_.GetPath().Append("GCache");
-  }
-
-  static void SetState(vector<ItemEventPtr>& events,
-                       const ItemEvent::State state) {
-    for (ItemEventPtr& event : events) {
-      DCHECK(event);
-      event->state = state;
-    }
   }
 
   PinManager::SpaceGetter GetSpaceGetter() {
