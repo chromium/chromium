@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/sequential_id_generator.h"
 #include "ui/views/views_export.h"
+#include "ui/views/win/pen_id_handler.h"
 
 namespace views {
 
@@ -46,13 +47,15 @@ class VIEWS_EXPORT PenEventProcessor {
       UINT32 pointer_id,
       const POINTER_INFO& pointer_info,
       const gfx::Point& point,
-      const ui::PointerDetails& pointer_details);
+      const ui::PointerDetails& pointer_details,
+      int32_t device_id);
   std::unique_ptr<ui::Event> GenerateTouchEvent(
       UINT message,
       UINT32 pointer_id,
       const POINTER_INFO& pointer_info,
       const gfx::Point& point,
-      const ui::PointerDetails& pointer_details);
+      const ui::PointerDetails& pointer_details,
+      int32_t device_id);
 
   raw_ptr<ui::SequentialIDGenerator> id_generator_;
   bool direct_manipulation_enabled_;
@@ -64,6 +67,8 @@ class VIEWS_EXPORT PenEventProcessor {
   base::flat_map<UINT32, bool> sent_touch_start_;
 
   absl::optional<ui::PointerId> eraser_pointer_id_;
+
+  PenIdHandler pen_id_handler_;
 };
 
 }  // namespace views

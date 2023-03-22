@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 
 namespace views {
@@ -68,10 +69,13 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
       input_type, mapped_pointer_id, /* radius_x */ 0.0f, /* radius_y */ 0.0f,
       pressure, rotation_angle, tilt_x, tilt_y, /* tangential_pressure */ 0.0f);
 
+  int32_t device_id = pen_id_handler_.TryGetPenUniqueId(pointer_id)
+                          .value_or(ui::ED_UNKNOWN_DEVICE);
+
   // If the flag is disabled, we send mouse events for all pen inputs.
   if (!direct_manipulation_enabled_) {
     return GenerateMouseEvent(message, pointer_id, pointer_pen_info.pointerInfo,
-                              point, pointer_details);
+                              point, pointer_details, device_id);
   }
   bool is_pointer_event =
       message == WM_POINTERENTER || message == WM_POINTERLEAVE;
@@ -99,11 +103,11 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
 
   if (is_pointer_event || !send_touch) {
     return GenerateMouseEvent(message, pointer_id, pointer_pen_info.pointerInfo,
-                              point, pointer_details);
+                              point, pointer_details, device_id);
   }
 
   return GenerateTouchEvent(message, pointer_id, pointer_pen_info.pointerInfo,
-                            point, pointer_details);
+                            point, pointer_details, device_id);
 }
 
 std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
@@ -111,7 +115,8 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
     UINT32 pointer_id,
     const POINTER_INFO& pointer_info,
     const gfx::Point& point,
-    const ui::PointerDetails& pointer_details) {
+    const ui::PointerDetails& pointer_details,
+    int32_t device_id) {
   ui::EventType event_type = ui::ET_MOUSE_MOVED;
   int flag = GetFlagsFromPointerMessage(message, pointer_info);
   int changed_flag = ui::EF_NONE;
@@ -164,6 +169,7 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
       event_type, point, point, ui::EventTimeForNow(),
       flag | ui::GetModifiersFromKeyState(), changed_flag, pointer_details);
   event->AsMouseEvent()->SetClickCount(click_count);
+  event->set_source_device_id(device_id);
   return event;
 }
 
@@ -172,7 +178,8 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
     UINT32 pointer_id,
     const POINTER_INFO& pointer_info,
     const gfx::Point& point,
-    const ui::PointerDetails& pointer_details) {
+    const ui::PointerDetails& pointer_details,
+    int32_t device_id) {
   int flags = GetFlagsFromPointerMessage(message, pointer_info);
 
   ui::EventType event_type = ui::ET_TOUCH_MOVED;
@@ -209,6 +216,7 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
   event->set_hovering(event_type == ui::ET_TOUCH_RELEASED);
   event->latency()->AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, event_time);
+  event->set_source_device_id(device_id);
   return event;
 }
 

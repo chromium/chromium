@@ -180,6 +180,7 @@ WebTouchPoint CreateWebTouchPoint(const MotionEvent& event,
                             event.GetY(pointer_index));
   touch.SetPositionInScreen(event.GetRawX(pointer_index),
                             event.GetRawY(pointer_index));
+  touch.device_id = event.GetSourceDeviceId(pointer_index);
 
   // A note on touch ellipse specifications:
   //

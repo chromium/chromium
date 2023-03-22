@@ -249,6 +249,11 @@ float MotionEventGeneric::GetHistoricalY(size_t pointer_index,
   return historical_events_[historical_index]->GetY(pointer_index);
 }
 
+int32_t MotionEventGeneric::GetSourceDeviceId(size_t pointer_index) const {
+  DCHECK_LT(pointer_index, pointers_->size());
+  return pointers_[pointer_index].source_device_id;
+}
+
 // static
 std::unique_ptr<MotionEventGeneric> MotionEventGeneric::CloneEvent(
     const MotionEvent& event) {

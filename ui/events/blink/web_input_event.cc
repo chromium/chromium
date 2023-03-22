@@ -433,6 +433,7 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
   webkit_event.twist = event.pointer_details().twist;
   webkit_event.id = event.pointer_details().id;
   webkit_event.pointer_type = event.pointer_details().pointer_type;
+  webkit_event.device_id = event.source_device_id();
 
   return webkit_event;
 }

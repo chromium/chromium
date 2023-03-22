@@ -88,6 +88,8 @@ class GESTURE_DETECTION_EXPORT MotionEventGeneric : public MotionEvent {
   float GetHistoricalY(size_t pointer_index,
                        size_t historical_index) const override;
 
+  int32_t GetSourceDeviceId(size_t pointer_index) const override;
+
   // Adds |pointer| to the set of pointers returning the index it was added at.
   size_t PushPointer(const PointerProperties& pointer);
 

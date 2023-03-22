@@ -684,6 +684,7 @@ component("views") {
       "win/hwnd_message_handler_delegate.h",
       "win/hwnd_util.h",
       "win/pen_event_processor.h",
+      "win/pen_id_handler.h",
       "win/scoped_enable_unadjusted_mouse_events_win.h",
       "win/scoped_fullscreen_visibility.h",
     ]
@@ -695,6 +696,7 @@ component("views") {
       "win/hwnd_message_handler.cc",
       "win/hwnd_util_aurawin.cc",
       "win/pen_event_processor.cc",
+      "win/pen_id_handler.cc",
       "win/scoped_enable_unadjusted_mouse_events_win.cc",
       "win/scoped_fullscreen_visibility.cc",
     ]
@@ -1087,6 +1089,10 @@ source_set("test_support") {
     sources += [
       "test/desktop_window_tree_host_win_test_api.cc",
       "test/desktop_window_tree_host_win_test_api.h",
+      "win/test_support/fake_ipen_device.cc",
+      "win/test_support/fake_ipen_device.h",
+      "win/test_support/fake_ipen_device_statics.cc",
+      "win/test_support/fake_ipen_device_statics.h",
     ]
   }
   if (is_mac) {
@@ -1338,6 +1344,7 @@ test("views_unittests") {
       "accessibility/test_list_grid_view.h",
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",
       "win/pen_event_processor_unittest.cc",
+      "win/pen_id_handler_unittest.cc",
     ]
   }
 
