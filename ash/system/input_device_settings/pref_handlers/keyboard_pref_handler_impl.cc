@@ -108,12 +108,12 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
   settings->auto_repeat_enabled =
       prefs->GetBoolean(prefs::kXkbAutoRepeatEnabled);
 
-  const PrefService::Preference* top_row_are_fkeys_preference =
-      prefs->FindPreference(prefs::kSendFunctionKeys);
-  settings->top_row_are_fkeys =
-      top_row_are_fkeys_preference->GetValue()->GetBool();
-  force_persistence.top_row_are_fkeys =
-      top_row_are_fkeys_preference->HasUserSetting();
+  const auto* top_row_are_fkeys_preference =
+      prefs->GetUserPrefValue(prefs::kSendFunctionKeys);
+  settings->top_row_are_fkeys = top_row_are_fkeys_preference
+                                    ? top_row_are_fkeys_preference->GetBool()
+                                    : kDefaultTopRowAreFKeys;
+  force_persistence.top_row_are_fkeys = top_row_are_fkeys_preference != nullptr;
 
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
   // Do not persist as default should not be persisted.
