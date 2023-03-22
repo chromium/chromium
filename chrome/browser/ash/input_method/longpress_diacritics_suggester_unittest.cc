@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"

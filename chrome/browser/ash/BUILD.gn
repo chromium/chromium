@@ -1439,6 +1439,8 @@ source_set("ash") {
     "input_method/input_method_syncer.h",
     "input_method/longpress_diacritics_suggester.cc",
     "input_method/longpress_diacritics_suggester.h",
+    "input_method/longpress_suggester.cc",
+    "input_method/longpress_suggester.h",
     "input_method/multi_word_suggester.cc",
     "input_method/multi_word_suggester.h",
     "input_method/native_input_method_engine.cc",
