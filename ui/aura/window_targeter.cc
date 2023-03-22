@@ -150,46 +150,11 @@ Window* WindowTargeter::FindTargetInRootWindow(Window* root_window,
   return nullptr;
 }
 
-bool WindowTargeter::ProcessEventIfTargetsDifferentRootWindow(
-    Window* root_window,
-    Window* target,
-    ui::Event* event) {
-  if (root_window->Contains(target))
-    return false;
-
-  // |window| is the root window, but |target| is not a descendent of
-  // |window|. So do not allow dispatching from here. Instead, dispatch the
-  // event through the WindowEventDispatcher that owns |target|.
-  Window* new_root = target->GetRootWindow();
-  DCHECK(new_root);
-  if (event->IsLocatedEvent()) {
-    // The event has been transformed to be in |target|'s coordinate system.
-    // But dispatching the event through the EventProcessor requires the event
-    // to be in the host's coordinate system. So, convert the event to be in
-    // the root's coordinate space, and then to the host's coordinate space by
-    // applying the host's transform.
-    ui::LocatedEvent* located_event = event->AsLocatedEvent();
-    located_event->ConvertLocationToTarget(target, new_root);
-    WindowTreeHost* window_tree_host = new_root->GetHost();
-    located_event->UpdateForRootTransform(
-        window_tree_host->GetRootTransform(),
-        window_tree_host->GetRootTransformForLocalEventCoordinates());
-  }
-  std::ignore = new_root->GetHost()->GetEventSink()->OnEventFromSource(event);
-  return true;
-}
-
 ui::EventTarget* WindowTargeter::FindTargetForEvent(ui::EventTarget* root,
                                                     ui::Event* event) {
   Window* window = static_cast<Window*>(root);
-  Window* target = event->IsKeyEvent()
-                       ? FindTargetForKeyEvent(window)
-                       : FindTargetForNonKeyEvent(window, event);
-  if (target && !window->parent() &&
-      ProcessEventIfTargetsDifferentRootWindow(window, target, event)) {
-    return nullptr;
-  }
-  return target;
+  return event->IsKeyEvent() ? FindTargetForKeyEvent(window)
+                             : FindTargetForNonKeyEvent(window, event);
 }
 
 ui::EventTarget* WindowTargeter::FindNextBestTarget(
@@ -249,6 +214,38 @@ Window* WindowTargeter::FindTargetForLocatedEvent(Window* window,
     }
   }
   return FindTargetForLocatedEventRecursively(window, event);
+}
+
+ui::EventSink* WindowTargeter::GetNewEventSinkForEvent(
+    const ui::EventTarget* current_root,
+    ui::EventTarget* target,
+    ui::Event* in_out_event) {
+  const aura::Window* root_window = static_cast<const Window*>(current_root);
+  aura::Window* target_window = static_cast<Window*>(target);
+  if (!target_window || root_window->parent() ||
+      root_window->Contains(target_window)) {
+    // no need to re-target.
+    return nullptr;
+  }
+  // |window| is the root window, but |target| is not a descendent of
+  // |window|. So do not allow dispatching from here. Instead, dispatch the
+  // event through the WindowEventDispatcher that owns |target|.
+  Window* new_root = target_window->GetRootWindow();
+  DCHECK(new_root);
+  if (in_out_event->IsLocatedEvent()) {
+    // The event has been transformed to be in |target|'s coordinate system.
+    // But dispatching the event through the EventProcessor requires the event
+    // to be in the host's coordinate system. So, convert the event to be in
+    // the root's coordinate space, and then to the host's coordinate space by
+    // applying the host's transform.
+    ui::LocatedEvent* located_event = in_out_event->AsLocatedEvent();
+    located_event->ConvertLocationToTarget(target_window, new_root);
+    WindowTreeHost* window_tree_host = new_root->GetHost();
+    located_event->UpdateForRootTransform(
+        window_tree_host->GetRootTransform(),
+        window_tree_host->GetRootTransformForLocalEventCoordinates());
+  }
+  return new_root->GetHost()->GetEventSink();
 }
 
 bool WindowTargeter::SubtreeCanAcceptEvent(

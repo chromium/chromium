@@ -78,18 +78,14 @@ class AURA_EXPORT WindowTargeter : public ui::EventTargeter {
   Window* FindTargetInRootWindow(Window* root_window,
                                  const ui::LocatedEvent& event);
 
-  // If |target| is not a child of |root_window|, then converts |event| to
-  // be relative to |root_window| and dispatches the event to |root_window|.
-  // Returns false if the |target| is a child of |root_window|.
-  bool ProcessEventIfTargetsDifferentRootWindow(Window* root_window,
-                                                Window* target,
-                                                ui::Event* event);
-
   // ui::EventTargeter:
   ui::EventTarget* FindTargetForEvent(ui::EventTarget* root,
                                       ui::Event* event) override;
   ui::EventTarget* FindNextBestTarget(ui::EventTarget* previous_target,
                                       ui::Event* event) override;
+  ui::EventSink* GetNewEventSinkForEvent(const ui::EventTarget* current_root,
+                                         ui::EventTarget* target,
+                                         ui::Event* in_out_event) override;
 
   Window* FindTargetForKeyEvent(Window* root_window);
 

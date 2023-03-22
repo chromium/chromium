@@ -12,7 +12,6 @@
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
@@ -37,37 +36,36 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
   UnifiedEventTargeter& operator=(const UnifiedEventTargeter&) = delete;
   ~UnifiedEventTargeter() override { delegate_ = nullptr; }
 
+  // aura::WindowTargeter:
   ui::EventTarget* FindTargetForEvent(ui::EventTarget* root,
                                       ui::Event* event) override {
+    delegate_->SetCurrentEventTargeterSourceHost(nullptr);
     if (root == src_root_ && !event->target()) {
-      delegate_->SetCurrentEventTargeterSourceHost(src_root_->GetHost());
-
-      if (event->IsLocatedEvent()) {
-        ui::LocatedEvent* located_event = static_cast<ui::LocatedEvent*>(event);
-        located_event->ConvertLocationToTarget(
-            static_cast<aura::Window*>(nullptr), dst_root_);
-      }
-      auto ptr = weak_ptr_factory_.GetWeakPtr();
-      std::ignore =
-          dst_root_->GetHost()->GetEventSink()->OnEventFromSource(event);
-      if (!ptr)
-        return nullptr;
-
-      // Reset the source host.
-      delegate_->SetCurrentEventTargeterSourceHost(nullptr);
-
-      return nullptr;
+      return root;
     } else {
       NOTREACHED() << "event type:" << event->type();
       return aura::WindowTargeter::FindTargetForEvent(root, event);
     }
+  }
+  ui::EventSink* GetNewEventSinkForEvent(const ui::EventTarget* current_root,
+                                         ui::EventTarget* target,
+                                         ui::Event* in_out_event) override {
+    if (current_root == src_root_ && !in_out_event->target()) {
+      delegate_->SetCurrentEventTargeterSourceHost(src_root_->GetHost());
+      if (in_out_event->IsLocatedEvent()) {
+        ui::LocatedEvent* located_event = in_out_event->AsLocatedEvent();
+        located_event->ConvertLocationToTarget(
+            static_cast<aura::Window*>(nullptr), dst_root_);
+      }
+      return dst_root_->GetHost()->GetEventSink();
+    }
+    return nullptr;
   }
 
  private:
   aura::Window* src_root_;
   aura::Window* dst_root_;
   AshWindowTreeHostDelegate* delegate_;  // Not owned.
-  base::WeakPtrFactory<UnifiedEventTargeter> weak_ptr_factory_{this};
 };
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(

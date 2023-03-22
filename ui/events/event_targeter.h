@@ -11,6 +11,7 @@
 namespace ui {
 
 class Event;
+class EventSink;
 class EventTarget;
 
 class EVENTS_EXPORT EventTargeter {
@@ -35,6 +36,14 @@ class EVENTS_EXPORT EventTargeter {
   // coordinate space).
   virtual EventTarget* FindNextBestTarget(EventTarget* previous_target,
                                           Event* event) = 0;
+
+  // Returns new event sink if the `in_out_event` should be dispatched to a
+  // different sink. The event will be updated so that it can be dispatched to
+  // the new sink correctly. Returns `nullptr` if the event do not have to be
+  // redirected.
+  virtual EventSink* GetNewEventSinkForEvent(const EventTarget* current_root,
+                                             EventTarget* target,
+                                             Event* in_out_event);
 
  private:
   friend class EventProcessor;
