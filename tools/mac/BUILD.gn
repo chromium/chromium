@@ -5,12 +5,12 @@
 group("mac") {
   testonly = true
   deps = [
-    ":dsc_extract",
+    ":dsc_extractor",
     "power:all",
   ]
 }
 
-executable("dsc_extract") {
+executable("dsc_extractor") {
   testonly = true
-  sources = [ "dsc_extract.cc" ]
+  sources = [ "dsc_extractor.cc" ]
 }
