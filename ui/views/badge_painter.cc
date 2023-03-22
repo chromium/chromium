@@ -16,6 +16,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -25,16 +26,18 @@ namespace {
 // Returns the appropriate font to use for the badge based on the font
 // currently being used to render the title of the menu item.
 gfx::FontList DeriveBadgeFont(const gfx::FontList& primary_font) {
+  if (features::IsChromeRefresh2023()) {
+    return views::style::GetFont(views::style::CONTEXT_BADGE,
+                                 views::style::STYLE_SECONDARY);
+  }
+
   // Preferred font is slightly smaller and slightly more bold than the title
   // font. The size change is required to make it look correct in the badge; we
   // add a small degree of bold to prevent color smearing/blurring due to font
   // smoothing. This ensures readability on all platforms and in both light and
   // dark modes.
-  const gfx::Font::Weight weight = features::IsChromeRefresh2023()
-                                       ? gfx::Font::Weight::SEMIBOLD
-                                       : gfx::Font::Weight::MEDIUM;
   return primary_font.Derive(BadgePainter::kBadgeFontSizeAdjustment,
-                             gfx::Font::NORMAL, weight);
+                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
 }
 
 // Returns the highlight rect for the badge given the font and text rect

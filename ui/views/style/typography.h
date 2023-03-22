@@ -24,9 +24,12 @@ enum TextContext {
   // "CONTEXT_" represent the actual TextContexts: the rest are markers.
   VIEWS_TEXT_CONTEXT_START = 0,
 
+  // Text that appears on a views::Badge. Always 9pt.
+  CONTEXT_BADGE = VIEWS_TEXT_CONTEXT_START,
+
   // Text that appears on a button control. Usually 12pt. This includes controls
   // with button-like behavior, such as Checkbox.
-  CONTEXT_BUTTON = VIEWS_TEXT_CONTEXT_START,
+  CONTEXT_BUTTON,
 
   // Text that appears on an MD-styled dialog button control. Usually 12pt.
   CONTEXT_BUTTON_MD,

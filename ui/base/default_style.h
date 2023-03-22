@@ -19,6 +19,14 @@ namespace ui {
 // ui::ResourceBundle provides a description via IDS_UI_FONT_FAMILY_CROS.
 const int kMessageFontSizeDelta = 0;
 
+// Default font size delta for views::Badge.
+#if BUILDFLAG(IS_APPLE)
+// Aim for 9pt for Cocoa labels ([NSFont systemFontSize] is typically 13pt).
+const int kBadgeFontSizeDelta = -4;
+#else
+const int kBadgeFontSizeDelta = -3;
+#endif
+
 // Default font size delta for dialog buttons, textfields, and labels.
 #if BUILDFLAG(IS_APPLE)
 // Aim for 12pt for Cocoa labels ([NSFont systemFontSize] is typically 13pt).

@@ -36,6 +36,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   constexpr int kBodyTextLargeSize = 13;
   constexpr int kDefaultSize = 12;
   constexpr int kStatusSize = 10;
+  constexpr int kBadgeSize = 9;
 
   DCHECK(StyleAllowedForContext(context, style))
       << "context: " << context << " style: " << style;
@@ -50,6 +51,10 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetails(
   ApplyCommonFontStyles(context, style, details);
 
   switch (context) {
+    case views::style::CONTEXT_BADGE:
+      details.size_delta = kBadgeSize - gfx::PlatformFont::kDefaultBaseFontSize;
+      details.weight = gfx::Font::Weight::BOLD;
+      break;
     case views::style::CONTEXT_BUTTON_MD:
       details.weight = MediumWeightForUI();
       break;

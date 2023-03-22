@@ -75,6 +75,10 @@ ui::ResourceBundle::FontDetails TypographyProvider::GetFontDetails(
   ui::ResourceBundle::FontDetails details;
 
   switch (context) {
+    case style::CONTEXT_BADGE:
+      details.size_delta = ui::kBadgeFontSizeDelta;
+      details.weight = gfx::Font::Weight::BOLD;
+      break;
     case style::CONTEXT_BUTTON_MD:
       details.size_delta = ui::kLabelFontSizeDelta;
       details.weight = TypographyProvider::MediumWeightForUI();
