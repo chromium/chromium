@@ -1610,6 +1610,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)setContentOffset:(CGFloat)offset {
   self.collectionView.contentOffset = CGPointMake(0, offset);
   self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
+  [self handleStickyElementsForScrollPosition:offset force:YES];
   if (self.feedHeaderViewController) {
     [self.feedHeaderViewController
         toggleBackgroundBlur:(self.scrolledIntoFeed &&
