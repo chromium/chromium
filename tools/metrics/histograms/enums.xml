@@ -54771,10 +54771,12 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 </enum>
 
 <enum name="JobProtocolErrorLocation">
-  <int value="0" label="SessionStartReadingFailed"/>
-  <int value="1" label="CreateSessionFailed"/>
-  <int value="2" label="CryptoConnectFailedSync"/>
-  <int value="3" label="CryptoConnectFailedAsync"/>
+  <int value="0" label="kSessionStartReadingFailedAsync"/>
+  <int value="1" label="kSessionStartReadingFailedSync"/>
+  <int value="2" label="kCreateSessionFailedAsync"/>
+  <int value="3" label="kCreateSessionFailedSync"/>
+  <int value="4" label="CryptoConnectFailedSync"/>
+  <int value="5" label="CryptoConnectFailedAsync"/>
 </enum>
 
 <enum name="JpegColorSpace">

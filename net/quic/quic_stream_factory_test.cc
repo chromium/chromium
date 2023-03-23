@@ -288,6 +288,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     } else {
       disabled_features.push_back(features::kPriorityIncremental);
     }
+    enabled_features.push_back(features::kAsyncQuicSession);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     FLAGS_quic_enable_http3_grease_randomness = false;
     context_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
@@ -1012,7 +1013,9 @@ INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
                          ::testing::ValuesIn(GetTestParams()),
                          ::testing::PrintToStringParamName());
 
-TEST_P(QuicStreamFactoryTest, Create) {
+TEST_P(QuicStreamFactoryTest, CreateSyncQuicSession) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -1067,7 +1070,98 @@ TEST_P(QuicStreamFactoryTest, Create) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-TEST_P(QuicStreamFactoryTest, CreateZeroRtt) {
+TEST_P(QuicStreamFactoryTest, CreateAsyncQuicSession) {
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
+
+  QuicStreamRequest request2(factory_.get());
+  EXPECT_EQ(OK,
+            request2.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  // Will reset stream 3.
+  stream = CreateStream(&request2);
+
+  EXPECT_TRUE(stream.get());
+
+  // TODO(rtenneti): We should probably have a tests that HTTP and HTTPS result
+  // in streams on different sessions.
+  QuicStreamRequest request3(factory_.get());
+  EXPECT_EQ(OK,
+            request3.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  stream = CreateStream(&request3);  // Will reset stream 5.
+  stream.reset();                    // Will reset stream 7.
+
+  EXPECT_TRUE(socket_data.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+}
+
+// This test uses synchronous QUIC session creation
+TEST_P(QuicStreamFactoryTest, SyncCreateZeroRtt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  Initialize();
+  factory_->set_is_quic_known_to_work_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
+                                            "192.168.0.1", "");
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(OK,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+  EXPECT_TRUE(socket_data.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest, AsyncCreateZeroRtt) {
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -1199,6 +1293,49 @@ TEST_P(QuicStreamFactoryTest, FactoryDestroyedWhenJobPending) {
 }
 
 TEST_P(QuicStreamFactoryTest, RequireConfirmation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
+                                            "192.168.0.1", "");
+  Initialize();
+  factory_->set_is_quic_known_to_work_on_current_network(false);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+
+  EXPECT_FALSE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
+
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+
+  EXPECT_TRUE(http_server_properties_->HasLastLocalAddressWhenQuicWorked());
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(session->require_confirmation());
+}
+
+TEST_P(QuicStreamFactoryTest, RequireConfirmationAsyncQuicSession) {
   crypto_client_stream_factory_.set_handshake_mode(
       MockCryptoClientStream::ZERO_RTT);
   host_resolver_->set_synchronous_mode(true);
@@ -1911,8 +2048,8 @@ TEST_P(QuicStreamFactoryTest, HttpsPoolingWithMatchingPins) {
 }
 
 TEST_P(QuicStreamFactoryTest, NoHttpsPoolingWithDifferentPins) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
   Initialize();
 
@@ -2163,7 +2300,10 @@ TEST_P(QuicStreamFactoryTest, ResolutionErrorInCreate) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-TEST_P(QuicStreamFactoryTest, ConnectErrorInCreate) {
+// This test uses synchronous QUIC session creation.
+TEST_P(QuicStreamFactoryTest, SyncConnectErrorInCreate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
   Initialize();
 
   MockQuicData socket_data(version_);
@@ -2185,7 +2325,69 @@ TEST_P(QuicStreamFactoryTest, ConnectErrorInCreate) {
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 }
 
-TEST_P(QuicStreamFactoryTest, CancelCreate) {
+TEST_P(QuicStreamFactoryTest, AsyncConnectErrorInCreate) {
+  Initialize();
+
+  MockQuicData socket_data(version_);
+  socket_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
+
+  EXPECT_TRUE(socket_data.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+}
+
+// This test uses synchronous QUIC session creation.
+TEST_P(QuicStreamFactoryTest, SyncCancelCreate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  Initialize();
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+  {
+    QuicStreamRequest request(factory_.get());
+    EXPECT_EQ(
+        ERR_IO_PENDING,
+        request.Request(
+            scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+            SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+            /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+            failed_on_default_network_callback_, callback_.callback()));
+  }
+
+  base::RunLoop().RunUntilIdle();
+
+  QuicStreamRequest request2(factory_.get());
+  EXPECT_EQ(OK,
+            request2.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+
+  EXPECT_TRUE(stream.get());
+  stream.reset();
+
+  EXPECT_TRUE(socket_data.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest, AsyncCancelCreate) {
   Initialize();
   MockQuicData socket_data(version_);
   socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
@@ -2296,7 +2498,9 @@ TEST_P(QuicStreamFactoryTest, CloseAllSessions) {
 // report QUIC_HANDSHAKE_FAILED to upper layers. Subsequent
 // QuicStreamRequest should succeed without hanging.
 TEST_P(QuicStreamFactoryTest,
-       WriteErrorInCryptoConnectWithAsyncHostResolution) {
+       WriteErrorInCryptoConnectWithAsyncHostResolutionSyncSessionCreation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
   Initialize();
   // Use unmocked crypto stream to do crypto connect.
   crypto_client_stream_factory_.set_handshake_mode(
@@ -2362,7 +2566,146 @@ TEST_P(QuicStreamFactoryTest,
   EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
 }
 
-TEST_P(QuicStreamFactoryTest, WriteErrorInCryptoConnectWithSyncHostResolution) {
+TEST_P(QuicStreamFactoryTest,
+       WriteErrorInCryptoConnectWithAsyncHostResolutionAsyncSessionCreation) {
+  Initialize();
+  // Use unmocked crypto stream to do crypto connect.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
+  socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request, should fail after the write of the CHLO fails.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED, callback_.WaitForResult());
+  EXPECT_FALSE(HasActiveSession(scheme_host_port_));
+  EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
+
+  // Verify new requests can be sent normally without hanging.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request2(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request2.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_FALSE(HasActiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+  // Run the message loop to complete host resolution.
+  base::RunLoop().RunUntilIdle();
+
+  // Complete handshake. QuicStreamFactory::Job should complete and succeed.
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
+
+  // Create QuicHttpStream.
+  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  EXPECT_TRUE(stream.get());
+  stream.reset();
+  EXPECT_TRUE(socket_data.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest,
+       WriteErrorInCryptoConnectWithSyncHostResolutionSyncQuicSession) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  Initialize();
+  // Use unmocked crypto stream to do crypto connect.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
+                                            "192.168.0.1", "");
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  // Trigger PACKET_WRITE_ERROR when sending packets in crypto connect.
+  socket_data.AddWrite(SYNCHRONOUS, ERR_ADDRESS_UNREACHABLE);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request, should fail immediately.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_QUIC_HANDSHAKE_FAILED,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  // Check no active session, or active jobs left for this server.
+  EXPECT_FALSE(HasActiveSession(scheme_host_port_));
+  EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
+
+  // Verify new requests can be sent normally without hanging.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request2(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request2.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_FALSE(HasActiveSession(scheme_host_port_));
+  EXPECT_TRUE(HasActiveJob(scheme_host_port_, privacy_mode_));
+
+  base::RunLoop().RunUntilIdle();
+  // Complete handshake.
+  crypto_client_stream_factory_.last_stream()
+      ->NotifySessionOneRttKeyAvailable();
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  EXPECT_FALSE(HasActiveJob(scheme_host_port_, privacy_mode_));
+
+  // Create QuicHttpStream.
+  std::unique_ptr<HttpStream> stream = CreateStream(&request2);
+  EXPECT_TRUE(stream.get());
+  stream.reset();
+  EXPECT_TRUE(socket_data.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+}
+
+TEST_P(QuicStreamFactoryTest,
+       WriteErrorInCryptoConnectWithSyncHostResolutionAsyncQuicSession) {
   Initialize();
   // Use unmocked crypto stream to do crypto connect.
   crypto_client_stream_factory_.set_handshake_mode(
@@ -2495,7 +2838,74 @@ TEST_P(QuicStreamFactoryTest, CloseSessionDuringCreation) {
 // Regression test for b/267653996. Sets up dns race with stale session waiting
 // on CryptoConnect. Forces job to retry on alternate network before the
 // handshake and then disconnects the idle network.
-TEST_P(QuicStreamFactoryTest, OnIdleNetworkDetected) {
+TEST_P(QuicStreamFactoryTest, OnIdleNetworkDetectedSyncQuicSession) {
+  if (!version_.UsesTls()) {
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  quic_params_->race_stale_dns_on_connection = true;
+  quic_params_->retry_on_alternate_network_before_handshake = true;
+  host_resolver_ = std::make_unique<MockCachingHostResolver>();
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ASYNC_ZERO_RTT);
+
+  host_resolver_->set_ondemand_mode(true);
+  host_resolver_->rules()->AddRule(scheme_host_port_.host(), kCachedIPAddress);
+  host_resolver_->LoadIntoCache(scheme_host_port_, NetworkAnonymizationKey(),
+                                /*optional_parameters=*/absl::nullopt);
+
+  // Expire the cache
+  host_resolver_->GetHostCache()->Invalidate();
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  if (VersionUsesHttp3(version_.transport_version)) {
+    socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  }
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData socket_data1(version_);
+  socket_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  if (VersionUsesHttp3(version_.transport_version)) {
+    socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  }
+  socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+
+  TestCompletionCallback host_resolution_callback;
+  EXPECT_TRUE(
+      request.WaitForHostResolution(host_resolution_callback.callback()));
+
+  base::RunLoop().RunUntilIdle();
+  host_resolver_->ResolveAllPending();
+  base::RunLoop().RunUntilIdle();
+  crypto_client_stream_factory_.last_stream()->NotifySessionZeroRttComplete();
+  EXPECT_FALSE(
+      crypto_client_stream_factory_.last_stream()->one_rtt_keys_available());
+  quic::QuicServerId server_id(scheme_host_port_.host(),
+                               scheme_host_port_.port(), false);
+  EXPECT_TRUE(HasLiveSession(scheme_host_port_));
+  QuicChromiumClientSession* session = GetPendingSession(scheme_host_port_);
+  session->connection()->OnIdleNetworkDetected();
+}
+
+TEST_P(QuicStreamFactoryTest, OnIdleNetworkDetectedAsyncQuicSession) {
   if (!version_.UsesTls()) {
     return;
   }

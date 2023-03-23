@@ -325,6 +325,11 @@ BASE_FEATURE(kKerberosInBrowserRedirect,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// A flag to use asynchronous session creation for new QUIC sessions.
+BASE_FEATURE(kAsyncQuicSession,
+             "AsyncQuicSession",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // IP protection experiment configuration settings
 BASE_FEATURE(kEnableIpProtectionProxy,
              "EnableIpPrivacyProxy",
