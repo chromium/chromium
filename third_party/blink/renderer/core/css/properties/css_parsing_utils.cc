@@ -6410,8 +6410,11 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
     }
     return nullptr;
   }
-  if (!angle || !size) {
+  if (!angle) {
     return nullptr;
+  }
+  if (!size) {
+    size = CSSIdentifierValue::Create(CSSValueID::kClosestSide);
   }
   range = function_range;
   return MakeGarbageCollected<cssvalue::CSSRayValue>(*angle, *size, contain);

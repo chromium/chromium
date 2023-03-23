@@ -20,8 +20,10 @@ String CSSRayValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("ray(");
   result.Append(angle_->CssText());
-  result.Append(' ');
-  result.Append(size_->CssText());
+  if (size_->GetValueID() != CSSValueID::kClosestSide) {
+    result.Append(' ');
+    result.Append(size_->CssText());
+  }
   if (contain_) {
     result.Append(' ');
     result.Append(contain_->CssText());
