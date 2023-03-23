@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from os import path
+
 
 def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
   # Calculate mappings for ui/webui/resources/ sub-folders that have a dedicated
@@ -33,6 +35,24 @@ def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
     )]
 
 
+def _add_third_party_polymer_mappings(path_mappings, root_src_dir):
+  # Use path.join() below, since root_src_dir can end with trailing slashes.
+  path_mappings[f'//third_party/polymer/v3_0:library'] = [
+      (
+          f'//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
+          path.join(
+              root_src_dir,
+              'third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts'
+          ),
+      ),
+      (
+          f'//resources/polymer/v3_0/*',
+          path.join(root_src_dir,
+                    'third_party/polymer/v3_0/components-chromium/*'),
+      ),
+  ]
+
+
 # Ash-only
 def _add_ash_webui_resources_mappings(path_mappings, root_gen_dir):
   path_mappings['//ash/webui/common/resources:build_ts'] = [(
@@ -41,10 +61,11 @@ def _add_ash_webui_resources_mappings(path_mappings, root_gen_dir):
   )]
 
 
-def GetDepToPathMappings(root_gen_dir, platform):
+def GetDepToPathMappings(root_gen_dir, root_src_dir, platform):
   path_mappings = {}
 
   _add_ui_webui_resources_mappings(path_mappings, root_gen_dir)
+  _add_third_party_polymer_mappings(path_mappings, root_src_dir)
 
   if platform == 'chromeos_ash':
     _add_ash_webui_resources_mappings(path_mappings, root_gen_dir)

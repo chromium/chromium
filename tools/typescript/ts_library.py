@@ -39,6 +39,7 @@ def main(argv):
   parser.add_argument('--path_mappings', nargs='*')
 
   parser.add_argument('--root_gen_dir', required=True)
+  parser.add_argument('--root_src_dir', required=True)
 
   parser.add_argument('--root_dir', required=True)
   parser.add_argument('--out_dir', required=True)
@@ -161,6 +162,7 @@ def main(argv):
 
     assert args.raw_deps is not None
     dep_to_path_mappings = GetDepToPathMappings(args.root_gen_dir,
+                                                args.root_src_dir,
                                                 args.platform)
 
     for dep in args.raw_deps:
