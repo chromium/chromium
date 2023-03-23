@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -58,7 +59,10 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kPowerButtonMenuCornerRadius, kPowerButtonMenuBorderType,
+      kPowerButtonMenuCornerRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : kPowerButtonMenuBorderType,
       /*use_light_colors=*/false));
   SetBackground(
       views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));

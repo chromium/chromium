@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "base/functional/bind.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -152,7 +153,9 @@ void RemoveQueryConfirmationDialog::OnThemeChanged() {
       kDialogRoundedCornerRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kDialogRoundedCornerRadius,
-      views::HighlightBorder::Type::kHighlightBorder1,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
   title_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));

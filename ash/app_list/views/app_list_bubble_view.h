@@ -96,7 +96,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // views::View:
   const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void OnThemeChanged() override;
   void Layout() override;
 
   // SearchBoxViewDelegate:

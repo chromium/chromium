@@ -17,6 +17,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -231,7 +232,10 @@ void AppListToastView::OnThemeChanged() {
             ColorProvider::BaseLayerType::kTransparent80),
         kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
-        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+        kCornerRadius,
+        chromeos::features::IsJellyrollEnabled()
+            ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+            : views::HighlightBorder::Type::kHighlightBorder1,
         /*use_light_colors=*/false));
   } else {
     SetBackground(views::CreateRoundedRectBackground(

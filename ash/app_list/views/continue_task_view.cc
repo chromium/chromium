@@ -24,6 +24,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -361,7 +362,9 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
           ColorProvider::BaseLayerType::kTransparent60)));
   SetBorder(std::make_unique<views::HighlightBorder>(
       GetCornerRadius(/*tablet_mode=*/true),
-      views::HighlightBorder::Type::kHighlightBorder2,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder2,
       /*use_light_colors=*/false));
 }
 

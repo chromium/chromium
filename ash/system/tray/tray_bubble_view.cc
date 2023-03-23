@@ -535,7 +535,10 @@ void TrayBubbleView::OnThemeChanged() {
   }
 
   SetBorder(std::make_unique<views::HighlightBorder>(
-      params_.corner_radius, views::HighlightBorder::Type::kHighlightBorder1,
+      params_.corner_radius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
   set_color(GetColorProvider()->GetColor(
       chromeos::features::IsJellyEnabled()

@@ -39,6 +39,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -615,6 +616,8 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   DCHECK(view_delegate_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
+  const bool is_jelly_enabled = chromeos::features::IsJellyrollEnabled();
+
   // The background's corner radius cannot be changed in the same layer of the
   // contents container using layer animation, so use another layer to perform
   // such changes.
@@ -629,8 +632,10 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
       gfx::RoundedCornersF(kFolderBackgroundRadius));
   background_view_->layer()->SetIsFastRoundedCorner(true);
   background_view_->SetBorder(std::make_unique<views::HighlightBorder>(
-      kFolderBackgroundRadius, views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
+      kFolderBackgroundRadius,
+      is_jelly_enabled ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+                       : views::HighlightBorder::Type::kHighlightBorder1,
+      /*use_light_colors=*/false));
   background_view_->SetBackground(
       views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   background_view_->SetVisible(false);

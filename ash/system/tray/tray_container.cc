@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
@@ -116,7 +117,10 @@ void TrayContainer::OnPaint(gfx::Canvas* canvas) {
       canvas, *this,
       gfx::Rect(gfx::PointAtOffsetFromOrigin(bounds_origin),
                 background_bounds.size()),
-      rounded_corners, views::HighlightBorder::Type::kHighlightBorder2,
+      rounded_corners,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
+          : views::HighlightBorder::Type::kHighlightBorder2,
       /*use_light_colors=*/false);
 }
 

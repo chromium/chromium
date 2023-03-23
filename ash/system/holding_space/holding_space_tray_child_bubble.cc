@@ -16,6 +16,7 @@
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -205,7 +206,10 @@ void HoldingSpaceTrayChildBubble::Init() {
 
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kBubbleCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+      kBubbleCornerRadius,
+      chromeos::features::IsJellyrollEnabled()
+          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+          : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
 }
 
