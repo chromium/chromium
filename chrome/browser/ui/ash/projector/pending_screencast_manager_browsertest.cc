@@ -97,7 +97,8 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
   PendingScreencastMangerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kProjectorUpdateIndexableText}, {});
+        {features::kProjectorUpdateIndexableText},
+        {ash::features::kFilesInlineSyncStatus});
   }
   PendingScreencastMangerBrowserTest(
       const PendingScreencastMangerBrowserTest&) = delete;
@@ -133,8 +134,9 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
   virtual drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore non-user profile.
-    if (!ProfileHelper::IsUserProfile(profile))
+    if (!ProfileHelper::IsUserProfile(profile)) {
       return nullptr;
+    }
 
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath mount_path = profile->GetPath().Append("drivefs");
@@ -336,6 +338,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   void WaitBlockingTaskRunnerFinish() {
@@ -344,7 +347,6 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
         FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

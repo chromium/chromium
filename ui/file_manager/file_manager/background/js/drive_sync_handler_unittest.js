@@ -7,6 +7,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {toFilesAppURL} from '../../common/js/url_constants.js';
+import {util} from '../../common/js/util.js';
 
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {MockProgressCenter} from './mock_progress_center.js';
@@ -34,6 +35,8 @@ function asFileURL(name) {
  * @type {!Object}
  */
 const mockChrome = {};
+
+util.isInlineSyncStatusEnabled = () => false;
 
 mockChrome.fileManagerPrivate = {
   onFileTransfersUpdated: {

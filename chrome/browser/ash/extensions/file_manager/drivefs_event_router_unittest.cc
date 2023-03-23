@@ -183,6 +183,11 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
 };
 
 class DriveFsEventRouterTest : public testing::Test {
+ public:
+  DriveFsEventRouterTest() {
+    feature_list_.InitWithFeatures({}, {ash::features::kFilesInlineSyncStatus});
+  }
+
  protected:
   void SetUp() override {
     event_router_ = std::make_unique<TestDriveFsEventRouter>();
@@ -212,6 +217,9 @@ class DriveFsEventRouterTestInlineSyncStatus : public DriveFsEventRouterTest {
   DriveFsEventRouterTestInlineSyncStatus() {
     feature_list_.InitWithFeatures({ash::features::kFilesInlineSyncStatus}, {});
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 inline void AddEvent(std::vector<drivefs::mojom::ItemEventPtr>& events,

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_screencast.h"
@@ -77,6 +78,11 @@ using ScreencastManagerTest = SystemWebAppIntegrationTest;
 
 class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
  public:
+  ScreencastManagerTestWithDriveFs() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {ash::features::kFilesInlineSyncStatus});
+  }
+
   // ScreencastManagerTest:
   void SetUpInProcessBrowserTestFixture() override {
     ScreencastManagerTest::SetUpInProcessBrowserTestFixture();
@@ -120,8 +126,9 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
     const base::FilePath& absolute_path =
         GetTestFile(title, /*relative=*/false);
     // Writes a file with `kTestFileContents` if path doesn't exist.
-    if (!base::PathExists(absolute_path))
+    if (!base::PathExists(absolute_path)) {
       EXPECT_TRUE(base::WriteFile(absolute_path, kTestFileContents));
+    }
 
     const base::FilePath& relative_path = GetTestFile(title, /*relative=*/true);
     fake->SetMetadata(relative_path, content_type, title, false, false,
@@ -171,6 +178,8 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   drivefs::FakeDriveFs* GetFakeDriveFsForProfile(Profile* profile) {
     return &fake_drivefs_helpers_[profile]->fake_drivefs();
   }

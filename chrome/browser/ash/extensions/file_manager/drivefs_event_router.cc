@@ -53,23 +53,25 @@ DriveFsEventRouter::SyncingStatusState::SyncingStatusState(
 DriveFsEventRouter::SyncingStatusState::~SyncingStatusState() = default;
 
 void DriveFsEventRouter::OnUnmounted() {
-  sync_status_state_.completed_bytes = 0;
-  sync_status_state_.group_id_to_bytes_to_transfer.clear();
-  pin_status_state_.completed_bytes = 0;
-  pin_status_state_.group_id_to_bytes_to_transfer.clear();
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+    sync_status_state_.completed_bytes = 0;
+    sync_status_state_.group_id_to_bytes_to_transfer.clear();
+    pin_status_state_.completed_bytes = 0;
+    pin_status_state_.group_id_to_bytes_to_transfer.clear();
 
-  // Ensure any existing sync progress indicator is cleared.
-  FileTransferStatus sync_status;
-  sync_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
-  sync_status.show_notification = true;
-  sync_status.hide_when_zero_jobs = true;
-  FileTransferStatus pin_status;
-  pin_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
-  pin_status.show_notification = true;
-  pin_status.hide_when_zero_jobs = true;
+    // Ensure any existing sync progress indicator is cleared.
+    FileTransferStatus sync_status;
+    sync_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
+    sync_status.show_notification = true;
+    sync_status.hide_when_zero_jobs = true;
+    FileTransferStatus pin_status;
+    pin_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
+    pin_status.show_notification = true;
+    pin_status.hide_when_zero_jobs = true;
 
-  BroadcastTransferEvent(kTransferEvent, sync_status);
-  BroadcastTransferEvent(kPinEvent, pin_status);
+    BroadcastTransferEvent(kTransferEvent, sync_status);
+    BroadcastTransferEvent(kPinEvent, pin_status);
+  }
 
   dialog_callback_.Reset();
 }

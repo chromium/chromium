@@ -929,7 +929,7 @@ BASE_FEATURE(kFilesDriveShortcuts,
 // Enable inline sync status in Files app.
 BASE_FEATURE(kFilesInlineSyncStatus,
              "FilesInlineSyncStatus",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables V2 of search functionality in files.
 BASE_FEATURE(kFilesSearchV2,
