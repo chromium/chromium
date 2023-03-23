@@ -9,6 +9,7 @@
 #include "ash/style/icon_button.h"
 #include "quick_settings_slider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 
 namespace gfx {
@@ -86,11 +87,16 @@ class UnifiedSliderView : public views::View {
   void CreateToastLabel();
 
  private:
+  const gfx::VectorIcon* icon_;
+  int accessible_name_id_;
+  views::Button::PressedCallback callback_;
+
   // Unowned. Owned by views hierarchy.
   IconButton* button_ = nullptr;
   views::Slider* slider_ = nullptr;
   views::Label* toast_label_ = nullptr;
   views::ImageView* slider_icon_ = nullptr;
+  views::View* container_ = nullptr;
 };
 
 }  // namespace ash
