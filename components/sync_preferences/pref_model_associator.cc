@@ -261,8 +261,10 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   DCHECK(sync_processor.get());
   sync_processor_ = std::move(sync_processor);
 
-  // TODO(crbug.com/1416480): Inform `dual_layer_user_prefs_` to enable account
-  // storage for `type_`.
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+    // Inform the pref store to enable account storage for `type_`.
+    dual_layer_user_prefs_->EnableType(type_);
+  }
 
   syncer::SyncChangeList new_changes;
   std::set<std::string> remaining_preferences = registered_preferences_;
@@ -317,18 +319,13 @@ void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
   models_associated_ = false;
   sync_processor_.reset();
   if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    // Clear all synced preferences from the account store. Note that the same
-    // store may be in use by other PrefModelAssociators (for other preferences
-    // ModelTypes), so it's not okay to just clear the whole store.
     // TODO(crbug.com/1416480): StopSyncing() gets called when sync is being
     // stopped (permanently), but also during browser shutdown, and in that case
     // it's unnecessary (if mostly harmless) to clear the store. Plumb through
-    // an "is_shutdown" bit and don't clear in that case.
-    for (const std::string& pref_name : synced_preferences_) {
-      user_prefs_->RemoveValue(pref_name, GetWriteFlags(pref_name));
-    }
-    // TODO(crbug.com/1416480): Inform `dual_layer_user_prefs_` to disable
-    // account storage for `type_`.
+    // an "is_shutdown" bit and don't clear in that case. Another alternative
+    // would be to just not call StopSyncing in case of browser
+    // shutdown (crbug.com/1400437).
+    dual_layer_user_prefs_->DisableTypeAndClearAccountStore(type_);
   }
   synced_preferences_.clear();
   pref_service_->OnIsSyncingChanged();

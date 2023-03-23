@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -37,6 +38,14 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   DualLayerUserPrefStore(const DualLayerUserPrefStore&) = delete;
   DualLayerUserPrefStore& operator=(const DualLayerUserPrefStore&) = delete;
+
+  // Marks `model_type` as enabled for account storage. This should be called
+  // when a data type starts syncing.
+  void EnableType(syncer::ModelType model_type);
+  // Unmarks `model_type` as enabled for account storage and removes all
+  // corresponding preference entries(belonging to this type) from account
+  // storage. This should be called when a data type stops syncing.
+  void DisableTypeAndClearAccountStore(syncer::ModelType model_type);
 
   scoped_refptr<PersistentPrefStore> GetLocalPrefStore();
   scoped_refptr<WriteablePrefStore> GetAccountPrefStore();
@@ -110,6 +119,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   // notifications the this class's own observers.
   UnderlyingPrefStoreObserver local_pref_store_observer_;
   UnderlyingPrefStoreObserver account_pref_store_observer_;
+
+  // List of preference types currently syncing.
+  base::flat_set<syncer::ModelType> active_types_;
 
   // Set to true while this store is setting prefs in the underlying stores.
   // Used to avoid self-notifications.

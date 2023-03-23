@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences {
@@ -313,7 +314,47 @@ bool DualLayerUserPrefStore::IsPrefKeySyncable(const std::string& key) const {
     // Safer this way.
     return false;
   }
-  return syncable_prefs_database_->IsPreferenceSyncable(key);
+  auto metadata = syncable_prefs_database_->GetSyncablePrefMetadata(key);
+  return metadata.has_value() && active_types_.count(metadata->model_type());
+}
+
+void DualLayerUserPrefStore::EnableType(syncer::ModelType model_type) {
+  CHECK(model_type == syncer::PREFERENCES ||
+        model_type == syncer::PRIORITY_PREFERENCES
+#if BUILDFLAG(IS_CHROMEOS)
+        || model_type == syncer::OS_PREFERENCES ||
+        model_type == syncer::OS_PRIORITY_PREFERENCES
+#endif
+  );
+  active_types_.insert(model_type);
+}
+
+void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
+    syncer::ModelType model_type) {
+  CHECK(model_type == syncer::PREFERENCES ||
+        model_type == syncer::PRIORITY_PREFERENCES
+#if BUILDFLAG(IS_CHROMEOS)
+        || model_type == syncer::OS_PREFERENCES ||
+        model_type == syncer::OS_PRIORITY_PREFERENCES
+#endif
+  );
+  active_types_.erase(model_type);
+
+  if (!syncable_prefs_database_) {
+    // No pref is treated as syncable in this case. No need to clear the account
+    // store.
+    return;
+  }
+
+  // Clear all synced preferences from the account store.
+  for (auto [pref_name, pref_value] : account_pref_store_->GetValues()) {
+    if (!IsPrefKeySyncable(pref_name)) {
+      // The write flags only affect persistence, and the account store is in
+      // memory only.
+      account_pref_store_->RemoveValue(
+          pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+    }
+  }
 }
 
 }  // namespace sync_preferences

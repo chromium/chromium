@@ -8,6 +8,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +22,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
@@ -198,6 +200,92 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   // Value remains unchanged.
   EXPECT_THAT(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
               Eq("non-priority value"));
+}
+
+class SingleClientPreferencesWithAccountStorageSyncTest
+    : public SingleClientPreferencesSyncTest {
+ public:
+  SingleClientPreferencesWithAccountStorageSyncTest()
+      : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// ChromeOS does not support signing out of a primary account.
+#if !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldCleanupAccountStoreOnSignout) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  // Sign in and enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  // Sign out.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Account value gets cleared. Local value persists.
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "local value");
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldCleanupAccountStoreOnDisable) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+
+  // Disable syncing preferences.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Account value gets cleared. Local value persists.
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "local value");
 }
 
 }  // namespace

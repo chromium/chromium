@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/sync_preferences/test_syncable_prefs_database.h"
@@ -20,6 +21,7 @@ constexpr char kPref1[] = "pref1";
 constexpr char kPref2[] = "pref2";
 constexpr char kPref3[] = "pref3";
 constexpr char kPrefName[] = "pref";
+constexpr char kPriorityPrefName[] = "priority-pref";
 constexpr char kNonExistentPrefName[] = "nonexistent-pref";
 constexpr char kNonSyncablePrefName[] = "nonsyncable-pref";
 
@@ -30,6 +32,7 @@ const std::unordered_map<std::string, SyncablePrefMetadata>
         {kPref2, {0, syncer::PREFERENCES}},
         {kPref3, {0, syncer::PREFERENCES}},
         {kPrefName, {0, syncer::PREFERENCES}},
+        {kPriorityPrefName, {0, syncer::PRIORITY_PREFERENCES}},
 };
 
 base::Value MakeDict(
@@ -93,9 +96,6 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
     dual_layer_store_ = base::MakeRefCounted<DualLayerUserPrefStore>(
         local_store_, &syncable_prefs_database_);
 
-    // TODO(crbug.com/1416480): Add proper test setup to enable and disable data
-    // types appropriately.
-
     if (initialize) {
       local_store_->NotifyInitializationCompleted();
     }
@@ -112,7 +112,16 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
 
 class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {
  public:
-  DualLayerUserPrefStoreTest() : DualLayerUserPrefStoreTestBase(true) {}
+  DualLayerUserPrefStoreTest() : DualLayerUserPrefStoreTestBase(true) {
+    // TODO(crbug.com/1416480): Add proper test setup to enable and disable data
+    // types appropriately.
+    dual_layer_store_->EnableType(syncer::PREFERENCES);
+    dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    dual_layer_store_->EnableType(syncer::OS_PREFERENCES);
+    dual_layer_store_->EnableType(syncer::OS_PRIORITY_PREFERENCES);
+#endif
+  }
 };
 
 class DualLayerUserPrefStoreInitializationTest
@@ -672,8 +681,84 @@ TEST_F(DualLayerUserPrefStoreTest, ShouldAddOnlySyncablePrefsToAccountStore) {
                              kNonSyncablePrefName, kNewValue));
 }
 
-// TODO(crbug.com/1416477): Add tests that ensure only syncable prefs of syncing
-// types are written to the account store.
+class DualLayerUserPrefStoreTestForTypes
+    : public DualLayerUserPrefStoreTestBase {
+ public:
+  DualLayerUserPrefStoreTestForTypes() : DualLayerUserPrefStoreTestBase(true) {}
+};
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldAddOnlyEnabledTypePrefsToAccountStore) {
+  // Enable only PRIORITY_PREFERENCES
+  store()->EnableType(syncer::PRIORITY_PREFERENCES);
+
+  store()->SetValue(kPriorityPrefName, base::Value("priority-value"), 0);
+  store()->SetValue(kPrefName, base::Value("pref-value"), 0);
+
+  ASSERT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPriorityPrefName,
+                             "priority-value"));
+  // Regular pref is only added to the local pref store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPrefName));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, "pref-value"));
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldAddPrefsToAccountStoreOnlyAfterEnabled) {
+  store()->SetValue(kPrefName, base::Value("pref-value"), 0);
+
+  // Pref is only added to the local pref store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPrefName));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, "pref-value"));
+
+  store()->EnableType(syncer::PREFERENCES);
+  // The pref is not copied to the account store on enable.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPrefName));
+
+  store()->SetValue(kPrefName, base::Value("new_value"), 0);
+  // Both stores are updated now.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName, "new_value"));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, "new_value"));
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldClearAllSyncablePrefsOfTypeFromAccountStoreOnDisable) {
+  store()->EnableType(syncer::PREFERENCES);
+  store()->EnableType(syncer::PRIORITY_PREFERENCES);
+
+  store()->SetValue(kPrefName, base::Value("pref-value"), 0);
+  store()->SetValue(kPriorityPrefName, base::Value("priority-value"), 0);
+
+  ASSERT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName, "pref-value"));
+  ASSERT_TRUE(ValueInStoreIs(*store()->GetAccountPrefStore(), kPriorityPrefName,
+                             "priority-value"));
+
+  store()->DisableTypeAndClearAccountStore(syncer::PRIORITY_PREFERENCES);
+  // The regular pref remains untouched.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPrefName, "pref-value"));
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPrefName, "pref-value"));
+
+  // Priority prefs are cleared from the account store.
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPriorityPrefName));
+  // Local pref store is not affected.
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPriorityPrefName,
+                             "priority-value"));
+
+  // The value should no longer be there in the account store even if the type
+  // is enabled again.
+  store()->EnableType(syncer::PRIORITY_PREFERENCES);
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPriorityPrefName));
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPriorityPrefName,
+                             "priority-value"));
+}
 
 // TODO(crbug.com/1416479): Add tests for pref-merging logic.
 
