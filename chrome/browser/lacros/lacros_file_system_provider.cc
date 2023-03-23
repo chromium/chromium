@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
@@ -14,11 +15,105 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/image_loader.h"
 #include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/extension_icon_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
+
+// TODO(b/266519645): scope object lifetime to the lifetime of
+//                    `LacrosFileSystemProvider`.
+class IconLoadTask : public base::RefCounted<IconLoadTask> {
+ public:
+  using Callback =
+      base::OnceCallback<void(const gfx::Image&, const gfx::Image&)>;
+  IconLoadTask(content::BrowserContext* browser_context,
+               const extensions::Extension* extension,
+               Callback callback)
+      : callback_(std::move(callback)) {
+    LoadExtensionIcon(browser_context, extension, icon16x16_, 16);
+    LoadExtensionIcon(browser_context, extension, icon32x32_, 32);
+  }
+  // Loads an icon of a single size.
+  void LoadExtensionIcon(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension,
+                         absl::optional<gfx::Image>& target,
+                         int size) {
+    extensions::ExtensionResource icon = extensions::IconsInfo::GetIconResource(
+        extension, size, ExtensionIconSet::MatchType::MATCH_BIGGER);
+
+    extensions::ImageLoader::Get(browser_context)
+        ->LoadImageAsync(extension, icon, gfx::Size(size, size),
+                         base::BindOnce(&IconLoadTask::OnIconLoaded, this,
+                                        std::ref(target)));
+  }
+
+ private:
+  ~IconLoadTask() = default;
+  friend base::RefCounted<IconLoadTask>;
+
+  void OnIconLoaded(absl::optional<gfx::Image>& target,
+                    const gfx::Image& icon) {
+    target = icon;
+    if (icon16x16_ && icon32x32_) {
+      std::move(callback_).Run(*icon16x16_, *icon32x32_);
+    }
+  }
+
+  Callback callback_;
+  absl::optional<gfx::Image> icon16x16_;
+  absl::optional<gfx::Image> icon32x32_;
+};
+
+void NotifyAshExtensionLoaded(
+    const std::string& id,
+    const std::string& name,
+    const extensions::FileSystemProviderCapabilities& capabilities,
+    const gfx::Image& icon16x16,
+    const gfx::Image& icon32x32) {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  int fsp_service_version = service->GetInterfaceVersion(
+      crosapi::mojom::FileSystemProviderService::Uuid_);
+  if (fsp_service_version <
+      int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
+              kExtensionLoadedDeprecatedMinVersion}) {
+    return;
+  }
+
+  crosapi::mojom::FileSystemSource source;
+  switch (capabilities.source()) {
+    case extensions::FileSystemProviderSource::SOURCE_FILE:
+      source = crosapi::mojom::FileSystemSource::kFile;
+      break;
+    case extensions::FileSystemProviderSource::SOURCE_NETWORK:
+      source = crosapi::mojom::FileSystemSource::kNetwork;
+      break;
+    case extensions::FileSystemProviderSource::SOURCE_DEVICE:
+      source = crosapi::mojom::FileSystemSource::kDevice;
+      break;
+  }
+
+  auto& fsp_service =
+      service->GetRemote<crosapi::mojom::FileSystemProviderService>();
+  if (fsp_service_version <
+      int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
+              kExtensionLoadedMinVersion}) {
+    fsp_service->ExtensionLoadedDeprecated(
+        capabilities.configurable(), capabilities.watchable(),
+        capabilities.multiple_mounts(), source, name, id);
+    return;
+  }
+
+  fsp_service->ExtensionLoaded(
+      capabilities.configurable(), capabilities.watchable(),
+      capabilities.multiple_mounts(), source, name, id, icon16x16.AsImageSkia(),
+      icon32x32.AsImageSkia());
+}
 
 // Returns the single main profile, or nullptr if none is found.
 Profile* GetMainProfile() {
@@ -190,34 +285,14 @@ void LacrosFileSystemProvider::OnExtensionLoaded(
   }
   const extensions::FileSystemProviderCapabilities* const capabilities =
       extensions::FileSystemProviderCapabilities::Get(extension);
-  if (!capabilities)
-    return;
-
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (service->GetInterfaceVersion(
-          crosapi::mojom::FileSystemProviderService::Uuid_) <
-      int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
-              kExtensionLoadedMinVersion}) {
+  if (!capabilities) {
     return;
   }
 
-  crosapi::mojom::FileSystemSource source;
-  switch (capabilities->source()) {
-    case extensions::FileSystemProviderSource::SOURCE_FILE:
-      source = crosapi::mojom::FileSystemSource::kFile;
-      break;
-    case extensions::FileSystemProviderSource::SOURCE_NETWORK:
-      source = crosapi::mojom::FileSystemSource::kNetwork;
-      break;
-    case extensions::FileSystemProviderSource::SOURCE_DEVICE:
-      source = crosapi::mojom::FileSystemSource::kDevice;
-      break;
-  }
-
-  service->GetRemote<crosapi::mojom::FileSystemProviderService>()
-      ->ExtensionLoaded(capabilities->configurable(), capabilities->watchable(),
-                        capabilities->multiple_mounts(), source,
-                        extension->name(), extension->id());
+  base::MakeRefCounted<IconLoadTask>(
+      browser_context, extension,
+      base::BindOnce(&NotifyAshExtensionLoaded, extension->id(),
+                     extension->name(), *capabilities));
 }
 
 void LacrosFileSystemProvider::OnExtensionUnloaded(

@@ -60,12 +60,20 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                      int64_t request_id,
                      base::Value::List args,
                      MountFinishedCallback callback) override;
+  void ExtensionLoadedDeprecated(bool configurable,
+                                 bool watchable,
+                                 bool multiple_mounts,
+                                 mojom::FileSystemSource source,
+                                 const std::string& name,
+                                 const std::string& id) override;
   void ExtensionLoaded(bool configurable,
                        bool watchable,
                        bool multiple_mounts,
                        mojom::FileSystemSource source,
                        const std::string& name,
-                       const std::string& id) override;
+                       const std::string& id,
+                       const gfx::ImageSkia& icon16x16,
+                       const gfx::ImageSkia& icon32x32) override;
   void ExtensionUnloaded(const std::string& id, bool due_to_shutdown) override;
 
   // In order to support multi-login in ash, a legacy feature that is going

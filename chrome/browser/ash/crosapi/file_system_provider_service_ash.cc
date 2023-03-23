@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 
+#include "base/base64.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
@@ -15,7 +17,10 @@
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "extensions/common/extension_id.h"
+#include "ui/gfx/codec/png_codec.h"
+#include "url/url_constants.h"
 
+using ash::file_system_provider::IconSet;
 using ash::file_system_provider::MountOptions;
 using ash::file_system_provider::OpenedFiles;
 using ash::file_system_provider::ProvidedFileSystemInfo;
@@ -216,6 +221,19 @@ std::unique_ptr<ProvidedFileSystemObserver::Changes> ParseChanges(
   return results;
 }
 
+absl::optional<GURL> ToPNGDataURL(const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    return absl::nullopt;
+  }
+  std::vector<unsigned char> output;
+  gfx::PNGCodec::EncodeBGRASkBitmap(*image.bitmap(), false, &output);
+  GURL url("data:image/png;base64," + base::Base64Encode(output));
+  if (url.spec().size() > url::kMaxURLChars) {
+    return absl::nullopt;
+  }
+  return url;
+}
+
 }  // namespace
 
 FileSystemProviderServiceAsh::FileSystemProviderServiceAsh() = default;
@@ -301,13 +319,27 @@ void FileSystemProviderServiceAsh::MountFinished(
                            ProfileManager::GetPrimaryUserProfile());
 }
 
-void FileSystemProviderServiceAsh::ExtensionLoaded(
+void FileSystemProviderServiceAsh::ExtensionLoadedDeprecated(
     bool configurable,
     bool watchable,
     bool multiple_mounts,
     mojom::FileSystemSource source,
     const std::string& name,
     const std::string& id) {
+  ExtensionLoaded(configurable, watchable, multiple_mounts, source, name, id,
+                  /*icon16x16=*/gfx::ImageSkia(),
+                  /*icon32x32=*/gfx::ImageSkia());
+}
+
+void FileSystemProviderServiceAsh::ExtensionLoaded(
+    bool configurable,
+    bool watchable,
+    bool multiple_mounts,
+    mojom::FileSystemSource source,
+    const std::string& name,
+    const std::string& id,
+    const gfx::ImageSkia& icon16x16,
+    const gfx::ImageSkia& icon32x32) {
   Service* const service =
       Service::Get(ProfileManager::GetPrimaryUserProfile());
   DCHECK(service);
@@ -325,12 +357,25 @@ void FileSystemProviderServiceAsh::ExtensionLoaded(
       extension_source = extensions::FileSystemProviderSource::SOURCE_DEVICE;
       break;
   }
-  ash::file_system_provider::Capabilities capabilities{
-      configurable, watchable, multiple_mounts, extension_source};
+
+  absl::optional<IconSet> icon_set;
+  absl::optional<GURL> url_icon16x16 = ToPNGDataURL(icon16x16);
+  absl::optional<GURL> url_icon32x32 = ToPNGDataURL(icon32x32);
+  if (url_icon16x16 && url_icon32x32) {
+    icon_set = IconSet();
+    icon_set->SetIcon(IconSet::IconSize::SIZE_16x16, *url_icon16x16);
+    icon_set->SetIcon(IconSet::IconSize::SIZE_32x32, *url_icon32x32);
+  }
+
   auto provider =
       std::make_unique<ash::file_system_provider::ExtensionProvider>(
           ProfileManager::GetPrimaryUserProfile(), std::move(provider_id),
-          std::move(capabilities), name, /*icon_set=*/absl::nullopt);
+          ash::file_system_provider::Capabilities{
+              .configurable = configurable,
+              .watchable = watchable,
+              .multiple_mounts = multiple_mounts,
+              .source = extension_source},
+          name, icon_set);
   service->RegisterProvider(std::move(provider));
 }
 

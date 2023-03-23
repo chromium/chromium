@@ -6,6 +6,7 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/image/mojom/image.mojom";
 
 // A file system is uniquely identified by an opaque string (consisting of at
 // least the extension id + profile unique identifier) and a file_system_id.
@@ -246,8 +247,17 @@ interface FileSystemProviderService {
 
   // Called by Lacros when a filesystem providing extension is loaded.
   [MinVersion=2]
-  ExtensionLoaded@7(bool configurable, bool watchable, bool multiple_mounts,
+  ExtensionLoadedDeprecated@7(
+      bool configurable, bool watchable, bool multiple_mounts,
       FileSystemSource source, string extension_name, string extension_id);
+
+  // Called by Lacros when a filesystem providing extension is loaded. This
+  // version passes the extension's icons to use in the file browser.
+  [MinVersion=5]
+  ExtensionLoaded@11(
+      bool configurable, bool watchable, bool multiple_mounts,
+      FileSystemSource source, string extension_name, string extension_id,
+      gfx.mojom.ImageSkia? icon16x16, gfx.mojom.ImageSkia? icon32x32);
 
   // Called by Lacros when a filesystem providing extension is unloaded.
   [MinVersion=2]
