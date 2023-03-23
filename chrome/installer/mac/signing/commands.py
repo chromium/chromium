@@ -71,9 +71,7 @@ def read_file(path):
 
 
 def zip(out, path):
-    shutil.move(
-        shutil.make_archive('{}.zip.tmp'.format(os.path.basename(out)), 'zip',
-                            path), out)
+    run_command(['zip', '-9ry', out, '.'], cwd=path)
 
 
 def set_executable(path):
