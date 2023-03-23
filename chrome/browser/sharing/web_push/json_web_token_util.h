@@ -23,7 +23,7 @@ class ECPrivateKey;
 //
 // https://tools.ietf.org/html/rfc7519
 absl::optional<std::string> CreateJSONWebToken(
-    const base::Value& claims,
+    const base::Value::Dict& claims,
     crypto::ECPrivateKey* private_key);
 
 #endif  // CHROME_BROWSER_SHARING_WEB_PUSH_JSON_WEB_TOKEN_UTIL_H_

@@ -22,17 +22,12 @@ const char kTypJwt[] = "JWT";
 }  // namespace
 
 absl::optional<std::string> CreateJSONWebToken(
-    const base::Value& claims,
+    const base::Value::Dict& claims,
     crypto::ECPrivateKey* private_key) {
-  if (!claims.is_dict()) {
-    LOG(ERROR) << "claims is not a dictionary";
-    return absl::nullopt;
-  }
-
   // Generate header.
-  base::Value header(base::Value::Type::DICT);
-  header.SetKey(kKeyAlg, base::Value(kAlgES256));
-  header.SetKey(kKeyTyp, base::Value(kTypJwt));
+  base::Value::Dict header;
+  header.Set(kKeyAlg, base::Value(kAlgES256));
+  header.Set(kKeyTyp, base::Value(kTypJwt));
 
   // Serialize header.
   std::string header_serialized;

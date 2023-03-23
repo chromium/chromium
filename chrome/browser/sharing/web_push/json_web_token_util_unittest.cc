@@ -38,7 +38,7 @@ TEST(JSONWebTokenUtilTest, VerifiesCreateJSONWebToken) {
   base::Value::Dict claims;
   claims.Set("aud", "https://chromium.org");
   absl::optional<std::string> jwt =
-      CreateJSONWebToken(base::Value(claims.Clone()), private_key.get());
+      CreateJSONWebToken(claims.Clone(), private_key.get());
   ASSERT_TRUE(jwt);
 
   // Decompose JWS into data and signautre.

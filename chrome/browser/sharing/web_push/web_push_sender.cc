@@ -47,8 +47,8 @@ const char kContentCodingAes128Gcm[] = "aes128gcm";
 const char kContentEncodingOctetStream[] = "application/octet-stream";
 
 absl::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
-  base::Value claims(base::Value::Type::DICT);
-  claims.SetKey(kClaimsKeyAudience, base::Value(kFCMServerAudience));
+  base::Value::Dict claims;
+  claims.Set(kClaimsKeyAudience, base::Value(kFCMServerAudience));
 
   int64_t exp =
       (base::Time::Now() + kClaimsValidPeriod - base::Time::UnixEpoch())
@@ -57,8 +57,7 @@ absl::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
   if (exp > INT_MAX)
     return absl::nullopt;
 
-  claims.SetKey(kClaimsKeyExpirationTime,
-                base::Value(static_cast<int32_t>(exp)));
+  claims.Set(kClaimsKeyExpirationTime, base::Value(static_cast<int32_t>(exp)));
 
   absl::optional<std::string> jwt = CreateJSONWebToken(claims, vapid_key);
   if (!jwt)
