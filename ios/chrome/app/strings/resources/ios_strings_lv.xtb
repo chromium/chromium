@@ -805,6 +805,7 @@ Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="650279896687777322">Uzzināt vairāk…</translation>
 <translation id="6510072653668207258">Atgādināt vēlāk</translation>
 <translation id="651505212789431520">Vai atcelt sinhronizēšanu? Jebkurā brīdī iestatījumos varat ieslēgt sinhronizēšanu.</translation>
+<translation id="6518133107902771759">Verificēt</translation>
 <translation id="6524918542306337007">Inkognito režīms nav pieejams</translation>
 <translation id="6530992499366869131">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpuma dēļ</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -834,6 +835,7 @@ Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="6672241253012342409">Vietnes drīkst izmantot sīkfailus, lai uzlabotu pārlūkošanas pieredzi, piemēram, lai nodrošinātu ilgstošu pierakstīšanos vai saglabātu pirkumu grozā ievietotās preces.
 
 Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai.</translation>
+<translation id="6672697278890207089">Ievadiet savu ieejas frāzi</translation>
 <translation id="6674571176963658787">Lai sāktu sinhronizāciju, ievadiet savu ieejas frāzi</translation>
 <translation id="667999046851023355">Dokuments</translation>
 <translation id="6684906340059221832">Izsekotās cenas</translation>
@@ -1038,6 +1040,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8136856065410661948">Piekļuve tiks izmantota, lai jūsu Apple kalendārā veidotu pasākumus no pārlūka Chrome un funkcijas Google Lens.</translation>
 <translation id="8156478151976189188">Paroļu sinhronizācija nedarbojas</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konti</translation>
+<translation id="8179976553408161302">Ievadīt</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsu ierīces<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Tulkot lapu</translation>
 <translation id="8205564605687841303">Atcelt</translation>
@@ -1047,7 +1050,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8237382152611443140">Atveriet sadaļu AutoFill Password Settings (Paroļu automātiskās aizpildes iestatījumi)</translation>
 <translation id="8261506727792406068">Dzēst</translation>
 <translation id="8264966119170358612">Datu aizsardzības pārkāpumā, kas neradās Google serveros, tika atklātas dažas no jūsu saglabātajām parolēm. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
-<translation id="8265018477030547118">Tikai šajā ierīcē</translation>
 <translation id="8271720166617117963">Piekrist un pierakstīties</translation>
 <translation id="8278938988428169257">Ievadiet vārdu vai frāzi.</translation>
 <translation id="8281781826761538115">Noklusējuma — <ph name="DEFAULT_LOCALE" /></translation>

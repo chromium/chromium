@@ -385,6 +385,7 @@
 <translation id="1822540298136254167">المواقع الإلكترونية التي تزورها والوقت المُستغرق في تصفُّحها</translation>
 <translation id="1824402189105105503">اللفافة الثامنة</translation>
 <translation id="1826516787628120939">حساب شيكات</translation>
+<translation id="1826968372364864056">محو النموذج</translation>
 <translation id="1828959155404624835">استئجارات سيارات</translation>
 <translation id="1834321415901700177">يحتوي هذا الموقع على برامج ضارة</translation>
 <translation id="1838374766361614909">محو البحث</translation>
@@ -1961,6 +1962,7 @@
 <translation id="5786044859038896871">هل تريد ملء معلومات بطاقتك؟</translation>
 <translation id="578633867165174378">‏لقد عثر Chrome في عمليّة اختراق للبيانات على كلمة المرور التي استخدمتها للتو. ننصحك بتغيير كلمة المرور هذه الآن.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{ما مِن بيانات تسجيل دخول.}=1{بيانات تسجيل الدخول إلى حساب واحد}two{بيانات تسجيل الدخول إلى حسابَين}few{بيانات تسجيل الدخول إلى # حسابات}many{بيانات تسجيل الدخول إلى # حسابًا}other{بيانات تسجيل الدخول إلى # حساب}}</translation>
 <translation id="580241730938216256">بدء التحديث</translation>
 <translation id="5803412860119678065">هل تريد ملء <ph name="CARD_DETAIL" />؟</translation>
 <translation id="5804241973901381774">الأذونات</translation>
@@ -2513,6 +2515,7 @@
 <translation id="7201591969684833065">يمكن للمشرف الاطِّلاع على ما يلي:</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab)، ثم المفتاح Enter لفتح علامة تبويب جديدة في وضع التصفّح المتخفي للتصفُّح بخصوصية تامة.</translation>
 <translation id="7203375778433816396">‏ضبط Chrome كمتصفِّح تلقائي للنظام</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{ما مِن مفاتيح مرور.}=1{مفتاح مرور واحد}two{‫مفتاحَا مرور}few{‫# مفاتيح مرور}many{‫# مفتاح مرور}other{‫# مفتاح مرور}}</translation>
 <translation id="7210863904660874423">لا يلتزم <ph name="HOST_NAME" /> بمعايير الأمان.</translation>
 <translation id="7210993021468939304">‏نشاط نظام التشغيل Linux في الحاوية ويمكن تثبيت تطبيقات نظام التشغيل Linux وتشغيلها في الحاوية.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول هذه المشكلة.</translation>

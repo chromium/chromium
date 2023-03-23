@@ -386,6 +386,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1822540298136254167">Von dir besuchte Websites und Dauer des Besuchs</translation>
 <translation id="1824402189105105503">Achte Rolle</translation>
 <translation id="1826516787628120939">Überprüfung läuft</translation>
+<translation id="1826968372364864056">Formular leeren</translation>
 <translation id="1828959155404624835">Mietwagen</translation>
 <translation id="1834321415901700177">Diese Website enthält schädliche Programme</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
@@ -1965,6 +1966,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5786044859038896871">Möchtest du deine Kreditkarteninformationen eingeben?</translation>
 <translation id="578633867165174378">Chrome hat das Passwort, das du gerade verwendet hast, in einer Datenpanne gefunden. Wie empfehlen dir, dieses Passwort jetzt zu ändern.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Keine}=1{Anmeldedaten für 1 Konto}other{Anmeldedaten für # Konten}}</translation>
 <translation id="580241730938216256">Update starten</translation>
 <translation id="5803412860119678065">Möchtest du die Daten deiner <ph name="CARD_DETAIL" /> eingeben?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
@@ -2520,6 +2522,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7201591969684833065">Dein Administrator hat Zugriff auf Folgendes:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und die Eingabetaste, um einen neuen Inkognitotab zu öffnen und privat zu surfen</translation>
 <translation id="7203375778433816396">Chrome als Standardbrowser für das System festlegen</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Keine}=1{1 Passkey}other{# Passkeys}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> erfüllt die Sicherheitsstandards nicht.</translation>
 <translation id="7210993021468939304">Linux-Aktivität innerhalb des Containers, kann Linux-Anwendungen innerhalb des Containers installieren und ausführen</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>

@@ -461,6 +461,7 @@
 <translation id="3256109297135787951">Текчедеги нерсени бөлүп көрсөтүүнү алып салуу</translation>
 <translation id="3260969790895726815">Кеп түзмөктө иштетилип, текстти айтып терүү офлайнда иштейт, бирок айрым үн буйруктары иштебейт.</translation>
 <translation id="3269597722229482060">Оң баскычын чыкылдатуу</translation>
+<translation id="3289364673986435196">Кубат баскычынын менюсу</translation>
 <translation id="3289544412142055976">Учурда Linux колдонмолору колдоого алынбайт</translation>
 <translation id="3289674678944039601">Адаптер аркылуу кубатталууда</translation>
 <translation id="3290356915286466215">Корголгон эмес</translation>
@@ -685,6 +686,7 @@
 <translation id="4269883910223712419">Бул түзмөктүн администратору төмөнкүлөрдү аткара алат:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + ылдый жебе ыкчам баскычы өзгөртүлдү. Аягы баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + oңго жебени басыңыз.</translation>
 <translation id="4279490309300973883">Чагылыштыруу</translation>
+<translation id="4280601795273309128">Коопсуздук тутуму жаңыртылды. Түзмөгүңүздү жаңыртыңыз.</translation>
 <translation id="4283888303416325161">Коопсуздукту бекемдөө үчүн сырсөздү киргизиңиз</translation>
 <translation id="4285498937028063278">Бошотуу</translation>
 <translation id="4294319844246081198">Кутмандуу таңыңыз менен, <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@
 <translation id="5147567197700016471">Бекилген жок</translation>
 <translation id="5150070631291639005">Купуялык параметрлери</translation>
 <translation id="5155897006997040331">Окуу ылдамдыгы</translation>
+<translation id="5163434717504750796">Батареянын абалы: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Циклдердин саны: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Иш тактаны үлгү катары сактоо</translation>
 <translation id="5168181903108465623">Тышкы экранга чыгаруу түзмөктөрү жеткиликтүү</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
@@ -1341,6 +1344,7 @@
 <translation id="743058460480092004">Камера менен микрофон колдонулууда.</translation>
 <translation id="7452560014878697800">Колдонмо камераңызды колдонуп жатат</translation>
 <translation id="7453330308669753048">Издөө таржымалындагы натыйжалар өчүрүлдү</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | Толгуча <ph name="TIME" /> калды</translation>
 <translation id="7461924472993315131">Кадап коюу</translation>
 <translation id="746232733191930409">Экрандан видео жаздырып алуу режими</translation>
 <translation id="7466449121337984263">Сенсорго тийиңиз, сураныч</translation>
@@ -1704,6 +1708,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> сурамы боюнча 1 натыйжа көрсөтүлүүдө</translation>
 <translation id="9179259655489829027">Бул функция менен аккаунтка кирген бардык колдонуучуларга сырсөзсүз оңой өтө аласыз. Бул функцияны ишенимдүү аккаунттар менен гана колдонуңуз.</translation>
 <translation id="9183456764293710005">Толук экран лупасы</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> калды</translation>
 <translation id="9193626018745640770">Белгисиз алуучуга чыгарылууда</translation>
 <translation id="9194617393863864469">Башка колдонуучуну киргизүү…</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> дааналыгы төмөнкүгө өзгөртүлдү: <ph name="RESOLUTION" />. Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку жөндөөлөр <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>

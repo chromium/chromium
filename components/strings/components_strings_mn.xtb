@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">Таны зочилсон веб сайтууд болон тэдгээрт зарцуулсан хугацаа</translation>
 <translation id="1824402189105105503">Найм дахь хуйлмал</translation>
 <translation id="1826516787628120939">Шалгаж байна</translation>
+<translation id="1826968372364864056">Маягтыг арилгах</translation>
 <translation id="1828959155404624835">Машины түрээс</translation>
 <translation id="1834321415901700177">Энэ сайт аюултай программ агуулж байна</translation>
 <translation id="1838374766361614909">Хайлтыг арилгах</translation>
@@ -1968,6 +1969,7 @@
 <translation id="5786044859038896871">Картын мэдээллээ бөглөх үү?</translation>
 <translation id="578633867165174378">Chrome таны дөнгөж сая ашигласан нууц үгийг өгөгдлийн зөрчлөөс оллоо. Бид энэ нууц үгийг одоо өөрчлөхийг зөвлөж байна.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Байхгүй}=1{1 бүртгэлийн нэвтрэх өгөгдөл}other{# бүртгэлийн нэвтрэх өгөгдөл}}</translation>
 <translation id="580241730938216256">Шинэчилж эхлэх</translation>
 <translation id="5803412860119678065">Та <ph name="CARD_DETAIL" />-г бөглөх үү?</translation>
 <translation id="5804241973901381774">Зөвшөөрлүүд</translation>
@@ -2522,6 +2524,7 @@
 <translation id="7201591969684833065">Таны админ дараахыг харах боломжтой:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Нууцлалтайгаар үзэхийн тулд шинэ Нууцлалтай табыг эхлээд Tab, дараа нь Enter дээр дарж нээнэ үү</translation>
 <translation id="7203375778433816396">Chrome-г системийн өгөгдмөл хөтөч болгон тохируулах</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Байхгүй}=1{1 passkey}other{# passkey}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> нь аюулгүй байдлын стандартыг дагахгүй байна.</translation>
 <translation id="7210993021468939304">Контейнер дахь Linux-н үйл ажиллагаа болон Linux аппуудыг контейнерт суулгах болон ажиллуулах боломжтой</translation>
 <translation id="721197778055552897">Үүссэн асуудлын талаарх <ph name="BEGIN_LINK" />дэлгэрэнгүй<ph name="END_LINK" /> мэдээллийг эндээс авна уу.</translation>

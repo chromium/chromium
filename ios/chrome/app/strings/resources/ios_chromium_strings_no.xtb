@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">For å få mest mulig ut av Chromium, logg på Chromium med Google-kontoen din.</translation>
 <translation id="3639997914391704523">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> har brukt Chromium og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
+<translation id="372658070733623520">For å bruke og lagre Chromium-data i Google-kontoen din, bekreft at det er deg.</translation>
 <translation id="3805899903892079518">Chromium har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
 <translation id="4043291146360695975">Passord lagres i Passordlagring kun på denne enheten.</translation>
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
@@ -75,6 +76,7 @@
 <translation id="5945387852661427312">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir dermed administratoren for dette domenet kontroll over Chromium-dataene dine. Dataene dine blir knyttet til denne kontoen permanent. Når du logger av Chromium, slettes dataene dine fra denne enheten, men de er fortsatt lagret i Google-kontoen din.</translation>
 <translation id="5983312940147103417">Gjør Chromium bedre</translation>
 <translation id="6062449165341879460">Organisasjonen din, <ph name="DOMAIN" />, får tilgang til data, bokmerker, logg, passord og andre innstillinger for Chromium som du lagrer i denne kontoen. Når du logger av, slettes dataene dine fra denne enheten.  Dataene forblir imidlertid lagret i den administrerte Google-kontoen og er tilgjengelige for organisasjonen din. Organisasjonen din kan også angi spesifikke brukerinnstillinger for den aktuelle kontoen. Disse kan endre virkemåten til Chromium.</translation>
+<translation id="61109258320235597">For å bruke og lagre Chromium-data i Google-kontoen din, skriv inn passordfrasen din.</translation>
 <translation id="6119647025869519954">Slik velger du Chromium som standardnettleser:
 1. Åpne Innstillinger.
 2. Trykk på Standard nettleserapp.

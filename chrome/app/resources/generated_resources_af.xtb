@@ -563,6 +563,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1485015260175968628">Dit kan nou:</translation>
 <translation id="1485141095922496924">Weergawe <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Deursoek wagwoorde</translation>
+<translation id="1486486872607808064">Skandeer hierdie QR-kode met ’n kamera op die toestel waarop jy ’n wagwoordsleutel vir <ph name="APP_NAME" /> wil skep</translation>
 <translation id="1487335504823219454">Aan – gepasmaakte instellings</translation>
 <translation id="1493892686965953381">Wag tans vir <ph name="LOAD_STATE_PARAMETER" /> …</translation>
 <translation id="1494349716233667318">Werwe kan vra om lettertipes wat op jou toestel geïnstalleer is, te gebruik</translation>
@@ -773,6 +774,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="164936512206786300">Maak Bluetooth-toestel los</translation>
 <translation id="1651008383952180276">Jy moet dieselfde wagfrase twee keer invoer</translation>
 <translation id="1652326691684645429">Aktiveer Nabydeling</translation>
+<translation id="1654580009054503925">Nie toegelaat om versoeke te wys nie</translation>
 <translation id="1656528038316521561">Agtergrondondeursigtigheid</translation>
 <translation id="1657406563541664238">Help om <ph name="PRODUCT_NAME" /> te verbeter deur gebruikstatistiek en omvalverslae outomaties na Google te stuur</translation>
 <translation id="1657937299377480641">Vra jou ouer om jou toestemming te gee om weer aan te meld vir toegang tot opvoedkundige hulpbronne</translation>
@@ -3422,6 +3424,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3957079323242030166">Rugsteundata sal nie deel vorm van jou Drive-bergingkwota nie.</translation>
 <translation id="3957844511978444971">Tik op “Aanvaar” om jou keuse van hierdie Google-dienste-instellings te bevestig.</translation>
 <translation id="3958088479270651626">Voer boekmerke en instellings in</translation>
+<translation id="3958110062351175311">Toegelaat om versoeke in die nutsbalk te wys</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Meer handelinge vir <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Standaardbeskerming teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is</translation>
@@ -3681,6 +3684,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4205157409548006256">Kon nie Linux opstel nie.</translation>
 <translation id="4206144641569145248">Ruimtewese</translation>
 <translation id="4206323443866416204">Terugvoerverslag</translation>
+<translation id="4206585797409671301">Toegelaat om versoeke te wys</translation>
 <translation id="4207932031282227921">Toestemming is versoek; druk F6 om te antwoord</translation>
 <translation id="4208390505124702064">Deursoek <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Groot</translation>
@@ -4351,6 +4355,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="481574578487123132">Gekoppelde toestelle</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, besonderhede</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 boekmerk is uitgevee}other{{COUNT} boekmerke is uitgevee}}</translation>
+<translation id="4816900689218414104">Skep ’n wagwoordsleutel op ’n foon of tablet</translation>
 <translation id="4819323978093861656">{0,plural, =0{Maak nou toe.}=1{Maak toe oor: 1 sekonde}other{Maak toe oor: # sekondes}}</translation>
 <translation id="4819607494758673676">Google Assistent-kennisgewings</translation>
 <translation id="4820236583224459650">Stel as aktiewe kaartjie</translation>
@@ -6260,6 +6265,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6562117348069327379">Berg stelselloglêers in die Aflaaie-gids.</translation>
 <translation id="656293578423618167">Die lêerpad of -naam is te lank. Stoor asseblief met 'n korter naam of na 'n ander ligging.</translation>
 <translation id="6568283005472142698">Oortjiesoektog</translation>
+<translation id="6570622975915850879">Gebruik ’n ander toestel</translation>
 <translation id="65711204837946324">Benodig toestemming om af te laai</translation>
 <translation id="6571533309669248172">Teksformatering</translation>
 <translation id="6571772921213691236">Wysig aanmelddata</translation>
@@ -6823,6 +6829,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7044606776288350625">Sinkroniseer data</translation>
 <translation id="7047059339731138197">Kies 'n agtergrond</translation>
 <translation id="7049293980323620022">Hou lêer?</translation>
+<translation id="70496770794393383">Tabel van gestoorde wagwoorde</translation>
 <translation id="7050037487872780845">Ongeldige warmkolopstelling</translation>
 <translation id="7051551856857948729">Versteek IBAN-waarde</translation>
 <translation id="7052237160939977163">Stuur prestasienasporingdata</translation>

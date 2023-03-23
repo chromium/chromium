@@ -477,6 +477,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="3587596251841506391">Contribuer à sécuriser le Web</translation>
 <translation id="3597179440835065298">Obtenez de meilleures suggestions</translation>
 <translation id="3602290021589620013">Aperçu</translation>
+<translation id="360901359071773787">Supprimer les 15 dernières minutes ?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Gérer les fenêtres</translation>
 <translation id="3631987586758005671">Partage avec <ph name="DEVICE_NAME" />…</translation>
@@ -822,6 +823,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5517095782334947753">Vous disposez des favoris, de l'historique, des mots de passe et d'autres paramètres du compte <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Pendant les essais, si Chrome vous a intégré aléatoirement à un essai actif, votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime vos centres d'intérêt tous les mois.</translation>
 <translation id="5524843473235508879">Redirection bloquée.</translation>
+<translation id="554297709083131118">Les données suivantes des 15 dernières minutes seront supprimées</translation>
 <translation id="5548606607480005320">Contrôle de sécurité</translation>
 <translation id="5555525474779371165">Choisir votre mode de navigation sécurisée</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -1263,6 +1265,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="78270725016672455">L'ordinateur souhaite enregistrer cet appareil pour se connecter à un site</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser</translation>
 <translation id="7846296061357476882">Services Google</translation>
+<translation id="7847228556075070294">Historique, cookies et autres données supprimés</translation>
 <translation id="784934925303690534">Période</translation>
 <translation id="7851858861565204677">Autres appareils</translation>
 <translation id="7853202427316060426">Activité</translation>

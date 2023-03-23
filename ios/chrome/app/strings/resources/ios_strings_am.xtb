@@ -804,6 +804,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="650279896687777322">የበለጠ ለመረዳት...</translation>
 <translation id="6510072653668207258">በኋላ አስታውሰኝ</translation>
 <translation id="651505212789431520">ስምረት ይሰረዝ? ስምረትን በማንኛውም ጊዜ በቅንብሮች ውስጥ ማብራት ይችላሉ።</translation>
+<translation id="6518133107902771759">አረጋግጥ</translation>
 <translation id="6524918542306337007">ማንነት የማያሳውቅ ሁneታ አይገኝም</translation>
 <translation id="6530992499366869131">የይለፍ ቃላት በውሂብ ደንብ ጥሰት ተጋላጭ ከሆነ ያስጠንቅቅዎት</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1037,6 +1038,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8136856065410661948">ይህ ከChrome እና Google ሌንስ በእርስዎ Apple ቀን መቁጠሪያ ውስጥ ክስተቶችን ለመፍጠር ሥራ ላይ ይውላል።</translation>
 <translation id="8156478151976189188">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> መለያዎች</translation>
+<translation id="8179976553408161302">አስገባ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />የእርስዎ መሣሪያዎች<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ገጽን ተርጉም</translation>
 <translation id="8205564605687841303">ተወው</translation>
@@ -1046,7 +1048,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8237382152611443140">የይለፍ ቃላትን በራስ-ሙላ ቅንብሮችን ይክፈቱ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8264966119170358612">ከእርስዎ የተቀመጡ የይለፍ ቃላት መካከል አንዳንዶቹ የGoogle ባልሆነ የውሂብ ጥሰት ተጋልጠው ነበረ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">በዚህ መሣሪያ ላይ ብቻ</translation>
 <translation id="8271720166617117963">ተቀበል እና በመለያ ግባ</translation>
 <translation id="8278938988428169257">ቃል ወይም ሐረግ ያስገቡ</translation>
 <translation id="8281781826761538115">ነባሪ - <ph name="DEFAULT_LOCALE" /></translation>

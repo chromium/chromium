@@ -461,6 +461,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3256109297135787951">Utzi apaleko elementu bat nabarmentzeari</translation>
 <translation id="3260969790895726815">Hizketa gailuan prozesatzen da eta diktaketak konexiorik gabe funtzionatzen du. Hala ere, ahozko agindu batzuek ez dute funtzionatuko.</translation>
 <translation id="3269597722229482060">Egin klik eskuineko botoiarekin</translation>
+<translation id="3289364673986435196">Itzaltzeko menua</translation>
 <translation id="3289544412142055976">Une honetan ez dira onartzen Linux-eko aplikazioak</translation>
 <translation id="3289674678944039601">Egokigailu bidez kargatzen</translation>
 <translation id="3290356915286466215">Babestu gabe</translation>
@@ -686,6 +687,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4269883910223712419">Gailuaren administratzaileak honako hauek egin ditzake:</translation>
 <translation id="4274537685965975248">Ktrl + Alt + behera egiteko gezi-tekla lasterbidea aldatu egin da. Amaiera tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + eskuinera egiteko gezi-tekla.</translation>
 <translation id="4279490309300973883">Islatzen</translation>
+<translation id="4280601795273309128">Amaitu dira segurtasun-eguneratzeak. Bertsio-berritu gailua.</translation>
 <translation id="4283888303416325161">Segurtasuna areagotzeko, idatzi pasahitza</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
 <translation id="4294319844246081198">Egun on, <ph name="GIVEN_NAME" />:</translation>
@@ -872,6 +874,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5147567197700016471">Desblokeatuta</translation>
 <translation id="5150070631291639005">Pribatutasun-ezarpenak</translation>
 <translation id="5155897006997040331">Irakurketa-abiadura</translation>
+<translation id="5163434717504750796">Bateriaren egoera: % <ph name="BATTERY_HEALTH_PERCENTAGE" /> | Ziklo kopurua: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Gorde lan-eremua txantiloi gisa</translation>
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
@@ -1341,6 +1344,7 @@ Berriki instalatu da</translation>
 <translation id="743058460480092004">Norbait kamera eta mikrofonoa erabiltzen ari da.</translation>
 <translation id="7452560014878697800">Aplikazio bat kamera erabiltzen ari da</translation>
 <translation id="7453330308669753048">Kendu da bilaketa-historiako emaitza</translation>
+<translation id="7455047553373871740">% <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> guztiz kargatu arte</translation>
 <translation id="7461924472993315131">Ainguratu</translation>
 <translation id="746232733191930409">Pantaila grabatzeko modua</translation>
 <translation id="7466449121337984263">Ukitu sentsorea</translation>
@@ -1704,6 +1708,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9178475906033259337">"<ph name="QUERY" />" bilaketaren emaitza bat dago ikusgai</translation>
 <translation id="9179259655489829027">Saioa hasita daukan edozein erabiltzaile bizkor atzitzea baimentzen dizu eginbideak, pasahitza idatzi beharrik gabe. Erabili eginbide hau kontu fidagarriekin soilik.</translation>
 <translation id="9183456764293710005">Pantaila osoko lupa</translation>
+<translation id="9186811218777709815">% <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> geratzen dira</translation>
 <translation id="9193626018745640770">Hargailu ezezagun batera igortzen</translation>
 <translation id="9194617393863864469">Hasi saioa beste erabiltzaile batekin…</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> bereizmena honako bereizmen honetara aldatu da: <ph name="RESOLUTION" />. Sakatu "Berretsi" aldaketak gordetzeko. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>

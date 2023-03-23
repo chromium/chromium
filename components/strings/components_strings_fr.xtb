@@ -386,6 +386,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1822540298136254167">Sites Web consultés et durée des visites</translation>
 <translation id="1824402189105105503">8e rouleau</translation>
 <translation id="1826516787628120939">Vérification en cours…</translation>
+<translation id="1826968372364864056">Effacer le formulaire</translation>
 <translation id="1828959155404624835">Locations de voiture</translation>
 <translation id="1834321415901700177">Ce site contient des programmes dangereux</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
@@ -1967,6 +1968,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5786044859038896871">Souhaitez-vous indiquer vos informations de carte de paiement ?</translation>
 <translation id="578633867165174378">Chrome a trouvé le mot de passe que vous venez d'utiliser lors d'une violation de données. Nous vous recommandons de le modifier immédiatement.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Aucune}=1{données de connexion pour 1 compte}one{données de connexion pour # compte}other{données de connexion pour # comptes}}</translation>
 <translation id="580241730938216256">Lancer la mise à jour</translation>
 <translation id="5803412860119678065">Souhaitez-vous indiquer les informations "<ph name="CARD_DETAIL" />" ?</translation>
 <translation id="5804241973901381774">Autorisations</translation>
@@ -2522,6 +2524,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7201591969684833065">Votre administrateur peut consulter les éléments suivants :</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis sur Entrée pour ouvrir un nouvel onglet de navigation privée</translation>
 <translation id="7203375778433816396">Définir Chrome comme navigateur par défaut du système</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Aucune}=1{1 clé d'accès}one{# clé d'accès}other{# clés d'accès}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ne respecte pas les normes de sécurité.</translation>
 <translation id="7210993021468939304">Activité Linux dans le conteneur, et peut installer et exécuter des applications Linux dans le conteneur</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur ce problème.</translation>

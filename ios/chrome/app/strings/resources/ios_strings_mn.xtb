@@ -483,6 +483,7 @@
 <translation id="4474494258097106883">Таны iPhone-д зориулан бүтээсэн</translation>
 <translation id="4476574785019001431">Тохиргоо</translation>
 <translation id="448433063499977729">Синкийг унтраасан байна</translation>
+<translation id="4489536976005181779">{count,plural, =1{Таны {email} бүртгэлийн унших жагсаалтад тань хуудас нэмсэн}other{Таны {email} бүртгэлийн унших жагсаалтад тань хуудаснууд нэмсэн}}</translation>
 <translation id="4496373720959965247">Таб нэмэх болон хуудас хооронд шилжүүлэх</translation>
 <translation id="4502566650163919158">Одоо шалгах</translation>
 <translation id="4505980578794259603">Сүүлд <ph name="TIME" /> шалгасан.</translation>
@@ -803,6 +804,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="650279896687777322">Нэмэлт мэдээлэл авах...</translation>
 <translation id="6510072653668207258">Надад дараа сануулна уу</translation>
 <translation id="651505212789431520">Синк хийхийг цуцлах уу? Та синкийг хүссэн үедээ Тохиргоонд асааж болно.</translation>
+<translation id="6518133107902771759">Баталгаажуул</translation>
 <translation id="6524918542306337007">Нууцлалын горим боломжгүй байна</translation>
 <translation id="6530992499366869131">Таны нууц үг өгөгдлийн зөрчилд өртсөн тохиолдолд танд сануулах</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1036,6 +1038,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8136856065410661948">Үүнийг таны Apple Calendar-т Chrome болон Google Lens-с үйл явдал үүсгэхэд ашиглана.</translation>
 <translation id="8156478151976189188">Нууц үг синк хийх ажиллахгүй байна</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> хаяг</translation>
+<translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Хуудсыг орчуулах</translation>
 <translation id="8205564605687841303">Цуцлах</translation>
@@ -1045,7 +1048,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8237382152611443140">Автоматаар бөглөх хэсэг дэх нууц үгийн тохиргоог нээнэ үү</translation>
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8264966119170358612">Таны хадгалсан зарим нууц үг Google-н бус өгөгдлийн зөрчилд өртсөн байна. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Зөвхөн энэ төхөөрөмжид</translation>
 <translation id="8271720166617117963">Зөвшөөрөөд, нэвтрэх</translation>
 <translation id="8278938988428169257">Үг эсвэл өгүүлбэр оруулна уу</translation>
 <translation id="8281781826761538115">Өгөгдмөл - <ph name="DEFAULT_LOCALE" /></translation>

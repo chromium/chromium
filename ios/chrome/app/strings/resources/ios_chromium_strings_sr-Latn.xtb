@@ -47,10 +47,12 @@
 <translation id="3567399274263440288">Da biste koristili Chromium na najbolji način, prijavite se na Chromium pomoću Google naloga.</translation>
 <translation id="3639997914391704523">Chromium može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> je koristio Chromium i ostavio obeleživače, lozinke i druga podešavanja na ovom uređaju.</translation>
+<translation id="372658070733623520">Da biste koristili i čuvali Chromium podatke na Google nalogu, potvrdite svoj identitet.</translation>
 <translation id="3805899903892079518">Chromium ne može da pristupa slikama ili video snimcima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="4043291146360695975">Lozinke se čuvaju u Menadžeru lozinki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u verziji Chromium beta</translation>
 <translation id="4432744876818348753">Prijavite se da biste iskoristili Chromium na najbolji način.</translation>
+<translation id="452436063477828504">Uverite se da uvek možete da koristite Chromium podatke na Google nalogu</translation>
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će nuditi da prevodi stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="4633738821577273991">Nabavite poboljšano bezbedno pregledanje i za ovaj Chromium profil</translation>
@@ -75,6 +77,7 @@
 <translation id="5945387852661427312">Prijavljujete se pomoću naloga kojim upravlja <ph name="DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chromium podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chromium-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="5983312940147103417">Poboljšajte Chromium</translation>
 <translation id="6062449165341879460">Organizacija <ph name="DOMAIN" /> će imati pristup Chromium podacima, obeleživačima, istoriji, lozinkama i drugim podešavanjima koja čuvate na ovom nalogu. Kada se odjavite, podaci će se obrisati sa ovog uređaja.  Međutim, podaci će se i dalje čuvati na Google nalogu kojim se upravlja i biće dostupni vašoj organizaciji. Organizacija može da podešava posebne smernice za korisnike za taj nalog koje mogu da promene ponašanje Chromium-a.</translation>
+<translation id="61109258320235597">Da biste koristili i čuvali Chromium podatke na Google nalogu, unesite pristupnu frazu.</translation>
 <translation id="6119647025869519954">Da biste postavili Chromium za podrazumevani pregledač:
 1. Otvorite podešavanja
 2. Dodirnite Podrazumevana aplikacija za pregledanje
@@ -86,6 +89,7 @@
 <translation id="6625409903340039086">Chromium sada podržava smernice za korisnika za upravljani nalog</translation>
 <translation id="6752854822223394465">Vaša organizacija podešava Chromium...</translation>
 <translation id="6820823224820483452">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
+<translation id="6911341667534646387">Nastavite da koristite Chromium podatke na Google nalogu</translation>
 <translation id="7006920032187763988">Možete da koristite lozinke koje ste sačuvali u Menadžeru lozinki u drugim aplikacijama na iPad-u.</translation>
 <translation id="7018284295775193585">Chromium ne može da se ažurira</translation>
 <translation id="7045244423563602563">Prilagodite Chromium sebi</translation>

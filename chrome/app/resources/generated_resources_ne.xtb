@@ -559,6 +559,7 @@
 <translation id="1485015260175968628">यसले अब गर्न सक्छ:</translation>
 <translation id="1485141095922496924">संस्करण <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">खोज पासवर्डहरू</translation>
+<translation id="1486486872607808064">तपाईं जुन डिभाइसमा <ph name="APP_NAME" /> को पासकी बनाउन चाहनुहुन्छ उक्त डिभाइसको क्यामेरा प्रयोग गरी यो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="1487335504823219454">सक्रिय - आफू अनुकूल सेटिङहरू</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> लाई प्रतिक्षा गर्दै...</translation>
 <translation id="1494349716233667318">साइटहरूले तपाईंको डिभाइसमा इन्स्टल गरिएका फन्ट प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
@@ -767,6 +768,7 @@
 <translation id="164936512206786300">ब्लुटुथ यन्त्रको जोडा हटाउनुहोस्</translation>
 <translation id="1651008383952180276">तपाईंले अनिवार्य रूपले उही पासफ्रेज दुई पटक प्रविष्ट गर्नुपर्छ</translation>
 <translation id="1652326691684645429">नजिकैका डिभाइससँग सेयर गर्ने सुविधा सक्षम पार्नुहोस्</translation>
+<translation id="1654580009054503925">अनुरोधहरू देखाउने अनुमति दिइएको छैन</translation>
 <translation id="1656528038316521561">पृष्ठभूमिको अपारदर्शिता</translation>
 <translation id="1657406563541664238">Google लाई स्वत: उपयोग तथ्याङ्क र क्र्यास रिपोर्टहरू पठाएर <ph name="PRODUCT_NAME" /> लाई अझ राम्रो बनाउन मद्दत गर्नुहोस्</translation>
 <translation id="1657937299377480641">शैक्षिक स्रोत साधनहरू प्रयोग गर्नका लागि फेरि साइन इन गर्न आफ्ना अभिभावकलाई साइन इन गर्ने अनुमति दिन आग्रह गर्नुहोस्</translation>
@@ -3404,6 +3406,7 @@
 <translation id="3957079323242030166">डेटा ब्याकअप गर्दा तपाईंको ड्राइभको भण्डारण कोटा प्रयोग हुने छैन।</translation>
 <translation id="3957844511978444971">आफूले गरेका Google का सेवाहरूसम्बन्धी यी सेटिङहरूको चयनको पनि पुष्टि गर्न “स्वीकार गर्नुहोस्” नामक बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="3958088479270651626">पृष्ठमञ्जूषाहरू र सेटिङहरू आयात गर्नुहोस्</translation>
+<translation id="3958110062351175311">टुलबारमा अनुरोधहरू देखाउने अनुमति दिइएको छ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="3962119236270174787">खतरनाक मानिने वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट स्तरीय सुरक्षा</translation>
@@ -3663,6 +3666,7 @@
 <translation id="4205157409548006256">Linux कन्फिगर गर्दै गर्दा त्रुटि भयो।</translation>
 <translation id="4206144641569145248">अन्य ग्रहबासी</translation>
 <translation id="4206323443866416204">प्रतिक्रियाको रिपोर्ट</translation>
+<translation id="4206585797409671301">अनुरोधहरू देखाउने अनुमति दिइएको छ</translation>
 <translation id="4207932031282227921">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न F6 थिच्नुहोस्</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> मा खोज्नुहोस्</translation>
 <translation id="4209092469652827314">विशाल</translation>
@@ -4332,6 +4336,7 @@
 <translation id="481574578487123132">लिंक गरिएका डिभाइसहरू</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, विवरणहरू</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{एउटा पुस्तक चिन्ह मेटाइयो}other{{COUNT} वटा पुस्तक चिन्ह मेटाइए}}</translation>
+<translation id="4816900689218414104">फोन वा ट्याब्लेटमा पासकी सेट गर्नुहोस्</translation>
 <translation id="4819323978093861656">{0,plural, =0{अहिले बन्द गरिँदै छन्।}=1{निम्न समयपछि बन्द गरिन्छन्: १ सेकेन्ड}other{निम्न समयपछि बन्द गरिन्छन्: # सेकेन्ड}}</translation>
 <translation id="4819607494758673676">Google सहायकका सूचनाहरू</translation>
 <translation id="4820236583224459650">सक्रिय टिकटको रूपमा सेट गर्नुहोस्</translation>
@@ -6239,6 +6244,7 @@
 <translation id="6562117348069327379">सिस्टम लगहरू डाउनलोड नामक डिरेक्टरीमा भण्डारण गर्नुहोस्।</translation>
 <translation id="656293578423618167">फाइलको बाटो वा नाम निकै लामो छ । कृपया छोटो नाम दिएर वा अर्को स्थानमा बचत गर्नुहोस् ।</translation>
 <translation id="6568283005472142698">ट्याबमा खोज्ने सुविधा</translation>
+<translation id="6570622975915850879">अर्कै डिभाइस प्रयोग गर्नुहोस्</translation>
 <translation id="65711204837946324">डाउनलोड गर्ने अनुमति चाहिन्छ</translation>
 <translation id="6571533309669248172">टेक्स्टको फर्म्याट</translation>
 <translation id="6571772921213691236">साइन इन डेटा सम्पादन गर्नुहोस्</translation>
@@ -6802,6 +6808,7 @@
 <translation id="7044606776288350625">डेटा सिंक गर्नुहोस्</translation>
 <translation id="7047059339731138197">पृष्ठभूमि छनौट गर्नुहोस्</translation>
 <translation id="7049293980323620022">फाइल राख्ने हो?</translation>
+<translation id="70496770794393383">सेभ गरिएका पासवर्डहरूको तालिका</translation>
 <translation id="7050037487872780845">हटस्पटसम्बन्धी अवैध कन्फिगुरेसन</translation>
 <translation id="7051551856857948729">IBAN नम्बर लुकाइयोस्</translation>
 <translation id="7052237160939977163">प्रदर्शन ट्रेस लगत पठाउनुहोस्</translation>

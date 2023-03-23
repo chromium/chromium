@@ -477,6 +477,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="3587596251841506391">Ndihmo në përmirësimin e sigurisë në ueb</translation>
 <translation id="3597179440835065298">Merr sugjerime më të mira</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
+<translation id="360901359071773787">Të fshihen 15 minutat e fundit?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3631987586758005671">Po ndahet te <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5517095782334947753">Ke faqeshënues, historik, fjalëkalime dhe cilësime të tjera nga <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Kur provat janë aktive dhe nëse Chrome të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin interesat e tua në vazhdimësi çdo muaj.</translation>
 <translation id="5524843473235508879">Ridrejtimi u bllokua.</translation>
+<translation id="554297709083131118">Të dhënat e mëposhtme nga 15 minutat e fundit do të fshihen</translation>
 <translation id="5548606607480005320">Kontrolli i sigurisë</translation>
 <translation id="5555525474779371165">Zgjidh mbrojtjen me "Shfletimin e sigurt"</translation>
 <translation id="5556459405103347317">Ringarko</translation>
@@ -1263,6 +1265,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="78270725016672455">Kompjuteri yt kërkon ta regjistrojë këtë pajisje për t'u identifikuar në një faqe</translation>
 <translation id="7844171778363018843">Nuk janë zgjedhur të dhëna për t'u sinkronizuar</translation>
 <translation id="7846296061357476882">Shërbimet e Google</translation>
+<translation id="7847228556075070294">Historiku, kukit dhe të dhënat e tjera u fshinë</translation>
 <translation id="784934925303690534">Shtrirja kohore</translation>
 <translation id="7851858861565204677">Pajisjet e tjera</translation>
 <translation id="7853202427316060426">Aktiviteti</translation>

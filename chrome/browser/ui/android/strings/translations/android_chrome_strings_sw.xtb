@@ -477,6 +477,7 @@ Tokeni za hali ya faragha zinaboresha faragha kwenye wavuti na haziwezi kutumiwa
 <translation id="3587596251841506391">Tusaidie kuboresha usalama kwenye wavuti</translation>
 <translation id="3597179440835065298">Pata mapendekezo bora</translation>
 <translation id="3602290021589620013">Hakiki</translation>
+<translation id="360901359071773787">Ungependa kufuta mambo uliyovinjari dakika 15 zilizopita?</translation>
 <translation id="3616113530831147358">Sauti</translation>
 <translation id="3622349720008044802">Dhibiti madirisha</translation>
 <translation id="3631987586758005671">Inashiriki kwenye <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5517095782334947753">Una alamisho, historia, manenosiri na mipangilio mingine kutoka <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Vipindi vya kujaribu vinapowashwa na iwapo Chrome imekuweka kwa unasibu katika kipindi cha kujaribu kinachoendelea, historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi.</translation>
 <translation id="5524843473235508879">Imezuia shughuli ya kuelekeza kwingine.</translation>
+<translation id="554297709083131118">Data ifuatayo kuanzia dakika 15 zilizopita itafutwa</translation>
 <translation id="5548606607480005320">Angalizo la usalama</translation>
 <translation id="5555525474779371165">Chagua ulinzi wa Kuvinjari Salama Unaopendelea</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
@@ -1263,6 +1265,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="78270725016672455">Kompyuta yako inataka kusajili kifaa hiki ili kitumike wakati wa kuingia katika akaunti kwenye tovuti</translation>
 <translation id="7844171778363018843">Hujachagua data yoyote ya kusawazisha</translation>
 <translation id="7846296061357476882">Huduma za Google</translation>
+<translation id="7847228556075070294">Historia, vidakuzi na data nyingine iliyofutwa</translation>
 <translation id="784934925303690534">Muda</translation>
 <translation id="7851858861565204677">Vifaa vingine</translation>
 <translation id="7853202427316060426">Shughuli</translation>

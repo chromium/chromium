@@ -184,7 +184,6 @@
 <translation id="2421798028054665193">Imej <ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Ketepatan titik terapung</translation>
 <translation id="2448312741937722512">Jenis</translation>
-<translation id="2461822463642141190">Semasa</translation>
 <translation id="248546197012830854">Peranti di luar talian. Sambung kepada rangkaian Wi-Fi untuk melihat kandungan bantuan.</translation>
 <translation id="2491955442992294626">Kekunci tidak diuji apabila anda menggunakan tetingkap lain</translation>
 <translation id="2493126929778606526">Foto terbaik anda, dipilih secara automatik</translation>
@@ -698,6 +697,7 @@
 <translation id="7103252855940681301">Peranti <ph name="INDEX" /> daripada <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Nama Titik Capaian (APN)</translation>
+<translation id="7131634559772719176">Sahkan pratetapan</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pelayan nama}other{Pelayan nama}}</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
@@ -801,6 +801,7 @@
 <translation id="80398733265834479">Dayakan mod warna automatik</translation>
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8045012663542226664">Redam Mikrofon</translation>
+<translation id="8050091914317269817">Tindakan memilih hiasan latar ini akan menghidupkan mod gelap automatik dan pemadanan warna hiasan latar.</translation>
 <translation id="8075838845814659848">Baki cas</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8082366717211101304">Tidak dapat menyelesaikan DNS daripada apl Android</translation>

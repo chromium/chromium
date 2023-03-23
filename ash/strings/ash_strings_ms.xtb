@@ -40,6 +40,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1182225749592316782">Tindakan ini akan membenarkan akses kepada semua apl dan laman web dengan kebenaran kamera dan mikrofon</translation>
 <translation id="1183863904939664422">Tidak berminat dengan cadangan ini</translation>
+<translation id="1184126796192815024">Rangkaian ini tidak menyokong apl penstriman daripada telefon anda. Cuba gunakan tempat liputan telefon anda. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Masukkan kata laluan atau PIN untuk meningkatkan keselamatan</translation>
 <translation id="118532027333893379">Ketik mana-mana bahagian untuk menangkap skrin penuh</translation>
 <translation id="1190609913194133056">Pusat Pemberitahuan</translation>
@@ -461,6 +462,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3256109297135787951">Buang serlahan daripada item pada rak anda</translation>
 <translation id="3260969790895726815">Pertuturan diproses secara setempat dan pengimlakan berfungsi di luar talian, tetapi beberapa perintah suara tidak akan berfungsi.</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
+<translation id="3289364673986435196">Menu kuasa</translation>
 <translation id="3289544412142055976">Apl Linux tidak disokong pada masa ini</translation>
 <translation id="3289674678944039601">Mengecas melalui penyesuai</translation>
 <translation id="3290356915286466215">Tidak selamat</translation>
@@ -686,6 +688,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4269883910223712419">Pentadbir peranti ini berkeupayaan untuk:</translation>
 <translation id="4274537685965975248">Pintasan papan kekunci Ctrl + Alt + Anak Panah ke Bawah telah berubah. Untuk menggunakan kekunci End, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Anak Panah ke Kanan.</translation>
 <translation id="4279490309300973883">Pencerminan</translation>
+<translation id="4280601795273309128">Kemaskinian keselamatan tamat. Tingkatkan peranti anda.</translation>
 <translation id="4283888303416325161">Masukkan kata laluan untuk meningkatkan keselamatan</translation>
 <translation id="4285498937028063278">Menyahpin</translation>
 <translation id="4294319844246081198">Selamat pagi <ph name="GIVEN_NAME" />,</translation>
@@ -872,6 +875,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5147567197700016471">Tidak berkunci</translation>
 <translation id="5150070631291639005">Tetapan privasi</translation>
 <translation id="5155897006997040331">Kelajuan membaca</translation>
+<translation id="5163434717504750796">Kesihatan bateri <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Kiraan kitaran <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Simpan meja sebagai templat</translation>
 <translation id="5168181903108465623">Peranti Cast tersedia</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
@@ -1342,6 +1346,7 @@ Pemasangan baharu</translation>
 <translation id="743058460480092004">Kamera dan mikrofon sedang digunakan.</translation>
 <translation id="7452560014878697800">Satu aplikasi sedang menggunakan kamera anda</translation>
 <translation id="7453330308669753048">Hasil sejarah carian dialih keluar</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sehingga penuh</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Mod rakaman skrin</translation>
 <translation id="7466449121337984263">Sila sentuh penderia</translation>
@@ -1705,6 +1710,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9178475906033259337">Memaparkan 1 hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ciri ini membolehkan anda mengakses dengan cepat mana-mana pengguna yang telah log masuk tanpa memerlukan kata laluan. Gunakan ciri ini dengan akaun yang dipercayai sahaja.</translation>
 <translation id="9183456764293710005">Penggadang skrin penuh</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> lagi</translation>
 <translation id="9193626018745640770">Menghantar pada penerima yang tidak diketahui</translation>
 <translation id="9194617393863864469">Log masuk pengguna lain...</translation>
 <translation id="9198992156681343238">Peleraian <ph name="DISPLAY_NAME" /> telah ditukar kepada <ph name="RESOLUTION" />. Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>

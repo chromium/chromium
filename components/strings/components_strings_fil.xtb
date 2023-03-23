@@ -386,6 +386,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1822540298136254167">Mga website na binibisita mo at oras na ginugugol dito</translation>
 <translation id="1824402189105105503">Ikawalong Rolyo</translation>
 <translation id="1826516787628120939">Sinusuri</translation>
+<translation id="1826968372364864056">I-clear ang Form</translation>
 <translation id="1828959155404624835">Mga pagpaparenta ng kotse</translation>
 <translation id="1834321415901700177">Naglalaman ng mga mapanirang program ang site na ito</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
@@ -808,6 +809,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2951588413176968965">Aking mailbox</translation>
 <translation id="2952820037279740115">Isara ang lahat ng Incognito window</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Talahanayan ng mga naka-save na paraan ng pagbabayad</translation>
 <translation id="295526156371527179">Babala: Hindi na-merge ang patakarang ito bilang isang diksyunaryo gaya ng tinukoy ng patakaran dahil hindi ito isang diksyunaryo.</translation>
 <translation id="2955913368246107853">Isara ang bar sa paghahanap</translation>
 <translation id="2958544468932521864">Cricket</translation>
@@ -1967,6 +1969,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5786044859038896871">Gusto mo bang ilagay ang impormasyon ng iyong card?</translation>
 <translation id="578633867165174378">Nakita ng Chrome sa isang paglabag sa data ang password na kakagamit mo lang. Inirerekomenda naming palitan na ngayon ang password na ito.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Wala}=1{data sa pag-sign in para sa 1 account}one{data sa pag-sign in para sa # account}other{data sa pag-sign in para sa # na account}}</translation>
 <translation id="580241730938216256">Simulan ang pag-update</translation>
 <translation id="5803412860119678065">Gusto mo bang ilagay ang iyong <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Mga Pahintulot</translation>
@@ -2522,6 +2525,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="7201591969684833065">Makikita ng iyong administrator ang:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay Enter para magbukas ng bagong tab na Incognito para mag-browse nang pribado</translation>
 <translation id="7203375778433816396">Itakda ang Chrome bilang default na browser ng system</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Wala}=1{1 passkey}one{# passkey}other{# na passkey}}</translation>
 <translation id="7210863904660874423">Hindi sumusunod ang <ph name="HOST_NAME" /> sa mga pamantayan sa seguridad.</translation>
 <translation id="7210993021468939304">Aktibidad ng Linux sa container, at puwedeng mag-install at magpatakbo ng mga Linux app sa container</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dagdagan ang nalalaman<ph name="END_LINK" /> tungkol sa problemang ito.</translation>
@@ -2774,6 +2778,7 @@ Mga karagdagang detalye:
 <translation id="7736959720849233795">Kopyahin ang Address ng Link</translation>
 <translation id="7740996059027112821">Karaniwan</translation>
 <translation id="77424286611022110">Nagpapakita ang site na ito ng mga nakakasagabal o nakakapanlinlang na ad. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Talahanayan ng mga naka-save na address</translation>
 <translation id="774634243536837715">Na-block ang mapanganib na content.</translation>
 <translation id="7751971323486164747">I-customize ang mga laki ng font at typeface sa Chrome</translation>
 <translation id="7752995774971033316">Hindi pinamamahalaan</translation>
@@ -3015,6 +3020,7 @@ Mga karagdagang detalye:
 <translation id="8347658365704983341">Distance learning</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>
+<translation id="835203957414790336">Ipinapadala sa Google Cloud o mga third party ang content ng mga page na pini-print mo at ang impormasyon tungkol sa iyong printer para sa pagsusuri. Halimbawa, posible itong i-scan para sa sensitibong data.</translation>
 <translation id="8355270400102541638">Konteksto ng Lokal na Pag-crash:</translation>
 <translation id="8363502534493474904">I-off ang airplane mode</translation>
 <translation id="8364627913115013041">Hindi nakatakda.</translation>

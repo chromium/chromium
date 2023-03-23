@@ -596,6 +596,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3846575436967432996">Tīkla informācija nav pieejama.</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="385300504083504382">Sākums</translation>
+<translation id="3859364108019690">Nevar straumēt lietotnes</translation>
 <translation id="3861651314799684201">Lai ierakstītu visu ekrānu, nospiediet taustiņu Enter</translation>
 <translation id="3871092408932389764">Viszemākais</translation>
 <translation id="3886872229787704059">Atvērts šodien</translation>
@@ -1354,6 +1355,9 @@ Jauna instalācija</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Kameras kadrēšana ir ieslēgta.</translation>
+<translation id="7519649142417630956">Pēc ierīces izslēgšanas administrators būs atteicies un nevarēs kontrolēt jūsu ierīci.
+
+Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</translation>
 <translation id="7526573455193969409">Var tikt pārraudzītas tīklā veiktās darbības</translation>
 <translation id="7536035074519304529">IP adrese: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux lietotnes un inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
@@ -1719,6 +1723,7 @@ Jauna instalācija</translation>
 <translation id="938963181863597773">Kas ir atrodams manā kalendārā?</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="951991426597076286">Noraidīt</translation>
+<translation id="953431725143473984">Vai izslēgt ierīci?</translation>
 <translation id="954052413789300507">Nepietiek vietas krātuvē, lai lejupielādētu “<ph name="FILENAME" />”. Atbrīvojiet vietu krātuvē.</translation>
 <translation id="974545358917229949">Tiek rādīti <ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="QUERY" />”</translation>
 <translation id="98120814841227350">Doties uz dokumenta beigām</translation>

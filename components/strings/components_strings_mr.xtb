@@ -477,7 +477,7 @@
 <translation id="20817612488360358">सिस्टम प्रॉक्सी सेटिंग्ज वापरण्‍यास सेट करण्‍यात आल्या परंतु एक सुस्पष्‍ट प्रॉक्सी कॉंफिगरेशन देखील निर्दिष्‍ट करण्‍यात आले.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> पैकी <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2085876078937250610">सेव्ह करा…</translation>
-<translation id="2088086323192747268">सिंक व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
+<translation id="2088086323192747268">सिंक व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="2091887806945687916">ध्वनी</translation>
 <translation id="2093982008204312032">Google Chrome पासवर्ड एंटर करण्यासाठी Windows Hello बंद करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2094505752054353250">डोमेन जुळत नाही</translation>
@@ -569,7 +569,7 @@
 <translation id="2289385804009217824">ट्रिम करा</translation>
 <translation id="2292556288342944218">तुमचा इंटरनेट ॲक्सेस ब्लॉक केला आहे</translation>
 <translation id="2293443924986248631">सुरू असताना, साइट संपूर्ण वेबवर तुमचा माग ठेवणाऱ्या कुकी वापरू शकत नाहीत. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
-<translation id="2298855485018661510">कुकी व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची कुकी प्राधान्ये व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
+<translation id="2298855485018661510">कुकी व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची कुकी प्राधान्ये व्यवस्थापित करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="2300306941146563769">अपलोड केला नाही</translation>
 <translation id="2316159751672436664">ChromeOS सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करा</translation>
 <translation id="2316887270356262533">१ MB पेक्षा कमी जागा मोकळी करते. काही साइट तुमच्या पुढील भेटीच्या वेळी आणखी धीम्या गतीने लोड होऊ शकतात.</translation>
@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">माझा मेलबॉक्स</translation>
 <translation id="2952820037279740115">सर्व गुप्त विंडो बंद करा</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">सेव्ह केलेल्या पेमेंट पद्धतींची सारणी</translation>
 <translation id="295526156371527179">चेतावणी: धोरणामध्ये नमूद केल्याप्रमाणे हे धोरण शब्दकोश म्हणून विलीन केले नाही कारण तो एखादा शब्दकोश नाही.</translation>
 <translation id="2955913368246107853">शोध बार बंद करा</translation>
 <translation id="2958544468932521864">क्रिकेट</translation>
@@ -892,7 +893,7 @@
 <translation id="3194737229810486521"><ph name="URL" /> ला तुमच्या डिव्हाइसवर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> वर <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">तुम्ही हे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्याची विनंती करू शकते</translation>
-<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="320323717674993345">पेमेंट रद्द करा</translation>
 <translation id="3203366800380907218">वेबवरील</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
@@ -1027,7 +1028,7 @@
 <translation id="3507936815618196901">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करा आणि कॅमेर्‍याचे स्थान ट्रॅक करा</translation>
 <translation id="3512163584740124171">या धोरणाकडे दुर्लक्ष केले कारण त्याच धोरण गटातील दुसऱ्या धोरणाला उच्च प्राधान्य आहे.</translation>
 <translation id="3515972145999192222">धोरणाचे उल्लंघन करत असल्यामुळे, तुमच्या संस्थेने <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ला ब्लॉक केले आहे. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="35172538073169599">ॲड्रेस व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये ॲड्रेस जोडण्यासाठी आणि व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
+<translation id="35172538073169599">ॲड्रेस व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये ॲड्रेस जोडण्यासाठी आणि व्यवस्थापित करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="3518941727116570328">एकापेक्षा अधिक ऑब्जेक्ट हाताळणी</translation>
 <translation id="3525130752944427905">१० x १४ इं</translation>
 <translation id="3528171143076753409">सर्व्हरचे सर्टिफिकेट विश्वसनीय नाही.</translation>
@@ -2276,7 +2277,7 @@
 <translation id="6587893660316489419">एन्व्हलप बी५</translation>
 <translation id="6587923378399804057">तुम्ही कॉपी केलेली लिंक</translation>
 <translation id="6591833882275308647">तुमचे <ph name="DEVICE_TYPE" /> व्यवस्थापित केलेले नाही</translation>
-<translation id="6592952801936330159">साइट सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
+<translation id="6592952801936330159">साइट सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="6596325263575161958">एंक्रिप्शन पर्याय</translation>
 <translation id="6597665340361269064">९० अंश</translation>
 <translation id="6599642189720630047">ट्रॅक केलेली उत्पादने</translation>
@@ -2471,7 +2472,7 @@
 <translation id="7081308185095828845">हे वैशिष्ट्य तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
 <translation id="7083258188081898530">ट्रे ९</translation>
 <translation id="7086090958708083563">वापरकर्त्याने अपलोडची विनंती केली आहे</translation>
-<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर दाबा</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये परवानग्या आणि सर्व साइटवर स्टोअर केलेला डेटा व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर प्रेस करा</translation>
 <translation id="7096937462164235847">या वेबसाइटच्या ओळखीची पडताळणी केलेली नाही.</translation>
 <translation id="7101893872976785596">भयपट</translation>
 <translation id="7102079138917191645">बांधकाम आणि देखभाल</translation>
@@ -2581,7 +2582,7 @@
 <translation id="7359588939039777303">जाहिराती ब्लॉक केल्या.</translation>
 <translation id="7360451453306104998">सवलती उपलब्ध झाल्यावर, Google त्या चेकआउटदरम्यान दाखवेल</translation>
 <translation id="7363096869660964304">मात्र, तुम्ही अदृश्य नाही. गुप्त मोडमध्ये तुमचे ब्राउझिंग हे तुमचा नियोक्ता, तुमचा इंटरनेट सेवा पुरवठादार किंवा तुम्ही भेट देता त्या वेबसाइटपासून लपत नाही.</translation>
-<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये ॲड्रेस जोडण्यासाठी आणि व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर दाबा</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये ॲड्रेस जोडण्यासाठी आणि व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर प्रेस करा</translation>
 <translation id="7365849542400970216">तुमच्या डिव्हाइसचा वापर माहीत आहे का?</translation>
 <translation id="7366117520888504990">१९८ x २७५ मिमी</translation>
 <translation id="7366362069757178916">पेमेंट हँडलर</translation>
@@ -2777,6 +2778,7 @@
 <translation id="7736959720849233795">लिंकचा अ‍ॅड्रेस कॉपी करा</translation>
 <translation id="7740996059027112821">साधारण</translation>
 <translation id="77424286611022110">ही साइट नको असलेल्या किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">सेव्ह केलेल्या पत्त्यांची सारणी</translation>
 <translation id="774634243536837715">धोकादायक आशय ब्लॉक केला.</translation>
 <translation id="7751971323486164747">Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करा</translation>
 <translation id="7752995774971033316">व्यवस्थापित न केलेले</translation>
@@ -3018,6 +3020,7 @@
 <translation id="8347658365704983341">दूरस्‍थ शिक्षण</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
+<translation id="835203957414790336">तुम्ही प्रिंट करता त्या पेजचा आशय आणि तुमच्या प्रिंटरविषयीची माहिती विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांना पाठवली जाते. उदाहरणार्थ, तो संवेदनशील डेटासाठी स्कॅन केला जाऊ शकतो.</translation>
 <translation id="8355270400102541638">स्थानिक क्रॅश संदर्भ:</translation>
 <translation id="8363502534493474904">विमान मोड बंद करा</translation>
 <translation id="8364627913115013041">सेट केलेले नाही.</translation>
@@ -3047,7 +3050,7 @@
 <translation id="8427848540066057481">५०० x ७५० मिमी</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
 <translation id="8428634594422941299">समजले</translation>
-<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमची कुकी प्राधान्ये व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये तुमची कुकी प्राधान्ये व्यवस्थापित करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="8433057134996913067">हे तुम्हाला बहुतांश वेबसाइट वरून साइन आउट करेल.</translation>
 <translation id="8434840396568290395">पाळीव प्राणी</translation>
 <translation id="8437238597147034694">&amp;हलवा पूर्ववत करा</translation>
@@ -3312,7 +3315,7 @@
 <translation id="9114581008513152754">हा ब्राउझर कंपनी किंवा इतर संस्थेद्वारे व्यवस्थापित केला जात नाही. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chrome च्या बाहेर व्यवस्थापित केलेली असू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="9116548361133462832">Chrome मधील जाहिरातींबद्दल अधिक माहिती</translation>
 <translation id="9117930699067497412">नवीन</translation>
-<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी आणि शोध पुन्हा सुरू करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
+<translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी आणि शोध पुन्हा सुरू करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="9119042192571987207">अपलोड केला</translation>
 <translation id="9122954576417194280">कमॉडिटी आणि फ्यूचर्स ट्रेडिंग</translation>
 <translation id="9128016270925453879">धोरणे लोड केलेली आहेत</translation>

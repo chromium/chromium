@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
+<translation id="1014750484722996375">Maeneokazi</translation>
 <translation id="1018219910092211213">Imeshindwa kusuluhisha DNS</translation>
 <translation id="1018656279737460067">Imeghairiwa</translation>
+<translation id="1022433422498218992">Vidhibiti vya Jumla</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
 <translation id="1664796644829245314">Kagua <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN iliyojumuishwa ndani</translation>
+<translation id="1669047024429367828">Uonekanaji</translation>
 <translation id="1672499492233627739">Mpasho wa video wa kamera ya wavuti</translation>
 <translation id="1676557873873341166">Inaendelea kunasa video</translation>
 <translation id="1703835215927279855">Barua</translation>
 <translation id="1706391837335750954">Kisuluhishaji cha DNS Kinapatikana</translation>
+<translation id="1710499924611012470">Usogezaji wa ufikivu</translation>
 <translation id="1715359911173058521">Hitilafu ya kuwasiliana na kichanganuzi imetokea. Kagua muunganisho wa mtandao au USB kisha ujaribu tena.</translation>
 <translation id="1717874160321062422">Inadhibitiwa na <ph name="FIRST_MANAGER" /> na <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Seva za majina</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Aina ya uthibitishaji</translation>
 <translation id="1782199038061388045">tafsiri</translation>
+<translation id="1790209694022261219">Windows na Eneokazi</translation>
 <translation id="1792647875738159689">Inaghairi uchanganuzi</translation>
 <translation id="1801418420130173017">Zima mandhari meusi</translation>
 <translation id="1807246157184219062">Mwangaza</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Mipangilio zaidi</translation>
 <translation id="2085089206770112532">Punguza mwangaza wa skrini</translation>
+<translation id="2102231663024125441">Kubadilisha maandishi</translation>
 <translation id="2105810540595158374">Kifaa hiki ni kidhibiti cha mchezo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Una GB <ph name="AVAILABLE_MEMORY" /> kati ya GB <ph name="TOTAL_MEMORY" /></translation>
@@ -178,7 +184,6 @@
 <translation id="2421798028054665193">Picha ya <ph name="CURRENT_PAGE" /> kati ya <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Usahihi wa mfumo wa uhandisi wa kuonyesha nambari</translation>
 <translation id="2448312741937722512">Aina</translation>
-<translation id="2461822463642141190">Ya sasa</translation>
 <translation id="248546197012830854">Kifaa hakipo mtandaoni. Unganisha kwenye mtandao wa Wi-Fi ili uone maudhui ya usaidizi.</translation>
 <translation id="2491955442992294626">Funguo hazijaribiwi unapotumia dirisha lingine</translation>
 <translation id="2493126929778606526">Picha zako bora zaidi, zilizochaguliwa kiotomatiki</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Sasisho muhimu</translation>
 <translation id="2860473693272905224">Weka ukurasa mwingine kwenye kichanganuzi</translation>
 <translation id="2872961005593481000">Zima</translation>
+<translation id="2873483161362553159">Usogezaji kwenye kivinjari</translation>
 <translation id="2874939134665556319">Wimbo uliotangulia</translation>
 <translation id="2878387241690264070">Imetumia <ph name="RATE" /> ya chaji ndani ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="2902312830803030883">Vitendo zaidi</translation>
@@ -368,6 +374,7 @@
 <translation id="4311195029067684288">Imejaa</translation>
 <translation id="4333390807948134856">Kitufe cha <ph name="KEY_NAME" /> kimebonyezwa</translation>
 <translation id="435692326371619097">Simamia mipangilio ya APN ya mtandao. APN huanzisha muunganisho kati ya mtandao wa simu na Intaneti. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Weka upya njia za mkato</translation>
 <translation id="4378373042927530923">Usitekeleze</translation>
 <translation id="4378551569595875038">Inaunganisha...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +667,7 @@
 <translation id="6766275201586212568">Usuluhishaji wa DNS haukufaulu</translation>
 <translation id="6768237774506518020">Kiwango cha juu cha usuluhishaji wa DNS usiofaulu</translation>
 <translation id="6791471867139427246">rangi ya mwangaza wa kibodi</translation>
+<translation id="6798678288485555829">Usogezaji kwenye maandishi</translation>
 <translation id="680983167891198932">Ufunguo</translation>
 <translation id="6816797338148849397">Maelezo yanayohusiana na chaguo lako yanapatikana. Tumia kishale cha Juu ili uyafikie.</translation>
 <translation id="6838167112108853532">Imeshindwa kuzima au kuondoa APN hii. Hakikisha APN ulizowasha ambazo zimeambatishwa zinazimwa au kuondolewa.</translation>

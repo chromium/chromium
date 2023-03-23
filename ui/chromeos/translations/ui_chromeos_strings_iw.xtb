@@ -943,6 +943,7 @@
 <translation id="8492972329130824181">הרשת הביתית אינה זמינה. יש להפעיל נדידה בחבילת גלישה כדי להתחבר.</translation>
 <translation id="8499098729323186194">מתבצע חילוץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="8502913769543567768">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, הפעלה בסיום הגדרת המכשיר, בניהול האדמין</translation>
+<translation id="8512483403832814140">כל זמן</translation>
 <translation id="8521441079177373948">בריטניה</translation>
 <translation id="853494022971700746">צרפתית (צרפת)</translation>
 <translation id="8540608333167683902">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>

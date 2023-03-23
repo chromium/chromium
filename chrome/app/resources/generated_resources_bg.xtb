@@ -563,6 +563,7 @@
 <translation id="1485015260175968628">То вече има възможност за:</translation>
 <translation id="1485141095922496924">Версия <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Търсене в паролите</translation>
+<translation id="1486486872607808064">Сканирайте този QR код с камерата на устройството, на което искате да създадете код за достъп за <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Включено – персонализирани настройки</translation>
 <translation id="1493892686965953381">Изчаква се <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Сайтовете могат да искат разрешение да използват шрифтовете, инсталирани на устройството ви</translation>
@@ -770,6 +771,7 @@
 <translation id="164936512206786300">Прекратяване на сдвояването на устройство с Bluetooth</translation>
 <translation id="1651008383952180276">Трябва да въведете един и същ пропуск два пъти</translation>
 <translation id="1652326691684645429">Активиране на „Споделяне наблизо“</translation>
+<translation id="1654580009054503925">Няма разрешение да показва заявки</translation>
 <translation id="1656528038316521561">Плътност на фона</translation>
 <translation id="1657406563541664238">Помогнете ни да подобрим <ph name="PRODUCT_NAME" /> като автоматично изпращате на Google статистически данни за използването му и сигнали за сривове</translation>
 <translation id="1657937299377480641">За да влезете отново с цел достъп до образователни ресурси, помолете родител да ви предостави разрешение</translation>
@@ -3419,6 +3421,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3957079323242030166">Данните в резервното копие не се отчитат в квотата на хранилището ви в Диск.</translation>
 <translation id="3957844511978444971">Докоснете „Приемам“, за да потвърдите избора си на съответните настройки за услугите на Google.</translation>
 <translation id="3958088479270651626">Импортиране на отметки и настройки</translation>
+<translation id="3958110062351175311">Има разрешение да показва заявки в лентата с инструменти</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Още действия за <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Стандартна защита срещу уебсайтове, изтеглени файлове и разширения, за които е известно, че са опасни</translation>
@@ -3678,6 +3681,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4205157409548006256">При конфигурирането на Linux възникна грешка.</translation>
 <translation id="4206144641569145248">Извънземно</translation>
 <translation id="4206323443866416204">Сигнал с отзив</translation>
+<translation id="4206585797409671301">Има разрешение да показва заявки</translation>
 <translation id="4207932031282227921">Изисква се разрешение. Натиснете F6, за да отговорите</translation>
 <translation id="4208390505124702064">Търсене в/ъв <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Голям</translation>
@@ -4348,6 +4352,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="481574578487123132">Свързани устройства</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, подробности</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Изтрихте 1 отметка}other{Изтрихте {COUNT} отметки}}</translation>
+<translation id="4816900689218414104">Създаване на код за достъп на телефон или таблет</translation>
 <translation id="4819323978093861656">{0,plural, =0{Затваря се сега.}=1{Затваря се след 1 секунда}other{Затваря се след # секунди}}</translation>
 <translation id="4819607494758673676">Известия от Google Асистент</translation>
 <translation id="4820236583224459650">Задаване като активен пропуск</translation>
@@ -6257,6 +6262,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6562117348069327379">Запазване на системните регистрационни файлове в директорията „Изтегляния“.</translation>
 <translation id="656293578423618167">Пътят или името на файла са твърде дълги.  Моля, запазете файла с по-кратко име или на друго място.</translation>
 <translation id="6568283005472142698">Търсене на раздели</translation>
+<translation id="6570622975915850879">Използване на друго устройство</translation>
 <translation id="65711204837946324">Необходимо е разрешение за изтегляне</translation>
 <translation id="6571533309669248172">Форматиране на текста</translation>
 <translation id="6571772921213691236">Редактиране на данните за вход</translation>
@@ -6820,6 +6826,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7044606776288350625">Синхронизиране на данните</translation>
 <translation id="7047059339731138197">Изберете фон</translation>
 <translation id="7049293980323620022">Да се запази ли файлът?</translation>
+<translation id="70496770794393383">Таблица със запазени пароли</translation>
 <translation id="7050037487872780845">Невалидна конфигурация на точката за достъп</translation>
 <translation id="7051551856857948729">Скриване на стойността на IBAN</translation>
 <translation id="7052237160939977163">Да се изпратят данните от проследяването на ефективността</translation>

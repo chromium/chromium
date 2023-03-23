@@ -596,6 +596,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3846575436967432996">Der er ingen tilgængelige netværksoplysninger</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="385300504083504382">Begyndelsen</translation>
+<translation id="3859364108019690">Der kan ikke streames apps</translation>
 <translation id="3861651314799684201">Tryk på Enter for at optage fuld skærm</translation>
 <translation id="3871092408932389764">Laveste</translation>
 <translation id="3886872229787704059">Åbnet i dag</translation>
@@ -1354,6 +1355,9 @@ Installeret for nylig</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Automatisk zoom er aktiveret.</translation>
+<translation id="7519649142417630956">Når enheden er slukket, logges administratoren ud, og vedkommende kan ikke styre din enhed.
+
+Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</translation>
 <translation id="7526573455193969409">Netværket kan være overvåget</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux-apps og inkognitovinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
@@ -1719,6 +1723,7 @@ Installeret for nylig</translation>
 <translation id="938963181863597773">Hvad har jeg i kalenderen?</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Afvis</translation>
+<translation id="953431725143473984">Vil du slukke enheden?</translation>
 <translation id="954052413789300507">Der er ikke nok plads til <ph name="FILENAME" />. Frigør plads.</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Gå til slutningen af dokumentet</translation>

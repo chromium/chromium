@@ -150,6 +150,7 @@ Bu politikanın <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name
       <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> politikasının etkili olabilmesi için <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> politikasının Yanlış değerine ayarlanması şarttır.</translation>
 <translation id="1147732569915511430">Avatar resminin SHA-256 karması.</translation>
 <translation id="1148415065145333943">Gelişmiş pil şarj modunu devre dışı bırak</translation>
+<translation id="1149841949061115313">LTC kanalı</translation>
 <translation id="1150742937785306405">Kullanıcıların, cihazlarında <ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarını etkinleştirmesine veya devre dışı bırakmasına izin ver.</translation>
 <translation id="1151353063931113432">Bu sitelerdeki resimlere izin ver</translation>
 <translation id="1151987132434751822">Politika kimlik bilgilerinin uygulanabileceği kimlik doğrulama şemaları. Şunlardan biri olabilir:
@@ -2210,6 +2211,7 @@ Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa kullanıcı bu kay
 
       Politika, Devre Dışı değerine ayarlanırsa medya denetimleri kilit ekranında devre dışı bırakılır.</translation>
 <translation id="3072847235228302527">Bir cihaz yerel hesabı için Hizmet Şartları'nı ayarlama</translation>
+<translation id="3074032542020543133">LTS kanalı</translation>
 <translation id="3077650998740742747">
 Varsayılan davranış (Politika ayarlanmadıysa)
 İçerik alanına bir hesap eklendiğinde, kullanıcıdan yeni profil oluşturmasını isteyen küçük bir iletişim kutusu görünebilir. Bu iletişim kutusu kapatılabilir.
@@ -3356,6 +3358,13 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
 <translation id="4101282687722389021">Bu girişin son güncellendiği zamanı gösteren UTC zaman damgası. Zaman damgasına bir tamsayı sığmayacağından dize olarak gönderilir</translation>
 <translation id="4102347680024644994">Genişletilmiş tespit ve yanıt (XDR) etkinliklerini rapor et</translation>
 <translation id="4105989332710272578">Bir URL listesi için Sertifika Şeffaflığı uygulamasını devre dışı bırak</translation>
+<translation id="4110126170080699437"><ph name="GET_DISPLAY_MEDIA_API_NAME" /> web API, güvenlik nedenleriyle önceki kullanıcı hareketinin ("geçici etkinleştirme") çağrılmasını zorunlu kılar ve çağrılmadığı takdirde başarısız olur.
+
+Bu politika ayarlandığında yöneticiler, önceki kullanıcı hareketi olmadan bu API'nin çağrılabileceği kaynakları belirtebilir.
+
+Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Bu politikada * değeri kullanılamaz.
+
+Bu politika ayarlanmazsa tüm kaynaklar, bu API'yi çağırmak için önceki kullanıcı hareketini zorunlu kılar.</translation>
 <translation id="4114059938441379876">Politika ayarlanırsa kullanıcıların tarayıcıda bir uyarı gördükten sonra şifrelerini değiştirmeleri için hangi URL'ye gönderileceği belirlenir. Şifre koruma hizmeti, kullanıcıları bu politikayla belirlediğiniz URL'ye (yalnızca HTTP ve HTTPS protokolleri) gönderir. <ph name="PRODUCT_NAME" /> ürününün bu şifre değiştirme sayfasında yeni şifrenin rastgele oluşturulmuş karma değerini doğru bir şekilde yakalayabilmesi için şifre değiştirme sayfanızın, https://www.chromium.org/developers/design-documents/create-amazing-password-forms adresinde belirtilen yönergelere uygun olduğundan emin olun.
 
       Politika devre dışı bırakılır veya ayarlanmazsa hizmet, şifrelerini değiştirmeleri için kullanıcıları https://myaccount.google.com adresine gönderir.
@@ -7151,6 +7160,7 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 
       Politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa kullanıcı düzeyindeki bulut politikaları varsayılan olarak öncelikli olur.</translation>
 <translation id="7657261947024629645">Performans için optimize et.</translation>
+<translation id="76580522298425324">Önceki kullanıcı hareketi olmadan ekran görüntüsü almaya izin ver</translation>
 <translation id="7666228839913571182">3. taraf çerezlere izin ver</translation>
 <translation id="7668830462800981702">Politika, Etkin değerine ayarlanırsa kullanıcı adres çubuğuna URL olmayan metin girdiğinde varsayılan arama gerçekleştirilir. Varsayılan arama sağlayıcısını belirtmek için geri kalan arama politikalarını ayarlayın. Bu politikaları boş bırakırsanız kullanıcı varsayılan sağlayıcısını seçebilir. Politika, Devre dışı değerine ayarlanırsa kullanıcı adres çubuğuna URL olmayan metin girdiğinde arama gerçekleşmez.
 

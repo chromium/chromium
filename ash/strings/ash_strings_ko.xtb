@@ -461,6 +461,7 @@
 <translation id="3256109297135787951">실행기에 있는 항목에서 강조표시를 삭제합니다.</translation>
 <translation id="3260969790895726815">음성이 로컬에서 처리되고 음성기록이 오프라인으로 작동하지만 일부 음성 명령은 작동하지 않습니다.</translation>
 <translation id="3269597722229482060">마우스 오른쪽 버튼 클릭</translation>
+<translation id="3289364673986435196">전원 메뉴</translation>
 <translation id="3289544412142055976">Linux 앱은 현재 지원되지 않습니다.</translation>
 <translation id="3289674678944039601">어댑터를 통해 충전 중</translation>
 <translation id="3290356915286466215">비보안</translation>
@@ -685,6 +686,7 @@
 <translation id="4269883910223712419">이 기기의 관리자는 다음과 같은 작업을 할 수 있습니다.</translation>
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="4279490309300973883">미러링</translation>
+<translation id="4280601795273309128">보안 업데이트가 종료되었습니다. 기기를 업그레이드하세요.</translation>
 <translation id="4283888303416325161">보안 강화를 위해 비밀번호 입력</translation>
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="4294319844246081198">좋은 아침이에요, <ph name="GIVEN_NAME" />님</translation>
@@ -871,6 +873,7 @@
 <translation id="5147567197700016471">잠금 해제됨</translation>
 <translation id="5150070631291639005">개인 정보 보호 설정</translation>
 <translation id="5155897006997040331">읽기 속도</translation>
+<translation id="5163434717504750796">배터리 상태 <ph name="BATTERY_HEALTH_PERCENTAGE" />% | 사이클 수 <ph name="CYCLE_COUNT" />회</translation>
 <translation id="5166007464919321363">데스크를 템플릿으로 저장</translation>
 <translation id="5168181903108465623">전송 기기를 사용할 수 있음</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
@@ -1341,6 +1344,7 @@
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
 <translation id="7452560014878697800">다른 애플리케이션에서 카메라를 사용 중입니다.</translation>
 <translation id="7453330308669753048">검색 기록 결과 삭제됨</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> 후 충전 완료</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746232733191930409">화면 녹화 모드</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
@@ -1704,6 +1708,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> 검색결과 1개 표시 중</translation>
 <translation id="9179259655489829027">이 기능을 사용하면 로그인한 모든 사용자에게 비밀번호 없이 액세스할 수 있습니다. 이 기능은 신뢰할 수 있는 계정에만 사용하시기 바랍니다.</translation>
 <translation id="9183456764293710005">전체 화면 돋보기</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> 남음</translation>
 <translation id="9193626018745640770">알 수 없는 수신기에 전송 중</translation>
 <translation id="9194617393863864469">다른 사용자 추가...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />의 해상도가 <ph name="RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>

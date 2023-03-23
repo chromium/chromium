@@ -466,6 +466,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3256109297135787951">Remover o realce de um item na prateleira</translation>
 <translation id="3260969790895726815">A voz é processada localmente e o ditado funciona offline, mas alguns comandos de voz não funcionam.</translation>
 <translation id="3269597722229482060">Clicar com o botão direito do rato</translation>
+<translation id="3289364673986435196">Menu ligar/desligar</translation>
 <translation id="3289544412142055976">De momento, as apps para Linux não são suportadas</translation>
 <translation id="3289674678944039601">A carregar através de adaptador…</translation>
 <translation id="3290356915286466215">Não protegida</translation>
@@ -693,6 +694,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4269883910223712419">O administrador deste dispositivo pode:</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo foi alterado. Para utilizar a tecla Fim, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
+<translation id="4280601795273309128">As atualizações de segurança terminaram. Atualize o dispositivo.</translation>
 <translation id="4283888303416325161">Introduzir palavra-passe para uma maior segurança</translation>
 <translation id="4285498937028063278">Soltar</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
@@ -883,6 +885,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Definições de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
+<translation id="5163434717504750796">Estado da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Número de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Guardar espaço de trabalho como modelo</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
@@ -1357,6 +1360,7 @@ Nova instalação</translation>
 <translation id="743058460480092004">A câmara e o microfone estão a ser utilizados.</translation>
 <translation id="7452560014878697800">Uma aplicação está a utilizar a sua câmara.</translation>
 <translation id="7453330308669753048">Resultado do histórico de pesquisas removido</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até ficar completa</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746232733191930409">Modo de gravação de ecrã</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
@@ -1723,6 +1727,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9178475906033259337">A apresentar 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta funcionalidade permite-lhe aceder rapidamente a qualquer utilizador com a sessão iniciada sem ser necessária uma palavra-passe. Utilize esta funcionalidade apenas com contas fidedignas.</translation>
 <translation id="9183456764293710005">Lupa de ecrã inteiro</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Falta(m) <ph name="TIME" /></translation>
 <translation id="9193626018745640770">A transmitir para um recetor desconhecido…</translation>
 <translation id="9194617393863864469">Iniciar sessão com outro utilizador...</translation>
 <translation id="9198992156681343238">Resolução de <ph name="DISPLAY_NAME" /> alterada para <ph name="RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>

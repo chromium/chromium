@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">กล่องจดหมายของฉัน</translation>
 <translation id="2952820037279740115">ปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">ตารางวิธีการชำระเงินที่บันทึกไว้</translation>
 <translation id="295526156371527179">คำเตือน: ระบบไม่ได้รวมนโยบายนี้เป็นพจนานุกรมตามที่นโยบายระบุเพราะไม่ใช่พจนานุกรม</translation>
 <translation id="2955913368246107853">ปิดแถบค้นหา</translation>
 <translation id="2958544468932521864">คริกเก็ต</translation>
@@ -2776,6 +2777,7 @@
 <translation id="7736959720849233795">คัดลอกที่อยู่ลิงก์</translation>
 <translation id="7740996059027112821">มาตรฐาน</translation>
 <translation id="77424286611022110">เว็บไซต์นี้แสดงโฆษณาที่รบกวนหรือทำให้เข้าใจผิด <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">ตารางที่อยู่ที่บันทึกไว้</translation>
 <translation id="774634243536837715">บล็อกเนื้อหาอันตรายแล้ว</translation>
 <translation id="7751971323486164747">ปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
 <translation id="7752995774971033316">ไม่ได้จัดการ</translation>
@@ -3017,6 +3019,7 @@
 <translation id="8347658365704983341">การเรียนรู้ทางไกล</translation>
 <translation id="8349305172487531364">แถบบุ๊กมาร์ก</translation>
 <translation id="8351131234907093545">สร้างโน้ต</translation>
+<translation id="835203957414790336">ระบบจะส่งเนื้อหาของหน้าที่คุณพิมพ์และข้อมูลเกี่ยวกับเครื่องพิมพ์ไปยัง Google Cloud หรือบุคคลที่สามเพื่อการวิเคราะห์ เช่น อาจมีการสแกนหาข้อมูลที่ละเอียดอ่อน</translation>
 <translation id="8355270400102541638">บริบทของการขัดข้องในเครื่อง:</translation>
 <translation id="8363502534493474904">ปิดโหมดบนเครื่องบิน</translation>
 <translation id="8364627913115013041">ไม่ได้ตั้งค่า</translation>

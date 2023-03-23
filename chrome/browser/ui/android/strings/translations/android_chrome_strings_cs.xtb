@@ -477,6 +477,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3587596251841506391">Zlepšovat bezpečnost na webu</translation>
 <translation id="3597179440835065298">Získejte lepší návrhy</translation>
 <translation id="3602290021589620013">Náhled</translation>
+<translation id="360901359071773787">Smazat posledních 15 minut?</translation>
 <translation id="3616113530831147358">Zvuk</translation>
 <translation id="3622349720008044802">Spravovat okna</translation>
 <translation id="3631987586758005671">Sdílení se zařízením <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5517095782334947753">Máte záložky, historii, hesla a další nastavení z účtu <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Když jsou zapnuté zkušební verze a Chrome vás do nějaké náhodně umístí, vaše historie prohlížení bude mít vliv na zobrazované reklamy a zájmy, jak je odhadnuto níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže.</translation>
 <translation id="5524843473235508879">Bylo zablokováno přesměrování.</translation>
+<translation id="554297709083131118">Následující data z posledních 15 minut budou smazána</translation>
 <translation id="5548606607480005320">Bezpečnostní kontrola</translation>
 <translation id="5555525474779371165">Zvolte si stupeň Bezpečného prohlížení</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
@@ -1263,6 +1265,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="78270725016672455">Váš počítač chce toto zařízení zaregistrovat k přihlášení na web</translation>
 <translation id="7844171778363018843">Nebyla vybrána žádná data k synchronizaci</translation>
 <translation id="7846296061357476882">Služby Google</translation>
+<translation id="7847228556075070294">Byla smazána historie, soubory cookie a další data</translation>
 <translation id="784934925303690534">Časové období</translation>
 <translation id="7851858861565204677">Jiná zařízení</translation>
 <translation id="7853202427316060426">Aktivita</translation>

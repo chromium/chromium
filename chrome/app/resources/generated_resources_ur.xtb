@@ -560,6 +560,7 @@
 <translation id="1485015260175968628">اب ممکن ہے:</translation>
 <translation id="1485141095922496924">ورژن <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">پاس ورڈز تلاش کریں</translation>
+<translation id="1486486872607808064">‏اس QR کوڈ کو اس آلہ پر موجود کیمرا سے اسکین کریں جہاں آپ <ph name="APP_NAME" /> کے لئے پاس کی تخلیق کرنا چاہتے ہیں</translation>
 <translation id="1487335504823219454">آن - حسب ضرورت ترتیبات</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> کیلئے منتظر…</translation>
 <translation id="1494349716233667318">سائٹس آپ کے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کے لیے پوچھ سکتی ہیں</translation>
@@ -770,6 +771,7 @@
 <translation id="164936512206786300">بلوٹوتھ آلہ کا جوڑا ختم کریں</translation>
 <translation id="1651008383952180276">آپ کو وہی پاس فریز دوبار درج کرنا ہوگا</translation>
 <translation id="1652326691684645429">قریبی آلات کے ساتھ اشتراک فعال کریں</translation>
+<translation id="1654580009054503925">درخواستیں دکھانے کی اجازت نہیں ہے</translation>
 <translation id="1656528038316521561">پس منظر کا دھندلا پن</translation>
 <translation id="1657406563541664238">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس خودکار طور پر بھیج کر <ph name="PRODUCT_NAME" /> کو بہتر بنانے میں مدد کریں</translation>
 <translation id="1657937299377480641">تعلیمی وسائل تک رسائی کے لئے دوبارہ سائن ان کرنے کے لئے، والدین سے کہیں کہ آپ کو اجازت دیں</translation>
@@ -3409,6 +3411,7 @@
 <translation id="3957079323242030166">‏بیک اپ ڈیٹا کو آپ کے Drive اسٹوریج کوٹہ میں شمار نہیں کیا جائے گا۔</translation>
 <translation id="3957844511978444971">‏Google سروسز کی ان ترتیبات کے اپنے انتخاب کی توثیق کرنے کے لیے ”قبول کریں“ پر تھپتھپائیں۔</translation>
 <translation id="3958088479270651626">بُک مارکس اور ترتیبات درآمد کریں</translation>
+<translation id="3958110062351175311">ٹول بار میں درخواستیں دکھانے کی اجازت ہے</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> کے لیے مزید کارروائیاں</translation>
 <translation id="3962119236270174787">خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے معیاری حفاظت</translation>
@@ -3668,6 +3671,7 @@
 <translation id="4205157409548006256">‏Linux کنفیگر کرنے میں ایک خرابی تھی۔</translation>
 <translation id="4206144641569145248">ایلیئن</translation>
 <translation id="4206323443866416204">تاثرات کی رپورٹ</translation>
+<translation id="4206585797409671301">درخواستیں دکھانے کی اجازت ہے</translation>
 <translation id="4207932031282227921">‏اجازت کی درخواست کی گئی، جواب دینے کے ليے F6 دبائیں</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> میں تلاش کریں</translation>
 <translation id="4209092469652827314">بڑا</translation>
@@ -4337,6 +4341,7 @@
 <translation id="481574578487123132">لنک کردہ آلات</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />، تفصیلات</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 بُک مارک حذف کیا گیا}other{{COUNT} بُک مارکس حذف کئے گئے}}</translation>
+<translation id="4816900689218414104">فون یا ٹیبلیٹ پر پاس کی تخلیق کریں</translation>
 <translation id="4819323978093861656">{0,plural, =0{ابھی بند ہو رہا ہے۔}=1{بند ہو رہا ہے: 1 سیکنڈ}other{بند ہو رہا ہے: # سیکنڈ}}</translation>
 <translation id="4819607494758673676">‏Google اسسٹنٹ کی اطلاعات</translation>
 <translation id="4820236583224459650">بطور فعال ٹکٹ سیٹ کریں</translation>
@@ -6244,6 +6249,7 @@
 <translation id="6562117348069327379">ڈاؤن لوڈز ڈائرکٹری میں سسٹم لاگز اسٹور کریں۔</translation>
 <translation id="656293578423618167">فائل کا پاتھ یا نام کافی طویل ہیں۔ براہ کرم ایک چھوٹے نام کے ساتھ یا کسی دوسرے مقام میں محفوظ کریں۔</translation>
 <translation id="6568283005472142698">ٹیب تلاش</translation>
+<translation id="6570622975915850879">کسی مختلف آلے کا استعمال کریں</translation>
 <translation id="65711204837946324">ڈاؤن لوڈ کرنے کے لیے اجازت درکار ہے</translation>
 <translation id="6571533309669248172">ٹیکسٹ کی فارمیٹنگ</translation>
 <translation id="6571772921213691236">سائن ان ڈیٹا میں ترمیم کریں</translation>
@@ -6807,6 +6813,7 @@
 <translation id="7044606776288350625">ڈیٹا سنک کریں</translation>
 <translation id="7047059339731138197">ایک پس منظر منتخب کریں</translation>
 <translation id="7049293980323620022">فائل رکھیں؟</translation>
+<translation id="70496770794393383">محفوظ کردہ پاس ورڈ کا ٹیبل</translation>
 <translation id="7050037487872780845">ہاٹ اسپاٹ کا غلط کنفیگریشن</translation>
 <translation id="7051551856857948729">‏IBAN قدر کو چھپائیں</translation>
 <translation id="7052237160939977163">کارکردگی کا پتا لگانے کا ڈیٹا بھیجیں</translation>

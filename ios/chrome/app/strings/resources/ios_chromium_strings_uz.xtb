@@ -46,10 +46,12 @@
 <translation id="3567399274263440288">Chromium imkoniyatlaridan maksimal foydalanish uchun Chromiumga Google hisobingiz bilan kiring.</translation>
 <translation id="3639997914391704523">Google hisobingizga kirsangiz, Chromium parollaringizni tekshira oladi.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium ishlatardi va bu qurilmada uning bukmarklar, parollar va boshqa sozlamalari qolgan.</translation>
+<translation id="372658070733623520">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="3805899903892079518">Chromium rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasi orqali ruxsat bering.</translation>
 <translation id="4043291146360695975">Parollar faqat shu qurilmadagi Parollar menejeriga saqlanadi.</translation>
 <translation id="4099085513035183040">Chromium Beta nashrida ishlamaydi</translation>
 <translation id="4432744876818348753">Chromiumning barcha imkoniyatlaridan foydalanish uchun hisobga kiring</translation>
+<translation id="452436063477828504">Chromium maʼlumotlari Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="4555020257205549924">Agar bu funksiya yoniq bo‘lsa, Chromium sahifalarni Google Tarjima xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="4633738821577273991">Bu Chromium profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>
@@ -74,6 +76,7 @@
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chromium ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chromium ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="5983312940147103417">Chromiumni yaxshilash</translation>
 <translation id="6062449165341879460">Tashkilotingiz (<ph name="DOMAIN" />) hisobingizdagi Chromium maʼlumotlari, bukmarklar, tarix, parollar va boshqa sozlamalaringizni koʻra oladi. Hisobdan chiqsangiz, bu qurilmadagi maʼlumotlaringiz tozalanadi.  Lekin, boshqaruvdagi Google hisobi maʼlumotlari joyida qoladi va tashkilotingiz ularni koʻra oladi. Tashkilotingiz Chromium funksiyasini oʻzgartirish mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi ham mumkin.</translation>
+<translation id="61109258320235597">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun kodli iborani kiriting.</translation>
 <translation id="6119647025869519954">Chromium brauzerini asosiy deb belgilash uchun:
 1. Sozlamalarni oching
 2. Standart brauzer ilovasi ustiga bosing
@@ -85,6 +88,7 @@
 <translation id="6625409903340039086">Chromium endi boshqariladigan hisobingiz uchun foydalanuvchi siyosatlarini qoʻllab-quvvatlaydi</translation>
 <translation id="6752854822223394465">Chromium tashkilotingiz tomonidan sozlanmoqda...</translation>
 <translation id="6820823224820483452">Chromium barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
+<translation id="6911341667534646387">Chromium maʼlumotlari Google hisobingizda saqlanishda davom etsin</translation>
 <translation id="7006920032187763988">Parollar menejeriga saqlangan parollarni iPaddagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="7018284295775193585">Chromium yangilanmadi</translation>
 <translation id="7045244423563602563">Chromium brauzerini oʻzingizga moslashtiring</translation>

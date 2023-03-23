@@ -477,6 +477,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3587596251841506391">Axudar a mellorar a seguranza na Web</translation>
 <translation id="3597179440835065298">Recibe mellores suxestións</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
+<translation id="360901359071773787">Queres eliminar os últimos 15 minutos?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Xestionar as ventás</translation>
 <translation id="3631987586758005671">Compartindo co dispositivo <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5517095782334947753">Tes os marcadores, o historial, os contrasinais e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Cando as probas están activas e Chrome te inclúe de forma aleatoria nunha delas, o teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina os teus intereses cada mes.</translation>
 <translation id="5524843473235508879">Bloqueouse a redirección.</translation>
+<translation id="554297709083131118">Os seguintes datos dos últimos 15 minutos eliminaranse</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>
 <translation id="5555525474779371165">Escolle a protección da función Navegación segura</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
@@ -1263,6 +1265,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="78270725016672455">O ordenador require que se rexistre este dispositivo para iniciar sesión nun sitio</translation>
 <translation id="7844171778363018843">Non se seleccionaron datos para sincronizalos</translation>
 <translation id="7846296061357476882">Servizos de Google</translation>
+<translation id="7847228556075070294">Elimináronse o historial, as cookies e outros datos</translation>
 <translation id="784934925303690534">Intervalo de tempo</translation>
 <translation id="7851858861565204677">Outros dispositivos</translation>
 <translation id="7853202427316060426">Actividade</translation>

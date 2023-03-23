@@ -477,6 +477,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="3587596251841506391">Ayuda a mejorar la seguridad en la Web</translation>
 <translation id="3597179440835065298">Obtén mejores sugerencias</translation>
 <translation id="3602290021589620013">Vista previa</translation>
+<translation id="360901359071773787">¿Quieres borrar los últimos 15 minutos?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Administrar ventanas</translation>
 <translation id="3631987586758005671">Compartiendo con <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5517095782334947753">Tienes favoritos, historial, contraseñas y otras opciones de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Cuando comienzan las pruebas, si Chrome te ubicó de manera aleatoria en una prueba activa, tu historial de navegación afecta los anuncios que ves y los intereses, como se estima a continuación. Para proteger tu privacidad, Chrome borra tus intereses de manera continua todos los meses.</translation>
 <translation id="5524843473235508879">Se bloqueó el redireccionamiento</translation>
+<translation id="554297709083131118">Se borrarán los siguientes datos de los últimos 15 minutos</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
@@ -1263,6 +1265,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="78270725016672455">Tu computadora quiere registrar este dispositivo para acceder a un sitio</translation>
 <translation id="7844171778363018843">No se seleccionaron datos para sincronizar</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>
+<translation id="7847228556075070294">Historial, cookies y otros datos borrados</translation>
 <translation id="784934925303690534">Intervalo de tiempo</translation>
 <translation id="7851858861565204677">Otros dispositivos</translation>
 <translation id="7853202427316060426">Actividad</translation>

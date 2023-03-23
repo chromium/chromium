@@ -40,6 +40,7 @@
 <translation id="1181037720776840403">Уклони</translation>
 <translation id="1182225749592316782">Ово омогућава приступ свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон</translation>
 <translation id="1183863904939664422">Не занима ме овај предлог</translation>
+<translation id="1184126796192815024">Ова мрежа не подржава апликације за стримовање са телефона. Пробајте да користите хотспот телефона. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Унесите лозинку или PIN ради додатне безбедности</translation>
 <translation id="118532027333893379">Додирните било где да бисте снимили цео екран</translation>
 <translation id="1190609913194133056">Центар за обавештења</translation>
@@ -466,6 +467,7 @@
 <translation id="3256109297135787951">Уклоните истицање са ставке на полици</translation>
 <translation id="3260969790895726815">Говор се обрађује локално и диктирање ради офлајн, али неке гласовне команде не раде.</translation>
 <translation id="3269597722229482060">Десни клик</translation>
+<translation id="3289364673986435196">Мени дугмета за укључивање</translation>
 <translation id="3289544412142055976">Linux апликације тренутно нису подржане</translation>
 <translation id="3289674678944039601">Пуни се преко адаптера</translation>
 <translation id="3290356915286466215">Незаштићено</translation>
@@ -694,6 +696,7 @@
 <translation id="4269883910223712419">Администратор овог уређаја може:</translation>
 <translation id="4274537685965975248">Тастерска пречица Ctrl + Alt + стрелица надоле је промењена. Да бисте користили тастер End, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица надесно</translation>
 <translation id="4279490309300973883">Пресликавање</translation>
+<translation id="4280601795273309128">Безбедносна ажурирања су завршена. Надоградите уређај.</translation>
 <translation id="4283888303416325161">Унесите лозинку ради додатне безбедности</translation>
 <translation id="4285498937028063278">Откачи</translation>
 <translation id="4294319844246081198">Добро јутро, <ph name="GIVEN_NAME" />,</translation>
@@ -884,6 +887,7 @@
 <translation id="5147567197700016471">Откључано</translation>
 <translation id="5150070631291639005">Подешавања приватности</translation>
 <translation id="5155897006997040331">Брзина читања</translation>
+<translation id="5163434717504750796">Стање батерије <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Број циклуса <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Сачувај радну површину као шаблон</translation>
 <translation id="5168181903108465623">Доступни су уређаји за пребацивање</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
@@ -1358,6 +1362,7 @@
 <translation id="743058460480092004">Камера и микрофон се користе.</translation>
 <translation id="7452560014878697800">Апликација користи камеру</translation>
 <translation id="7453330308669753048">Резултат историје претраге је уклоњен</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> до краја пуњења</translation>
 <translation id="7461924472993315131">Закачи</translation>
 <translation id="746232733191930409">Режим снимања екрана</translation>
 <translation id="7466449121337984263">Додирните сензор</translation>
@@ -1724,6 +1729,7 @@
 <translation id="9178475906033259337">Приказује се један резултат за: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ова функција вам омогућава да брзо приступите било ком пријављеном кориснику без лозинке. Користите ову функцију само са налозима у које имате поверења.</translation>
 <translation id="9183456764293710005">Лупа за цео екран</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Још <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Пребацује се на непознати пријемник</translation>
 <translation id="9194617393863864469">Пријавите још једног корисника...</translation>
 <translation id="9198992156681343238">Резолуција екрана <ph name="DISPLAY_NAME" /> је промењена у <ph name="RESOLUTION" />. Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>

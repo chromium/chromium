@@ -477,6 +477,7 @@
 <translation id="3587596251841506391">帮助我们改善网络安全环境</translation>
 <translation id="3597179440835065298">获得更好的建议</translation>
 <translation id="3602290021589620013">预览</translation>
+<translation id="360901359071773787">要删除过去 15 分钟的浏览数据吗？</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3622349720008044802">管理窗口</translation>
 <translation id="3631987586758005671">正在分享给<ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@
 <translation id="5517095782334947753">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录、密码及其他设置。</translation>
 <translation id="5524761631371622910">在试用期间，如果 Chrome 随机将您加入到了其中某项正在进行的试用活动，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序删除您的部分兴趣。</translation>
 <translation id="5524843473235508879">已禁止重定向。</translation>
+<translation id="554297709083131118">过去 15 分钟内浏览的以下数据将被删除</translation>
 <translation id="5548606607480005320">安全检查</translation>
 <translation id="5555525474779371165">选择所需的“安全浏览”功能保护级别</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -1263,6 +1265,7 @@
 <translation id="78270725016672455">您的计算机希望注册此设备以登录网站</translation>
 <translation id="7844171778363018843">未选择任何要同步的数据</translation>
 <translation id="7846296061357476882">Google 服务</translation>
+<translation id="7847228556075070294">已删除历史记录、Cookie 和其他数据</translation>
 <translation id="784934925303690534">时间范围</translation>
 <translation id="7851858861565204677">来自其他设备的同步</translation>
 <translation id="7853202427316060426">活动</translation>

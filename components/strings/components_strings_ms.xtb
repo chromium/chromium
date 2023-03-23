@@ -498,6 +498,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2119867082804433120">Tebukan bawah sebelah kanan</translation>
 <translation id="2122719317867821810">Dasar ini berfungsi seperti yang diharapkan tetapi nilai yang bercanggah ditetapkan di tempat lain dan dibatalkan oleh dasar ini.</translation>
 <translation id="2126374524350484896">Pengeluar PDF:</translation>
+<translation id="2128262927290305126">Dalam Google Account <ph name="ACCOUNT" /> anda</translation>
 <translation id="2130448033692577677">Templat yang anda nyatakan tidak dapat digunakan kerana dasar DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Pakaian lelaki</translation>
@@ -543,6 +544,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2219735899272417925">Tetapan semula peranti diperlukan</translation>
 <translation id="2224337661447660594">Tiada Internet</translation>
 <translation id="2225927550500503913">Kad maya dihidupkan</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Log masuk<ph name="END_LINK" /> ke rangkaian Wi-Fi</translation>
 <translation id="2239100178324503013">Hantar sekarang</translation>
 <translation id="2241693394036365668">Fail dimuat turun</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
@@ -809,6 +811,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2951588413176968965">Peti mel saya</translation>
 <translation id="2952820037279740115">Tutup semua tetingkap Inkognito</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Jadual kaedah pembayaran yang disimpan</translation>
 <translation id="295526156371527179">Amaran: Dasar ini tidak digabungkan sebagai kamus seperti yang dinyatakan oleh dasar kerana dasar ini bukan kamus.</translation>
 <translation id="2955913368246107853">Tutup bar cari</translation>
 <translation id="2958544468932521864">Kriket</translation>
@@ -1082,6 +1085,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3631244953324577188">Biometrik</translation>
 <translation id="3632503704576938756">Perkongsian skrin disambung semula</translation>
 <translation id="3632892046558972264">Perkongsian skrin dijeda</translation>
+<translation id="3633035844150606508">Simpan alamat dalam Google Account anda, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Butang Kemas Kini Chrome, tekan Enter untuk mengemas kini Chrome daripada tetapan Chrome anda</translation>
 <translation id="3634530185120165534">Dulang 5</translation>
 <translation id="3634567936866541746">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chrome mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
@@ -1985,6 +1989,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5830698870816298009">penggunaan &amp; pergerakan kamera</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5838278095973806738">Anda tidak seharusnya memasukkan sebarang maklumat sensitif pada tapak ini (contohnya, kata laluan atau maklumat kad kredit) kerana maklumat ini boleh dicuri oleh penyerang.</translation>
+<translation id="5841338463993781099">Simpan dalam akaun?</translation>
 <translation id="5851548754964597211">Senarai tab</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
@@ -2778,6 +2783,7 @@ Butiran tambahan:
 <translation id="7736959720849233795">Salin Alamat Pautan</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="77424286611022110">Laman ini menyiarkan iklan yang mengganggu atau mengelirukan. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Jadual alamat yang disimpan</translation>
 <translation id="774634243536837715">Kandungan berbahaya disekat.</translation>
 <translation id="7751971323486164747">Sesuaikan saiz fon dan rupa huruf dalam Chrome</translation>
 <translation id="7752995774971033316">Tidak Diurus</translation>
@@ -3019,6 +3025,7 @@ Butiran tambahan:
 <translation id="8347658365704983341">Pembelajaran jarak jauh</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
 <translation id="8351131234907093545">Buat nota</translation>
+<translation id="835203957414790336">Kandungan halaman yang anda cetak dan maklumat tentang pencetak anda dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, teks itu mungkin diimbas untuk mencari data sensitif.</translation>
 <translation id="8355270400102541638">Konteks Ranap Sistem Setempat:</translation>
 <translation id="8363502534493474904">Matikan mod pesawat</translation>
 <translation id="8364627913115013041">Tidak ditetapkan.</translation>

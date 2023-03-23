@@ -560,6 +560,7 @@
 <translation id="1485015260175968628">新的可用權限：</translation>
 <translation id="1485141095922496924">版本 <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">搜尋密碼</translation>
+<translation id="1486486872607808064">使用裝置相機掃描這個 QR code，即可在該裝置上建立「<ph name="APP_NAME" />」的密碼金鑰</translation>
 <translation id="1487335504823219454">開啟 - 自訂設定</translation>
 <translation id="1493892686965953381">正在等待 <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">網站可以要求使用裝置上安裝的字型</translation>
@@ -770,6 +771,7 @@
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
 <translation id="1651008383952180276">你必須輸入兩次相同的通關密語</translation>
 <translation id="1652326691684645429">啟用鄰近分享功能</translation>
+<translation id="1654580009054503925">不允許顯示要求</translation>
 <translation id="1656528038316521561">背景不透明度</translation>
 <translation id="1657406563541664238">只要自動傳送使用統計資料及當機報告給 Google，就能助我們一臂之力，讓「<ph name="PRODUCT_NAME" />」更臻完美</translation>
 <translation id="1657937299377480641">你必須要求家長授予權限，才能再次登入帳戶並存取教育資源</translation>
@@ -3406,6 +3408,7 @@
 <translation id="3957079323242030166">備份資料不會計入你的雲端硬碟儲存空間配額。</translation>
 <translation id="3957844511978444971">輕觸 [接受] 即表示您確認所選的這些 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
+<translation id="3958110062351175311">已允許在工具列中顯示要求</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可對<ph name="IBAN_DESCRIPTION" /> 執行的其他動作</translation>
 <translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>
@@ -3665,6 +3668,7 @@
 <translation id="4205157409548006256">設定 Linux 時發生錯誤。</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">意見回饋報告</translation>
+<translation id="4206585797409671301">已允許顯示要求</translation>
 <translation id="4207932031282227921">已要求權限，按下 F6 鍵即可回覆</translation>
 <translation id="4208390505124702064">搜尋 <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">大</translation>
@@ -4334,6 +4338,7 @@
 <translation id="481574578487123132">連結的裝置</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />，詳細資料</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{已刪除 1 個書籤}other{已刪除 {COUNT} 個書籤}}</translation>
+<translation id="4816900689218414104">在手機或平板電腦上建立密碼金鑰</translation>
 <translation id="4819323978093861656">{0,plural, =0{立即關閉。}=1{關閉時間：1 秒後}other{關閉時間：# 秒後}}</translation>
 <translation id="4819607494758673676">Google 助理通知</translation>
 <translation id="4820236583224459650">設為使用中票證</translation>
@@ -6239,6 +6244,7 @@
 <translation id="6562117348069327379">將系統記錄儲存至「下載」目錄。</translation>
 <translation id="656293578423618167">檔案路徑或檔案名稱過長。請縮短檔案名稱或選擇其他儲存位置。</translation>
 <translation id="6568283005472142698">分頁搜尋</translation>
+<translation id="6570622975915850879">使用其他裝置</translation>
 <translation id="65711204837946324">需要下載權限</translation>
 <translation id="6571533309669248172">設定文字格式</translation>
 <translation id="6571772921213691236">編輯登入資料</translation>
@@ -6802,6 +6808,7 @@
 <translation id="7044606776288350625">同步處理資料</translation>
 <translation id="7047059339731138197">選擇背景</translation>
 <translation id="7049293980323620022">要保留檔案嗎？</translation>
+<translation id="70496770794393383">「已儲存的密碼」表格</translation>
 <translation id="7050037487872780845">無效的無線基地台設定</translation>
 <translation id="7051551856857948729">隱藏 IBAN 值</translation>
 <translation id="7052237160939977163">傳送效能追蹤資料</translation>

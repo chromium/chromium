@@ -576,6 +576,7 @@
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">У пачатак</translation>
+<translation id="3859364108019690">Не ўдаецца перадаць праграмы плынню</translation>
 <translation id="3861651314799684201">Каб запісаць увесь экран, націсніце Увод</translation>
 <translation id="3871092408932389764">Самы нізкі</translation>
 <translation id="3886872229787704059">Адкрывалася сёння</translation>
@@ -1314,6 +1315,9 @@
 <translation id="7514365320538308">Спампаваць</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Кадраванне ўключана.</translation>
+<translation id="7519649142417630956">Пры завяршэнні працы адбудзецца выхад адміністратара з сістэмы, і ён не зможа кіраваць вашай прыладай.
+
+Каб завяршыць працу прылады, зноў націсніце і ўтрымлівайце кнопку сілкавання на ёй.</translation>
 <translation id="7526573455193969409">За сеткай могуць сачыць</translation>
 <translation id="7536035074519304529">IP-адрас: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Вокны ў рэжыме інкогніта і праграмы Linux зараз не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
@@ -1667,6 +1671,7 @@
 <translation id="938963181863597773">Што ў маім календары?</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="951991426597076286">Адхіліць</translation>
+<translation id="953431725143473984">Завяршыць працу прылады?</translation>
 <translation id="954052413789300507">Файл "<ph name="FILENAME" />" не змяшчаецца ў сховішчы. Вызваліце месца.</translation>
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
 <translation id="98120814841227350">Перайсці ў канец дакумента</translation>

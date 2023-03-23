@@ -560,6 +560,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1485015260175968628">De app/extensie kan nu het volgende doen:</translation>
 <translation id="1485141095922496924">Versie <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Zoek in wachtwoorden</translation>
+<translation id="1486486872607808064">Scan deze QR-code met de camera op het apparaat waarop je een toegangssleutel voor <ph name="APP_NAME" /> wilt maken</translation>
 <translation id="1487335504823219454">Aan - aangepaste instellingen</translation>
 <translation id="1493892686965953381">Wachten op <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Sites kunnen vragen of ze de lettertypen mogen gebruiken die zijn geïnstalleerd op je apparaat</translation>
@@ -770,6 +771,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="164936512206786300">Bluetooth-apparaat ontkoppelen</translation>
 <translation id="1651008383952180276">Je moet twee keer dezelfde wachtwoordzin opgeven</translation>
 <translation id="1652326691684645429">Dichtbij delen aanzetten</translation>
+<translation id="1654580009054503925">Geen toestemming om verzoeken te tonen</translation>
 <translation id="1656528038316521561">Ondoorzichtigheid van achtergrond</translation>
 <translation id="1657406563541664238">Help <ph name="PRODUCT_NAME" /> beter te maken door automatisch gebruiksstatistieken en crashmeldingen naar Google te verzenden</translation>
 <translation id="1657937299377480641">Als je opnieuw wilt inloggen voor toegang tot educatieve bronnen, vraag je een ouder om je toestemming te geven</translation>
@@ -3407,6 +3409,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3957079323242030166">Back-upgegevens tellen niet mee voor de opslaglimiet van Drive.</translation>
 <translation id="3957844511978444971">Tik op Accepteren om je keuze van deze service-instellingen van Google te bevestigen.</translation>
 <translation id="3958088479270651626">Bookmarks en instellingen importeren</translation>
+<translation id="3958110062351175311">Toestemming om verzoeken in de werkbalk te tonen</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Meer acties voor <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Standaardbeveiliging tegen websites, downloads en extensies die als gevaarlijk zijn bestempeld</translation>
@@ -3665,6 +3668,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4205157409548006256">Er is een fout opgetreden bij het instellen van Linux.</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
+<translation id="4206585797409671301">Toestemming om verzoeken te tonen</translation>
 <translation id="4207932031282227921">Rechten gevraagd, druk op F6 om te reageren</translation>
 <translation id="4208390505124702064">Zoeken op <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Groot</translation>
@@ -4333,6 +4337,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="481574578487123132">Gekoppelde apparaten</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, details</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark verwijderd}other{{COUNT} bookmarks verwijderd}}</translation>
+<translation id="4816900689218414104">Een toegangssleutel maken op een telefoon of tablet</translation>
 <translation id="4819323978093861656">{0,plural, =0{De browsers worden nu gesloten}=1{De browsers worden over 1 seconde gesloten}other{De browsers worden over # seconden gesloten}}</translation>
 <translation id="4819607494758673676">Google Assistent-meldingen</translation>
 <translation id="4820236583224459650">Instellen als actief ticket</translation>
@@ -6237,6 +6242,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6562117348069327379">Systeemlogboeken opslaan in de map Downloads.</translation>
 <translation id="656293578423618167">Het bestandspad of de bestandsnaam is te lang. Sla op met een kortere naam of op een andere locatie.</translation>
 <translation id="6568283005472142698">Zoeken op tabbladen</translation>
+<translation id="6570622975915850879">Een ander apparaat gebruiken</translation>
 <translation id="65711204837946324">Rechten vereist om te downloaden</translation>
 <translation id="6571533309669248172">Tekstopmaak</translation>
 <translation id="6571772921213691236">Inloggegevens beheren</translation>
@@ -6799,6 +6805,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7044606776288350625">Gegevens synchroniseren</translation>
 <translation id="7047059339731138197">Een achtergrond kiezen</translation>
 <translation id="7049293980323620022">Bestand behouden?</translation>
+<translation id="70496770794393383">Tabel met opgeslagen wachtwoorden</translation>
 <translation id="7050037487872780845">Ongeldige hotspotconfiguratie</translation>
 <translation id="7051551856857948729">IBAN-waarde verbergen</translation>
 <translation id="7052237160939977163">Gegevens over het bijhouden van prestaties verzenden</translation>

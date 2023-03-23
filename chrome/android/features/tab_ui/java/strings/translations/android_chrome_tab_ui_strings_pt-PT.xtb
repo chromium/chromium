@@ -5,8 +5,8 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
 <translation id="1403228085774130835">Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome</translation>
-<translation id="1455506303394048917">A sua atividade nestes separadores de navegação anónima vai ser limpa deste dispositivo</translation>
-<translation id="1499635324672558517">Fechar todos os separadores de navegação anónima?</translation>
+<translation id="1455506303394048917">A sua atividade nestes separadores anónimos vai ser limpa deste dispositivo</translation>
+<translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado aos marcadores}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados aos marcadores}}</translation>

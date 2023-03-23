@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">Веб-сајтовите што ги посетувате и времето што го поминувате на нив</translation>
 <translation id="1824402189105105503">Осма ролна</translation>
 <translation id="1826516787628120939">Се проверува</translation>
+<translation id="1826968372364864056">Избриши формулар</translation>
 <translation id="1828959155404624835">Изнајмувања автомобил</translation>
 <translation id="1834321415901700177">Сајтов содржи штетни програми</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
@@ -1967,6 +1968,7 @@
 <translation id="5786044859038896871">Дали сакате да ги пополните информациите од картичката?</translation>
 <translation id="578633867165174378">Chrome ја најде лозинката која штотуку ја употребивте меѓу лозинките откриени при упад во податоците. Ви препорачуваме веднаш да ја промените.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Нема}=1{податоци за најавување за 1 сметка}one{податоци за најавување за # сметка}other{податоци за најавување за # сметки}}</translation>
 <translation id="580241730938216256">Започни ажурирање</translation>
 <translation id="5803412860119678065">Дали сакате да пополните <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
@@ -2522,6 +2524,7 @@
 <translation id="7201591969684833065">Администраторот може да гледа:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да отворите нова картичка „Инкогнито“ и да прелистувате приватно</translation>
 <translation id="7203375778433816396">Поставете го Chrome како стандарден прелистувач на системот</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Нема}=1{1 криптографски клуч}one{# криптографски клуч}other{# криптографски клучеви}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не се придржува до стандардите за безбедност.</translation>
 <translation id="7210993021468939304">Активноста на Linux во рамките на контејнерот и може да инсталира и извршува апликации на Linux во рамките на контејнерот</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /> за овој проблем.</translation>

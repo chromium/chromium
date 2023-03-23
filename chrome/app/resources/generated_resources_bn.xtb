@@ -564,6 +564,7 @@
 <translation id="1485015260175968628">এটি এখন করতে পারে:</translation>
 <translation id="1485141095922496924">ভার্সন <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">পাসওয়ার্ড খুঁজুন</translation>
+<translation id="1486486872607808064">আপনি যে <ph name="APP_NAME" />-এর জন্য একটি পাসকি তৈরি করতে চান সেই ডিভাইসে একটি ক্যামেরা দিয়ে এই QR কোডটি স্ক্যান করুন।</translation>
 <translation id="1487335504823219454">চালু - কাস্টম সেটিংস</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />এর জন্য প্রতীক্ষারত...</translation>
 <translation id="1494349716233667318">সাইট আপনার ডিভাইসে ইনস্টল করা ফন্ট ব্যবহার করার অনুমতি চাইতে পারে</translation>
@@ -774,6 +775,7 @@
 <translation id="164936512206786300">ব্লুটুথ ডিভাইস আনপেয়ার করুন</translation>
 <translation id="1651008383952180276">আপনাকে একই পাসফ্রেজ অবশ্যই দু'বার লিখতে হবে</translation>
 <translation id="1652326691684645429">'নিয়ারবাই শেয়ার' ফিচারটি চালু করুন</translation>
+<translation id="1654580009054503925">অনুরোধ দেখানোর অনুমতি নেই</translation>
 <translation id="1656528038316521561">ব্যাকগ্রাউন্ডের অস্বচ্ছতা</translation>
 <translation id="1657406563541664238">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট অটোমেটিক পাঠিয়ে <ph name="PRODUCT_NAME" />কে আরও ভালো করে তুলতে সাহায্য করুন</translation>
 <translation id="1657937299377480641">শিক্ষাগত রিসোর্স অ্যাক্সেস করার জন্য আবার সাইন-ইন করতে, অভিভাবকের কাছ থেকে অনুমতি চান</translation>
@@ -3422,6 +3424,7 @@
 <translation id="3957079323242030166">ব্যাক-আপ ডেটা আপনার Drive স্টোরেজ কোটার মধ্যে ধরা হয় না।</translation>
 <translation id="3957844511978444971">আপনি যে Google-এর এই পরিষেবাগুলির সেটিংস বেছে নিয়েছেন তা কনফার্ম করতে “স্বীকার করুন” বোতামে ট্যাপ করুন।</translation>
 <translation id="3958088479270651626">বুকমার্কস এবং সেটিংস ইমপোর্ট করুন</translation>
+<translation id="3958110062351175311">টুলবারে অনুরোধ দেখানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="3962119236270174787">ঝুঁকিপূর্ণ হিসেবে চিহ্নিত ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য স্ট্যান্ডার্ড নিরাপত্তা</translation>
@@ -3682,6 +3685,7 @@
 <translation id="4205157409548006256">Linux কনফিগার করার সময় কোনও সমস্যা হয়েছে।</translation>
 <translation id="4206144641569145248">ভিনগ্রহবাসী</translation>
 <translation id="4206323443866416204">প্রতিক্রিয়ার প্রতিবেদন</translation>
+<translation id="4206585797409671301">অনুরোধ দেখানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="4207932031282227921">অনুমতি চাওয়া হয়েছে, উত্তর দিতে F6 বোতাম প্রেস করুন</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> খুঁজুন:</translation>
 <translation id="4209092469652827314">বৃহত্</translation>
@@ -4353,6 +4357,7 @@
 <translation id="481574578487123132">লিঙ্ক করা ডিভাইস</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, বিবরণ</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{১টি বুকমার্ক মোছা হয়েছে}one{{COUNT}টি বুকমার্ক মোছা হয়েছে}other{{COUNT}টি বুকমার্ক মোছা হয়েছে}}</translation>
+<translation id="4816900689218414104">একটি ফোন বা ট্যাবলেটে একটি পাসকি তৈরি করুন</translation>
 <translation id="4819323978093861656">{0,plural, =0{এখন বন্ধ করা হচ্ছে।}=1{বন্ধ করা হচ্ছে: ১ সেকেন্ডের মধ্যে}one{বন্ধ করা হচ্ছে: # সেকেন্ডের মধ্যে}other{বন্ধ করা হচ্ছে: # সেকেন্ডের মধ্যে}}</translation>
 <translation id="4819607494758673676">Google Assistant বিজ্ঞপ্তি</translation>
 <translation id="4820236583224459650">অ্যাক্টিভ টিকিট হিসেবে সেট করুন</translation>
@@ -6263,6 +6268,7 @@
 <translation id="6562117348069327379">ডাউনলোড ডিরেক্টরিতে সিস্টেম লগ সেভ করুন।</translation>
 <translation id="656293578423618167">ফাইল পাথ অথবা নাম অত্যন্ত বড়৷ অনুগ্রহ করে একটি সংক্ষিপ্ত নামে বা অন্য কোনো স্থানে সেভণ করুন৷</translation>
 <translation id="6568283005472142698">ট্যাব সার্চ করা</translation>
+<translation id="6570622975915850879">আলাদা ডিভাইস ব্যবহার করুন</translation>
 <translation id="65711204837946324">ডাউনলোড করার জন্য অনুমতি প্রয়োজন</translation>
 <translation id="6571533309669248172">টেক্সট ফর্ম্যাট করা</translation>
 <translation id="6571772921213691236">সাইন-ইন ডেটা এডিট করুন</translation>
@@ -6828,6 +6834,7 @@
 <translation id="7044606776288350625">ডেটা সিঙ্ক করুন</translation>
 <translation id="7047059339731138197">একটি ব্যাকগ্রাউন্ড বেছে নিন</translation>
 <translation id="7049293980323620022">ফাইল রাখবেন?</translation>
+<translation id="70496770794393383">সেভ করা পাসওয়ার্ড সারণী</translation>
 <translation id="7050037487872780845">হটস্পট কনফিগারেশনটি সঠিক নয়</translation>
 <translation id="7051551856857948729">IBAN ভ্যালু লুকান</translation>
 <translation id="7052237160939977163">কার্য-সম্পাদনা ট্রেস ডেটা পাঠান</translation>

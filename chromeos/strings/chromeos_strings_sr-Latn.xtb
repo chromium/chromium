@@ -184,7 +184,6 @@
 <translation id="2421798028054665193"><ph name="CURRENT_PAGE" />. slika od <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Preciznost pokretnog zareza</translation>
 <translation id="2448312741937722512">Tip</translation>
-<translation id="2461822463642141190">Aktuelno</translation>
 <translation id="248546197012830854">Uređaj je oflajn. Povežite se na WiFi mrežu da biste videli sadržaj pomoći.</translation>
 <translation id="2491955442992294626">Tasteri se ne testiraju kada koristite drugi prozor</translation>
 <translation id="2493126929778606526">Najbolje automatski izabrane slike</translation>
@@ -275,6 +274,7 @@
 <translation id="3456078764689556234">Odštampanih stranica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skenira se <ph name="PAGE_NUM" />. stranica. Dovršeno je <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">Štampanje</translation>
+<translation id="346423161771747987">Struja</translation>
 <translation id="346539236881580388">Ponovo snimi</translation>
 <translation id="3484914941826596830">Ne isključujte spoljni uređaj ni računar dok se firmver ažurira. Možete da umanjite ovaj prozor. Ovo ažuriranje može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
 <translation id="3486220673238053218">definicija</translation>
@@ -698,6 +698,7 @@
 <translation id="7103252855940681301"><ph name="INDEX" />. uređaj od <ph name="COUNT" /> sa nazivom <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
+<translation id="7131634559772719176">Potvrdite unapred određeno podešavanje</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server imena}one{Serveri imena}few{Serveri imena}other{Serveri imena}}</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
@@ -801,6 +802,7 @@
 <translation id="80398733265834479">Omogućite režim autopodešavanja boja</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8045012663542226664">Isključivanje zvuka mikrofona</translation>
+<translation id="8050091914317269817">Ako izaberete ovu pozadinu, uključićete automatski tamni režim i podudaranje boja pozadine.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>

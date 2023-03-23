@@ -40,6 +40,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1182225749592316782">Ovo omogućava pristup svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon</translation>
 <translation id="1183863904939664422">Ne zanima me ovaj predlog</translation>
+<translation id="1184126796192815024">Ova mreža ne podržava aplikacije za strimovanje sa telefona. Probajte da koristite hotspot telefona. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Unesite lozinku ili PIN radi dodatne bezbednosti</translation>
 <translation id="118532027333893379">Dodirnite bilo gde da biste snimili ceo ekran</translation>
 <translation id="1190609913194133056">Centar za obaveštenja</translation>
@@ -466,6 +467,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3256109297135787951">Uklonite isticanje sa stavke na polici</translation>
 <translation id="3260969790895726815">Govor se obrađuje lokalno i diktiranje radi oflajn, ali neke glasovne komande ne rade.</translation>
 <translation id="3269597722229482060">Desni klik</translation>
+<translation id="3289364673986435196">Meni dugmeta za uključivanje</translation>
 <translation id="3289544412142055976">Linux aplikacije trenutno nisu podržane</translation>
 <translation id="3289674678944039601">Puni se preko adaptera</translation>
 <translation id="3290356915286466215">Nezaštićeno</translation>
@@ -694,6 +696,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4274537685965975248">Tasterska prečica Ctrl + Alt + strelica nadole je promenjena. Da biste koristili taster End, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nadesno</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
+<translation id="4280601795273309128">Bezbednosna ažuriranja su završena. Nadogradite uređaj.</translation>
 <translation id="4283888303416325161">Unesite lozinku radi dodatne bezbednosti</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" />,</translation>
@@ -884,6 +887,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Podešavanja privatnosti</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
+<translation id="5163434717504750796">Stanje baterije <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Broj ciklusa <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Sačuvaj radnu površinu kao šablon</translation>
 <translation id="5168181903108465623">Dostupni su uređaji za prebacivanje</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
@@ -1358,6 +1362,7 @@ Novo instaliranje</translation>
 <translation id="743058460480092004">Kamera i mikrofon se koriste.</translation>
 <translation id="7452560014878697800">Aplikacija koristi kameru</translation>
 <translation id="7453330308669753048">Rezultat istorije pretrage je uklonjen</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do kraja punjenja</translation>
 <translation id="7461924472993315131">Zakači</translation>
 <translation id="746232733191930409">Režim snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
@@ -1724,6 +1729,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9178475906033259337">Prikazuje se jedan rezultat za: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ova funkcija vam omogućava da brzo pristupite bilo kom prijavljenom korisniku bez lozinke. Koristite ovu funkciju samo sa nalozima u koje imate poverenja.</translation>
 <translation id="9183456764293710005">Lupa za ceo ekran</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Još <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Prebacuje se na nepoznati prijemnik</translation>
 <translation id="9194617393863864469">Prijavite još jednog korisnika...</translation>
 <translation id="9198992156681343238">Rezolucija ekrana <ph name="DISPLAY_NAME" /> je promenjena u <ph name="RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>

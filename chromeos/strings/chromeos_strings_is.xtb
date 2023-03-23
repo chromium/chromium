@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1014750484722996375">Skrifborð</translation>
 <translation id="1018219910092211213">Ekki er hægt að leysa úr DNS</translation>
 <translation id="1018656279737460067">Hætt við</translation>
+<translation id="1022433422498218992">Almennar stýringar</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> þræðir, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nýr eiginleiki í boði, notaðu ör upp-lykilinn til að fá frekari upplýsingar.</translation>
 <translation id="1059913517121127803">Ekki tókst að skanna</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Stöðvað – blekið er búið</translation>
 <translation id="1664796644829245314">Forskoða <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
+<translation id="1669047024429367828">Sýnileiki</translation>
 <translation id="1672499492233627739">Myndskeiðsstraumur vefmyndavélar</translation>
 <translation id="1676557873873341166">Myndbandsupptaka í gangi</translation>
 <translation id="1703835215927279855">Bréf</translation>
 <translation id="1706391837335750954">DNS-úrlausn til staðar</translation>
+<translation id="1710499924611012470">Aðgengisfletting</translation>
 <translation id="1715359911173058521">Villa kom upp við að ná sambandi við skannann. Athugaðu net- eða USB-tenginguna og reyndu aftur.</translation>
 <translation id="1717874160321062422">Í umsjón <ph name="FIRST_MANAGER" /> og <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Nafnaþjónar</translation>
@@ -136,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Fleiri stillingar</translation>
 <translation id="2085089206770112532">Draga úr birtustigi skjás</translation>
+<translation id="2102231663024125441">Breytingar á texta</translation>
 <translation id="2105810540595158374">Tækið er leikjafjarstýring.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB af <ph name="TOTAL_MEMORY" /> GB tiltæk</translation>
@@ -179,7 +184,6 @@
 <translation id="2421798028054665193">Mynd <ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nákvæmni hlaupakommu</translation>
 <translation id="2448312741937722512">Gerð</translation>
-<translation id="2461822463642141190">Núna</translation>
 <translation id="248546197012830854">Tækið er ekki nettengt. Tengstu Wi-Fi neti til að sjá hjálparefni.</translation>
 <translation id="2491955442992294626">Lyklar eru ekki prófaðir þegar þú notar annan glugga</translation>
 <translation id="2493126929778606526">Bestu myndirnar þínar, valdar sjálfkrafa</translation>
@@ -213,6 +217,7 @@
 <translation id="2859243502336719778">Mikilvæg uppfærsla</translation>
 <translation id="2860473693272905224">Settu aðra síðu á skannann</translation>
 <translation id="2872961005593481000">Slökkva</translation>
+<translation id="2873483161362553159">Vafrafletting</translation>
 <translation id="2874939134665556319">Fyrra lag</translation>
 <translation id="2878387241690264070">Afhleðsla nam <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="2902312830803030883">Fleiri aðgerðir</translation>
@@ -662,6 +667,7 @@
 <translation id="6766275201586212568">DNS-úrlausn mistókst</translation>
 <translation id="6768237774506518020">DNS-úrlausn mistekst oft</translation>
 <translation id="6791471867139427246">litur lyklaborðsljóss</translation>
+<translation id="6798678288485555829">Fletting í texta</translation>
 <translation id="680983167891198932">Lykill</translation>
 <translation id="6816797338148849397">Tiltækar upplýsingar sem tengjast vali þínu. Notaðu ör upp-lykilinn til að opna.</translation>
 <translation id="6838167112108853532">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á tengdum aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>

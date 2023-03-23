@@ -564,6 +564,7 @@
 <translation id="1485015260175968628">هم‌اکنون این می‌تواند:</translation>
 <translation id="1485141095922496924">نسخه <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">جستجوی گذرواژه‌ها</translation>
+<translation id="1486486872607808064">با دوربین دستگاهی که می‌خواهید ازطریق آن گذرکلیدی برای <ph name="APP_NAME" /> ایجاد کنید، این رمزینه پاسخ‌سریع را اسکن کنید</translation>
 <translation id="1487335504823219454">روشن - تنظیمات سفارشی</translation>
 <translation id="1493892686965953381">انتظار برای <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">سایت‌ها می‌توانند برای استفاده از قلم‌های نصب‌شده در دستگاه درخواست دهند</translation>
@@ -771,6 +772,7 @@
 <translation id="164936512206786300">لغو مرتبط‌سازی دستگاه بلوتوث</translation>
 <translation id="1651008383952180276">باید همان گذرعبارت را دو بار وارد کنید</translation>
 <translation id="1652326691684645429">فعال کردن «هم‌رسانی با اطراف»</translation>
+<translation id="1654580009054503925">مجاز به نمایش درخواست‌ها نیست</translation>
 <translation id="1656528038316521561">ماتی پس‌زمینه</translation>
 <translation id="1657406563541664238">‏با ارسال خودکار آمار استفاده و گزارش‌های خرابی به Google، به بهتر شدن <ph name="PRODUCT_NAME" /> کمک کنید.</translation>
 <translation id="1657937299377480641">برای ورود دوباره به سیستم برای دسترسی به منابع آموزشی، از ولی‌تان بخواهید به شما اجازه بدهد</translation>
@@ -3419,6 +3421,7 @@
 <translation id="3957079323242030166">‏داده‌های پشتیبان‌گیری‌شده جزو سهمیه ذخیره‌سازی Drive شما به حساب نمی‌آیند.</translation>
 <translation id="3957844511978444971">‏برای تأیید انتخاب خود از میان این تنظیمات سرویس‌های Google، روی «پذیرفتن» ضربه بزنید.</translation>
 <translation id="3958088479270651626">وارد کردن نشانک‌ها و تنظیمات</translation>
+<translation id="3958110062351175311">مجاز به نمایش درخواست‌ها در نوارابزار</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">کنش‌های بیشتر برای <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">محافظت استاندارد دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است</translation>
@@ -3678,6 +3681,7 @@
 <translation id="4205157409548006256">‏هنگام پیکربندی Linux خطایی رخ داد.</translation>
 <translation id="4206144641569145248">آدم فضایی</translation>
 <translation id="4206323443866416204">گزارش بازخورد</translation>
+<translation id="4206585797409671301">مجاز به نمایش درخواست‌ها</translation>
 <translation id="4207932031282227921">‏درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید F6 را فشار دهید</translation>
 <translation id="4208390505124702064">جستجوی <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">بزرگ</translation>
@@ -4348,6 +4352,7 @@
 <translation id="481574578487123132">دستگاه‌های پیوندشده</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />، جزئیات</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{۱ نشانک حذف شد}one{{COUNT} نشانک حذف شد}other{{COUNT} نشانک حذف شد}}</translation>
+<translation id="4816900689218414104">گذرکلیدی در تلفن یا رایانه لوحی ایجاد کنید</translation>
 <translation id="4819323978093861656">{0,plural, =0{اکنون بسته می‌شود.}=1{یک ثانیه دیگر بسته می‌شود}one{# ثانیه دیگر بسته می‌شود}other{# ثانیه دیگر بسته می‌شود}}</translation>
 <translation id="4819607494758673676">‏اعلان‌های «دستیار Google»</translation>
 <translation id="4820236583224459650">تنظیم به‌عنوان بلیت فعال</translation>
@@ -6256,6 +6261,7 @@
 <translation id="6562117348069327379">گزارش‌های سیستم را در فهرست راهنمای «بارگیری‌ها» ذخیره کنید.</translation>
 <translation id="656293578423618167">مسیر یا نام فایل خیلی طولانی است. لطفاً با یک نام کوتاه‌تر یا در محل دیگری ذخیره کنید.</translation>
 <translation id="6568283005472142698">جستجوی برگه</translation>
+<translation id="6570622975915850879">استفاده از دستگاهی دیگر</translation>
 <translation id="65711204837946324">برای بارگیری نیاز به اجازه دارد</translation>
 <translation id="6571533309669248172">قالب‌بندی نوشتار</translation>
 <translation id="6571772921213691236">ویرایش داده‌های ورود به سیستم</translation>
@@ -6821,6 +6827,7 @@
 <translation id="7044606776288350625">همگام‌سازی داده‌ها</translation>
 <translation id="7047059339731138197">انتخاب پس‌زمینه</translation>
 <translation id="7049293980323620022">فایل حفظ شود؟</translation>
+<translation id="70496770794393383">جدول گذرواژه‌های ذخیره‌شده</translation>
 <translation id="7050037487872780845">پیکربندی نقطه اتصال نامعتبر است</translation>
 <translation id="7051551856857948729">‏پنهان کردن شماره IBAN</translation>
 <translation id="7052237160939977163">ارسال داده‌های ردیابی عملکرد</translation>

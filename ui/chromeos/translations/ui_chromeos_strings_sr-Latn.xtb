@@ -97,6 +97,7 @@
 <translation id="1773212559869067373">Sertifikat za potvrdu autentičnosti je odbijen lokalno</translation>
 <translation id="1775381402323441512">Informacije o video datoteci</translation>
 <translation id="180035236176489073">Morate da budete na mreži da biste pristupili ovim datotekama.</translation>
+<translation id="1805030087840125683">{COUNT,plural, =1{Dodatak sa ID-om}one{Dodaci sa ID-ovima}few{Dodaci sa ID-ovima}other{Dodaci sa ID-ovima}}</translation>
 <translation id="1807938677607439181">Sve datoteke</translation>
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija amharskog</translation>
@@ -130,6 +131,7 @@
 <translation id="2084108471225856927">Podešavanja uređaja</translation>
 <translation id="2084809735218147718">Osoba piše „Hvala vam“</translation>
 <translation id="2088690981887365033">VPN mreža</translation>
+<translation id="2111134541987263231">Uključite <ph name="BEGIN_BOLD" />Dozvoli u režimu bez arhiviranja<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Stavke (<ph name="NUMBER_OF_ITEMS" />) će biti izbrisane i nećete moći da ih vratite.</translation>
 <translation id="2122305276694332719">Ako se automatski povežete na skrivenu mrežu, drugi mogu da vide vaš uređaj i neka podešavanja mreže, zbog čega vam to ne preporučujemo.</translation>
 <translation id="2125607626296734455">kmerski</translation>
@@ -228,6 +230,7 @@
 <translation id="290843123675549676">marati</translation>
 <translation id="2923240520113693977">estonski</translation>
 <translation id="2938685643439809023">mongolski</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{Nismo uspeli da pronađemo dodatak}one{Nismo uspeli da pronađemo dodatke}few{Nismo uspeli da pronađemo dodatke}other{Nismo uspeli da pronađemo dodatke}}</translation>
 <translation id="2943503720238418293">Koristite kraći naziv</translation>
 <translation id="2949781154072577687">Formatira se <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -282,6 +285,7 @@
 <translation id="3356580349448036450">Završeno</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Povezan</translation>
+<translation id="3372635229069101468">Kliknite na <ph name="BEGIN_BOLD" />Detalji<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepalski sa indijskom tastaturom</translation>
 <translation id="338691029516748599"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, poveži</translation>
 <translation id="3408072735282270043">Aktivirajte mrežu <ph name="NETWORK_NAME" /></translation>
@@ -366,6 +370,7 @@
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Premestite stavke koje vam ne trebaju u otpad</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiviraj posle podešavanja uređaja</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{Uključite sledeći dodatak u režimu bez arhiviranja:}one{Uključite sledeće dodatke u režimu bez arhiviranja:}few{Uključite sledeće dodatke u režimu bez arhiviranja:}other{Uključite sledeće dodatke u režimu bez arhiviranja:}}</translation>
 <translation id="4153015322587141338">Kliknite desnim tasterom na fajl i izaberite <ph name="PIN_COMMAND" /> za brz pristup fajlovima na polici.</translation>
 <translation id="4157569377477607576">Smernice administratora ne preporučuju:</translation>
 <translation id="4159731583141908892">Premeštenih stavki: <ph name="FILE_NAME" />.</translation>
@@ -462,8 +467,10 @@
 <translation id="4801956050125744859">Zadrži obe</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Vraćaju se stavke (<ph name="COUNT" />)</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{Da biste koristili režim bez arhiviranja, organizacija zahteva dodatak}one{Da biste koristili režim bez arhiviranja, organizacija zahteva neke dodatke}few{Da biste koristili režim bez arhiviranja, organizacija zahteva neke dodatke}other{Da biste koristili režim bez arhiviranja, organizacija zahteva neke dodatke}}</translation>
 <translation id="4823651846660089135">Uređaj je samo za čitanje</translation>
 <translation id="4826849268470072925">tamilski ITRANS</translation>
+<translation id="482932175346970750">Unesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> u pregledač</translation>
 <translation id="4839847978919684242">Izabranih stavki: <ph name="SELCTED_FILES_COUNT" /></translation>
 <translation id="4843566743023903107">Chromebase-ovi</translation>
 <translation id="4850886885716139402">Prikaz</translation>
@@ -533,6 +540,7 @@
     na njima sa drugima, i sve to na jednom mestu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Vraćene datoteke sa Google diska</translation>
 <translation id="5278111733643988471">Da biste vratili ovu stavku, prevucite je u nov folder izvan otpada. Prvobitni folder <ph name="PARENT_FOLDER_NAME" /> za ovu stavku je izbrisan.</translation>
+<translation id="5283101102242354279">Uključite dodatak u režimu bez arhiviranja:</translation>
 <translation id="5286194356314741248">Skeniranje</translation>
 <translation id="5288441970121584418">Pljeskavica</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -628,6 +636,7 @@
 <translation id="603895874132768835">Nećete moći da koristite ovu mrežu dok ne podesite novi PIN</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6055907707645252013">Mreža <ph name="NETWORK_TYPE" />, nije povezana</translation>
+<translation id="6073060579181816027">Više lokacija fajlova</translation>
 <translation id="6074825444536523002">Google obrazac</translation>
 <translation id="6079871810119356840">mađarski sa Qwerty tastaturom</translation>
 <translation id="6096979789310008754">Tekst pretrage je obrisan, prikazuju se sve datoteke i direktorijumi.</translation>
@@ -778,6 +787,7 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, detalji</translation>
 <translation id="7246947237293279874">FTP proksi</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
+<translation id="7252604552361840748">Pronađite dodatak iznad</translation>
 <translation id="7256405249507348194">Nepoznata greška: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupne usluge</translation>
 <translation id="7292816689782057017">Smernice administratora ograničavaju čuvanje na nekim lokacijama.</translation>
@@ -791,6 +801,7 @@
 <translation id="7359359531237882347">Kopiraju se stavke (<ph name="NUMBER_OF_ITEMS" />)...</translation>
 <translation id="7375951387215729722">Lista datoteka je sortirana po opadajućem redosledu po kriterijumu <ph name="COLUMN_NAME" />.</translation>
 <translation id="7377161162143020057">Smernice administratora blokiraju kopiranje ovog fajla</translation>
+<translation id="7392500733467492920">nismo uspeli da pronađemo. Obratite se administratoru.</translation>
 <translation id="7402503521691663770">Chrome OS Flex uređaji</translation>
 <translation id="7408870451288633753">češki</translation>
 <translation id="7417453074306512035">Etiopljanska tastatura</translation>

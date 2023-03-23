@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Налог не функционише на Google Chrome-у. Контактирајте администратора домена или се пријавите помоћу обичног Google налога.</translation>
 <translation id="3173834708294760622">Google Chrome страница</translation>
 <translation id="3196546062792660320">Chrome вам штеди време тако што поставља налоге на веб. Можете да додајете или уклањате налоге у подешавањима.</translation>
+<translation id="322254490661677575">Да бисте користили и чували Chrome податке на Google налогу, унесите приступну фразу.</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3345341804167540816">Користите Chrome свуда</translation>
 <translation id="3503014945441706099">Набавите побољшано безбедно прегледање и за овај Chrome профил</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Мењате налог за синхронизацију из <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Постојећим Chrome подацима управља <ph name="DOMAIN" />. Промена ће избрисати податке са овог уређаја, али ће подаци остати на <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Организација захтева да останете одјављени са Chrome-а.</translation>
 <translation id="3988789688219830639">Google Chrome не може да приступа сликама или видео снимцима. Омогућите приступ у iOS Settings (Подешавања iOS-а) &gt; Privacy (Приватност) &gt; Photos (Слике).</translation>
+<translation id="4064699917955374540">Да бисте користили и чували Chrome податке на Google налогу, потврдите свој идентитет.</translation>
 <translation id="417201473131094001">Није подржано у верзији Chrome Canary</translation>
 <translation id="4233521129555661685">Корисник <ph name="USER_EMAIL1" /> је користио Chrome и оставио обележиваче, лозинке и друга подешавања на овом уређају.</translation>
 <translation id="424864128008805179">Желите ли да се одјавите из Chrome-а?</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">Изаберите Chrome</translation>
 <translation id="5162467219239570114">Chrome је застарео. Ако ажурирање није доступно у <ph name="BEGIN_LINK" />App Store-у<ph name="END_LINK" />, уређај можда не подржава нове верзије Chrome-а.</translation>
 <translation id="5389212809648216794">Google Chrome не може да користи камеру зато што је већ користи друга апликација</translation>
+<translation id="5395376160638294582">Уверите се да увек можете да користите Chrome податке на Google налогу</translation>
 <translation id="5460571915754665838">4. Изаберите Chrome</translation>
 <translation id="5492504007368565877">Google менаџер лозинки не може да вам проверава лозинке.</translation>
 <translation id="5552137475244467770">Chrome повремено упоређује ваше лозинке са листама које су објављене онлајн. Док то ради, ваше лозинке и корисничка имена су шифровани, па нико не може да их прочита, укључујући Google.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
 <translation id="840168496893712993">Неки програмски додаци изазивају отказивање Chrome-а. Покушајте да их деинсталирате.</translation>
 <translation id="8414886616817913619">Организација захтева да се пријавите да бисте користили Chrome. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Наставите да користите Chrome податке на Google налогу</translation>
 <translation id="8459495907675268833">Изабрани подаци су уклоњени из Chrome-а и са синхронизованих уређаја. Google налог можда има друге облике историје прегледања, попут претрага и активности у другим Google услугама на history.google.com.</translation>
 <translation id="850555388806794946">Да бисте поставили Chrome за подразумевани прегледач:
   1. Отворите подешавања

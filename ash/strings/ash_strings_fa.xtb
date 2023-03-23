@@ -461,6 +461,7 @@
 <translation id="3256109297135787951">حذف برجسته‌سازی از مورد روی قفسه</translation>
 <translation id="3260969790895726815">گفتار به‌صورت محلی پردازش می‌شود و ویژگی دیکته آفلاین کار می‌کند، اما برخی‌از فرمان‌های صوتی کار نخواهند کرد.</translation>
 <translation id="3269597722229482060">کلیک راست</translation>
+<translation id="3289364673986435196">منوی روشن/خاموش</translation>
 <translation id="3289544412142055976">‏درحال‌حاضر از برنامه‌های Linux پشتیبانی نمی‌شود</translation>
 <translation id="3289674678944039601">درحال شارژ ازطریق آداپتور</translation>
 <translation id="3290356915286466215">ناامن</translation>
@@ -684,6 +685,7 @@
 <translation id="4269883910223712419">سرپرست این دستگاه می‌تواند:</translation>
 <translation id="4274537685965975248">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای پایین» تغییر کرده است. برای استفاده از کلید «پایان»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای راست» را فشار دهید.</translation>
 <translation id="4279490309300973883">بازتاب می‌شود</translation>
+<translation id="4280601795273309128">به‌روزرسانی‌های امنیتی به‌پایان رسیده است. دستگاهتان را ارتقا دهید.</translation>
 <translation id="4283888303416325161">برای ایمنی بیشتر، گذرواژه را وارد کنید</translation>
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
 <translation id="4294319844246081198">صبح‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
@@ -870,6 +872,7 @@
 <translation id="5147567197700016471">قفل‌نشده</translation>
 <translation id="5150070631291639005">تنظیمات حریم خصوصی</translation>
 <translation id="5155897006997040331">سرعت خواندن</translation>
+<translation id="5163434717504750796">سلامت باتری <ph name="BATTERY_HEALTH_PERCENTAGE" />٪ | تعداد چرخه <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ذخیره میزکار به‌عنوان الگو</translation>
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
@@ -1340,6 +1343,7 @@
 <translation id="743058460480092004">دوربین و میکروفن در حال استفاده هستند.</translation>
 <translation id="7452560014878697800">برنامه‌ای درحال استفاده از دوربینتان است</translation>
 <translation id="7453330308669753048">نتیجه سابقه جستجو برداشته شد</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> مانده تا شارژ کامل</translation>
 <translation id="7461924472993315131">پین</translation>
 <translation id="746232733191930409">حالت ضبط صفحه‌نمایش</translation>
 <translation id="7466449121337984263">لطفاً حسگر را لمس کنید</translation>
@@ -1702,6 +1706,7 @@
 <translation id="9178475906033259337">نمایش ۱ نتیجه برای <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">این ویژگی امکان می‌دهد بدون نیاز به گذرواژه، به هر کاربری که به سیستم واردشده به‌سرعت دسترسی داشته باشید. تنها برای حساب‌های مورد اعتمادتان از این ویژگی استفاده کنید.</translation>
 <translation id="9183456764293710005">ذره‌بین تمام‌صفحه</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> باقی‌مانده</translation>
 <translation id="9193626018745640770">درحال پخش محتوا به گیرنده ناشناس</translation>
 <translation id="9194617393863864469">ورود به سیستم حسابی دیگر...</translation>
 <translation id="9198992156681343238">وضوح <ph name="DISPLAY_NAME" /> به <ph name="RESOLUTION" /> تغییر کرد. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>

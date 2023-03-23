@@ -477,6 +477,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3587596251841506391">Helpu i wella diogelwch ar y we</translation>
 <translation id="3597179440835065298">Cael awgrymiadau gwell</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
+<translation id="360901359071773787">Dileu'r 15 munud diwethaf?</translation>
 <translation id="3616113530831147358">Sain</translation>
 <translation id="3622349720008044802">Rheoli ffenestri</translation>
 <translation id="3631987586758005671">Wrthi'n rhannu i <ph name="DEVICE_NAME" /></translation>
@@ -822,6 +823,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5517095782334947753">Mae gennych nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill o <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524761631371622910">Pan fydd treialon ymlaen ac os yw Chrome wedi'ch gosod ar hap mewn treial gweithredol, mae eich hanes pori yn effeithio ar yr hysbysebion a welwch a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu eich diddordebau yn awtomatig bob mis.</translation>
 <translation id="5524843473235508879">Ailgyfeirio wedi'i rwystro.</translation>
+<translation id="554297709083131118">Bydd data dilynol o'r 15 munud diwethaf yn cael eu dileu</translation>
 <translation id="5548606607480005320">Gwiriad diogelwch</translation>
 <translation id="5555525474779371165">Dewiswch eich diogelwch Pori'n Ddiogel</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
@@ -1263,6 +1265,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="78270725016672455">Mae eich cyfrifiadur eisiau cofrestru'r ddyfais hon i fewngofnodi i wefan</translation>
 <translation id="7844171778363018843">Ni ddewiswyd unrhyw ddata i'w cysoni</translation>
 <translation id="7846296061357476882">Gwasanaethau Google</translation>
+<translation id="7847228556075070294">Hanes, cwcis a data eraill a ddilëwyd</translation>
 <translation id="784934925303690534">Ystod amser</translation>
 <translation id="7851858861565204677">Dyfeisiau eraill</translation>
 <translation id="7853202427316060426">Gweithgarwch</translation>

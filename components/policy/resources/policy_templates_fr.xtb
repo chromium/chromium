@@ -150,6 +150,7 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
       La configuration de la règle <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> n'est effective que si la règle <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="1147732569915511430">Hachage SHA-256 de l'image de l'avatar.</translation>
 <translation id="1148415065145333943">Désactiver le mode avancé de recharge de la batterie</translation>
+<translation id="1149841949061115313">Version LTC</translation>
 <translation id="1150742937785306405">Autorisez les utilisateurs à activer ou à désactiver le paramètre des annonces suggérées par le site de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1151353063931113432">Autoriser les images sur ces sites</translation>
 <translation id="1151987132434751822">Méthodes d'authentification pour lesquelles les identifiants spécifiés dans la règle peuvent être appliqués. La méthode employée peut être l'une des trois suivantes :
@@ -2196,6 +2197,7 @@ Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir 
 
       Si elle est désactivée, les commandes multimédias ne s'affichent pas sur l'écran de verrouillage.</translation>
 <translation id="3072847235228302527">Définir les conditions d'utilisation d'un compte local de l'appareil</translation>
+<translation id="3074032542020543133">Version LTS</translation>
 <translation id="3077650998740742747">
 Comportement par défaut (Règle non définie)
 Lorsqu'un compte est ajouté dans la zone de contenu, une petite boîte de dialogue invitant l'utilisateur à créer un profil peut s'afficher. Vous pouvez fermer cette boîte de dialogue.
@@ -3339,6 +3341,13 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
 <translation id="4102347680024644994">Signaler les événements de détection et réponse étendues (XDR)</translation>
 <translation id="4105989332710272578">Désactiver l'application des règles de transparence des certificats pour une liste d'URL</translation>
+<translation id="4110126170080699437">Pour des raisons de sécurité, l'API Web <ph name="GET_DISPLAY_MEDIA_API_NAME" /> nécessite un geste préalable de l'utilisateur ("activation temporaire"). Sinon, une erreur se produit.
+
+Une fois cette règle définie, les administrateurs peuvent préciser les origines sur lesquelles cette API peut être appelée sans geste préalable de l'utilisateur.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur * n'est pas acceptée pour cette règle.
+
+Si cette règle n'est pas configurée, toutes les origines nécessitent un geste préalable de l'utilisateur pour appeler cette API.</translation>
 <translation id="4114059938441379876">Permet de spécifier l'URL à laquelle les utilisateurs doivent modifier leur mot de passe après avoir lu l'avertissement affiché dans le navigateur. Le service de protection par mot de passe redirige les utilisateurs vers l'URL (protocoles HTTP et HTTPS uniquement) que vous avez indiquée dans cette règle. Pour que <ph name="PRODUCT_NAME" /> enregistre correctement la copie hachée et après salage du nouveau mot de passe sur la page de modification de celui-ci, vérifiez si cette page respecte bien les consignes indiquées sur https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
       Si cette règle est désactivée ou si elle n'est pas configurée, les utilisateurs sont redirigés vers la page https://myaccount.google.com pour modifier leur mot de passe.
@@ -7110,6 +7119,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les règles cloud utilisateur prévalent par défaut.</translation>
 <translation id="7657261947024629645">Privilégier les performances.</translation>
+<translation id="76580522298425324">Autoriser la capture d'écran sans geste préalable de l'utilisateur</translation>
 <translation id="7666228839913571182">Autoriser les cookies tiers</translation>
 <translation id="7668830462800981702">Si cette règle est activée et que l'utilisateur saisit autre chose qu'une URL dans la barre d'adresse, une recherche est alors lancée par défaut. Pour spécifier le moteur de recherche par défaut, définissez le reste des règles de recherche par défaut. Si vous ne configurez pas ces règles, l'utilisateur peut choisir le moteur par défaut. Si cette règle est désactivée et que l'utilisateur saisit autre chose qu'une URL dans la barre d'adresse, aucune recherche n'est lancée.
 

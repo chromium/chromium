@@ -560,6 +560,7 @@
 <translation id="1485015260175968628">ახლა შეუძლია შემდეგის გაკეთება:</translation>
 <translation id="1485141095922496924">ვერსია <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">პაროლების ძებნა</translation>
+<translation id="1486486872607808064">დაასკანირეთ ეს QR კოდი იმ მოწყობილობის კამერით, რომელზეც გსურთ, შექმნათ წვდომის გასაღები <ph name="APP_NAME" />-ისთვის</translation>
 <translation id="1487335504823219454">ჩართულია — მორგებული პარამეტრები</translation>
 <translation id="1493892686965953381">ელოდება <ph name="LOAD_STATE_PARAMETER" />-ს…</translation>
 <translation id="1494349716233667318">საიტებს შეუძლია ნებართვის მოთხოვნა თქვენს მოწყობილობაზე არსებული შრიფტების გამოსაყენებლად</translation>
@@ -770,6 +771,7 @@
 <translation id="164936512206786300">Bluetooth მოწყობილობის დაწყვილების გაუქმება</translation>
 <translation id="1651008383952180276">შეყვანილი საიდუმლო ფრაზები უნდა ემთხვეოდეს</translation>
 <translation id="1652326691684645429">მახლობლად გაზიარების გააქტიურება</translation>
+<translation id="1654580009054503925">დაუშვებელია მოთხოვნების ჩვენება</translation>
 <translation id="1656528038316521561">ფონის გაუმჭვირობა</translation>
 <translation id="1657406563541664238">დახმარება აუმჯობესებს <ph name="PRODUCT_NAME" /> ს Google-ისათვის მეხსიერების სტატისტიკის და ავარიული ანგარიშების ავტომატურ მიწოდებას</translation>
 <translation id="1657937299377480641">საგანმანათლებლო რესურსებზე წვდომისთვის სისტემაში ხელახლა შესასვლელად საჭიროა მშობლისგან ნებართვის მიღება</translation>
@@ -3407,6 +3409,7 @@
 <translation id="3957079323242030166">სარეზერვო მონაცემები არ იქონიებს გავლენას Google Drive-ში თქვენთვის გამოყოფილ მეხსიერების კვოტაზე.</translation>
 <translation id="3957844511978444971">შეეხეთ „მიღებას“ Google-ის სერვისების პარამეტრების თქვენი არჩევანის დასადასტურებლად.</translation>
 <translation id="3958088479270651626">სანიშნეების და პარამეტრების იმპორტი</translation>
+<translation id="3958110062351175311">დაშვებულია მოთხოვნების ჩვენება ხელსაწყოთა ზოლში</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">სხვა ქმედებები <ph name="IBAN_DESCRIPTION" />-ისთვის</translation>
 <translation id="3962119236270174787">სტანდარტული დაცვა ცნობილი სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან</translation>
@@ -3666,6 +3669,7 @@
 <translation id="4205157409548006256">Linux-ის კონფიგურაციისას შეცდომა მოხდა.</translation>
 <translation id="4206144641569145248">უცხოპლანეტელი</translation>
 <translation id="4206323443866416204">გამოხმაურების ანგარიში</translation>
+<translation id="4206585797409671301">დაშვებულია მოთხოვნების ჩვენება</translation>
 <translation id="4207932031282227921">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშს F6</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" />-ში ძიება</translation>
 <translation id="4209092469652827314">დიდი</translation>
@@ -4335,6 +4339,7 @@
 <translation id="481574578487123132">მიბმული მოწყობილობები</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, დეტალები</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 სანიშნე წაიშალა}other{{COUNT} სანიშნე წაიშალა}}</translation>
+<translation id="4816900689218414104">შექმენით წვდომის გასაღები ტელეფონზე ან ტაბლეტზე</translation>
 <translation id="4819323978093861656">{0,plural, =0{ახლა დაიხურება.}=1{დაიხურება 1 წამში}other{დაიხურება # წამში}}</translation>
 <translation id="4819607494758673676">Google ასისტენტის შეტყობინებები</translation>
 <translation id="4820236583224459650">აქტიურ ბილეთად დაყენება</translation>
@@ -6243,6 +6248,7 @@
 <translation id="6562117348069327379">სისტემის ჟურნალების „ჩამოტვირთვების“ კატალოგში შენახვა.</translation>
 <translation id="656293578423618167">ფაილის მდებარეობა ან სახელი ძალიან გრძელია. გთხოვთ, შეინახოთ იგი უფრო მოკლე სახელით ან სხვა ადგილას.</translation>
 <translation id="6568283005472142698">ჩანართებში ძიება</translation>
+<translation id="6570622975915850879">სხვა მოწყობილობის გამოყენება</translation>
 <translation id="65711204837946324">ჩამოსატვირთად საჭიროა ნებართვა</translation>
 <translation id="6571533309669248172">ტექსტის ფორმატი</translation>
 <translation id="6571772921213691236">დაარედაქტირეთ სისტემაში შესვლის მონაცემები</translation>
@@ -6806,6 +6812,7 @@
 <translation id="7044606776288350625">მონაცემთა სინქრონიზაცია</translation>
 <translation id="7047059339731138197">ფონის არჩევა</translation>
 <translation id="7049293980323620022">გსურთ ფაილის შენარჩუნება?</translation>
+<translation id="70496770794393383">შენახული პაროლების ცხრილი</translation>
 <translation id="7050037487872780845">უსადენო ქსელის კონფიგურაცია არასწორია</translation>
 <translation id="7051551856857948729">IBAN-ის მნიშვნელობის დამალვა</translation>
 <translation id="7052237160939977163">ეფექტურობის ტრასირების მონაცემების გაგზავნა</translation>

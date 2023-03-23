@@ -807,6 +807,7 @@
 <translation id="650279896687777322">مزيد من المعلومات...</translation>
 <translation id="6510072653668207258">تذكيري لاحقًا</translation>
 <translation id="651505212789431520">هل تريد إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت في "الإعدادات".</translation>
+<translation id="6518133107902771759">تحقق</translation>
 <translation id="6524918542306337007">"وضع التصفُّح المتخفي" غير متاح</translation>
 <translation id="6530992499366869131">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -836,6 +837,7 @@
 <translation id="6672241253012342409">يسمح هذا الخيار للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل مواصلة تسجيل دخولك أو الاحتفاظ بالمنتجات التي تمت إضافتها إلى سلة التسوق.
 
 في وضع التصفُّح المتخفي، لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح الخاص بك على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً.</translation>
+<translation id="6672697278890207089">إدخال عبارة المرور</translation>
 <translation id="6674571176963658787">لبدء المزامنة، يجب إدخال عبارة المرور.</translation>
 <translation id="667999046851023355">مستند</translation>
 <translation id="6684906340059221832">المنتجات التي يتم تتبُّع أسعارها</translation>
@@ -1038,6 +1040,7 @@
 <translation id="8136856065410661948">‏سيتم استخدام هذه البيانات لإنشاء الأحداث في Apple Calendar (تطبيق "التقويم" من Apple) من Chrome و"عدسة Google".</translation>
 <translation id="8156478151976189188">ميزة "مزامنة كلمات المرور" لا تعمل حاليًا</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> من الحسابات</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ترجمة الصفحة</translation>
 <translation id="8205564605687841303">إلغاء</translation>
@@ -1047,7 +1050,6 @@
 <translation id="8237382152611443140">‏فتح AutoFill Password Settings (إعدادات الملء التلقائي لكلمات المرور)</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8264966119170358612">‏تم رصد بعض كلمات المرور المحفوظة الخاصة بك ضمن عملية اختراق للبيانات من خارج Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">سيتم حفظ كلمة المرور على هذا الجهاز فقط.</translation>
 <translation id="8271720166617117963">القبول وتسجيل الدخول</translation>
 <translation id="8278938988428169257">أدخِل كلمة أو عبارة.</translation>
 <translation id="8281781826761538115">التلقائي - <ph name="DEFAULT_LOCALE" /></translation>

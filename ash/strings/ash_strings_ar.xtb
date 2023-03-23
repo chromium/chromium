@@ -126,6 +126,7 @@
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
 <translation id="1546492247443594934">مكتب 2</translation>
 <translation id="1546930421365146760">‏يُرجى الرجوع إلى المشرف لطلب ضبط إعدادات هذا الجهاز من خلال وحدة تحكّم المشرف في Google.</translation>
+<translation id="1549512626801247439">إدارة مساحة التخزين</translation>
 <translation id="1550406609415860283">الأجهزة المتاحة</translation>
 <translation id="1550523713251050646">انقر للحصول على المزيد من الخيارات</translation>
 <translation id="1555130319947370107">أزرق</translation>
@@ -249,6 +250,7 @@
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2149229036084364364">الانتقال إلى المقطع الصوتي السابق</translation>
 <translation id="2161132820593978283">جرِّب استخدام ميزة "تكبير تلقائي" حتى تظهر صورة وجهك في وسط الشاشة أثناء مكالمات الفيديو. يمكنك تفعيل هذه الميزة من خلال قائمة "الإعدادات السريعة".</translation>
+<translation id="2165966740263283349">مساحة التخزين المستخدَمة</translation>
 <translation id="2170530631236737939">يمكنك التمرير سريعًا لأسفل الشاشة بثلاثة أصابع للخروج من وضع "النظرة العامة".</translation>
 <translation id="2185166372312820725">الانتقال إلى علامة التبويب السابقة</translation>
 <translation id="2185444992308415167">التنقّل بين علامات التبويب من الأولى حتى الثامنة</translation>
@@ -286,6 +288,7 @@
 <translation id="2352467521400612932">إعدادات قلم الشاشة</translation>
 <translation id="2354174487190027830">تفعيل <ph name="NAME" /></translation>
 <translation id="2359808026110333948">متابعة</translation>
+<translation id="2360398059912971776">بطارية</translation>
 <translation id="2367186422933365202">‏يتعذّر تسجيل الدخول إلى جهاز Chromebook.</translation>
 <translation id="2367972762794486313">إظهار التطبيقات</translation>
 <translation id="2369165858548251131">"مرحبًا" باللغة الصينية</translation>
@@ -320,6 +323,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">فتح قفل النوافذ</translation>
 <translation id="2530896289327917474">تفعيل ميزة "التصفُّح النصي بالمؤشر" أو إيقافها</translation>
+<translation id="2531025035050312891">الجهاز بطيء</translation>
 <translation id="2542089167727451762">انقر على صورة الملف الشخصي.</translation>
 <translation id="254900897760075745">نسخ المحتوى الذي تم اختياره إلى الحافظة</translation>
 <translation id="255671100581129685">‏لا يتوفَّر "مساعد Google" في جلسة عامة.</translation>
@@ -332,6 +336,7 @@
 <translation id="2596078834055697711">أخذ لقطة شاشة للنافذة</translation>
 <translation id="2598725286293895280">يتضمّن سطح المكتب تطبيقات غير متوافقة</translation>
 <translation id="2607678425161541573">يجب تسجيل الدخول على الإنترنت</translation>
+<translation id="2612072250312279703">أداة رصد النشاط</translation>
 <translation id="2612614436418177118">نقل رمز تطبيق داخل شبكة التطبيقات</translation>
 <translation id="2620016719323068571">البحث في <ph name="CATEGORY" /> والملفات والتطبيقات وغير ذلك...</translation>
 <translation id="2620436844016719705">النظام</translation>
@@ -470,6 +475,7 @@
 <translation id="3308453408813785101">سيظل بإمكان <ph name="USER_EMAIL_ADDRESS" /> تسجيل الدخول لاحقًا.</translation>
 <translation id="3321628682574733415">رمز أحد الوالدين غير صحيح</translation>
 <translation id="332827762492701193">الإشعارات مخفية.</translation>
+<translation id="3338855835380298613">‏استخدام وحدة المعالجة المركزية (CPU)</translation>
 <translation id="3339826665088060472">لقطة الشاشة، أدوات التقاط لقطات الشاشة وتسجيلات الشاشة</translation>
 <translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3341303451326249809">تم أخذ لقطة الشاشة.</translation>
@@ -477,6 +483,7 @@
 <translation id="334927402682780278">اختيار النص من موضع المؤشر إلى نهاية السطر</translation>
 <translation id="3349345708646875009">فتح "إدارة المهام"</translation>
 <translation id="3351879221545518001">أنت حاليًا تبث محتوى الشاشة.</translation>
+<translation id="3354555338129305222">لماذا يعمل الجهاز ببطء</translation>
 <translation id="3364721542077212959">أدوات قلم الشاشة</translation>
 <translation id="3365977133351922112">‏هاتفك بعيد جدًا. ضَع هاتفك في مكان قريب من جهاز Chromebook.</translation>
 <translation id="3368922792935385530">متصل</translation>
@@ -584,6 +591,7 @@
 <translation id="3779139509281456663">جارٍ ربط <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">قفل</translation>
+<translation id="3796198851576711985">حالة البطارية</translation>
 <translation id="3796746699333205839">أحد التطبيقات يستخدم الكاميرا والميكروفون.</translation>
 <translation id="3798670284305777884">سماعة (داخلية)</translation>
 <translation id="3799080171973636491">لقد ضغطت على اختصار لوحة المفاتيح للمُكبِّر بملء الشاشة. هل ترغب في تفعيله؟</translation>
@@ -596,6 +604,7 @@
 <translation id="3846575436967432996">لا توجد معلومات متاحة حول الشبكة</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="385300504083504382">البداية</translation>
+<translation id="3859364108019690">يتعذّر بث محتوى التطبيقات</translation>
 <translation id="3861651314799684201">‏اضغط على المفتاح Enter لتسجيل فيديو للشاشة بأكملها</translation>
 <translation id="3871092408932389764">الأقل</translation>
 <translation id="3886872229787704059">تم فتحه اليوم.</translation>
@@ -737,9 +746,11 @@
 <translation id="4527045527269911712">يريد جهاز بلوتوث "<ph name="DEVICE_NAME" />" الحصول على إذن للإقران.</translation>
 <translation id="4533343294786968049">يتم حاليًا شحن البطارية، وستكتمل عملية الشحن بحلول <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> حتى اكتمال الشحن</translation>
+<translation id="4536664881735498710">‏استخدام ذاكرة الوصول العشوائي (RAM)</translation>
 <translation id="4538824937723742295">الحصول على لقطة شاشة في وضع ملء الشاشة</translation>
 <translation id="4539127209940689201">طباعة الصفحة الحالية</translation>
 <translation id="4544483149666270818">يُرجى اختيار نافذة لتسجيل فيديو لها.</translation>
+<translation id="454541942614298893">جهازي</translation>
 <translation id="4560576029703263363">مُفعَّل</translation>
 <translation id="4561267230861221837">شبكة الجيل الثالث</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
@@ -853,9 +864,11 @@
 <translation id="5043679421800073804">النقر على الرمز الأخير على الرف</translation>
 <translation id="504465286040788597">الفقرة السابقة</translation>
 <translation id="5045550434625856497">كلمة مرور غير صحيحة</translation>
+<translation id="5062496344832867502">‏ذاكرة الوصول العشوائي (RAM)</translation>
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>
 <translation id="5083553833479578423">‏الاستفادة من المزيد من ميزات "مساعد Google"</translation>
 <translation id="5092436659250499817">تشغيل/إيقاف الإضاءة الخلفية في لوحة المفاتيح</translation>
+<translation id="5094577350232361255">لمحة</translation>
 <translation id="509790653408515442">عند تشغيل تطبيقات هاتفك، سيتم عرضها هنا.</translation>
 <translation id="5098537242461068432">تمت إعادة فتح سطح المكتب والنوافذ.</translation>
 <translation id="5104236669533825617">تعذُّر إنشاء تسجيل رقمي للشاشة</translation>
@@ -957,6 +970,7 @@
 <translation id="557563299383177668">الفقرة التالية</translation>
 <translation id="5577082622442191756">إيقاف/تفعيل البلوتوث: <ph name="STATE_TEXT" /></translation>
 <translation id="5577281275355252094">يُرجى التأكّد من تفعيل البلوتوث على هاتفك لاستخدام ميزة "مركز التحكّم بالهاتف".</translation>
+<translation id="5578188167649348993">ذاكرة</translation>
 <translation id="5580000943347215299">المكتبة</translation>
 <translation id="558849140439112033">يُرجى السحب لتحديد منطقة لالتقاط صورة لها.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />، <ph name="DATE" /></translation>
@@ -1026,6 +1040,7 @@
 <translation id="589817443623831496">مسح النقاط</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">أصفر</translation>
+<translation id="5902162043476810127">ذاكرة الوصول العشوائي</translation>
 <translation id="5909862606227538307">سطح مكتب غير نشط</translation>
 <translation id="5911231045062997865">‏نوافذ متصفّح Lacros غير متوافقة حاليًا. سيتم حفظ التطبيقات الأخرى.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1131,6 +1146,7 @@
 <translation id="6431865393913628856">تسجيل الشاشة</translation>
 <translation id="6442259747294754014">الوصول إلى ميكروفون الجهاز غير مفعَّل.</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
+<translation id="6445915701151710649">‏وحدة المعالجة المركزية (CPU)</translation>
 <translation id="6447111710783417522"><ph name="DATE" />، حدث واحد (<ph name="NUMBER" />)</translation>
 <translation id="6449483711453944360">‏هذا الخيار غير متوفّر حاليًا لتطبيقات Linux ونوافذ التصفّح المتخفي.</translation>
 <translation id="6452181791372256707">رفض</translation>
@@ -1204,6 +1220,7 @@
 <translation id="6752912906630585008">تمت إزالة سطح المكتب <ph name="REMOVED_DESK" /> ودمجه مع سطح المكتب <ph name="RECEIVE_DESK" />.</translation>
 <translation id="6753390234084146956">علامات التبويب</translation>
 <translation id="6757237461819837179">لا يتم تشغيل أي وسائط حاليًا</translation>
+<translation id="6768043681523654438">مساحة التخزين</translation>
 <translation id="6777216307882431711">‏شحن أجهزة USB-C المتصلة</translation>
 <translation id="6781002679438061620">سطح المكتب 9</translation>
 <translation id="6782182743534150858">سطح المكتب 13</translation>
@@ -1349,6 +1366,9 @@
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">ميزة "تكبير تلقائي" مفعّلة.</translation>
+<translation id="7519649142417630956">بعد إطفاء الجهاز، سيتم تسجيل خروج المشرف ولن يتمكّن من التحكّم في جهازك.
+
+لإطفاء الجهاز، اضغط مع الاستمرار على زر تشغيل الجهاز مرة أخرى.</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">‏تطبيقات Linux ونوافذ التصفّح المتخفي غير متوافقة حاليًا، ولكن سيتم حفظ التطبيقات الأخرى.</translation>
@@ -1397,6 +1417,7 @@
 <translation id="7723703419796509666">إظهار وحدة تحكُّم "أدوات المطوِّرين" أو إخفاؤها</translation>
 <translation id="7724603315864178912">قص</translation>
 <translation id="7727952505535211425">فتح الموقع الإلكتروني بشريط العناوين في علامة تبويب جديدة</translation>
+<translation id="77365090426890123">استخدام الذاكرة</translation>
 <translation id="7742327441377685481">ما مِن إشعارات</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
 <translation id="776344839111254542">النقر لعرض تفاصيل التحديث</translation>
@@ -1626,6 +1647,8 @@
 <translation id="8853703225951107899">يتعذّر حتى الآن التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. ملاحظة: في حال تم تغيير كلمة المرور الخاصّة بك مؤخرًا، يمكنك تسجيل الدخول باستخدام كلمة المرور القديمة. وسيتم تطبيق كلمة المرور الجديدة بعد تسجيل الخروج.</translation>
 <translation id="8855885154700222542">مفتاح ملء الشاشة</translation>
 <translation id="8858369206579825206">عناصر التحكّم في الخصوصية</translation>
+<translation id="8860817004574502558">عمر البطارية</translation>
+<translation id="8863602954531760927">‫<ph name="STORAGE_IN_USE_SIZE" /> قيد الاستخدام من إجمالي <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">التطبيق لا يتيح تقسيم الشاشة.</translation>
 <translation id="8874184842967597500">غير متصل</translation>
 <translation id="8875021410787719674">التنقُّل بين أسفل يسار الشاشة ومشغّل التطبيقات وشريط العناوين وشريط الإشارات والموقع الإلكتروني المفتوح وعمليات التنزيل</translation>
@@ -1711,6 +1734,7 @@
 <translation id="938963181863597773">ماذا يتضمّن تقويمي؟</translation>
 <translation id="945522503751344254">إرسال تعليقات</translation>
 <translation id="951991426597076286">رفض</translation>
+<translation id="953431725143473984">هل تريد إطفاء الجهاز؟</translation>
 <translation id="954052413789300507">لا تتوفّر مساحة كافية لتنزيل الملف <ph name="FILENAME" />. عليك إخلاء بعض المساحة.</translation>
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
 <translation id="98120814841227350">الانتقال إلى نهاية المستند</translation>

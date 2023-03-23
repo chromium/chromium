@@ -461,6 +461,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3256109297135787951">De markering voor een item op je plank verwijderen</translation>
 <translation id="3260969790895726815">Spraak wordt lokaal verwerkt en dicteren werkt offline, maar sommige spraakopdrachten werken niet.</translation>
 <translation id="3269597722229482060">Klikken met rechtermuisknop</translation>
+<translation id="3289364673986435196">Aan/uit-menu</translation>
 <translation id="3289544412142055976">Linux-apps worden momenteel niet ondersteund</translation>
 <translation id="3289674678944039601">Opladen via adapter</translation>
 <translation id="3290356915286466215">Niet beveiligd</translation>
@@ -685,6 +686,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4269883910223712419">De beheerder van dit apparaat kan het volgende doen:</translation>
 <translation id="4274537685965975248">De sneltoets Ctrl + Alt + pijl-omlaag is veranderd. Als je de toets End wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-rechts.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
+<translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
 <translation id="4285498937028063278">Losmaken</translation>
 <translation id="4294319844246081198">Goedemorgen <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5147567197700016471">Ontgrendeld</translation>
 <translation id="5150070631291639005">Privacyinstellingen</translation>
 <translation id="5155897006997040331">Leesnelheid</translation>
+<translation id="5163434717504750796">Batterijstatus <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Aantal cycli <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Bureau opslaan als template</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
@@ -1338,6 +1341,7 @@ Nieuwe installatie</translation>
 <translation id="743058460480092004">Camera en microfoon zijn in gebruik.</translation>
 <translation id="7452560014878697800">Een app gebruikt je camera</translation>
 <translation id="7453330308669753048">Zoekgeschiedenisresultaat verwijderd</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
@@ -1701,6 +1705,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9178475906033259337">1 resultaat bekijken voor <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met deze functie kun je snel zonder wachtwoord toegang krijgen tot iedere ingelogde gebruiker. Gebruik deze functie alleen met accounts die je vertrouwt.</translation>
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Nog <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Casten naar een onbekende ontvanger</translation>
 <translation id="9194617393863864469">Als andere gebruiker inloggen...</translation>
 <translation id="9198992156681343238">De resolutie van <ph name="DISPLAY_NAME" /> is gewijzigd in <ph name="RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>

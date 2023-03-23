@@ -805,6 +805,7 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="650279896687777322">Få flere oplysninger...</translation>
 <translation id="6510072653668207258">Påmind mig senere</translation>
 <translation id="651505212789431520">Vil du annullere synkroniseringen? Du kan til enhver tid aktivere synkronisering i indstillingerne.</translation>
+<translation id="6518133107902771759">Bekræft</translation>
 <translation id="6524918542306337007">Inkognitotilstand er ikke tilgængelig</translation>
 <translation id="6530992499366869131">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="6537746030088321027">eksempel.dk</translation>
@@ -834,6 +835,7 @@ Du bør bruge en unik adgangskode for hvert website.</translation>
 <translation id="6672241253012342409">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv.
 
 Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhistorik på forskellige websites for f.eks. at tilpasse annoncer.</translation>
+<translation id="6672697278890207089">Angiv din adgangssætning</translation>
 <translation id="6674571176963658787">Angiv din adgangssætning for at starte synkroniseringen</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Overvågning af priser</translation>
@@ -1038,6 +1040,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8136856065410661948">Dette bruges til at oprette begivenheder i din Apple Kalender via Chrome og Google Lens.</translation>
 <translation id="8156478151976189188">Password Sync fungerer ikke</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konti</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dine enheder<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Oversæt side</translation>
 <translation id="8205564605687841303">Annuller</translation>
@@ -1047,7 +1050,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8237382152611443140">Åbn indstillingerne for Autoudfyld adgangskoder</translation>
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8264966119170358612">Nogle af dine gemte adgangskoder er blevet offentliggjort som følge af et brud på datasikkerheden uden for Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Kun på denne enhed</translation>
 <translation id="8271720166617117963">Acceptér og log ind</translation>
 <translation id="8278938988428169257">Angiv et ord eller en sætning</translation>
 <translation id="8281781826761538115">Standardsprog – <ph name="DEFAULT_LOCALE" /></translation>

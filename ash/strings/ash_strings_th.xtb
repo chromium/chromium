@@ -466,6 +466,7 @@
 <translation id="3256109297135787951">นำไฮไลต์ออกจากรายการบนชั้นวาง</translation>
 <translation id="3260969790895726815">คําพูดจะได้รับการประมวลผลในเครื่องและการพิมพ์ตามคําบอกจะทํางานแบบออฟไลน์ แต่คําสั่งเสียงบางอย่างจะไม่ทํางาน</translation>
 <translation id="3269597722229482060">คลิกขวา</translation>
+<translation id="3289364673986435196">เมนูเปิด/ปิด</translation>
 <translation id="3289544412142055976">ขณะนี้ยังไม่รองรับแอป Linux</translation>
 <translation id="3289674678944039601">กำลังชาร์จผ่านอะแดปเตอร์</translation>
 <translation id="3290356915286466215">ไม่ปลอดภัย</translation>
@@ -689,6 +690,7 @@
 <translation id="4269883910223712419">ผู้ดูแลระบบของอุปกรณ์เครื่องนี้ทำสิ่งต่อไปนี้ได้</translation>
 <translation id="4274537685965975248">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรลง หากต้องการใช้แป้น End ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขวา</translation>
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
+<translation id="4280601795273309128">การอัปเดตความปลอดภัยสิ้นสุดแล้ว โปรดอัปเกรดอุปกรณ์</translation>
 <translation id="4283888303416325161">ป้อนรหัสผ่านเพื่อความปลอดภัยมากขึ้น</translation>
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="4294319844246081198">สวัสดียามเช้า <ph name="GIVEN_NAME" /></translation>
@@ -879,6 +881,7 @@
 <translation id="5147567197700016471">ปลดล็อกแล้ว</translation>
 <translation id="5150070631291639005">การตั้งค่าความเป็นส่วนตัว</translation>
 <translation id="5155897006997040331">ความเร็วในการอ่าน</translation>
+<translation id="5163434717504750796">ประสิทธิภาพของแบตเตอรี่ <ph name="BATTERY_HEALTH_PERCENTAGE" />% | จำนวนรอบ <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">บันทึกเดสก์เป็นเทมเพลต</translation>
 <translation id="5168181903108465623">เครื่องส่งพร้อมใช้งาน</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
@@ -1353,6 +1356,7 @@
 <translation id="743058460480092004">ใช้กล้องถ่ายรูปและไมโครโฟนอยู่</translation>
 <translation id="7452560014878697800">มีแอปพลิเคชันกำลังใช้กล้อง</translation>
 <translation id="7453330308669753048">นำผลลัพธ์ในประวัติการค้นหาออกแล้ว</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | อีก <ph name="TIME" /> จะเต็ม</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="746232733191930409">โหมดบันทึกหน้าจอ</translation>
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
@@ -1719,6 +1723,7 @@
 <translation id="9178475906033259337">กำลังแสดงผลการค้นหา 1 รายการสำหรับ "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">ฟีเจอร์นี้ช่วยให้เข้าถึงผู้ใช้ที่ลงชื่อเข้าใช้แล้วได้อย่างรวดเร็วโดยไม่ต้องใช้รหัสผ่าน ใช้ฟีเจอร์นี้กับบัญชีที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="9183456764293710005">แว่นขยายทั้งหน้าจอ</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | เหลืออีก <ph name="TIME" /></translation>
 <translation id="9193626018745640770">กำลังแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="9194617393863864469">ลงชื่อเข้าใช้ด้วยชื่อผู้ใช้อื่น...</translation>
 <translation id="9198992156681343238">ความละเอียดของ <ph name="DISPLAY_NAME" /> เปลี่ยนเป็น <ph name="RESOLUTION" /> คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>

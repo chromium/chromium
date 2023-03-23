@@ -40,6 +40,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1182225749592316782">Dette gir tilgang til alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
 <translation id="1183863904939664422">Ikke interessert i dette forslaget</translation>
+<translation id="1184126796192815024">Dette nettverket støtter ikke strømming av apper fra telefonen. Prøv å bruke telefonens wifi-sone. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Oppgi passordet eller PIN-koden for høyere sikkerhet</translation>
 <translation id="118532027333893379">Trykk hvor som helst for å ta bilde i fullskjerm</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
@@ -466,6 +467,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3256109297135787951">Fjern fremhevingen av et element på hyllen</translation>
 <translation id="3260969790895726815">Tale behandles lokalt, og diktering fungerer uten nett, men enkelte talekommandoer fungerer ikke.</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
+<translation id="3289364673986435196">Av/på-meny</translation>
 <translation id="3289544412142055976">Linux-apper støttes ikke for øyeblikket</translation>
 <translation id="3289674678944039601">Lader via adapter</translation>
 <translation id="3290356915286466215">Usikret</translation>
@@ -693,6 +695,7 @@ Koble enheten til strøm.</translation>
 <translation id="4269883910223712419">Administratoren av denne enheten kan</translation>
 <translation id="4274537685965975248">Hurtigtasten Ctrl + Alt + nedoverpil er endret. For å bruke End-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + høyrepilen.</translation>
 <translation id="4279490309300973883">Speiling</translation>
+<translation id="4280601795273309128">Sikkerhetsoppdateringer er avsluttet. Oppgrader enheten.</translation>
 <translation id="4283888303416325161">Oppgi passordet for høyere sikkerhet</translation>
 <translation id="4285498937028063278">Løsne</translation>
 <translation id="4294319844246081198">God morgen, <ph name="GIVEN_NAME" /></translation>
@@ -883,6 +886,7 @@ Koble enheten til strøm.</translation>
 <translation id="5147567197700016471">Ulåst</translation>
 <translation id="5150070631291639005">Personverninnstillinger</translation>
 <translation id="5155897006997040331">Lesehastighet</translation>
+<translation id="5163434717504750796">Batteritilstand <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Syklusantall <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Lagre skrivebordet som en mal</translation>
 <translation id="5168181903108465623">Cast-enheter er tilgjengelige</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
@@ -955,7 +959,7 @@ Koble enheten til strøm.</translation>
 <translation id="5506975627792768506">Slå på forstørreren av eller på</translation>
 <translation id="5512042095225963688">Slett forrige ord</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5520229639206813572">Administratoren din har fjernet alle e-SIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
+<translation id="5520229639206813572">Administratoren din har fjernet alle eSIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> kobler til.</translation>
 <translation id="5532994612895037630">Trykk hvor som helst for å ta opp i fullskjerm</translation>
 <translation id="5536723544185013515">Nylige apper – naviger med venstrepilen eller høyrepilen for å få tilgang til alle nylige apper</translation>
@@ -1179,7 +1183,7 @@ Koble enheten til strøm.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nylig installert</translation>
 <translation id="6559976592393364813">Spør administratoren</translation>
-<translation id="6565007273808762236">e-SIM-korttilkoblingen er ikke tilgjengelig</translation>
+<translation id="6565007273808762236">eSIM-korttilkoblingen er ikke tilgjengelig</translation>
 <translation id="6570831796530454248">{0,plural, =1{Oppdater enheten innen en time}other{Oppdater enheten innen # timer}}</translation>
 <translation id="6570902864550063460">Lader via USB</translation>
 <translation id="6574587113394758819">Et varsel fra <ph name="APP_TITLE" /> er skjult fordi visningsbeskyttelse er på</translation>
@@ -1357,6 +1361,7 @@ Nylig installert</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
 <translation id="7452560014878697800">Et program bruker kameraet ditt</translation>
 <translation id="7453330308669753048">Resultatet er fjernet fra søkeloggen</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til fulladet</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746232733191930409">Skjermopptaksmodus</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
@@ -1443,7 +1448,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7862292329216937261">For å bruke enheten som gjest må du logge av og velge Surf som gjest nederst på skjermen.</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7868900307798234037">Låser opp med fingeravtrykk</translation>
-<translation id="7872195908557044066">Administratoren holder på å tilbakestille e-SIM-kortet ditt. Vent i noen minutter.</translation>
+<translation id="7872195908557044066">Administratoren holder på å tilbakestille eSIM-kortet ditt. Vent i noen minutter.</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det ser ut til at Bluetooth er slått av på <ph name="DEVICE_TYPE" />. Slå på Bluetooth for å bruke Telefonstyring.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Nedgrader enheten til en tidligere versjon nå}=1{Nedgrader enheten til en tidligere versjon innen 1 sekund}other{Nedgrader enheten til en tidligere versjon innen # sekunder}}</translation>
@@ -1723,6 +1728,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9178475906033259337">Viser 1 resultat for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Med denne funksjonen får du rask tilgang til påloggede brukere uten å måtte skrive inn passord. Du bør bare bruke denne funksjonen med kontoer du stoler på.</translation>
 <translation id="9183456764293710005">Lupe for hele skjermen</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> igjen</translation>
 <translation id="9193626018745640770">Caster på en ukjent mottaker</translation>
 <translation id="9194617393863864469">Logg på en annen bruker</translation>
 <translation id="9198992156681343238">Oppløsningen for <ph name="DISPLAY_NAME" /> ble endret til <ph name="RESOLUTION" />. Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>

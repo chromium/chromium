@@ -483,6 +483,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4474494258097106883">Vytvořeno pro iPhone</translation>
 <translation id="4476574785019001431">Nastavení</translation>
 <translation id="448433063499977729">Synchronizace byla vypnuta</translation>
+<translation id="4489536976005181779">{count,plural, =1{Stránka byla přidána do seznamu četby ve vašem účtu {email}}few{Stránky byly přidány do seznamu četby ve vašem účtu {email}}many{Stránky byly přidány do seznamu četby ve vašem účtu {email}}other{Stránky byly přidány do seznamu četby ve vašem účtu {email}}}</translation>
 <translation id="4496373720959965247">Přidejte karty a přepínejte mezi stránkami</translation>
 <translation id="4502566650163919158">Zkontrolovat</translation>
 <translation id="4505980578794259603">Poslední kontrola: <ph name="TIME" />.</translation>
@@ -804,6 +805,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="650279896687777322">Další informace…</translation>
 <translation id="6510072653668207258">Připomenout později</translation>
 <translation id="651505212789431520">Zrušit synchronizaci? Synchronizaci můžete kdykoliv zapnout v Nastavení.</translation>
+<translation id="6518133107902771759">Ověřit</translation>
 <translation id="6524918542306337007">Anonymní režim není k dispozici</translation>
 <translation id="6530992499366869131">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -833,6 +835,7 @@ Pro každý web se pokuste použít jedinečné heslo.</translation>
 <translation id="6672241253012342409">Weby mohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich mohou pamatovat vaše přihlášení a položky v nákupním košíku.
 
 V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na různých webech, například k personalizaci reklam.</translation>
+<translation id="6672697278890207089">Zadejte přístupové heslo</translation>
 <translation id="6674571176963658787">Pokud chcete spustit synchronizaci, zadejte heslovou frázi</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Sledování cen</translation>
@@ -1037,6 +1040,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8136856065410661948">Tyto údaje poslouží k vytváření událostí v Kalendáři Apple z Chromu a Google Lens.</translation>
 <translation id="8156478151976189188">Synchronizace hesel nefunguje</translation>
 <translation id="8157532349231307196">Účty: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Přeložit stránku</translation>
 <translation id="8205564605687841303">Zrušit</translation>
@@ -1046,7 +1050,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8237382152611443140">Otevřete nastavení automatického vyplňování hesel.</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8264966119170358612">Při porušení zabezpečení údajů třetí strany byla vyzrazena některá vaše uložená hesla. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Pouze na tomto zařízení</translation>
 <translation id="8271720166617117963">Přijmout a přihlásit se</translation>
 <translation id="8278938988428169257">Zadejte slovo nebo sousloví</translation>
 <translation id="8281781826761538115">Výchozí – <ph name="DEFAULT_LOCALE" /></translation>

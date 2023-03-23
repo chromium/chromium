@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="1014750484722996375">Desgiau</translation>
 <translation id="1018219910092211213">Methu â datrys DNS</translation>
 <translation id="1018656279737460067">Canslwyd</translation>
+<translation id="1022433422498218992">Rheolyddion Cyffredinol</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> o drywyddau, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Mae nodwedd newydd ar gael, defnyddiwch y fysell saeth I Fyny i ddysgu rhagor.</translation>
 <translation id="1059913517121127803">Methu â dechrau sganio</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Wedi stopio - Allan o inc</translation>
 <translation id="1664796644829245314">Rhagolwg <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integredig</translation>
+<translation id="1669047024429367828">Gwelededd</translation>
 <translation id="1672499492233627739">Ffrwd fideo'r gwe-gamera</translation>
 <translation id="1676557873873341166">Cymryd fideo</translation>
 <translation id="1703835215927279855">Llythyr</translation>
 <translation id="1706391837335750954">Mae Datryswr DNS yn Bresennol</translation>
+<translation id="1710499924611012470">Llywio hygyrchedd</translation>
 <translation id="1715359911173058521">Mae problem wrth gyfathrebu â'r sganiwr. Gwiriwch y cysylltiad rhwydwaith neu USB a rhowch gynnig arall arni.</translation>
 <translation id="1717874160321062422">Rheolir gan <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Gweinyddwyr enwau</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Math o ddilysu</translation>
 <translation id="1782199038061388045">cyfieithiad</translation>
+<translation id="1790209694022261219">Ffenestri a Desgiau</translation>
 <translation id="1792647875738159689">Wrthi'n canslo sganio</translation>
 <translation id="1801418420130173017">Analluogi'r thema dywyll</translation>
 <translation id="1807246157184219062">Golau</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Rhagor o osodiadau</translation>
 <translation id="2085089206770112532">Disgleirdeb y sgrîn i lawr</translation>
+<translation id="2102231663024125441">Golygu testun</translation>
 <translation id="2105810540595158374">Mae'r ddyfais yn rheolydd gêm.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, fersiwn <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Mae <ph name="AVAILABLE_MEMORY" /> GB o <ph name="TOTAL_MEMORY" /> GB ar gael</translation>
@@ -178,7 +184,6 @@
 <translation id="2421798028054665193">Llun <ph name="CURRENT_PAGE" /> o <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Cywirdeb pwynt rhydd</translation>
 <translation id="2448312741937722512">Math</translation>
-<translation id="2461822463642141190">Presennol</translation>
 <translation id="248546197012830854">Mae'r ddyfais all-lein. Cysylltwch â rhwydwaith Wi-Fi i weld cynnwys cymorth.</translation>
 <translation id="2491955442992294626">Nid yw allweddi'n cael eu profi pan fyddwch yn defnyddio ffenestr arall</translation>
 <translation id="2493126929778606526">Eich lluniau gorau, wedi'u dewis yn awtomatig</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Diweddariad critigol</translation>
 <translation id="2860473693272905224">Rhowch dudalen arall ar y sganiwr</translation>
 <translation id="2872961005593481000">Diffodd</translation>
+<translation id="2873483161362553159">Llywio porwr</translation>
 <translation id="2874939134665556319">Trac blaenorol</translation>
 <translation id="2878387241690264070">Wedi dadwefru <ph name="RATE" /> mewn <ph name="NUM_SECONDS" /> eiliad.</translation>
 <translation id="2902312830803030883">Rhagor o gamau gweithredu</translation>
@@ -256,6 +262,7 @@
 <translation id="3310640316857623290">Mae cuddni DNS yn sylweddol uwch na'r trothwy a ganiateir</translation>
 <translation id="3328783797891415197">Mae prawf wrthi'n rhedeg</translation>
 <translation id="3340011300870565703">Mae gan y ddyfais <ph name="BATTERY_PERCENTAGE" />% o fatri bud dde.</translation>
+<translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Wedi cysylltu</translation>
 <translation id="3369013195428705271">Ydych chi'n siŵr eich bod am glirio holl hanes argraffu? Ni fydd y tasgau argraffu sy'n mynd rhagddynt yn cael eu clirio.</translation>
 <translation id="3404249063913988450">Galluogi'r arbedydd sgrîn</translation>
@@ -359,6 +366,7 @@
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="4258281355379922695">Cuddni HTTP</translation>
 <translation id="4271957103967917607">Gweld yn y modd Sgrîn Lawn</translation>
+<translation id="4275663329226226506">Cyfryngau</translation>
 <translation id="4289540628985791613">Trosolwg</translation>
 <translation id="4289849978083912975">Sioe sleidiau</translation>
 <translation id="4297501883039923494">Wedi stopio - Gwall anhysbys</translation>
@@ -366,6 +374,7 @@
 <translation id="4311195029067684288">Llawn</translation>
 <translation id="4333390807948134856">Mae'r fysell <ph name="KEY_NAME" /> wedi'i phwyso</translation>
 <translation id="435692326371619097">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Ailosod pob llwybr byr</translation>
 <translation id="4378373042927530923">Ni Redwyd</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -658,6 +667,7 @@
 <translation id="6766275201586212568">Cydraniadau DNS wedi methu</translation>
 <translation id="6768237774506518020">Cyfradd fethiant cydraniad DNS uchel</translation>
 <translation id="6791471867139427246">lliw golau bysellfwrdd</translation>
+<translation id="6798678288485555829">Llywio testun</translation>
 <translation id="680983167891198932">Allwedd</translation>
 <translation id="6816797338148849397">Mae gwybodaeth sy'n ymwneud â'ch dewis ar gael. Defnyddiwch y fysell Saeth i fyny i gael mynediad.</translation>
 <translation id="6838167112108853532">Methu ag analluogi na thynnu'r APN hwn. Sicrhewch fod APN atodedig sydd wedi'u galluogi wedi'u hanalluogi neu eu tynnu.</translation>
@@ -802,6 +812,7 @@
 <translation id="8132480444149501833">Gwneud cais am Rifyddion Traffig</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Dewiswch <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
+<translation id="8151185429379586178">Offer datblygwyr</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Atodi</translation>
 <translation id="8206859287963243715">Symudol</translation>

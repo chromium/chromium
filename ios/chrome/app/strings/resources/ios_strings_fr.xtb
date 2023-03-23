@@ -483,6 +483,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
 <translation id="4476574785019001431">Paramètres</translation>
 <translation id="448433063499977729">La synchronisation a été désactivée</translation>
+<translation id="4489536976005181779">{count,plural, =1{Page ajoutée à votre liste de lecture dans votre compte, {email}}one{Page ajoutée à votre liste de lecture dans votre compte, {email}}other{Pages ajoutées à votre liste de lecture dans votre compte, {email}}}</translation>
 <translation id="4496373720959965247">Ajoutez des onglets pour naviguer d'une page à l'autre</translation>
 <translation id="4502566650163919158">Vérifier maintenant</translation>
 <translation id="4505980578794259603">Dernière vérification <ph name="TIME" />.</translation>
@@ -804,6 +805,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="650279896687777322">En savoir plus…</translation>
 <translation id="6510072653668207258">Me le rappeler plus tard</translation>
 <translation id="651505212789431520">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
+<translation id="6518133107902771759">Valider</translation>
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
 <translation id="6530992499366869131">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -833,6 +835,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="6672241253012342409">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
 
 Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
+<translation id="6672697278890207089">Saisissez votre mot de passe multiterme.</translation>
 <translation id="6674571176963658787">Pour lancer la synchronisation, saisissez votre phrase secrète</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6684906340059221832">Suivi des prix activé</translation>
@@ -1038,6 +1041,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8136856065410661948">Cela permettra de créer des événements dans votre calendrier Apple à partir de Chrome et de Google Lens.</translation>
 <translation id="8156478151976189188">Password Sync ne fonctionne pas</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> comptes</translation>
+<translation id="8179976553408161302">Entrée</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Traduire la page</translation>
 <translation id="8205564605687841303">Annuler</translation>
@@ -1047,7 +1051,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8237382152611443140">Accédez à "Préremplir les mots de passe"</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été divulgués à la suite d'une violation de données non-Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Uniquement sur cet appareil</translation>
 <translation id="8271720166617117963">Accepter et se connecter</translation>
 <translation id="8278938988428169257">Saisissez un terme ou une expression</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>

@@ -563,6 +563,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1485015260175968628">Sekarang aplikasi/ekstensi dapat:</translation>
 <translation id="1485141095922496924">Versi <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Telusuri sandi</translation>
+<translation id="1486486872607808064">Pindai kode QR ini dengan kamera di perangkat tempat Anda ingin membuat kunci sandi untuk <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Aktif - setelan khusus</translation>
 <translation id="1493892686965953381">Menunggu <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Situs dapat meminta untuk menggunakan font yang diinstal di perangkat Anda</translation>
@@ -773,6 +774,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="164936512206786300">Lepaskan sambungan perangkat Bluetooth</translation>
 <translation id="1651008383952180276">Anda harus memasukkan frasa sandi yang sama dua kali</translation>
 <translation id="1652326691684645429">Aktifkan Berbagi Langsung</translation>
+<translation id="1654580009054503925">Tidak diizinkan menampilkan permintaan</translation>
 <translation id="1656528038316521561">Opasitas latar belakang</translation>
 <translation id="1657406563541664238">Bantu menjadikan <ph name="PRODUCT_NAME" /> lebih baik dengan mengirim statistik penggunaan dan laporan kerusakan secara otomatis ke Google</translation>
 <translation id="1657937299377480641">Agar dapat login lagi untuk mengakses materi pendidikan, minta izin kepada orang tuamu</translation>
@@ -3422,6 +3424,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3957079323242030166">Data cadangan tidak akan mengurangi kuota penyimpanan Drive Anda.</translation>
 <translation id="3957844511978444971">Ketuk “Setuju” untuk mengonfirmasi pilihan setelan layanan Google ini.</translation>
 <translation id="3958088479270651626">Impor bookmark dan setelan</translation>
+<translation id="3958110062351175311">Diizinkan menampilkan permintaan di toolbar</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Tindakan lainnya untuk <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya</translation>
@@ -3681,6 +3684,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4205157409548006256">Terjadi error saat mengonfigurasi Linux.</translation>
 <translation id="4206144641569145248">Alien</translation>
 <translation id="4206323443866416204">Laporan Masukan</translation>
+<translation id="4206585797409671301">Diizinkan menampilkan permintaan</translation>
 <translation id="4207932031282227921">Izin diminta, tekan F6 untuk merespons</translation>
 <translation id="4208390505124702064">Telusuri <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Besar</translation>
@@ -4351,6 +4355,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="481574578487123132">Perangkat tertaut</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Detail</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bookmark dihapus}other{{COUNT} bookmark dihapus}}</translation>
+<translation id="4816900689218414104">Buat kunci sandi di ponsel atau tablet</translation>
 <translation id="4819323978093861656">{0,plural, =0{Menutup sekarang.}=1{Menutup dalam: 1 detik}other{Menutup dalam: # detik}}</translation>
 <translation id="4819607494758673676">Notifikasi Asisten Google</translation>
 <translation id="4820236583224459650">Setel sebagai tiket aktif</translation>
@@ -6259,6 +6264,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6562117348069327379">Simpan log sistem ke direktori Download.</translation>
 <translation id="656293578423618167">Jalur atau nama file terlalu panjang. Simpan dengan nama yang lebih pendek atau ke lokasi lain.</translation>
 <translation id="6568283005472142698">Penelusuran Tab</translation>
+<translation id="6570622975915850879">Gunakan perangkat lain</translation>
 <translation id="65711204837946324">Memerlukan izin untuk mendownload</translation>
 <translation id="6571533309669248172">Pemformatan teks</translation>
 <translation id="6571772921213691236">Edit data login</translation>
@@ -6822,6 +6828,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7044606776288350625">Sinkronkan data</translation>
 <translation id="7047059339731138197">Pilih latar belakang</translation>
 <translation id="7049293980323620022">Simpan file?</translation>
+<translation id="70496770794393383">Tabel sandi tersimpan</translation>
 <translation id="7050037487872780845">Konfigurasi hotspot tidak valid</translation>
 <translation id="7051551856857948729">Sembunyikan nilai IBAN</translation>
 <translation id="7052237160939977163">Mengirim data pelacakan kinerja</translation>

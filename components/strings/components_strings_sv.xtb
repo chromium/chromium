@@ -386,6 +386,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1822540298136254167">De webbplatser du besöker och hur länge du är där</translation>
 <translation id="1824402189105105503">Åttonde rullen</translation>
 <translation id="1826516787628120939">Kontrollerar</translation>
+<translation id="1826968372364864056">Rensa formuläret</translation>
 <translation id="1828959155404624835">Biluthyrning</translation>
 <translation id="1834321415901700177">Den här webbplatsen innehåller skadliga program</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
@@ -1967,6 +1968,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5786044859038896871">Vill du att kortuppgifterna ska fyllas i?</translation>
 <translation id="578633867165174378">Chrome upptäckte att lösenordet som du precis använde har läckt ut vid ett dataintrång. Vi rekommenderar att du byter det här lösenordet nu.</translation>
 <translation id="5789643057113097023">,</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Inga}=1{inloggningsuppgifter för 1 konto}other{inloggningsuppgifter för # konton}}</translation>
 <translation id="580241730938216256">Starta uppdatering</translation>
 <translation id="5803412860119678065">Vill du att uppgifterna om <ph name="CARD_DETAIL" /> ska fyllas i?</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
@@ -2522,6 +2524,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7201591969684833065">Administratören kan se</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Tryck på Tabb och sedan på Retur om du vill öppna en ny inkognitoflik och surfa privat</translation>
 <translation id="7203375778433816396">Ställ in Chrome som standardwebbläsare</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Inga}=1{1 nyckel}other{# nycklar}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> följer inte säkerhetsstandarderna.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i behållaren och kan installera och köra Linux-appar i behållaren</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om problemet.</translation>

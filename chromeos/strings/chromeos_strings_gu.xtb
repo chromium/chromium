@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1014750484722996375">ડેસ્ક</translation>
 <translation id="1018219910092211213">DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="1018656279737460067">રદ કરેલા</translation>
+<translation id="1022433422498218992">સામાન્ય નિયંત્રણો</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> થ્રેડ, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">નવી સુવિધા ઉપલબ્ધ છે, વધુ જાણવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1059913517121127803">સ્કૅન કરવાનું શરૂ કરી શક્યા નથી</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">બંધ - શાહી ખલાસ થઈ ગઈ</translation>
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />નો પ્રીવ્યૂ કરો</translation>
 <translation id="1668469839109562275">બિલ્ટ-ઇન VPN</translation>
+<translation id="1669047024429367828">દૃશ્યતા</translation>
 <translation id="1672499492233627739">વેબકૅમના વીડિયોનું ફીડ</translation>
 <translation id="1676557873873341166">વીડિયો લઈ રહ્યાં છીએ</translation>
 <translation id="1703835215927279855">અક્ષર</translation>
 <translation id="1706391837335750954">DNS રિઝોલ્વરનું વર્તમાન પરીક્ષણ</translation>
+<translation id="1710499924611012470">ઍક્સેસિબિલિટી નૅવિગેશન</translation>
 <translation id="1715359911173058521">સ્કૅનર સાથે સંચાર કરતી વખતે સમસ્યા આવી. નેટવર્ક અથવા USB કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> અને <ph name="SECOND_MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="1726100011689679555">નામ સર્વર</translation>
@@ -135,6 +139,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ</translation>
 <translation id="2085089206770112532">ડિસ્પ્લેનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
+<translation id="2102231663024125441">ટેક્સ્ટ એડિટિંગ</translation>
 <translation id="2105810540595158374">ડિવાઇસ એક ગેમ કન્ટ્રોલર છે.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBમાંથી <ph name="AVAILABLE_MEMORY" /> GB ઉપલબ્ધ છે</translation>
@@ -178,7 +183,6 @@
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />માંથી <ph name="CURRENT_PAGE" />ની છબી</translation>
 <translation id="2446553403094072641">ફ્લોટિંગ પૉઇન્ટની સચોટતા</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
-<translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="248546197012830854">ડિવાઇસ ઑફલાઇન છે. સહાયક કન્ટેન્ટ જોવા માટે વાઇ-ફાઇ નેટવર્ક સાથે કનેક્ટ કરો.</translation>
 <translation id="2491955442992294626">જ્યારે તમે અન્ય વિન્ડોનો ઉપયોગ કરી રહ્યાં હો, ત્યારે કીનું પરીક્ષણ કરવામાં આવતું નથી</translation>
 <translation id="2493126929778606526">ઑટોમૅટિક રીતે પસંદ કરવામાં આવેલા તમારા શ્રેષ્ઠ ફોટા</translation>
@@ -212,6 +216,7 @@
 <translation id="2859243502336719778">અતિશય મહત્ત્વની અપડેટ</translation>
 <translation id="2860473693272905224">બીજા પેજને સ્કૅનર પર મૂકો</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
+<translation id="2873483161362553159">બ્રાઉઝર નૅવિગેશન</translation>
 <translation id="2874939134665556319">પાછલું ટ્રૅક</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> સેકન્ડમાં <ph name="RATE" /> ડિસ્ચાર્જ.</translation>
 <translation id="2902312830803030883">વધુ ક્રિયાઓ</translation>
@@ -660,6 +665,7 @@
 <translation id="6766275201586212568">નિષ્ફળ રહેલા DNS રિઝોલ્યુશન</translation>
 <translation id="6768237774506518020">DNS રિઝોલ્યુશન નિષ્ફળતાનો ઉચ્ચ રેટ</translation>
 <translation id="6791471867139427246">કીબોર્ડની લાઇટનો રંગ</translation>
+<translation id="6798678288485555829">ટેક્સ્ટ નૅવિગેશન</translation>
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="6838167112108853532">આ APNને બંધ કરી કે કાઢી શકતા નથી. ખાતરી કરો કે જોડેલા APN જે ચાલુ કરેલા છે, તેને બંધ કરવામાં અથવા કાઢી નાખવામાં આવ્યા છે.</translation>

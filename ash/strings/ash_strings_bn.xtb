@@ -461,6 +461,7 @@
 <translation id="3256109297135787951">আপনার শেল্ফে আইটেম থেকে হাইলাইট সরিয়ে দিন</translation>
 <translation id="3260969790895726815">স্পিচ স্থানীয়ভাবে প্রসেস করা হয় এবং ডিক্টেশন অফলাইনে কাজ করে, কিন্তু কিছু ভয়েস কমান্ড কাজ করবে না।</translation>
 <translation id="3269597722229482060">ডানদিকের বোতামে ক্লিক করুন</translation>
+<translation id="3289364673986435196">পাওয়ার মেনু</translation>
 <translation id="3289544412142055976">বর্তমানে Linux অ্যাপ ব্যবহারের সুবিধা নেই</translation>
 <translation id="3289674678944039601">অ্যাডাপ্টার দিয়ে চার্জ হচ্ছে</translation>
 <translation id="3290356915286466215">সুরক্ষিত নেই</translation>
@@ -685,6 +686,7 @@
 <translation id="4269883910223712419">এই ডিভাইসের প্রশাসক এগুলি করতে পারেন:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। End কী ব্যবহার করতে <ph name="LAUNCHER_KEY_NAME" /> + Right Arrow কী প্রেস করুন।</translation>
 <translation id="4279490309300973883">অনুকরণ করা হচ্ছে</translation>
+<translation id="4280601795273309128">নিরাপত্তা আপডেট শেষ হয়েছে। আপনার ডিভাইস আপগ্রেড করুন।</translation>
 <translation id="4283888303416325161">আরও নিরাপত্তার জন্য পাসওয়ার্ড লিখুন</translation>
 <translation id="4285498937028063278">আনপিন</translation>
 <translation id="4294319844246081198">সুপ্রভাত <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@
 <translation id="5147567197700016471">আনলক করা হয়েছে</translation>
 <translation id="5150070631291639005">গোপনীয়তার সেটিংস</translation>
 <translation id="5155897006997040331">পড়ার গতি</translation>
+<translation id="5163434717504750796"><ph name="BATTERY_HEALTH_PERCENTAGE" />% ব্যাটারি আছে | সাইকেল কাউন্ট <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">টেম্পলেট হিসেবে ডেস্ক সেভ করুন</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
@@ -1341,6 +1344,7 @@
 <translation id="743058460480092004">ক্যামেরা এবং মাইক্রোফোন ব্যবহার করা হচ্ছে।</translation>
 <translation id="7452560014878697800">কোনও অ্যাপ্লিকেশন আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="7453330308669753048">সার্চ ইতিহাসের ফলাফল সরিয়ে দেওয়া হয়েছে</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% - সম্পূর্ণ হতে <ph name="TIME" /> বাকি</translation>
 <translation id="7461924472993315131">পিন</translation>
 <translation id="746232733191930409">স্ক্রিন রেকর্ড করার মোড</translation>
 <translation id="7466449121337984263">সেন্সরটি স্পর্শ করুন</translation>
@@ -1704,6 +1708,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" />-এর জন্য ১টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="9179259655489829027">এই বৈশিষ্ট্যের মাধ্যমে আপনি কোনও পাসওয়ার্ড ছাড়াই সাইন-ইন করা যেকোনও ব্যবহারকারীকে দ্রুত অ্যাক্সেস করতে পারেন। এটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টেই ব্যবহার করুন।</translation>
 <translation id="9183456764293710005">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> বাঁদিকে</translation>
 <translation id="9193626018745640770">অজানা ডিভাইসে কাস্ট করা হচ্ছে</translation>
 <translation id="9194617393863864469">অন্য ব্যবহারকারীকে সাইন-ইন করান...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-এর রেজোলিউশন পরিবর্তন করে <ph name="RESOLUTION" /> করা হয়েছে। পরিবর্তিত সেটিংস বজায় রাখতে, 'কনফার্ম করুন' বোতামে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>

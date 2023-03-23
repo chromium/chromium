@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
+<translation id="1014750484722996375">Plochy</translation>
 <translation id="1018219910092211213">Nelze přeložit název DNS</translation>
 <translation id="1018656279737460067">Zrušeno</translation>
+<translation id="1022433422498218992">Obecné ovládací prvky</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
 <translation id="1664796644829245314">Náhled <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
+<translation id="1669047024429367828">Viditelnost</translation>
 <translation id="1672499492233627739">Zdroj videa z webkamery</translation>
 <translation id="1676557873873341166">Pořizování videa</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Přítomnost resolveru DNS</translation>
+<translation id="1710499924611012470">Navigace pro usnadnění přístupu</translation>
 <translation id="1715359911173058521">Při komunikaci se skenerem došlo k problému. Zkontrolujte připojení k síti nebo připojení USB a zkuste to znovu.</translation>
 <translation id="1717874160321062422">Spravuje <ph name="FIRST_MANAGER" /> a <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Jmenné servery</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Typ ověření</translation>
 <translation id="1782199038061388045">překlad</translation>
+<translation id="1790209694022261219">Okna a plochy</translation>
 <translation id="1792647875738159689">Rušení skenování</translation>
 <translation id="1801418420130173017">Deaktivovat tmavý motiv</translation>
 <translation id="1807246157184219062">Světlé</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2085089206770112532">Snížit jas displeje</translation>
+<translation id="2102231663024125441">Úprava textu</translation>
 <translation id="2105810540595158374">Zařízení je herní ovladač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">K dispozici je <ph name="AVAILABLE_MEMORY" /> GB z <ph name="TOTAL_MEMORY" /> GB</translation>
@@ -178,7 +184,6 @@
 <translation id="2421798028054665193">Obrázek <ph name="CURRENT_PAGE" /> z <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Přesnost pohyblivé řádové čárky</translation>
 <translation id="2448312741937722512">Typ</translation>
-<translation id="2461822463642141190">Aktuální</translation>
 <translation id="248546197012830854">Zařízení je offline. Pokud chcete zobrazit obsah nápovědy, připojte se k síti Wi-Fi.</translation>
 <translation id="2491955442992294626">Když používáte jiné okno, klíče nejsou testovány</translation>
 <translation id="2493126929778606526">Vaše nejlepší fotky, vybrané automaticky</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Kritická aktualizace</translation>
 <translation id="2860473693272905224">Položte na skener další stránku</translation>
 <translation id="2872961005593481000">Vypnout</translation>
+<translation id="2873483161362553159">Navigace v prohlížeči</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
 <translation id="2902312830803030883">Další akce</translation>
@@ -368,6 +374,7 @@
 <translation id="4311195029067684288">Plné</translation>
 <translation id="4333390807948134856">Klávesa <ph name="KEY_NAME" /> byla stisknuta</translation>
 <translation id="435692326371619097">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Resetovat všechny zkratky</translation>
 <translation id="4378373042927530923">Nespuštěno</translation>
 <translation id="4378551569595875038">Připojování...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +667,7 @@
 <translation id="6766275201586212568">Neúspěšné překlady DNS</translation>
 <translation id="6768237774506518020">Vysoká míra selhání překladu DNS</translation>
 <translation id="6791471867139427246">barva světla klávesnice</translation>
+<translation id="6798678288485555829">Navigace v textu</translation>
 <translation id="680983167891198932">Klíč</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
 <translation id="6838167112108853532">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit připojené APN.</translation>

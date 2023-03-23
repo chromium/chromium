@@ -812,6 +812,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="650279896687777322">Ďalšie informácie…</translation>
 <translation id="6510072653668207258">Pripomenúť neskôr</translation>
 <translation id="651505212789431520">Chcete zrušiť synchronizáciu? Môžete ju kedykoľvek zapnúť v Nastaveniach.</translation>
+<translation id="6518133107902771759">Overiť</translation>
 <translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
 <translation id="6530992499366869131">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="6537746030088321027">priklad.sk</translation>
@@ -841,6 +842,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="6672241253012342409">Weby môžu pomocou súborov cookie zlepšovať vaše prostredie prehliadania, napríklad zabrániť odhláseniu alebo zapamätať si položky vo vašom nákupnom košíku.
 
 Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám).</translation>
+<translation id="6672697278890207089">Zadajte svoju prístupovú frázu</translation>
 <translation id="6674571176963658787">Ak chcete spustiť synchronizáciu, zadajte prístupovú frázu</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Ceny sa sledujú</translation>
@@ -1046,6 +1048,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8136856065410661948">Táto možnosť sa použije na vytváranie udalostí vo vašom Kalendári Apple v Chrome a pomocou funkcie Google Lens.</translation>
 <translation id="8156478151976189188">Synchronizácia hesiel nefunguje</translation>
 <translation id="8157532349231307196">Počet účtov: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zariadenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Preložiť stránku</translation>
 <translation id="8205564605687841303">Zrušiť</translation>
@@ -1055,7 +1058,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8237382152611443140">Otvorte nastavenia automatického dopĺňania hesiel</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
 <translation id="8264966119170358612">Pri porušení ochrany údajov tretej strany boli odhalené niektoré vaše heslá. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Iba v tomto zariadení</translation>
 <translation id="8271720166617117963">Prijať a prihlásiť sa</translation>
 <translation id="8278938988428169257">Zadajte slovo alebo frázu</translation>
 <translation id="8281781826761538115">Predvolené – <ph name="DEFAULT_LOCALE" /></translation>

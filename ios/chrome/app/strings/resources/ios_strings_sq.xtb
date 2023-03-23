@@ -483,6 +483,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4474494258097106883">Krijuar për iPhone tënd</translation>
 <translation id="4476574785019001431">Cilësimet</translation>
 <translation id="448433063499977729">Sinkronizimi është çaktivizuar</translation>
+<translation id="4489536976005181779">{count,plural, =1{Faqja u shtua në listën e leximit në llogarinë tënde, {email}}other{Faqet u shtuan në listën e leximit në llogarinë tënde, {email}}}</translation>
 <translation id="4496373720959965247">Shto skeda dhe ndërro faqet</translation>
 <translation id="4502566650163919158">Kontrollo tani</translation>
 <translation id="4505980578794259603">Kontrolli i fundit: <ph name="TIME" /></translation>
@@ -804,6 +805,7 @@ Provo të përdorësh një fjalëkalim unik për çdo sajt.</translation>
 <translation id="650279896687777322">Mëso më shumë...</translation>
 <translation id="6510072653668207258">Më kujto më vonë</translation>
 <translation id="651505212789431520">Të anulohet sinkronizimi? Mund ta aktivizosh sinkronizimin në çdo kohë te "Cilësimet".</translation>
+<translation id="6518133107902771759">Verifiko</translation>
 <translation id="6524918542306337007">Modaliteti "i fshehtë" nuk ofrohet</translation>
 <translation id="6530992499366869131">Të të paralajmërojë nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1037,6 +1039,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8136856065410661948">Kjo do të përdoret për të krijuar ngjarje në Apple Calendar nga Chrome dhe nga "Lentja e Google".</translation>
 <translation id="8156478151976189188">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> llogari</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Pajisjet e tua<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Përkthe faqen</translation>
 <translation id="8205564605687841303">Anulo</translation>
@@ -1046,7 +1049,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8237382152611443140">Hap "Cilësimet e plotësimit automatik të fjalëkalimit"</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8264966119170358612">Disa nga fjalëkalimet e tua të ruajtura janë ekspozuar në një nxjerrje të paautorizuar të të dhënave nga një palë që nuk është Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Vetëm në këtë pajisje</translation>
 <translation id="8271720166617117963">Pranoje dhe identifikohu</translation>
 <translation id="8278938988428169257">Fut një fjalë ose një frazë</translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>

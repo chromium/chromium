@@ -560,6 +560,7 @@
 <translation id="1485015260175968628">ส่วนขยายตอนนี้สามารถ:</translation>
 <translation id="1485141095922496924">เวอร์ชัน <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">ค้นหารหัสผ่าน</translation>
+<translation id="1486486872607808064">สแกนคิวอาร์โค้ดนี้ด้วยกล้องในอุปกรณ์ที่คุณต้องการสร้างพาสคีย์สำหรับ <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">เปิด - การตั้งค่าที่กำหนดเอง</translation>
 <translation id="1493892686965953381">กำลังรอ <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">เว็บไซต์สามารถขอใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์ได้</translation>
@@ -770,6 +771,7 @@
 <translation id="164936512206786300">เลิกจับคู่อุปกรณ์บลูทูธ</translation>
 <translation id="1651008383952180276">คุณต้องป้อนรหัสผ่านเดียวกัน 2 ครั้ง</translation>
 <translation id="1652326691684645429">เปิดใช้การแชร์ใกล้เคียง</translation>
+<translation id="1654580009054503925">ไม่ได้รับอนุญาตให้แสดงคำขอ</translation>
 <translation id="1656528038316521561">ความทึบแสงของพื้นหลัง</translation>
 <translation id="1657406563541664238">ช่วยปรับปรุง <ph name="PRODUCT_NAME" /> ให้ดีขึ้นโดยการส่งสถิติการใช้งานและรายงานปัญหาไปยัง Google โดยอัตโนมัติ</translation>
 <translation id="1657937299377480641">หากต้องการลงชื่อเข้าใช้อีกครั้งเพื่อเข้าถึงทรัพยากรทางการศึกษา ให้ขออนุญาตจากผู้ปกครอง</translation>
@@ -3407,6 +3409,7 @@
 <translation id="3957079323242030166">ข้อมูลสำรองจะไม่นับรวมในโควตาพื้นที่เก็บข้อมูล Google ไดรฟ์</translation>
 <translation id="3957844511978444971">แตะ “ยอมรับ” เพื่อยืนยันการเลือกการตั้งค่าบริการของ Google เหล่านี้</translation>
 <translation id="3958088479270651626">นำเข้าบุ๊กมาร์กและการตั้งค่า</translation>
+<translation id="3958110062351175311">ได้รับอนุญาตให้แสดงคำขอในแถบเครื่องมือ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">การดำเนินการเพิ่มเติมสำหรับ <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">การปกป้องแบบมาตรฐานจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย</translation>
@@ -3666,6 +3669,7 @@
 <translation id="4205157409548006256">เกิดข้อผิดพลาดขณะกำหนดค่า Linux</translation>
 <translation id="4206144641569145248">มนุษย์ต่างดาว</translation>
 <translation id="4206323443866416204">รายงานความคิดเห็น</translation>
+<translation id="4206585797409671301">ได้รับอนุญาตให้แสดงคำขอ</translation>
 <translation id="4207932031282227921">ขอสิทธิ์ กด F6 เพื่อตอบกลับ</translation>
 <translation id="4208390505124702064">ค้นหา <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">ขนาดใหญ่</translation>
@@ -4335,6 +4339,7 @@
 <translation id="481574578487123132">อุปกรณ์ที่ลิงก์</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, รายละเอียด</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก {COUNT} รายการแล้ว}}</translation>
+<translation id="4816900689218414104">สร้างพาสคีย์ในโทรศัพท์หรือแท็บเล็ต</translation>
 <translation id="4819323978093861656">{0,plural, =0{กำลังจะปิดตอนนี้}=1{กำลังจะปิดในอีก 1 วินาที}other{กำลังจะปิดในอีก # วินาที}}</translation>
 <translation id="4819607494758673676">การแจ้งเตือนของ Google Assistant</translation>
 <translation id="4820236583224459650">กำหนดเป็นตั๋วที่ใช้งานอยู่</translation>
@@ -6240,6 +6245,7 @@
 <translation id="6562117348069327379">จัดเก็บบันทึกระบบไปยังไดเรกทอรี "การดาวน์โหลด"</translation>
 <translation id="656293578423618167">เส้นทางหรือชื่อของไฟล์ยาวเกินไป โปรดบันทึกด้วยชื่อที่สั้นกว่านี้หรือบันทึกลงในตำแหน่งอื่น</translation>
 <translation id="6568283005472142698">การค้นหาแท็บ</translation>
+<translation id="6570622975915850879">ใช้อุปกรณ์อื่น</translation>
 <translation id="65711204837946324">ต้องมีสิทธิ์ในการดาวน์โหลด</translation>
 <translation id="6571533309669248172">การจัดรูปแบบข้อความ</translation>
 <translation id="6571772921213691236">แก้ไขข้อมูลการลงชื่อเข้าใช้</translation>
@@ -6803,6 +6809,7 @@
 <translation id="7044606776288350625">ซิงค์ข้อมูล</translation>
 <translation id="7047059339731138197">เลือกพื้นหลัง</translation>
 <translation id="7049293980323620022">เก็บไฟล์ไว้ไหม</translation>
+<translation id="70496770794393383">ตารางรหัสผ่านที่บันทึกไว้</translation>
 <translation id="7050037487872780845">การกำหนดค่าฮอตสปอตไม่ถูกต้อง</translation>
 <translation id="7051551856857948729">ซ่อนค่า IBAN</translation>
 <translation id="7052237160939977163">ส่งข้อมูลการติดตามผลการปฏิบัติงาน</translation>

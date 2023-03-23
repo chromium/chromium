@@ -483,6 +483,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4474494258097106883">Byggd för iPhone</translation>
 <translation id="4476574785019001431">Inställningar</translation>
 <translation id="448433063499977729">Synkronisering har inaktiverats</translation>
+<translation id="4489536976005181779">{count,plural, =1{Sidan har lagts till i läslistan i kontot {email}}other{Sidorna har lagts till i läslistan i kontot {email}}}</translation>
 <translation id="4496373720959965247">Lägg till flikar och byt mellan sidor</translation>
 <translation id="4502566650163919158">Kontrollera nu</translation>
 <translation id="4505980578794259603">Kontrollerades senast <ph name="TIME" /></translation>
@@ -804,6 +805,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="650279896687777322">Läs mer …</translation>
 <translation id="6510072653668207258">Påminn mig senare</translation>
 <translation id="651505212789431520">Vill du avbryta synkroniseringen? Du kan när som helst aktivera synkronisering i inställningarna.</translation>
+<translation id="6518133107902771759">Verifiera</translation>
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
 <translation id="6530992499366869131">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -833,6 +835,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6672241253012342409">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen.
 
 I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
+<translation id="6672697278890207089">Ange din lösenfras</translation>
 <translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Bevakar priser</translation>
@@ -1037,6 +1040,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8136856065410661948">Detta används för att skapa händelser i Apple Kalender från Chrome och Google Lens.</translation>
 <translation id="8156478151976189188">Det går inte att synkronisera lösenord</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konton</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Översätt sidan</translation>
 <translation id="8205564605687841303">Avbryt</translation>
@@ -1046,7 +1050,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8237382152611443140">Öppna inställningarna för autofyllning av lösenord</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8264966119170358612">Vissa av dina lösenord har läckts i samband med ett dataintrång utanför Google. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Bara på den här enheten</translation>
 <translation id="8271720166617117963">Godkänn och logga in</translation>
 <translation id="8278938988428169257">Ange ett ord eller en fras</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>

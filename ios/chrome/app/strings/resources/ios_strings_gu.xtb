@@ -16,6 +16,7 @@
 <translation id="1054745118061919935">આગળ વધીને, તમે <ph name="BEGIN_LINK" />સેવાની શરતો<ph name="END_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="1063454504051558093">અન્ય પાસવર્ડનો ઉપયોગ કરો...</translation>
 <translation id="1066060668811609597">સિંક મેનેજ કરો</translation>
+<translation id="1069154182096085577">પાસવર્ડ પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
 <translation id="1076785341346483463">મેનેજ કરેલા એકાઉન્ટ સાથે સિંક કરો</translation>
 <translation id="1084365883616172403">Facebook પોસ્ટ પૂર્ણ કરી છે.</translation>
@@ -121,6 +122,7 @@
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1752547299766512813">પાસવર્ડ સાચવો</translation>
 <translation id="1753905327828125965">સૌથી વધુ જોવાયેલ</translation>
+<translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">કાર્ડધારકનું નામ</translation>
 <translation id="1809939268435598390">ફોલ્ડર ડિલીટ કરો</translation>
@@ -215,6 +217,7 @@
 <translation id="2523363575747517183">આ વેબસાઇટ વારંવાર અન્ય ઍપ્લિકેશન ખોલવાનો પ્રયાસ કરી રહી છે.</translation>
 <translation id="2529021024822217800">બધા ખોલો</translation>
 <translation id="2547458583188611426">સિંક કાર્ય કરી રહ્યું નથી. સિંક કરવાનું શરૂ કરવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
+<translation id="2551153019974022505">એકાઉન્ટમાં ભૂલ</translation>
 <translation id="2556092377360758201">કોઈ સંરક્ષણ નથી (સુઝાવ આપતા નથી)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> પર મોકલી રહ્યાં છીએ...</translation>
 <translation id="2576499762020411840">તમારા Google એકાઉન્ટમાંના પાસવર્ડનો ઉપયોગ કરો અને તેને સાચવો</translation>
@@ -417,6 +420,7 @@
 <translation id="3928666092801078803">મારા ડેટાને સંયોજિત કરો</translation>
 <translation id="3929457972718048006">સરનામાં</translation>
 <translation id="3943492037546055397">પાસવર્ડ</translation>
+<translation id="3951717558054674026">{count,plural, =1{{count} નબળો પાસવર્ડ}one{{count} નબળો પાસવર્ડ}other{{count} નબળા પાસવર્ડ}}</translation>
 <translation id="3959736869653157332">મેનૂ → નવી છૂપી ટૅબ</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3968505803272650567">રુચિઓ મેનેજ કરો</translation>
@@ -468,6 +472,7 @@
 <translation id="4334428914252001502">1 વાંચ્યા વગરનો લેખ.</translation>
 <translation id="4338650699862464074">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે.</translation>
 <translation id="4342054591427973606">{count,plural, =1{આ સરનામું આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}one{આ સરનામું આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}other{આ સરનામા આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}}</translation>
+<translation id="4342946437867096381">તમે પહેલેથી આ સાઇટ માટેનો પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવ્યો છે. Google તમારા માટે સૌથી તાજેતરનો પાસવર્ડ પસંદ કરી શકે છે.</translation>
 <translation id="4343046787186034850">કૅમેરા અને માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="4359125752503270327">આ પેજ બીજી અ‍ૅપ્લિકેશનમાં ખુલશે.</translation>
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
@@ -483,6 +488,7 @@
 <translation id="4474494258097106883">તમારા iPhone માટે બનાવાયેલું</translation>
 <translation id="4476574785019001431">સેટિંગ</translation>
 <translation id="448433063499977729">સિંક કરવાની સુવિધા બંદ કરવામાં આવી છે</translation>
+<translation id="4488754974567924717">જો તમારા પાસવર્ડ સાથે ચેડાં કરવામાં આવ્યા હોય, તો અમે તમને જણાવીશું</translation>
 <translation id="4496373720959965247">ટૅબ ઉમેરો અને પેજ વચ્ચે સ્વિચ કરો</translation>
 <translation id="4502566650163919158">હમણાં ચેક કરો</translation>
 <translation id="4505980578794259603">છેલ્લે <ph name="TIME" /> તપાસ્યું.</translation>
@@ -588,6 +594,7 @@
 <translation id="5150492518600715772">તમારા ડિવાઇસ પર મોકલો</translation>
 <translation id="5168414296986405587">iPadOS માટે બનાવવામાં આવેલું</translation>
 <translation id="5173088371991956744">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
+<translation id="5176312250994681348">તાજેતરનો પાસવર્ડ રાખો</translation>
 <translation id="5181140330217080051">ડાઉનલોડ કરી રહ્યું છે</translation>
 <translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5186185447130319458">ખાનગી</translation>
@@ -804,6 +811,7 @@
 <translation id="650279896687777322">વધુ જાણો...</translation>
 <translation id="6510072653668207258">મને પછીથી યાદ કરાવો</translation>
 <translation id="651505212789431520">સિંક કરવાનું રદ કરીએ? તમે સેટિંગમાં કોઈ પણ સમયે સિંક કરવાનું ચાલુ કરી શકો છો.</translation>
+<translation id="6518133107902771759">પ્રમાણિત કરો</translation>
 <translation id="6524918542306337007">છૂપો મોડ ઉપલબ્ધ નથી</translation>
 <translation id="6530992499366869131">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -833,6 +841,7 @@
 <translation id="6672241253012342409">સાઇટ તમને વધુ સારો બ્રાઉઝિંગ અનુભવ આપવા, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરીને રાખવા અથવા તમારા શૉપિંગ કાર્ટની આઇટમ યાદ રાખવા માટે, કુકીનો ઉપયોગ કરી શકે છે.
 
 જ્યારે છૂપા મોડમાં હો, ત્યારે વિભિન્ન સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે, સાઇટ કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને વ્યક્તિગત બનાવવા માટે.</translation>
+<translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6674571176963658787">સિંક કરવાનું શરૂ કરવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="667999046851023355">દસ્તાવેજ</translation>
 <translation id="6684906340059221832">ટ્રૅક કરવામાં આવી રહેલી કિંમતો</translation>
@@ -961,6 +970,7 @@
 <translation id="7679915578945954324">સાઇટના ઍડ્રેસ કૉપિ કર્યા</translation>
 <translation id="7687508192620387263">કૅલેન્ડર ફાઇલ ઉપલબ્ધ છે</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
+<translation id="7711440461521638739">તમે કોઈપણ પાસવર્ડ ફરીથી ઉપયોગમાં લઈ રહ્યાં નથી</translation>
 <translation id="7720410380936703141">ફરી પ્રયાસ કરો</translation>
 <translation id="7726702057919861819">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. માત્ર આ જ ડિવાઇસ પર.</translation>
@@ -1037,6 +1047,7 @@
 <translation id="8136856065410661948">Chrome અને Google Lensમાંથી તમારા Apple Calendarમાં ઇવેન્ટ બનાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
 <translation id="8156478151976189188">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> એકાઉન્ટ્સ</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">પેજનો અનુવાદ કરો</translation>
 <translation id="8205564605687841303">રદ કરો</translation>
@@ -1046,7 +1057,6 @@
 <translation id="8237382152611443140">પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધાનાં સેટિંગ ખોલો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8264966119170358612">તમારા અમુક સાચવેલા પાસવર્ડ બિન-Google ડેટા ઉલ્લંઘનમાં જાહેર કરવામાં આવ્યા હતા. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">માત્ર આ જ ડિવાઇસ પર</translation>
 <translation id="8271720166617117963">સ્વીકારો અને સાઇન ઇન કરો</translation>
 <translation id="8278938988428169257">શબ્દ અથવા શબ્દસમૂહ દાખલ કરો</translation>
 <translation id="8281781826761538115">ડિફૉલ્ટ - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1065,6 +1075,7 @@
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> દિવસથી ઉપયોગમાં ન લેવાયેલી ટૅબ</translation>
 <translation id="8407669440184693619">આ સાઇટ માટે કોઈ પાસવર્ડ મળ્યાં નથી</translation>
 <translation id="842017693807136194">ની સાથે સાઇન ઇન કરેલ</translation>
+<translation id="8425693829365242963">તમારા પાસવર્ડ વિશિષ્ટ છે</translation>
 <translation id="8428045167754449968">શહેર/નગર</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8428634594422941299">સમજાઈ ગયું</translation>
@@ -1085,6 +1096,7 @@
 <translation id="8533670235862049797">Safe Browsingની સુવિધા ચાલુ છે</translation>
 <translation id="8534481786647257214">Google+ પોસ્ટ પૂર્ણ કરેલ છે.</translation>
 <translation id="8548878600947630424">પેજમાં શોધો...</translation>
+<translation id="8556590991644167667">{count,plural, =1{તમે {count} ચેતવણી છોડી દીધી}one{તમે {count} ચેતવણી છોડી દીધી}other{તમે {count} ચેતવણી છોડી દીધી}}</translation>
 <translation id="8558480467877843976">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromeનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8591976964826315682">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
@@ -1093,9 +1105,11 @@
 <translation id="8626393685701737946">તમે સેટિંગ &gt; કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
+<translation id="8663764600409216912">તમે એવા પાસવર્ડનો ઉપયોગ કરી રહ્યાં છો જેનું અનુમાન લગાવવું મુશ્કેલ છે</translation>
 <translation id="8668210798914567634">આ પેજ, તમારી વાંચન સૂચિમાં સાચવવામાં આવ્યું છે.</translation>
 <translation id="8680787084697685621">એકાઉન્ટ સાઇન ઇન વિગતો જૂની થઈ ગઈ છે.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ટૅબ બંધ કરો}one{ટૅબ બંધ કરો}other{ટૅબ બંધ કરો}}</translation>
+<translation id="8703536910991780768">તમારા પાસવર્ડ સશક્ત જણાય છે</translation>
 <translation id="8706588385081740091">પાસવર્ડ</translation>
 <translation id="8717864919010420084">લિંકની કૉપિ કરો</translation>
 <translation id="8721297211384281569">સાધન મેનૂ</translation>
@@ -1144,6 +1158,7 @@
 <translation id="8974714402877957201">1. iPad સેટિંગ ખોલો</translation>
 <translation id="8976382372951310360">સહાય</translation>
 <translation id="8976414606286374109">કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે.</translation>
+<translation id="8978059030508051916">{count,plural, =0{ચેડાં કરાયેલો એકપણ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {count} પાસવર્ડ}one{ચેડાં કરાયેલો {count} પાસવર્ડ}other{ચેડાં કરાયેલા {count} પાસવર્ડ}}</translation>
 <translation id="8981454092730389528">Google પ્રવૃત્તિ નિયંત્રણો</translation>
 <translation id="8985320356172329008">Google પર આ તરીકે સાઇન ઇન થયાં</translation>
 <translation id="9000089900434778519">તમારું શોધ એન્જિન <ph name="DSE_NAME" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>

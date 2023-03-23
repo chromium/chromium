@@ -558,6 +558,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1485015260175968628">İndi bunları bacarır:</translation>
 <translation id="1485141095922496924">Versiya <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Parolları axtarın</translation>
+<translation id="1486486872607808064"><ph name="APP_NAME" /> üçün giriş açarı yaratmaq istədiyiniz cihazda kamera ilə bu QR kodunu skanlayın</translation>
 <translation id="1487335504823219454">Aktiv - xüsusi ayarlar</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> üçün gözləyir...</translation>
 <translation id="1494349716233667318">Saytlar cihazınızda quraşdırılmış şriftləri istifadə etmək üçün icazə istəyə bilər</translation>
@@ -766,6 +767,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="164936512206786300">Bluetooth cihazını ayırın</translation>
 <translation id="1651008383952180276">Eyni parol sözü iki dəfə daxil etməlisiniz</translation>
 <translation id="1652326691684645429">Yaxındakılarla Paylaşmanı aktivləşdirin</translation>
+<translation id="1654580009054503925">Sorğular göstərməsinə icazə verilməyib</translation>
 <translation id="1656528038316521561">Arxa fonun qeyri-şəffaflığı</translation>
 <translation id="1657406563541664238">İstifadə statistikası və xəta hesabatlarını avtomatik Google'a göndərməklə <ph name="PRODUCT_NAME" /> tətbiqini təkmilləşdirməyə kömək edin</translation>
 <translation id="1657937299377480641">Təhsillə bağlı resurslara giriş üçün yenidən daxil olmaq məqsədilə valideyndən sizə icazə verməsini istəyin</translation>
@@ -3406,6 +3408,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3957079323242030166">Yedəkləmə datası Disk yaddaşı kvotanıza aid edilməyəcək.</translation>
 <translation id="3957844511978444971">Bu Google xidmət ayarlarını seçdiyinizi təsdiq etmək üçün "Razıyam" düyməsinə klikləyin.</translation>
 <translation id="3958088479270651626">Əlfəcinləri və ayarları import edin...</translation>
+<translation id="3958110062351175311">Alətlər panelində sorğular göstərməsinə icazə verilib</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> üçün digər əməliyyatlar</translation>
 <translation id="3962119236270174787">Təhlükəli hesab edilən veb saytlar, endirmələr və artırmalara qarşı standart qoruma</translation>
@@ -3663,6 +3666,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4205157409548006256">Linux'u konfiqurasiya edərkən xəta baş verdi.</translation>
 <translation id="4206144641569145248">Yadplanetli</translation>
 <translation id="4206323443866416204">Əks Əlaqə</translation>
+<translation id="4206585797409671301">Sorğular göstərməsinə icazə verilib</translation>
 <translation id="4207932031282227921">İcazə tələb edilib, cavablandırmaq üçün F6 düyməsini basın</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> axtarın</translation>
 <translation id="4209092469652827314">Böyük</translation>
@@ -4332,6 +4336,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="481574578487123132">Əlaqələndirilmiş cihazlar</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Detallar</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 əlfəcin silindi}other{{COUNT} əlfəcin silindi}}</translation>
+<translation id="4816900689218414104">Telefon və ya planşetdə giriş açarı yaradın</translation>
 <translation id="4819323978093861656">{0,plural, =0{İndi bağlanır.}=1{1 saniyə sonra bağlanacaq}other{# saniyə sonra bağlanacaq}}</translation>
 <translation id="4819607494758673676">Google Assistent Bildirişləri</translation>
 <translation id="4820236583224459650">Aktiv bilet kimi yadda saxlayın</translation>
@@ -6238,6 +6243,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6562117348069327379">Sistem loqlarını Endirmələr kataloqunda saxlayın.</translation>
 <translation id="656293578423618167">Fayl yolu və ya adı çox uzundur. Qısa ad ilə və ya başqa yerə saxlayın.</translation>
 <translation id="6568283005472142698">Tab Axtarışı</translation>
+<translation id="6570622975915850879">Başqa cihaz istifadə edin</translation>
 <translation id="65711204837946324">Endirmək üçün icazə tələb edir</translation>
 <translation id="6571533309669248172">Mətn formatı</translation>
 <translation id="6571772921213691236">Giriş datasını redaktə edin</translation>
@@ -6801,6 +6807,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7044606776288350625">Datanı sinxronlaşdırın</translation>
 <translation id="7047059339731138197">Arxa fon seçin</translation>
 <translation id="7049293980323620022">Fayl saxlanılsın?</translation>
+<translation id="70496770794393383">Saxlanan parollar cədvəli</translation>
 <translation id="7050037487872780845">Yanlış hotspot konfiqurasiyası</translation>
 <translation id="7051551856857948729">IBAN məlumatını gizlədin</translation>
 <translation id="7052237160939977163">Performans izləmə datasını göndərin</translation>

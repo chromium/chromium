@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">Ձեր այցելած կայքերը և դրանց վրա ծախսած ժամանակը</translation>
 <translation id="1824402189105105503">Ութերորդ գլանափաթեթ</translation>
 <translation id="1826516787628120939">Ստուգում</translation>
+<translation id="1826968372364864056">Մաքրել ձևը</translation>
 <translation id="1828959155404624835">Մեքենայի վարձույթ</translation>
 <translation id="1834321415901700177">Այս կայքը պարունակում է վնասաբեր ծրագրեր</translation>
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
@@ -808,6 +809,7 @@
 <translation id="2951588413176968965">Իմ փոստարկղը</translation>
 <translation id="2952820037279740115">Փակել բոլոր ինկոգնիտո պատուհանները</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Վճարման պահված եղանակների աղյուսակ</translation>
 <translation id="295526156371527179">Զգուշացում. այս կանոնը չի միավորվել որպես բառարան, ինչպես նշված է կանոնում, քանի որ այն բառարան չէ:</translation>
 <translation id="2955913368246107853">Փակել որոնման գոտին</translation>
 <translation id="2958544468932521864">Կրիկետ</translation>
@@ -1968,6 +1970,7 @@
 <translation id="5786044859038896871">Ուզո՞ւմ եք լրացնել ձեր քարտի տվյալները:</translation>
 <translation id="578633867165174378">Chrome-ը հայտնաբերել է, որ գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Խորհուրդ ենք տալիս անհապաղ փոխել այս գաղտնաբառը։</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Ոչ մի}=1{1 հաշվի մուտքի տվյալներ}one{# հաշվի մուտքի տվյալներ}other{# հաշվի մուտքի տվյալներ}}</translation>
 <translation id="580241730938216256">Թարմացնել</translation>
 <translation id="5803412860119678065">Ուզո՞ւմ եք լրացնել ձեր <ph name="CARD_DETAIL" /> քարտի տվյալները:</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
@@ -2523,6 +2526,7 @@
 <translation id="7201591969684833065">Ձեր ադմինիստրատորը կարող է տեսնել՝</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Նոր ինկոգնիտո ներդիր բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="7203375778433816396">Դարձնել Chrome-ը համակարգի կանխադրված դիտարկիչ</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Ոչ մի}=1{1 անցաբառ}one{# անցաբառ}other{# անցաբառ}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />-ը չի հետևում անվտանգության չափորոշիչներին:</translation>
 <translation id="7210993021468939304">Տեսնում է Լինուքսի գործողությունները կոնտեյներում և կարող է տեղադրել ու գործարկել Լինուքսի հավելվածներ կոնտեյներից</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /> այս խնդրի մասին:</translation>
@@ -2775,6 +2779,7 @@
 <translation id="7736959720849233795">Պատճենել հղման հասցեն</translation>
 <translation id="7740996059027112821">Ստանդարտ</translation>
 <translation id="77424286611022110">Այս կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում։ <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Պահված հասցեների աղյուսակ</translation>
 <translation id="774634243536837715">Վտանգավոր բովանդակությունն արգելափակված է</translation>
 <translation id="7751971323486164747">Անհատականացնել տառատեսակները և դրանց չափերը Chrome-ում</translation>
 <translation id="7752995774971033316">Չի կառավարվում</translation>
@@ -3016,6 +3021,7 @@
 <translation id="8347658365704983341">Հեռավար ուսուցում</translation>
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
 <translation id="8351131234907093545">Գրառման ստեղծում</translation>
+<translation id="835203957414790336">Ձեր տպած էջերի բովանդակությունը և ձեր տպիչի մասին տեղեկությունները վերլուծության նպատակով ուղարկվում են Google Cloud կամ երրորդ կողմերի։ Օրինակ՝ կարող է ստուգվել զգայուն տվյալների առկայությունը։</translation>
 <translation id="8355270400102541638">Խափանման լոկալ կոնտեքստը՝</translation>
 <translation id="8363502534493474904">Անջատել Ավիառեժիմը</translation>
 <translation id="8364627913115013041">Կարգավորված չէ:</translation>

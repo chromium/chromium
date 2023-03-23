@@ -563,6 +563,7 @@
 <translation id="1485015260175968628">ते आता करू शकते:</translation>
 <translation id="1485141095922496924">आवृत्ती <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">पासवर्ड शोधा</translation>
+<translation id="1486486872607808064">डिव्हाइसवरील कॅमेरा वापरून हा QR कोड स्कॅन करा, जेथे तुम्हाला <ph name="APP_NAME" /> साठी पासकी तयार करायची आहे</translation>
 <translation id="1487335504823219454">सुरू - कस्टम सेटिंग्ज</translation>
 <translation id="1493892686965953381">यासाठी प्रतीक्षा करत आहे <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">तुमच्या डिव्हाइसवर इंस्टॉल केलेले फाँट वापरण्यासाठी साइट विचारू शकतात</translation>
@@ -772,6 +773,7 @@
 <translation id="164936512206786300">ब्लूटूथ डिव्हाइसचे पेअरिंग काढा</translation>
 <translation id="1651008383952180276">समान सांकेतिक पासफ्रेझ दोनदा एंटर करणे आवश्यक आहे</translation>
 <translation id="1652326691684645429">Nearby सह शेअरिंग सुरू करा</translation>
+<translation id="1654580009054503925">विनंत्या दाखवण्याची अनुमती दिलेली नाही</translation>
 <translation id="1656528038316521561">बॅकग्राउंडची अपारदर्शकता</translation>
 <translation id="1657406563541664238">वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप Google कडे पाठवून <ph name="PRODUCT_NAME" /> ला अधिक चांगले करण्यास मदत करा</translation>
 <translation id="1657937299377480641">शैक्षणिक स्रोतांच्या अ‍ॅक्सेससाठी पुन्हा साइन इन करण्याकरिता, तुम्हाला परवानगी देण्याबाबत पालकाला सांगा</translation>
@@ -1143,7 +1145,7 @@
 <translation id="1969654639948595766">WebRTC मजकूर लॉग (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1972325230031091483">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
 <translation id="197288927597451399">ठेवा</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही. डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 दाबा.</translation>
+<translation id="1973763416111613016"><ph name="FILE_NAME" /> सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही. डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL वितरण बिंदू</translation>
 <translation id="1974060860693918893">प्रगत</translation>
@@ -1605,7 +1607,7 @@
 <translation id="2345723121311404059">1 पेज <ph name="PRINTER_NAME" />वर</translation>
 <translation id="23463457491630512">उदाहरणार्थ, तुम्ही मॅरेथॉनसाठी शूज खरेदी करण्यासाठी एखाद्या साइटला भेट दिल्यास, ती साइट तुमचे स्वारस्य मॅरेथॉनमध्ये धावणे म्हणून परिभाषित करू शकते. त्यानंतर, तुम्ही एखाद्या शर्यतीसाठी नोंदणी करण्याकरिता वेगळ्या साइटला भेट दिल्यास, ती साइट तुम्हाला तुमच्या स्वारस्यांनुसार धावण्यासाठीच्या शूजची जाहिरात दाखवू शकते.</translation>
 <translation id="2348176352564285430">ॲप: <ph name="ARC_PROCESS_NAME" /></translation>
-<translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी Ctrl + Forward दाबा</translation>
+<translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी Ctrl + Forward प्रेस करा</translation>
 <translation id="234889437187286781">डेटा लोड करताना एरर आली</translation>
 <translation id="2348939752188770364">पर्सनलायझेशन डेटा साफ करा...</translation>
 <translation id="2349610121459545414">या साइटला तुमचे स्थान अ‍ॅक्सेस करण्याची परवानगी देणे पुढे सुरू ठेवा</translation>
@@ -3421,6 +3423,7 @@
 <translation id="3957079323242030166">बॅकअप डेटा तुमच्या ड्राइव्ह स्टोरेजच्या जागेमध्ये मोजला जाणार नाही.</translation>
 <translation id="3957844511978444971">या Google सेवा सेटिंग्ज तुमच्या निवडीची खात्री करण्यासाठी "स्वीकारा" वर टॅप करा.</translation>
 <translation id="3958088479270651626">बुकमार्क आणि सेटिंग्ज इंपोर्ट करा</translation>
+<translation id="3958110062351175311">टूलबारमध्ये विनंत्या दाखवण्याची अनुमती दिली आहे</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> साठी आणखी कृती</translation>
 <translation id="3962119236270174787">धोकादायक म्हणून ओळखल्या जाणार्‍या वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून साधारण संरक्षण</translation>
@@ -3678,7 +3681,8 @@
 <translation id="4205157409548006256">Linux काँफिगर करताना एरर आली.</translation>
 <translation id="4206144641569145248">एलियन</translation>
 <translation id="4206323443866416204">फीडबॅक अहवाल</translation>
-<translation id="4207932031282227921">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी F6 दाबा</translation>
+<translation id="4206585797409671301">विनंत्या दाखवण्याची अनुमती दिली आहे</translation>
+<translation id="4207932031282227921">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी F6 प्रेस करा</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> शोधा</translation>
 <translation id="4209092469652827314">मोठा</translation>
 <translation id="4209251085232852247">बंद केले</translation>
@@ -4300,7 +4304,7 @@
 <translation id="4766598565665644999">सर्व एक्स्टेंशन <ph name="HOST" /> रीड करू शकतात आणि बदलू शकतात</translation>
 <translation id="4767427586072640478">बंद केलेल्या एक्स्टेंशनबद्दल अधिक जाणून घ्या.</translation>
 <translation id="4768332406694066911">आपल्‍याकडे या संस्थांकडील प्रमाणपत्रे आहेत जी आपल्‍याला ओळखतात</translation>
-<translation id="4770119228883592393">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + डाउन अ‍ॅरो दाबा</translation>
+<translation id="4770119228883592393">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + डाउन अ‍ॅरो प्रेस करा</translation>
 <translation id="4773112038801431077">Linux अपग्रेड करा</translation>
 <translation id="477647109558161443">डेस्कटॉप शॉर्टकट तयार करा</translation>
 <translation id="4776594120007763294">नंतर वाचण्यासाठी पेज जोडण्याकरिता, बटणवर क्लिक करा</translation>
@@ -4348,6 +4352,7 @@
 <translation id="481574578487123132">लिंक केलेली डिव्हाइस</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, तपशील</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{एक बुकमार्क हटवला}other{{COUNT} बुकमार्क हटवले}}</translation>
+<translation id="4816900689218414104">फोन किंवा टॅबलेटवर पासकी तयार करा</translation>
 <translation id="4819323978093861656">{0,plural, =0{Closing now.}=1{बंद होत आहे: एक सेकंद}other{बंद होत आहे: # सेकंद}}</translation>
 <translation id="4819607494758673676">Google Assistant सूचना</translation>
 <translation id="4820236583224459650">ॲक्टिव्ह तिकीट म्हणून सेट करा</translation>
@@ -5234,7 +5239,7 @@
 <translation id="5628393161682339323">मी एक्स्टेंशनवर क्लिक करतो/करते तेव्हा</translation>
 <translation id="562935524653278697">तुमच्या ॲडमिनिस्ट्रेटरने तुमचे बुकमार्क, इतिहास, संंकेतशब्द आणि अन्य सेटिंग्ज सिंक करणे अक्षम केले आहे.</translation>
 <translation id="5631017369956619646">CPU वापर</translation>
-<translation id="5632059346822207074">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी Ctrl + Forward दाबा</translation>
+<translation id="5632059346822207074">परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी Ctrl + Forward प्रेस करा</translation>
 <translation id="5632221585574759616">एक्स्टेंशन परवानग्यांबद्दल अधिक जाणून घ्या</translation>
 <translation id="5632566673632479864">तुमच्या <ph name="EMAIL" /> खात्याला यापुढे प्राथमिक खाते म्हणून अनुमती नाही. हे खाते <ph name="DOMAIN" /> ने व्यवस्थापित केले असल्याने, तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज या डिव्हाइस वरून साफ केले जाईल.</translation>
 <translation id="5633149627228920745">सिस्टीमशी संबंधित आवश्यकतांबद्दल अधिक जाणून घ्या</translation>
@@ -5366,7 +5371,7 @@
 <translation id="5764797882307050727">कृपया तुमच्या डिव्हाइसवर काही जागा मोकळी करा.</translation>
 <translation id="5765425701854290211">माफ करा, काही फाइल खराब झाल्‍या होत्‍या आणि अपडेट होऊ शकले नाही. तुमच्‍या सिंक केलेल्‍या फाइल सुरक्षित आहेत.</translation>
 <translation id="5765491088802881382">कोणतीही नेटवर्क उपलब्ध नाहीत</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> धोकादायक असू शकते. स्कॅन करण्यासाठी Google ला पाठवायची आहे का? डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 दाबा.</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> धोकादायक असू शकते. स्कॅन करण्यासाठी Google ला पाठवायची आहे का? डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="5770125698810550803">नेव्हिगेशन बटणे दाखवा</translation>
 <translation id="5771816112378578655">सेटअप प्रक्रियेत आहे...</translation>
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> तुम्हाला तुमच्या Chromebook वर Windows® अ‍ॅप्स रन करू देते. इंस्टॉल करण्यासाठी <ph name="MINIMUM_SPACE" /> मोकळ्या जागेची शिफारस केली जाते.</translation>
@@ -6130,7 +6135,7 @@
 <translation id="645286928527869380">पाककलेशी संबंधित कल्पना</translation>
 <translation id="6452961788130242735">नेटवर्क समस्या किंवा वाईट क्षेत्र</translation>
 <translation id="6453191633103419909">टॅब/स्क्रीनच्या प्रोजेक्शनची गुणवत्ता</translation>
-<translation id="6453921811609336127">पुढील इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> दाबा</translation>
+<translation id="6453921811609336127">पुढील इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> प्रेस करा</translation>
 <translation id="6455264371803474013">विशिष्ट साइटवर</translation>
 <translation id="6455894534188563617">नवीन फोल्‍डर</translation>
 <translation id="645705751491738698">JavaScript ब्लॉक करणे सुरू ठेवा</translation>
@@ -6257,6 +6262,7 @@
 <translation id="6562117348069327379">सिस्टम लॉग डाउनलोड डिरेक्टरीमध्ये स्टोअर करा.</translation>
 <translation id="656293578423618167">फाइल पथ किंवा नाव खूप मोठे आहे. कृपया एका छोट्या नावाने किंवा दुसर्‍या स्‍थानावर सेव्ह करा.</translation>
 <translation id="6568283005472142698">टॅब शोध</translation>
+<translation id="6570622975915850879">वेगळे डिव्हाइस वापरा</translation>
 <translation id="65711204837946324">डाउनलोड करण्यासाठी परवानगी आवश्यक आहे</translation>
 <translation id="6571533309669248172">मजकूर फॉरमॅटिंग</translation>
 <translation id="6571772921213691236">साइन इन डेटा संपादित करा</translation>
@@ -6820,6 +6826,7 @@
 <translation id="7044606776288350625">डेटा सिंक करा</translation>
 <translation id="7047059339731138197">बॅकग्राउंड निवडा</translation>
 <translation id="7049293980323620022">फाईल ठेवायची?</translation>
+<translation id="70496770794393383">सेव्ह केलेल्या पासवर्डची सारणी</translation>
 <translation id="7050037487872780845">चुकीचे हॉटस्पॉट कॉंफिगरेशन</translation>
 <translation id="7051551856857948729">IBAN मूल्य लपवा</translation>
 <translation id="7052237160939977163">कार्यप्रदर्शन ट्रेस डेटा पाठवा</translation>
@@ -7053,7 +7060,7 @@
 <translation id="7287143125007575591">ॲक्सेस नाकारला.</translation>
 <translation id="7287411021188441799">डीफॉल्ट बॅकग्राउंड रिस्टोअर करा</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी F6 दाबा</translation>
+<translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी F6 प्रेस करा</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> नी होस्ट केलेली, ही साइन-इन सेवा, आपल्या कॅमेर्‍यामध्ये प्रवेश करीत आहे.</translation>
 <translation id="7295614427631867477">लक्षात ठेवा की, Android, Play आणि सहयोगी ॲप्स त्यांच्या स्वतःच्या डेटा संग्रह आणि वापर धोरणे याद्वारे व्यवस्थापित केले जातात.</translation>
 <translation id="729583233778673644">AES आणि RC4 एंक्रिप्‍शनला अनुमती द्या. हा पर्याय वापरल्याने तुमचा धोका वाढतो, कारण RC4 सायफर असुरक्षित आहेत.</translation>
@@ -7898,7 +7905,7 @@
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> डाउनलोड करत आहे</translation>
 <translation id="8028993641010258682">आकार</translation>
-<translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + अप अ‍ॅरो दाबा</translation>
+<translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - परवानगीची विनंती केली आहे, प्रतिसाद देण्यासाठी ⌘ + Option + अप अ‍ॅरो प्रेस करा</translation>
 <translation id="8030169304546394654">डिस्कनेक्ट केलेले</translation>
 <translation id="8030852056903932865">मंजूर करा</translation>
 <translation id="8032244173881942855">टॅब कास्ट करण्यात अक्षम.</translation>
@@ -9106,7 +9113,7 @@
 <translation id="909554839118732438">गुप्त विंडो बंद करा</translation>
 <translation id="9096776523567481218">स्थानिकरीत्या इंस्टॉल केलेले नाही</translation>
 <translation id="9099220545925418560">तुमच्या ब्राउझिंग इतिहासावर आधारित. हे सेटिंग बंद आहे.</translation>
-<translation id="9100416672768993722">यापूर्वी वापरलेल्या इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> दाबा</translation>
+<translation id="9100416672768993722">यापूर्वी वापरलेल्या इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> प्रेस करा</translation>
 <translation id="9100765901046053179">प्रगत सेटिंग्ज</translation>
 <translation id="9101691533782776290">ॲप लाँच करा</translation>
 <translation id="9102610709270966160">एक्स्टेंशन सुरू करा</translation>

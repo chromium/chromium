@@ -16,6 +16,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1054745118061919935">Ao continuar, aceita os <ph name="BEGIN_LINK" />Termos de Utilização<ph name="END_LINK" />.</translation>
 <translation id="1063454504051558093">Usar outra palavra-passe…</translation>
 <translation id="1066060668811609597">Gerir a sincronização</translation>
+<translation id="1069154182096085577">A palavra-passe já existe</translation>
 <translation id="1076421457278169141">Código digitalizado</translation>
 <translation id="1076785341346483463">Sincronize com uma conta gerida</translation>
 <translation id="1084365883616172403">Publicação no Facebook concluída.</translation>
@@ -121,6 +122,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1752547299766512813">Guardar Palavras-passe</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
+<translation id="1767766085187034454">Google Tradutor</translation>
 <translation id="1789803444939621101">Damos-lhe as boas-vindas de volta, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">Nome do titular do cartão</translation>
 <translation id="1809939268435598390">Eliminar pasta</translation>
@@ -215,6 +217,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2523363575747517183">Este Website está a tentar repetidamente abrir outra aplicação.</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2547458583188611426">A sincronização não está a funcionar. Para iniciar a sincronização, introduza a sua frase de acesso.</translation>
+<translation id="2551153019974022505">Erro de conta</translation>
 <translation id="2556092377360758201">Sem proteção (não recomendado)</translation>
 <translation id="2562041823070056534">A enviar para o dispositivo <ph name="DEVICE_NAME" />…</translation>
 <translation id="2576499762020411840">Usar e guardar palavras-passe na sua Conta Google</translation>
@@ -417,6 +420,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3928666092801078803">Combinar os meus dados</translation>
 <translation id="3929457972718048006">Moradas</translation>
 <translation id="3943492037546055397">Palavras-passe</translation>
+<translation id="3951717558054674026">{count,plural, =1{{count} palavra-passe fraca}other{{count} palavras-passe fracas}}</translation>
 <translation id="3959736869653157332">Menu → Novo separador anónimo</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="3968505803272650567">Gerir interesses</translation>
@@ -468,6 +472,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4334428914252001502">1 artigo não lido.</translation>
 <translation id="4338650699862464074">Envia para a Google os URLs das páginas que visita.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Esta morada vai ser eliminada deste e de outros dispositivos com sessão iniciada}other{Estas moradas vão ser eliminadas deste e de outros dispositivos com sessão iniciada}}</translation>
+<translation id="4342946437867096381">Já guardou uma palavra-passe para este site na sua Conta Google. A Google pode escolher a palavra-passe mais recente para si.</translation>
 <translation id="4343046787186034850">Acesso à câmara e ao microfone permitido</translation>
 <translation id="4359125752503270327">Esta página abre noutra aplicação.</translation>
 <translation id="4375040482473363939">Pesquisa de códigos QR</translation>
@@ -483,6 +488,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4474494258097106883">Concebido para o iPhone</translation>
 <translation id="4476574785019001431">Definições</translation>
 <translation id="448433063499977729">A sincronização foi desativada</translation>
+<translation id="4488754974567924717">Informamos se as suas palavras-passe estiverem comprometidas</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à sua Lista de leitura na sua conta, {email}}other{Páginas adicionadas à sua Lista de leitura na sua conta, {email}}}</translation>
 <translation id="4496373720959965247">Adicione separadores e alterne entre páginas.</translation>
 <translation id="4502566650163919158">Rever agora</translation>
@@ -589,6 +595,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5150492518600715772">Enviar para o dispositivo</translation>
 <translation id="5168414296986405587">Criado para o iPadOS</translation>
 <translation id="5173088371991956744">A sincronização precisa de validar a sua identidade</translation>
+<translation id="5176312250994681348">Manter palavra-passe recente</translation>
 <translation id="5181140330217080051">A transferir</translation>
 <translation id="5184329579814168207">Abrir no Chrome</translation>
 <translation id="5186185447130319458">Privado</translation>
@@ -805,6 +812,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="650279896687777322">Saber mais…</translation>
 <translation id="6510072653668207258">Lembrar-me mais tarde</translation>
 <translation id="651505212789431520">Pretende cancelar a sincronização? Pode ativar a sincronização em qualquer altura nas Definições.</translation>
+<translation id="6518133107902771759">Rever</translation>
 <translation id="6524918542306337007">O Modo de navegação anónima está indisponível</translation>
 <translation id="6530992499366869131">Enviar-lhe um aviso se as palavras-passe forem expostas numa violação de dados</translation>
 <translation id="6537746030088321027">exemplo.pt</translation>
@@ -834,6 +842,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6672241253012342409">Os sites podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.
 
 Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
+<translation id="6672697278890207089">Introduza a frase de acesso</translation>
 <translation id="6674571176963658787">Para iniciar a sincronização, introduza a sua frase de acesso</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6684906340059221832">A monitorizar os preços</translation>
@@ -962,6 +971,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7679915578945954324">Endereços dos sites copiados</translation>
 <translation id="7687508192620387263">Ficheiro de calendário disponível</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
+<translation id="7711440461521638739">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7726702057919861819">Menu → Histórico → Limpar dados de navegação</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Só neste dispositivo.</translation>
@@ -1038,6 +1048,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8136856065410661948">Isto vai ser usado para criar eventos no seu Calendário Apple a partir do Chrome e Google Lens.</translation>
 <translation id="8156478151976189188">A Sincronização de palavras-passe não está a funcionar</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Traduzir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
@@ -1047,7 +1058,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8237382152611443140">Abra as Definições do preenchimento automático de palavras-passe</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8264966119170358612">Algumas das suas palavras-passe guardadas foram expostas numa violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Apenas neste dispositivo</translation>
 <translation id="8271720166617117963">Aceitar e iniciar sessão</translation>
 <translation id="8278938988428169257">Introduza uma palavra ou uma expressão</translation>
 <translation id="8281781826761538115">Predefinição – <ph name="DEFAULT_LOCALE" /></translation>
@@ -1066,6 +1076,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8393889347136007944">Separadores não usados há <ph name="THRESHOLD" /> dias</translation>
 <translation id="8407669440184693619">Não foram encontradas palavras-passe para este site</translation>
 <translation id="842017693807136194">Iniciar sessão com</translation>
+<translation id="8425693829365242963">As suas palavras-passe são únicas</translation>
 <translation id="8428045167754449968">Cidade/Localidade</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8428634594422941299">OK</translation>
@@ -1086,6 +1097,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8533670235862049797">A Navegação segura está ativada.</translation>
 <translation id="8534481786647257214">Publicação no Google+ concluído.</translation>
 <translation id="8548878600947630424">Localizar na página...</translation>
+<translation id="8556590991644167667">{count,plural, =1{Ignorou {count} aviso}other{Ignorou {count} avisos}}</translation>
 <translation id="8558480467877843976">Agora, pode usar o Chrome sempre que navegar ou tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="8588404856427128947">Desativada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros na Navegação anónima</translation>
@@ -1094,9 +1106,11 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8626393685701737946">Pode alterar a vista do site predefinida para o computador em Definições &gt; Definições de conteúdo</translation>
 <translation id="8636825310635137004">Para obter os separadores dos seus outros dispositivos, ative a sincronização.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
+<translation id="8663764600409216912">Está a usar palavras-passe que parecem ser difíceis de adivinhar</translation>
 <translation id="8668210798914567634">Esta página foi guardada na sua lista de leitura.</translation>
 <translation id="8680787084697685621">Os detalhes de início de sessão na conta estão desactualizados.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fechar o separador}other{Fechar os separadores}}</translation>
+<translation id="8703536910991780768">As suas palavras-passe parecem fortes</translation>
 <translation id="8706588385081740091">Palavras-passe</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
@@ -1145,6 +1159,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8974714402877957201">1. Abra as Definições do iPad</translation>
 <translation id="8976382372951310360">Ajuda</translation>
 <translation id="8976414606286374109">Os cartões são guardados na sua Conta Google.</translation>
+<translation id="8978059030508051916">{count,plural, =0{Nenhuma palavra-passe comprometida}=1{{count} palavra-passe comprometida}other{{count} palavras-passe comprometidas}}</translation>
 <translation id="8981454092730389528">Controlos da atividade Google</translation>
 <translation id="8985320356172329008">Iniciou sessão no Google como</translation>
 <translation id="9000089900434778519">O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as instruções para eliminar o histórico de pesquisas.</translation>

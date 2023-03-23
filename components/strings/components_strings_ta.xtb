@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">நீங்கள் பார்வையிட்ட இணையதளங்களும் அவற்றில் செலவழித்த நேரமும்</translation>
 <translation id="1824402189105105503">ரோல் 8</translation>
 <translation id="1826516787628120939">சரிபார்க்கிறது</translation>
+<translation id="1826968372364864056">படிவத்தில் உள்ளவற்றை அழி</translation>
 <translation id="1828959155404624835">கார் வாடகை</translation>
 <translation id="1834321415901700177">இந்தத் தளத்தில் தீங்கிழைக்கும் நிரல்கள் உள்ளன</translation>
 <translation id="1838374766361614909">தேடலை அழி</translation>
@@ -1963,6 +1964,7 @@
 <translation id="5786044859038896871">கார்டு தகவலை நிரப்ப விரும்புகிறீர்களா?</translation>
 <translation id="578633867165174378">நீங்கள் தற்போது பயன்படுத்திய கடவுச்சொல், தரவு மீறலுக்கு உட்பட்டது என Chrome கண்டறிந்துள்ளது. இந்தக் கடவுச்சொல்லை இப்போதே மாற்றவும்.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{எதுவுமில்லை}=1{1 கணக்கின் உள்நுழைவுத் தரவு}other{# கணக்குகளின் உள்நுழைவுத் தரவு}}</translation>
 <translation id="580241730938216256">புதுப்பிப்பைத் தொடங்கு</translation>
 <translation id="5803412860119678065"><ph name="CARD_DETAIL" />ஐ நிரப்ப விரும்புகிறீர்களா?</translation>
 <translation id="5804241973901381774">அனுமதிகள்</translation>
@@ -2517,6 +2519,7 @@
 <translation id="7201591969684833065">உங்கள் நிர்வாகி இவற்றைப் பார்க்க முடியும்:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, தனிப்பட்ட முறையில் உலாவுவதற்குப் புதிய மறைநிலைப் பக்கத்தைத் திறக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="7203375778433816396">சிஸ்டத்தின் இயல்பு உலாவியாக Chromeமை அமைக்கும்</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{எதுவுமில்லை}=1{1 கடவுச்சாவி}other{# கடவுச்சாவிகள்}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> பாதுகாப்புத் தரநிலைகளுக்கு இணங்கவில்லை.</translation>
 <translation id="7210993021468939304">கண்டெய்னருக்குள் நடக்கும் Linux செயல்பாட்டினைப் பார்க்க முடியும், மற்றும் கண்டெய்னருக்குள் Linux ஆப்ஸை நிறுவி இயக்க முடியும்</translation>
 <translation id="721197778055552897">இந்த சிக்கல் குறித்து <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" />.</translation>

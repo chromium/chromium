@@ -150,6 +150,7 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
       Definir <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor "False" a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>
 <translation id="1147732569915511430">El hash SHA-256 de la imagen de avatar.</translation>
 <translation id="1148415065145333943">Inhabilitar el modo avanzado de carga de la batería</translation>
+<translation id="1149841949061115313">Canal de LTC</translation>
 <translation id="1150742937785306405">Permitir que los usuarios activen o desactiven la opción de anuncios sugeridos por el sitio de <ph name="PRIVACY_SANDBOX_NAME" /> en sus dispositivos.</translation>
 <translation id="1151353063931113432">Permitir imágenes en estos sitios</translation>
 <translation id="1151987132434751822">Los esquemas de autenticación en los que se pueden aplicar las credenciales de políticas. Puede ser uno de los siguientes:
@@ -2196,6 +2197,7 @@ Si esta política se habilita o no se define, el usuario podrá establecer la im
 
       Si se inhabilita la política, se desactivarán los controles multimedia en la pantalla de bloqueo.</translation>
 <translation id="3072847235228302527">Establecer los Términos del Servicio para una cuenta de dispositivo local</translation>
+<translation id="3074032542020543133">Canal de LTS</translation>
 <translation id="3077650998740742747">
 Comportamiento predeterminado (política sin definir)
 Cuando se añade una cuenta en el área de contenido, puede aparecer un pequeño cuadro de diálogo que le pedirá al usuario que cree un perfil nuevo. Este cuadro de diálogo se puede cerrar.
@@ -3347,6 +3349,13 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 <translation id="4101282687722389021">Marca de tiempo UTC de la última vez que se actualizó esta entrada. Enviada como cadena porque la marca de tiempo no cabe en un número entero.</translation>
 <translation id="4102347680024644994">Informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
 <translation id="4105989332710272578">No permite que se aplique la Transparencia en Certificados a una lista de URLs</translation>
+<translation id="4110126170080699437">Por motivos de seguridad, para llamar a la API web <ph name="GET_DISPLAY_MEDIA_API_NAME" /> se requiere un gesto previo del usuario ("activación temporal"). De lo contrario, se producirá un error.
+
+Si se define esta política, los administradores pueden especificar los orígenes desde los que se puede llamar a esta API sin ningún gesto previo del usuario.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor *.
+
+Si no se define esta política, se requerirá un gesto previo del usuario para llamar a esta API desde todos los orígenes.</translation>
 <translation id="4114059938441379876">Si se define esta política, se configurará la URL donde los usuarios podrán cambiar sus contraseñas después de ver una advertencia en el navegador. El servicio de protección de contraseñas envía a los usuarios a la URL que designes (únicamente con protocolos HTTP y HTTPS) a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con salt de la nueva contraseña en esta página de cambio de contraseña, la página debe seguir las directrices incluidas en https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
       Si la política se desactiva o no se define, el servicio enviará a los usuarios a https://myaccount.google.com para cambiar su contraseña.
@@ -7157,6 +7166,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 
       Si no se establece esta política o se inhabilita, las políticas basadas en la nube a nivel de usuario tendrán el nivel de prioridad predeterminado.</translation>
 <translation id="7657261947024629645">Optimizar para un mejor rendimiento.</translation>
+<translation id="76580522298425324">Permitir captura de pantalla sin gesto previo del usuario</translation>
 <translation id="7666228839913571182">Permitir cookies de terceros</translation>
 <translation id="7668830462800981702">Si se habilita esta política, se realiza una búsqueda predeterminada cuando un usuario introduce en la barra de direcciones texto que no es una URL. Para especificar el proveedor de búsqueda predeterminado, configura el resto de las políticas de búsqueda predeterminadas. Si no configuras esas políticas, el usuario podrá elegir el proveedor predeterminado. Si se inhabilita esta política, no se realizará ninguna búsqueda cuando el usuario introduzca texto que no es una URL en la barra de direcciones.
 

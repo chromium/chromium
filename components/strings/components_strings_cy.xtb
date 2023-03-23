@@ -386,6 +386,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1822540298136254167">Gwefannau rydych yn ymweld â nhw a'r amser rydych yn ei dreulio arnynt</translation>
 <translation id="1824402189105105503">Wythfed Rôl</translation>
 <translation id="1826516787628120939">Wrthi'n gwirio</translation>
+<translation id="1826968372364864056">Clirio'r Ffurflen</translation>
 <translation id="1828959155404624835">Rhentu ceir</translation>
 <translation id="1834321415901700177">Mae'r wefan hon yn cynnwys rhaglenni niweidiol</translation>
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
@@ -1967,6 +1968,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5786044859038896871">Hoffech chi lenwi gwybodaeth am eich cerdyn?</translation>
 <translation id="578633867165174378">Daeth Chrome o hyd i'r cyfrinair rydych newydd ei ddefnyddio mewn tor data. Rydym yn argymell newid y cyfrinair hwn ar unwaith.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Dim}=1{data mewngofnodi ar gyfer 1 cyfrif}two{data mewngofnodi ar gyfer # gyfrif}few{data mewngofnodi ar gyfer # chyfrif}many{data mewngofnodi ar gyfer # chyfrif}other{data mewngofnodi ar gyfer # cyfrif}}</translation>
 <translation id="580241730938216256">Dechrau diweddaru</translation>
 <translation id="5803412860119678065">Ydych chi am lenwi'ch <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Caniatadau</translation>
@@ -2522,6 +2524,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7201591969684833065">Gall eich gweinyddwr weld:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pwyswch Tab yna Enter i agor tab Anhysbys newydd i bori'n breifat</translation>
 <translation id="7203375778433816396">Gosod Chrome fel porwr diofyn y system</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Dim}=1{1 cod pas}two{# god pas}few{# chod pas}many{# chod pas}other{# cod pas}}</translation>
 <translation id="7210863904660874423">Nid yw <ph name="HOST_NAME" /> yn cadw at safonau diogelwch.</translation>
 <translation id="7210993021468939304">Gweithgarwch Linux o fewn y cynhwysydd, a gall osod a rhedeg apiau Linux yn y cynhwysydd</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /> am y broblem hon.</translation>

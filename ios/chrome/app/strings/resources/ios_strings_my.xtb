@@ -489,6 +489,7 @@
 <translation id="4476574785019001431">ဆက်တင်များ</translation>
 <translation id="448433063499977729">စင့်ခ်လုပ်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="4488754974567924717">သင့်စကားဝှက်များ ပေါက်ကြားသွားပါက သင့်ကို ကျွန်ုပ်တို့အသိပေးပါမည်</translation>
+<translation id="4489536976005181779">{count,plural, =1{သင့်အကောင့် {email} ရှိ သင်၏ဖတ်ရန် စာရင်းတွင် စာမျက်နှာကို ထည့်လိုက်သည်}other{သင့်အကောင့် {email} ရှိ သင်၏ဖတ်ရန် စာရင်းတွင် စာမျက်နှာများကို ထည့်လိုက်သည်}}</translation>
 <translation id="4496373720959965247">စာမျက်နှာများအကြားတွင် တက်ဘ်များထည့်ပြီး ပြောင်းပါ</translation>
 <translation id="4502566650163919158">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="4505980578794259603"><ph name="TIME" /> တွင် နောက်ဆုံးစစ်ဆေးခဲ့သည်။</translation>
@@ -810,6 +811,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="650279896687777322">ပိုမိုလေ့လာရန်...</translation>
 <translation id="6510072653668207258">နောက်မှ ကျွန်ုပ်ကို သတိပေးပါ</translation>
 <translation id="651505212789431520">စင့်ခ်လုပ်ခြင်းကို ပယ်ဖျက်လိုပါသလား။ 'ဆက်တင်များ' ထဲတွင် စင့်ခ်လုပ်ခြင်းကို အချိန်မရွေး ဖွင့်နိုင်သည်။</translation>
+<translation id="6518133107902771759">စိစစ်ရန်</translation>
 <translation id="6524918542306337007">'ရုပ်ဖျက်မုဒ်' ကို မရနိုင်ပါ</translation>
 <translation id="6530992499366869131">‘ဒေတာကျိုးပေါက်မှု’ တွင် ‘စကားဝှက်များ ဖော်ထုတ်ခံရ’ သည့်အခါ သင့်ကို သတိပေးခြင်း</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1044,6 +1046,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8136856065410661948">Apple Calendar တွင် Chrome နှင့် Google Lens မှ အစီအစဉ်များ ပြုလုပ်ရန် ၎င်းကိုသုံးမည်။</translation>
 <translation id="8156478151976189188">‘စကားဝှက်စင့်ခ်လုပ်ခြင်း’ ကို သုံး၍မရပါ</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> အကောင့်များ</translation>
+<translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">စာမျက်နှာကို ဘာသာပြန်ရန်</translation>
 <translation id="8205564605687841303">မလုပ်တော့</translation>
@@ -1053,7 +1056,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8237382152611443140">‘စကားဝှက် အော်တိုဖြည့်ဆက်တင်များ’ ဖွင့်ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8264966119170358612">Google မဟုတ်သည့် ဒေတာကျိုးပေါက်မှုတွင် သင်၏ သိမ်းထားသည့်စကားဝှက်အချို့ ဖော်ထုတ်ခံထားရသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">ဤစက်တွင်သာ</translation>
 <translation id="8271720166617117963">လက်ခံပြီး လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="8278938988428169257">စကားလုံး (သို့) စကားစု ထည့်ပါ</translation>
 <translation id="8281781826761538115">မူရင်း − <ph name="DEFAULT_LOCALE" /></translation>

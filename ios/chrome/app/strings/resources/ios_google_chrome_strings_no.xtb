@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
 <translation id="3196546062792660320">Chrome sparer tid for deg ved å legge kontoene dine på nettet. Du kan legge til eller fjerne kontoer i Innstillinger.</translation>
+<translation id="322254490661677575">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din.</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3345341804167540816">Bruk Chrome overalt</translation>
 <translation id="3503014945441706099">Få Safe Browsing med økt beskyttelse for denne Chrome-profilen også</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chrome-dataene dine administreres av <ph name="DOMAIN" />. Dette sletter dataene dine fra denne enheten, men dataene blir værende i <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasjonen din krever at du forblir logget av Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
+<translation id="4064699917955374540">For å bruke og lagre Chrome-data i Google-kontoen din, bekreft at det er deg.</translation>
 <translation id="417201473131094001">Støttes ikke i Chrome Canary</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> har brukt Chrome og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>

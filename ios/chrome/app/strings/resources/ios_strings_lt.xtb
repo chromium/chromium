@@ -812,6 +812,7 @@ Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translati
 <translation id="650279896687777322">Sužinokite daugiau...</translation>
 <translation id="6510072653668207258">Priminti vėliau</translation>
 <translation id="651505212789431520">Atšaukti sinchronizavimą? Galite bet kada įjungti sinchronizavimą skiltyje „Nustatymai“.</translation>
+<translation id="6518133107902771759">Patvirtinti</translation>
 <translation id="6524918542306337007">Inkognito režimas nepasiekiamas</translation>
 <translation id="6530992499366869131">Įspėti, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -841,6 +842,7 @@ Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translati
 <translation id="6672241253012342409">Svetainės gali naudoti slapukus, kad pagerintų naršymo kokybę, pvz., kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės.
 
 Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus.</translation>
+<translation id="6672697278890207089">Įveskite slaptafrazę</translation>
 <translation id="6674571176963658787">Jei norite pradėti sinchronizuoti, įveskite slaptafrazę</translation>
 <translation id="667999046851023355">Dokumentas</translation>
 <translation id="6684906340059221832">Kainų stebėjimas</translation>
@@ -1046,6 +1048,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8136856065410661948">Šie duomenys bus naudojami įvykiams programoje „Apple Calendar“ kurti naudojant „Chrome“ ir „Google Lens“.</translation>
 <translation id="8156478151976189188">Slaptažodžio sinchronizavimas neveikia</translation>
 <translation id="8157532349231307196">Paskyrų: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
+<translation id="8179976553408161302">Įvesti</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsų įrenginiai<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Versti puslapį</translation>
 <translation id="8205564605687841303">Atšaukti</translation>
@@ -1055,7 +1058,6 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8237382152611443140">Atidarykite automatinio slaptažodžių pildymo nustatymus</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8264966119170358612">Kai kurie jūsų išsaugoti slaptažodžiai buvo atskleisti dėl ne „Google“ duomenų saugos pažeidimo. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Tik šiame įrenginyje</translation>
 <translation id="8271720166617117963">Sutikti ir prisijungti</translation>
 <translation id="8278938988428169257">Įveskite žodį ar frazę</translation>
 <translation id="8281781826761538115">Numatytoji – <ph name="DEFAULT_LOCALE" /></translation>

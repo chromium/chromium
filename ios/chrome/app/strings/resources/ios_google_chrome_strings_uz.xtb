@@ -40,6 +40,7 @@
 <translation id="3167189358072330585">Hisobingiz Google Chrome tizimida ishlamaydi. Domen administratoriga murojaat qiling yoki tizimga oddiy Google hisobidan kiring.</translation>
 <translation id="3173834708294760622">Google Chrome sahifasi</translation>
 <translation id="3196546062792660320">Chrome xizmatlariga kirishda har safar foydalanuvchi nomi va parol kiritishingiz shart emas. Chrome qurilmada saqlangan hisoblardan foydalanadi. Ularni sozlamalar orqali boshqarishingiz mumkin.</translation>
+<translation id="322254490661677575">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun kodli iborani kiriting.</translation>
 <translation id="3282568296779691940">Chrome hisobiga kirish</translation>
 <translation id="3345341804167540816">Chrome’ni o‘zingiz bilan olib yuring</translation>
 <translation id="3503014945441706099">Bu Chrome profili orqali xavfsiz qidiruvni ham kuchaytirilgan rejimda himoyalang</translation>
@@ -52,6 +53,7 @@
 <translation id="3980220367029651214">Siz <ph name="USER_EMAIL1" /> hisobi ma’lumotlarini <ph name="USER_EMAIL2" /> hisobiga ko‘chirish arafasizdasiz. Mavjud Chrome ma’lumotlaringiz <ph name="DOMAIN" /> domenida boshqariladi. Barcha Chrome ma’lumotlari ushbu qurilmadan o‘chiriladi, lekin <ph name="USER_EMAIL1" /> hisobida saqlanib qoladi.</translation>
 <translation id="3984746313391923992">Tashkilotingiz Chrome hisobidan chiqishingizni talab qilmoqda.</translation>
 <translation id="3988789688219830639">Google Chrome rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasida ruxsat bering.</translation>
+<translation id="4064699917955374540">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="417201473131094001">Chrome Canary nashrida ishlamaydi</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chrome ishlatardi va bu qurilmada uning bukmarklar, parollar va boshqa sozlamalari qolgan.</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
@@ -68,6 +70,7 @@
 <translation id="5119391094379141756">Chrome brauzerini tanlang</translation>
 <translation id="5162467219239570114">Chrome versiyasi eskirgan. Agar <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> orqali chiqmasa, demak qurilmangizda yangi versiyadagi Chrome nashrlari ishlamasligi mumkin.</translation>
 <translation id="5389212809648216794">Google Chrome kamerangizdan foydalana olmaydi, chuki boshqa ilova allaqachon kamerani ishlatmoqda.</translation>
+<translation id="5395376160638294582">Chrome maʼlumotlari Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="5460571915754665838">4. Chrome brauzerini tanlang</translation>
 <translation id="5492504007368565877">Google Parollar menejeri parollaringizni tekshira olmaydi.</translation>
 <translation id="5552137475244467770">Vaqti-vaqti bilan Chrome internetda oshkor etilgan roʻyxatlarda parolingiz borligini tekshirib turadi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
@@ -122,6 +125,7 @@
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="840168496893712993">Ba’zi kengaytmalar Chrome brauzerini ishdan chiqaradi. Ularni o‘chirib tashlang.</translation>
 <translation id="8414886616817913619">Chrome brauzeridan foydalanishingiz uchun tashkilotingiz roʻyxatdan oʻtishni talab qiladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="84594714173170813">Chrome maʼlumotlari Google hisobingizda saqlanishda davom etsin</translation>
 <translation id="8459495907675268833">Tanlangan ma’lumotlar Chrome va sinxronlangan qurilmalardan o‘chirildi. Google hisobingiz orqali amalga oshirilgan qidiruvlar, brauzer tarixi va boshqa internetdagi faoliyatingizni history.google.com sahifasi orqali ko‘rishingiz mumkin.</translation>
 <translation id="850555388806794946">Chrome brauzerini asosiy deb belgilash uchun:
   1. Sozlamalarni oching

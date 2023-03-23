@@ -561,6 +561,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1485015260175968628">Aceasta poate acum să:</translation>
 <translation id="1485141095922496924">Versiunea <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Caută parole</translation>
+<translation id="1486486872607808064">Scanează codul QR folosind camera foto a dispozitivului pe care vrei să creezi o cheie de acces pentru <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Activat – setări personalizate</translation>
 <translation id="1493892686965953381">Se așteaptă <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Site-urile pot solicita permisiunea de a folosi fonturile instalate pe dispozitiv</translation>
@@ -771,6 +772,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="164936512206786300">Anulează asocierea dispozitivului Bluetooth</translation>
 <translation id="1651008383952180276">Trebuie să introduci aceeași expresie de acces de două ori</translation>
 <translation id="1652326691684645429">Activează Trimiterea în apropiere</translation>
+<translation id="1654580009054503925">Nu are permisiunea de a afișa solicitări</translation>
 <translation id="1656528038316521561">Opacitatea fundalului</translation>
 <translation id="1657406563541664238">Trimite automat statistici de utilizare și rapoarte de blocare la Google pentru a contribui la îmbunătățirea <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1657937299377480641">Ca să te conectezi din nou pentru acces la resurse educaționale, solicită permisiunea unui părinte</translation>
@@ -3408,6 +3410,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3957079323242030166">Datele cărora li s-a făcut backup nu sunt luate în considerare la calcularea cotei de stocare Drive.</translation>
 <translation id="3957844511978444971">Atinge „Acceptă” ca să confirmi selectarea acestor setări pentru serviciile Google.</translation>
 <translation id="3958088479270651626">Importați marcaje și setări</translation>
+<translation id="3958110062351175311">Are permisiunea de a afișa solicitări în bara de instrumente</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Mai multe acțiuni pentru <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Protecție standard împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase</translation>
@@ -3667,6 +3670,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4205157409548006256">A apărut o eroare la configurarea Linux.</translation>
 <translation id="4206144641569145248">Extraterestru</translation>
 <translation id="4206323443866416204">Raport de feedback</translation>
+<translation id="4206585797409671301">Are permisiunea de a afișa solicitări</translation>
 <translation id="4207932031282227921">Permisiune necesară, apasă F6 pentru a răspunde</translation>
 <translation id="4208390505124702064">Caută pe <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Mare</translation>
@@ -4336,6 +4340,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="481574578487123132">Dispozitive conectate</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detalii</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Un marcaj șters}few{{COUNT} marcaje șterse}other{{COUNT} de marcaje șterse}}</translation>
+<translation id="4816900689218414104">Creează o cheie de acces pe telefon sau pe tabletă</translation>
 <translation id="4819323978093861656">{0,plural, =0{Se închide.}=1{Se închide în o secundă}few{Se închide în # secunde}other{Se închide în # de secunde}}</translation>
 <translation id="4819607494758673676">Notificări privind Asistentul Google</translation>
 <translation id="4820236583224459650">Setează ca tichet activ</translation>
@@ -6244,6 +6249,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6562117348069327379">Stochează jurnale de sistem în directorul Descărcări.</translation>
 <translation id="656293578423618167">Calea sau numele fișierului sunt prea lungi. Salvați utilizând un nume mai scurt sau într-o altă locație.</translation>
 <translation id="6568283005472142698">Căutarea filelor</translation>
+<translation id="6570622975915850879">Folosește alt dispozitiv</translation>
 <translation id="65711204837946324">Necesită permisiunea pentru descărcare</translation>
 <translation id="6571533309669248172">Formatarea textului</translation>
 <translation id="6571772921213691236">Editează datele de conectare</translation>
@@ -6809,6 +6815,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7044606776288350625">Sincronizează datele</translation>
 <translation id="7047059339731138197">Alege un fundal</translation>
 <translation id="7049293980323620022">Păstrezi fișierul?</translation>
+<translation id="70496770794393383">Tabel cu parolele salvate</translation>
 <translation id="7050037487872780845">Configurația hotspotului nu este validă</translation>
 <translation id="7051551856857948729">Ascunde valoarea IBAN</translation>
 <translation id="7052237160939977163">Trimiteți datele privind urmărirea performanței</translation>

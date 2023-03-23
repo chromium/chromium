@@ -16,6 +16,7 @@
 <translation id="1054745118061919935">চালিয়ে যাওয়ার অর্থ হল আপনি <ph name="BEGIN_LINK" />পরিষেবার শর্তাবলী<ph name="END_LINK" />তে সম্মতি দিচ্ছেন।</translation>
 <translation id="1063454504051558093">অন্য পাসওয়ার্ড ব্যবহার করুন...</translation>
 <translation id="1066060668811609597">সিঙ্ক পরিচালনা করুন</translation>
+<translation id="1069154182096085577">আগে থেকেই পাসওয়ার্ড আছে</translation>
 <translation id="1076421457278169141">কোড স্ক্যান করা হয়েছে</translation>
 <translation id="1076785341346483463">ম্যানেজ করা অ্যাকাউন্ট ব্যবহার করে সিঙ্ক করুন</translation>
 <translation id="1084365883616172403">Facebook পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
@@ -121,6 +122,7 @@
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
 <translation id="1752547299766512813">পাসওয়ার্ডগুলি সেভ করুন</translation>
 <translation id="1753905327828125965">সর্বাধিক দেখা</translation>
+<translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101"><ph name="USER_NAME" />, আপনাকে আবার স্বাগত জানাই</translation>
 <translation id="1803264062614276815">কার্ড হোল্ডারের নাম</translation>
 <translation id="1809939268435598390">ফোল্ডার মুছুন</translation>
@@ -215,6 +217,7 @@
 <translation id="2523363575747517183">এই ওয়েবসাইটটি ক্রমাগত অন্য অ্যাপ্লিকেশন খোলার চেষ্টা করছে।</translation>
 <translation id="2529021024822217800">সবকটি খুলুন</translation>
 <translation id="2547458583188611426">সিঙ্ক বিকল্প কাজ করছে না। সিঙ্ক শুরু করতে, আপনার পাসফ্রেজ লিখুন।</translation>
+<translation id="2551153019974022505">অ্যাকাউন্টে সমস্যা</translation>
 <translation id="2556092377360758201">সুরক্ষিত নয় (সাজেস্ট করা হচ্ছে না)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" />-এ পাঠানো হচ্ছে…</translation>
 <translation id="2576499762020411840">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড ব্যবহার করে সেভ করা</translation>
@@ -417,6 +420,7 @@
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
 <translation id="3929457972718048006">ঠিকানা</translation>
 <translation id="3943492037546055397">পাসওয়ার্ড</translation>
+<translation id="3951717558054674026">{count,plural, =1{{count}টি দুর্বল পাসওয়ার্ড}one{{count}টি দুর্বল পাসওয়ার্ড}other{{count}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="3959736869653157332">মেনু → নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3968505803272650567">আপনার পছন্দ ম্যানেজ করুন</translation>
@@ -468,6 +472,7 @@
 <translation id="4334428914252001502">পড়া হয়নি এমন ১টি নিবন্ধ।</translation>
 <translation id="4338650699862464074">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়।</translation>
 <translation id="4342054591427973606">{count,plural, =1{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}one{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}other{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}}</translation>
+<translation id="4342946437867096381">আপনি আগেই আপনার Google অ্যাকাউন্টে এই সাইটের জন্য একটি পাসওয়ার্ড সেভ করেছেন। Google আপনার জন্য সবচেয়ে সাম্প্রতিক পাসওয়ার্ড বেছে নিতে পারে।</translation>
 <translation id="4343046787186034850">ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="4359125752503270327">এই পৃষ্ঠাটি আরেকটি অ্যাপ্লিকেশানে খুলবে।</translation>
 <translation id="4375040482473363939">QR কোড খুঁজুন</translation>
@@ -483,6 +488,7 @@
 <translation id="4474494258097106883">আপনার iPhone-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="4476574785019001431">সেটিংস</translation>
 <translation id="448433063499977729">সিঙ্ক করার ফিচার বন্ধ করে দেওয়া হয়েছে</translation>
+<translation id="4488754974567924717">আপনার পাসওয়ার্ড যদি চুরি হয়ে যায়, আমরা তা আপনাকে জানাবো</translation>
 <translation id="4489536976005181779">{count,plural, =1{আপনার অ্যাকাউন্টে আপনার পড়ার তালিকায় পৃষ্ঠাগুলি যোগ করা হয়েছে, {email}}one{আপনার অ্যাকাউন্টে আপনার পড়ার তালিকায় পৃষ্ঠাগুলি যোগ করা হয়েছে, {email}}other{আপনার অ্যাকাউন্টে আপনার পড়ার তালিকায় পৃষ্ঠাগুলি যোগ করা হয়েছে, {email}}}</translation>
 <translation id="4496373720959965247">পৃষ্ঠার মধ্যে ট্যাব এবং পাল্টানো যোগ করুন</translation>
 <translation id="4502566650163919158">এখনই চেক করুন</translation>
@@ -589,6 +595,7 @@
 <translation id="5150492518600715772">আপনার অন্য ডিভাইসে পাঠান</translation>
 <translation id="5168414296986405587">iPadOS-এর জন্য তৈরি</translation>
 <translation id="5173088371991956744">সিঙ্ক করার আগে যাচাই করিয়ে নিতে হবে যে এটি আপনি করছেন</translation>
+<translation id="5176312250994681348">সাম্প্রতিক পাসওয়ার্ড রাখুন</translation>
 <translation id="5181140330217080051">ডাউনলোড হচ্ছে</translation>
 <translation id="5184329579814168207">Chrome এ খুলুন</translation>
 <translation id="5186185447130319458">ব্যক্তিগত</translation>
@@ -806,6 +813,7 @@
 <translation id="650279896687777322">আরও জানুন...</translation>
 <translation id="6510072653668207258">আমাকে পরে মনে করাবেন</translation>
 <translation id="651505212789431520">সিঙ্ক বাতিল করতে চান? যেকোনও সময় সেটিংস থেকে আপনি সিঙ্ক চালু করতে পারবেন।</translation>
+<translation id="6518133107902771759">যাচাই করুন</translation>
 <translation id="6524918542306337007">'ছদ্মবেশী মোড' উপলভ্য নেই</translation>
 <translation id="6530992499366869131">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশিত হলে তা এটি আপনাকে জানায়</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -835,6 +843,7 @@
 <translation id="6672241253012342409">আপনার ব্রাউজিং অভিজ্ঞতার উন্নতি করতে কোনও সাইট কুকি ব্যবহার করতে পারে, যেমন আপনাকে সাইন-ইন করে রাখতে বা আপনার শপিং কার্টে যোগ করা প্রোডাক্ট মনে রাখতে।
 
 ছদ্মবেশী মোডে থাকলে বিভিন্ন সাইট আপনার ব্রাউজিং অ্যাক্টিভিটি ট্র্যাক করার জন্য কুকি ব্যবহার করতে পারে না, যেমন পছন্দসই বিজ্ঞাপন দেখাতে।</translation>
+<translation id="6672697278890207089">আপনার পাসফ্রেজটি প্রবেশ করান</translation>
 <translation id="6674571176963658787">সিঙ্ক শুরু করতে, আপনার পাসফ্রেজ লিখুন</translation>
 <translation id="667999046851023355">দস্তাবেজ</translation>
 <translation id="6684906340059221832">দাম ট্র্যাক করা হচ্ছে</translation>
@@ -963,6 +972,7 @@
 <translation id="7679915578945954324">সাইটের ঠিকানা কপি করা হয়েছে</translation>
 <translation id="7687508192620387263">ক্যালেন্ডার ফাইল উপলভ্য</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
+<translation id="7711440461521638739">আপনি কোনও পাসওয়ার্ড আবার ব্যবহার করছেন না</translation>
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
 <translation id="7726702057919861819">মেনু → ইতিহাস → ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। শুধুমাত্র এই ডিভাইসে।</translation>
@@ -1039,6 +1049,7 @@
 <translation id="8136856065410661948">এটি Chrome এবং Google Lens থেকে আপনার Apple ক্যালেন্ডারে ইভেন্ট তৈরি করতে ব্যবহার করা হবে।</translation>
 <translation id="8156478151976189188">'পাসওয়ার্ড সিঙ্ক' ফিচার কাজ করছে না</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" />টি অ্যাকাউন্ট</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">পৃষ্ঠাটি অনুবাদ করুন</translation>
 <translation id="8205564605687841303">বাতিল করুন</translation>
@@ -1048,7 +1059,6 @@
 <translation id="8237382152611443140">অটোফিল পাসওয়ার্ড সেটিংস খুলুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8264966119170358612">Google-এর নয়, এমন ডেটার নিরাপত্তা লঙ্ঘনের সময় আপনার সেভ করা কিছু পাসওয়ার্ড ফাঁস হয়ে গেছে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">শুধুমাত্র এই ডিভাইসে</translation>
 <translation id="8271720166617117963">অ্যাক্সেপ্ট করে সাইন-ইন করুন</translation>
 <translation id="8278938988428169257">শব্দ বা বাক্যাংশ লিখুন</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1067,6 +1077,7 @@
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> দিন ট্যাব ব্যবহার করা হয়নি</translation>
 <translation id="8407669440184693619">এই সাইটের জন্য কোনও পাসওয়ার্ড পাওয়া যায়নি</translation>
 <translation id="842017693807136194">এটি দিয়ে সাইন-ইন করেছেন</translation>
+<translation id="8425693829365242963">আপনার পাসওয়ার্ড আগে ব্যবহার করা হয়নি</translation>
 <translation id="8428045167754449968">নগর / ছোট শহর</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8428634594422941299">বুঝেছি</translation>
@@ -1087,6 +1098,7 @@
 <translation id="8533670235862049797">Safe Browsing চালু আছে</translation>
 <translation id="8534481786647257214">Google+ পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
 <translation id="8548878600947630424">পৃষ্ঠাটি খুঁজুন...</translation>
+<translation id="8556590991644167667">{count,plural, =1{আপনি {count}টি সতর্কতা বাতিল করেছেন}one{আপনি {count}টি সতর্কতা বাতিল করেছেন}other{আপনি {count}টি সতর্কতা বাতিল করেছেন}}</translation>
 <translation id="8558480467877843976">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্ক ব্রাউজ বা ট্যাপ করে তা যেকোনও সময় Chrome খুলতে পারেন।</translation>
 <translation id="8588404856427128947">বন্ধ করা আছে</translation>
 <translation id="8591976964826315682">'ছদ্মবেশী' মোডে থার্ড-পার্টি কুকি ব্লক করুন</translation>
@@ -1095,9 +1107,11 @@
 <translation id="8626393685701737946">সেটিংস &gt; কন্টেন্ট সেটিংস বিকল্প থেকে ডেস্কটপে ডিফল্ট সাইট ভিউ পরিবর্তন করতে পারবেন</translation>
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="8654802032646794042">বাতিল করুন</translation>
+<translation id="8663764600409216912">আপনি যেসব পাসওয়ার্ড ব্যবহার করছেন তা অনুমান করা কঠিন বলে মনে হচ্ছে</translation>
 <translation id="8668210798914567634">এই পৃষ্ঠাটি আপনার পড়ার তালিকায় সংরক্ষণ করা হয়েছে।</translation>
 <translation id="8680787084697685621">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণের তারিখ সীমার বাইরে৷</translation>
 <translation id="8693663554456874301">{count,plural, =1{'ট্যাব' বন্ধ করুন}one{'ট্যাব' বন্ধ করুন}other{'ট্যাব' বন্ধ করুন}}</translation>
+<translation id="8703536910991780768">আপনার ব্যবহার করা পাসওয়ার্ড শক্তিশালী বলে মনে হচ্ছ</translation>
 <translation id="8706588385081740091">পাসওয়ার্ড</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
 <translation id="8721297211384281569">টুল মেনু</translation>
@@ -1146,6 +1160,7 @@
 <translation id="8974714402877957201">১. iPad সেটিংস খুলুন</translation>
 <translation id="8976382372951310360">সহায়তা</translation>
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>
+<translation id="8978059030508051916">{count,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}}</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
 <translation id="8985320356172329008">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> হল আপনার সার্চ ইঞ্জিনের নাম। এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সেটির নির্দেশাবলী দেখুন।</translation>

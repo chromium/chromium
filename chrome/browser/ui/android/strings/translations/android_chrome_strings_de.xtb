@@ -477,6 +477,7 @@ Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="3587596251841506391">Dabei helfen, das Web sicherer zu machen</translation>
 <translation id="3597179440835065298">Bessere Vorschläge erhalten</translation>
 <translation id="3602290021589620013">Vorschau</translation>
+<translation id="360901359071773787">Letzte 15 Minuten löschen?</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Fenster verwalten</translation>
 <translation id="3631987586758005671">Wird mit "<ph name="DEVICE_NAME" />" geteilt</translation>
@@ -822,6 +823,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5517095782334947753">Du hast Lesezeichen, den Verlauf, Passwörter und andere Einstellungen von <ph name="FROM_ACCOUNT" /> übernommen.</translation>
 <translation id="5524761631371622910">Wenn Tests aktiviert sind und Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen.</translation>
 <translation id="5524843473235508879">Weiterleitung blockiert.</translation>
+<translation id="554297709083131118">Folgende Daten der letzten 15 Minuten werden gelöscht</translation>
 <translation id="5548606607480005320">Sicherheitscheck</translation>
 <translation id="5555525474779371165">Safe Browsing-Schutz auswählen</translation>
 <translation id="5556459405103347317">Neu laden</translation>
@@ -1263,6 +1265,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="78270725016672455">Dein Computer möchte dieses Gerät für die Anmeldung bei einer Website registrieren</translation>
 <translation id="7844171778363018843">Keine Daten zum Synchronisieren ausgewählt</translation>
 <translation id="7846296061357476882">Google-Dienste</translation>
+<translation id="7847228556075070294">Gelöschter Verlauf, Cookies und andere Daten</translation>
 <translation id="784934925303690534">Zeitraum</translation>
 <translation id="7851858861565204677">Andere Geräte</translation>
 <translation id="7853202427316060426">Aktivität</translation>

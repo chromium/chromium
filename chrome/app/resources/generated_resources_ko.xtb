@@ -563,6 +563,7 @@
 <translation id="1485015260175968628">앱의 현재 권한:</translation>
 <translation id="1485141095922496924">버전 <ph name="PRODUCT_VERSION" />(<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">비밀번호 검색</translation>
+<translation id="1486486872607808064"><ph name="APP_NAME" />의 패스키를 생성하려는 기기의 카메라로 이 QR 코드를 스캔하세요.</translation>
 <translation id="1487335504823219454">사용 - 맞춤 설정</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" />을(를) 기다리는 중...</translation>
 <translation id="1494349716233667318">사이트에서 기기에 설치된 글꼴 사용을 요청할 수 있음</translation>
@@ -773,6 +774,7 @@
 <translation id="164936512206786300">블루투스 기기 페어링 해제</translation>
 <translation id="1651008383952180276">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="1652326691684645429">Nearby Share 사용</translation>
+<translation id="1654580009054503925">요청 표시가 허용되지 않음</translation>
 <translation id="1656528038316521561">배경 불투명도</translation>
 <translation id="1657406563541664238">사용 통계 및 비정상 종료 보고서가 Google로 자동 전송되게 하여 <ph name="PRODUCT_NAME" /> 개선에 도움 주기</translation>
 <translation id="1657937299377480641">교육 자료에 액세스하기 위해 다시 로그인하려면 부모님에게 권한을 부여해 달라고 요청하세요.</translation>
@@ -3424,6 +3426,7 @@
 <translation id="3957079323242030166">백업 데이터는 드라이브 스토리지 저장용량에 포함되지 않습니다.</translation>
 <translation id="3957844511978444971">선택한 Google 서비스 설정을 승인하려면 '동의'를 탭하세요.</translation>
 <translation id="3958088479270651626">북마크 및 설정 가져오기</translation>
+<translation id="3958110062351175311">툴바 내 요청 표시가 허용됨</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" />의 작업 더보기</translation>
 <translation id="3962119236270174787">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 대응하는 표준 보호 기능입니다.</translation>
@@ -3681,6 +3684,7 @@
 <translation id="4205157409548006256">Linux를 설정하는 중에 오류가 발생했습니다.</translation>
 <translation id="4206144641569145248">외계인</translation>
 <translation id="4206323443866416204">의견 보고서</translation>
+<translation id="4206585797409671301">요청 표시가 허용됨</translation>
 <translation id="4207932031282227921">권한 요청됨, F6 키를 눌러 응답</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> 검색</translation>
 <translation id="4209092469652827314">크게</translation>
@@ -4351,6 +4355,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="481574578487123132">연결된 기기</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, 세부정보</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{북마크 1개 삭제됨}other{북마크 {COUNT}개 삭제됨}}</translation>
+<translation id="4816900689218414104">휴대전화 또는 태블릿에서 패스키 만들기</translation>
 <translation id="4819323978093861656">{0,plural, =0{지금 종료 중입니다.}=1{1초 후 종료됨}other{#초 후 종료됨}}</translation>
 <translation id="4819607494758673676">Google 어시스턴트 알림</translation>
 <translation id="4820236583224459650">활성 티켓으로 설정</translation>
@@ -6259,6 +6264,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6562117348069327379">시스템 로그를 다운로드 디렉터리에 저장합니다.</translation>
 <translation id="656293578423618167">파일 경로 또는 이름이 너무 깁니다. 짧은 이름으로 변경하거나 다른 위치에 저장하세요.</translation>
 <translation id="6568283005472142698">탭 검색</translation>
+<translation id="6570622975915850879">다른 기기 사용</translation>
 <translation id="65711204837946324">다운로드 권한 필요</translation>
 <translation id="6571533309669248172">텍스트 서식 지정</translation>
 <translation id="6571772921213691236">로그인 데이터 수정</translation>
@@ -6822,6 +6828,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7044606776288350625">데이터 동기화</translation>
 <translation id="7047059339731138197">백그라운드를 선택합니다.</translation>
 <translation id="7049293980323620022">파일을 보관하시겠습니까?</translation>
+<translation id="70496770794393383">저장된 비밀번호 표</translation>
 <translation id="7050037487872780845">핫스팟 구성이 잘못됨</translation>
 <translation id="7051551856857948729">IBAN 값 숨기기</translation>
 <translation id="7052237160939977163">성능 추적 데이터 전송</translation>

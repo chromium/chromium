@@ -805,6 +805,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="650279896687777322">Nánar...</translation>
 <translation id="6510072653668207258">Minna mig á seinna</translation>
 <translation id="651505212789431520">Hætta við samstillingu? Hægt er að kveikja á samstillingu hvenær sem er í stillingunum.</translation>
+<translation id="6518133107902771759">Staðfesta</translation>
 <translation id="6524918542306337007">Huliðsstilling er ekki tiltæk</translation>
 <translation id="6530992499366869131">Fá viðvörun ef aðgangsorðin þín eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1038,6 +1039,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8136856065410661948">Þetta verður notað til að búa til viðburði í Apple Calendar frá Chrome og Google-linsu.</translation>
 <translation id="8156478151976189188">Samstilling aðgangsorða virkar ekki</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> reikningar</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tækin þín<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Þýða síðu</translation>
 <translation id="8205564605687841303">Hætta við</translation>
@@ -1047,7 +1049,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8237382152611443140">Opnaðu stillingar sjálfvirkrar útfyllingar aðgangsorða</translation>
 <translation id="8261506727792406068">Eyða</translation>
 <translation id="8264966119170358612">Sum vistuðu aðgangsorðin þín voru afhjúpuð í öryggisbroti utan Google. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Aðeins í þessu tæki</translation>
 <translation id="8271720166617117963">Samþykkja og skrá inn</translation>
 <translation id="8278938988428169257">Sláðu inn orð eða setningu</translation>
 <translation id="8281781826761538115">Sjálfgefið – <ph name="DEFAULT_LOCALE" /></translation>

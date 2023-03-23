@@ -126,6 +126,7 @@
 <translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1546492247443594934">桌面 2</translation>
 <translation id="1546930421365146760">請與系統管理員聯絡，要求對方在 Google 管理控制台中設定這部裝置</translation>
+<translation id="1549512626801247439">儲存空間管理</translation>
 <translation id="1550406609415860283">有可用的裝置</translation>
 <translation id="1550523713251050646">按一下即可查看更多選項</translation>
 <translation id="1555130319947370107">藍色</translation>
@@ -249,6 +250,7 @@
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149229036084364364">播放上一首曲目</translation>
 <translation id="2161132820593978283">試用相機取景功能，讓你在視訊通話時處於畫面中央。你可以在「快速設定」中開啟這項功能。</translation>
+<translation id="2165966740263283349">儲存空間使用量</translation>
 <translation id="2170530631236737939">以三指向下滑動即可結束「總覽」</translation>
 <translation id="2185166372312820725">前往上一個分頁</translation>
 <translation id="2185444992308415167">瀏覽分頁 1 至 8</translation>
@@ -286,6 +288,7 @@
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2360398059912971776">電池</translation>
 <translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
 <translation id="2369165858548251131">「你好」的英文</translation>
@@ -320,6 +323,7 @@
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">解鎖視窗</translation>
 <translation id="2530896289327917474">開啟或關閉鍵盤瀏覽功能</translation>
+<translation id="2531025035050312891">裝置運作緩慢</translation>
 <translation id="2542089167727451762">輕觸你的個人資料圖片</translation>
 <translation id="254900897760075745">將所選內容複製到剪貼簿</translation>
 <translation id="255671100581129685">Google 助理不適用於公開工作階段。</translation>
@@ -332,6 +336,7 @@
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
 <translation id="2598725286293895280">桌面不支援的應用程式</translation>
 <translation id="2607678425161541573">需要線上登入</translation>
+<translation id="2612072250312279703">活動監測工具</translation>
 <translation id="2612614436418177118">在應用程式排列顯示畫面中移動應用程式圖示</translation>
 <translation id="2620016719323068571">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容...</translation>
 <translation id="2620436844016719705">系統</translation>
@@ -461,6 +466,7 @@
 <translation id="3256109297135787951">取消檔案櫃項目的醒目顯示狀態</translation>
 <translation id="3260969790895726815">語音內容會在本機進行處理，語音輸入可離線運作，但部分語音指令無法使用。</translation>
 <translation id="3269597722229482060">按一下滑鼠右鍵</translation>
+<translation id="3289364673986435196">電源鍵選單</translation>
 <translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
 <translation id="3289674678944039601">正在透過變壓器充電</translation>
 <translation id="3290356915286466215">不安全</translation>
@@ -471,6 +477,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
 <translation id="332827762492701193">通知已隱藏</translation>
+<translation id="3338855835380298613">CPU 使用率</translation>
 <translation id="3339826665088060472">螢幕畫面擷取、擷取螢幕截圖和錄製螢幕畫面的工具</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341303451326249809">已擷取螢幕截圖</translation>
@@ -478,6 +485,7 @@
 <translation id="334927402682780278">選取從游標到該行結尾之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
 <translation id="3351879221545518001">你目前正在投放畫面。</translation>
+<translation id="3354555338129305222">為什麼裝置運作緩慢</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
 <translation id="3365977133351922112">你的手機距離太遠，請拿近一點。</translation>
 <translation id="3368922792935385530">已連線</translation>
@@ -581,6 +589,7 @@
 <translation id="3779139509281456663">正在連結 <ph name="NAME" /></translation>
 <translation id="3783640748446814672">Alt</translation>
 <translation id="3784455785234192852">鎖定</translation>
+<translation id="3796198851576711985">電池壽命</translation>
 <translation id="3796746699333205839">某個應用程式正在使用攝影機和麥克風</translation>
 <translation id="3798670284305777884">喇叭 (內部)</translation>
 <translation id="3799080171973636491">你按下了全螢幕放大鏡的鍵盤快速鍵。確定要啟用這項功能嗎？</translation>
@@ -682,6 +691,7 @@
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下鍵」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右鍵。</translation>
 <translation id="4279490309300973883">鏡像</translation>
+<translation id="4280601795273309128">安全性更新已終止，請升級裝置。</translation>
 <translation id="4283888303416325161">基於安全考量，請輸入密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="4294319844246081198">早安，<ph name="GIVEN_NAME" />：</translation>
@@ -737,9 +747,11 @@
 <translation id="4527045527269911712">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。</translation>
 <translation id="4533343294786968049">延長電池續航力。電池電量將在<ph name="FULLY_CHARGE_TIME" /> 充飽。</translation>
 <translation id="453661520163887813"><ph name="TIME" /> 後充飽</translation>
+<translation id="4536664881735498710">RAM 用量</translation>
 <translation id="4538824937723742295">擷取全螢幕畫面</translation>
 <translation id="4539127209940689201">列印目前的網頁</translation>
 <translation id="4544483149666270818">選取要錄影的視窗</translation>
+<translation id="454541942614298893">我的裝置</translation>
 <translation id="4548482551627849548">將使用中的視窗移至左側桌面</translation>
 <translation id="4560576029703263363">開啟</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -854,9 +866,11 @@
 <translation id="5043679421800073804">點選或輕觸檔案櫃中的最後一個圖示</translation>
 <translation id="504465286040788597">上一段</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
+<translation id="5062496344832867502">RAM</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
 <translation id="5092436659250499817">開啟/關閉鍵盤背光</translation>
+<translation id="5094577350232361255">關於</translation>
 <translation id="509790653408515442">串流手機的應用程式時，這些應用程式會顯示在這裡</translation>
 <translation id="5098537242461068432">已重新開啟桌面和視窗</translation>
 <translation id="5104236669533825617">無法建立螢幕側錄工作階段</translation>
@@ -868,6 +882,7 @@
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5150070631291639005">隱私權設定</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
+<translation id="5163434717504750796">電池健康度：<ph name="BATTERY_HEALTH_PERCENTAGE" />% | 充電循環次數：<ph name="CYCLE_COUNT" /> 次</translation>
 <translation id="5166007464919321363">將桌面儲存為範本</translation>
 <translation id="5168181903108465623">可用的投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
@@ -958,6 +973,7 @@
 <translation id="557563299383177668">下一段</translation>
 <translation id="5577082622442191756">切換藍牙。<ph name="STATE_TEXT" />。</translation>
 <translation id="5577281275355252094">如要使用 Phone Hub，請確認手機已開啟藍牙功能</translation>
+<translation id="5578188167649348993">記憶體</translation>
 <translation id="5580000943347215299">資料庫</translation>
 <translation id="558849140439112033">拖曳選取要擷圖的區域</translation>
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
@@ -1027,6 +1043,7 @@
 <translation id="589817443623831496">點掃描</translation>
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
 <translation id="5901630391730855834">黃色</translation>
+<translation id="5902162043476810127">隨機存取記憶體</translation>
 <translation id="5909862606227538307">非使用中的桌面。</translation>
 <translation id="5911231045062997865">目前不支援 Lacros 視窗，系統將儲存其他應用程式。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1132,6 +1149,7 @@
 <translation id="6431865393913628856">螢幕畫面錄製</translation>
 <translation id="6442259747294754014">裝置的麥克風存取權已關閉</translation>
 <translation id="6445835306623867477">正在透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
+<translation id="6445915701151710649">CPU</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="6449483711453944360">目前不支援 Linux 應用程式和無痕式視窗</translation>
 <translation id="6452181791372256707">拒絕</translation>
@@ -1205,6 +1223,7 @@
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
 <translation id="6753390234084146956">分頁</translation>
 <translation id="6757237461819837179">目前未播放任何媒體</translation>
+<translation id="6768043681523654438">儲存空間</translation>
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6781002679438061620">桌面 9</translation>
 <translation id="6782182743534150858">桌面 13</translation>
@@ -1337,6 +1356,7 @@
 <translation id="743058460480092004">攝影機和麥克風正在使用中。</translation>
 <translation id="7452560014878697800">某個應用程式正在使用攝影機</translation>
 <translation id="7453330308669753048">搜尋已移除的搜尋記錄</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | 還要 <ph name="TIME" />才能充飽</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">螢幕畫面錄製模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
@@ -1402,6 +1422,7 @@
 <translation id="7723703419796509666">顯示或隱藏開發人員工具控制台</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7727952505535211425">在新分頁中開啟網址列中的網站</translation>
+<translation id="77365090426890123">記憶體用量</translation>
 <translation id="7742327441377685481">沒有任何通知</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="776344839111254542">按一下即可查看更新詳細資料</translation>
@@ -1633,6 +1654,8 @@
 <translation id="8853703225951107899">系統仍然無法驗證你的 PIN 碼或密碼。注意：如果你最近變更了密碼，請使用舊密碼。系統會在你登出帳戶後套用新密碼。</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
 <translation id="8858369206579825206">隱私權控制項</translation>
+<translation id="8860817004574502558">電池續航力</translation>
+<translation id="8863602954531760927">已使用 <ph name="STORAGE_IN_USE_SIZE" />/<ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">這個應用程式不支援分割畫面。</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8875021410787719674">在以下位置之間移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
@@ -1699,6 +1722,7 @@
 <translation id="9178475906033259337">目前正顯示 1 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
 <translation id="9179259655489829027">這項功能可讓你快速存取任何已登入的使用者帳戶，不需提供密碼。使用這項功能時，請務必只存取你信任的帳戶。</translation>
 <translation id="9183456764293710005">全螢幕放大鏡</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | 還剩 <ph name="TIME" /></translation>
 <translation id="9193626018745640770">正在透過不明接收器投放</translation>
 <translation id="9194617393863864469">登入其他使用者帳戶...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> 的解析度已變更為 <ph name="RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>

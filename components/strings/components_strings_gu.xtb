@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">તમે મુલાકાત લો તે વેબસાઇટ અને તેના પર વિતાવેલો સમય</translation>
 <translation id="1824402189105105503">આઠમો રોલ</translation>
 <translation id="1826516787628120939">તપાસી રહ્યાં છે</translation>
+<translation id="1826968372364864056">ફોર્મ સાફ કરો</translation>
 <translation id="1828959155404624835">કાર ભાડા પર આપતી કંપનીઓ</translation>
 <translation id="1834321415901700177">આ સાઇટમાં હાનિકારક પ્રોગ્રામ્સ છે</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
@@ -808,6 +809,7 @@
 <translation id="2951588413176968965">મારું મેઇલબૉક્સ</translation>
 <translation id="2952820037279740115">બધી છૂપી વિન્ડો બંધ કરો</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">સાચવેલી ચુકવણી પદ્ધતિઓનું કોષ્ટક</translation>
 <translation id="295526156371527179">ચેતવણી: નીતિમાં ઉલ્લેખ કર્યા મુજબ આ નીતિને શબ્દકોશ તરીકે મર્જ કરવામાં આવી ન હતી, કારણ કે તે શબ્દકોશ નથી.</translation>
 <translation id="2955913368246107853">શોધ બાર બંધ કરો</translation>
 <translation id="2958544468932521864">ક્રિકેટ</translation>
@@ -1967,6 +1969,7 @@
 <translation id="5786044859038896871">શું તમે તમારી કાર્ડ માહિતી ભરવા માગો છો?</translation>
 <translation id="578633867165174378">Chromeને તમે હમણાં જ ડેટા ઉલ્લંઘનમાં ઉપયોગમાં લીધેલો પાસવર્ડ મળ્યો છે. અમે આ પાસવર્ડ હમણાં જ બદલવાનો સુઝાવ આપીએ છીએ.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{એકપણ નહીં}=1{1 એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}one{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}other{# એકાઉન્ટ માટેનો સાઇન-ઇન ડેટા}}</translation>
 <translation id="580241730938216256">અપડેટ શરૂ કરો</translation>
 <translation id="5803412860119678065">શું તમે તમારી <ph name="CARD_DETAIL" /> માહિતી ભરવા માગો છો?</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
@@ -2522,6 +2525,7 @@
 <translation id="7201591969684833065">તમારા વ્યવસ્થાપક જોઈ શકે છે:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ખાનગી રીતે બ્રાઉઝ કરવા નવી છૂપી ટૅબ ખોલવા માટે Tab પછી Enter દબાવો</translation>
 <translation id="7203375778433816396">Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{એકપણ નહીં}=1{1 પાસકી}one{# પાસકી}other{# પાસકી}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, સુરક્ષા માનકોનું પાલન કરતું નથી.</translation>
 <translation id="7210993021468939304">કન્ટેનરની અંદર જ Linuxની પ્રવૃત્તિ અને કન્ટેનરની અંદર જ Linuxની ઍપ ઇન્સ્ટૉલ કરી શકાશે તેમજ ચલાવી શકાશે</translation>
 <translation id="721197778055552897">આ સમસ્યા વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>
@@ -2774,6 +2778,7 @@
 <translation id="7736959720849233795">લિંકનું ઍડ્રેસ કૉપિ કરો</translation>
 <translation id="7740996059027112821">માનક</translation>
 <translation id="77424286611022110">આ સાઇટ ઘૃણાસ્પદ અથવા ગેરમાર્ગે દોરનારી જાહેરાતો બતાવે છે. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">સાચવેલા સરનામાંનું કોષ્ટક</translation>
 <translation id="774634243536837715">જોખમકારક કન્ટેન્ટ બ્લૉક કર્યું.</translation>
 <translation id="7751971323486164747">Chromeમાં ફૉન્ટના કદ અને ટાઇપફેસ કસ્ટમાઇઝ કરો</translation>
 <translation id="7752995774971033316">બિનસંચાલિત</translation>
@@ -3015,6 +3020,7 @@
 <translation id="8347658365704983341">દૂરસ્થ શિક્ષણ</translation>
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
 <translation id="8351131234907093545">નોંધ બનાવો</translation>
+<translation id="835203957414790336">તમે જે પેજ પ્રિન્ટ કરો છો તેનું કન્ટેન્ટ અને તમારા પ્રિન્ટર વિશેની માહિતી વિશ્લેષણ માટે Google Cloud અથવા ત્રીજા પક્ષોને મોકલવામાં આવે છે. ઉદાહરણ તરીકે, તેને સંવેદનશીલ વ્યક્તિગત ડેટા માટે સ્કૅન કરવામાં આવી શકે છે.</translation>
 <translation id="8355270400102541638">સ્થાનિક ક્રૅશ સંદર્ભ:</translation>
 <translation id="8363502534493474904">એરપ્લેન મોડ બંધ કરીને</translation>
 <translation id="8364627913115013041">સેટ નથી.</translation>

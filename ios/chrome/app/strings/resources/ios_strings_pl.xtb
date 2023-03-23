@@ -812,6 +812,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="650279896687777322">Więcej informacji…</translation>
 <translation id="6510072653668207258">Przypomnij później</translation>
 <translation id="651505212789431520">Anulować synchronizację? W każdej chwili możesz włączyć synchronizację w Ustawieniach.</translation>
+<translation id="6518133107902771759">Zweryfikuj</translation>
 <translation id="6524918542306337007">Tryb incognito jest niedostępny</translation>
 <translation id="6530992499366869131">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -841,6 +842,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6672241253012342409">Witryny mogą używać plików cookie dla Twojej wygody – na przykład aby nie wylogowywać Cię z konta lub zapamiętywać zawartość koszyka.
 
 W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam.</translation>
+<translation id="6672697278890207089">Wprowadź swoje hasło</translation>
 <translation id="6674571176963658787">Aby rozpocząć synchronizację, wpisz hasło</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6684906340059221832">Monitorowanie cen</translation>
@@ -1046,6 +1048,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8136856065410661948">Będziemy z tego korzystać, aby tworzyć wydarzenia z Chrome i Obiektywu Google w kalendarzu Apple.</translation>
 <translation id="8156478151976189188">Funkcja Password Sync nie działa</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kont(a)</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Twoje urządzenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Przetłumacz stronę</translation>
 <translation id="8205564605687841303">Anuluj</translation>
@@ -1055,7 +1058,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8237382152611443140">Otwórz Automatyczne wypełnianie haseł w Ustawieniach.</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8264966119170358612">Niektóre z Twoich zapisanych haseł zostały ujawnione w wyniku naruszenia bezpieczeństwa danych poza firmą Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Tylko na tym urządzeniu</translation>
 <translation id="8271720166617117963">Zaakceptuj i zaloguj się</translation>
 <translation id="8278938988428169257">Wpisz słowo lub wyrażenie</translation>
 <translation id="8281781826761538115">Domyślny – <ph name="DEFAULT_LOCALE" /></translation>

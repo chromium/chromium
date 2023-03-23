@@ -386,6 +386,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1822540298136254167">Odwiedzone strony internetowe i spędzony na nich czas</translation>
 <translation id="1824402189105105503">Rolka 8</translation>
 <translation id="1826516787628120939">Sprawdzam</translation>
+<translation id="1826968372364864056">Wyczyść formularz</translation>
 <translation id="1828959155404624835">Wypożyczalnie samochodów</translation>
 <translation id="1834321415901700177">Ta strona zawiera szkodliwe programy</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
@@ -1968,6 +1969,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5786044859038896871">Chcesz wpisać dane swojej karty?</translation>
 <translation id="578633867165174378">Przeglądarka Chrome znalazła użyte właśnie hasło w naruszeniu bezpieczeństwa danych. Zalecamy jak najszybszą zmianę tego hasła.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Brak}=1{dane logowania dla 1 konta}few{dane logowania dla # kont}many{dane logowania dla # kont}other{dane logowania dla # konta}}</translation>
 <translation id="580241730938216256">Rozpocznij aktualizację</translation>
 <translation id="5803412860119678065">Chcesz wpisać dane swojej karty (<ph name="CARD_DETAIL" />)?</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
@@ -2523,6 +2525,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7201591969684833065">Administrator może zobaczyć:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby otworzyć nową kartę incognito i przeglądać prywatnie</translation>
 <translation id="7203375778433816396">Ustaw Chrome jako domyślną przeglądarkę w systemie</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Brak}=1{1 klucz}few{# klucze}many{# kluczy}other{# klucza}}</translation>
 <translation id="7210863904660874423">Serwer <ph name="HOST_NAME" /> nie spełnia norm bezpieczeństwa.</translation>
 <translation id="7210993021468939304">Wyświetlanie aktywności Linuksa w kontenerze oraz instalowanie i uruchamianie aplikacji Linuksa w kontenerze</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /> na temat tego problemu.</translation>

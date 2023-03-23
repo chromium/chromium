@@ -565,7 +565,7 @@ Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. 
 <translation id="1485015260175968628">Sada može:</translation>
 <translation id="1485141095922496924">Verzija <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Pretražite lozinke</translation>
-<translation id="1486486872607808064">Skenirajte ovaj QR kôd kamerom na uređaju na kojem želite izraditi pristupni ključ za aplikaciju <ph name="APP_NAME" /></translation>
+<translation id="1486486872607808064">Skenirajte ovaj QR kôd kamerom na uređaju na kojem želite kreirati pristupni ključ za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Uključeno – prilagođene postavke</translation>
 <translation id="1493892686965953381">Čeka se <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Web lokacije mogu tražiti fontove instalirane na uređaju</translation>
@@ -776,7 +776,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="164936512206786300">Okončaj uparivanje Bluetooth uređaja</translation>
 <translation id="1651008383952180276">Morate dvaput unijeti isti pristupni izraz</translation>
 <translation id="1652326691684645429">Omogući Dijeljenje u blizini</translation>
-<translation id="1654580009054503925">Nije dopušteno prikazivanje zahtjeva</translation>
+<translation id="1654580009054503925">Nije dozvoljeno prikazivanje zahtjeva</translation>
 <translation id="1656528038316521561">Neprozirnost pozadine</translation>
 <translation id="1657406563541664238">Pomozite nam da poboljšamo <ph name="PRODUCT_NAME" /> automatskim slanjem statistika korištenja i izvještaja o padovima aplikacija Googleu</translation>
 <translation id="1657937299377480641">Da se prijaviš ponovo za pristup obrazovnim izvorima, zatraži od roditelja pristup</translation>
@@ -3423,7 +3423,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3957079323242030166">Podaci sigurnosne kopije se neće računati u vašu kvotu Pohrane na Disku.</translation>
 <translation id="3957844511978444971">Dodirnite „Prihvatam“ da potvrdite svoj odabir ovih postavki za Googleove usluge.</translation>
 <translation id="3958088479270651626">Uvezite oznake i postavke</translation>
-<translation id="3958110062351175311">Dopušteno je prikazivanje zahtjeva na alatnoj traci</translation>
+<translation id="3958110062351175311">Dozvoljeno je prikazivanje zahtjeva u alatnoj traci</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Više radnji za oznaku <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Standardna zaštita od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasne</translation>
@@ -3683,7 +3683,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4205157409548006256">Došlo je do greške prilikom konfiguriranja Linuxa.</translation>
 <translation id="4206144641569145248">Vanzemaljac</translation>
 <translation id="4206323443866416204">Izvještaj o povratnim informacijama</translation>
-<translation id="4206585797409671301">Dopušteno je prikazivanje zahtjeva</translation>
+<translation id="4206585797409671301">Dozvoljeno je prikazivanje zahtjeva</translation>
 <translation id="4207932031282227921">Zatraženo je odobrenje. Pritisnite F6 da odgovorite</translation>
 <translation id="4208390505124702064">Pretraži <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Veliki</translation>
@@ -4354,7 +4354,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="481574578487123132">Povezani uređaji</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detalji</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{Izbrisana je 1 oznaka}one{Izbrisana je {COUNT} oznaka}few{Izbrisane su {COUNT} oznake}other{Izbrisano je {COUNT} oznaka}}</translation>
-<translation id="4816900689218414104">Izrada pristupnog ključa na telefonu ili tabletu</translation>
+<translation id="4816900689218414104">Kreirajte pristupni ključ na telefonu ili tabletu</translation>
 <translation id="4819323978093861656">{0,plural, =0{Zatvaraju se sada.}=1{Zatvaraju se za 1 sekundu}one{Zatvaraju se za # sekundu}few{Zatvaraju se za # sekunde}other{Zatvaraju se za # sekundi}}</translation>
 <translation id="4819607494758673676">Obavještenja Google Asistenta</translation>
 <translation id="4820236583224459650">Postavi kao aktivan tiket</translation>
@@ -6831,7 +6831,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7044606776288350625">Sinhronizacija podataka</translation>
 <translation id="7047059339731138197">Odaberite pozadinu</translation>
 <translation id="7049293980323620022">Zadržati fajl?</translation>
-<translation id="70496770794393383">Tablica spremljenih zaporki</translation>
+<translation id="70496770794393383">Tabela sačuvanih lozinki</translation>
 <translation id="7050037487872780845">Nevažeća konfiguracija pristupne tačke</translation>
 <translation id="7051551856857948729">Sakrijte vrijednost IBAN-a</translation>
 <translation id="7052237160939977163">Pošalji podatke o praćenju performansi</translation>

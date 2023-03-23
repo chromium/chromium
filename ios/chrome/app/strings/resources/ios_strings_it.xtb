@@ -483,6 +483,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4474494258097106883">Realizzato per il tuo iPhone</translation>
 <translation id="4476574785019001431">Impostazioni</translation>
 <translation id="448433063499977729">La sincronizzazione è stata disattivata</translation>
+<translation id="4489536976005181779">{count,plural, =1{Pagina aggiunta al tuo elenco di lettura nel tuo account, {email}}other{Pagine aggiunte al tuo elenco di lettura nel tuo account, {email}}}</translation>
 <translation id="4496373720959965247">Aggiungi schede e spostati tra le pagine</translation>
 <translation id="4502566650163919158">Controlla ora</translation>
 <translation id="4505980578794259603">Ultima verifica: <ph name="TIME" />.</translation>
@@ -804,6 +805,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="650279896687777322">Scopri di più…</translation>
 <translation id="6510072653668207258">Ricordamelo più tardi</translation>
 <translation id="651505212789431520">Annullare la sincronizzazione? Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni.</translation>
+<translation id="6518133107902771759">Verifica</translation>
 <translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
 <translation id="6530992499366869131">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -833,6 +835,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6672241253012342409">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.
 
 Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci.</translation>
+<translation id="6672697278890207089">Inserisci la passphrase</translation>
 <translation id="6674571176963658787">Per avviare la sincronizzazione devi inserire la tua passphrase</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6684906340059221832">Stai monitorando i prezzi</translation>
@@ -1037,6 +1040,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8136856065410661948">Verranno creati eventi nel tuo Calendario Apple da Chrome e Google Lens.</translation>
 <translation id="8156478151976189188">La sincronizzazione delle password non funziona</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> account</translation>
+<translation id="8179976553408161302">Invio</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Traduci la pagina</translation>
 <translation id="8205564605687841303">Annulla</translation>
@@ -1046,7 +1050,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8237382152611443140">Apri le Impostazioni Riempimento automatico password</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Solo su questo dispositivo</translation>
 <translation id="8271720166617117963">Accetta e accedi</translation>
 <translation id="8278938988428169257">Inserisci una parola o una frase</translation>
 <translation id="8281781826761538115">Predefinita - <ph name="DEFAULT_LOCALE" /></translation>

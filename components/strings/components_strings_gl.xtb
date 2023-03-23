@@ -386,6 +386,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1822540298136254167">Sitios web que visitas e tempo que pasas neles</translation>
 <translation id="1824402189105105503">Oitavo rolo</translation>
 <translation id="1826516787628120939">Comprobando</translation>
+<translation id="1826968372364864056">Borrar formulario</translation>
 <translation id="1828959155404624835">Alugueiros de coches</translation>
 <translation id="1834321415901700177">Este sitio contén programas daniños</translation>
 <translation id="1838374766361614909">Borrar busca</translation>
@@ -1967,6 +1968,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5786044859038896871">Queres completar a información da tarxeta de crédito?</translation>
 <translation id="578633867165174378">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Recomendámosche que o cambies de inmediato.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Ningún}=1{datos de inicio de sesión para 1 conta}other{datos de inicio de sesión para # contas}}</translation>
 <translation id="580241730938216256">Iniciar actualización</translation>
 <translation id="5803412860119678065">Queres completar a información da tarxeta de crédito <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -2522,6 +2524,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7201591969684833065">O teu administrador pode ver:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para abrir unha nova pestana do modo de incógnito e navegar de forma privada, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="7203375778433816396">Establecer Chrome como navegador predeterminado do sistema</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Ningunha}=1{1 clave de acceso}other{# claves de acceso}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non cumpre cos estándares de seguranza.</translation>
 <translation id="7210993021468939304">Actividade de Linux no contedor, e pode instalar e executar aplicacións de Linux no contedor.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca deste problema.</translation>

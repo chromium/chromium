@@ -483,6 +483,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4474494258097106883">iPhone'unuz için Geliştirildi</translation>
 <translation id="4476574785019001431">Ayarlar</translation>
 <translation id="448433063499977729">Senkronizasyon Kapatıldı</translation>
+<translation id="4489536976005181779">{count,plural, =1{Sayfa, {email} hesabınızdaki Okuma Listenize eklendi}other{Sayfalar, {email} hesabınızdaki Okuma Listenize eklendi}}</translation>
 <translation id="4496373720959965247">Sekmeler ekleyin ve sayfalar arasında geçiş yapın</translation>
 <translation id="4502566650163919158">Şimdi Denetle</translation>
 <translation id="4505980578794259603">Son kontrol zamanı: <ph name="TIME" />.</translation>
@@ -804,6 +805,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="650279896687777322">Daha Fazla Bilgi...</translation>
 <translation id="6510072653668207258">Daha Sonra Hatırlat</translation>
 <translation id="651505212789431520">Senkronizasyon iptal edilsin mi? Senkronizasyonu istediğiniz zaman Ayarlar'dan açabilirsiniz.</translation>
+<translation id="6518133107902771759">Doğrula</translation>
 <translation id="6524918542306337007">Gizli Mod Kullanılamıyor</translation>
 <translation id="6530992499366869131">Şifreleriniz Bir Veri İhlalinde İfşa Olursa Uyarı Alın</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -833,6 +835,7 @@ Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="6672241253012342409">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir.
 
 Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerez kullanamaz.</translation>
+<translation id="6672697278890207089">Parolanızı girin</translation>
 <translation id="6674571176963658787">Senkronizasyonu başlatmak için parolanızı girin</translation>
 <translation id="667999046851023355">Doküman</translation>
 <translation id="6684906340059221832">Fiyatlar Takip Ediliyor</translation>
@@ -1037,6 +1040,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8136856065410661948">Bu bilgiler, Chrome ve Google Lens'ten alınan etkinlikleri Apple Takvim'de oluşturmak için kullanılır.</translation>
 <translation id="8156478151976189188">Şifre Senkronizasyonu Çalışmıyor</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> hesap</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Sayfayı Çevir</translation>
 <translation id="8205564605687841303">İptal</translation>
@@ -1046,7 +1050,6 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8237382152611443140">Şifreleri Otomatik Doldur ayarlarını açın</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8264966119170358612">Google harici bir veri ihlalinde bazı kayıtlı şifrelerinizin güvenliği ihlal edildi. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Yalnızca bu cihazda</translation>
 <translation id="8271720166617117963">Kabul Et ve Oturum Aç</translation>
 <translation id="8278938988428169257">Bir kelime veya kelime öbeği girin</translation>
 <translation id="8281781826761538115">Varsayılan - <ph name="DEFAULT_LOCALE" /></translation>

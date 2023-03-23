@@ -483,6 +483,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4474494258097106883">Wedi'i Ddatblygu ar gyfer Eich iPhone</translation>
 <translation id="4476574785019001431">Gosodiadau</translation>
 <translation id="448433063499977729">Mae Cysoni wedi'i Ddiffodd</translation>
+<translation id="4489536976005181779">{count,plural, =1{Mae tudalen wedi'i hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}zero{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}two{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}few{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}many{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}other{Mae tudalennau wedi'u hychwanegu at eich rhestr ddarllen yn eich cyfrif, {email}}}</translation>
 <translation id="4496373720959965247">Ychwanegu tabiau a newid rhwng tudalennau</translation>
 <translation id="4502566650163919158">Gwirio Nawr</translation>
 <translation id="4505980578794259603">Gwiriwyd ddiwethaf: <ph name="TIME" />.</translation>
@@ -804,6 +805,7 @@ Ceisiwch ddefnyddio cyfrinair unigryw ar gyfer pob gwefan.</translation>
 <translation id="650279896687777322">Dysgu Rhagor...</translation>
 <translation id="6510072653668207258">Atgoffa Fi yn Nes Ymlaen</translation>
 <translation id="651505212789431520">Canslo'r Cysoni? Gallwch droi cysoni ymlaen unrhyw bryd yn y Gosodiadau.</translation>
+<translation id="6518133107902771759">Dilysu</translation>
 <translation id="6524918542306337007">Nid yw'r Mood Anhysbys ar gael</translation>
 <translation id="6530992499366869131">Yn Eich Rhybuddio os yw Cyfrineiriau'n Cael eu Datgelu Mewn Tor Data</translation>
 <translation id="6537746030088321027">enghraifft.com</translation>
@@ -1037,6 +1039,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8136856065410661948">Bydd hwn yn cael ei ddefnyddio i greu digwyddiadau yn eich Apple Calendar o Chrome a Google Lens.</translation>
 <translation id="8156478151976189188">Nid yw Cysoni Cyfrineiriau yn Gweithio</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> o gyfrifon</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Eich dyfeisiau<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Cyfieithu'r Dudalen</translation>
 <translation id="8205564605687841303">Canslo</translation>
@@ -1046,7 +1049,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8237382152611443140">Agorwch y Gosodiadau Awtolenwi Cyfrinair</translation>
 <translation id="8261506727792406068">Dileu</translation>
 <translation id="8264966119170358612">Cafodd rhai o'ch cyfrineiriau a gadwyd eu datgelu mewn achos o dor diogelwch data y tu allan i Google. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Ar y ddyfais hon yn unig</translation>
 <translation id="8271720166617117963">Derbyn a Mewngofnodi</translation>
 <translation id="8278938988428169257">Rhowch Air neu Ymadrodd</translation>
 <translation id="8281781826761538115">Diofyn - <ph name="DEFAULT_LOCALE" /></translation>

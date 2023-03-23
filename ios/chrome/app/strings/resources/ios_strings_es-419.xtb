@@ -483,6 +483,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4474494258097106883">Diseñado para tu iPhone</translation>
 <translation id="4476574785019001431">Configuración</translation>
 <translation id="448433063499977729">La sincronización está desactivada</translation>
+<translation id="4489536976005181779">{count,plural, =1{Se agregó la página a la lista de lectura de tu cuenta ({email})}other{Se agregaron las páginas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4496373720959965247">Agrega pestañas y alterna entre páginas</translation>
 <translation id="4502566650163919158">Verificar ahora</translation>
 <translation id="4505980578794259603">Última comprobación: <ph name="TIME" /></translation>
@@ -804,6 +805,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="650279896687777322">Más información…</translation>
 <translation id="6510072653668207258">Recordarme más tarde</translation>
 <translation id="651505212789431520">¿Quieres cancelar la sincronización? Puedes activarla en la Configuración en cualquier momento.</translation>
+<translation id="6518133107902771759">Verificar</translation>
 <translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
 <translation id="6530992499366869131">Advertirme si quedan expuestas las contraseñas ante una violación de la seguridad de los datos</translation>
 <translation id="6537746030088321027">ejemplo.com</translation>
@@ -833,6 +835,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6672241253012342409">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos en el carrito de compras.
 
 Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
+<translation id="6672697278890207089">Ingresa tu frase de contraseña</translation>
 <translation id="6674571176963658787">Para iniciar la sincronización, ingresa tu frase de contraseña.</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6684906340059221832">Se está realizando el seguimiento de los precios</translation>
@@ -1037,6 +1040,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8136856065410661948">Se usará para crear eventos en el Calendario de Apple desde Chrome y Google Lens.</translation>
 <translation id="8156478151976189188">No funciona la Sincronización de contraseñas.</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> cuentas</translation>
+<translation id="8179976553408161302">Intro</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Traducir página</translation>
 <translation id="8205564605687841303">Cancelar</translation>
@@ -1046,7 +1050,6 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8237382152611443140">Ve a Autorrelleno de contraseñas en Configuración.</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8264966119170358612">Se expusieron algunas de tus contraseñas guardadas en una violación de la seguridad de los datos de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Solo en este dispositivo</translation>
 <translation id="8271720166617117963">Aceptar y acceder</translation>
 <translation id="8278938988428169257">Ingresa una palabra o frase.</translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>

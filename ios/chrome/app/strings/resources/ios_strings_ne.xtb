@@ -16,6 +16,7 @@
 <translation id="1054745118061919935">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK" />सेवाका सर्तहरू<ph name="END_LINK" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="1063454504051558093">अर्को पासवर्ड प्रयोग गर्नुहोस्...</translation>
 <translation id="1066060668811609597">सिंक व्यवस्थापन गर्नुहोस्</translation>
+<translation id="1069154182096085577">यो पासवर्ड पहिले नै सेभ गरिसकिएको छ</translation>
 <translation id="1076421457278169141">कोड स्क्यान गरियो</translation>
 <translation id="1076785341346483463">व्यवस्थापन गरिएको खातासँग सिंक गर्नुहोस्</translation>
 <translation id="1084365883616172403">Facebook पोस्ट पूरा भयो।</translation>
@@ -121,6 +122,7 @@
 <translation id="1740468249224277719">स्थापना गर्न डबल ट्याप गर्नुहोस्।</translation>
 <translation id="1752547299766512813">पासवर्डहरू सेभ गर्नुहोस्</translation>
 <translation id="1753905327828125965">धेरै भ्रमण गरिएको</translation>
+<translation id="1767766085187034454">Google Translate</translation>
 <translation id="1789803444939621101">फेरि स्वागत छ, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">कार्डवालाको नाम</translation>
 <translation id="1809939268435598390">फोल्डर मेटाउनुहोस्</translation>
@@ -215,6 +217,7 @@
 <translation id="2523363575747517183">यो वेबसाइटले बारम्बार अर्को एप खोल्ने प्रयास गर्दैछ।</translation>
 <translation id="2529021024822217800">सबै खोल्नुहोस्</translation>
 <translation id="2547458583188611426">सिंक गर्ने सुविधाले काम गरिरहेको छैन। सिंक गर्ने कार्य सुरु गर्न आफ्नो पासफ्रेज हाल्नुहोस्।</translation>
+<translation id="2551153019974022505">खातासम्बन्धी त्रुटि</translation>
 <translation id="2556092377360758201">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="2562041823070056534"><ph name="DEVICE_NAME" /> मा पठाउँदै...</translation>
 <translation id="2576499762020411840">मेरो Google खातामा पासवर्डहरू सेभ गरिऊन् र ती पासवर्डहरू प्रयोग गरिऊन्</translation>
@@ -417,6 +420,7 @@
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
 <translation id="3929457972718048006">ठेगानाहरू</translation>
 <translation id="3943492037546055397">पासवर्डहरू</translation>
+<translation id="3951717558054674026">{count,plural, =1{{count} वटा कमजोर पासवर्ड भेटियो}other{{count} वटा कमजोर पासवर्ड भेटिए}}</translation>
 <translation id="3959736869653157332">मेनु → नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -468,6 +472,7 @@
 <translation id="4334428914252001502">१ वटा नपढिएको लेख।</translation>
 <translation id="4338650699862464074">यसले Google मा तपाईं जाने पृष्ठका URL हरू पठाउँछ।</translation>
 <translation id="4342054591427973606">{count,plural, =1{यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यो ठेगाना मेटाइने छ।}other{यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यी ठेगानाहरू मेटाइने छन्।}}</translation>
+<translation id="4342946437867096381">तपाईंले आफ्नो Google खातामा यो साइटको पासवर्ड सेभ गरिसक्नुभएको छ। Google ले तपाईंका लागि हालसालैका पासवर्डहरू चयन गर्न सक्छ।</translation>
 <translation id="4343046787186034850">क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="4359125752503270327">यो पृष्ठ अर्को एपमा खुल्नेछ।</translation>
 <translation id="4375040482473363939">QR कोड खोज्नुहोस्‌</translation>
@@ -483,6 +488,7 @@
 <translation id="4474494258097106883">तपाईंको iPhone का लागि बनाइएको</translation>
 <translation id="4476574785019001431">सेटिङहरू</translation>
 <translation id="448433063499977729">सिंक गर्ने सुविधा अफ गरिएको छ</translation>
+<translation id="4488754974567924717">तपाईंका पासवर्डहरू ह्याक वा चोरी भएका खण्डमा हामी तपाईंलाई त्यसका बारेमा जानकारी दिने छौँ</translation>
 <translation id="4489536976005181779">{count,plural, =1{यो पेज तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएको छ}other{यी पेजहरू तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएका छन्}}</translation>
 <translation id="4496373720959965247">ट्याबहरू थप्नुहोस् र पृष्ठहरू बीच बदल्नुहोस्</translation>
 <translation id="4502566650163919158">अहिले नै जाँच्नुहोस्</translation>
@@ -589,6 +595,7 @@
 <translation id="5150492518600715772">आफ्ना यन्त्रमा पठाउनुहोस्</translation>
 <translation id="5168414296986405587">iPadOS का लागि बनाइएको</translation>
 <translation id="5173088371991956744">"सिंक" ले तपाईंको पहिचान पुष्टि गर्नु पर्ने हुन्छ</translation>
+<translation id="5176312250994681348">हालसालैका पासवर्डहरू सेभ गरिराख्नुहोस्</translation>
 <translation id="5181140330217080051">डाउनलोड गर्दै</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
 <translation id="5186185447130319458">निजी</translation>
@@ -805,6 +812,7 @@
 <translation id="650279896687777322">थप जान्नुहोस्...</translation>
 <translation id="6510072653668207258">मलाई पछि स्मरण गराइयोस्</translation>
 <translation id="651505212789431520">सिंक गर्ने कार्य रद्द गर्ने हो? तपाईं सेटिङमा गई जुनसुकै बेला सिंक गर्ने सुविधा सक्रिय गर्न सक्नुहुन्छ।</translation>
+<translation id="6518133107902771759">रुजू गर्नुहोस्</translation>
 <translation id="6524918542306337007">इन्कोग्निटो मोड उपलब्ध छैन</translation>
 <translation id="6530992499366869131">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा मलाई चेतावनी दिइयोस्</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -962,6 +970,7 @@
 <translation id="7679915578945954324">साइटका ठेगानाहरू कपी गरिए</translation>
 <translation id="7687508192620387263">पात्रोको फाइल उपलब्ध छ</translation>
 <translation id="7701040980221191251">कुनै पनि होइन</translation>
+<translation id="7711440461521638739">तपाईंले पहिला नै प्रयोग गरिएको कुनै पनि पासवर्ड प्रयोग गर्नुभएको छैन</translation>
 <translation id="7720410380936703141">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7726702057919861819">मेनु → इतिहास → ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />। यो डिभाइसमा मात्र।</translation>
@@ -1038,6 +1047,7 @@
 <translation id="8136856065410661948">Chrome तथा Google लेन्समार्फत Apple पात्रोमा कार्यक्रमहरू बनाउने प्रयोजनका लागि यो एप प्रयोग गरिने छ।</translation>
 <translation id="8156478151976189188">पासवर्ड सिंक गर्ने सुविधाले काम गरिरहेको छैन</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> खाताहरू</translation>
+<translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">पृष्ठ अनुवाद गर्नुहोस्</translation>
 <translation id="8205564605687841303">रद्द गर्नुहोस्</translation>
@@ -1047,7 +1057,6 @@
 <translation id="8237382152611443140">पासवर्ड स्वतः भर्ने सुविधासम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
 <translation id="8264966119170358612">तपाईंका सेभ गरिएका केही पासवर्डहरू तेस्रो पक्षले गरेको डेटा चोरीको घटनामा देखिएका थिए। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">यो डिभाइसमा मात्र</translation>
 <translation id="8271720166617117963">स्वीकार गर्नुहोस् र साइन इन गर्नुहोस्</translation>
 <translation id="8278938988428169257">कुनै शब्द वा वाक्यांश हाल्नुहोस्</translation>
 <translation id="8281781826761538115">डिफल्ट - <ph name="DEFAULT_LOCALE" /></translation>
@@ -1066,6 +1075,7 @@
 <translation id="8393889347136007944">गत <ph name="THRESHOLD" /> दिनदेखि प्रयोग नगरिएका ट्याबहरू</translation>
 <translation id="8407669440184693619">यो साइटका लागि कुनै पनि पासवर्ड फेला परेन</translation>
 <translation id="842017693807136194">निम्न प्रमाणमार्फत साइन इन ...</translation>
+<translation id="8425693829365242963">तपाईंका पासवर्डहरू एकअर्कासँग मिल्दैनन्</translation>
 <translation id="8428045167754449968">गाउँ / टोल</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8428634594422941299">बुझेँ</translation>
@@ -1086,6 +1096,7 @@
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8534481786647257214">Google+ पोस्ट पूरा भयो।</translation>
 <translation id="8548878600947630424">पृष्ठमा फेला पार्नुहोस्...</translation>
+<translation id="8556590991644167667">{count,plural, =1{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}other{तपाईंले {count} वटा चेतावनी खारेज गर्नुभएको छ}}</translation>
 <translation id="8558480467877843976">तपाईंले अब म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंक ब्राउज गर्दा वा तिनमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्।</translation>
 <translation id="8588404856427128947">निष्क्रिय</translation>
 <translation id="8591976964826315682">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकीलाई रोक लगाइयोस्</translation>
@@ -1094,9 +1105,11 @@
 <translation id="8626393685701737946">तपाईं "सेटिङ &gt; सामग्रीसम्बन्धी सेटिङ" मा गई डिफल्ट साइट भ्यू बदलेर डेस्कटप बनाउन सक्नुहुन्छ</translation>
 <translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई अन गर्नुहोस्।</translation>
 <translation id="8654802032646794042">रद्द गर्नुहोस्</translation>
+<translation id="8663764600409216912">तपाईंले अनुमान लगाउन कठिन हुने पासवर्डहरू प्रयोग गर्नुभएको छ</translation>
 <translation id="8668210798914567634">यस पृष्ठलाई तपाईंको पाठ्य सूचीमा सुरक्षित गरिएको छ।</translation>
 <translation id="8680787084697685621">खाता साइन-इन विवरणहरूको समय समाप्त भएको छ।</translation>
 <translation id="8693663554456874301">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
+<translation id="8703536910991780768">तपाईंका पासवर्डहरू भरपर्दा देखिन्छन्</translation>
 <translation id="8706588385081740091">पासवर्डहरू</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
 <translation id="8721297211384281569">उपकरणहरू मेनु</translation>
@@ -1145,6 +1158,7 @@
 <translation id="8974714402877957201">१. iPad का सेटिङ खोल्नुहोस्</translation>
 <translation id="8976382372951310360">मद्दत</translation>
 <translation id="8976414606286374109">कार्डहरू तपाईंको Google खातामा सेभ गरिन्छन्।</translation>
+<translation id="8978059030508051916">{count,plural, =0{कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन}=1{{count} वटा पासवर्ड ह्याक वा चोरी भएको छ}other{{count} वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
 <translation id="8981454092730389528">Google गतिविधि नियन्त्रणहरू</translation>
 <translation id="8985320356172329008">Google मा यस रूपमा साइन इन गरियो</translation>
 <translation id="9000089900434778519">तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE_NAME" /> हो। तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>

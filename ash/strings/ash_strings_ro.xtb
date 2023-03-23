@@ -461,6 +461,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3256109297135787951">Elimină evidențierea de pe un element de pe raft</translation>
 <translation id="3260969790895726815">Vorbirea este procesată local și dictarea funcționează offline, dar unele comenzi vocale nu vor funcționa.</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
+<translation id="3289364673986435196">Meniul de pornire</translation>
 <translation id="3289544412142055976">Aplicațiile Linux nu sunt acceptate</translation>
 <translation id="3289674678944039601">Se încarcă prin adaptor</translation>
 <translation id="3290356915286466215">Nesecurizată</translation>
@@ -685,6 +686,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4269883910223712419">Administratorul acestui dispozitiv poate:</translation>
 <translation id="4274537685965975248">Comanda rapidă de la tastatură Ctrl + Alt + săgeată în jos s-a schimbat. Pentru a folosi tasta End, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + săgeata spre dreapta.</translation>
 <translation id="4279490309300973883">Oglindire</translation>
+<translation id="4280601795273309128">Actualizările de securitate s-au încheiat. Fă upgrade dispozitivului.</translation>
 <translation id="4283888303416325161">Introdu parola pentru mai multă siguranță</translation>
 <translation id="4285498937028063278">Anulați fixarea</translation>
 <translation id="4294319844246081198">Bună dimineața, <ph name="GIVEN_NAME" />!</translation>
@@ -871,6 +873,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5147567197700016471">Deblocat</translation>
 <translation id="5150070631291639005">Setări de confidențialitate</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
+<translation id="5163434717504750796">Buna funcționare a bateriei: <ph name="BATTERY_HEALTH_PERCENTAGE" /> % | Numărul de cicluri: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Salvează desktopul ca șablon</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
@@ -1341,6 +1344,7 @@ Instalare nouă</translation>
 <translation id="743058460480092004">Camera foto și microfonul sunt în uz.</translation>
 <translation id="7452560014878697800">O aplicație folosește camera</translation>
 <translation id="7453330308669753048">S-a eliminat rezultatul din istoricul căutărilor</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> până la încărcarea completă</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746232733191930409">Modul de înregistrare a ecranului</translation>
 <translation id="7466449121337984263">Atinge senzorul</translation>
@@ -1704,6 +1708,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9178475906033259337">Se afișează un rezultat pentru <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cu această funcție poți să accesezi rapid orice utilizator conectat fără solicitarea parolei. Folosește funcția numai pentru conturile în care ai încredere.</translation>
 <translation id="9183456764293710005">Lupă de ecran complet</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" /> % | Timp rămas: <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Se proiectează pe un receiver necunoscut</translation>
 <translation id="9194617393863864469">Conectează-te cu alt nume de utilizator...</translation>
 <translation id="9198992156681343238">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>

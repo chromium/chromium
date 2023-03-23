@@ -560,6 +560,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1485015260175968628">Hau egin dezake:</translation>
 <translation id="1485141095922496924">Bertsioa: <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Bilatu pasahitza</translation>
+<translation id="1486486872607808064">Eskaneatu QR kodea <ph name="APP_NAME" /> webgunerako sarbide-gakoa sortzeko erabili nahi duzun gailuaren kamerarekin</translation>
 <translation id="1487335504823219454">Aktibatuta: ezarpen pertsonalizatuak</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> parametroaren zain…</translation>
 <translation id="1494349716233667318">Webguneek gailuan instalatutako letrak erabiltzea eska dezakete</translation>
@@ -770,6 +771,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="164936512206786300">Desparekatu Bluetooth bidezko gailua</translation>
 <translation id="1651008383952180276">Pasaesaldi bera idatzi behar duzu bietan</translation>
 <translation id="1652326691684645429">Gaitu Nearby Share</translation>
+<translation id="1654580009054503925">Ez du eskaerak erakusteko baimenik</translation>
 <translation id="1656528038316521561">Atzeko planoaren opakutasuna</translation>
 <translation id="1657406563541664238">Lagundu <ph name="PRODUCT_NAME" /> hobetzen Google-ra erabilera-estatistikak eta hutsegite-txostenak bidalita</translation>
 <translation id="1657937299377480641">Hezkuntza-baliabideak atzitzeko saioa berriro hasteko, eskatu gurasoren bati baimena eman diezazula</translation>
@@ -3407,6 +3409,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3957079323242030166">Babeskopiek ez dute hartzen tokirik Drive-n.</translation>
 <translation id="3957844511978444971">Sakatu "Onartu" Google-ren zerbitzuen ezarpen hauek hautatu dituzula berresteko.</translation>
 <translation id="3958088479270651626">Inportatu laster-markak eta ezarpenak</translation>
+<translation id="3958110062351175311">Tresna-barran eskaerak erakusteko baimena du</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> ordainketa-metodoarekin erlazionatutako ekintza gehiago</translation>
 <translation id="3962119236270174787">Kaltegarriak direla dakigun webgune, deskarga eta luzapenen aurkako babes estandarra</translation>
@@ -3666,6 +3669,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4205157409548006256">Errore bat gertatu da Linux konfiguratzean.</translation>
 <translation id="4206144641569145248">Estralurtarra</translation>
 <translation id="4206323443866416204">Iritzi-txostena</translation>
+<translation id="4206585797409671301">Eskaerak erakusteko baimena du</translation>
 <translation id="4207932031282227921">Baimena eskatu da. Erantzuteko, sakatu F6.</translation>
 <translation id="4208390505124702064">Bilatu <ph name="SITE_NAME" /> webgunean</translation>
 <translation id="4209092469652827314">Handia</translation>
@@ -4335,6 +4339,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="481574578487123132">Lotutako gailuak</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, Xehetasunak</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 laster-marka ezabatu da}other{{COUNT} laster-marka ezabatu dira}}</translation>
+<translation id="4816900689218414104">Sortu sarbide-gako bat telefono edo tableta batean</translation>
 <translation id="4819323978093861656">{0,plural, =0{Itxi egingo da.}=1{Segundo bat barru itxiko da}other{# segundo barru itxiko da}}</translation>
 <translation id="4819607494758673676">Google-ren Laguntzailea zerbitzuaren jakinarazpenak</translation>
 <translation id="4820236583224459650">Ezarri zerbitzu-eskaera aktibo gisa</translation>
@@ -6240,6 +6245,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6562117348069327379">Gorde sistemaren erregistroak Deskargak direktorioan.</translation>
 <translation id="656293578423618167">Fitxategi-bidea edo -izena luzeegia da. Gorde izen laburrago batekin edo beste kokapen batean.</translation>
 <translation id="6568283005472142698">Fitxa-bilaketa</translation>
+<translation id="6570622975915850879">Erabili beste gailu bat</translation>
 <translation id="65711204837946324">Deskargatzeko baimena behar da</translation>
 <translation id="6571533309669248172">Testuaren formatua</translation>
 <translation id="6571772921213691236">Editatu saioa hasteko datuak</translation>
@@ -6803,6 +6809,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7044606776288350625">Sinkronizatu datuak</translation>
 <translation id="7047059339731138197">Aukeratu atzeko plano bat</translation>
 <translation id="7049293980323620022">Fitxategia gorde nahi duzu?</translation>
+<translation id="70496770794393383">Gordetako pasahitzen taula</translation>
 <translation id="7050037487872780845">Wifi-gunearen konfigurazioak ez du balio</translation>
 <translation id="7051551856857948729">Ezkutatu IBANaren balioa</translation>
 <translation id="7052237160939977163">Bidali errendimenduaren jarraipena egiteko datuak</translation>

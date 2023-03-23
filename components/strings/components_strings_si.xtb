@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">ඔබ පැමිණෙන වෙබ් අඩවි සහ ඒවායේ ගත කර කාලය</translation>
 <translation id="1824402189105105503">Eighth Roll</translation>
 <translation id="1826516787628120939">පරීක්ෂා කරමින්</translation>
+<translation id="1826968372364864056">පෝරමය හිස් කරන්න</translation>
 <translation id="1828959155404624835">මෝටර් රථ කුලියට දීම</translation>
 <translation id="1834321415901700177">මෙම වෙබ් අඩවියෙහි හානිකර ක්‍රමලේඛ අඩංගුය</translation>
 <translation id="1838374766361614909">සෙවීම හිස් කරන්න</translation>
@@ -808,6 +809,7 @@
 <translation id="2951588413176968965">මගේ තැපැල් පෙට්ටිය</translation>
 <translation id="2952820037279740115">සියලු අප්‍රකට කවුළු වසන්න</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">සුරැකි ගෙවීම් ක්‍රම වගුව</translation>
 <translation id="295526156371527179">අවවාදයයි: මෙය අකාරාදියක් නොවන බැවින් ප්‍රතිපත්තියෙන් සඳහන් කෙරෙන අකාරාදියක් ලෙස මෙම ප්‍රතිපත්තිය ඒකාබද්ධ කරනු නොලැබීය.</translation>
 <translation id="2955913368246107853">සෙවීම් බාර් එක වසන්න</translation>
 <translation id="2958544468932521864">ක්‍රිකට්</translation>
@@ -1967,6 +1969,7 @@
 <translation id="5786044859038896871">ඔබට ඔබේ කාඩ්පත් තොරතුරු පිරවීමට අවශ්‍යද?</translation>
 <translation id="578633867165174378">කඩ කිරීමකදී ඔබ භාවිත කළ මුරපදය Chrome හට හමු විය. මෙම මුරපදය දැන් වෙනස් කිරීමට අපි නිර්දේශ කරමු.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{කිසිත් නැත}=1{1 ගිණුමක් සඳහා පුරනය වීමේ දත්ත}one{ගිණුම් #ක් සඳහා පුරනය වීමේ දත්ත}other{ගිණුම් #ක් සඳහා පුරනය වීමේ දත්ත}}</translation>
 <translation id="580241730938216256">යාවත්කාලීන කිරීම ආරම්භ කරන්න</translation>
 <translation id="5803412860119678065">ඔබට ඔබේ <ph name="CARD_DETAIL" /> පිරවීමට අවශ්‍යද?</translation>
 <translation id="5804241973901381774">අවසර</translation>
@@ -2522,6 +2525,7 @@
 <translation id="7201591969684833065">ඔබේ පරිපාලකයාට බැලිය හැක්කේ:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, පුද්ගලිකව බ්‍රවුස් කිරීමට නව අප්‍රකට ටැබයක් විවෘත කිරීමට, Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="7203375778433816396">පද්ධතියේ පෙරනිමි බ්‍රව්සරය ලෙස Chrome සකසන්න</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{කිසිත් නැත}=1{1 මුරයතුරක්}one{මුරයතුරු #ක්}other{මුරයතුරු #ක්}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ආරක්ෂක සම්මත අනුගමනය නොකරයි.</translation>
 <translation id="7210993021468939304">බඳුන තුළ ලිනක්ස් ක්‍රියාව, සහ බඳුන තුළ ලිනක්ස් යෙදුම් ස්ථාපන කර ධාවන කළ හැක</translation>
 <translation id="721197778055552897">මෙම ගැටළුව පිළිබඳ <ph name="BEGIN_LINK" />තවත් දැනගන්න<ph name="END_LINK" />.</translation>
@@ -2774,6 +2778,7 @@
 <translation id="7736959720849233795">සබැඳියේ ලිපිනය පිටපත් කරන්න</translation>
 <translation id="7740996059027112821">සම්මත</translation>
 <translation id="77424286611022110">මෙම අඩවිය ආක්‍රමණික හෝ නොමඟ යවන සුළු වෙළඳ දැන්වීම් පෙන්වයි. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">සුරැකි ලිපින වගුව</translation>
 <translation id="774634243536837715">අනතුරුදායක අන්තර්ගතය අවහිරයි.</translation>
 <translation id="7751971323486164747">Chrome තුළ අකුරු වර්ග තරම සහ මුහුණත අභිරුචිකරණය කරන්න</translation>
 <translation id="7752995774971033316">කළමනාකරණය නොකළ</translation>
@@ -3015,6 +3020,7 @@
 <translation id="8347658365704983341">දුරස්ථ ඉගෙනුම</translation>
 <translation id="8349305172487531364">පිටු සලකුණු බාර් එක</translation>
 <translation id="8351131234907093545">සටහන සාදන්න</translation>
+<translation id="835203957414790336">ඔබ මුද්‍රණ කරන පිටුවල අන්තර්ගතය සහ ඔබේ මුද්‍රණ යන්ත්‍රයේ තොරතුරු විශ්ලේෂණය සඳහා Google Cloud හෝ තෙවන පාර්ශ්ව වෙත යවනු ලැබේ. උදාහරණය වශයෙන්, සංවේදි දත්ත තිබේදැයි එය ස්කෑන් කරනු ලැබීමට ඉඩ ඇත.</translation>
 <translation id="8355270400102541638">ස්ථානීය බිඳ වැටීම් සංදර්භය:</translation>
 <translation id="8363502534493474904">ගුවන් යානා ප්‍රකාරය ක්‍රියාවිරහිත කරමින්</translation>
 <translation id="8364627913115013041">සකසා නැත.</translation>

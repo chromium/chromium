@@ -126,6 +126,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
 <translation id="1546492247443594934">Biurko 2</translation>
 <translation id="1546930421365146760">Poproś administratora o skonfigurowanie tego urządzenia w konsoli administracyjnej Google</translation>
+<translation id="1549512626801247439">zarządzanie pamięcią</translation>
 <translation id="1550406609415860283">Dostępne urządzenia</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1555130319947370107">Niebieski</translation>
@@ -249,6 +250,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2149229036084364364">Przejdź do poprzedniego utworu</translation>
 <translation id="2161132820593978283">Spróbuj ustawić kadr, aby na obrazie z kamery podczas rozmów wideo znaleźć się pośrodku ekranu. Włącz tę funkcję w Szybkich ustawieniach.</translation>
+<translation id="2165966740263283349">użycie pamięci</translation>
 <translation id="2170530631236737939">Aby zamknąć Przegląd, przesuń 3 palcami w dół</translation>
 <translation id="2185166372312820725">Przejdź do poprzedniej karty</translation>
 <translation id="2185444992308415167">Poruszaj się między kartami 1–8</translation>
@@ -286,6 +288,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2352467521400612932">Ustawienia rysika</translation>
 <translation id="2354174487190027830">Aktywuję <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Dalej</translation>
+<translation id="2360398059912971776">bateria</translation>
 <translation id="2367186422933365202">Nie mogę zalogować się na Chromebooku</translation>
 <translation id="2367972762794486313">Pokaż aplikacje</translation>
 <translation id="2369165858548251131">„Cześć” po chińsku</translation>
@@ -320,6 +323,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2526581474998477112">Odblokuj okna</translation>
 <translation id="2530896289327917474">Włącz lub wyłącz przeglądanie przy użyciu kursora</translation>
+<translation id="2531025035050312891">wolne urządzenie</translation>
 <translation id="2542089167727451762">Kliknij swoje zdjęcie profilowe</translation>
 <translation id="254900897760075745">Skopiuj wybraną treść do schowka</translation>
 <translation id="255671100581129685">Asystent Google jest niedostępny w sesji publicznej.</translation>
@@ -332,6 +336,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
 <translation id="2598725286293895280">Nieobsługiwane aplikacje w biurku</translation>
 <translation id="2607678425161541573">Wymagane jest zalogowanie w trybie online</translation>
+<translation id="2612072250312279703">monitor aktywności</translation>
 <translation id="2612614436418177118">Przenieś ikonę aplikacji w siatce aplikacji</translation>
 <translation id="2620016719323068571">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje…</translation>
 <translation id="2620436844016719705">System</translation>
@@ -472,6 +477,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> nadal może się później zalogować.</translation>
 <translation id="3321628682574733415">Nieprawidłowy kod rodzica</translation>
 <translation id="332827762492701193">Powiadomienia są ukryte</translation>
+<translation id="3338855835380298613">wykorzystanie procesora</translation>
 <translation id="3339826665088060472">Zrzut ekranu, narzędzia do robienia zrzutów i nagrań ekranu</translation>
 <translation id="3340978935015468852">ustawienia</translation>
 <translation id="3341303451326249809">Wykonano zrzut ekranu</translation>
@@ -479,6 +485,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="334927402682780278">Zaznacz tekst od kursora do końca wiersza</translation>
 <translation id="3349345708646875009">Otwórz menedżera zadań</translation>
 <translation id="3351879221545518001">Obecnie przesyłasz ekran.</translation>
+<translation id="3354555338129305222">dlaczego moje urządzenie działa wolno?</translation>
 <translation id="3364721542077212959">Narzędzia rysika</translation>
 <translation id="3365977133351922112">Twój telefon jest za daleko. Przysuń go bliżej.</translation>
 <translation id="3368922792935385530">Połączone</translation>
@@ -585,6 +592,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3779139509281456663">Łączę z urządzeniem <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zablokuj</translation>
+<translation id="3796198851576711985">stan baterii</translation>
 <translation id="3796746699333205839">Aplikacja używa kamery i mikrofonu</translation>
 <translation id="3798670284305777884">Głośnik (wewnętrzny)</translation>
 <translation id="3799080171973636491">Naciśnięto skrót klawiszowy lupy pełnoekranowej. Czy chcesz ją włączyć?</translation>
@@ -597,6 +605,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
+<translation id="3859364108019690">Nie można przesyłać strumieniowo aplikacji</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
 <translation id="3871092408932389764">Najniższy</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
@@ -741,9 +750,11 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4527045527269911712">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować.</translation>
 <translation id="4533343294786968049">Wydłużam czas pracy na baterii. Bateria zostanie w pełni naładowana do <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do pełnego naładowania</translation>
+<translation id="4536664881735498710">wykorzystanie pamięci RAM</translation>
 <translation id="4538824937723742295">Zrób zrzut całego ekranu</translation>
 <translation id="4539127209940689201">Drukuj bieżącą stronę</translation>
 <translation id="4544483149666270818">Wybierz okno, które chcesz nagrać</translation>
+<translation id="454541942614298893">moje urządzenie</translation>
 <translation id="4548482551627849548">Przenieś aktywne okno na biurko po lewej</translation>
 <translation id="4560576029703263363">Włączono</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -858,9 +869,11 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5043679421800073804">Kliknij ostatnią ikonę na półce</translation>
 <translation id="504465286040788597">Poprzedni akapit</translation>
 <translation id="5045550434625856497">Nieprawidłowe hasło</translation>
+<translation id="5062496344832867502">RAM</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
 <translation id="5092436659250499817">Włącz/wyłącz podświetlenie klawiatury</translation>
+<translation id="5094577350232361255">informacje</translation>
 <translation id="509790653408515442">Tutaj będą się pojawiać aplikacje przesyłane strumieniowo z telefonu</translation>
 <translation id="5098537242461068432">Biurko i okna ponownie otwarte</translation>
 <translation id="5104236669533825617">Nie udało się utworzyć screencasta</translation>
@@ -963,6 +976,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="557563299383177668">Następny akapit</translation>
 <translation id="5577082622442191756">Przełącz Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="5577281275355252094">Aby korzystać ze sterowania telefonem, na telefonie musi być włączony Bluetooth</translation>
+<translation id="5578188167649348993">pamięć</translation>
 <translation id="5580000943347215299">Biblioteka</translation>
 <translation id="558849140439112033">Przeciągnij, by wybrać obszar, który chcesz przechwycić</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
@@ -1032,6 +1046,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="589817443623831496">Skanowanie punktowe</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Żółty</translation>
+<translation id="5902162043476810127">pamięć RAM</translation>
 <translation id="5909862606227538307">Biurko nieaktywne.</translation>
 <translation id="5911231045062997865">Okna Lacros nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1137,6 +1152,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6431865393913628856">Nagrywanie ekranu</translation>
 <translation id="6442259747294754014">Dostęp do mikrofonu urządzenia jest wyłączony</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
+<translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> zdarzenie</translation>
 <translation id="6449483711453944360">Aplikacje na Linuksa ani okna incognito nie są obecnie obsługiwane</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
@@ -1210,6 +1226,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6752912906630585008">Biurko <ph name="REMOVED_DESK" /> zostało usunięte i połączone z biurkiem <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">karty</translation>
 <translation id="6757237461819837179">Multimedia nie są odtwarzane</translation>
+<translation id="6768043681523654438">miejsce na dane</translation>
 <translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
 <translation id="6781002679438061620">Biurko 9</translation>
 <translation id="6782182743534150858">Biurko 13</translation>
@@ -1357,6 +1374,9 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Kadrowanie jest włączone.</translation>
+<translation id="7519649142417630956">Po wyłączeniu urządzenia administrator zostanie wylogowany i nie będzie mógł nim sterować.
+
+Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk zasilania.</translation>
 <translation id="7526573455193969409">Sieć może być monitorowana</translation>
 <translation id="7536035074519304529">Adres IP: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Aplikacje na Linuksa ani okna incognito nie są obecnie obsługiwane. Inne aplikacje zostaną zapisane.</translation>
@@ -1405,6 +1425,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7723703419796509666">Wyświetl lub ukryj konsolę Narzędzi dla programistów</translation>
 <translation id="7724603315864178912">Wytnij</translation>
 <translation id="7727952505535211425">Otwórz stronę z paska adresu w nowej karcie</translation>
+<translation id="77365090426890123">wykorzystanie pamięci</translation>
 <translation id="7742327441377685481">Brak powiadomień</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
@@ -1637,6 +1658,8 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
 <translation id="8855885154700222542">Klawisz trybu pełnoekranowego</translation>
 <translation id="8858369206579825206">Ustawienia prywatności</translation>
+<translation id="8860817004574502558">żywotność baterii</translation>
+<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> w użyciu / <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
 <translation id="8874184842967597500">Nie połączono</translation>
 <translation id="8875021410787719674">Przejdź między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
@@ -1723,6 +1746,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="938963181863597773">Co mam w kalendarzu?</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="951991426597076286">Odrzuć</translation>
+<translation id="953431725143473984">Wyłączyć urządzenie?</translation>
 <translation id="954052413789300507">Za mało miejsca na plik <ph name="FILENAME" />. Zwolnij miejsce.</translation>
 <translation id="974545358917229949">Wyświetlam wyniki (<ph name="RESULT_COUNT" />) dla zapytania <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Przejdź na koniec dokumentu</translation>

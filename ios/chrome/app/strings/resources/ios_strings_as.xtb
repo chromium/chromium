@@ -805,6 +805,7 @@
 <translation id="650279896687777322">অধিক জানক...</translation>
 <translation id="6510072653668207258">মোক পাছত মনত পেলাই দিয়ক</translation>
 <translation id="651505212789431520">ছিংক কৰাটো বাতিল কৰিবনে? আপুনি ছেটিংসমূহলৈ গৈ যিকোনো সময়তে ছিংক অন কৰিব পাৰে।</translation>
+<translation id="6518133107902771759">সত্যাপন কৰক</translation>
 <translation id="6524918542306337007">ইনক’গনিট’ ম’ডটো উপলব্ধ নহয়</translation>
 <translation id="6530992499366869131">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1038,6 +1039,7 @@
 <translation id="8136856065410661948">Chrome আৰু Google Lensৰ পৰা আপোনাৰ Apple Calendarত অনুষ্ঠান সৃষ্টি কৰিবলৈ এইটো ব্যৱহাৰ কৰা হ’ব।</translation>
 <translation id="8156478151976189188">পাছৱৰ্ড ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> টা একাউণ্ট</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপোনাৰ ডিভাইচ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">পৃষ্ঠা অনুবাদ কৰক</translation>
 <translation id="8205564605687841303">বাতিল কৰক</translation>
@@ -1047,7 +1049,6 @@
 <translation id="8237382152611443140">স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱা পাছৱৰ্ডৰ ছেটিং খোলক</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8264966119170358612">আপোনাৰ ছেভ কৰি থোৱা কিছুমান পাছৱৰ্ড Googleৰ বাহিৰৰ এটা ডেটা উলংঘনত ফাদিল হৈছে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">কেৱল এই ডিভাইচটোত</translation>
 <translation id="8271720166617117963">গ্ৰহণ কৰি ছাইন ইন কৰক</translation>
 <translation id="8278938988428169257">এটা শব্দ অথবা বাক্যাংশ দিয়ক</translation>
 <translation id="8281781826761538115">ডিফ’ল্ট - <ph name="DEFAULT_LOCALE" /></translation>

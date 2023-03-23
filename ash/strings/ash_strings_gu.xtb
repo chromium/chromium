@@ -449,6 +449,7 @@
 <translation id="3256109297135787951">તમારા શેલ્ફ પર આઇટમમાંથી હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="3260969790895726815">સ્પીચની પ્રક્રિયા સ્થાનિક લેવલ પર જ કરવામાં આવે છે અને ડિક્ટેશન ઑફલાઇન કામ કરે છે, પરંતુ કેટલાક વૉઇસ આદેશો કામ કરશે નહીં.</translation>
 <translation id="3269597722229482060">રાઇટ ક્લિક કરો</translation>
+<translation id="3289364673986435196">પાવર મેનૂ</translation>
 <translation id="3289544412142055976">હાલમાં Linux ઍપને સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="3289674678944039601">અડૅપ્ટર વડે ચાર્જિંગ</translation>
 <translation id="3290356915286466215">અસુરક્ષિત</translation>
@@ -578,6 +579,7 @@
 <translation id="3846575436967432996">કોઈ નેટવર્ક માહિતી ઉપલબ્ધ નથી</translation>
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="385300504083504382">શરૂઆત</translation>
+<translation id="3859364108019690">ઍપ સ્ટ્રીમ કરી શકતા નથી</translation>
 <translation id="3861651314799684201">પૂર્ણ સ્ક્રીન રેકોર્ડ કરવા માટે Enter કી દબાવો</translation>
 <translation id="3871092408932389764">ન્યૂનતમ</translation>
 <translation id="3886872229787704059">આજે ખોલેલી</translation>
@@ -664,6 +666,7 @@
 <translation id="4269883910223712419">આ ઉપકરણના વ્યવસ્થાપકની ક્ષમતા:</translation>
 <translation id="4274537685965975248">Ctrl કી + Alt કી + નીચેની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. End કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + જમણી ઍરો કી દબાવો.</translation>
 <translation id="4279490309300973883">પ્રતિબિંબત થઈ રહ્યું છે</translation>
+<translation id="4280601795273309128">સુરક્ષા અપડેટ સમાપ્ત થયા. તમારું ડિવાઇસ અપગ્રેડ કરો.</translation>
 <translation id="4283888303416325161">વધુ સુરક્ષા માટે પાસવર્ડ દાખલ કરો</translation>
 <translation id="4285498937028063278">અનપિન કરો</translation>
 <translation id="4294319844246081198">ગુડ મોર્નિંગ <ph name="GIVEN_NAME" />,</translation>
@@ -846,6 +849,7 @@
 <translation id="5147567197700016471">અનલૉક કર્યું</translation>
 <translation id="5150070631291639005">પ્રાઇવસી સેટિંગ</translation>
 <translation id="5155897006997040331">વાંચનની ઝડપ</translation>
+<translation id="5163434717504750796">બૅટરીની અવસ્થા <ph name="BATTERY_HEALTH_PERCENTAGE" />% | સાઇકલની ગણતરી <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">ડેસ્કને નમૂના તરીકે સાચવો</translation>
 <translation id="5168181903108465623">Cast ઉપકરણો ઉપલબ્ધ</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
@@ -1304,6 +1308,7 @@
 <translation id="743058460480092004">કૅમેરા અને માઇક્રોફોન ઉપયોગમાં છે.</translation>
 <translation id="7452560014878697800">કોઈ ઍપ્લિકેશન તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7453330308669753048">શોધ ઇતિહાસનું પરિણામ કાઢી નાખ્યું</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | પૂર્ણ ચાર્જ થવામાં <ph name="TIME" /> બાકી</translation>
 <translation id="7461924472993315131">પિન કરો</translation>
 <translation id="746232733191930409">સ્ક્રીન રેકોર્ડિંગ મોડ</translation>
 <translation id="7466449121337984263">કૃપા કરીને સેન્સરને સ્પર્શ કરો</translation>
@@ -1318,6 +1323,9 @@
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">કૅમેરા ફ્રેમિંગ ચાલુ છે.</translation>
+<translation id="7519649142417630956">એકવાર શટ ડાઉન થઈ ગયા પછી, ઍડમિનિસ્ટ્રેટર લૉગ આઉટ થઈ જશે અને તમારા ડિવાઇસને નિયંત્રિત કરી શકશે નહીં.
+
+ડિવાઇસ શટ ડાઉન કરવા માટે, ફરીથી ડિવાઇસ પરનું પાવર બટન દબાવી રાખો.</translation>
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી. અન્ય ઍપ સાચવવામાં આવશે.</translation>
@@ -1652,6 +1660,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> માટે 1 પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="9179259655489829027">આ સુવિધા તમને પાસવર્ડની જરૂર વગર ઝડપથી કોઈ સાઇન-ઇન થયેલ વપરાશકર્તાને ઍક્સેસ કરવાની પરવાનગી આપે છે. માત્ર તમે જેના પર વિશ્વાસ કરતા હો તે એકાઉન્ટ સાથે જ આ સુવિધાનો ઉપયોગ કરો.</translation>
 <translation id="9183456764293710005">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> બાકી</translation>
 <translation id="9193626018745640770">અજાણ્યા પ્રાપ્તકર્તા પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="9194617393863864469">અન્ય વપરાશકર્તા સાઇન ઇન કરો...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />નું રિઝોલ્યુશન બદલીને <ph name="RESOLUTION" /> કરવામાં આવ્યું. ફેરફારો રાખવા માટે કન્ફર્મ પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
@@ -1671,6 +1680,7 @@
 <translation id="938963181863597773">મારા કૅલેન્ડરમાં શું છે?</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="951991426597076286">નકારો</translation>
+<translation id="953431725143473984">ડિવાઇસ શટ ડાઉન કરીએ?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> માટે પર્યાપ્ત સ્પેસ નથી. સ્પેસ ખાલી કરો.</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="98120814841227350">દસ્તાવેજના અંતે જાઓ</translation>

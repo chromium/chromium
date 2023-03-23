@@ -1907,6 +1907,8 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandl
       Als je het beleid niet toepast, worden prompts uitgezet en zijn audio-opnamen alleen beschikbaar voor URL's die zijn ingesteld in de lijst AudioCaptureAllowedUrls.
 
       Opmerking: Dit beleid is van invloed op alle audio-invoer (en niet alleen op de ingebouwde microfoon).</translation>
+<translation id="2818869063785105255">Bepaalt of <ph name="PRODUCT_OS_NAME" /> lokale accountgegevens bewaart na uitloggen. Als je dit beleid instelt op True, bewaart <ph name="PRODUCT_OS_NAME" /> geen bestaande accounts en worden alle gegevens uit de gebruikerssessie na het uitloggen verwijderd. Als je dit beleid instelt op False of niet instelt, kan het apparaat (versleutelde) lokale gebruikersgegevens bewaren.
+Het beleid <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> kan het gedrag van dit beleid overschrijven voor lokale accounts op het apparaat met de opgegeven kortstondige modus.</translation>
 <translation id="2823870601012066791">Locatie van Windows-register voor <ph name="PRODUCT_OS_NAME" />-clients:</translation>
 <translation id="2824715612115726353">Incognito aanzetten</translation>
 <translation id="282870810415075521">Toestaan dat JavaScript op deze sites JIT gebruikt</translation>
@@ -3813,6 +3815,13 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaardgrootte. Gebruikers kunnen deze instelling wijzigen met de optie --disk-cache-size.
 
       Opmerking: De waarde die je in dit beleid opgeeft, wordt gebruikt als hint voor verschillende cachesubsystemen in de browser. Daarom ligt het werkelijke totale schijfverbruik van alle caches hoger, maar in dezelfde orde van grootte als de opgegeven waarde.</translation>
+<translation id="458285976189239891">Om veiligheidsredenen moet voor de web-API's <ph name="SHOW_OPEN_FILE_PICKER_API_NAME" />, <ph name="SHOW_SAVE_FILE_PICKER_API_NAME" /> en <ph name="SHOW_DIRECTORY_PICKER_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukt deze.
+
+Als dit beleid is ingesteld, kunnen beheerders oorsprongen opgeven waarvoor deze API's kunnen worden aangeroepen zonder eerder gebruikersgebaar.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. * is geen geaccepteerde waarde voor dit beleid.
+
+Als je dit beleid niet instelt, is voor alle oorsprongen een eerder gebruikersgebaar vereist om deze API's aan te roepen.</translation>
 <translation id="4587365491100112056">Als je het beleid instelt, geef je aan hoeveel uur verificatiegegevens worden gecachet. Het cachegeheugen bevat gegevens over realms die door de machine realm worden vertrouwd (aangesloten realms). Verificatiegegevens worden gecachet zodat je sneller kunt inloggen. Er worden geen gebruikersspecifieke gegevens en geen gegevens voor niet-aangesloten realms gecachet.
 
       Als je het beleid instelt op 0, wordt cachen van verificatiegegevens uitgezet. Realmspecifieke gegevens worden elke keer opgehaald als de gebruiker inlogt. Als verificatiegegevens niet meer worden gecachet, kan het inlogproces voor gebruikers aanzienlijk worden vertraagd.
@@ -7752,6 +7761,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="827054846390793641">Verbindingsgerelateerde UI aanzetten op hostdesktop bij een actieve verbinding</translation>
 <translation id="8274603902181597201">De eCryptfs-hoofdmap van de gebruiker wissen en beginnen met een nieuwe hoofdmap die is versleuteld met ext4</translation>
 <translation id="8274926413890711289">Opties voor gedetailleerde rapportage aanzetten</translation>
+<translation id="8275103737670730746">Toestaan dat API's voor bestands- of directorykiezers worden aangeroepen zonder eerder gebruikersgebaar</translation>
 <translation id="8278133379873210419">JavaScript-dialoogvensters onderdrukken als deze worden geactiveerd vanaf een subframe met een andere oorsprong</translation>
 <translation id="8284296539558710573">Cross-origin-prompts voor HTTP-verificatie</translation>
 <translation id="8284527236880877730">Als <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> is uitgezet, stel je met <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> het percentage in waarmee de dimperiode van het scherm wordt geschaald als met het apparaat wordt gepresenteerd. Als de dimperiode van het scherm wordt geschaald, blijven de perioden tot het scherm uitgaat, het scherm wordt vergrendeld en inactiviteit wordt geactiveerd, gelijk aan de periode voor het dimmen van het scherm die je oorspronkelijk had ingesteld.

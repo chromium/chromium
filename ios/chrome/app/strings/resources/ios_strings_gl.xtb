@@ -483,6 +483,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4474494258097106883">Deseñado para iPhone</translation>
 <translation id="4476574785019001431">Configuración</translation>
 <translation id="448433063499977729">Desactivouse a sincronización</translation>
+<translation id="4489536976005181779">{count,plural, =1{Engadiuse a páxina á túa lista de lectura da conta {email}}other{Engadíronse as páxinas á túa lista de lectura da conta {email}}}</translation>
 <translation id="4496373720959965247">Engade pestanas e cambia dunha páxina a outra</translation>
 <translation id="4502566650163919158">Comprobar agora</translation>
 <translation id="4505980578794259603">Última comprobación: <ph name="TIME" />.</translation>
@@ -804,6 +805,7 @@ Tenta usar un contrasinal distinto para cada sitio.</translation>
 <translation id="650279896687777322">Máis información…</translation>
 <translation id="6510072653668207258">Lembrarmo máis tarde</translation>
 <translation id="651505212789431520">Queres cancelar a sincronización? Podes activala en calquera momento en Configuración.</translation>
+<translation id="6518133107902771759">Verificar</translation>
 <translation id="6524918542306337007">O modo de incógnito non está dispoñible</translation>
 <translation id="6530992499366869131">Avisarte se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1037,6 +1039,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8136856065410661948">Usarase para crear eventos no teu calendario de Apple desde Chrome e Google Lens.</translation>
 <translation id="8156478151976189188">A sincronización de contrasinais non funciona</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> contas</translation>
+<translation id="8179976553408161302">Intro</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Os teus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Traducir páxina</translation>
 <translation id="8205564605687841303">Cancelar</translation>
@@ -1046,7 +1049,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8237382152611443140">Abre os axustes de AutoFill Passwords (Autocompletar contrasinais)</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8264966119170358612">Algúns dos teus contrasinais gardados quedaron expostos nunha violación da seguranza dos datos allea a Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>
 <translation id="8271720166617117963">Aceptar e iniciar sesión</translation>
 <translation id="8278938988428169257">Escribe unha palabra ou frase</translation>
 <translation id="8281781826761538115">Idioma predeterminado: <ph name="DEFAULT_LOCALE" /></translation>

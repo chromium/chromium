@@ -461,6 +461,7 @@
 <translation id="3256109297135787951">आफ्नो सेल्फमा भएको कुनै वस्तुबाट हाइलाइट हटाउनुहोस्‌</translation>
 <translation id="3260969790895726815">बोलेको कुरा डिभाइसभित्रै प्रोसेस गरिन्छ र स्पिच-टु-टेक्स्टले अफलाइनमा काम गर्छ तर डिभाइसलाई बोलेर दिइने केही निर्देशनहरू दिँदा भने त्यसले काम गर्दैन।</translation>
 <translation id="3269597722229482060">दायाँ क्लिक गर्नुहोस्</translation>
+<translation id="3289364673986435196">पावर मेनु</translation>
 <translation id="3289544412142055976">Linux एपहरू हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="3289674678944039601">एड्याप्टरमार्फत चार्ज गरिँदै छ</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
@@ -685,6 +686,7 @@
 <translation id="4269883910223712419">यो डिभाइसको प्रशासक निम्न कुराहरू गर्न सक्नुहु्न्छ:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। End की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + राइट एरो थिच्नुहोस्।</translation>
 <translation id="4279490309300973883">प्रतिबिम्ब गर्दै</translation>
+<translation id="4280601795273309128">सुरक्षासम्बन्धी अपडेट प्राप्त गर्ने सुविधाको म्याद सकियो। आफ्नो डिभाइस अपग्रेड गर्नुहोस्।</translation>
 <translation id="4283888303416325161">थप सुरक्षाका लागि पासवर्ड हाल्नुहोस्</translation>
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="4294319844246081198">नमस्ते <ph name="GIVEN_NAME" />,</translation>
@@ -871,6 +873,7 @@
 <translation id="5147567197700016471">अनलक गरिएको छ</translation>
 <translation id="5150070631291639005">गोपनीयतासम्बन्धी सेटिङ</translation>
 <translation id="5155897006997040331">पढ्ने गति</translation>
+<translation id="5163434717504750796">ब्याट्रीको अवस्था <ph name="BATTERY_HEALTH_PERCENTAGE" />% | साइकल काउन्ट <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">टेम्प्लेटका रूपमा डेस्क सेभ गर्नुहोस्</translation>
 <translation id="5168181903108465623">Cast यन्त्रहरू उपलब्ध</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
@@ -1341,6 +1344,7 @@
 <translation id="743058460480092004">क्यामेरा र माइक्रोफोन प्रयोगमा छ।</translation>
 <translation id="7452560014878697800">कुनै एपले तपाईंको डिभाइसको क्यामेरा प्रयोग गरिरहेको छ</translation>
 <translation id="7453330308669753048">सर्च हिस्ट्रको परिणाम हटाइयो</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | पूरा चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746232733191930409">स्क्रिन रेकर्डिङ मोड</translation>
 <translation id="7466449121337984263">कृपया फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>
@@ -1704,6 +1708,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> सम्बन्धी १ परिणाम देखाउँदै</translation>
 <translation id="9179259655489829027">यस सुविधाले तपाईंलाई पासवर्ड प्रविष्ट नगरिकनै साइन इन भएका जुनसुकै प्रयोगकर्तामाथि द्रुत रूपमा पहुँच राख्न दिन्छ।आफूले विश्वास गर्ने खाताहरूमा मात्र यो सुविधाको प्रयोग गर्नुहोस्।</translation>
 <translation id="9183456764293710005">फुल स्क्रिन म्याग्निफायर</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> बाँकी छ</translation>
 <translation id="9193626018745640770">कुनै अज्ञात प्रापकमा cast गर्दै</translation>
 <translation id="9194617393863864469">अर्को प्रयोगकर्तालाई साइन इन गर्नुहोस् ...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> रिजोल्युसन परिवर्तन गरी <ph name="RESOLUTION" /> पारियो। परिवर्तनहरू सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अघिल्ला सेटिङहरूलाई <ph name="TIMEOUT_SECONDS" /> भित्र पुनर्स्थापना गरिने छ।</translation>

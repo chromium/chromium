@@ -386,6 +386,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1822540298136254167">Sitios web que visitas y el tiempo que pasas en ellos</translation>
 <translation id="1824402189105105503">Octavo rollo</translation>
 <translation id="1826516787628120939">Comprobando</translation>
+<translation id="1826968372364864056">Borrar formulario</translation>
 <translation id="1828959155404624835">Alquileres de coches</translation>
 <translation id="1834321415901700177">Este sitio web contiene programas dañinos</translation>
 <translation id="1838374766361614909">Borrar búsqueda</translation>
@@ -1967,6 +1968,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5786044859038896871">¿Quieres rellenar la información de la tarjeta?</translation>
 <translation id="578633867165174378">Chrome ha detectado que la contraseña que acabas de usar se ha visto expuesta en una brecha de seguridad de datos. Te recomendamos que la cambies ahora.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Ninguno}=1{datos de inicio de sesión de 1 cuenta}other{datos de inicio de sesión de # cuentas}}</translation>
 <translation id="580241730938216256">Iniciar actualización</translation>
 <translation id="5803412860119678065">¿Quieres rellenar la información de <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -2522,6 +2524,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7201591969684833065">El administrador puede consultar lo siguiente:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una pestaña de Incógnito nueva y navegar de forma privada</translation>
 <translation id="7203375778433816396">Establecer Chrome como navegador predeterminado del sistema</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Ninguna}=1{1 llave de acceso}other{# llaves de acceso}}</translation>
 <translation id="7210863904660874423">La página <ph name="HOST_NAME" /> no cumple los estándares de seguridad.</translation>
 <translation id="7210993021468939304">Los administradores pueden ver la actividad de Linux en el contenedor, y también pueden instalar y ejecutar aplicaciones de Linux en el contenedor</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre este problema.</translation>

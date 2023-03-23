@@ -466,6 +466,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3256109297135787951">Nag-aalis ng highlight sa isang item sa iyong shelf</translation>
 <translation id="3260969790895726815">Lokal na pinoproseso ang speech at gumagana offline ang dictation, pero hindi gagana ang ilang command gamit ang boses.</translation>
 <translation id="3269597722229482060">Mag-right Click</translation>
+<translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Kasalukuyang hindi sinusuportahan ang mga Linux app.</translation>
 <translation id="3289674678944039601">Nagcha-charge sa pamamagitan ng adapter</translation>
 <translation id="3290356915286466215">Hindi secure</translation>
@@ -604,6 +605,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="385300504083504382">Simula</translation>
+<translation id="3859364108019690">Hindi makapag-stream ng mga app</translation>
 <translation id="3861651314799684201">Pindutin ang enter para mag-record nang full screen</translation>
 <translation id="3871092408932389764">Pinakamababa</translation>
 <translation id="3886872229787704059">Binuksan ngayon</translation>
@@ -692,6 +694,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4269883910223712419">May kakayahan ang admin ng device na ito na:</translation>
 <translation id="4274537685965975248">Nagbago ang keyboard shortcut na Ctrl + Alt + Pababang Arrow. Para magamit ang End key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pakanang Arrow.</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
+<translation id="4280601795273309128">Natapos na ang mga update sa seguridad. I-upgrade ang iyong device.</translation>
 <translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
 <translation id="4285498937028063278">I-unpin</translation>
 <translation id="4294319844246081198">Magandang umaga <ph name="GIVEN_NAME" />,</translation>
@@ -882,6 +885,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5147567197700016471">Na-unlock na</translation>
 <translation id="5150070631291639005">Mga setting ng privacy</translation>
 <translation id="5155897006997040331">Bilis ng pagbabasa</translation>
+<translation id="5163434717504750796">Kalagayan ng baterya <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Bilang ng cycle <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">I-save ang bilang template</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
@@ -1356,6 +1360,7 @@ Kaka-install lang</translation>
 <translation id="743058460480092004">Ginagamit ang camera at mikropono.</translation>
 <translation id="7452560014878697800">May application na gumagamit ng iyong camera</translation>
 <translation id="7453330308669753048">Naalis ang resulta ng history ng paghahanap</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> bago mapuno</translation>
 <translation id="7461924472993315131">I-pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Pakipindot ang sensor</translation>
@@ -1370,6 +1375,9 @@ Kaka-install lang</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Naka-on ang camera framing.</translation>
+<translation id="7519649142417630956">Kapag na-shut down, mala-log out ang administrator at hindi niya makokontrol ang iyong device.
+
+Para i-shut down ang device, pindutin ulit nang matagal ang power button sa device.</translation>
 <translation id="7526573455193969409">Maaaring sinusubaybayan ang network</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Kasalukuyang hindi sinusuportahan ang mga Linux app at Incognito window. Mase-save ang iba pang app.</translation>
@@ -1718,6 +1726,7 @@ Kaka-install lang</translation>
 <translation id="9178475906033259337">Ipinapakita ang 1 resulta para sa <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Nagbibigay-daan sa iyo ang feature na ito para mabilis na ma-access ang anumang na-sign in na user nang hindi nangangailangan ng password. Gamitin lang ang feature na ito sa mga account na iyong pinagkakatiwalaan.</translation>
 <translation id="9183456764293710005">Pang-magnify ng Full-screen</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> na lang</translation>
 <translation id="9193626018745640770">Nagka-cast sa isang hindi pa natutukoy na tagatanggap</translation>
 <translation id="9194617393863864469">Mag-sign in ng isa pang user...</translation>
 <translation id="9198992156681343238">Ginawang <ph name="RESOLUTION" /> ang resolution ng <ph name="DISPLAY_NAME" />. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga dating setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
@@ -1737,6 +1746,7 @@ Kaka-install lang</translation>
 <translation id="938963181863597773">Ano'ng nakaiskedyul sa kalendaryo ko?</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="951991426597076286">Tanggihan</translation>
+<translation id="953431725143473984">I-shut down ang device?</translation>
 <translation id="954052413789300507">Walang sapat na espasyo para sa <ph name="FILENAME" />. Magbakante ng espasyo.</translation>
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="98120814841227350">Pumunta sa dulo ng dokumento</translation>

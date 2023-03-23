@@ -47,6 +47,7 @@
 <translation id="3567399274263440288">Untuk memanfaatkan Chromium sepenuhnya, log masuk ke Chromium dengan Google Account anda.</translation>
 <translation id="3639997914391704523">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> telah menggunakan Chromium dan membiarkan penanda halaman, kata laluan dan tetapan lain pada peranti ini.</translation>
+<translation id="372658070733623520">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
 <translation id="4043291146360695975">Kata laluan disimpan pada Pengurus Kata Laluan pada peranti ini sahaja.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
@@ -75,6 +76,7 @@
 <translation id="5945387852661427312">Anda mengelog masuk dengan akaun yang diurus oleh <ph name="DOMAIN" /> dan memberi kawalan terhadap data Chromium anda kepada pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan mengelog keluar daripada Chromium akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Akaun Google anda.</translation>
 <translation id="5983312940147103417">Jadikan Chromium Lebih Baik</translation>
 <translation id="6062449165341879460">Organisasi <ph name="DOMAIN" /> anda akan mempunyai akses kepada data Chromium, penanda halaman, sejarah, kata laluan dan tetapan lain yang anda simpan dalam akaun ini. Apabila anda log keluar, data anda akan dikosongkan daripada peranti ini.  Namun begitu, data anda akan terus disimpan dalam Google Account terurus anda dan akan tersedia di organisasi anda. Organisasi anda juga boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chromium.</translation>
+<translation id="61109258320235597">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, masukkan ungkapan laluan anda.</translation>
 <translation id="6119647025869519954">Untuk menjadikan Chromium sebagai penyemak imbas lalai anda:
 1. Buka Tetapan
 2. Ketik Apl Penyemak Imbas Lalai

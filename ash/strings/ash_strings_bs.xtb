@@ -250,7 +250,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2149229036084364364">Odlazak na prethodnu numeru</translation>
 <translation id="2161132820593978283">Isprobajte kadriranje kamere da budete na sredini ekrana prilikom video poziva. Uključite ga u Brzim postavkama.</translation>
-<translation id="2165966740263283349">upotreba pohrane</translation>
+<translation id="2165966740263283349">iskorištenost pohrane</translation>
 <translation id="2170530631236737939">Prevucite nadolje s tri prsta da izađete iz Pregleda</translation>
 <translation id="2185166372312820725">Idi na prethodnu karticu</translation>
 <translation id="2185444992308415167">Kretanje od 1. od 8. kartice</translation>
@@ -466,7 +466,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3256109297135787951">Uklonite oznaku sa stavke na polici</translation>
 <translation id="3260969790895726815">Govor se obrađuje lokalno i diktiranje funkcionira offline, ali neke glasovne komande neće funkcionirati.</translation>
 <translation id="3269597722229482060">Desni klik</translation>
-<translation id="3289364673986435196">Izbornik tipke za uključivanje</translation>
+<translation id="3289364673986435196">Meni napajanja</translation>
 <translation id="3289544412142055976">Linux aplikacije trenutno nisu podržane</translation>
 <translation id="3289674678944039601">Punjenje putem adaptera</translation>
 <translation id="3290356915286466215">Nije osigurano</translation>
@@ -477,7 +477,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se može ponovo prijaviti kasnije.</translation>
 <translation id="3321628682574733415">Pogrešan kôd za roditelja</translation>
 <translation id="332827762492701193">Obavještenja su skrivena</translation>
-<translation id="3338855835380298613">upotreba procesora</translation>
+<translation id="3338855835380298613">potrošnja cpu-a</translation>
 <translation id="3339826665088060472">Snimanje ekrana, alati za kreiranje slika i snimaka ekrana</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
@@ -592,7 +592,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3779139509281456663">Povezivanje s uređajem <ph name="NAME" /></translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Zaključano</translation>
-<translation id="3796198851576711985">status baterije</translation>
+<translation id="3796198851576711985">stanje baterije</translation>
 <translation id="3796746699333205839">Aplikacija koristi vašu kameru i mikrofon</translation>
 <translation id="3798670284305777884">Zvučnik (interni)</translation>
 <translation id="3799080171973636491">Pritisnite prečicu na tastaturi za povećalo preko cijelog ekrana. Želite li ga uključiti?</translation>
@@ -694,7 +694,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4274537685965975248">Prečica na tastaturi Ctrl + Alt + strelica nadolje je promijenjena. Da koristite tipku End, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu udesno.</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
-<translation id="4280601795273309128">Sigurnosna ažuriranja su završila. Nadogradite uređaj.</translation>
+<translation id="4280601795273309128">Sigurnosna ažuriranja su se završila. Nadogradite uređaj.</translation>
 <translation id="4283888303416325161">Unesite lozinku radi veće sigurnosti</translation>
 <translation id="4285498937028063278">Otkači</translation>
 <translation id="4294319844246081198">Dobro jutro <ph name="GIVEN_NAME" />,</translation>
@@ -750,7 +750,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4527045527269911712">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje.</translation>
 <translation id="4533343294786968049">Produžavanje vijeka trajanja baterije. Ona će se potpuno napuniti do <ph name="FULLY_CHARGE_TIME" />.</translation>
 <translation id="453661520163887813">Do potpune napunjenosti je preostalo <ph name="TIME" /></translation>
-<translation id="4536664881735498710">upotreba rama</translation>
+<translation id="4536664881735498710">korištenje ram-a</translation>
 <translation id="4538824937723742295">Snimanje cijelog ekrana</translation>
 <translation id="4539127209940689201">Štampanje trenutne stranice</translation>
 <translation id="4544483149666270818">Odaberite prozor za snimanje</translation>
@@ -885,7 +885,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Postavke privatnosti</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
-<translation id="5163434717504750796">Status baterije <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Broj ciklusa <ph name="CYCLE_COUNT" /></translation>
+<translation id="5163434717504750796">Stanje baterije <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Broj ciklusa <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Sačuvaj radnu površinu kao šablon</translation>
 <translation id="5168181903108465623">Dostupni su "cast" uređaji</translation>
 <translation id="5170568018924773124">Prikaži u folderu</translation>
@@ -1152,7 +1152,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="6431865393913628856">Snimanje ekrana</translation>
 <translation id="6442259747294754014">Pristup mikrofonu uređaja je isključen</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
-<translation id="6445915701151710649">procesor</translation>
+<translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> događaj(a)</translation>
 <translation id="6449483711453944360">Linux aplikacije i anonimni prozori trenutno nisu podržani</translation>
 <translation id="6452181791372256707">Odbij</translation>
@@ -1360,7 +1360,7 @@ Nova instalacija</translation>
 <translation id="743058460480092004">Kamera i mikrofon su u upotrebi.</translation>
 <translation id="7452560014878697800">Aplikacija koristi vašu kameru</translation>
 <translation id="7453330308669753048">Rezultati historije pretraživanja su uklonjeni</translation>
-<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do kraja</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do potpune napunjenosti</translation>
 <translation id="7461924472993315131">PIN</translation>
 <translation id="746232733191930409">Način rada snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
@@ -1426,7 +1426,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7723703419796509666">Prikazivanje ili sakrivanje konzole s alatima za programere</translation>
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7727952505535211425">Otvaranje web lokacije u traci za adresu u novoj kartici</translation>
-<translation id="77365090426890123">upotreba memorije</translation>
+<translation id="77365090426890123">korištenje memorije</translation>
 <translation id="7742327441377685481">Nema obavještenja</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="776344839111254542">Kliknite da vidite detalje o ažuriranju</translation>
@@ -1659,8 +1659,8 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8853703225951107899">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Napomena: Ako ste nedavno promijenili lozinku, koristite staru. Nova lozinka će se primijeniti nakon što se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za prikaz preko cijelog ekrana</translation>
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
-<translation id="8860817004574502558">trajanje baterije</translation>
-<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> u upotrebi / <ph name="STORAGE_TOTAL_SIZE" /></translation>
+<translation id="8860817004574502558">vijek trajanja baterije</translation>
+<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> se koristi / <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Aplikacija ne podržava dijeljenje ekrana.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8875021410787719674">Premještajte se između donjeg desnog ugla, pokretača, trake za adresu, trake oznaka, otvorene web lokacije i preuzimanja</translation>
@@ -1727,7 +1727,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9178475906033259337">Prikaz 1 rezultata za upit <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ova funkcija vam omogućava da brzo pristupite prijavljenim korisnicima bez lozinke. Ovu funkciju koristite samo s računima kojima vjerujete.</translation>
 <translation id="9183456764293710005">Povećalo za cijeli ekran</translation>
-<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Još <ph name="TIME" /></translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | Preostalo je <ph name="TIME" /></translation>
 <translation id="9193626018745640770">Emitiranje na nepoznatom prijemniku</translation>
 <translation id="9194617393863864469">Prijavite još jednog korisnika...</translation>
 <translation id="9198992156681343238">Rezolucija uređaja <ph name="DISPLAY_NAME" /> je promijenjena na <ph name="RESOLUTION" />. Kliknite Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>

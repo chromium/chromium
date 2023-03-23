@@ -489,6 +489,7 @@
 <translation id="4476574785019001431">设置</translation>
 <translation id="448433063499977729">同步功能已关闭</translation>
 <translation id="4488754974567924717">如果您的密码已泄露，我们会通知您</translation>
+<translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下帐户的阅读清单中：{email}}other{网页已添加到您的以下帐户的阅读清单中：{email}}}</translation>
 <translation id="4496373720959965247">添加标签页并在网页之间切换</translation>
 <translation id="4502566650163919158">立即检查</translation>
 <translation id="4505980578794259603">上次检查时间：<ph name="TIME" />。</translation>
@@ -811,6 +812,7 @@
 <translation id="650279896687777322">了解详情…</translation>
 <translation id="6510072653668207258">以后再提醒我</translation>
 <translation id="651505212789431520">取消同步？您随时可在“设置”中开启同步功能。</translation>
+<translation id="6518133107902771759">验证</translation>
 <translation id="6524918542306337007">无痕模式不可用</translation>
 <translation id="6530992499366869131">密码在数据泄露事件的波及范围内时向您发出警告</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -840,6 +842,7 @@
 <translation id="6672241253012342409">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 
 不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。</translation>
+<translation id="6672697278890207089">请输入密码</translation>
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="667999046851023355">文档</translation>
 <translation id="6684906340059221832">正在跟踪价格</translation>
@@ -1045,6 +1048,7 @@
 <translation id="8136856065410661948">这是为了在 Apple 日历中通过 Chrome 和 Google 智能镜头创建活动。</translation>
 <translation id="8156478151976189188">无法同步密码</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> 个帐号</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">翻译网页</translation>
 <translation id="8205564605687841303">取消</translation>
@@ -1054,7 +1058,6 @@
 <translation id="8237382152611443140">打开用于自动填充密码的设置</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8264966119170358612">您保存的密码中有一些已在非 Google 数据泄露事件中外泄。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">仅在该设备上</translation>
 <translation id="8271720166617117963">接受并登录</translation>
 <translation id="8278938988428169257">输入字词或词组</translation>
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>

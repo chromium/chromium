@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1014750484722996375">Escritorios</translation>
 <translation id="1018219910092211213">No se puede resolver el DNS</translation>
 <translation id="1018656279737460067">Cancelado</translation>
+<translation id="1022433422498218992">Controles generales</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Para obtener más información, usa la flecha hacia arriba.</translation>
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Se detuvo: sin tinta</translation>
 <translation id="1664796644829245314">Vista previa de <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1669047024429367828">Visibilidad</translation>
 <translation id="1672499492233627739">Feed de video de la cámara web</translation>
 <translation id="1676557873873341166">Grabando un video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Agente de resolución de DNS disponible</translation>
+<translation id="1710499924611012470">Navegación de accesibilidad</translation>
 <translation id="1715359911173058521">Hay un problema de comunicación con el escáner. Revisa la conexión de red o USB y vuelve a intentarlo.</translation>
 <translation id="1717874160321062422">Administrado por <ph name="FIRST_MANAGER" /> y <ph name="SECOND_MANAGER" />.</translation>
 <translation id="1726100011689679555">Servidores de nombres</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Tipo de autenticación</translation>
 <translation id="1782199038061388045">traducción</translation>
+<translation id="1790209694022261219">Ventanas y escritorios</translation>
 <translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1801418420130173017">Inhabilitar el tema oscuro</translation>
 <translation id="1807246157184219062">Claro</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2085089206770112532">Disminuir el brillo de la pantalla</translation>
+<translation id="2102231663024125441">Edición de texto</translation>
 <translation id="2105810540595158374">El dispositivo es un control de juegos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB de <ph name="TOTAL_MEMORY" /> GB de memoria disponible</translation>
@@ -178,7 +184,6 @@
 <translation id="2421798028054665193">Imagen <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Exactitud del punto flotante</translation>
 <translation id="2448312741937722512">Tipo</translation>
-<translation id="2461822463642141190">Actual</translation>
 <translation id="248546197012830854">El dispositivo está sin conexión. Conéctate a una red Wi-Fi para ver el contenido de ayuda.</translation>
 <translation id="2491955442992294626">Cuando usas otra ventana no se prueban las teclas.</translation>
 <translation id="2493126929778606526">Tus mejores fotos seleccionadas automáticamente</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Actualización crítica</translation>
 <translation id="2860473693272905224">Coloca otra página en el escáner.</translation>
 <translation id="2872961005593481000">Apagar</translation>
+<translation id="2873483161362553159">Exploración en el navegador</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2878387241690264070">Se descargó el <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2902312830803030883">Más acciones</translation>
@@ -368,6 +374,7 @@
 <translation id="4311195029067684288">Total</translation>
 <translation id="4333390807948134856">La tecla <ph name="KEY_NAME" /> está presionada</translation>
 <translation id="435692326371619097">Administra la configuración del APN de red. Los APN establecen una conexión entre Internet y una red móvil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Restablecer todos los accesos directos</translation>
 <translation id="4378373042927530923">No se ejecutó la rutina</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +667,7 @@
 <translation id="6766275201586212568">Resoluciones DNS con error</translation>
 <translation id="6768237774506518020">Tasa alta de errores para la resolución de DNS</translation>
 <translation id="6791471867139427246">color de la luz del teclado</translation>
+<translation id="6798678288485555829">Navegación por el texto</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Información disponible sobre el texto seleccionado. Utiliza la flecha hacia arriba para acceder.</translation>
 <translation id="6838167112108853532">No se puede inhabilitar ni quitar este APN. Asegúrate de que se inhabiliten o se quiten los APN que estén habilitados.</translation>

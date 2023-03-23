@@ -184,7 +184,6 @@
 <translation id="2421798028054665193">Bilde <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Nøyaktighet av flytende desimalpunkt</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2461822463642141190">Nåværende</translation>
 <translation id="248546197012830854">Enheten er uten nett. Koble til et wifi-nettverk for å se hjelpeinnhold.</translation>
 <translation id="2491955442992294626">Taster blir ikke testet når du bruker andre vinduer</translation>
 <translation id="2493126929778606526">De beste bildene dine, valgt automatisk</translation>
@@ -698,6 +697,7 @@
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" />. Navn: <ph name="NAME" />.</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7130438335435247835">Navn på tilgangspunkt (APN)</translation>
+<translation id="7131634559772719176">Bekreft forhåndsinnstilling</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navnetjener}other{Navnetjenere}}</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
@@ -801,6 +801,7 @@
 <translation id="80398733265834479">Slå på automatisk fargemodus</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8045012663542226664">Kutt mikrofonlyden</translation>
+<translation id="8050091914317269817">Hvis du velger denne bakgrunnen, blir automatisk mørk modus og matching av bakgrunnsfarge slått på.</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8082366717211101304">Kan ikke foreta DNS-oppslag fra Android-apper</translation>

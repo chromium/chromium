@@ -40,6 +40,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="1182225749592316782">Kamera va mikrofon ruxsatiga ega barcha ilova va saytlarga kirish imkonini beradi</translation>
 <translation id="1183863904939664422">Bu tavsiya menga qiziq emas</translation>
+<translation id="1184126796192815024">Bu tarmoqda telefondan ilovalarni namoyish qilib boʻlmaydi. Telefondagi hotspotdan foydalanib koʻring. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Xavfsizlikni oshirish uchun parol yoki PIN kodni kiriting</translation>
 <translation id="118532027333893379">Butun ekranni rasmga olish uchun ekranning istalgan joyiga bosing</translation>
 <translation id="1190609913194133056">Bildirishnomalar markazi</translation>
@@ -461,6 +462,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3256109297135787951">Javondagi narsaning ajratib belgilanishini bekor qilish</translation>
 <translation id="3260969790895726815">Nutq qurilmada qayta ishlanadi va ovoz bilan yozish oflayn rejimda ishlaydi, lekin ayrim ovozli buyruqlar ishlamaydi.</translation>
 <translation id="3269597722229482060">Oʻng klik</translation>
+<translation id="3289364673986435196">Quvvat menyusi</translation>
 <translation id="3289544412142055976">Linux ilovalari hozirda ishlamaydi</translation>
 <translation id="3289674678944039601">Adapter orqali quvvat olmoqda</translation>
 <translation id="3290356915286466215">Himoyalanmagan</translation>
@@ -685,6 +687,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4269883910223712419">Bu qurilma administratorining vakolatlari:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Pastga strelka tezkor tugmasi oʻzgardi. End tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Oʻngga strelkani bosing.</translation>
 <translation id="4279490309300973883">Ekran nusxasini boshqa ekranga uzatish</translation>
+<translation id="4280601795273309128">Xavfsizlikka oid yangilanishlar tugadi. Qurilmani yangilang.</translation>
 <translation id="4283888303416325161">Xavfsizlikni oshirish uchun parol kiriting</translation>
 <translation id="4285498937028063278">Olib tashlash</translation>
 <translation id="4294319844246081198">Xayrli tong, <ph name="GIVEN_NAME" /></translation>
@@ -871,6 +874,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5147567197700016471">Ochiq</translation>
 <translation id="5150070631291639005">Maxfiylik sozlamalari</translation>
 <translation id="5155897006997040331">Oʻqish tezligi</translation>
+<translation id="5163434717504750796">Batareya holati: <ph name="BATTERY_HEALTH_PERCENTAGE" />% | Davrlar soni: <ph name="CYCLE_COUNT" /></translation>
 <translation id="5166007464919321363">Ish stolini andoza sifatida saqlash</translation>
 <translation id="5168181903108465623">Translatsiya qurilmalari mavjud</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
@@ -1341,6 +1345,7 @@ yangi oʻrnatilgan</translation>
 <translation id="743058460480092004">Kamera va mikrofon ishlatilmoqda.</translation>
 <translation id="7452560014878697800">Ilova kamerangizni ishlatmoqda</translation>
 <translation id="7453330308669753048">Qidiruv tarixidagi natija olib tashlandi</translation>
+<translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> da toʻladi</translation>
 <translation id="7461924472993315131">Qadab qo‘yish</translation>
 <translation id="746232733191930409">Ekranni yozib olish rejimi</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
@@ -1704,6 +1709,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="9178475906033259337"><ph name="QUERY" /> – 1 ta natija chiqdi</translation>
 <translation id="9179259655489829027">Bu funksiya kirish bajarilgan istalgan hisobga tez va parolsiz ruxsat beradi. Faqatgina ishonchli hisoblarga qo‘llang.</translation>
 <translation id="9183456764293710005">Butun ekran rejimidagi lupa</translation>
+<translation id="9186811218777709815"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> qoldi</translation>
 <translation id="9193626018745640770">Notanish qurilmaga translatsiya qilinmoqda</translation>
 <translation id="9194617393863864469">Boshqa hisobga kirish...</translation>
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> displeyining ekrani <ph name="RESOLUTION" /> hajmiga oʻzgartirildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>

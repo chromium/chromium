@@ -364,7 +364,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1316136264406804862">A pesquisar...</translation>
 <translation id="1316248800168909509">Não foi possível ligar ao dispositivo <ph name="DEVICE" />. Tente novamente.</translation>
 <translation id="1316495628809031177">A sincronização está em pausa.</translation>
-<translation id="1317637799698924700">A estação de carregamento vai funcionar no modo compatível com USB tipo C.</translation>
+<translation id="1317637799698924700">A estação de ancoragem vai funcionar no modo compatível com USB tipo C.</translation>
 <translation id="1319983966058170660">Botão anterior da subpágina <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="1322046419516468189">Veja e faça a gestão das palavras-passe guardadas em <ph name="SAVED_PASSWORDS_STORE" />.</translation>
 <translation id="1324106254079708331">Salvaguarda as Contas Google pessoais de qualquer pessoa em risco de ataques direcionados.</translation>
@@ -560,6 +560,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1485015260175968628">Esta pode agora:</translation>
 <translation id="1485141095922496924">Versão <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">Pesquisar palavras-passe</translation>
+<translation id="1486486872607808064">Leia este código QR com uma câmara no dispositivo onde quer criar uma chave de acesso para a app <ph name="APP_NAME" /></translation>
 <translation id="1487335504823219454">Ativado - definições personalizadas</translation>
 <translation id="1493892686965953381">A aguardar <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sites podem solicitar a utilização de tipos de letra instalados no seu dispositivo</translation>
@@ -770,6 +771,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="164936512206786300">Dessincronizar dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Tem de introduzir a mesma frase de acesso duas vezes</translation>
 <translation id="1652326691684645429">Ativar a funcionalidade Partilhar na proximidade</translation>
+<translation id="1654580009054503925">Sem autorização para mostrar pedidos</translation>
 <translation id="1656528038316521561">Opacidade do fundo</translation>
 <translation id="1657406563541664238">Ajude a melhorar o <ph name="PRODUCT_NAME" /> enviando automaticamente estatísticas de utilização e relatórios de falhas para a Google</translation>
 <translation id="1657937299377480641">Para voltares a iniciar sessão e teres acesso a recursos educativos, pede ao teu Pai ou Mãe para te darem autorização.</translation>
@@ -1354,7 +1356,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2155772377859296191">Parece ter <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156877321344104010">Executar novamente a verificação de segurança</translation>
-<translation id="2157474325782140681">Para ter acesso a mais funcionalidades, utilize uma estação de carregamento Dell concebida para trabalhar com este Chromebook.</translation>
+<translation id="2157474325782140681">Para ter acesso a mais funcionalidades, utilize uma estação de ancoragem Dell concebida para trabalhar com este Chromebook.</translation>
 <translation id="215753907730220065">Sair do modo de ecrã inteiro</translation>
 <translation id="2157875535253991059">Esta página está agora em ecrã inteiro.</translation>
 <translation id="2158475082070321257">Copiar link para realçar</translation>
@@ -1485,7 +1487,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2271986192355138465">Saiba como instalar apps Web</translation>
 <translation id="2272430695183451567">0 interruptores atribuídos</translation>
 <translation id="2272570998639520080">Copo de Martini</translation>
-<translation id="2273119997271134996">Problema na porta de vídeo da estação de carregamento</translation>
+<translation id="2273119997271134996">Problema na porta de vídeo da estação de ancoragem</translation>
 <translation id="2274840746523584236">Carregue o seu Chromebook</translation>
 <translation id="2276503375879033601">Adicionar mais aplicações</translation>
 <translation id="2276910256003242519">A limpar dados…</translation>
@@ -2468,7 +2470,7 @@ Pretende pará-lo?</translation>
 <translation id="3115580024857770654">Reduzir tudo</translation>
 <translation id="3115743155098198207">Gerir o idioma da Conta Google</translation>
 <translation id="3117138513108032865">Atualizar as navegações para HTTPS e avisar antes de carregar sites que não o suportam. Não pode alterar esta definição porque tem a Proteção avançada ativada.</translation>
-<translation id="3117362587799608430">A estação de carregamento não é totalmente compatível</translation>
+<translation id="3117362587799608430">A estação de ancoragem não é totalmente compatível</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{Falha ao enviar <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />}other{Falha ao enviar <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Ajuda do <ph name="PRODUCT_NAME" /></translation>
 <translation id="3119948370277171654">Qual o conteúdo ou URL que está a transmitir?</translation>
@@ -2981,7 +2983,7 @@ Pretende pará-lo?</translation>
 <translation id="3605780360466892872">Empresário</translation>
 <translation id="3609277884604412258">Pesquisa rápida</translation>
 <translation id="3610241585790874201">Sem autorização para guardar dados no seu dispositivo</translation>
-<translation id="3610369246614755442">A ventoinha da estação de carregamento necessita de manutenção</translation>
+<translation id="3610369246614755442">A ventoinha da estação de ancoragem necessita de manutenção</translation>
 <translation id="361106536627977100">Dados do Flash</translation>
 <translation id="3611655097742243705">Visite a Play Store para encontrar mais apps</translation>
 <translation id="3611658447322220736">Os sites fechados recentemente podem concluir o envio e a receção de dados</translation>
@@ -3408,6 +3410,7 @@ Pretende pará-lo?</translation>
 <translation id="3957079323242030166">Os dados da cópia de segurança não são contabilizados para a sua quota do armazenamento do Drive.</translation>
 <translation id="3957844511978444971">Toque em "Aceitar" para confirmar a sua seleção destas definições dos serviços Google.</translation>
 <translation id="3958088479270651626">Importar marcadores e definições</translation>
+<translation id="3958110062351175311">Com autorização para mostrar pedidos na barra de ferramentas</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Mais ações para <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Proteção padrão contra Websites, transferências e extensões identificados como perigosos</translation>
@@ -3667,6 +3670,7 @@ Pretende pará-lo?</translation>
 <translation id="4205157409548006256">Ocorreu um erro ao configurar o Linux.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Relatório de comentários</translation>
+<translation id="4206585797409671301">Com autorização para mostrar pedidos</translation>
 <translation id="4207932031282227921">Autorização solicitada, prima F6 para responder</translation>
 <translation id="4208390505124702064">Pesquisar <ph name="SITE_NAME" /></translation>
 <translation id="4209092469652827314">Grande</translation>
@@ -4005,7 +4009,7 @@ Pretende pará-lo?</translation>
 <translation id="4513872120116766993">Escrita preditiva</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="451407183922382411">Com tecnologia da <ph name="COMPANY_NAME" /></translation>
-<translation id="4515872537870654449">Contacte a Dell para obter assistência. A estação de carregamento será encerrada se a ventoinha não estiver a funcionar.</translation>
+<translation id="4515872537870654449">Contacte a Dell para obter assistência. A estação de ancoragem será encerrada se a ventoinha não estiver a funcionar.</translation>
 <translation id="4518840066030486079">Estilo do modo com tecla Shift</translation>
 <translation id="4519331665958994620">Os sites podem solicitar a utilização da câmara</translation>
 <translation id="4519935350946509010">Erro de ligação.</translation>
@@ -4336,6 +4340,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="481574578487123132">Dispositivos associados</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, detalhes</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
+<translation id="4816900689218414104">Crie uma chave de acesso num telemóvel ou tablet</translation>
 <translation id="4819323978093861656">{0,plural, =0{A fechar agora.}=1{A fechar dentro de: 1 segundo}other{A fechar dentro de: # segundos}}</translation>
 <translation id="4819607494758673676">Notificações do Assistente Google</translation>
 <translation id="4820236583224459650">Definir como permissão ativa</translation>
@@ -6245,6 +6250,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6562117348069327379">Armazene registos de sistema no diretório Transferências.</translation>
 <translation id="656293578423618167">O caminho ou nome do ficheiro é demasiado longo. Guarde com um nome mais curto ou noutra localização.</translation>
 <translation id="6568283005472142698">Pesquisa de separadores</translation>
+<translation id="6570622975915850879">Usar um dispositivo diferente</translation>
 <translation id="65711204837946324">Precisa de autorização para transferir</translation>
 <translation id="6571533309669248172">Formatação de texto</translation>
 <translation id="6571772921213691236">Edite os dados de início de sessão</translation>
@@ -6808,6 +6814,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7044606776288350625">Sincronizar dados</translation>
 <translation id="7047059339731138197">Escolher um fundo</translation>
 <translation id="7049293980323620022">Pretende manter este ficheiro?</translation>
+<translation id="70496770794393383">Tabela de palavras-passe guardadas</translation>
 <translation id="7050037487872780845">Configuração da zona Wi-Fi inválida</translation>
 <translation id="7051551856857948729">Ocultar valor do IBAN</translation>
 <translation id="7052237160939977163">Enviar dados de rastreio do desempenho</translation>
@@ -7312,7 +7319,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7531771599742723865">Dispositivo em utilização</translation>
 <translation id="7531779363494549572">Aceda a Definições &gt; Apps e notificações &gt; Notificações.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
-<translation id="7535730537657706072">Para limpar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores de navegação anónima</translation>
+<translation id="7535730537657706072">Para limpar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores anónimos</translation>
 <translation id="7537451260744431038">Os sites não podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.</translation>
 <translation id="7538088324298143359">Pesquisar na imagem com o <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Ocorreu um erro durante a verificação de atualizações: <ph name="ERROR" /></translation>
@@ -8252,7 +8259,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8345848587667658367">Agora, pode ver as fotos, o conteúdo multimédia, as notificações e as apps recentes do seu telemóvel</translation>
 <translation id="8347227221149377169">Tarefas de impressão</translation>
 <translation id="834785183489258869">Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
-<translation id="8350789879725387295">Ferramentas da caneta stylus na estação de carregamento</translation>
+<translation id="8350789879725387295">Ferramentas da caneta stylus na estação de ancoragem</translation>
 <translation id="8351316842353540018">Mostrar sempre opções de a11y</translation>
 <translation id="8351419472474436977">Esta extensão apoderou-se das suas definições de proxy, o que significa que pode alterar, interromper ou intercetar qualquer coisa que esteja a fazer online. Se não tem a certeza do motivo pelo qual aconteceu esta alteração, é provável que não a queira.</translation>
 <translation id="8351630282875799764">A bateria não está a carregar</translation>

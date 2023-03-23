@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">Відвідані веб-сайти й час перебування на них</translation>
 <translation id="1824402189105105503">Восьмий рулон</translation>
 <translation id="1826516787628120939">Перевірка</translation>
+<translation id="1826968372364864056">Очистити форму</translation>
 <translation id="1828959155404624835">Прокат автомобілів</translation>
 <translation id="1834321415901700177">Цей сайт містить шкідливі програми</translation>
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
@@ -808,6 +809,7 @@
 <translation id="2951588413176968965">Моя поштова скринька</translation>
 <translation id="2952820037279740115">Закрити всі вікна в режимі анонімного перегляду</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Таблиця "Збережені способи оплати"</translation>
 <translation id="295526156371527179">Застереження: це правило не об'єднано в словник, як указано в правилі, оскільки це не словник.</translation>
 <translation id="2955913368246107853">Закрити панель пошуку</translation>
 <translation id="2958544468932521864">Крикет</translation>
@@ -1967,6 +1969,7 @@
 <translation id="5786044859038896871">Ввести дані кредитної картки?</translation>
 <translation id="578633867165174378">Веб-переглядач Chrome виявив, що введений пароль розкрито через порушення безпеки даних. Радимо негайно змінити його.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{Немає}=1{дані для входу в 1 обліковий запис}one{дані для входу в # обліковий запис}few{дані для входу в # облікові записи}many{дані для входу в # облікових записів}other{дані для входу в # облікового запису}}</translation>
 <translation id="580241730938216256">Почати оновлення</translation>
 <translation id="5803412860119678065">Ввести дані кредитної картки <ph name="CARD_DETAIL" />?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
@@ -2522,6 +2525,7 @@
 <translation id="7201591969684833065">Адміністратор може бачити:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відкрити нову анонімну вкладку</translation>
 <translation id="7203375778433816396">Зробити Chrome веб-переглядачем системи за умовчанням</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Немає}=1{1 ключ доступу}one{# ключ доступу}few{# ключі доступу}many{# ключів доступу}other{# ключа доступу}}</translation>
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не відповідає стандартам безпеки.</translation>
 <translation id="7210993021468939304">Активність Linux у межах контейнера. Може встановлювати та запускати додатки Linux у межах контейнера</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про цю проблему.</translation>
@@ -2774,6 +2778,7 @@
 <translation id="7736959720849233795">Копіювати адресу посилання</translation>
 <translation id="7740996059027112821">Стандартно</translation>
 <translation id="77424286611022110">Цей сайт показує нав’язливі й оманливі оголошення. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Таблиця "Збережені адреси"</translation>
 <translation id="774634243536837715">Заблоковано небезпечний вміст.</translation>
 <translation id="7751971323486164747">Налаштуйте розміри та гарнітури шрифтів у Chrome</translation>
 <translation id="7752995774971033316">Некерований клієнт</translation>
@@ -3015,6 +3020,7 @@
 <translation id="8347658365704983341">Дистанційне навчання</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
 <translation id="8351131234907093545">Створити нотатку</translation>
+<translation id="835203957414790336">Інформація про ваш принтер і контент сторінок, які ви друкуєте, надсилається на аналіз на платформу Google Cloud або стороннім сервісам. Наприклад, контент можуть сканувати на наявність конфіденційних даних.</translation>
 <translation id="8355270400102541638">Локальний контекст аварійного завершення роботи:</translation>
 <translation id="8363502534493474904">вимкнути режим польоту</translation>
 <translation id="8364627913115013041">Не встановлено.</translation>

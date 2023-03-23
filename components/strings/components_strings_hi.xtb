@@ -387,6 +387,7 @@
 <translation id="1822540298136254167">आप किन वेबसाइटों पर जाते हैं और उन पर कितना समय देते हैं</translation>
 <translation id="1824402189105105503">आठवां रोल</translation>
 <translation id="1826516787628120939">जाँच की जा रही है</translation>
+<translation id="1826968372364864056">पहले से भरी जानकारी मिटाएं</translation>
 <translation id="1828959155404624835">किराये पर कार देने वाली कंपनियां</translation>
 <translation id="1834321415901700177">इस साइट में हानिकारक प्रोग्राम हैं</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
@@ -809,6 +810,7 @@
 <translation id="2951588413176968965">मेरा मेलबॉक्स</translation>
 <translation id="2952820037279740115">सभी गुप्त विंडो बंद करें</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">सेव की गए पेमेंट के तरीकों की टेबल</translation>
 <translation id="295526156371527179">चेतावनी: इस नीति को शब्दकोश के तौर पर नीति के बताए अनुसार मिलाया नहीं जा सकता, क्योंकि यह शब्दकोश नहीं है.</translation>
 <translation id="2955913368246107853">खोज बार बंद करें</translation>
 <translation id="2958544468932521864">क्रिकेट</translation>
@@ -1967,6 +1969,7 @@
 <translation id="5786044859038896871">क्या अपनी कार्ड जानकारी भरना चाहते हैं?</translation>
 <translation id="578633867165174378">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. हमारा सुझाव है कि आप इस पासवर्ड को अभी बदल दें.</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{एक भी नहीं}=1{1 खाते का साइन इन करने के लिए डेटा}one{# खाते का साइन इन करने के लिए डेटा}other{# खाते का साइन इन करने के लिए डेटा}}</translation>
 <translation id="580241730938216256">अपडेट करना शुरू करें</translation>
 <translation id="5803412860119678065">क्या आप अपनी <ph name="CARD_DETAIL" /> भरना चाहते हैं?</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
@@ -2522,6 +2525,7 @@
 <translation id="7201591969684833065">आपका एडमिन यह देख सकता है:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, निजी तौर पर ब्राउज़ करने के लिए, पहले Tab और फिर Enter दबाकर एक नया गुप्त टैब खोलें</translation>
 <translation id="7203375778433816396">Chrome को सिस्टम के डिफ़ॉल्ट ब्राउज़र के रूप में सेट करें</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{एक भी नहीं}=1{1 पासकी}one{# पासकी}other{# पासकी}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> सुरक्षा मानकों का पालन नहीं करता.</translation>
 <translation id="7210993021468939304">कंटेनर के अंदर Linux गतिविधि कर सकते हैं और Linux ऐप्लिकेशन इंस्टॉल करके चला सकते हैं</translation>
 <translation id="721197778055552897">इस समस्या के बारे में <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" />.</translation>
@@ -2774,6 +2778,7 @@
 <translation id="7736959720849233795">लिंक का पता कॉपी करें</translation>
 <translation id="7740996059027112821">मानक</translation>
 <translation id="77424286611022110">इस साइट पर, तंग करने वाले या गुमराह करने वाले विज्ञापन दिखते हैं. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">सेव किए गए पतों की टेबल</translation>
 <translation id="774634243536837715">खतरनाक सामग्री ब्लॉक की गई.</translation>
 <translation id="7751971323486164747">Chrome में फ़ॉन्ट साइज़ और टाइपफ़ेस को पसंद के मुताबिक बनाएं</translation>
 <translation id="7752995774971033316">अप्रबंधित</translation>
@@ -3015,6 +3020,7 @@
 <translation id="8347658365704983341">डिस्टेंस लर्निंग</translation>
 <translation id="8349305172487531364">बुकमार्क बार</translation>
 <translation id="8351131234907093545">नोट बनाएं</translation>
+<translation id="835203957414790336">प्रिंट किए जाने वाले पेजों का कॉन्टेंट और आपके प्रिंटर की जानकारी, विश्लेषण के लिए Google Cloud या तीसरे पक्ष की कंपनियों के पास भेजी जाती है. उदाहरण के लिए, इसे संवेदनशील डेटा की जांच के लिए स्कैन किया जा सकता है.</translation>
 <translation id="8355270400102541638">स्थानीय खराबी रिपोर्ट से जुड़ी जानकारी:</translation>
 <translation id="8363502534493474904">हवाई जहाज़ मोड बंद करें</translation>
 <translation id="8364627913115013041">सेट नहीं है.</translation>

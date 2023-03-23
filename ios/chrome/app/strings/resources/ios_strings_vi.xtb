@@ -812,6 +812,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="650279896687777322">Tìm hiểu thêm...</translation>
 <translation id="6510072653668207258">Nhắc tôi sau</translation>
 <translation id="651505212789431520">Bạn muốn hủy đồng bộ hóa? Bạn có thể bật tính năng đồng bộ hóa bất cứ lúc nào trong phần Cài đặt.</translation>
+<translation id="6518133107902771759">Xác minh</translation>
 <translation id="6524918542306337007">Không có Chế độ ẩn danh</translation>
 <translation id="6530992499366869131">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -841,6 +842,7 @@ Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</tra
 <translation id="6672241253012342409">Các trang web có thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ những mặt hàng có trong giỏ hàng.
 
 Ở chế độ Ẩn danh, các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như nhằm điều chỉnh quảng cáo cho phù hợp với bạn.</translation>
+<translation id="6672697278890207089">Nhập cụm mật khẩu của bạn</translation>
 <translation id="6674571176963658787">Để bắt đầu đồng bộ hóa, hãy nhập cụm mật khẩu của bạn</translation>
 <translation id="667999046851023355">Tài liệu</translation>
 <translation id="6684906340059221832">Theo dõi giá</translation>
@@ -1046,6 +1048,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8136856065410661948">Thông tin này sẽ được dùng để tạo sự kiện trong Lịch Apple trên Chrome và Google Ống kính.</translation>
 <translation id="8156478151976189188">Tính năng đồng bộ hóa mật khẩu hiện không hoạt động</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> tài khoản</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Thiết bị của bạn<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Dịch trang</translation>
 <translation id="8205564605687841303">Hủy</translation>
@@ -1055,7 +1058,6 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8237382152611443140">Mở chế độ Cài đặt tự động điền mật khẩu</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8264966119170358612">Một số mật khẩu bạn lưu đã bị lộ trong một sự cố rò rỉ dữ liệu xảy ra ngoài Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">Chỉ trên thiết bị này</translation>
 <translation id="8271720166617117963">Chấp nhận và Đăng nhập</translation>
 <translation id="8278938988428169257">Nhập một từ hoặc cụm từ</translation>
 <translation id="8281781826761538115">Mặc định - <ph name="DEFAULT_LOCALE" /></translation>

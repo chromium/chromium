@@ -150,6 +150,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
       Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
 <translation id="1147732569915511430">SHA-256-Hash des Avatarbilds.</translation>
 <translation id="1148415065145333943">Modus „Intelligente Akkuladung“ deaktivieren</translation>
+<translation id="1149841949061115313">Langzeitsupportkandidat-Kanal</translation>
 <translation id="1150742937785306405">Nutzer dürfen die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung auf ihrem Gerät aktivieren oder deaktivieren.</translation>
 <translation id="1151353063931113432">Bilder auf diesen Websites zulassen</translation>
 <translation id="1151987132434751822">Authentifizierungsschemas, für die die Anmeldedaten in der Richtlinie angewendet werden können. Mögliche Werte:
@@ -1903,6 +1904,8 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
       Ist diese Richtlinie deaktiviert, wird nie beim Nutzer nachgefragt und die Möglichkeit für Audioaufnahmen steht nur URLs in der Liste "AudioCaptureAllowedUrls" zur Verfügung.
 
       Hinweis: Die Richtlinie gilt für jegliche Form der Audioeingabe, nicht nur für das integrierte Mikrofon.</translation>
+<translation id="2818869063785105255">Legt fest, ob lokale Kontodaten nach der Abmeldung in <ph name="PRODUCT_OS_NAME" /> gespeichert bleiben. Wenn die Richtlinie auf „true“ gesetzt ist, werden Konten nicht dauerhaft in <ph name="PRODUCT_OS_NAME" /> gespeichert und alle Daten der Nutzersitzung werden nach der Abmeldung verworfen. Ist sie auf „false“ gesetzt oder nicht konfiguriert, können lokale (verschlüsselte) Nutzerdaten auf dem Gerät gespeichert werden.
+Die Richtlinie <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> kann das Verhalten dieser Richtlinie für lokale Gerätekonten mit einem bestimmten flüchtigen Modus überschreiben.</translation>
 <translation id="2823870601012066791">Windows-Registrierungspfad für <ph name="PRODUCT_OS_NAME" />-Clients:</translation>
 <translation id="2824715612115726353">Inkognitomodus aktivieren</translation>
 <translation id="282870810415075521">Verwendung von JIT durch JavaScript auf diesen Websites zulassen</translation>
@@ -2190,6 +2193,7 @@ Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über 
 
       Ist die Richtlinie deaktiviert, wird die Mediensteuerung auf dem Sperrbildschirm ausgeschaltet.</translation>
 <translation id="3072847235228302527">Nutzungsbedingungen für ein lokales Gerätekonto festlegen</translation>
+<translation id="3074032542020543133">Langzeitsupport-Kanal</translation>
 <translation id="3077650998740742747">
 Standardverhalten (Richtlinie nicht konfiguriert)
 Wenn im Inhaltsbereich ein Konto hinzugefügt wird, wird der Nutzer möglicherweise über ein kleines Dialogfeld gebeten, ein neues Profil zu erstellen. Dieses Dialogfeld kann geschlossen werden.
@@ -3337,6 +3341,13 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4101282687722389021">UTC-Zeitstempel für die letzte Änderung dieses Eintrags. Wird als String gesendet, da der Zeitstempel nicht als Ganzzahl angegeben werden kann.</translation>
 <translation id="4102347680024644994">Ereignisse vom Typ „Extended Detection and Response“ (XDR) melden</translation>
 <translation id="4105989332710272578">Erzwingung der Zertifikatstransparenz für eine Liste von URLs deaktivieren</translation>
+<translation id="4110126170080699437">Aus Sicherheitsgründen erfordert die <ph name="GET_DISPLAY_MEDIA_API_NAME" />-Web-API die vorherige Ausführung einer Geste zur vorübergehenden Aktivierung durch den Nutzer; andernfalls tritt ein Fehler auf.
+
+Mithilfe dieser Richtlinie können Administratoren Ursprünge festlegen, von denen diese API ohne vorherige Nutzergeste aufgerufen werden kann.
+
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * ist kein akzeptierter Wert für diese Richtlinie.
+
+Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufruf dieser API unabhängig vom Ursprung eine Nutzergeste ausgeführt werden.</translation>
 <translation id="4114059938441379876">Wenn diese Richtlinie konfiguriert ist, wird die URL für Nutzer festgelegt, über die sie ihr Passwort ändern können, nachdem ihnen im Browser eine Warnung angezeigt wurde. Der Passwortschutzdienst leitet Nutzer weiter zu der URL (nur HTTP- und HTTPS-Protokolle), die du mit dieser Richtlinie festlegst. Die Seite zum Ändern des Passworts muss den Richtlinien unter https://www.chromium.org/developers/design-documents/create-amazing-password-forms entsprechen, damit der Salted-Hash-Wert des neuen Passworts in <ph name="PRODUCT_NAME" /> richtig erfasst werden kann.
 
 Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den Dienst an https://myaccount.google.com weitergeleitet, um ihr Passwort zu ändern.
@@ -3810,6 +3821,13 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
       Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> die Standardgröße. Nutzer können diese Einstellung mit dem Flag „--disk-cache-size“ ändern.
 
       Hinweis: Der in dieser Richtlinie angegebene Wert wird als Hinweis für verschiedene Cache-Subsysteme des Browsers verwendet. Daher ist der tatsächliche Speicherplatzverbrauch aller Caches insgesamt größer, der angegebene Wert trifft aber in etwa zu.</translation>
+<translation id="458285976189239891">Aus Sicherheitsgründen erfordert das Aufrufen der Web-APIs <ph name="SHOW_OPEN_FILE_PICKER_API_NAME" />, <ph name="SHOW_SAVE_FILE_PICKER_API_NAME" /> und <ph name="SHOW_DIRECTORY_PICKER_API_NAME" /> eine vorherige Nutzergeste („vorübergehende Aktivierung“) – ansonsten schlägt das Aufrufen fehl.
+
+Wenn diese Richtlinie konfiguriert ist, können Administratoren Ursprünge festlegen, von denen diese APIs ohne vorherige Nutzergeste aufgerufen werden kann.
+
+Weitere Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * ist kein akzeptierter Wert für diese Richtlinie.
+
+Wenn diese Richtlinie nicht konfiguriert ist, muss vor dem Aufruf dieser APIs unabhängig vom Ursprung eine Nutzergeste ausgeführt werden.</translation>
 <translation id="4587365491100112056">Wenn die Richtlinie konfiguriert ist, wird die Cachelebensdauer für Authentifizierungsdaten in Stunden festgelegt. Im Cache befinden sich Daten zu Bereichen, die der Computer als vertrauenswürdig einstuft, d. h. verwandte Bereiche. Das Speichern von Authentifizierungsdaten im Cache beschleunigt die Anmeldung. Im Cache werden keine nutzerspezifischen Daten und auch keine Daten zu nicht verwandten Bereichen gespeichert.
 
       Wenn die Richtlinie auf „0“ gesetzt ist, wird die Speicherung der Authentifizierungsdaten deaktiviert. Bereichsspezifische Daten werden bei jeder Anmeldung abgerufen, daher kann ein Ausschalten der Speicherung von Authentifizierungsdaten die Nutzeranmeldung erheblich verlangsamen.
@@ -5021,6 +5039,7 @@ Wenn die Richtlinie nicht konfiguriert ist, können keine Domains auf „file://
 <translation id="5722577409367087850">Erweiterung laden</translation>
 <translation id="5728154254076636808">Erstellung von Roaming-Kopien für <ph name="PRODUCT_NAME" />-Profildaten aktivieren</translation>
 <translation id="5729308727912841256">Kerberos-Passwort. Der Platzhalter „<ph name="PASSWORD_PLACEHOLDER" />“ wird durch das Anmeldepasswort ersetzt.</translation>
+<translation id="573183812760497142">Drittanbieter-Speicherpartitionierung für diese Ursprünge blockieren</translation>
 <translation id="5732972008943405952">Bei erstmaliger Ausführung Autofill-Formulardaten aus Standardbrowser importieren</translation>
 <translation id="5733040281451845496">Wenn die Richtlinie aktiviert ist, wird die erste Aktivität des Nutzers in einer Sitzung als Ausgangspunkt für Verzögerungen bei der Energieverwaltung und Begrenzungen der Sitzungslänge verwendet.
 
@@ -6192,6 +6211,11 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, werden keine Informationen zur App-Nutzung gesendet.</translation>
 <translation id="6823711520976094072">Wenn du einen Wert unter 1 MB oder gar keinen Wert festlegst, verwendet <ph name="PRODUCT_OS_NAME" /> beim Installieren durch mehrere Nutzer auf demselben Gerät die Standardgröße von 256 MiB zum Speichern von Apps und Erweiterungen im Cache. Hierdurch wird ein nochmaliges Herunterladen für jeden Nutzer vermieden.</translation>
+<translation id="6828729771894228555">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen, die die oberste Ebene (URL in der Adressleiste des Tabs) von Ursprüngen angeben, für die die Drittanbieter-Speicherpartitionierung (Partitionierung des ursprungsübergreifenden iFrame-Speichers) blockiert werden soll.
+          Wenn diese Richtlinie nicht konfiguriert ist oder der Ursprung auf oberster Ebene nicht übereinstimmt, wird der Wert von <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" /> verwendet.
+          Genaue Informationen zu gültigen Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+          Beachte, dass die Muster, die du hier aufführst, als Ursprünge und nicht als URLs behandelt werden. Gib deshalb keinen Pfad an.
+          Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="6829632070341067746">Mit dieser Richtlinie wird die aktuelle Refaktorierung für Graphics3D-APIs im PPAPI-Plug‑in gesteuert.
 
 Die Migration wirkt sich nur auf Details der internen Implementierung aus und sollte das Verhalten nicht ändern. Diese Richtlinie kann jedoch verwendet werden, wenn PPAPI-Anwendungen nicht wie erwartet funktionieren.
@@ -7077,6 +7101,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 
       Wenn die Richtlinie nicht konfiguriert oder deaktiviert wird, werden Cloud-Richtlinien auf Nutzerebene standardmäßig priorisiert.</translation>
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
+<translation id="76580522298425324">Bildschirmaufnahme ohne vorherige Nutzergeste zulassen</translation>
 <translation id="7666228839913571182">Drittanbieter-Cookies zulassen</translation>
 <translation id="7668830462800981702">Ist diese Richtlinie aktiviert, wird eine Standardsuche durchgeführt, wenn der Nutzer Text in die Adressleiste eingibt, bei dem es sich nicht um eine URL handelt. Wenn du den Standardsuchanbieter angeben möchtest, lege die restlichen Richtlinien für die Standardsuche fest. Tust du das nicht, kann der Nutzer den Standardanbieter selbst auswählen. Ist diese Richtlinie deaktiviert, wird keine Suche durchgeführt, wenn der Nutzer Text in die Adressleiste eingibt, bei dem es sich nicht um eine URL handelt.
 
@@ -7386,6 +7411,7 @@ Mit dieser Unternehmensrichtlinie können Administratoren steuern, ob Nutzer die
 <translation id="7962093600142350905">Mit dieser Richtlinie wird festgelegt, ob Nutzern im Dialogfeld mit der Druckvorschau verfügbare Privet-Drucker angezeigt werden.
       Wenn diese Richtlinie aktiviert ist, werden verfügbare Privet-Drucker angezeigt.
       Ist sie deaktiviert oder nicht konfiguriert, erscheinen Privet-Drucker nicht in der Druckvorschau, weil diese Druckmethode veraltet ist.</translation>
+<translation id="7970660709107174905">Einstellungen für die Drittanbieter-Speicherpartitionierung</translation>
 <translation id="7972642710812569707">Erzwingen, dass WebSQL im Zusammenhang mit Drittanbietern wieder aktiviert wird.</translation>
 <translation id="7973609468423251675">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
@@ -7752,6 +7778,7 @@ Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deak
 <translation id="827054846390793641">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Host-Computer während einer aktiven Verbindung aktivieren</translation>
 <translation id="8274603902181597201">ecryptfs-Basisverzeichnis des Nutzers löschen und durch ein neues ext4-verschlüsseltes Basisverzeichnis ersetzen.</translation>
 <translation id="8274926413890711289">Steuerelemente für detailliertes Reporting aktivieren</translation>
+<translation id="8275103737670730746">Aufrufen von APIs für Datei- oder Verzeichnisauswahl ohne vorherige Nutzergeste zulassen</translation>
 <translation id="8278133379873210419">JavaScript-Dialogfelder unterdrücken, die von anderen Quell-Subframes ausgelöst wurden</translation>
 <translation id="8284296539558710573">Ursprungsübergreifende HTTP-Authentifizierungsaufforderungen</translation>
 <translation id="8284527236880877730">Wenn <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME" /> deaktiviert ist, wird mit <ph name="PRESENTATION_SCREEN_DIM_DELAY_SCALE_POLICY_NAME" /> der Prozentsatz angegeben, um den die Verzögerung für das Dimmen des Bildschirms skaliert wird, wenn sich das Gerät im Präsentationsmodus befindet. Wenn die Verzögerung für das Dimmen skaliert wird, werden die Verzögerung für die Abschaltung und Sperre des Bildschirms sowie die Inaktivität so angepasst, dass die Abstände der ursprünglichen Konfiguration proportional beibehalten werden.
@@ -7895,6 +7922,10 @@ Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deak
 <translation id="838870586332499308">Daten-Roaming aktivieren</translation>
 <translation id="8392478748777481636">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="8393850527597048037">Nur Plattform</translation>
+<translation id="8394518861160238324">Die Drittanbieter-Speicherpartitionierung ist für einige Nutzer ab M113 standardmäßig aktiviert, kann aber per Chrome-Flag deaktiviert werden.
+          Wenn diese Richtlinie auf <ph name="ALLOW_PARTITIONING_VALUE" /> gesetzt oder nicht konfiguriert ist, kann die Drittanbieter-Speicherpartitionierung aktiviert werden.
+          Ist sie auf <ph name="BLOCK_PARTITIONING_VALUE" /> gesetzt, kann die Drittanbieter-Speicherpartitionierung nicht aktiviert werden.
+          Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developer.chrome.com/docs/privacy-sandbox/storage-partitioning/.</translation>
 <translation id="8395350646076131800">Zeitlimit für die Inaktivität für den Bildschirmschoner auf dem Sperrbildschirm des Nutzers.</translation>
 <translation id="8395749934754392549">Legt die Einstellungen für den Android-Container (ARC) und Android-Apps fest.</translation>
 <translation id="8398952282584132331">Datenschutzbildschirm aktivieren</translation>

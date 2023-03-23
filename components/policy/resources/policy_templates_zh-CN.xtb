@@ -150,6 +150,7 @@
       仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
 <translation id="1147732569915511430">相应头像图片的 SHA-256 哈希值。</translation>
 <translation id="1148415065145333943">停用高级电池充电模式</translation>
+<translation id="1149841949061115313">LTC 渠道</translation>
 <translation id="1150742937785306405">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 网站建议采用的广告设置。</translation>
 <translation id="1151353063931113432">在这些网站上允许图片</translation>
 <translation id="1151987132434751822">可对哪些身份验证方案采用政策凭据。可设为下列值之一：
@@ -2185,6 +2186,7 @@
 
       如果此政策已停用，系统会关闭锁定屏幕上的媒体控件。</translation>
 <translation id="3072847235228302527">为设备本地帐号设置服务条款</translation>
+<translation id="3074032542020543133">LTS 渠道</translation>
 <translation id="3077650998740742747">
 默认行为（未设置政策）
 在内容区域中添加帐号后，系统可能会显示一个小对话框，从中要求用户创建一份新的个人资料。此对话框是可关闭的。
@@ -3321,6 +3323,13 @@
 <translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为该时间戳不能表示为整数</translation>
 <translation id="4102347680024644994">报告扩展检测和响应 (XDR) 事件</translation>
 <translation id="4105989332710272578">对于指定的一系列网址，不强制要求必须符合证书透明度政策</translation>
+<translation id="4110126170080699437">出于安全考虑，调用 <ph name="GET_DISPLAY_MEDIA_API_NAME" /> Web API 需要之前的用户手势（“暂时性激活”），否则将会失败。
+
+如果设置此政策，管理员可以指定哪些源不需要之前的用户手势，即可调用此 API。
+
+如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。* 不是此政策可接受的值。
+
+如果不设置此政策，所有源都将需要之前的用户手势才能调用此 API。</translation>
 <translation id="4114059938441379876">通过设置此政策，您可以配置当浏览器显示警告后，供用户更改密码的网址。密码保护服务会将用户转到您通过此政策指定的网址（仅限 HTTP 和 HTTPS 协议）。为了使 <ph name="PRODUCT_NAME" /> 能够在这个密码更改页面上正确捕获新密码的加盐哈希值，请务必确保该页面遵循了这些准则 ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms )。
 
       如果您停用了或未设置此政策，该服务会将用户转到 https://myaccount.google.com，以便其更改密码。
@@ -7074,6 +7083,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策未设置或已停用，用户级云政策将具有默认优先级。</translation>
 <translation id="7657261947024629645">针对性能进行优化。</translation>
+<translation id="76580522298425324">允许不需要之前的用户手势即可截取屏幕</translation>
 <translation id="7666228839913571182">允许使用第三方 Cookie</translation>
 <translation id="7668830462800981702">如果此政策已启用，当用户在地址栏中输入非网址的文字时，系统将会执行默认搜索。若要指定默认搜索服务提供商，请设置其余的默认搜索政策。如果您将这些政策留空，用户可自行选择默认提供商。如果此政策已停用，当用户在地址栏中输入非网址的文字时，系统将不会执行任何搜索。
 

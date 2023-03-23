@@ -386,6 +386,7 @@
 <translation id="1822540298136254167">আপুনি চোৱা ৱেবছাইটসমূহ আৰু সেইসমূহত খৰচ কৰা সময়</translation>
 <translation id="1824402189105105503">অষ্টম ৰোল</translation>
 <translation id="1826516787628120939">পৰীক্ষা কৰি থকা হৈছে</translation>
+<translation id="1826968372364864056">ফৰ্ম মচক</translation>
 <translation id="1828959155404624835">গাড়ী ভাড়ালৈ দিয়া সেৱা</translation>
 <translation id="1834321415901700177">এই ছাইটটোত বিপজ্জনক প্ৰ’গ্ৰেম আছে</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
@@ -1963,6 +1964,7 @@
 <translation id="5786044859038896871">আপুনি আপোনাৰ কাৰ্ডৰ তথ্য ভৰাব খোজে নেকি?</translation>
 <translation id="578633867165174378">Chromeএ আপুনি এইমাত্ৰ ডেটা উলংঘনত ব্যৱহাৰ কৰা পাছৱৰ্ডটো বিচাৰি পাইছে। আমি এই পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰোঁ।</translation>
 <translation id="5789643057113097023">.</translation>
+<translation id="5793777472500812427">{COUNT,plural, =0{এটাও নাই}=1{১ টা একাউণ্টৰ বাবে ছাইন ইনৰ ডেটা}one{# টা একাউণ্টৰ ছাইন ইনৰ ডেটা}other{# টা একাউণ্টৰ ছাইন ইনৰ ডেটা}}</translation>
 <translation id="580241730938216256">আপডে’ট আৰম্ভ কৰক</translation>
 <translation id="5803412860119678065">আপুনি নিজৰ <ph name="CARD_DETAIL" /> পুৰাব খোজেনে?</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
@@ -2517,6 +2519,7 @@
 <translation id="7201591969684833065">আপোনাৰ প্ৰশাসকে এয়া চাব পাৰে:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ব্যক্তিগতভাৱে ব্ৰাউজ কৰাৰ বাবে এটা নতুন ইনক’গনিট’ টেব খুলিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="7203375778433816396">Chromeক ছিষ্টেমৰ ডিফ’ল্ট ব্ৰাউজাৰ হিচাপে ছেট কৰক</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{এটাও নাই}=1{১ টা পাছকী}one{# টা পাছকী}other{# টা পাছকী}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />এ সুৰক্ষাৰ নীতি মানি নচলে।</translation>
 <translation id="7210993021468939304">কণ্টেইনাৰটোৰ ভিতৰৰ Linux কাৰ্যকলাপে কণ্টেইনাৰৰ ভিতৰত থকা Linux এপ্‌সমূহ ইনষ্টল কৰিব আৰু চলাব পাৰে</translation>
 <translation id="721197778055552897">এই সমস্যাটোৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" />।</translation>

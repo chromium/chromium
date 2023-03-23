@@ -596,6 +596,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3846575436967432996">Engar netupplýsingar tiltækar</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="385300504083504382">Byrjun</translation>
+<translation id="3859364108019690">Ekki er hægt að streyma forritum</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
 <translation id="3871092408932389764">Mjög lítil</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
@@ -1354,6 +1355,9 @@ Ný uppsetning</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7519206258459640379">Kveikt er á myndavélarramma.</translation>
+<translation id="7519649142417630956">Þegar búið er að slökkva skráist stjórnandinn út og getur ekki stjórnað tækinu.
+
+Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
 <translation id="7543399541175347147">Linux forrit og huliðsgluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
@@ -1719,6 +1723,7 @@ Ný uppsetning</translation>
 <translation id="938963181863597773">Hvað er á dagskránni hjá mér?</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="951991426597076286">Hafna</translation>
+<translation id="953431725143473984">Slökkva á tækinu?</translation>
 <translation id="954052413789300507">Ekki nægilegt pláss fyrir <ph name="FILENAME" />. Losaðu um pláss.</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 <translation id="98120814841227350">Fara aftast í skjal</translation>

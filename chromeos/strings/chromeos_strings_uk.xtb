@@ -1,8 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1014750484722996375">Робочі столи</translation>
 <translation id="1018219910092211213">Не вдається перетворити DNS</translation>
 <translation id="1018656279737460067">Скасовано</translation>
+<translation id="1022433422498218992">Загальні налаштування</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоків: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
@@ -84,10 +86,12 @@
 <translation id="1662989795263954667">Зупинено – закінчилося чорнило</translation>
 <translation id="1664796644829245314">Попередньо переглянути файл "<ph name="PREVIEW_OBJECT" />"</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
+<translation id="1669047024429367828">Видимість</translation>
 <translation id="1672499492233627739">Відео з веб-камери</translation>
 <translation id="1676557873873341166">Записується відео</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Є резолвер DNS</translation>
+<translation id="1710499924611012470">Навігація для спеціальних можливостей</translation>
 <translation id="1715359911173058521">Не вдалося підключитися до сканера. Перевірте з’єднання з мережею або USB та повторіть спробу.</translation>
 <translation id="1717874160321062422">Пристроєм керують <ph name="FIRST_MANAGER" /> і <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">Сервери імен</translation>
@@ -102,6 +106,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1768959921651994223">Тип автентифікації</translation>
 <translation id="1782199038061388045">переклад</translation>
+<translation id="1790209694022261219">Вікна й робочі столи</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
 <translation id="1801418420130173017">Вимкнути темну тему</translation>
 <translation id="1807246157184219062">Світла</translation>
@@ -135,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Інші налаштування</translation>
 <translation id="2085089206770112532">Зменшити яскравість екрана</translation>
+<translation id="2102231663024125441">Редагування тексту</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Доступно <ph name="AVAILABLE_MEMORY" /> з <ph name="TOTAL_MEMORY" /> ГБ</translation>
@@ -178,7 +184,6 @@
 <translation id="2421798028054665193">Зображення <ph name="CURRENT_PAGE" /> з <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Точність рухомої коми</translation>
 <translation id="2448312741937722512">Тип</translation>
-<translation id="2461822463642141190">Енергоспоживання</translation>
 <translation id="248546197012830854">Пристрій не підключено до Інтернету. Щоб переглянути довідковий контент, підключіться до мережі Wi-Fi.</translation>
 <translation id="2491955442992294626">Якщо відкрити інше вікно, клавіші не будуть перевірятися</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
@@ -212,6 +217,7 @@
 <translation id="2859243502336719778">Критичне оновлення</translation>
 <translation id="2860473693272905224">Розмістіть на сканері ще одну сторінку</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
+<translation id="2873483161362553159">Навігація у веб-переглядачі</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="2902312830803030883">Додаткові дії</translation>
@@ -368,6 +374,7 @@
 <translation id="4311195029067684288">Повністю</translation>
 <translation id="4333390807948134856">Клавішу "<ph name="KEY_NAME" />" натиснено</translation>
 <translation id="435692326371619097">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею й Інтернетом. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="437294888293595148">Скинути всі комбінації клавіш</translation>
 <translation id="4378373042927530923">Не виконано</translation>
 <translation id="4378551569595875038">Підключення…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -660,6 +667,7 @@
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
 <translation id="6791471867139427246">колір підсвічування клавіатури</translation>
+<translation id="6798678288485555829">Навігація текстом</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6838167112108853532">Не вдалося вимкнути або вилучити цю точку доступу. Переконайтеся, що ввімкнені точки доступу, які підключено, вимкнено або вилучено.</translation>

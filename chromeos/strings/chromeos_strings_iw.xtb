@@ -1,14 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
+<translation id="1014750484722996375">שולחנות עבודה וירטואליים</translation>
 <translation id="1018219910092211213">‏לא ניתן ליצור רזולוציית DNS</translation>
 <translation id="1018656279737460067">בוטל</translation>
+<translation id="1022433422498218992">אמצעי בקרה כלליים</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
 <translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">זוהתה חומת אש</translation>
 <translation id="1075811647922107217">גודל הדף</translation>
+<translation id="1082009148392559545">שומר המסך בהורדה</translation>
 <translation id="1094693127011229778">‏כתובת ה-IP לא זמינה</translation>
 <translation id="1113892970288677790">בחירת תמונות ויצירות אומנות מתוך אוסף</translation>
 <translation id="1119447706177454957">שגיאה פנימית</translation>
@@ -83,14 +86,17 @@
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1664796644829245314">תצוגה מקדימה של <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
+<translation id="1669047024429367828">חשיפה</translation>
 <translation id="1672499492233627739">פיד הווידאו של מצלמת האינטרנט</translation>
 <translation id="1676557873873341166">מתבצעת הקלטת וידאו</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
+<translation id="1710499924611012470">אפשרויות נגישות לניווט</translation>
 <translation id="1715359911173058521">‏יש בעיה בתקשורת עם הסורק. יש לבדוק את הרשת או את חיבור ה-USB ולנסות שוב.</translation>
 <translation id="1717874160321062422">מנוהל על ידי <ph name="FIRST_MANAGER" /> ועל ידי <ph name="SECOND_MANAGER" /></translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
 <translation id="1731082422893354635">‏לוח מגע של Bluetooth</translation>
+<translation id="1738949837603788263">אזור <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">לא ניתן היה לטעון את התמונות. כדאי לבדוק את החיבור לרשת או לנסות לטעון את התמונות שוב.</translation>
 <translation id="1751249301761991853">התאמה אישית</translation>
 <translation id="1753496554272155572">יציאה מהתצוגה המקדימה של הטפט</translation>
@@ -133,6 +139,7 @@
 <translation id="2056550196601855911">‏IPv4/‏IPv6</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
+<translation id="2102231663024125441">עריכת טקסט</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">‏הנפח הזמין: GB<ph name="AVAILABLE_MEMORY" /> מתוך GB<ph name="TOTAL_MEMORY" /></translation>
@@ -176,7 +183,6 @@
 <translation id="2421798028054665193">תמונה <ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
-<translation id="2461822463642141190">כרגע</translation>
 <translation id="248546197012830854">‏המכשיר במצב אופליין. צריך להתחבר לרשת Wi-Fi כדי לראות את תוכן העזרה.</translation>
 <translation id="2491955442992294626">המקשים לא נבדקים כשמשתמשים בחלון אחר</translation>
 <translation id="2493126929778606526">התמונות הטובות ביותר שלך שנבחרו באופן אוטומטי</translation>
@@ -210,6 +216,7 @@
 <translation id="2859243502336719778">עדכון קריטי</translation>
 <translation id="2860473693272905224">צריך להניח דף נוסף על הסורק</translation>
 <translation id="2872961005593481000">כיבוי</translation>
+<translation id="2873483161362553159">ניווט באמצעות הדפדפן</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="2902312830803030883">פעולות נוספות</translation>
@@ -607,6 +614,7 @@
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="6379086450106841622">מסך מגע</translation>
 <translation id="6381741036071372448">בדיקת המקלדת</translation>
+<translation id="6382182670717268353">תצוגה מקדימה של שומר המסך</translation>
 <translation id="6388847657025262518">מזין המסמכים של הסורק תקוע. יש לבדוק אותו ולנסות שוב.</translation>
 <translation id="6394634179843537518">הוספה של קובץ</translation>
 <translation id="6410257289063177456">קובצי תמונה</translation>
@@ -657,6 +665,7 @@
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
+<translation id="6798678288485555829">ניווט בטקסט</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
 <translation id="6838167112108853532">‏לא ניתן להשבית או להסיר את ה-APN הזה. יש לוודא שפריטי ה-APN המצורפים שהופעלו הושבתו או הוסרו.</translation>
@@ -699,6 +708,7 @@
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
+<translation id="7184043045742675738">כדי להתאים אישית את הלחצן, מקישים על מקש כלשהו. משנים את מיקום המקש באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7212734716605298123">עדכוני קושחה למכשירים חיצוניים</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
 <translation id="725133483556299729">בחירת אימייל</translation>
@@ -740,6 +750,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏מסך מגע של USB</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
+<translation id="7613724632293948900">שינוי המיקום באמצעות העכבר או מקשי החיצים.</translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="763165478673169849">זמן האיפוס האחרון</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
@@ -867,6 +878,7 @@
 <translation id="8798441408945964110">שם ספק</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">טפט</translation>
+<translation id="8820457400746201697">מעבירים את נקודת המגע הכחולה לפעולה. להתאמה אישית, בוחרים את המקש המשויך.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>

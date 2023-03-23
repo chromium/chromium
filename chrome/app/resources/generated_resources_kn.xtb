@@ -564,6 +564,7 @@
 <translation id="1485015260175968628">ಇದೀಗ ಸಾಧ್ಯ:</translation>
 <translation id="1485141095922496924">ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1486096554574027028">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
+<translation id="1486486872607808064">ನೀವು <ph name="APP_NAME" /> ಗಾಗಿ ಪಾಸ್‌ಕೀಯನ್ನು ರಚಿಸಲು ಬಯಸುವ ಸಾಧನದಲ್ಲಿ ಕ್ಯಾಮರಾ ಮೂಲಕ ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="1487335504823219454">ಆನ್ - ಕಸ್ಟಮ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1494349716233667318">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
@@ -775,6 +776,7 @@
 <translation id="164936512206786300">ಬ್ಲೂಟೂತ್ ಸಾಧನದ ಜೋಡಿ ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="1651008383952180276">ನೀವು ಒಂದೇ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಎರಡು ಬಾರಿ ನಮೂದಿಸಬೇಕು</translation>
 <translation id="1652326691684645429">Nearby ಶೇರ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="1654580009054503925">ವಿನಂತಿಗಳನ್ನು ತೋರಿಸಲು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="1656528038316521561">ಹಿನ್ನೆಲೆ ಅಪಾರದರ್ಶಕತೆ</translation>
 <translation id="1657406563541664238">Google ಗೆ ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುವ ಮೂಲಕ <ph name="PRODUCT_NAME" /> ಅನ್ನು ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="1657937299377480641">ಶಿಕ್ಷಣಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಮೂಲಗಳನ್ನು ಪುನಃ ಪ್ರವೇಶಿಸಲು, ನಿಮಗೆ ಅನುಮತಿ ನೀಡಲು ಪೋಷಕರಿಗೆ ಹೇಳಿ</translation>
@@ -3416,6 +3418,7 @@
 <translation id="3957079323242030166">ಬ್ಯಾಕಪ್ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ಡ್ರೈವ್ ಸಂಗ್ರಹಣೆ ಕೋಟಾದಲ್ಲಿ ಪರಿಗಣಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="3957844511978444971">ಈ Google ಸೇವಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ನಿಮ್ಮ ಆಯ್ಕೆಯನ್ನು ಖಚಿತಪಡಿಸಲು "ಸಮ್ಮತಿಸಿ" ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="3958088479270651626">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
+<translation id="3958110062351175311">ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿ ವಿನಂತಿಗಳನ್ನು ತೋರಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="3962119236270174787">ಅಪಾಯಕಾರಿ ಎಂದು ತಿಳಿದಿರುವ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ಪ್ರಮಾಣಿತ ಸುರಕ್ಷತೆ</translation>
@@ -3675,6 +3678,7 @@
 <translation id="4205157409548006256">Linux ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡುವಾಗ ದೋಷ ಕಂಡುಬಂದಿದೆ.</translation>
 <translation id="4206144641569145248">ಏಲಿಯನ್</translation>
 <translation id="4206323443866416204">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ</translation>
+<translation id="4206585797409671301">ವಿನಂತಿಗಳನ್ನು ತೋರಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4207932031282227921">ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು F6 ಒತ್ತಿರಿ</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> ಹುಡುಕಿ</translation>
 <translation id="4209092469652827314">ದೊಡ್ಡದು</translation>
@@ -4344,6 +4348,7 @@
 <translation id="481574578487123132">ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳು</translation>
 <translation id="4816097470512964351"><ph name="DEVICE" />, ವಿವರಗಳು</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಅಳಿಸಲಾಗಿದೆ}one{{COUNT} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}other{{COUNT} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}}</translation>
+<translation id="4816900689218414104">ಫೋನ್ ಅಥವಾ ಟ್ಯಾಬ್ಲೆಟ್‌ ಒಂದರಲ್ಲಿ ಪಾಸ್‌ಕೀ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="4819323978093861656">{0,plural, =0{ಈಗ ಮುಚ್ಚಲಾಗುತ್ತಿದೆ.}=1{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: 1 ಸೆಕೆಂಡಿನಲ್ಲಿ}one{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}other{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}}</translation>
 <translation id="4819607494758673676">Google Assistant ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="4820236583224459650">ಸಕ್ರಿಯ ಟಿಕೆಟ್ ಎಂದು ಹೊಂದಿಸಿ</translation>
@@ -6254,6 +6259,7 @@
 <translation id="6562117348069327379">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಡೈರೆಕ್ಟರಿಗೆ ಸಿಸ್ಟಂ ಲಾಗ್‌ಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ.</translation>
 <translation id="656293578423618167">ಫೈಲ್ ಹಾದಿ ಅಥವಾ ಹೆಸರು ತುಂಬಾ ಉದ್ದವಾಗಿದೆ. ದಯವಿಟ್ಟು ಕಿರಿದಾದ ಹೆಸರಿನೊಂದಿಗೆ ಅಥವಾ ಮತ್ತೊಂದು ಸ್ಥಾನದಲ್ಲಿ ಉಳಿಸಿ. </translation>
 <translation id="6568283005472142698">ಟ್ಯಾಬ್ ಹುಡುಕಾಟ</translation>
+<translation id="6570622975915850879">ಬೇರೆ ಸಾಧನವನ್ನು ಬಳಸಿ</translation>
 <translation id="65711204837946324">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6571533309669248172">ಪಠ್ಯ ಫಾರ್ಮ್ಯಾಟಿಂಗ್</translation>
 <translation id="6571772921213691236">ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -6820,6 +6826,7 @@
 <translation id="7044606776288350625">ಡೇಟಾ ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="7047059339731138197">ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7049293980323620022">ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
+<translation id="70496770794393383">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಟೇಬಲ್</translation>
 <translation id="7050037487872780845">ಅಮಾನ್ಯ ಹಾಟ್‌ಸ್ಪಾಟ್ ಕಾನ್ಫಿಗರೇಶನ್</translation>
 <translation id="7051551856857948729">IBAN ಮೌಲ್ಯವನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="7052237160939977163">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್‌ ಡೇಟಾ ಕಳುಹಿಸಿ</translation>

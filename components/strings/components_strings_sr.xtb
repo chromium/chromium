@@ -498,6 +498,7 @@
 <translation id="2119867082804433120">Бушење у доњем десном углу</translation>
 <translation id="2122719317867821810">Ове смернице раде као што је предвиђено, али неусаглашена вредност је подешена на другом месту и замењују је ове смернице.</translation>
 <translation id="2126374524350484896">Апликација за прављење PDF докумената:</translation>
+<translation id="2128262927290305126">На Google налогу <ph name="ACCOUNT" /></translation>
 <translation id="2130448033692577677">Није могуће применити шаблоне које сте навели јер DnsOverHttpsMode смернице нису подешене.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2135799067377889518">Мушка одећа</translation>
@@ -543,6 +544,7 @@
 <translation id="2219735899272417925">Треба да ресетујете уређај</translation>
 <translation id="2224337661447660594">Нема интернета</translation>
 <translation id="2225927550500503913">Виртуелна картица је укључена</translation>
+<translation id="2226636330183131181"><ph name="BEGIN_LINK" />Пријављивање<ph name="END_LINK" /> на WiFi мрежу</translation>
 <translation id="2239100178324503013">Пошаљи одмах</translation>
 <translation id="2241693394036365668">Датотека је преузета</translation>
 <translation id="2246264294482514010">10×12 in</translation>
@@ -628,6 +630,7 @@
 <translation id="2469153820345007638">Редослед од 1 до n</translation>
 <translation id="2470767536994572628">Када измените коментаре, овај документ се враћа на приказ појединачне странице и у првобитни положај.</translation>
 <translation id="2479410451996844060">Неважећа URL адреса претраге.</translation>
+<translation id="2480300195898055381">На Google налогу, <ph name="USER_EMAIL" /></translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="248348093745724435">Смернице за уређаје</translation>
 <translation id="2491120439723279231">Сертификат сервера садржи грешке.</translation>
@@ -809,6 +812,7 @@
 <translation id="2951588413176968965">Моје поштанско сандуче</translation>
 <translation id="2952820037279740115">Затвори све прозоре без архивирања</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">Табела са сачуваним начинима плаћања</translation>
 <translation id="295526156371527179">Упозорење: Ове смернице нису обједињене као речник како је наведено у смерницама јер нису речник.</translation>
 <translation id="2955913368246107853">Затворите траку за проналажење</translation>
 <translation id="2958544468932521864">Крикет</translation>
@@ -840,6 +844,7 @@
 <translation id="3029752078111257850">Вести из света</translation>
 <translation id="3037177537145227281">Прати се цена</translation>
 <translation id="3037605927509011580">О, не!</translation>
+<translation id="3041450980936463495">Можете да користите сачуване адресе у свим Google производима. Ова адреса је сачувана на Google налогу (<ph name="ACCOUNT" />).</translation>
 <translation id="3041612393474885105">Информације о сертификату</translation>
 <translation id="305162504811187366">Историја Chrome удаљеног рачунара, укључујући временске ознаке, ИД-еве сесија хостова и клијената</translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
@@ -1081,6 +1086,7 @@
 <translation id="3631244953324577188">Биометрија</translation>
 <translation id="3632503704576938756">Дељење садржаја екрана је настављено</translation>
 <translation id="3632892046558972264">Дељење садржаја екрана је паузирано</translation>
+<translation id="3633035844150606508">Сачуваћемо адресу на Google налогу, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Дугме Ажурирај Chrome, притисните Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>
 <translation id="3634530185120165534">5. фиока</translation>
 <translation id="3634567936866541746">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chrome препоручује да проверите сачуване лозинке.</translation>
@@ -1932,6 +1938,7 @@
 <translation id="5695542892312572833">Желите да користите Windows Hello да бисте потврдили и завршили куповину?</translation>
 <translation id="5701381305118179107">Центрирај</translation>
 <translation id="570530837424789914">Управљајте...</translation>
+<translation id="5706906618852913030">Желите да сачувате на налогу?</translation>
 <translation id="5707154300732650394">Наставите пут</translation>
 <translation id="57094364128775171">Предложи јаку лозинку…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -1984,6 +1991,7 @@
 <translation id="5830698870816298009">коришћење и кретање камере</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5838278095973806738">Немојте да уносите осетљиве информације на овом сајту (на пример, лозинке или кредитне картице) јер нападачи могу да их украду.</translation>
+<translation id="5841338463993781099">Желите да сачувате на налогу?</translation>
 <translation id="5851548754964597211">Листа картица</translation>
 <translation id="5852909432155870672">RA4</translation>
 <translation id="5860033963881614850">Искључено</translation>
@@ -2776,6 +2784,7 @@
 <translation id="7736959720849233795">Копирај адресу линка</translation>
 <translation id="7740996059027112821">Стандардно</translation>
 <translation id="77424286611022110">Овај сајт приказује огласе који ометају активности или обмањујуће огласе.<ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">Табела сачуваних адреса</translation>
 <translation id="774634243536837715">Опасан садржај је блокиран.</translation>
 <translation id="7751971323486164747">Прилагодите величине и изглед фонтова у Chrome-у</translation>
 <translation id="7752995774971033316">Не управља</translation>
@@ -3017,6 +3026,7 @@
 <translation id="8347658365704983341">Учење на даљину</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
 <translation id="8351131234907093545">Направите белешку</translation>
+<translation id="835203957414790336">Садржај страница које штампате и информације о штампачу се шаљу у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима.</translation>
 <translation id="8355270400102541638">Контекст локалног отказивања:</translation>
 <translation id="8363502534493474904">да искључите режим рада у авиону</translation>
 <translation id="8364627913115013041">Није подешено.</translation>

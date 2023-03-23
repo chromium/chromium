@@ -809,6 +809,7 @@
 <translation id="2951588413176968965">내 메일박스</translation>
 <translation id="2952820037279740115">시크릿 창 모두 닫기</translation>
 <translation id="2952904171810469095">A2x5</translation>
+<translation id="2954624054936281172">저장된 결제 수단 표</translation>
 <translation id="295526156371527179">경고: 이 정책은 사전이 아니므로 정책에 명시된 대로 사전으로 병합되지 않았습니다.</translation>
 <translation id="2955913368246107853">검색 바 닫기</translation>
 <translation id="2958544468932521864">크리켓</translation>
@@ -2776,6 +2777,7 @@
 <translation id="7736959720849233795">링크 주소 복사</translation>
 <translation id="7740996059027112821">표준</translation>
 <translation id="77424286611022110">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
+<translation id="7744505202669469867">저장된 주소 표</translation>
 <translation id="774634243536837715">위험한 콘텐츠 차단됨</translation>
 <translation id="7751971323486164747">Chrome의 글꼴 크기 및 서체 맞춤설정</translation>
 <translation id="7752995774971033316">관리되지 않음</translation>
@@ -3017,6 +3019,7 @@
 <translation id="8347658365704983341">원격 교육</translation>
 <translation id="8349305172487531364">북마크바</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
+<translation id="835203957414790336">인쇄하는 페이지의 콘텐츠와 프린터 정보가 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어, 민감한 정보를 찾기 위해 텍스트를 스캔할 수 있습니다.</translation>
 <translation id="8355270400102541638">로컬 비정상 종료 컨텍스트:</translation>
 <translation id="8363502534493474904">비행기 모드 사용 중지</translation>
 <translation id="8364627913115013041">설정 안됨</translation>

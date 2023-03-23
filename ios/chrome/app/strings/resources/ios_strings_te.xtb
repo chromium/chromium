@@ -805,6 +805,7 @@
 <translation id="650279896687777322">మరింత తెలుసుకోండి...</translation>
 <translation id="6510072653668207258">తర్వాత గుర్తు చేయండి</translation>
 <translation id="651505212789431520">సింక్‌ను రద్దు చేయాలా? సెట్టింగ్‌లలో ఎప్పుడైనా మీరు సింక్‌ను ఆన్ చేయవచ్చు.</translation>
+<translation id="6518133107902771759">ధృవీకరించు</translation>
 <translation id="6524918542306337007">అజ్ఞాత మోడ్ అందుబాటులో లేదు</translation>
 <translation id="6530992499366869131">మీరు ఉపయోగించే పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -834,6 +835,7 @@
 <translation id="6672241253012342409">సైట్‌లు మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి కుక్కీలను ఉపయోగిస్తాయి, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను గుర్తు చేయడం లాంటివి.
 
 అజ్ఞాత మోడ్‌లో ఉండగా, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం.</translation>
+<translation id="6672697278890207089">మీ పాస్‌ఫ్రేజ్‌ని ఎంటర్ చేయండి</translation>
 <translation id="6674571176963658787">సింక్‌ను ప్రారంభించడానికి, రహస్య పదబంధాన్ని ఎంటర్ చేయండి</translation>
 <translation id="667999046851023355">డాక్యుమెంట్‌</translation>
 <translation id="6684906340059221832">ధరలను ట్రాక్ చేయడం</translation>
@@ -1038,6 +1040,7 @@
 <translation id="8136856065410661948">Chrome, Google Lens నుండి మీ Apple క్యాలెండర్‌లో ఈవెంట్‌లను క్రియేట్ చేయడానికి ఇది ఉపయోగించబడుతుంది.</translation>
 <translation id="8156478151976189188">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ఖాతాలు</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />మీ పరికరాలు<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">పేజీని అనువదించు</translation>
 <translation id="8205564605687841303">రద్దు చేయండి</translation>
@@ -1047,7 +1050,6 @@
 <translation id="8237382152611443140">ఆటోఫిల్ పాస్‌వర్డ్ సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
 <translation id="8264966119170358612">సేవ్ చేసిన మీ పాస్‌వర్డ్‌లలో కొన్ని, Google-యేతర డేటా ఉల్లంఘనలో బహిర్గతమయ్యాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
-<translation id="8265018477030547118">ఈ పరికరంలో మాత్రమే</translation>
 <translation id="8271720166617117963">ఆమోదించి, సైన్ ఇన్ చేయండి</translation>
 <translation id="8278938988428169257">పదాన్ని లేదా పదబంధాన్ని ఎంటర్ చేయండి</translation>
 <translation id="8281781826761538115">డిఫాల్ట్ - <ph name="DEFAULT_LOCALE" /></translation>
