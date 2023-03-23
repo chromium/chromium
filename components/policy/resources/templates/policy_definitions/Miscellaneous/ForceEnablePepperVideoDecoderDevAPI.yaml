@@ -39,6 +39,6 @@ items:
   value: true
 - caption: Let browser decide support
   value: false
-default: true
-example_value: false
+default: false
+example_value: true
 tags: []
