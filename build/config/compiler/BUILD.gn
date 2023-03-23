@@ -2670,9 +2670,12 @@ if (is_chromeos_ash && is_chromeos_device) {
 if (is_android || (is_chromeos_ash && is_chromeos_device)) {
   # Use orderfile for linking Chrome on Android and Chrome OS.
   # This config enables using an orderfile for linking in LLD.
-  # TODO: Consider using call graph sort instead, at least on Android.
   config("chrome_orderfile_config") {
-    if (chrome_orderfile_path != "" && !enable_call_graph_profile_sort) {
+    # Don't try to use an orderfile with call graph sorting, except on Android,
+    # where we care about memory used by code, so we still want to mandate
+    # ordering.
+    if (chrome_orderfile_path != "" &&
+        (is_android || !enable_call_graph_profile_sort)) {
       assert(use_lld)
       _rebased_orderfile = rebase_path(chrome_orderfile_path, root_build_dir)
       ldflags = [
