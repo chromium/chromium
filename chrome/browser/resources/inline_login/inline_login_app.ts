@@ -221,7 +221,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       // This can happen only if the user opened chrome://chrome-signin manually
       // in the browser. Normally (in the account addition dialog) this will be
       // handled earlier and a special error screen will be shown.
-      console.error(
+      console.warn(
           'SecondaryGoogleAccountSigninAllowed is set to false - aborting.');
       return;
     }
