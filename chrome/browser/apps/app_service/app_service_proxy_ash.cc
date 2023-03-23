@@ -230,6 +230,15 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
     }
   }
 
+  // Close uninstall dialogs for any uninstalled apps.
+  for (const AppPtr& delta : deltas) {
+    if (delta->readiness != Readiness::kUnknown &&
+        !apps_util::IsInstalled(delta->readiness) &&
+        base::Contains(uninstall_dialogs_, delta->app_id)) {
+      uninstall_dialogs_[delta->app_id]->CloseDialog();
+    }
+  }
+
   if (crosapi_subscriber_) {
     crosapi_subscriber_->OnApps(deltas, app_type, should_notify_initialized);
   }

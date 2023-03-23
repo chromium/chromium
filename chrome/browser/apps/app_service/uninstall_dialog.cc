@@ -11,6 +11,7 @@
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "ui/views/native_window_tracker.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -62,6 +63,15 @@ void UninstallDialog::PrepareToShow(IconKey icon_key,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void UninstallDialog::CloseDialog() {
+  if (widget_) {
+    widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    return;
+  }
+
+  OnDialogClosed(false, false, false);
+}
+
 views::Widget* UninstallDialog::GetWidget() {
   return widget_;
 }
@@ -69,6 +79,7 @@ views::Widget* UninstallDialog::GetWidget() {
 void UninstallDialog::OnDialogClosed(bool uninstall,
                                      bool clear_site_data,
                                      bool report_abuse) {
+  CHECK(uninstall_callback_);
   std::move(uninstall_callback_)
       .Run(uninstall, clear_site_data, report_abuse, this);
 }

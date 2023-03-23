@@ -101,6 +101,11 @@ class UninstallDialog {
   // the dialog view.
   void PrepareToShow(IconKey icon_key, apps::IconLoader* icon_loader);
 
+  // Closes this dialog if it is open. If the dialog is not open yet because
+  // icons are still loading, immediately runs `uninstall_callback_` so that
+  // `this` can be deleted.
+  void CloseDialog();
+
   views::Widget* GetWidget();
 
   // Called when the uninstall dialog is closing to process uninstall or cancel
