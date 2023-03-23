@@ -9,10 +9,10 @@
 #include <iterator>
 
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -327,7 +327,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
 
   if (!json_value || !json_value->is_dict()) {
     NotifyEvent(__LINE__, "Language list is invalid");
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return false;
   }
   // The first level dictionary contains two sub-dicts, first for source
@@ -337,7 +337,7 @@ bool TranslateLanguageList::SetSupportedLanguages(
       json_value->FindDictPath(TranslateLanguageList::kTargetLanguagesKey);
   if (!target_languages) {
     NotifyEvent(__LINE__, "Target languages are not found in the response");
-    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
     return false;
   }
 
