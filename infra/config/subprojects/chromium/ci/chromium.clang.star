@@ -422,6 +422,7 @@ clang_mac_builder(
         category = "ToT Mac",
         short_name = "rel",
     ),
+    execution_timeout = 16 * time.hour,
 )
 
 clang_mac_builder(
@@ -431,6 +432,7 @@ clang_mac_builder(
         category = "ToT Mac",
         short_name = "dbg",
     ),
+    execution_timeout = 16 * time.hour,
 )
 
 clang_mac_builder(
@@ -440,6 +442,7 @@ clang_mac_builder(
         category = "ToT Mac",
         short_name = "asn",
     ),
+    execution_timeout = 16 * time.hour,
 )
 
 clang_mac_builder(
