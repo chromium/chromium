@@ -5,6 +5,9 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +32,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -39,6 +44,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -905,18 +911,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
                        PRE_ClearAccountStoreOnStartup) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  SetupSyncTransportWithoutPasswordAccountStorage();
+  // Add a credential to the server.
+  AddCredentialToFakeServer(
+      CreateTestPasswordForm("accountuser", "accountpass"));
 
-  ASSERT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
-
-  // Manually add a credential to the account store, without actually opting in.
-  // This simulates the case (for the following test) where the user revoked
-  // their opt-in, but the account store was *not* cleared correctly, e.g. due
-  // to a poorly-timed crash.
-  password_manager::PasswordStoreInterface* account_store =
-      passwords_helper::GetAccountPasswordStoreInterface(0);
-  account_store->AddLogin(CreateTestPasswordForm("accountuser", "accountpass"));
+  SetupSyncTransportWithPasswordAccountStorage();
 
   // Also add a credential to the profile store.
   AddLocalCredential("localuser", "localpass");
@@ -928,24 +927,39 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
-  base::HistogramTester histograms;
+  // Before setting up the client (aka profile), manually remove the opt-in pref
+  // from the profile's prefs file. This simulates the case where the user
+  // revoked their opt-in, but the account store was not cleared correctly, e.g.
+  // due to a poorly-timed crash.
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::FilePath profile_path = user_data_dir.Append(GetProfileBaseName(0));
+  base::FilePath json_path = profile_path.Append(chrome::kPreferencesFilename);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string json;
+    ASSERT_TRUE(base::ReadFileToString(json_path, &json));
+    absl::optional<base::Value> prefs = base::JSONReader::Read(json);
+    ASSERT_TRUE(prefs.has_value());
+    ASSERT_TRUE(prefs->is_dict());
+    ASSERT_TRUE(prefs->GetDict().RemoveByDottedPath(
+        password_manager::prefs::kAccountStoragePerAccountSettings));
+    ASSERT_TRUE(base::JSONWriter::Write(*prefs, &json));
+    ASSERT_TRUE(base::WriteFile(json_path, json));
+  }
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
+  // Since we mangled the prefs file, the opt-in should be gone.
   ASSERT_FALSE(password_manager::features_util::IsOptedInForAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
-
-  // The "original" is defined in password_model_type_controller.cc.
-  const int kNotOptedInAndHadToClear = 2;
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 
   // Since there's no opt-in, the account-scoped store should have been cleared
   // during startup, and the credential added by the PRE_ test should be gone.
   EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(), IsEmpty());
-  histograms.ExpectUniqueSample(
-      "PasswordManager.AccountStorage.ClearedOnStartup2",
-      /*sample=*/kNotOptedInAndHadToClear, 1);
 
   // Just as a sanity check: The credential in the profile-scoped store should
   // still be there.

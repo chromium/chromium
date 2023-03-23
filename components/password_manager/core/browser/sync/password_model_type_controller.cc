@@ -26,26 +26,6 @@ namespace password_manager {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ClearedOnStartup {
-  kOptedInSoNoNeedToClear = 0,
-  kNotOptedInAndWasAlreadyEmpty = 1,
-  kNotOptedInAndHadToClear = 2,
-  kMaxValue = kNotOptedInAndHadToClear
-};
-
-void RecordClearedOnStartup(ClearedOnStartup state) {
-  base::UmaHistogramEnumeration(
-      "PasswordManager.AccountStorage.ClearedOnStartup2", state);
-}
-
-void PasswordStoreClearDone(bool cleared) {
-  RecordClearedOnStartup(cleared
-                             ? ClearedOnStartup::kNotOptedInAndHadToClear
-                             : ClearedOnStartup::kNotOptedInAndWasAlreadyEmpty);
-}
-
 #if BUILDFLAG(IS_IOS)
 // Master kill switch that can be used to disable enabling PASSWORDS transport
 // mode for users using non-standard encryption passphrase types (explicit
@@ -80,19 +60,6 @@ PasswordModelTypeController::PasswordModelTypeController(
               &PasswordModelTypeController::OnOptInStateMaybeChanged,
               base::Unretained(this))) {
   identity_manager_observation_.Observe(identity_manager_);
-
-  if (account_password_store_for_cleanup) {
-    DCHECK(
-        base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
-    // Note: Right now, we're still in the middle of SyncService initialization,
-    // so we can't check IsOptedInForAccountStorage() yet (SyncService might not
-    // have determined the syncing account yet). Post a task do to it after the
-    // initialization is complete.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&PasswordModelTypeController::MaybeClearStore,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  account_password_store_for_cleanup));
-  }
 }
 
 PasswordModelTypeController::~PasswordModelTypeController() = default;
@@ -235,18 +202,6 @@ void PasswordModelTypeController::OnOptInStateMaybeChanged() {
   // when the opt-in state changes, but DataTypePreconditionChanged() is cheap
   // if nothing actually changed, so some spurious calls don't hurt.
   sync_service_->DataTypePreconditionChanged(syncer::PASSWORDS);
-}
-
-void PasswordModelTypeController::MaybeClearStore(
-    scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup) {
-  DCHECK(account_password_store_for_cleanup);
-  if (features_util::IsOptedInForAccountStorage(pref_service_, sync_service_)) {
-    RecordClearedOnStartup(ClearedOnStartup::kOptedInSoNoNeedToClear);
-  } else {
-    account_password_store_for_cleanup->RemoveLoginsCreatedBetween(
-        base::Time(), base::Time::Max(),
-        base::BindOnce(&PasswordStoreClearDone));
-  }
 }
 
 }  // namespace password_manager
