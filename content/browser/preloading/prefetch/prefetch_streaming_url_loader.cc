@@ -208,9 +208,15 @@ void PrefetchStreamingURLLoader::HandleRedirect(
     PrefetchStreamingURLLoaderStatus new_status) {
   DCHECK(redirect_head_);
 
+  // If the prefetch_url_loader_ is no longer connected, mark this as failed.
+  if (!prefetch_url_loader_) {
+    new_status = PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
+  }
+
   status_ = new_status;
   switch (status_) {
     case PrefetchStreamingURLLoaderStatus::kFollowRedirect:
+      DCHECK(prefetch_url_loader_);
       prefetch_url_loader_->FollowRedirect(
           /*removed_headers=*/std::vector<std::string>(),
           /*modified_headers=*/net::HttpRequestHeaders(),

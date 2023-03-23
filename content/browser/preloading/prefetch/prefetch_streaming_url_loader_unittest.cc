@@ -1162,6 +1162,66 @@ TEST_F(PrefetchStreamingURLLoaderTest, PausedIneligibleRedirect) {
       PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, 1);
 }
 
+TEST_F(PrefetchStreamingURLLoaderTest,
+       PausedEligibleRedirect_UrlLoaderDisconnect) {
+  base::HistogramTester histogram_tester;
+  const GURL kTestUrl = GURL("https://example.com");
+  const std::string kBodyContent = "example body";
+
+  std::unique_ptr<network::ResourceRequest> prefetch_request =
+      std::make_unique<network::ResourceRequest>();
+  prefetch_request->url = kTestUrl;
+  prefetch_request->method = "GET";
+
+  base::RunLoop on_receive_redirect_loop;
+
+  // Create the |PrefetchStreamingURLLoader| that is being tested.
+  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
+      std::make_unique<PrefetchStreamingURLLoader>(
+          test_url_loader_factory(), std::move(prefetch_request),
+          TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
+          base::BindOnce([](network::mojom::URLResponseHead* head) {
+            NOTREACHED();
+            return PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody;
+          }),
+          base::BindOnce(
+              [](const network::URLLoaderCompletionStatus& completion_status) {
+                NOTREACHED();
+              }),
+          base::BindRepeating(
+              [](base::RunLoop* on_receive_redirect_loop,
+                 const net::RedirectInfo& redirect_info,
+                 const network::mojom::URLResponseHead& response_head) {
+                on_receive_redirect_loop->Quit();
+                return PrefetchStreamingURLLoaderStatus::
+                    kPauseRedirectForEligibilityCheck;
+              },
+              &on_receive_redirect_loop));
+
+  // Simulate a redirect that should be followed by the URL loader. The URL
+  // loader needs to pause until the eligibility check is complete.
+  test_url_loader_factory()->SimulateRedirect(GURL("https://redirect.com"),
+                                              net::HTTP_PERMANENT_REDIRECT);
+  on_receive_redirect_loop.Run();
+
+  // Simulate the network URL loader stopping before the result of the
+  // eligibility check is done.
+  test_url_loader_factory()->DisconnectMojoPipes();
+  task_environment()->RunUntilIdle();
+
+  streaming_loader->OnEligibilityCheckForRedirectComplete(/*is_eligible=*/true);
+
+  // Since the network URL loader was disconnected, then redirect cannot be
+  // followed and the prefetch should not be servable.
+  EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
+
+  streaming_loader.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
+      PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect, 1);
+}
+
 TEST_F(PrefetchStreamingURLLoaderTest, Decoy) {
   base::HistogramTester histogram_tester;
   const GURL kTestUrl = GURL("https://example.com");
