@@ -18065,7 +18065,7 @@ TEST_F(UnifiedScrollingDeathTest, EmptyMainThreadHitTest) {
 #else
     status = ContinuedScrollBegin(kInvalidId);
     EXPECT_EQ(ScrollThread::SCROLL_IGNORED, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNoScrollingLayer,
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_scrolling_reasons);
 #endif
   }
