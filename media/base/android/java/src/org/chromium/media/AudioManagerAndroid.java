@@ -27,6 +27,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 @JNINamespace("media")
 class AudioManagerAndroid {
@@ -340,8 +341,9 @@ class AudioManagerAndroid {
         return AcousticEchoCanceler.isAvailable();
     }
 
-    // Used for reflection of hidden method getOutputLatency.
-    private static final Method sGetOutputLatency = reflectMethod("getOutputLatency");
+    // Used for reflection of hidden method getOutputLatency.  Will be `null` before reflection, and
+    // a (possibly empty) Optional after.
+    private static Optional<Method> sGetOutputLatency;
 
     // Reflect |methodName(int)|, and return it.
     private static final Method reflectMethod(String methodName) {
@@ -361,10 +363,16 @@ class AudioManagerAndroid {
     private int getOutputLatency() {
         mThreadChecker.assertOnValidThread();
 
+        if (sGetOutputLatency == null) {
+            // It's okay if this assigns `null`; we won't call it, but we also won't try again to
+            // reflect it.
+            sGetOutputLatency = Optional.ofNullable(reflectMethod("getOutputLatency"));
+        }
+
         int result = 0;
-        if (sGetOutputLatency != null) {
+        if (sGetOutputLatency.isPresent()) {
             try {
-                result = (Integer) sGetOutputLatency.invoke(
+                result = (Integer) sGetOutputLatency.get().invoke(
                         mAudioManager, AudioManager.STREAM_MUSIC);
             } catch (Exception e) {
                 ;
