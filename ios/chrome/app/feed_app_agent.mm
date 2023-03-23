@@ -140,7 +140,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
   // Do not DCHECK IsFeedBackgroundRefreshEnabled() because this is also called
   // from the background task handler, and the value could have changed during a
   // cold start.
-  if (!IsFeedBackgroundRefreshEnabled() ||
+  if (!IsFeedBackgroundRefreshEnabled() &&
       !IsFeedAppCloseBackgroundRefreshEnabled()) {
     return;
   }
