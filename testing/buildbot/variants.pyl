@@ -524,7 +524,7 @@
     'enabled': True,
     'identifier': 'EVE_RELEASE_STABLE',
   },
-  'CROS_EVE_FULL': {
+  'CROS_EVE_PUBLIC_LKGM': {
     'skylab': {
       'cros_board': 'eve',
       'cros_chrome_version': '109.0.5367.0',
@@ -532,7 +532,7 @@
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
-    'identifier': 'EVE_FULL',
+    'identifier': 'EVE_PUBLIC_LKGM',
   },
   'CROS_HANA_RELEASE_LKGM': {
     'skylab': {
@@ -615,7 +615,7 @@
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_STABLE',
   },
-  'CROS_JACUZZI_PUBLIC': {
+  'CROS_JACUZZI_PUBLIC_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
       'cros_chrome_version': '109.0.5367.0',
@@ -623,9 +623,9 @@
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
-    'identifier': 'JACUZZI_PUBLIC',
+    'identifier': 'JACUZZI_PUBLIC_LKGM',
   },
-  'CROS_JACUZZI_CQ_PUBLIC': {
+  'CROS_JACUZZI_CQ_PUBLIC_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
       'cros_chrome_version': '109.0.5367.0',
@@ -635,9 +635,9 @@
       'public_builder_bucket': 'testplatform-public',
     },
     'enabled': True,
-    'identifier': 'JACUZZI_CQ_PUBLIC',
+    'identifier': 'JACUZZI_CQ_PUBLIC_LKGM',
   },
-  'CROS_KEVIN_PUBLIC': {
+  'CROS_KEVIN_PUBLIC_LKGM': {
     'skylab': {
       'cros_board': 'kevin',
       'cros_chrome_version': '109.0.5367.0',
@@ -645,9 +645,9 @@
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
-    'identifier': 'KEVIN_PUBLIC',
+    'identifier': 'KEVIN_PUBLIC_LKGM',
   },
-  'CROS_OCTOPUS_FULL': {
+  'CROS_OCTOPUS_PUBLIC_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
       'cros_chrome_version': '109.0.5367.0',
@@ -655,7 +655,7 @@
       'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
-    'identifier': 'OCTOPUS_FULL',
+    'identifier': 'OCTOPUS_PUBLIC_LKGM',
   },
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {

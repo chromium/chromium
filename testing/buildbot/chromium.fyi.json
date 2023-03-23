@@ -45227,7 +45227,7 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
         "cros_img": "octopus-public/R109-15222.0.0",
-        "name": "lacros_all_tast_tests OCTOPUS_FULL",
+        "name": "lacros_all_tast_tests OCTOPUS_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -45237,14 +45237,14 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "OCTOPUS_FULL"
+        "variant_id": "OCTOPUS_PUBLIC_LKGM"
       },
       {
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
         "cros_img": "eve-public/R109-15222.0.0",
-        "name": "lacros_all_tast_tests EVE_FULL",
+        "name": "lacros_all_tast_tests EVE_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -45254,7 +45254,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "EVE_FULL"
+        "variant_id": "EVE_PUBLIC_LKGM"
       }
     ]
   },
@@ -45268,7 +45268,7 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R109-15222.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_PUBLIC",
+        "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -45278,14 +45278,14 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "JACUZZI_PUBLIC"
+        "variant_id": "JACUZZI_PUBLIC_LKGM"
       },
       {
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R109-15222.0.0",
-        "name": "lacros_all_tast_tests KEVIN_PUBLIC",
+        "name": "lacros_all_tast_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -45295,7 +45295,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "KEVIN_PUBLIC"
+        "variant_id": "KEVIN_PUBLIC_LKGM"
       }
     ]
   },
@@ -45309,7 +45309,7 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R109-15222.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_PUBLIC",
+        "name": "lacros_all_tast_tests JACUZZI_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -45319,14 +45319,14 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "JACUZZI_PUBLIC"
+        "variant_id": "JACUZZI_PUBLIC_LKGM"
       },
       {
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R109-15222.0.0",
-        "name": "lacros_all_tast_tests JACUZZI_CQ_PUBLIC",
+        "name": "lacros_all_tast_tests JACUZZI_CQ_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
         "resultdb": {
@@ -45338,14 +45338,14 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "JACUZZI_CQ_PUBLIC"
+        "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
       {
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin64-public/R109-15222.0.0",
-        "name": "lacros_all_tast_tests KEVIN_PUBLIC",
+        "name": "lacros_all_tast_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -45355,7 +45355,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "KEVIN_PUBLIC"
+        "variant_id": "KEVIN_PUBLIC_LKGM"
       }
     ]
   },

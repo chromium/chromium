@@ -7391,8 +7391,8 @@
     'lacros_amd64_generic_rel_skylab_fyi': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_OCTOPUS_FULL',
-          'CROS_EVE_FULL',
+          'CROS_OCTOPUS_PUBLIC_LKGM',
+          'CROS_EVE_PUBLIC_LKGM',
         ]
       },
     },
@@ -7400,7 +7400,7 @@
     'lacros_arm64_generic_rel_skylab': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC',
+          'CROS_KEVIN_PUBLIC_LKGM',
         ]
       },
     },
@@ -7408,9 +7408,9 @@
     'lacros_arm64_generic_rel_skylab_fyi': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_JACUZZI_PUBLIC',
-          'CROS_JACUZZI_CQ_PUBLIC',
-          'CROS_KEVIN_PUBLIC',
+          'CROS_JACUZZI_PUBLIC_LKGM',
+          'CROS_JACUZZI_CQ_PUBLIC_LKGM',
+          'CROS_KEVIN_PUBLIC_LKGM',
         ]
       },
     },
@@ -7418,7 +7418,7 @@
     'lacros_arm_generic_rel_skylab': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_JACUZZI_PUBLIC',
+          'CROS_JACUZZI_PUBLIC_LKGM',
         ]
       },
     },
@@ -7426,8 +7426,8 @@
     'lacros_arm_generic_rel_skylab_fyi': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_JACUZZI_PUBLIC',
-          'CROS_KEVIN_PUBLIC',
+          'CROS_JACUZZI_PUBLIC_LKGM',
+          'CROS_KEVIN_PUBLIC_LKGM',
         ]
       },
     },
