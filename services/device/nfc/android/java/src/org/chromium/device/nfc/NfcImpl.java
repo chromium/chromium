@@ -542,7 +542,7 @@ public class NfcImpl implements Nfc {
             Log.w(TAG, "Cannot write data to NFC tag. Tag is lost: " + e.getMessage());
             pendingPushOperationCompleted(createError(NdefErrorType.IO_ERROR,
                     "Failed to write because the tag is lost: " + e.getMessage()));
-        } catch (FormatException | IllegalStateException | IOException e) {
+        } catch (FormatException | IllegalStateException | IOException | SecurityException e) {
             Log.w(TAG, "Cannot write data to NFC tag: " + e.getMessage());
             pendingPushOperationCompleted(createError(NdefErrorType.IO_ERROR,
                     "Failed to write due to an IO error: " + e.getMessage()));
@@ -594,7 +594,7 @@ public class NfcImpl implements Nfc {
             Log.w(TAG, "Cannot make NFC tag read-only. Tag is lost: " + e.getMessage());
             pendingMakeReadOnlyOperationCompleted(createError(NdefErrorType.IO_ERROR,
                     "Failed to make read-only because the tag is lost: " + e.getMessage()));
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             Log.w(TAG, "Cannot make NFC tag read-only: " + e.getMessage());
             pendingMakeReadOnlyOperationCompleted(createError(NdefErrorType.IO_ERROR,
                     "Failed to make read-only due to an IO error: " + e.getMessage()));
@@ -638,7 +638,7 @@ public class NfcImpl implements Nfc {
             Log.w(TAG, "Cannot read data from NFC tag. Tag is lost: " + e.getMessage());
             notifyErrorToAllWatchers(createError(NdefErrorType.IO_ERROR,
                     "Failed to read because the tag is lost: " + e.getMessage()));
-        } catch (FormatException | IllegalStateException | IOException e) {
+        } catch (FormatException | IllegalStateException | IOException | SecurityException e) {
             Log.w(TAG, "Cannot read data from NFC tag. IO_ERROR: " + e.getMessage());
             notifyErrorToAllWatchers(createError(NdefErrorType.IO_ERROR,
                     "Failed to read due to an IO error: " + e.getMessage()));

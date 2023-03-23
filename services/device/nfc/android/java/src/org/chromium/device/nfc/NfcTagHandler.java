@@ -169,7 +169,7 @@ public class NfcTagHandler {
     /**
      * Connects to NFC tag.
      */
-    public void connect() throws IOException, TagLostException {
+    public void connect() throws IOException, SecurityException, TagLostException {
         if (!mTech.isConnected()) {
             mTech.connect();
             mWasConnected = true;
@@ -217,7 +217,7 @@ public class NfcTagHandler {
     public boolean isTagOutOfRange() {
         try {
             connect();
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             return mWasConnected;
         }
         return false;
