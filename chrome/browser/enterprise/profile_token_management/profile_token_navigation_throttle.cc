@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/profile_token_management/token_management_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -58,11 +59,8 @@ ProfileTokenNavigationThrottle::TokenInfoGetter::~TokenInfoGetter() = default;
 std::unique_ptr<ProfileTokenNavigationThrottle>
 ProfileTokenNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement)) {
-    return nullptr;
-  }
-
-  if (!profiles::IsProfileCreationAllowed()) {
+  if (!base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement) ||
+      !profiles::IsProfileCreationAllowed()) {
     return nullptr;
   }
 
@@ -87,7 +85,7 @@ ProfileTokenNavigationThrottle::WillProcessResponse() {
     token_info_getter_->GetTokenInfo(
         navigation_handle(),
         base::BindOnce(&ProfileTokenNavigationThrottle::OnTokenInfoReceived,
-                       base::Unretained(this)));
+                       weak_ptr_factory_.GetWeakPtr()));
     return DEFER;
   }
   return PROCEED;

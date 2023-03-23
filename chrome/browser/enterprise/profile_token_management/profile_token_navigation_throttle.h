@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -61,6 +62,7 @@ class ProfileTokenNavigationThrottle : public content::NavigationThrottle {
   void OnTokenInfoReceived(const std::string& id,
                            const std::string& management_token);
   std::unique_ptr<TokenInfoGetter> token_info_getter_;
+  base::WeakPtrFactory<ProfileTokenNavigationThrottle> weak_ptr_factory_{this};
 };
 
 }  // namespace profile_token_management
