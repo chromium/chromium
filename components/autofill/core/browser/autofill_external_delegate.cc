@@ -507,6 +507,7 @@ std::u16string AutofillExternalDelegate::GetSettingsSuggestionValue() const {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES);
 
     case PopupType::kCreditCards:
+    case PopupType::kIbans:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
 
     case PopupType::kPersonalInformation:

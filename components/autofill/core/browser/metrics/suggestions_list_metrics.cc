@@ -19,7 +19,9 @@ ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
     case PopupType::kAddresses:
       return ManageSuggestionType::kAddresses;
     case PopupType::kCreditCards:
-      return ManageSuggestionType::kPaymentMethods;
+      return ManageSuggestionType::kPaymentMethodsCreditCards;
+    case PopupType::kIbans:
+      return ManageSuggestionType::kPaymentMethodsIbans;
     case PopupType::kPasswords:
       ABSL_FALLTHROUGH_INTENDED;
     case PopupType::kUnspecified:
@@ -50,6 +52,11 @@ void LogAutofillSuggestionAcceptedIndex(int index,
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.Other",
                                uma_index);
       break;
+    case PopupType::kIbans:
+      // It is NOTREACHED because it's a single field form fill type (the above
+      // types are all multi fields main Autofill type), and thus the logging
+      // will be handled separately by SingleFieldFormFiller.
+      NOTREACHED_NORETURN();
   }
 
   base::RecordAction(base::UserMetricsAction("Autofill_SelectedSuggestion"));

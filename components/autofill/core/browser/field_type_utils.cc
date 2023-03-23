@@ -59,6 +59,7 @@ bool IsAddressType(const AutofillType& type) {
     case FieldTypeGroup::kUsernameField:
     case FieldTypeGroup::kPasswordField:
     case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kIban:
       return false;
   }
   NOTREACHED_NORETURN();

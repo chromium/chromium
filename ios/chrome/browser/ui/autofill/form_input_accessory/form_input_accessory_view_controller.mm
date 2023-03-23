@@ -269,6 +269,7 @@
             suggestionCount);
         break;
       case autofill::PopupType::kCreditCards:
+      case autofill::PopupType::kIbans:
         suggestionTypeString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_PAYMENT_METHOD_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);

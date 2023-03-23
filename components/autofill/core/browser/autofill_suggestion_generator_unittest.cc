@@ -26,13 +26,17 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
+
+using gfx::test::AreImagesEqual;
 
 namespace autofill {
 
@@ -108,9 +112,17 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
     return local_card;
   }
 
-  gfx::Image& CreateCardArtImage() {
-    return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
-        IDR_DEFAULT_FAVICON);
+  gfx::Image CreateFakeImage() { return gfx::test::CreateImage(32, 32); }
+
+  void SetUpIbanImageResources() {
+    if (ui::ResourceBundle::HasSharedInstance()) {
+      ui::ResourceBundle::CleanupSharedInstance();
+    }
+    ui::ResourceBundle::InitSharedInstanceWithLocale(
+        "en-US", &mock_resource_delegate_,
+        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+    ON_CALL(mock_resource_delegate_, GetImageNamed(IDR_AUTOFILL_IBAN))
+        .WillByDefault(testing::Return(CreateFakeImage()));
   }
 
   bool VerifyCardArtImageExpectation(Suggestion& suggestion,
@@ -119,7 +131,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID)
     return suggestion.custom_icon_url == expected_url;
 #else
-    return gfx::test::AreImagesEqual(suggestion.custom_icon, expected_image);
+    return AreImagesEqual(suggestion.custom_icon, expected_image);
 #endif
   }
 
@@ -141,6 +153,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   TestAutofillClient autofill_client_;
   std::unique_ptr<TestAutofillSuggestionGenerator> suggestion_generator_;
   scoped_refptr<AutofillWebDataService> database_;
+  testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
 };
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -590,6 +603,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
+  SetUpIbanImageResources();
+
   auto MakeIBAN = [](const std::u16string& value,
                      const std::u16string& nickname) {
     IBAN iban(base::GenerateGUID());
@@ -607,7 +622,11 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   std::vector<Suggestion> iban_suggestions =
       AutofillSuggestionGenerator::GetSuggestionsForIBANs(
           {&iban0, &iban1, &iban2, &iban3});
-  EXPECT_TRUE(iban_suggestions.size() == 4);
+
+  // There are 6 suggestions, 4 for IBAN suggestions, followed by a separator,
+  // and followed by "Manage payment methods..." which redirect to Chrome
+  // payment settings page.
+  ASSERT_EQ(iban_suggestions.size(), 6u);
 
   EXPECT_EQ(iban_suggestions[0].main_text.value,
             iban0.GetIdentifierStringForAutofillDisplay());
@@ -617,6 +636,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   ASSERT_EQ(iban_suggestions[0].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[0].labels[0][0].value, u"My doctor's IBAN");
   EXPECT_EQ(iban_suggestions[0].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_TRUE(
+      AreImagesEqual(iban_suggestions[0].custom_icon, CreateFakeImage()));
 
   EXPECT_EQ(iban_suggestions[1].main_text.value,
             iban1.GetIdentifierStringForAutofillDisplay());
@@ -626,6 +647,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   ASSERT_EQ(iban_suggestions[1].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[1].labels[0][0].value, u"My brother's IBAN");
   EXPECT_EQ(iban_suggestions[1].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_TRUE(
+      AreImagesEqual(iban_suggestions[1].custom_icon, CreateFakeImage()));
 
   EXPECT_EQ(iban_suggestions[2].main_text.value,
             iban2.GetIdentifierStringForAutofillDisplay());
@@ -635,6 +658,8 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   ASSERT_EQ(iban_suggestions[2].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[2].labels[0][0].value, u"My teacher's IBAN");
   EXPECT_EQ(iban_suggestions[2].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_TRUE(
+      AreImagesEqual(iban_suggestions[2].custom_icon, CreateFakeImage()));
 
   EXPECT_EQ(iban_suggestions[3].main_text.value,
             iban3.GetIdentifierStringForAutofillDisplay());
@@ -642,6 +667,14 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
             iban3.GetStrippedValue());
   EXPECT_EQ(iban_suggestions[3].labels.size(), 0u);
   EXPECT_EQ(iban_suggestions[3].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_TRUE(
+      AreImagesEqual(iban_suggestions[3].custom_icon, CreateFakeImage()));
+
+  EXPECT_EQ(iban_suggestions[4].frontend_id, POPUP_ITEM_ID_SEPARATOR);
+
+  EXPECT_EQ(iban_suggestions[5].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
+  EXPECT_EQ(iban_suggestions[5].frontend_id, POPUP_ITEM_ID_AUTOFILL_OPTIONS);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -1068,7 +1101,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
   CreditCard server_card = CreateServerCard();
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
-  gfx::Image fake_image = CreateCardArtImage();
+  gfx::Image fake_image = CreateFakeImage();
   personal_data()->AddCardArtImage(card_art_url, fake_image);
 
   Suggestion virtual_card_suggestion =
@@ -1124,7 +1157,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
 
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
-  gfx::Image fake_image = CreateCardArtImage();
+  gfx::Image fake_image = CreateFakeImage();
   personal_data()->AddServerCreditCard(server_card);
   personal_data()->AddCardArtImage(card_art_url, fake_image);
 

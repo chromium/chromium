@@ -16,6 +16,7 @@ enum class PopupType {
   // Address form with address-related fields.
   kAddresses,
   kCreditCards,
+  kIbans,
   kPasswords,
 };
 

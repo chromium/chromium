@@ -1066,6 +1066,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
 
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kIban:
     case FieldTypeGroup::kPasswordField:
     case FieldTypeGroup::kUsernameField:
     case FieldTypeGroup::kTransaction:

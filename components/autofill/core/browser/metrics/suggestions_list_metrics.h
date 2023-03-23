@@ -19,8 +19,9 @@ enum class ManageSuggestionType {
   kOther = 0,
   kPersonalInformation = 1,
   kAddresses = 2,
-  kPaymentMethods = 3,
-  kMaxValue = kPaymentMethods,
+  kPaymentMethodsCreditCards = 3,
+  kPaymentMethodsIbans = 4,
+  kMaxValue = kPaymentMethodsIbans,
 };
 
 // Log the index of the selected Autofill suggestion in the popup.

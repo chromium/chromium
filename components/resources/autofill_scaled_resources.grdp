@@ -23,6 +23,7 @@
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_UNIONPAY" file="autofill/metadata/unionpay.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_VISA" file="autofill/metadata/visa.png" />
   <structure type="chrome_scaled_image" name="IDR_AUTOFILL_METADATA_CC_TROY" file="autofill/metadata/troy.png" />
+  <structure type="chrome_scaled_image" name="IDR_AUTOFILL_IBAN" file="autofill/iban.png" />
   <if expr="_google_chrome">
     <then>
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY" file="google_chrome/autofill/googlepay.png" />

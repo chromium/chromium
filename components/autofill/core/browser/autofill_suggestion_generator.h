@@ -69,6 +69,13 @@ class AutofillSuggestionGenerator {
       bool& with_offer,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
 
+  // Generates a separator suggestion.
+  static Suggestion CreateSeparator();
+
+  // Generates a footer suggestion "Manage payment methods..." menu item which
+  // will redirect to Chrome payment settings page.
+  static Suggestion CreateManagePaymentMethodsEntry();
+
   // Returns the local and server cards ordered by the Autofill ranking. The
   // cards which are expired and disused aren't included if
   // |suppress_disused_cards| is true.

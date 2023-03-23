@@ -7226,6 +7226,16 @@ others/histograms.xml -->
   <int value="9223" label="Birthdate: False Positive (Empty)"/>
   <int value="9224" label="Birthdate: False Negative (Mismatch)"/>
   <int value="9225" label="Birthdate: False Negative (Unknown)"/>
+  <int value="9472" label="IBAN: True Positive"/>
+  <int value="9473" label="IBAN: True Negative (Ambiguous)"/>
+  <int value="9474" label="IBAN: True Negative (Unknown)"/>
+  <int value="9475" label="IBAN: True Negative (Empty)"/>
+  <int value="9476" label="IBAN: False Positive (Mismatch)"/>
+  <int value="9477" label="IBAN: False Positive (Ambiguous)"/>
+  <int value="9478" label="IBAN: False Positive (Unknown)"/>
+  <int value="9479" label="IBAN: False Positive (Empty)"/>
+  <int value="9480" label="IBAN: False Negative (Mismatch)"/>
+  <int value="9481" label="IBAN: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFormDynamicity">
@@ -9720,7 +9730,8 @@ others/histograms.xml -->
   <int value="0" label="Other"/>
   <int value="1" label="Personal Information"/>
   <int value="2" label="Addresses"/>
-  <int value="3" label="Payment Methods"/>
+  <int value="3" label="Payment Methods: Credit Cards"/>
+  <int value="4" label="Payment Methods: IBANs"/>
 </enum>
 
 <enum name="AutofillSyncState">

@@ -26,6 +26,7 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case FieldTypeGroup::kUsernameField:
     case FieldTypeGroup::kPasswordField:
       return FormType::kPasswordForm;
+    case FieldTypeGroup::kIban:
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kTransaction:
     case FieldTypeGroup::kUnfillable:

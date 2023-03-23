@@ -633,6 +633,9 @@ PopupType BrowserAutofillManager::GetPopupType(const FormData& form,
     case FieldTypeGroup::kCreditCard:
       return PopupType::kCreditCards;
 
+    case FieldTypeGroup::kIban:
+      return PopupType::kIbans;
+
     case FieldTypeGroup::kAddressHome:
     case FieldTypeGroup::kAddressBilling:
       return PopupType::kAddresses;
@@ -646,9 +649,6 @@ PopupType BrowserAutofillManager::GetPopupType(const FormData& form,
     case FieldTypeGroup::kBirthdateField:
       return FormHasAddressField(form) ? PopupType::kAddresses
                                        : PopupType::kPersonalInformation;
-
-    default:
-      NOTREACHED();
   }
 }
 

@@ -33,8 +33,10 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
 
@@ -212,6 +214,22 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 }
 
 // static
+Suggestion AutofillSuggestionGenerator::CreateSeparator() {
+  Suggestion suggestion;
+  suggestion.frontend_id = POPUP_ITEM_ID_SEPARATOR;
+  return suggestion;
+}
+
+// static
+Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
+  suggestion.frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
+  suggestion.icon = "settingsIcon";
+  return suggestion;
+}
+
+// static
 std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
     AutofillClient* autofill_client,
     bool suppress_disused_cards) {
@@ -256,14 +274,25 @@ std::vector<CreditCard> AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
 std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIBANs(
     const std::vector<const IBAN*>& ibans) {
   std::vector<Suggestion> suggestions;
+  suggestions.reserve(ibans.size() + 2);
   for (const IBAN* iban : ibans) {
     Suggestion& suggestion = suggestions.emplace_back(iban->value());
+    suggestion.custom_icon =
+        ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+            IDR_AUTOFILL_IBAN);
     suggestion.frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
     suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
     suggestion.main_text.value = iban->GetIdentifierStringForAutofillDisplay();
     if (!iban->nickname().empty())
       suggestion.labels = {{Suggestion::Text(iban->nickname())}};
   }
+
+  if (suggestions.empty()) {
+    return suggestions;
+  }
+
+  suggestions.push_back(CreateSeparator());
+  suggestions.push_back(CreateManagePaymentMethodsEntry());
   return suggestions;
 }
 
@@ -302,8 +331,7 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
   if (!footer_offer_details_url.is_empty()) {
     // Add the footer separator since we will now have a footer in the offers
     // suggestions popup.
-    suggestions.emplace_back();
-    suggestions.back().frontend_id = POPUP_ITEM_ID_SEPARATOR;
+    suggestions.push_back(CreateSeparator());
 
     // Add the footer suggestion that navigates the user to the promo code
     // details page in the offers suggestions popup.

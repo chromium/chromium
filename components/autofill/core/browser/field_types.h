@@ -384,7 +384,8 @@ enum class FieldTypeGroup {
   kUsernameField,
   kUnfillable,
   kBirthdateField,
-  kMaxValue = kBirthdateField,
+  kIban,
+  kMaxValue = kIban,
 };
 
 using ServerFieldTypeSet = DenseSet<ServerFieldType, MAX_VALID_FIELD_TYPE>;

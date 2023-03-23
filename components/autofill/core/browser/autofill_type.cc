@@ -76,6 +76,9 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case CREDIT_CARD_VERIFICATION_CODE:
       return FieldTypeGroup::kCreditCard;
 
+    case IBAN_VALUE:
+      return FieldTypeGroup::kIban;
+
     case COMPANY_NAME:
       return FieldTypeGroup::kCompany;
 
@@ -97,7 +100,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
-    case IBAN_VALUE:
     case UPI_VPA:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kNoGroup;
@@ -123,8 +125,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case UNKNOWN_TYPE:
       return FieldTypeGroup::kNoGroup;
   }
-  NOTREACHED();
-  return FieldTypeGroup::kNoGroup;
 }
 
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,

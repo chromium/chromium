@@ -394,6 +394,7 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
       return;
     case PopupType::kUnspecified:
     case PopupType::kPasswords:
+    case PopupType::kIbans:
       NOTREACHED();
   }
 #else
@@ -401,6 +402,7 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
   if (browser) {
     switch (popup_type) {
       case PopupType::kCreditCards:
+      case PopupType::kIbans:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
       case PopupType::kPersonalInformation:
