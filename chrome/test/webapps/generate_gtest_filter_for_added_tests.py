@@ -75,8 +75,9 @@ def print_gtest_filters(gtest_filters: Dict[str, Set[str]]):
         if len(gtest_filters[test_binary]) == 0:
             continue
         print('Please run:')
-        print('    %s --gtest_filter=WebAppIntegrationTest.%s\n' %
-              (test_binary, ':'.join(gtest_filters[test_binary])))
+        print('    %s --gtest_filter=WebAppIntegration.%s\n' %
+              (test_binary, ':WebAppIntegration.'.join(
+                  gtest_filters[test_binary])))
 
 
 def _execute_cmd_from_src(cmd: List[str]) -> List[str]:
