@@ -291,7 +291,7 @@ struct Config {
 
   // The set of collections to block from being content clustered.
   base::flat_set<std::string> collections_to_block_from_content_clustering = {
-      "/collection/it_glosssary", "/collection/periodicals",
+      "/collection/it_glossary", "/collection/periodicals",
       "/collection/software", "/collection/websites"};
 
   // Whether to merge similar clusters using pairwise merge.
