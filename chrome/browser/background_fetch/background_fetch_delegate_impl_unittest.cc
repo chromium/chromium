@@ -51,8 +51,11 @@ class BackgroundFetchDelegateImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
-  raw_ptr<BackgroundFetchDelegateImpl> delegate_;
   std::unique_ptr<TestingProfile> profile_;
+
+  // Can't outlive `profile_` which owns it.
+  raw_ptr<BackgroundFetchDelegateImpl> delegate_;
+
   const GURL kOriginUrl{"https://example.com/"};
 };
 
