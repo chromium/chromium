@@ -47,8 +47,9 @@ bool PopulateItem(const base::Value& from, T* out) {
   if (!from.is_dict())
     return false;
   T obj;
-  if (!T::Populate(from, &obj))
+  if (!T::Populate(from, obj)) {
     return false;
+  }
   *out = std::move(obj);
   return true;
 }
@@ -58,8 +59,9 @@ bool PopulateItem(const base::Value& from, T* out) {
 template <class T>
 bool PopulateItem(const base::Value& from, T* out, std::u16string* error) {
   T obj;
-  if (!T::Populate(from, &obj, error))
+  if (!T::Populate(from, obj, error)) {
     return false;
+  }
   *out = std::move(obj);
   return true;
 }

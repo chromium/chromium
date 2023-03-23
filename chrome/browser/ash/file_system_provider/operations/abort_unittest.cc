@@ -69,7 +69,8 @@ TEST_F(FileSystemProviderOperationsAbortTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   AbortRequestedOptions options;
-  ASSERT_TRUE(AbortRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(
+      AbortRequestedOptions::Populate(options_as_value->GetDict(), options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kOperationRequestId, options.operation_request_id);

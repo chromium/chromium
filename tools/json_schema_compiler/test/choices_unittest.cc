@@ -119,10 +119,9 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
   base::Value::Dict dict;
   dict.Set("integers", 4);
   dict.Set("strings", std::move(strings_value));
-  base::Value value(std::move(dict));
 
   choices::ChoiceType out;
-  ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
+  ASSERT_TRUE(choices::ChoiceType::Populate(dict, out));
   ASSERT_TRUE(out.integers.as_integer);
   EXPECT_FALSE(out.integers.as_integers);
   EXPECT_EQ(4, *out.integers.as_integer);
@@ -141,12 +140,11 @@ TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
   base::Value::Dict dict;
   dict.Set("integers", 5);
   dict.Set("strings", std::move(strings_value));
-  base::Value value(std::move(dict));
 
   choices::ChoiceType out;
-  ASSERT_TRUE(choices::ChoiceType::Populate(value, &out));
+  ASSERT_TRUE(choices::ChoiceType::Populate(dict, out));
 
-  EXPECT_EQ(value, out.ToValue());
+  EXPECT_EQ(dict, out.ToValue());
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {

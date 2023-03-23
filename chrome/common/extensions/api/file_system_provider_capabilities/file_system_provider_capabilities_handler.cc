@@ -56,7 +56,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
                                                   std::u16string* error) {
   const bool has_permission = extensions::PermissionsParser::HasAPIPermission(
       extension, mojom::APIPermissionID::kFileSystemProvider);
-  const base::Value* section = extension->manifest()->FindDictPathAsValue(
+  const base::Value::Dict* section = extension->manifest()->FindDictPath(
       manifest_keys::kFileSystemProviderCapabilities);
 
   if (has_permission && !section) {
@@ -79,7 +79,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
 
   api::manifest_types::FileSystemProviderCapabilities idl_capabilities;
   if (!api::manifest_types::FileSystemProviderCapabilities::Populate(
-          *section, &idl_capabilities, error)) {
+          *section, idl_capabilities, error)) {
     return false;
   }
 

@@ -61,8 +61,7 @@ std::unique_ptr<omnibox::SuggestResult> GetOmniboxDefaultSuggestion(
   }
 
   auto suggestion = std::make_unique<omnibox::SuggestResult>();
-  omnibox::SuggestResult::Populate(base::Value(dict->Clone()),
-                                   suggestion.get());
+  omnibox::SuggestResult::Populate(*dict, *suggestion);
 
   return suggestion;
 }

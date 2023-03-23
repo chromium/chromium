@@ -75,8 +75,8 @@ TEST_F(BluetoothSocketApiUnittest, MAYBE_CreateThenClose) {
   ASSERT_TRUE(result->is_dict());
 
   api::bluetooth_socket::CreateInfo create_info;
-  EXPECT_TRUE(
-      api::bluetooth_socket::CreateInfo::Populate(*result, &create_info));
+  EXPECT_TRUE(api::bluetooth_socket::CreateInfo::Populate(result->GetDict(),
+                                                          create_info));
 
   const int socket_id = create_info.socket_id;
   auto close_function =

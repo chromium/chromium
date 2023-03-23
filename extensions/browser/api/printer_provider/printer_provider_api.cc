@@ -622,7 +622,7 @@ void PrinterProviderAPIImpl::DispatchPrintRequested(PrinterProviderPrintJob job,
   print_job.printer_id = internal_printer_id;
 
   if (!api::printer_provider::PrintJob::Ticket::Populate(job.ticket,
-                                                         &print_job.ticket)) {
+                                                         print_job.ticket)) {
     std::move(callback).Run(base::Value(api::printer_provider::ToString(
         api::printer_provider::PRINT_ERROR_INVALID_TICKET)));
     return;

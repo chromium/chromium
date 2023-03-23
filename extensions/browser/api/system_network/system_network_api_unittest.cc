@@ -39,9 +39,10 @@ TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
   ASSERT_FALSE(result->GetList().empty());
 
   for (const auto& network_interface_value : result->GetList()) {
+    ASSERT_TRUE(network_interface_value.is_dict());
     NetworkInterface network_interface;
-    ASSERT_TRUE(NetworkInterface::Populate(network_interface_value,
-                                           &network_interface));
+    ASSERT_TRUE(NetworkInterface::Populate(network_interface_value.GetDict(),
+                                           network_interface));
 
     LOG(INFO) << "Network interface: address=" << network_interface.address
               << ", name=" << network_interface.name

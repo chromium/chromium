@@ -51,11 +51,10 @@ base::Value CreateItemValue(int val) {
 
 TEST(JsonSchemaCompilerArrayTest, BasicArrayType) {
   {
-    base::Value value(CreateBasicArrayTypeDictionary());
-    auto basic_array_type = std::make_unique<arrays::BasicArrayType>();
-    ASSERT_TRUE(arrays::BasicArrayType::Populate(base::Value(value.Clone()),
-                                                 basic_array_type.get()));
-    EXPECT_EQ(value, basic_array_type->ToValue());
+    base::Value::Dict value(CreateBasicArrayTypeDictionary());
+    arrays::BasicArrayType basic_array_type;
+    ASSERT_TRUE(arrays::BasicArrayType::Populate(value, basic_array_type));
+    EXPECT_EQ(value, basic_array_type.ToValue());
   }
 }
 
@@ -71,8 +70,8 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
   arrays::EnumArrayReference enum_array_reference;
 
   // Test Populate.
-  ASSERT_TRUE(arrays::EnumArrayReference::Populate(base::Value(value.Clone()),
-                                                   &enum_array_reference));
+  ASSERT_TRUE(
+      arrays::EnumArrayReference::Populate(value, enum_array_reference));
 
   arrays::Enumeration expected_types[] = {arrays::ENUMERATION_ONE,
                                           arrays::ENUMERATION_TWO,
@@ -105,8 +104,7 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
   arrays::EnumArrayMixed enum_array_mixed;
 
   // Test Populate.
-  ASSERT_TRUE(arrays::EnumArrayMixed::Populate(base::Value(value.Clone()),
-                                               &enum_array_mixed));
+  ASSERT_TRUE(arrays::EnumArrayMixed::Populate(value, enum_array_mixed));
 
   arrays::Enumeration expected_infile_types[] = {arrays::ENUMERATION_ONE,
                                                  arrays::ENUMERATION_TWO,
@@ -144,8 +142,8 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     value.Set("types", std::move(types));
 
     arrays::OptionalEnumArrayType enum_array_type;
-    ASSERT_TRUE(arrays::OptionalEnumArrayType::Populate(
-        base::Value(value.Clone()), &enum_array_type));
+    ASSERT_TRUE(
+        arrays::OptionalEnumArrayType::Populate(value, enum_array_type));
     EXPECT_EQ(enums, *enum_array_type.types);
   }
   {
@@ -155,8 +153,8 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
 
     value.Set("types", std::move(enum_array));
     arrays::OptionalEnumArrayType enum_array_type;
-    ASSERT_FALSE(arrays::OptionalEnumArrayType::Populate(
-        base::Value(value.Clone()), &enum_array_type));
+    ASSERT_FALSE(
+        arrays::OptionalEnumArrayType::Populate(value, enum_array_type));
     EXPECT_TRUE(enum_array_type.types->empty());
   }
 }
@@ -169,13 +167,12 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     ref_array.Append(CreateItemValue(2));
     ref_array.Append(CreateItemValue(3));
     value.Set("refs", std::move(ref_array));
-    auto ref_array_type = std::make_unique<arrays::RefArrayType>();
-    EXPECT_TRUE(arrays::RefArrayType::Populate(base::Value(value.Clone()),
-                                               ref_array_type.get()));
-    ASSERT_EQ(3u, ref_array_type->refs.size());
-    EXPECT_EQ(1, ref_array_type->refs[0].val);
-    EXPECT_EQ(2, ref_array_type->refs[1].val);
-    EXPECT_EQ(3, ref_array_type->refs[2].val);
+    arrays::RefArrayType ref_array_type;
+    EXPECT_TRUE(arrays::RefArrayType::Populate(value, ref_array_type));
+    ASSERT_EQ(3u, ref_array_type.refs.size());
+    EXPECT_EQ(1, ref_array_type.refs[0].val);
+    EXPECT_EQ(2, ref_array_type.refs[1].val);
+    EXPECT_EQ(3, ref_array_type.refs[2].val);
   }
   {
     base::Value::Dict value;
@@ -183,9 +180,8 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     not_ref_array.Append(CreateItemValue(1));
     not_ref_array.Append(3);
     value.Set("refs", std::move(not_ref_array));
-    auto ref_array_type = std::make_unique<arrays::RefArrayType>();
-    EXPECT_FALSE(arrays::RefArrayType::Populate(base::Value(value.Clone()),
-                                                ref_array_type.get()));
+    arrays::RefArrayType ref_array_type;
+    EXPECT_FALSE(arrays::RefArrayType::Populate(value, ref_array_type));
   }
 }
 

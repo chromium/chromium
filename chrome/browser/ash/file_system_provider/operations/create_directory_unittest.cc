@@ -76,8 +76,8 @@ TEST_F(FileSystemProviderOperationsCreateDirectoryTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   CreateDirectoryRequestedOptions options;
-  ASSERT_TRUE(
-      CreateDirectoryRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(CreateDirectoryRequestedOptions::Populate(
+      options_as_value->GetDict(), options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kDirectoryPath, options.directory_path);

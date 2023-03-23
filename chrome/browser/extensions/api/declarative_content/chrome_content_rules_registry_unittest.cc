@@ -171,7 +171,7 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
 
   // Add a rule.
   api::events::Rule rule;
-  api::events::Rule::Populate(base::test::ParseJson(R"({
+  api::events::Rule::Populate(base::test::ParseJsonDict(R"({
           "id": "rule1",
           "priority": 100,
           "conditions": [
@@ -183,7 +183,7 @@ TEST_F(DeclarativeChromeContentRulesRegistryTest, ActiveRulesDoesntGrow) {
             {"instanceType": "declarativeContent.ShowAction"}
           ]
       })"),
-                              &rule);
+                              rule);
   std::vector<const api::events::Rule*> rules({&rule});
 
   const Extension* extension =

@@ -68,7 +68,8 @@ TEST_F(FileSystemProviderOperationsUnmountTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   UnmountRequestedOptions options;
-  ASSERT_TRUE(UnmountRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(
+      UnmountRequestedOptions::Populate(options_as_value->GetDict(), options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
 }

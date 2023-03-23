@@ -535,16 +535,16 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
       "  \"priority\": 300                                               \n"
       "}                                                                 ";
 
-  base::Value value1 = base::test::ParseJson(kRule1);
-  base::Value value2 = base::test::ParseJson(kRule2);
+  base::Value::Dict value1 = base::test::ParseJsonDict(kRule1);
+  base::Value::Dict value2 = base::test::ParseJsonDict(kRule2);
 
   std::vector<const api::events::Rule*> rules;
   api::events::Rule rule1;
   api::events::Rule rule2;
   rules.push_back(&rule1);
   rules.push_back(&rule2);
-  ASSERT_TRUE(api::events::Rule::Populate(value1, &rule1));
-  ASSERT_TRUE(api::events::Rule::Populate(value2, &rule2));
+  ASSERT_TRUE(api::events::Rule::Populate(value1, rule1));
+  ASSERT_TRUE(api::events::Rule::Populate(value2, rule2));
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));
@@ -694,10 +694,10 @@ TEST(WebRequestRulesRegistrySimpleTest, StageChecker) {
       "  \"priority\": 200                                                \n"
       "}                                                                  ";
 
-  base::Value value = base::test::ParseJson(kRule);
+  base::Value::Dict value = base::test::ParseJsonDict(kRule);
 
   api::events::Rule rule;
-  ASSERT_TRUE(api::events::Rule::Populate(value, &rule));
+  ASSERT_TRUE(api::events::Rule::Populate(value, rule));
 
   std::string error;
   URLMatcher matcher;
@@ -780,12 +780,12 @@ TEST_F(WebRequestRulesRegistryTest, CheckOriginAndPathRegEx) {
       "  \"priority\": 200                                               \n"
       "}                                                                 ";
 
-  base::Value value = base::test::ParseJson(kRule);
+  base::Value::Dict value = base::test::ParseJsonDict(kRule);
 
   std::vector<const api::events::Rule*> rules;
   api::events::Rule rule;
   rules.push_back(&rule);
-  ASSERT_TRUE(api::events::Rule::Populate(value, &rule));
+  ASSERT_TRUE(api::events::Rule::Populate(value, rule));
 
   scoped_refptr<WebRequestRulesRegistry> registry(
       new TestWebRequestRulesRegistry(&profile_));

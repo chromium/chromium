@@ -73,8 +73,8 @@ TEST_F(FileSystemProviderOperationsAddWatcherTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   AddWatcherRequestedOptions options;
-  ASSERT_TRUE(
-      AddWatcherRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(AddWatcherRequestedOptions::Populate(options_as_value->GetDict(),
+                                                   options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kEntryPath, options.entry_path);

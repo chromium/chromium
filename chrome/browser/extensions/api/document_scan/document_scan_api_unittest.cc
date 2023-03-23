@@ -133,8 +133,7 @@ TEST_F(DocumentScanScanFunctionTest, Success) {
       function_.get(), "[{\"mimeTypes\": [\"image/png\"]}]");
   ASSERT_TRUE(result);
   document_scan::ScanResults scan_results;
-  EXPECT_TRUE(document_scan::ScanResults::Populate(
-      base::Value(std::move(*result)), &scan_results));
+  EXPECT_TRUE(document_scan::ScanResults::Populate(*result, scan_results));
   // Verify the image data URL is the PNG image data URL prefix plus the base64
   // representation of "PrettyPicture".
   EXPECT_THAT(
@@ -158,8 +157,7 @@ TEST_F(DocumentScanScanFunctionTest, TestingMIMEType) {
       function_.get(), "[{\"mimeTypes\": [\"testing\"]}]");
   ASSERT_TRUE(result);
   document_scan::ScanResults scan_results;
-  EXPECT_TRUE(document_scan::ScanResults::Populate(
-      base::Value(std::move(*result)), &scan_results));
+  EXPECT_TRUE(document_scan::ScanResults::Populate(*result, scan_results));
   // Verify the image data URL is the PNG image data URL prefix plus the base64
   // representation of "PrettyPicture".
   EXPECT_THAT(

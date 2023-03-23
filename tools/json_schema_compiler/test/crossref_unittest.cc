@@ -36,8 +36,7 @@ TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
 
   // Test Populate of the value --> compiled type.
   crossref::CrossrefType crossref_type;
-  ASSERT_TRUE(crossref::CrossrefType::Populate(
-      base::Value(crossref_orig.Clone()), &crossref_type));
+  ASSERT_TRUE(crossref::CrossrefType::Populate(crossref_orig, crossref_type));
   EXPECT_EQ(1.1, crossref_type.test_type.number);
   EXPECT_EQ(4, crossref_type.test_type.integer);
   EXPECT_EQ("bling", crossref_type.test_type.string);
@@ -73,12 +72,10 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
 
 TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
   base::Value::Dict value = CreateTestTypeValue();
-  auto test_type = std::make_unique<simple_api::TestType>();
-  EXPECT_TRUE(simple_api::TestType::Populate(base::Value(value.Clone()),
-                                             test_type.get()));
+  simple_api::TestType test_type;
+  EXPECT_TRUE(simple_api::TestType::Populate(value, test_type));
 
-  base::Value::List results =
-      crossref::GetTestType::Results::Create(*test_type);
+  base::Value::List results = crossref::GetTestType::Results::Create(test_type);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(value, results[0]);
 }

@@ -70,7 +70,8 @@ TEST_F(FileSystemProviderOperationsCloseFileTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   CloseFileRequestedOptions options;
-  ASSERT_TRUE(CloseFileRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(CloseFileRequestedOptions::Populate(options_as_value->GetDict(),
+                                                  options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kOpenRequestId, options.open_request_id);

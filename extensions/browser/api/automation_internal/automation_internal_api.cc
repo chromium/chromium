@@ -124,7 +124,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     int32_t automation_node_id,
     const std::string& action_type_string,
     int request_id,
-    const base::Value& additional_properties,
+    const base::Value::Dict& additional_properties,
     const std::string& extension_id,
     ui::AXActionData* action) {
   AutomationInternalPerformActionFunction::Result validation_error_result;
@@ -159,7 +159,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     case api::automation::ACTION_TYPE_GETIMAGEDATA: {
       api::automation_internal::GetImageDataParams get_image_data_params;
       bool result = api::automation_internal::GetImageDataParams::Populate(
-          additional_properties, &get_image_data_params);
+          additional_properties, get_image_data_params);
       if (!result) {
         return validation_error_result;
       }
@@ -171,7 +171,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     case api::automation::ACTION_TYPE_HITTEST: {
       api::automation_internal::HitTestParams hit_test_params;
       bool result = api::automation_internal::HitTestParams::Populate(
-          additional_properties, &hit_test_params);
+          additional_properties, hit_test_params);
       if (!result) {
         return validation_error_result;
       }
@@ -220,7 +220,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     case api::automation::ACTION_TYPE_SETSELECTION: {
       api::automation_internal::SetSelectionParams selection_params;
       bool result = api::automation_internal::SetSelectionParams::Populate(
-          additional_properties, &selection_params);
+          additional_properties, selection_params);
       if (!result) {
         return validation_error_result;
       }
@@ -246,7 +246,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
           perform_custom_action_params;
       bool result =
           api::automation_internal::PerformCustomActionParams::Populate(
-              additional_properties, &perform_custom_action_params);
+              additional_properties, perform_custom_action_params);
       if (!result) {
         return validation_error_result;
       }
@@ -259,7 +259,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
           replace_selected_text_params;
       bool result =
           api::automation_internal::ReplaceSelectedTextParams::Populate(
-              additional_properties, &replace_selected_text_params);
+              additional_properties, replace_selected_text_params);
       if (!result) {
         return validation_error_result;
       }
@@ -270,7 +270,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     case api::automation::ACTION_TYPE_SETVALUE: {
       api::automation_internal::SetValueParams set_value_params;
       bool result = api::automation_internal::SetValueParams::Populate(
-          additional_properties, &set_value_params);
+          additional_properties, set_value_params);
       if (!result) {
         return validation_error_result;
       }
@@ -281,7 +281,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     case api::automation::ACTION_TYPE_SCROLLTOPOINT: {
       api::automation_internal::ScrollToPointParams scroll_to_point_params;
       bool result = api::automation_internal::ScrollToPointParams::Populate(
-          additional_properties, &scroll_to_point_params);
+          additional_properties, scroll_to_point_params);
       if (!result) {
         return validation_error_result;
       }
@@ -294,7 +294,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
       api::automation_internal::ScrollToPositionAtRowColumnParams params;
       bool result =
           api::automation_internal::ScrollToPositionAtRowColumnParams::Populate(
-              additional_properties, &params);
+              additional_properties, params);
       if (!result) {
         return validation_error_result;
       }
@@ -305,7 +305,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
     case api::automation::ACTION_TYPE_SETSCROLLOFFSET: {
       api::automation_internal::SetScrollOffsetParams set_scroll_offset_params;
       bool result = api::automation_internal::SetScrollOffsetParams::Populate(
-          additional_properties, &set_scroll_offset_params);
+          additional_properties, set_scroll_offset_params);
       if (!result) {
         return validation_error_result;
       }
@@ -319,7 +319,7 @@ AutomationInternalPerformActionFunction::Result ConvertToAXActionData(
           get_text_location_params;
       bool result =
           api::automation_internal::GetTextLocationDataParams::Populate(
-              additional_properties, &get_text_location_params);
+              additional_properties, get_text_location_params);
       if (!result) {
         return validation_error_result;
       }
@@ -709,8 +709,7 @@ AutomationInternalPerformActionFunction::Run() {
   Result result = ConvertToAXActionData(
       ui::AXTreeID::FromString(params->args.tree_id),
       params->args.automation_node_id, params->args.action_type, request_id,
-      base::Value(std::move(params->opt_args.additional_properties)),
-      extension_id(), &data);
+      params->opt_args.additional_properties, extension_id(), &data);
 
   if (!result.validation_success) {
     // This macro has a built in |return|.

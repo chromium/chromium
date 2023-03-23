@@ -60,8 +60,9 @@ std::vector<api::events::Rule> RulesFromValue(
     if (!dict_value.is_dict())
       continue;
     api::events::Rule rule;
-    if (api::events::Rule::Populate(dict_value, &rule))
+    if (api::events::Rule::Populate(dict_value.GetDict(), rule)) {
       rules.push_back(std::move(rule));
+    }
   }
 
   return rules;

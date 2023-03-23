@@ -14,19 +14,17 @@ TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
     test::api::any::AnyType any_type;
     base::Value::Dict any_type_dict;
     any_type_dict.Set("any", "value");
-    base::Value any_type_value(std::move(any_type_dict));
-    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_value, &any_type));
+    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
     base::Value::Dict any_type_to_value(any_type.ToValue());
-    EXPECT_EQ(any_type_value, any_type_to_value);
+    EXPECT_EQ(any_type_dict, any_type_to_value);
   }
   {
     test::api::any::AnyType any_type;
     base::Value::Dict any_type_dict;
     any_type_dict.Set("any", 5);
-    base::Value any_type_value(std::move(any_type_dict));
-    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_value, &any_type));
+    EXPECT_TRUE(test::api::any::AnyType::Populate(any_type_dict, any_type));
     base::Value::Dict any_type_to_value(any_type.ToValue());
-    EXPECT_EQ(any_type_value, any_type_to_value);
+    EXPECT_EQ(any_type_dict, any_type_to_value);
   }
 }
 

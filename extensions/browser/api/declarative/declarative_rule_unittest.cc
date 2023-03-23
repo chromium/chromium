@@ -17,6 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using url_matcher::URLMatcher;
 using url_matcher::URLMatcherConditionFactory;
 using url_matcher::URLMatcherConditionSet;
@@ -303,7 +304,7 @@ TEST(DeclarativeActionTest, ApplyActionSet) {
 TEST(DeclarativeRuleTest, Create) {
   typedef DeclarativeRule<FulfillableCondition, SummingAction> Rule;
   Rule::JsonRule json_rule;
-  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJson(R"(
+  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJsonDict(R"(
       {
         "id": "rule1",
         "conditions": [
@@ -317,7 +318,7 @@ TEST(DeclarativeRuleTest, Create) {
         ],
         "priority": 200
       })"),
-                                       &json_rule));
+                                       json_rule));
 
   const char kExtensionId[] = "ext1";
   scoped_refptr<const Extension> extension = ExtensionBuilder()
@@ -379,7 +380,7 @@ TEST(DeclarativeRuleTest, CheckConsistency) {
                                                  .SetID(kExtensionId)
                                                  .Build();
 
-  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJson(R"(
+  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJsonDict(R"(
       {
         "id": "rule1",
         "conditions": [
@@ -393,14 +394,14 @@ TEST(DeclarativeRuleTest, CheckConsistency) {
         ],
         "priority": 200
       })"),
-                                       &json_rule));
+                                       json_rule));
   std::unique_ptr<Rule> rule(Rule::Create(
       matcher.condition_factory(), nullptr, extension.get(), base::Time(),
       json_rule, base::BindOnce(AtLeastOneCondition), &error));
   EXPECT_TRUE(rule);
   EXPECT_EQ("", error);
 
-  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJson(R"({
+  ASSERT_TRUE(Rule::JsonRule::Populate(ParseJsonDict(R"({
                                                    "id": "rule1",
                                                    "conditions": [
                                                    ],
@@ -411,7 +412,7 @@ TEST(DeclarativeRuleTest, CheckConsistency) {
                                                    ],
                                                    "priority": 200
                                                  })"),
-                                       &json_rule));
+                                       json_rule));
   rule = Rule::Create(matcher.condition_factory(), nullptr, extension.get(),
                       base::Time(), json_rule,
                       base::BindOnce(AtLeastOneCondition), &error);

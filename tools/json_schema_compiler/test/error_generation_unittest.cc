@@ -18,11 +18,11 @@ using base::Value;
 using json_schema_compiler::test_util::Dictionary;
 using json_schema_compiler::test_util::List;
 
-template <typename T>
+template <typename T, typename Value>
 std::u16string GetPopulateError(const Value& value) {
   std::u16string error;
   T test_type;
-  T::Populate(value, &test_type, &error);
+  T::Populate(value, test_type, &error);
   return error;
 }
 
@@ -39,12 +39,8 @@ testing::AssertionResult EqualsUtf16(const std::string& expected,
 TEST(JsonSchemaCompilerErrorTest, RequiredPropertyPopulate) {
   {
     base::Value value = Dictionary("string", Value("bling"));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::TestType>(value)));
-  }
-  {
-    Value value(Value::Type::BINARY);
-    EXPECT_TRUE(EqualsUtf16("expected dictionary, got binary",
-                            GetPopulateError<errors::TestType>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("", GetPopulateError<errors::TestType>(value.GetDict())));
   }
 }
 
@@ -67,10 +63,11 @@ TEST(JsonSchemaCompilerErrorTest, UnexpectedTypePopulation) {
 TEST(JsonSchemaCompilerErrorTest, TypeIsRequired) {
   {
     base::Value value = Dictionary("integers", Value(5));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::ChoiceType>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("", GetPopulateError<errors::ChoiceType>(value.GetDict())));
   }
   {
-    base::Value value(base::Value::Type::DICT);
+    base::Value::Dict value;
     EXPECT_TRUE(EqualsUtf16("'integers' is required",
                             GetPopulateError<errors::ChoiceType>(value)));
   }
@@ -118,12 +115,14 @@ TEST(JsonSchemaCompilerErrorTest, ParamIsRequired) {
 TEST(JsonSchemaCompilerErrorTest, WrongPropertyValueType) {
   {
     base::Value value = Dictionary("string", Value("yes"));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::TestType>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("", GetPopulateError<errors::TestType>(value.GetDict())));
   }
   {
     base::Value value = Dictionary("string", Value(1.1));
-    EXPECT_TRUE(EqualsUtf16("'string': expected string, got double",
-                            GetPopulateError<errors::TestType>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("'string': expected string, got double",
+                    GetPopulateError<errors::TestType>(value.GetDict())));
   }
 }
 
@@ -147,14 +146,14 @@ TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
 
 TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
   {
-    base::Value value(base::Value::Type::DICT);
+    base::Value::Dict value;
     EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::ObjectType>(value)));
   }
   {
     base::Value value = Dictionary("otherType", Value(1.1));
     errors::ObjectType out;
     std::u16string error;
-    EXPECT_FALSE(errors::ObjectType::Populate(value, &out, &error));
+    EXPECT_FALSE(errors::ObjectType::Populate(value.GetDict(), out, &error));
     EXPECT_TRUE(EqualsUtf16("'otherType': expected dictionary, got double",
         error));
     EXPECT_FALSE(out.other_type.has_value());
@@ -179,12 +178,14 @@ TEST(JsonSchemaCompilerErrorTest, UnableToPopulateArray) {
 TEST(JsonSchemaCompilerErrorTest, BinaryTypeExpected) {
   {
     base::Value value = Dictionary("data", Value(Value::Type::BINARY));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::BinaryData>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("", GetPopulateError<errors::BinaryData>(value.GetDict())));
   }
   {
     base::Value value = Dictionary("data", Value(1.1));
-    EXPECT_TRUE(EqualsUtf16("'data': expected binary, got double",
-                            GetPopulateError<errors::BinaryData>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("'data': expected binary, got double",
+                    GetPopulateError<errors::BinaryData>(value.GetDict())));
   }
 }
 
@@ -192,12 +193,14 @@ TEST(JsonSchemaCompilerErrorTest, ListExpected) {
   {
     base::Value value =
         Dictionary("TheArray", base::Value(base::Value::Type::LIST));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::ArrayObject>(value)));
+    EXPECT_TRUE(EqualsUtf16(
+        "", GetPopulateError<errors::ArrayObject>(value.GetDict())));
   }
   {
     base::Value value = Dictionary("TheArray", Value(5));
-    EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
-                            GetPopulateError<errors::ArrayObject>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("'TheArray': expected list, got integer",
+                    GetPopulateError<errors::ArrayObject>(value.GetDict())));
   }
 }
 
@@ -206,30 +209,31 @@ TEST(JsonSchemaCompilerErrorTest, ListExpected) {
 TEST(JsonSchemaCompilerErrorTest, BadEnumValue) {
   {
     base::Value value = Dictionary("enumeration", Value("one"));
-    EXPECT_TRUE(
-        EqualsUtf16("", GetPopulateError<errors::HasEnumeration>(value)));
+    EXPECT_TRUE(EqualsUtf16(
+        "", GetPopulateError<errors::HasEnumeration>(value.GetDict())));
   }
   {
     base::Value value = Dictionary("enumeration", Value("bad sauce"));
     EXPECT_TRUE(
         EqualsUtf16("'Enumeration': expected \"one\" or \"two\" "
                     "or \"three\", got \"bad sauce\"",
-                    GetPopulateError<errors::HasEnumeration>(value)));
+                    GetPopulateError<errors::HasEnumeration>(value.GetDict())));
   }
 }
 
 TEST(JsonSchemaCompilerErrorTest, ErrorOnOptionalFailure) {
   {
     base::Value value = Dictionary("string", Value("bling"));
-    EXPECT_TRUE(
-        EqualsUtf16("", GetPopulateError<errors::OptionalTestType>(value)));
+    EXPECT_TRUE(EqualsUtf16(
+        "", GetPopulateError<errors::OptionalTestType>(value.GetDict())));
   }
   {
     base::Value value = Dictionary("string", Value(1));
 
     errors::OptionalTestType out;
     std::u16string error;
-    EXPECT_FALSE(errors::OptionalTestType::Populate(value, &out, &error));
+    EXPECT_FALSE(
+        errors::OptionalTestType::Populate(value.GetDict(), out, &error));
     EXPECT_TRUE(EqualsUtf16("'string': expected string, got integer",
         error));
     EXPECT_FALSE(out.string);
@@ -239,8 +243,8 @@ TEST(JsonSchemaCompilerErrorTest, ErrorOnOptionalFailure) {
 TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
   {
     base::Value value = Dictionary("data", Value(Value::Type::BINARY));
-    EXPECT_TRUE(
-        EqualsUtf16("", GetPopulateError<errors::OptionalBinaryData>(value)));
+    EXPECT_TRUE(EqualsUtf16(
+        "", GetPopulateError<errors::OptionalBinaryData>(value.GetDict())));
   }
   {
     // There's a bug with silent failures if the key doesn't exist.
@@ -248,7 +252,8 @@ TEST(JsonSchemaCompilerErrorTest, OptionalBinaryTypeFailure) {
 
     errors::OptionalBinaryData out;
     std::u16string error;
-    EXPECT_FALSE(errors::OptionalBinaryData::Populate(value, &out, &error));
+    EXPECT_FALSE(
+        errors::OptionalBinaryData::Populate(value.GetDict(), out, &error));
     EXPECT_TRUE(EqualsUtf16("'data': expected binary, got integer",
         error));
     EXPECT_FALSE(out.data.has_value());
@@ -259,13 +264,14 @@ TEST(JsonSchemaCompilerErrorTest, OptionalArrayTypeFailure) {
   {
     base::Value value =
         Dictionary("TheArray", base::Value(base::Value::Type::LIST));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::ArrayObject>(value)));
+    EXPECT_TRUE(EqualsUtf16(
+        "", GetPopulateError<errors::ArrayObject>(value.GetDict())));
   }
   {
     base::Value value = Dictionary("TheArray", Value(5));
     errors::ArrayObject out;
     std::u16string error;
-    EXPECT_FALSE(errors::ArrayObject::Populate(value, &out, &error));
+    EXPECT_FALSE(errors::ArrayObject::Populate(value.GetDict(), out, &error));
     EXPECT_TRUE(EqualsUtf16("'TheArray': expected list, got integer",
         error));
     EXPECT_FALSE(out.the_array.has_value());
@@ -284,7 +290,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
     errors::OptionalChoiceType::Integers out;
     std::u16string error;
     EXPECT_FALSE(errors::OptionalChoiceType::Integers::Populate(params_value,
-                                                                &out, &error));
+                                                                out, &error));
     EXPECT_TRUE(
         EqualsUtf16("Error at key 'integers': Parsing array failed at index 1: "
                     "expected integer, got boolean",
@@ -296,12 +302,14 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
 TEST(JsonSchemaCompilerErrorTest, TooManyKeys) {
   {
     base::Value value = Dictionary("string", Value("yes"));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::TestType>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("", GetPopulateError<errors::TestType>(value.GetDict())));
   }
   {
     // We simply ignore extra keys.
     base::Value value =
         Dictionary("string", Value("yes"), "ohno", Value("many values"));
-    EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::TestType>(value)));
+    EXPECT_TRUE(
+        EqualsUtf16("", GetPopulateError<errors::TestType>(value.GetDict())));
   }
 }

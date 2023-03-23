@@ -92,7 +92,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
       return testing::AssertionFailure() << "No result";
 
     ReadLogSourceResult result;
-    if (!ReadLogSourceResult::Populate(*result_value, &result)) {
+    if (!ReadLogSourceResult::Populate(*result_value, result)) {
       return testing::AssertionFailure()
              << "Unable to parse a valid result from " << *result_value;
     }

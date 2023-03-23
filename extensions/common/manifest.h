@@ -173,7 +173,6 @@ class Manifest final {
   const std::string* FindStringPath(base::StringPiece path) const;
 
   const base::Value::Dict* FindDictPath(base::StringPiece path) const;
-  const base::Value* FindDictPathAsValue(base::StringPiece path) const;
 
   // Deprecated: Use the FindDictPath(asValue) functions instead.
   bool GetList(const std::string& path, const base::Value** out_value) const;

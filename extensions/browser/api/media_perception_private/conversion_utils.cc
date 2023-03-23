@@ -562,7 +562,7 @@ bool NamedTemplateArgumentProtoToIdl(
 
   named_template_argument->value.emplace();
   if (!NamedTemplateArgument::Value::Populate(
-          value, &*named_template_argument->value)) {
+          value, *named_template_argument->value)) {
     return false;
   }
 

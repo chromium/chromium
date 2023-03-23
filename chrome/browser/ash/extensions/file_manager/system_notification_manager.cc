@@ -447,7 +447,7 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   std::u16string message;
   if (file_manager_private::DriveSyncErrorEvent::Populate(event_arguments[0],
-                                                          &sync_error)) {
+                                                          sync_error)) {
     id = file_manager_private::ToString(sync_error.type);
     GURL file_url(sync_error.file_url);
     switch (sync_error.type) {
@@ -534,7 +534,7 @@ SystemNotificationManager::MakeDriveConfirmDialogNotification(
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   std::u16string message;
   if (file_manager_private::DriveConfirmDialogEvent::Populate(
-          event_arguments[0], &dialog_event)) {
+          event_arguments[0], dialog_event)) {
     std::vector<message_center::ButtonInfo> notification_buttons;
     scoped_refptr<message_center::NotificationDelegate> delegate =
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -564,7 +564,7 @@ SystemNotificationManager::UpdateDriveSyncNotification(
   std::unique_ptr<message_center::Notification> notification;
   file_manager_private::FileTransferStatus transfer_status;
   if (!file_manager_private::FileTransferStatus::Populate(event_arguments[0],
-                                                          &transfer_status)) {
+                                                          transfer_status)) {
     LOG(ERROR) << "Invalid event argument or transfer status...";
     return notification;
   }

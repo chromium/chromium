@@ -251,13 +251,24 @@ class _Generator(object):
         c.Comment('Manifest key constants.')
         c.Concat(self._GenerateManifestKeyConstants(type_.properties.values()))
 
+      value_type = ('base::Value'
+                    if type_.property_type is PropertyType.CHOICES else
+                    'base::Value::Dict')
+
       if type_.origin.from_json:
         (c.Append()
-          .Comment('Populates a %s object from a base::Value. Returns'
-                   ' whether |out| was successfully populated.' % classname)
+          .Comment('Populates a %s object from a base::Value& instance. Returns'
+                   ' whether |out| was successfully populated.' %  classname)
           .Append('static bool Populate(%s);' % self._GenerateParams(
-              ('const base::Value& value', '%s* out' % classname)))
+              ('const base::Value& value', '%s& out' % classname)))
         )
+        if type_.property_type is not PropertyType.CHOICES:
+          (c.Append()
+            .Comment('Populates a %s object from a Dict& instance. Returns'
+                    ' whether |out| was successfully populated.' %  classname)
+            .Append('static bool Populate(%s);' % self._GenerateParams(
+                ('const base::Value::Dict& value', '%s& out' % classname)))
+          )
         if is_toplevel:
           (c.Append()
             .Comment('Creates a %s object from a base::Value, or NULL on '
@@ -266,9 +277,6 @@ class _Generator(object):
                 classname, self._GenerateParams(('const base::Value& value',))))
           )
       if type_.origin.from_client:
-        value_type = ('base::Value'
-                      if type_.property_type is PropertyType.CHOICES else
-                      'base::Value::Dict')
         (c.Append()
           .Comment('Returns a new %s representing the serialized form of this'
                    '%s object.' % (value_type, classname))

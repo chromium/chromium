@@ -75,7 +75,8 @@ TEST_F(FileSystemProviderOperationsMoveEntryTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   MoveEntryRequestedOptions options;
-  ASSERT_TRUE(MoveEntryRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(MoveEntryRequestedOptions::Populate(options_as_value->GetDict(),
+                                                  options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kSourcePath, options.source_path);

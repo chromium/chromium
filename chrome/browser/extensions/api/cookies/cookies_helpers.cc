@@ -139,7 +139,7 @@ CookieStore CreateCookieStore(Profile* profile, base::Value::List tab_ids) {
   dict.Set(cookies_api_constants::kTabIdsKey, std::move(tab_ids));
 
   CookieStore cookie_store;
-  bool rv = CookieStore::Populate(base::Value(std::move(dict)), &cookie_store);
+  bool rv = CookieStore::Populate(dict, cookie_store);
   CHECK(rv);
   return cookie_store;
 }

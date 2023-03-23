@@ -78,7 +78,8 @@ TEST_F(FileSystemProviderOperationsWriteFileTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   WriteFileRequestedOptions options;
-  ASSERT_TRUE(WriteFileRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(WriteFileRequestedOptions::Populate(options_as_value->GetDict(),
+                                                  options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kFileHandle, options.open_request_id);

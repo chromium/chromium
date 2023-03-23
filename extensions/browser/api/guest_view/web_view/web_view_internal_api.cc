@@ -453,8 +453,9 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
   if (args().size() <= 2 || !args()[2].is_dict())
     return set_init_result(VALIDATION_FAILURE);
   std::unique_ptr<InjectDetails> details(new InjectDetails());
-  if (!InjectDetails::Populate(args()[2], details.get()))
+  if (!InjectDetails::Populate(args()[2], *details)) {
     return set_init_result(VALIDATION_FAILURE);
+  }
 
   details_ = std::move(details);
 

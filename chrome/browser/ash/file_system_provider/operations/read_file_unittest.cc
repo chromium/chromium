@@ -121,7 +121,8 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   ReadFileRequestedOptions options;
-  ASSERT_TRUE(ReadFileRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(
+      ReadFileRequestedOptions::Populate(options_as_value->GetDict(), options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kFileHandle, options.open_request_id);

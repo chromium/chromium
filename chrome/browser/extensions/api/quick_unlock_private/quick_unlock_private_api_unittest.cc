@@ -426,9 +426,10 @@ class QuickUnlockPrivateUnitTest
     absl::optional<base::Value> result = RunFunction(
         base::MakeRefCounted<QuickUnlockPrivateCheckCredentialFunction>(),
         std::move(params));
+    EXPECT_TRUE(result->is_dict());
 
     CredentialCheck function_result;
-    EXPECT_TRUE(CredentialCheck::Populate(*result, &function_result));
+    EXPECT_TRUE(CredentialCheck::Populate(result->GetDict(), function_result));
     return function_result;
   }
 
@@ -441,9 +442,11 @@ class QuickUnlockPrivateUnitTest
         RunFunction(base::MakeRefCounted<
                         QuickUnlockPrivateGetCredentialRequirementsFunction>(),
                     std::move(params));
+    EXPECT_TRUE(result->is_dict());
 
     CredentialRequirements function_result;
-    EXPECT_TRUE(CredentialRequirements::Populate(*result, &function_result));
+    EXPECT_TRUE(
+        CredentialRequirements::Populate(result->GetDict(), function_result));
 
     EXPECT_EQ(function_result.min_length, expected_pin_min_length);
     EXPECT_EQ(function_result.max_length, expected_pin_max_length);

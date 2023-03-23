@@ -142,8 +142,8 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
   ASSERT_TRUE(options_as_value->is_dict());
 
   ReadDirectoryRequestedOptions options;
-  ASSERT_TRUE(
-      ReadDirectoryRequestedOptions::Populate(*options_as_value, &options));
+  ASSERT_TRUE(ReadDirectoryRequestedOptions::Populate(
+      options_as_value->GetDict(), options));
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kDirectoryPath, options.directory_path);

@@ -366,9 +366,10 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   std::unique_ptr<base::Value> device_info_value =
       RunFunctionAndReturnValue(function.get(), "[]");
   ASSERT_TRUE(device_info_value.get());
+  ASSERT_TRUE(device_info_value->is_dict());
   enterprise_reporting_private::DeviceInfo info;
   ASSERT_TRUE(enterprise_reporting_private::DeviceInfo::Populate(
-      *device_info_value, &info));
+      device_info_value->GetDict(), info));
 #if BUILDFLAG(IS_MAC)
   EXPECT_EQ("macOS", info.os_name);
 #elif BUILDFLAG(IS_WIN)
@@ -445,10 +446,11 @@ class EnterpriseReportingPrivateGetContextInfoTest
     std::unique_ptr<base::Value> context_info_value =
         RunFunctionAndReturnValue(function.get(), "[]");
     EXPECT_TRUE(context_info_value.get());
+    EXPECT_TRUE(context_info_value->is_dict());
 
     enterprise_reporting_private::ContextInfo info;
     EXPECT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
-        *context_info_value, &info));
+        context_info_value->GetDict(), info));
 
     return info;
   }

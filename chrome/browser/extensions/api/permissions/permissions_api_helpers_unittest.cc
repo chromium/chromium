@@ -82,8 +82,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("permissions", apis.Clone());
-    EXPECT_TRUE(Permissions::Populate(base::Value(std::move(dict)),
-                                      &permissions_object));
+    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
 
     std::unique_ptr<UnpackPermissionSetResult> unpack_result =
         UnpackPermissionSet(permissions_object, PermissionSet(),
@@ -101,8 +100,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("origins", origins.Clone());
-    EXPECT_TRUE(Permissions::Populate(base::Value(std::move(dict)),
-                                      &permissions_object));
+    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
 
     std::unique_ptr<UnpackPermissionSetResult> unpack_result =
         UnpackPermissionSet(permissions_object, PermissionSet(),
@@ -121,8 +119,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     base::Value::List invalid_apis = apis.Clone();
     invalid_apis.Append(3);
     dict.Set("permissions", std::move(invalid_apis));
-    EXPECT_FALSE(Permissions::Populate(base::Value(std::move(dict)),
-                                       &permissions_object));
+    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
   }
 
   // Throw errors for non-string origins.
@@ -132,8 +129,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     base::Value::List invalid_origins = origins.Clone();
     invalid_origins.Append(3);
     dict.Set("origins", std::move(invalid_origins));
-    EXPECT_FALSE(Permissions::Populate(base::Value(std::move(dict)),
-                                       &permissions_object));
+    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
   }
 
   // Throw errors when "origins" or "permissions" are not list values.
@@ -141,16 +137,14 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("origins", 2);
-    EXPECT_FALSE(Permissions::Populate(base::Value(std::move(dict)),
-                                       &permissions_object));
+    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
   }
 
   {
     Permissions permissions_object;
     base::Value::Dict dict;
     dict.Set("permissions", 2);
-    EXPECT_FALSE(Permissions::Populate(base::Value(std::move(dict)),
-                                       &permissions_object));
+    EXPECT_FALSE(Permissions::Populate(dict, permissions_object));
   }
 
   // Additional fields should be allowed.
@@ -159,8 +153,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     base::Value::Dict dict;
     dict.Set("origins", origins.Clone());
     dict.Set("random", 3);
-    EXPECT_TRUE(Permissions::Populate(base::Value(std::move(dict)),
-                                      &permissions_object));
+    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
 
     std::unique_ptr<UnpackPermissionSetResult> unpack_result =
         UnpackPermissionSet(permissions_object, PermissionSet(),
@@ -179,8 +172,7 @@ TEST(ExtensionPermissionsAPIHelpers, Unpack_Basic) {
     base::Value::List invalid_apis = apis.Clone();
     invalid_apis.Append("unknown_permission");
     dict.Set("permissions", std::move(invalid_apis));
-    EXPECT_TRUE(Permissions::Populate(base::Value(std::move(dict)),
-                                      &permissions_object));
+    EXPECT_TRUE(Permissions::Populate(dict, permissions_object));
 
     EXPECT_FALSE(UnpackPermissionSet(permissions_object, PermissionSet(),
                                      optional_permissions, true, &error));

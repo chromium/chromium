@@ -154,8 +154,9 @@ IN_PROC_BROWSER_TEST_F(BluetoothApiTest, GetAdapterState) {
   std::unique_ptr<base::Value> result(utils::RunFunctionAndReturnSingleResult(
       get_adapter_state.get(), "[]", browser()));
   ASSERT_TRUE(result.get() != nullptr);
+  ASSERT_TRUE(result->is_dict());
   api::bluetooth::AdapterState state;
-  ASSERT_TRUE(api::bluetooth::AdapterState::Populate(*result, &state));
+  ASSERT_TRUE(api::bluetooth::AdapterState::Populate(result->GetDict(), state));
 
   EXPECT_FALSE(state.available);
   EXPECT_TRUE(state.powered);

@@ -148,7 +148,7 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
     }
 
     Rule rule;
-    if (!Rule::Populate(element, &rule)) {
+    if (!Rule::Populate(dict, rule)) {
       error_builder.Append("rule failed to populate");
       return nullptr;
     }

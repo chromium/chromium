@@ -159,8 +159,7 @@ TEST_F(ExtensionCookiesTest, GetURLFromCanonicalCookie) {
 TEST_F(ExtensionCookiesTest, EmptyDictionary) {
   base::Value::Dict dict;
   GetAll::Params::Details details;
-  bool rv =
-      GetAll::Params::Details::Populate(base::Value(std::move(dict)), &details);
+  bool rv = GetAll::Params::Details::Populate(dict, details);
   ASSERT_TRUE(rv);
   cookies_helpers::MatchFilter filter(&details);
   net::CanonicalCookie cookie;
