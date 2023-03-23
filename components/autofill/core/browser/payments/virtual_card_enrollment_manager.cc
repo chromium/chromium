@@ -271,6 +271,13 @@ void VirtualCardEnrollmentManager::SetSaveCardBubbleAcceptedTimestamp(
 void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
     VirtualCardEnrollmentRequestType type,
     AutofillClient::PaymentsRpcResult result) {
+  // Add a strike if enrollment attempt was not successful.
+  if (type == VirtualCardEnrollmentRequestType::kEnroll &&
+      result != AutofillClient::PaymentsRpcResult::kSuccess) {
+    AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
+        state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
+  }
+
   LogUpdateVirtualCardEnrollmentRequestResult(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
       type, result == AutofillClient::PaymentsRpcResult::kSuccess);

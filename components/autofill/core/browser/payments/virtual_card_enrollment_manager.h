@@ -267,6 +267,8 @@ class VirtualCardEnrollmentManager {
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            StrikeDatabase_BubbleCanceled);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           StrikeDatabase_EnrollmentAttemptFailed);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            StrikeDatabase_SettingsPageNotBlocked);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
                            VirtualCardEnrollmentFields_LastShow);
