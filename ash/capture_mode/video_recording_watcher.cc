@@ -282,6 +282,7 @@ void VideoRecordingWatcher::ShutDown() {
   recording_overlay_controller_.reset();
   demo_tools_controller_.reset();
   dimmers_.clear();
+  ReleaseLayer();
 
   if (features::IsProjectorEnabled())
     ProjectorControllerImpl::Get()->OnRecordingEnded(is_in_projector_mode_);

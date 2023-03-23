@@ -61,6 +61,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/widget/widget.h"
 
@@ -234,6 +235,16 @@ void DeleteFileAsync(scoped_refptr<base::SequencedTaskRunner> task_runner,
                      path));
 }
 
+// Adds the given `notification` to the message center after it removes any
+// existing notification that has the same ID.
+void AddNotificationToMessageCenter(
+    std::unique_ptr<message_center::Notification> notification) {
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->RemoveNotification(notification->id(),
+                                     /*by_user=*/false);
+  message_center->AddNotification(std::move(notification));
+}
+
 // Shows a Capture Mode related notification with the given parameters.
 // |for_video_thumbnail| will be considered only if |optional_fields| contain
 // an image to show in the notification as a thumbnail for what was captured.
@@ -267,12 +278,7 @@ void ShowNotification(
                                            : kScreenShotNotificationType);
   }
 
-  // Remove the previous notification before showing the new one if there is
-  // any.
-  auto* message_center = message_center::MessageCenter::Get();
-  message_center->RemoveNotification(notification_id,
-                                     /*by_user=*/false);
-  message_center->AddNotification(std::move(notification));
+  AddNotificationToMessageCenter(std::move(notification));
 }
 
 // Shows a notification informing the user that a Capture Mode operation has
@@ -282,6 +288,24 @@ void ShowFailureNotification() {
                    IDS_ASH_SCREEN_CAPTURE_FAILURE_TITLE,
                    IDS_ASH_SCREEN_CAPTURE_FAILURE_MESSAGE,
                    /*optional_fields=*/{}, /*delegate=*/nullptr);
+}
+
+// Shows a notification that indicates to the user that the GIF file is being
+// processed and will be ready shortly.
+void ShowGifProgressNotification() {
+  message_center::RichNotificationData optional_fields;
+  optional_fields.progress = -1;  // Infinite progress.
+  optional_fields.never_timeout = true;
+  AddNotificationToMessageCenter(CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_PROGRESS, kScreenCaptureNotificationId,
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_GIF_PROGRESS_TITLE),
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_GIF_PROGRESS_MESSAGE),
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kScreenCaptureNotifierId,
+                                 NotificationCatalogName::kScreenCapture),
+      optional_fields, /*delegate=*/nullptr, kCaptureModeIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL));
 }
 
 // Returns the ID of the message or the title for the notification based on
@@ -1216,6 +1240,13 @@ void CaptureModeController::TerminateRecordingUiElements() {
   camera_controller_->MaybeRevertAutoCameraSelection();
 
   video_recording_watcher_->ShutDown();
+
+  // GIF files take a while to finalize and fully get written to disk. Therefore
+  // we show a notification to the user to let them know that the file will be
+  // ready shortly.
+  if (current_video_file_path_.MatchesExtension(".gif")) {
+    ShowGifProgressNotification();
+  }
 }
 
 void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
@@ -1835,6 +1866,12 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
   current_video_file_path_.clear();
 
   if (should_delete_file) {
+    // Remove any lingering notification, e.g. the GIF progress notification,
+    // before proceeding, since it no longer makes sense as the file will be
+    // deleted.
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kScreenCaptureNotificationId, /*by_user=*/false);
+
     DeleteFileAsync(blocking_task_runner_, video_file_path,
                     std::move(on_file_deleted_callback_for_test_));
   } else {
