@@ -37313,6 +37313,7 @@ Called by update_extension_permission.py.-->
   <int value="0" label="Other Not Supervised"/>
   <int value="1" label="Policy Enabled Supervision"/>
   <int value="2" label="User Enabled Supervision"/>
+  <int value="3" label="Mixed Profile"/>
 </enum>
 
 <enum name="FamilyLinkUserParentAccessWidgetError">

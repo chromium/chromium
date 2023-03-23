@@ -2514,6 +2514,13 @@ static_library("browser") {
       "performance_monitor/metric_evaluator_helper_posix.h",
     ]
   }
+  if (enable_supervised_users &&
+      (is_android || is_win || is_linux || is_mac || is_chromeos_lacros)) {
+    sources += [
+      "metrics/family_link_user_metrics_provider.cc",
+      "metrics/family_link_user_metrics_provider.h",
+    ]
+  }
 
   if (is_android) {
     sources += [
@@ -3042,8 +3049,6 @@ static_library("browser") {
       "memory_details_android.cc",
       "metrics/chrome_android_metrics_provider.cc",
       "metrics/chrome_android_metrics_provider.h",
-      "metrics/family_link_user_metrics_provider.cc",
-      "metrics/family_link_user_metrics_provider.h",
       "metrics/incognito_observer_android.cc",
       "metrics/page_load_metrics_provider.cc",
       "metrics/page_load_metrics_provider.h",

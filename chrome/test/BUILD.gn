@@ -6669,7 +6669,6 @@ test("unit_tests") {
       "../browser/lookalikes/safety_tip_message_delegate_android_unittest.cc",
       "../browser/media/android/cdm/media_drm_origin_id_manager_unittest.cc",
       "../browser/metrics/chrome_android_metrics_provider_unittest.cc",
-      "../browser/metrics/family_link_user_metrics_provider_unittest.cc",
       "../browser/notifications/notification_channels_provider_android_unittest.cc",
       "../browser/optimization_guide/android/optimization_guide_bridge_unittest.cc",
       "../browser/optimization_guide/android/optimization_guide_tab_url_provider_android_unittest.cc",
@@ -9126,6 +9125,11 @@ test("unit_tests") {
       "//components/supervised_user/core/common",
       "//components/supervised_user/core/common:buildflags",
     ]
+
+    if (is_android || is_win || is_mac || is_linux || is_chromeos_lacros) {
+      sources +=
+          [ "../browser/metrics/family_link_user_metrics_provider_unittest.cc" ]
+    }
   }
   if (safe_browsing_mode == 1 && enable_extensions) {
     sources += [ "../browser/extensions/blocklist_unittest.cc" ]

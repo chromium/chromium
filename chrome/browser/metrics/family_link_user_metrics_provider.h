@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -15,6 +16,9 @@
 // Categorizes the primary account of the active user profile into a FamilyLink
 // supervision type to segment the Chrome user population.
 // TODO(crbug.com/1347816): Support multi-profile supervision type segmentation.
+
+BASE_DECLARE_FEATURE(kExtendFamilyLinkUserLogSegmentToAllPlatforms);
+
 class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
                                       public IdentityManagerFactory::Observer,
                                       public signin::IdentityManager::Observer {
@@ -33,10 +37,14 @@ class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
     // User that has chosen to be supervised by FamilyLink (maps to Geller
     // accounts).
     kSupervisionEnabledByUser = 2,
+    // Profile contains users with multiple different supervision status
+    // used only when ExtendFamilyLinkUserLogSegmentToAllPlatforms flag is
+    // enabled
+    kMixedProfile = 3,
     // Add future entries above this comment, in sync with
     // "FamilyLinkUserLogSegment" in src/tools/metrics/histograms/enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kSupervisionEnabledByUser
+    kMaxValue = kMixedProfile
   };
 
   FamilyLinkUserMetricsProvider();
@@ -61,6 +69,10 @@ class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
 
   static const char* GetHistogramNameForTesting();
 
+  // Used to skip the check for active browsers in ProvideHistograms() while
+  // testing
+  bool skip_active_browser_count_for_unittesting_ = false;
+
  private:
   void SetLogSegment(LogSegment log_segment);
 
@@ -80,6 +92,10 @@ class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
   // Cache the log segment because it won't change during the session once
   // assigned.
   absl::optional<LogSegment> log_segment_;
+
+  // Used when kExtendFamilyLinkUserLogSegmentToAllPlatforms is enabled
+  absl::optional<LogSegment> SupervisionStatusOfProfile(
+      const AccountInfo& account_info);
 };
 
 #endif  // CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
