@@ -53,7 +53,6 @@ class SaveAddressProfileBannerRequestConfig
   std::u16string message_text_;
   std::u16string description_;
   std::u16string button_label_text_;
-  NSString* icon_image_name_ = nil;
 
   // Denotes that the profile will be saved to Google Account.
   bool is_migration_to_account_ = false;

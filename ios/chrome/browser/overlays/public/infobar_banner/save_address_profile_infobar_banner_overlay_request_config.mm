@@ -16,11 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// The name of the icon image for the save address banner.
-NSString* const kIconImageName = @"ic_place";
-}
-
 namespace autofill_address_profile_infobar_overlays {
 
 OVERLAY_USER_DATA_SETUP_IMPL(SaveAddressProfileBannerRequestConfig);
@@ -36,7 +31,6 @@ SaveAddressProfileBannerRequestConfig::SaveAddressProfileBannerRequestConfig(
   button_label_text_ = delegate->GetMessageActionText();
   description_ = delegate->GetDescription();
   is_update_banner_ = delegate->GetOriginalProfile() ? true : false;
-  icon_image_name_ = kIconImageName;
   is_migration_to_account_ = delegate->IsMigrationToAccount();
 }
 
