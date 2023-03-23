@@ -152,12 +152,10 @@ export class PowerBookmarksService {
                   folder.children!));
       shownBookmarks = topLevelBookmarks;
     }
-    if (searchQuery) {
-      shownBookmarks = this.applySearchQuery_(searchQuery!, shownBookmarks);
+    if (searchQuery || labels.find((label) => label.active)) {
+      shownBookmarks =
+          this.applySearchQueryAndLabels_(labels, searchQuery, shownBookmarks);
     }
-    shownBookmarks = shownBookmarks.filter(
-        (b: chrome.bookmarks.BookmarkTreeNode) =>
-            this.nodeMatchesContentFilters_(b, labels));
     const sortChangedPosition =
         this.sortBookmarks(shownBookmarks, activeSortIndex);
     if (sortChangedPosition) {
@@ -438,8 +436,8 @@ export class PowerBookmarksService {
     return expanded;
   }
 
-  private applySearchQuery_(
-      searchQuery: string,
+  private applySearchQueryAndLabels_(
+      labels: Label[], searchQuery: string|undefined,
       shownBookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
     let searchSpace: chrome.bookmarks.BookmarkTreeNode[] = [];
     // Search space should include all descendants of the shown bookmarks, in
@@ -449,10 +447,12 @@ export class PowerBookmarksService {
     });
     return searchSpace.filter(
         (bookmark: chrome.bookmarks.BookmarkTreeNode) =>
-            (bookmark.title &&
-             bookmark.title.toLocaleLowerCase().includes(searchQuery)) ||
-            (bookmark.url &&
-             bookmark.url.toLocaleLowerCase().includes(searchQuery)));
+            this.nodeMatchesContentFilters_(bookmark, labels) &&
+            (!searchQuery ||
+             (bookmark.title &&
+              bookmark.title.toLocaleLowerCase().includes(searchQuery!)) ||
+             (bookmark.url &&
+              bookmark.url.toLocaleLowerCase().includes(searchQuery!))));
   }
 
   private nodeMatchesContentFilters_(
