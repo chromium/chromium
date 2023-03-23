@@ -604,6 +604,13 @@ TEST_F(IntegrationTest, CheckForUpdate_UpdaterNotInstalled) {
 }
 
 TEST_F(IntegrationTest, CheckForUpdate) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1425609): Remove procmon logging once bug is fixed.
+  const base::ScopedClosureRunner stop_procmon_logging(
+      base::BindOnce(&updater::test::StopProcmonLogging,
+                     updater::test::StartProcmonLogging()));
+#endif  // #if BUILDFLAG(IS_WIN)
+
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(Install());
 
