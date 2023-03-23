@@ -4,6 +4,11 @@
 
 // https://w3c.github.io/clipboard-apis/#clipboard-interface
 
+[RuntimeEnabled=ClipboardUnsanitizedContent]
+dictionary ClipboardUnsanitizedFormats {
+  sequence<DOMString> unsanitized;
+};
+
 [
     SecureContext,
     Exposed=Window
@@ -11,6 +16,11 @@
     [MeasureAs=AsyncClipboardAPIRead,
      CallWith=ScriptState
     ] Promise<sequence<ClipboardItem>> read();
+
+    [MeasureAs=AsyncClipboardAPIUnsanitizedRead,
+     RuntimeEnabled=ClipboardUnsanitizedContent,
+     CallWith=ScriptState
+    ] Promise<sequence<ClipboardItem>> read(ClipboardUnsanitizedFormats formats);
 
     [MeasureAs=AsyncClipboardAPIReadText,
      CallWith=ScriptState

@@ -127,15 +127,18 @@ class ClipboardTextReader final : public ClipboardReader {
 class ClipboardHtmlReader final : public ClipboardReader {
  public:
   explicit ClipboardHtmlReader(SystemClipboard* system_clipboard,
-                               ClipboardPromise* promise)
-      : ClipboardReader(system_clipboard, promise) {}
+                               ClipboardPromise* promise,
+                               bool sanitize_html)
+      : ClipboardReader(system_clipboard, promise),
+        sanitize_html_(sanitize_html) {}
   ~ClipboardHtmlReader() override = default;
 
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     promise_->GetExecutionContext()->CountUse(
-        WebFeature::kHtmlClipboardApiRead);
+        sanitize_html_ ? WebFeature::kHtmlClipboardApiRead
+                       : WebFeature::kHtmlClipboardApiUnsanitizedRead);
     system_clipboard()->ReadHTML(
         WTF::BindOnce(&ClipboardHtmlReader::OnRead, WrapPersistent(this)));
   }
@@ -153,21 +156,31 @@ class ClipboardHtmlReader final : public ClipboardReader {
       return;
     }
 
-    // Now sanitize the HTML string.
-    // This must be called on the main thread because HTML DOM nodes can
-    // only be used on the main thread.
-    String sanitized_html = CreateSanitizedMarkupWithContext(
-        *frame->GetDocument(), html_string, fragment_start, fragment_end, url,
-        kIncludeNode, kResolveAllURLs);
-
-    if (sanitized_html.empty()) {
+    String serialized_html;
+    if (sanitize_html_) {
+      // Sanitize the HTML string.
+      // This must be called on the main thread because HTML DOM nodes can only
+      // be used on the main thread.
+      serialized_html = CreateSanitizedMarkupWithContext(
+          *frame->GetDocument(), html_string, fragment_start, fragment_end, url,
+          kIncludeNode, kResolveAllURLs);
+    } else {
+      // Similarly to reading sanitized HTML from the clipboard, we need to
+      // extract the fragment using the `fragment_start` and `fragment_end`
+      // calculated by the browser process. The browser process already removes
+      // the CF_HTML headers, but we have to go through this removal step in
+      // Blink because the markup isn't going through a sanitization process.
+      serialized_html =
+          html_string.Substring(fragment_start, fragment_end - fragment_start);
+    }
+    if (serialized_html.empty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
     worker_pool::PostTask(
         FROM_HERE, CrossThreadBindOnce(
                        &ClipboardHtmlReader::EncodeOnBackgroundThread,
-                       std::move(sanitized_html), MakeCrossThreadHandle(this),
+                       std::move(serialized_html), MakeCrossThreadHandle(this),
                        std::move(clipboard_task_runner_)));
   }
 
@@ -199,6 +212,8 @@ class ClipboardHtmlReader final : public ClipboardReader {
     }
     promise_->OnRead(blob);
   }
+
+  bool sanitize_html_ = true;
 };
 
 // Reads SVG from the System Clipboard as a Blob with image/svg+xml content.
@@ -313,7 +328,8 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 // static
 ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
-                                         ClipboardPromise* promise) {
+                                         ClipboardPromise* promise,
+                                         bool sanitize_html) {
   DCHECK(ClipboardWriter::IsValidType(mime_type));
   // If this is a web custom format then read the unsanitized version.
   if (RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled() &&
@@ -325,14 +341,18 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
         system_clipboard, promise, mime_type);
   }
 
-  if (mime_type == kMimeTypeImagePng)
+  if (mime_type == kMimeTypeImagePng) {
     return MakeGarbageCollected<ClipboardPngReader>(system_clipboard, promise);
+  }
 
-  if (mime_type == kMimeTypeTextPlain)
+  if (mime_type == kMimeTypeTextPlain) {
     return MakeGarbageCollected<ClipboardTextReader>(system_clipboard, promise);
+  }
 
-  if (mime_type == kMimeTypeTextHTML)
-    return MakeGarbageCollected<ClipboardHtmlReader>(system_clipboard, promise);
+  if (mime_type == kMimeTypeTextHTML) {
+    return MakeGarbageCollected<ClipboardHtmlReader>(system_clipboard, promise,
+                                                     sanitize_html);
+  }
 
   if (mime_type == kMimeTypeImageSvg &&
       RuntimeEnabledFeatures::ClipboardSvgEnabled()) {

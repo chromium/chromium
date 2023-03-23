@@ -161,7 +161,10 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
     if (!local_frame || !execution_context) {
       return;
     }
-    execution_context->CountUse(WebFeature::kHtmlClipboardApiWrite);
+    execution_context->CountUse(
+        RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled()
+            ? WebFeature::kHtmlClipboardApiUnsanitizedWrite
+            : WebFeature::kHtmlClipboardApiWrite);
 
     String html_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),

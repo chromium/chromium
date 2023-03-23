@@ -42595,6 +42595,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4519" label="V8StorageBucketManager_Delete_Method"/>
   <int value="4520" label="NavigatorUAData_GetHighEntropyValues"/>
   <int value="4521" label="SchedulerYield"/>
+  <int value="4522" label="HtmlClipboardApiUnsanitizedRead"/>
+  <int value="4523" label="HtmlClipboardApiUnsanitizedWrite"/>
+  <int value="4524" label="AsyncClipboardAPIUnsanitizedRead"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

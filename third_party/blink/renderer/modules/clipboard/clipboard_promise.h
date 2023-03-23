@@ -27,12 +27,15 @@ class ScriptPromiseResolver;
 class LocalFrame;
 class ExecutionContext;
 class ClipboardItemOptions;
+class ClipboardUnsanitizedFormats;
 
 class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
                                public ExecutionContextLifecycleObserver {
  public:
   // Creates promise to execute Clipboard API functions off the main thread.
-  static ScriptPromise CreateForRead(ExecutionContext*, ScriptState*);
+  static ScriptPromise CreateForRead(ExecutionContext*,
+                                     ScriptState*,
+                                     ClipboardUnsanitizedFormats*);
   static ScriptPromise CreateForReadText(ExecutionContext*, ScriptState*);
   static ScriptPromise CreateForWrite(ExecutionContext*,
                                       ScriptState*,
@@ -69,7 +72,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   void WriteNextRepresentation();
 
   // Checks Read/Write permission (interacting with PermissionService).
-  void HandleRead();
+  void HandleRead(ClipboardUnsanitizedFormats*);
   void HandleReadText();
   void HandleWrite(HeapVector<Member<ClipboardItem>>*);
   void HandleWriteText(const String&);
@@ -103,6 +106,9 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
 
   // Checks for Read and Write permission.
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+
+  // Indicates whether unsanitized HTML content will be read from the clipboard.
+  bool will_read_unsanitized_html_ = false;
 
   // Only for use in writeText().
   String plain_text_;

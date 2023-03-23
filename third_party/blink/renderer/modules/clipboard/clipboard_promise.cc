@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_unsanitized_formats.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -114,15 +115,18 @@ class ClipboardPromise::BlobPromiseResolverFunction final
 };
 
 // static
-ScriptPromise ClipboardPromise::CreateForRead(ExecutionContext* context,
-                                              ScriptState* script_state) {
+ScriptPromise ClipboardPromise::CreateForRead(
+    ExecutionContext* context,
+    ScriptState* script_state,
+    ClipboardUnsanitizedFormats* formats) {
   if (!script_state->ContextIsValid())
     return ScriptPromise();
   ClipboardPromise* clipboard_promise =
       MakeGarbageCollected<ClipboardPromise>(context, script_state);
   clipboard_promise->GetTaskRunner()->PostTask(
       FROM_HERE, WTF::BindOnce(&ClipboardPromise::HandleRead,
-                               WrapPersistent(clipboard_promise)));
+                               WrapPersistent(clipboard_promise),
+                               WrapPersistent(formats)));
   return clipboard_promise->script_promise_resolver_->Promise();
 }
 
@@ -231,8 +235,30 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
           clipboard_item_data_[clipboard_representation_index_].first + "."));
 }
 
-void ClipboardPromise::HandleRead() {
+void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled() && formats &&
+      formats->hasUnsanitized() && !formats->unsanitized().empty()) {
+    Vector<String> unsanitized_formats = formats->unsanitized();
+    if (unsanitized_formats.size() > 1) {
+      script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "Support to read multiple unsanitized formats is not implemented."));
+      return;
+    }
+    if (unsanitized_formats[0] != kMimeTypeTextHTML) {
+      script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError, "The unsanitized type " +
+                                                  unsanitized_formats[0] +
+                                                  " is not supported."));
+      return;
+    }
+    // HTML is the only standard format that can have an unsanitized read for
+    // now.
+    will_read_unsanitized_html_ = true;
+  }
+
   RequestPermission(mojom::blink::PermissionName::CLIPBOARD_READ,
                     /*will_be_sanitized=*/
                     !RuntimeEnabledFeatures::ClipboardCustomFormatsEnabled(),
@@ -383,7 +409,8 @@ void ClipboardPromise::ReadNextRepresentation() {
 
   ClipboardReader* clipboard_reader = ClipboardReader::Create(
       GetLocalFrame()->GetSystemClipboard(),
-      clipboard_item_data_[clipboard_representation_index_].first, this);
+      clipboard_item_data_[clipboard_representation_index_].first, this,
+      /*sanitize_html=*/!will_read_unsanitized_html_);
   if (!clipboard_reader) {
     OnRead(nullptr);
     return;

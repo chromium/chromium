@@ -28,8 +28,10 @@ Clipboard* Clipboard::clipboard(Navigator& navigator) {
 
 Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
-ScriptPromise Clipboard::read(ScriptState* script_state) {
-  return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state);
+ScriptPromise Clipboard::read(ScriptState* script_state,
+                              ClipboardUnsanitizedFormats* formats) {
+  return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
+                                         formats);
 }
 
 ScriptPromise Clipboard::readText(ScriptState* script_state) {

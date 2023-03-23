@@ -15,6 +15,7 @@ namespace blink {
 
 class Navigator;
 class ScriptState;
+class ClipboardUnsanitizedFormats;
 
 class Clipboard : public EventTargetWithInlineData,
                   public Supplement<Navigator> {
@@ -28,7 +29,8 @@ class Clipboard : public EventTargetWithInlineData,
   Clipboard(const Clipboard&) = delete;
   Clipboard& operator=(const Clipboard&) = delete;
 
-  ScriptPromise read(ScriptState*);
+  ScriptPromise read(ScriptState*,
+                     ClipboardUnsanitizedFormats* formats = nullptr);
   ScriptPromise readText(ScriptState*);
 
   ScriptPromise write(ScriptState*, const HeapVector<Member<ClipboardItem>>&);
