@@ -113,7 +113,7 @@ message GetHintsResponse {
 // Must sync with enum OptimizationType in enums.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12;
+  reserved 11, 12, 29;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
