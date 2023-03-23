@@ -28,6 +28,9 @@ namespace ash {
 
 namespace {
 
+// The default number of pages defined in the PaginationModel.
+constexpr int kDefaultTotalPages = -1;
+
 // Attributes of arrow buttons.
 constexpr int kArrowButtonIconSize = 20;
 constexpr ui::ColorId kArrowButtonColorId = cros_tokens::kCrosSysSecondary;
@@ -294,7 +297,9 @@ PaginationView::PaginationView(PaginationModel* model)
   indicator_scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
 
-  TotalPagesChanged(0, model_->total_pages());
+  if (model_->total_pages() != kDefaultTotalPages) {
+    TotalPagesChanged(kDefaultTotalPages, model_->total_pages());
+  }
 
   if (model_->is_valid_page(model_->selected_page())) {
     CreateSelectorDot();
@@ -521,6 +526,7 @@ void PaginationView::SelectedPageChanged(int old_selected, int new_selected) {
 
 void PaginationView::TotalPagesChanged(int previous_page_count,
                                        int new_page_count) {
+  DCHECK_NE(previous_page_count, new_page_count);
   if (previous_page_count < new_page_count) {
     // Add more indicators at the end of container.
     for (int i = previous_page_count; i < new_page_count; i++) {

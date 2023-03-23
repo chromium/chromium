@@ -32,12 +32,15 @@ void PaginationModel::SetTotalPages(int total_pages) {
 
   int previous_pages = total_pages_;
   total_pages_ = total_pages;
+  for (auto& observer : observers_) {
+    observer.TotalPagesChanged(previous_pages, total_pages);
+  }
+
+  // The selected page may need to change due to total pages changing.
   if (selected_page_ < 0)
     SelectPage(0, false /* animate */);
   if (selected_page_ >= total_pages_)
     SelectPage(std::max(total_pages_ - 1, 0), false /* animate */);
-  for (auto& observer : observers_)
-    observer.TotalPagesChanged(previous_pages, total_pages);
 }
 
 void PaginationModel::SelectPage(int page, bool animate) {
