@@ -10,7 +10,7 @@ namespace cc {
 CrossThreadSharedBitmap::CrossThreadSharedBitmap(const viz::SharedBitmapId& id,
                                                  base::MappedReadOnlyRegion shm,
                                                  const gfx::Size& size,
-                                                 viz::ResourceFormat format)
+                                                 viz::SharedImageFormat format)
     : id_(id),
       region_(std::move(shm.region)),
       mapping_(std::move(shm.mapping)),

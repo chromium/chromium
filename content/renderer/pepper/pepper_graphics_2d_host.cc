@@ -748,7 +748,8 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
         viz::bitmap_allocation::AllocateSharedBitmap(pixel_image_size,
                                                      viz::RGBA_8888);
     shared_bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-        id, std::move(shm), pixel_image_size, viz::RGBA_8888);
+        id, std::move(shm), pixel_image_size,
+        viz::SinglePlaneFormat::kRGBA_8888);
     registration = bitmap_registrar->RegisterSharedBitmapId(id, shared_bitmap);
   }
   void* src = image_data_->Map();

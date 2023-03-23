@@ -223,15 +223,15 @@ bool ImageLayerBridge::PrepareTransferableResource(
     // compositor.
     constexpr SkColorType dst_color_type = kN32_SkColorType;
     // TODO(vasilyt): this used to be
-    // viz::SkColorTypeToResourceFormat(dst_color_type), but on some
-    // platforms (including Mac), kN32_SkColorType is BGRA8888 which
-    // is disallowed as a bitmap format. Deeper refactorings are
-    // needed to fix this properly; in the meantime, force the use of
-    // viz::RGBA_8888 as the resource format. This addresses assertion
-    // failures when serializing these bitmaps to the GPU process.
-    viz::ResourceFormat resource_format = viz::RGBA_8888;
+    // viz::SkColorTypeToResourceFormat(dst_color_type), but on some platforms
+    // (including Mac), kN32_SkColorType is BGRA8888 which is disallowed as a
+    // bitmap format. Deeper refactorings are needed to fix this properly; in
+    // the meantime, force the use of viz::SinglePlaneFormat::kRGBA_8888 as the
+    // resource format. This addresses assertion failures when serializing these
+    // bitmaps to the GPU process.
+    viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
     RegisteredBitmap registered =
-        CreateOrRecycleBitmap(size, resource_format, bitmap_registrar);
+        CreateOrRecycleBitmap(size, format, bitmap_registrar);
 
     SkImageInfo dst_info =
         SkImageInfo::Make(size.width(), size.height(), dst_color_type,
@@ -243,7 +243,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
       return false;
 
     *out_resource = viz::TransferableResource::MakeSoftware(
-        registered.bitmap->id(), size, resource_format);
+        registered.bitmap->id(), size, format);
     out_resource->color_space = sk_image->colorSpace()
                                     ? gfx::ColorSpace(*sk_image->colorSpace())
                                     : gfx::ColorSpace::CreateSRGB();
@@ -257,14 +257,16 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
 ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
     const gfx::Size& size,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     cc::SharedBitmapIdRegistrar* bitmap_registrar) {
   auto* it = std::remove_if(
       recycled_bitmaps_.begin(), recycled_bitmaps_.end(),
       [&size, &format](const RegisteredBitmap& registered) {
         unsigned src_bytes_per_pixel =
-            viz::BitsPerPixel(registered.bitmap->format()) / 8;
-        unsigned target_bytes_per_pixel = viz::BitsPerPixel(format) / 8;
+            viz::BitsPerPixel(registered.bitmap->format().resource_format()) /
+            8;
+        unsigned target_bytes_per_pixel =
+            viz::BitsPerPixel(format.resource_format()) / 8;
         return (registered.bitmap->size().GetArea() * src_bytes_per_pixel !=
                 size.GetArea() * target_bytes_per_pixel);
       });
@@ -280,8 +282,8 @@ ImageLayerBridge::RegisteredBitmap ImageLayerBridge::CreateOrRecycleBitmap(
 
   // There are no bitmaps to recycle so allocate a new one.
   viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-  base::MappedReadOnlyRegion shm =
-      viz::bitmap_allocation::AllocateSharedBitmap(size, format);
+  base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
+      size, format.resource_format());
 
   RegisteredBitmap registered;
   registered.bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(

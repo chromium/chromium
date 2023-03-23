@@ -9,8 +9,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "cc/cc_export.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/shared_bitmap.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace cc {
@@ -27,7 +27,7 @@ class CC_EXPORT CrossThreadSharedBitmap
   CrossThreadSharedBitmap(const viz::SharedBitmapId& id,
                           base::MappedReadOnlyRegion shm,
                           const gfx::Size& size,
-                          viz::ResourceFormat format);
+                          viz::SharedImageFormat format);
 
   const viz::SharedBitmapId& id() const { return id_; }
   const base::ReadOnlySharedMemoryRegion& shared_region() const {
@@ -35,7 +35,7 @@ class CC_EXPORT CrossThreadSharedBitmap
   }
   void* memory() const { return mapping_.memory(); }
   const gfx::Size& size() const { return size_; }
-  viz::ResourceFormat format() const { return format_; }
+  viz::SharedImageFormat format() const { return format_; }
 
  private:
   friend base::RefCountedThreadSafe<CrossThreadSharedBitmap>;
@@ -46,7 +46,7 @@ class CC_EXPORT CrossThreadSharedBitmap
   const base::ReadOnlySharedMemoryRegion region_;
   base::WritableSharedMemoryMapping mapping_;
   const gfx::Size size_;
-  const viz::ResourceFormat format_;
+  const viz::SharedImageFormat format_;
 };
 
 }  // namespace cc

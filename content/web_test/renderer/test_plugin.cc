@@ -281,7 +281,8 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
         viz::bitmap_allocation::AllocateSharedBitmap(gfx::Rect(rect_).size(),
                                                      viz::RGBA_8888);
     shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-        id, std::move(shm), gfx::Rect(rect_).size(), viz::RGBA_8888);
+        id, std::move(shm), gfx::Rect(rect_).size(),
+        viz::SinglePlaneFormat::kRGBA_8888);
     // The |shared_bitmap_|'s id will be registered when being given to the
     // compositor.
 

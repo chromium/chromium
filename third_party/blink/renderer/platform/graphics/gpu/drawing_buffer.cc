@@ -386,7 +386,7 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
   base::MappedReadOnlyRegion shm = viz::bitmap_allocation::AllocateSharedBitmap(
       size_, format.resource_format());
   auto bitmap = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-      id, std::move(shm), size_, format.resource_format());
+      id, std::move(shm), size_, format);
   RegisteredBitmap registered = {
       bitmap, bitmap_registrar->RegisterSharedBitmapId(id, bitmap)};
   return registered;
