@@ -45,6 +45,8 @@ class ChromeBrowserState;
 @property(nonatomic) BOOL userInteractionEnabled;
 // YES if this interface is incognito.
 @property(nonatomic, readonly) BOOL incognito;
+// YES if TTS audio is playing.
+@property(nonatomic, readonly) BOOL playingTTS;
 
 // Sets the interface as "primary".
 - (void)setPrimary:(BOOL)primary;

@@ -23,6 +23,9 @@
 // an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
 
+// Returns whether or not text to speech is playing.
+@property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
+
 // Clears any presented state on BVC.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;

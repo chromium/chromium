@@ -492,6 +492,10 @@ enum class ToolbarKind {
 
 #pragma mark - Public
 
+- (BOOL)isPlayingTTS {
+  return _voiceSearchController.audioPlaying;
+}
+
 - (void)setActive:(BOOL)active {
   DCHECK_EQ(_active, self.viewController.active);
   if (_active == active) {

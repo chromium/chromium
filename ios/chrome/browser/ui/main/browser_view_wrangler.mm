@@ -95,6 +95,10 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   return self.browserState->IsOffTheRecord();
 }
 
+- (BOOL)playingTTS {
+  return self.coordinator.playingTTS;
+}
+
 - (void)setPrimary:(BOOL)primary {
   [self.coordinator.viewController setPrimary:primary];
 }

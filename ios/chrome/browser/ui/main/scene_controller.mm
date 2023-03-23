@@ -2261,13 +2261,11 @@ void InjectNTP(Browser* browser) {
 - (void)startVoiceSearchInCurrentBVC {
   // If the background (non-current) BVC is playing TTS audio, call
   // -startVoiceSearch on it to stop the TTS.
-  BrowserViewController* backgroundBVC =
-      self.mainInterface == self.currentInterface ? self.incognitoInterface.bvc
-                                                  : self.mainInterface.bvc;
-  // TODO(crbug.com/1329104): playingTTS will be removed as an API from the BVC
-  // and something else will be used instead.
-  if (backgroundBVC.playingTTS) {
-    [backgroundBVC startVoiceSearch];
+  id<BrowserInterface> interface = self.mainInterface == self.currentInterface
+                                       ? self.incognitoInterface
+                                       : self.mainInterface;
+  if (interface.playingTTS) {
+    [interface.bvc startVoiceSearch];
   } else {
     [self.currentInterface.bvc startVoiceSearch];
   }

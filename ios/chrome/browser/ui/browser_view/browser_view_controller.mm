@@ -539,12 +539,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return self.browserContainerViewController.view;
 }
 
-// TODO(crbug.com/1329104): Move voice search controller/coordinator to
-// BrowserCoordinator, remove this as a public property.
-- (BOOL)isPlayingTTS {
-  return _voiceSearchController.audioPlaying;
-}
-
 // TODO(crbug.com/1329093): Remove this property. Also not a public property.
 - (ChromeBrowserState*)browserState {
   return self.browser ? self.browser->GetBrowserState() : nullptr;

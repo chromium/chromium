@@ -23,6 +23,7 @@ class ChromeBrowserState;
 @property(nonatomic, readwrite) Browser* browser;
 @property(nonatomic, readwrite) ChromeBrowserState* browserState;
 @property(nonatomic, readwrite) BOOL incognito;
+@property(nonatomic, readwrite) BOOL playingTTS;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MAIN_TEST_STUB_BROWSER_INTERFACE_H_

@@ -153,11 +153,6 @@ typedef struct {
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 
-// TODO(crbug.com/1329104): Move voice search controller/coordinator to
-// BrowserCoordinator, remove this as a public property. Returns whether or not
-// text to speech is playing.
-@property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
-
 // Whether web usage is enabled for the WebStates in `self.browser`.
 @property(nonatomic) BOOL webUsageEnabled;
 
