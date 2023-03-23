@@ -233,7 +233,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForTutorialPromo(
                     feature_engagement::kIPHDesktopCustomizeChromeFeature,
-                    kTabStripRegionElementId,
+                    kTopContainerElementId,
                     IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH,
                     kSidePanelCustomizeChromeTutorialId)
                     .SetBubbleArrow(HelpBubbleArrow::kNone)
@@ -640,9 +640,8 @@ void MaybeRegisterChromeTutorials(
     TutorialDescription::Step success_step(
         IDS_TUTORIAL_GENERIC_SUCCESS_TITLE,
         IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY,
-        ui::InteractionSequence::StepType::kShown,
-        CustomizeChromeUI::kChangeChromeThemeClassicElementId, std::string(),
-        HelpBubbleArrow::kRightCenter, ui::CustomElementEventType(),
+        ui::InteractionSequence::StepType::kShown, kTopContainerElementId,
+        std::string(), HelpBubbleArrow::kNone, ui::CustomElementEventType(),
         /* must_remain_visible =*/false,
         /* transition_only_on_event =*/false,
         user_education::TutorialDescription::NameElementsCallback(),
