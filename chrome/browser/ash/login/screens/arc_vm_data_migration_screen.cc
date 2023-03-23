@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
@@ -151,6 +152,17 @@ void ReportRequiredFreeDiskSpace(uint64_t required_free_disk_space_in_bytes,
       required_free_disk_space_in_bytes >> 30,
       kMinDiskSpaceForUmaCustomCountsInGB, kMaxDiskSpaceForUmaCustomCountsInGB,
       kNumBucketsForUmaCustomCounts);
+}
+
+void ReportInitialBatteryLevel(double battery_percent) {
+  base::UmaHistogramCounts100("Arc.VmDataMigration.InitialBatteryLevel",
+                              base::saturated_cast<int>(battery_percent));
+}
+
+void ReportBatteryConsumption(double battery_consumption_percent) {
+  base::UmaHistogramCounts100(
+      "Arc.VmDataMigration.BatteryConsumption",
+      base::saturated_cast<int>(battery_consumption_percent));
 }
 
 std::string GetChromeOsUsername(Profile* profile) {
@@ -459,6 +471,10 @@ void ArcVmDataMigrationScreen::PowerChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (proto.has_battery_percent()) {
     battery_percent_ = proto.battery_percent();
+    if (update_button_pressed_) {
+      lowest_battery_percent_during_migration_ =
+          std::min(lowest_battery_percent_during_migration_, battery_percent_);
+    }
   } else {
     LOG(WARNING) << "No battery percent is reported. Reusing the old value: "
                  << battery_percent_;
@@ -484,6 +500,8 @@ void ArcVmDataMigrationScreen::PowerChanged(
     // No need to update the UI state if this is not the initial loading screen.
     return;
   }
+
+  ReportInitialBatteryLevel(battery_percent_);
 
   if (has_enough_battery) {
     ReportInitialState(ArcVmDataMigrationScreenInitialState::kMigrationReady,
@@ -641,6 +659,9 @@ void ArcVmDataMigrationScreen::OnDataMigrationProgress(
                                   arc::ArcVmDataMigrationStatus::kFinished);
       ReportEvent(ArcVmDataMigrationScreenEvent::kSuccessScreenShown,
                   resuming_);
+      ReportBatteryConsumption(
+          std::max(0.0, battery_percent_on_migration_start_ -
+                            lowest_battery_percent_during_migration_));
       UpdateUIState(ArcVmDataMigrationScreenView::UIState::kSuccess);
       return;
     case arc::data_migrator::DATA_MIGRATION_FAILED:
@@ -765,6 +786,8 @@ void ArcVmDataMigrationScreen::HandleUpdate() {
     return;
   }
   update_button_pressed_ = true;
+  battery_percent_on_migration_start_ = battery_percent_;
+  lowest_battery_percent_during_migration_ = battery_percent_;
   ReportEvent(ArcVmDataMigrationScreenEvent::kUpdateButtonClicked, resuming_);
   UpdateUIState(ArcVmDataMigrationScreenView::UIState::kLoading);
   if (resuming_) {

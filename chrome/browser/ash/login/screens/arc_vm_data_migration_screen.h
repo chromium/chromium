@@ -138,6 +138,13 @@ class ArcVmDataMigrationScreen : public BaseScreen,
   double battery_percent_ = 100.0;
   bool is_connected_to_charger_ = true;
 
+  // Holds the value of |battery_percent_| when |update_button_pressed_| is
+  // flipped to true.
+  double battery_percent_on_migration_start_;
+  // Holds the lowest value of |battery_percent_| observed after
+  // |update_button_pressed_| is flipped to true.
+  double lowest_battery_percent_during_migration_;
+
   const base::TickClock* tick_clock_ = nullptr;
   base::TimeTicks previous_ticks_ = {};
   uint64_t previous_bytes_ = 0;

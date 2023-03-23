@@ -2322,6 +2322,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.BatteryConsumption" units="%"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The amount of decrease in battery level during ARCVM /data migration,
+    defined by the battery level at the beginning of the migration minus the
+    lowest battery level observed during the migration. Reported at the end of
+    successful migrations. 0 is reported if the battery level has always been
+    higher than that at the beginning of the migration.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.DesiredDiskImageSizeInGB.{SatisfiedOrNot}"
     units="GB" expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
@@ -2397,6 +2411,17 @@ chromium-metrics-reviews@google.com.
     migration thread encounters a file operation error. This can be reported
     multiple times for a migration when multiple threads fail at around the same
     time.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmDataMigration.InitialBatteryLevel" units="%"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The battery level when the user enters the UX flow of ARCVM /data migration.
+    This is reported for both new migrations and resumed migrations.
   </summary>
 </histogram>
 
