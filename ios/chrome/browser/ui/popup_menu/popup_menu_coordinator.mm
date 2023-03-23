@@ -72,12 +72,6 @@ using base::RecordAction;
 using base::UserMetricsAction;
 
 namespace {
-// Returns the corresponding command type for a Popup menu `type`.
-PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
-  if (type == PopupMenuTypeToolsMenu)
-    return PopupMenuCommandTypeToolsMenu;
-  return PopupMenuCommandTypeDefault;
-}
 
 // Enum for IOS.OverflowMenu.ActionType histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -183,34 +177,245 @@ enum class IOSOverflowMenuActionType {
 
 #pragma mark - PopupMenuCommands
 
-- (void)showNavigationHistoryBackPopupMenu {
-  RecordAction(UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
-  [self presentPopupOfType:PopupMenuTypeNavigationBackward
-      fromLayoutGuideNamed:kBackButtonGuide];
-}
-
-- (void)showNavigationHistoryForwardPopupMenu {
-  RecordAction(UserMetricsAction("MobileToolbarShowTabHistoryMenu"));
-  [self presentPopupOfType:PopupMenuTypeNavigationForward
-      fromLayoutGuideNamed:kForwardButtonGuide];
-}
-
 - (void)showToolsMenuPopup {
-  // The metric is registered at the toolbar level.
-  [self presentPopupOfType:PopupMenuTypeToolsMenu
-      fromLayoutGuideNamed:kToolsMenuGuide];
-}
+  if (self.presenter || self.overflowMenuMediator) {
+    [self dismissPopupMenuAnimated:YES];
+  }
 
-- (void)showTabGridButtonPopup {
-  RecordAction(UserMetricsAction("MobileToolbarShowTabGridMenu"));
-  [self presentPopupOfType:PopupMenuTypeTabGrid
-      fromLayoutGuideNamed:kTabSwitcherGuide];
-}
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  id<BrowserCommands> callableDispatcher =
+      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
+  [callableDispatcher prepareForOverflowMenuPresentation];
 
-- (void)showNewTabButtonPopup {
-  RecordAction(UserMetricsAction("MobileToolbarShowNewTabMenu"));
-  [self presentPopupOfType:PopupMenuTypeNewTab
-      fromLayoutGuideNamed:kNewTabButtonGuide];
+  self.requestStartTime = [NSDate timeIntervalSinceReferenceDate];
+
+  PopupMenuTableViewController* tableViewController =
+      [[PopupMenuTableViewController alloc] init];
+  tableViewController.baseViewController = self.baseViewController;
+  tableViewController.tableView.accessibilityIdentifier =
+      kPopupMenuToolsMenuTableViewId;
+
+  self.viewController = tableViewController;
+
+  BOOL triggerNewIncognitoTabTip =
+      self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction;
+  self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
+      NO;
+
+  OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kWebContentArea);
+  self.contentBlockerMediator = [[BrowserContainerMediator alloc]
+                initWithWebStateList:self.browser->GetWebStateList()
+      webContentAreaOverlayPresenter:overlayPresenter];
+
+  // Create the overflow menu mediator first so the popup mediator isn't created
+  // if not needed.
+  self.toolsMenuOpenTime = [NSDate timeIntervalSinceReferenceDate];
+  self.toolsMenuWasScrolledVertically = NO;
+  self.toolsMenuWasScrolledHorizontally = NO;
+  self.toolsMenuUserTookAction = NO;
+  if (IsNewOverflowMenuEnabled()) {
+    if (@available(iOS 15, *)) {
+      self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
+
+      CGFloat screenWidth = self.baseViewController.view.frame.size.width;
+      UIContentSizeCategory contentSizeCategory =
+          self.baseViewController.traitCollection.preferredContentSizeCategory;
+
+      self.overflowMenuMediator.visibleDestinationsCount =
+          [OverflowMenuUIConfiguration
+              numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
+                  screenWidth
+                                                      forContentSizeCategory:
+                                                          contentSizeCategory];
+
+      self.overflowMenuMediator.dispatcher = static_cast<
+          id<ActivityServiceCommands, ApplicationCommands, BrowserCommands,
+             BrowserCoordinatorCommands, FindInPageCommands,
+             PriceNotificationsCommands, TextZoomCommands>>(
+          self.browser->GetCommandDispatcher());
+      self.overflowMenuMediator.bookmarksCommandsHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), BookmarksCommands);
+      self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), PageInfoCommands);
+      self.overflowMenuMediator.popupMenuCommandsHandler = HandlerForProtocol(
+          self.browser->GetCommandDispatcher(), PopupMenuCommands);
+      self.overflowMenuMediator.webStateList = self.browser->GetWebStateList();
+      self.overflowMenuMediator.navigationAgent =
+          WebNavigationBrowserAgent::FromBrowser(self.browser);
+      self.overflowMenuMediator.baseViewController = self.baseViewController;
+      self.overflowMenuMediator.isIncognito =
+          self.browser->GetBrowserState()->IsOffTheRecord();
+      self.overflowMenuMediator.bookmarkModel =
+          ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.browserStatePrefs =
+          self.browser->GetBrowserState()->GetPrefs();
+      self.overflowMenuMediator.localStatePrefs =
+          GetApplicationContext()->GetLocalState();
+      self.overflowMenuMediator.engagementTracker =
+          feature_engagement::TrackerFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+      self.overflowMenuMediator.webContentAreaOverlayPresenter =
+          overlayPresenter;
+      self.overflowMenuMediator.browserPolicyConnector =
+          GetApplicationContext()->GetBrowserPolicyConnector();
+      self.overflowMenuMediator.syncService =
+          SyncServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState());
+
+      if (IsWebChannelsEnabled()) {
+        self.overflowMenuMediator.followBrowserAgent =
+            FollowBrowserAgent::FromBrowser(self.browser);
+      }
+
+      self.contentBlockerMediator.consumer = self.overflowMenuMediator;
+
+      OverflowMenuUIConfiguration* uiConfiguration =
+          [[OverflowMenuUIConfiguration alloc]
+              initWithPresentingViewControllerHorizontalSizeClass:
+                  self.baseViewController.traitCollection.horizontalSizeClass
+                        presentingViewControllerVerticalSizeClass:
+                            self.baseViewController.traitCollection
+                                .verticalSizeClass];
+
+      self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
+
+      UIViewController* menu = [OverflowMenuViewProvider
+          makeViewControllerWithModel:self.overflowMenuMediator
+                                          .overflowMenuModel
+                      uiConfiguration:uiConfiguration
+                       metricsHandler:self];
+
+      LayoutGuideCenter* layoutGuideCenter =
+          LayoutGuideCenterForBrowser(self.browser);
+      UILayoutGuide* layoutGuide =
+          [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
+      [self.baseViewController.view addLayoutGuide:layoutGuide];
+
+      menu.modalPresentationStyle = UIModalPresentationPopover;
+
+      UIPopoverPresentationController* popoverPresentationController =
+          menu.popoverPresentationController;
+      popoverPresentationController.sourceView = self.baseViewController.view;
+      popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
+      popoverPresentationController.permittedArrowDirections =
+          UIPopoverArrowDirectionUp;
+      popoverPresentationController.delegate = self;
+      popoverPresentationController.backgroundColor =
+          [UIColor colorNamed:kBackgroundColor];
+
+      // The adaptive controller adjusts styles based on window size: sheet
+      // for slim windows on iPhone and iPad, popover for larger windows on
+      // ipad.
+      UISheetPresentationController* sheetPresentationController =
+          popoverPresentationController.adaptiveSheetPresentationController;
+      if (sheetPresentationController) {
+        sheetPresentationController.delegate = self;
+        sheetPresentationController.prefersGrabberVisible = YES;
+        sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+        sheetPresentationController
+            .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+
+        NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
+          [UISheetPresentationControllerDetent mediumDetent],
+          [UISheetPresentationControllerDetent largeDetent]
+        ];
+
+        NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
+            @[ [UISheetPresentationControllerDetent largeDetent] ];
+
+        BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
+            menu.traitCollection.preferredContentSizeCategory);
+        sheetPresentationController.detents =
+            hasLargeText ? largeTextDetents : regularDetents;
+      }
+
+      __weak __typeof(self) weakSelf = self;
+      [self.baseViewController
+          presentViewController:menu
+                       animated:YES
+                     completion:^{
+                       [weakSelf.popupMenuHelpCoordinator
+                           showOverflowMenuIPHInViewController:menu];
+                     }];
+      return;
+    }
+  }
+
+  self.mediator = [[PopupMenuMediator alloc]
+            initWithIsIncognito:self.browser->GetBrowserState()
+                                    ->IsOffTheRecord()
+               readingListModel:ReadingListModelFactory::GetForBrowserState(
+                                    self.browser->GetBrowserState())
+      triggerNewIncognitoTabTip:triggerNewIncognitoTabTip
+         browserPolicyConnector:GetApplicationContext()
+                                    ->GetBrowserPolicyConnector()];
+  self.mediator.engagementTracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  self.mediator.webStateList = self.browser->GetWebStateList();
+  self.mediator.browserCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
+  self.mediator.lensCommandsHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  self.mediator.bookmarkModel =
+      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
+  self.mediator.templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  self.mediator.popupMenu = tableViewController;
+  self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
+  self.mediator.URLLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  if (IsWebChannelsEnabled()) {
+    self.mediator.followBrowserAgent =
+        FollowBrowserAgent::FromBrowser(self.browser);
+  }
+
+  self.contentBlockerMediator.consumer = self.mediator;
+
+  self.actionHandler = [[PopupMenuActionHandler alloc] init];
+  self.actionHandler.baseViewController = self.baseViewController;
+  self.actionHandler.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCommands, FindInPageCommands,
+         LoadQueryCommands, PriceNotificationsCommands, TextZoomCommands>>(
+      self.browser->GetCommandDispatcher());
+  self.actionHandler.bookmarksCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BookmarksCommands);
+  self.actionHandler.browserCoordinatorCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  self.actionHandler.pageInfoCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageInfoCommands);
+  self.actionHandler.popupMenuCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PopupMenuCommands);
+  self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QRScannerCommands);
+  self.actionHandler.delegate = self.mediator;
+  self.actionHandler.navigationAgent =
+      WebNavigationBrowserAgent::FromBrowser(self.browser);
+  tableViewController.delegate = self.actionHandler;
+
+  self.presenter = [[PopupMenuPresenter alloc] init];
+  self.presenter.baseViewController = self.baseViewController;
+  self.presenter.presentedViewController = tableViewController;
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  UILayoutGuide* layoutGuide =
+      [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
+  [self.baseViewController.view addLayoutGuide:layoutGuide];
+  self.presenter.layoutGuide = layoutGuide;
+  self.presenter.delegate = self;
+
+  [self.presenter prepareForPresentation];
+  [self.presenter presentAnimated:YES];
+
+  // Scrolls happen during prepareForPresentation, so only attach the metrics
+  // handler after presentation is done.
+  tableViewController.metricsHandler = self;
 }
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
@@ -299,16 +504,6 @@ enum class IOSOverflowMenuActionType {
   [snackbarCommandsHandler showSnackbarMessage:message];
 }
 
-#pragma mark - PopupMenuLongPressDelegate
-
-- (void)longPressFocusPointChangedTo:(CGPoint)point {
-  [self.viewController focusRowAtPoint:point];
-}
-
-- (void)longPressEndedAtPoint:(CGPoint)point {
-  [self.viewController selectRowAtPoint:point];
-}
-
 #pragma mark - ContainedPresenterDelegate
 
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
@@ -367,270 +562,6 @@ enum class IOSOverflowMenuActionType {
 }
 
 #pragma mark - Private
-
-// Presents a popup menu of type `type` with an animation starting from the
-// layout named `guideName`.
-- (void)presentPopupOfType:(PopupMenuType)type
-      fromLayoutGuideNamed:(GuideName*)guideName {
-  if (self.presenter || self.overflowMenuMediator)
-    [self dismissPopupMenuAnimated:YES];
-
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  id<BrowserCommands> callableDispatcher =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
-  [callableDispatcher
-      prepareForPopupMenuPresentation:CommandTypeFromPopupType(type)];
-
-  self.requestStartTime = [NSDate timeIntervalSinceReferenceDate];
-
-  PopupMenuTableViewController* tableViewController =
-      [[PopupMenuTableViewController alloc] init];
-  tableViewController.baseViewController = self.baseViewController;
-  if (type == PopupMenuTypeToolsMenu) {
-    tableViewController.tableView.accessibilityIdentifier =
-        kPopupMenuToolsMenuTableViewId;
-  } else if (type == PopupMenuTypeNavigationBackward ||
-             type == PopupMenuTypeNavigationForward) {
-    tableViewController.tableView.accessibilityIdentifier =
-        kPopupMenuNavigationTableViewId;
-  } else if (type == PopupMenuTypeTabGrid) {
-    tableViewController.tableView.accessibilityIdentifier =
-        kPopupMenuTabGridMenuTableViewId;
-  }
-
-  self.viewController = tableViewController;
-
-  BOOL triggerNewIncognitoTabTip = NO;
-  if (type == PopupMenuTypeToolsMenu) {
-    triggerNewIncognitoTabTip =
-        self.bubblePresenter.incognitoTabTipBubblePresenter
-            .triggerFollowUpAction;
-    self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
-        NO;
-  }
-
-  OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kWebContentArea);
-  self.contentBlockerMediator = [[BrowserContainerMediator alloc]
-                initWithWebStateList:self.browser->GetWebStateList()
-      webContentAreaOverlayPresenter:overlayPresenter];
-
-  // Create the overflow menu mediator first so the popup mediator isn't created
-  // if not needed.
-  if (type == PopupMenuTypeToolsMenu) {
-    self.toolsMenuOpenTime = [NSDate timeIntervalSinceReferenceDate];
-    self.toolsMenuWasScrolledVertically = NO;
-    self.toolsMenuWasScrolledHorizontally = NO;
-    self.toolsMenuUserTookAction = NO;
-    if (IsNewOverflowMenuEnabled()) {
-      if (@available(iOS 15, *)) {
-        self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
-
-        CGFloat screenWidth = self.baseViewController.view.frame.size.width;
-        UIContentSizeCategory contentSizeCategory =
-            self.baseViewController.traitCollection
-                .preferredContentSizeCategory;
-
-        self.overflowMenuMediator
-            .visibleDestinationsCount = [OverflowMenuUIConfiguration
-            numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
-                screenWidth
-                                                    forContentSizeCategory:
-                                                        contentSizeCategory];
-
-        self.overflowMenuMediator.dispatcher = static_cast<
-            id<ActivityServiceCommands, ApplicationCommands, BrowserCommands,
-               BrowserCoordinatorCommands, FindInPageCommands,
-               PriceNotificationsCommands, TextZoomCommands>>(
-            self.browser->GetCommandDispatcher());
-        self.overflowMenuMediator.bookmarksCommandsHandler = HandlerForProtocol(
-            self.browser->GetCommandDispatcher(), BookmarksCommands);
-        self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
-            self.browser->GetCommandDispatcher(), PageInfoCommands);
-        self.overflowMenuMediator.popupMenuCommandsHandler = HandlerForProtocol(
-            self.browser->GetCommandDispatcher(), PopupMenuCommands);
-        self.overflowMenuMediator.webStateList =
-            self.browser->GetWebStateList();
-        self.overflowMenuMediator.navigationAgent =
-            WebNavigationBrowserAgent::FromBrowser(self.browser);
-        self.overflowMenuMediator.baseViewController = self.baseViewController;
-        self.overflowMenuMediator.isIncognito =
-            self.browser->GetBrowserState()->IsOffTheRecord();
-        self.overflowMenuMediator.bookmarkModel =
-            ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-                self.browser->GetBrowserState());
-        self.overflowMenuMediator.browserStatePrefs =
-            self.browser->GetBrowserState()->GetPrefs();
-        self.overflowMenuMediator.localStatePrefs =
-            GetApplicationContext()->GetLocalState();
-        self.overflowMenuMediator.engagementTracker =
-            feature_engagement::TrackerFactory::GetForBrowserState(
-                self.browser->GetBrowserState());
-        self.overflowMenuMediator.webContentAreaOverlayPresenter =
-            overlayPresenter;
-        self.overflowMenuMediator.browserPolicyConnector =
-            GetApplicationContext()->GetBrowserPolicyConnector();
-        self.overflowMenuMediator.syncService =
-            SyncServiceFactory::GetForBrowserState(
-                self.browser->GetBrowserState());
-
-        if (IsWebChannelsEnabled()) {
-          self.overflowMenuMediator.followBrowserAgent =
-              FollowBrowserAgent::FromBrowser(self.browser);
-        }
-
-        self.contentBlockerMediator.consumer = self.overflowMenuMediator;
-
-        OverflowMenuUIConfiguration* uiConfiguration =
-            [[OverflowMenuUIConfiguration alloc]
-                initWithPresentingViewControllerHorizontalSizeClass:
-                    self.baseViewController.traitCollection.horizontalSizeClass
-                          presentingViewControllerVerticalSizeClass:
-                              self.baseViewController.traitCollection
-                                  .verticalSizeClass];
-
-        self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
-
-        UIViewController* menu = [OverflowMenuViewProvider
-            makeViewControllerWithModel:self.overflowMenuMediator
-                                            .overflowMenuModel
-                        uiConfiguration:uiConfiguration
-                         metricsHandler:self];
-
-        LayoutGuideCenter* layoutGuideCenter =
-            LayoutGuideCenterForBrowser(self.browser);
-        UILayoutGuide* layoutGuide =
-            [layoutGuideCenter makeLayoutGuideNamed:guideName];
-        [self.baseViewController.view addLayoutGuide:layoutGuide];
-
-        menu.modalPresentationStyle = UIModalPresentationPopover;
-
-        UIPopoverPresentationController* popoverPresentationController =
-            menu.popoverPresentationController;
-        popoverPresentationController.sourceView = self.baseViewController.view;
-        popoverPresentationController.sourceRect = layoutGuide.layoutFrame;
-        popoverPresentationController.permittedArrowDirections =
-            UIPopoverArrowDirectionUp;
-        popoverPresentationController.delegate = self;
-        popoverPresentationController.backgroundColor =
-            [UIColor colorNamed:kBackgroundColor];
-
-        // The adaptive controller adjusts styles based on window size: sheet
-        // for slim windows on iPhone and iPad, popover for larger windows on
-        // ipad.
-        UISheetPresentationController* sheetPresentationController =
-            popoverPresentationController.adaptiveSheetPresentationController;
-        if (sheetPresentationController) {
-          sheetPresentationController.delegate = self;
-          sheetPresentationController.prefersGrabberVisible = YES;
-          sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-          sheetPresentationController
-              .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-
-          NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
-            [UISheetPresentationControllerDetent mediumDetent],
-            [UISheetPresentationControllerDetent largeDetent]
-          ];
-
-          NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
-              @[ [UISheetPresentationControllerDetent largeDetent] ];
-
-          BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
-              menu.traitCollection.preferredContentSizeCategory);
-          sheetPresentationController.detents =
-              hasLargeText ? largeTextDetents : regularDetents;
-        }
-
-        __weak __typeof(self) weakSelf = self;
-        [self.baseViewController
-            presentViewController:menu
-                         animated:YES
-                       completion:^{
-                         [weakSelf.popupMenuHelpCoordinator
-                             showOverflowMenuIPHInViewController:menu];
-                       }];
-        return;
-      }
-    }
-  }
-
-  self.mediator = [[PopupMenuMediator alloc]
-                   initWithType:type
-                    isIncognito:self.browser->GetBrowserState()
-                                    ->IsOffTheRecord()
-               readingListModel:ReadingListModelFactory::GetForBrowserState(
-                                    self.browser->GetBrowserState())
-      triggerNewIncognitoTabTip:triggerNewIncognitoTabTip
-         browserPolicyConnector:GetApplicationContext()
-                                    ->GetBrowserPolicyConnector()];
-  self.mediator.engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.browserCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
-  self.mediator.lensCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
-  self.mediator.bookmarkModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  self.mediator.prefService = self.browser->GetBrowserState()->GetPrefs();
-  self.mediator.templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  self.mediator.popupMenu = tableViewController;
-  self.mediator.webContentAreaOverlayPresenter = overlayPresenter;
-  self.mediator.URLLoadingBrowserAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  if (IsWebChannelsEnabled()) {
-    self.mediator.followBrowserAgent =
-        FollowBrowserAgent::FromBrowser(self.browser);
-  }
-
-  self.contentBlockerMediator.consumer = self.mediator;
-
-  self.actionHandler = [[PopupMenuActionHandler alloc] init];
-  self.actionHandler.baseViewController = self.baseViewController;
-  self.actionHandler.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, FindInPageCommands,
-         LoadQueryCommands, PriceNotificationsCommands, TextZoomCommands>>(
-      self.browser->GetCommandDispatcher());
-  self.actionHandler.bookmarksCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BookmarksCommands);
-  self.actionHandler.browserCoordinatorCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  self.actionHandler.pageInfoCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PageInfoCommands);
-  self.actionHandler.popupMenuCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PopupMenuCommands);
-  self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), QRScannerCommands);
-  self.actionHandler.delegate = self.mediator;
-  self.actionHandler.navigationAgent =
-      WebNavigationBrowserAgent::FromBrowser(self.browser);
-  tableViewController.delegate = self.actionHandler;
-
-  self.presenter = [[PopupMenuPresenter alloc] init];
-  self.presenter.baseViewController = self.baseViewController;
-  self.presenter.presentedViewController = tableViewController;
-  LayoutGuideCenter* layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  UILayoutGuide* layoutGuide =
-      [layoutGuideCenter makeLayoutGuideNamed:guideName];
-  [self.baseViewController.view addLayoutGuide:layoutGuide];
-  self.presenter.layoutGuide = layoutGuide;
-  self.presenter.delegate = self;
-
-  [self.presenter prepareForPresentation];
-  [self.presenter presentAnimated:YES];
-
-  // Scrolls happen during prepareForPresentation, so only attach the metrics
-  // handler after presentation is done.
-  if (type == PopupMenuTypeToolsMenu) {
-    tableViewController.metricsHandler = self;
-  }
-}
 
 - (void)trackToolsMenuNoHorizontalScrollOrAction {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();

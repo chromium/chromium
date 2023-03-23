@@ -156,19 +156,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  if ([ChromeEarlGrey isSFSymbolEnabled]) {
-    AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/true);
-    AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/true);
-  } else {
-    AssertItemEnabledState(
-        grey_accessibilityID(kToolsMenuNewTabId),
-        grey_accessibilityID(kPopupMenuTabGridMenuTableViewId),
-        /*enabled=*/YES);
-    AssertItemEnabledState(
-        grey_accessibilityID(kToolsMenuNewIncognitoTabId),
-        grey_accessibilityID(kPopupMenuTabGridMenuTableViewId),
-        /*enabled=*/YES);
-  }
+  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/true);
+  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/true);
 }
 
 // When the IncognitoModeAvailability policy is set to disabled, the "New
@@ -180,19 +169,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  if ([ChromeEarlGrey isSFSymbolEnabled]) {
-    AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/true);
-    AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/false);
-  } else {
-    AssertItemEnabledState(
-        grey_accessibilityID(kToolsMenuNewTabId),
-        grey_accessibilityID(kPopupMenuTabGridMenuTableViewId),
-        /*enabled=*/YES);
-    AssertItemEnabledState(
-        grey_accessibilityID(kToolsMenuNewIncognitoTabId),
-        grey_accessibilityID(kPopupMenuTabGridMenuTableViewId),
-        /*enabled=*/NO);
-  }
+  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/true);
+  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/false);
 }
 
 // When the IncognitoModeAvailability policy is set to forced, the "New Tab"
@@ -204,17 +182,8 @@ void AssertItemEnabledState(id<GREYMatcher> item,
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
 
-  if ([ChromeEarlGrey isSFSymbolEnabled]) {
-    AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/false);
-    AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/true);
-  } else {
-    AssertItemEnabledState(
-        grey_accessibilityID(kToolsMenuNewTabId),
-        grey_accessibilityID(kPopupMenuTabGridMenuTableViewId), NO);
-    AssertItemEnabledState(
-        grey_accessibilityID(kToolsMenuNewIncognitoTabId),
-        grey_accessibilityID(kPopupMenuTabGridMenuTableViewId), YES);
-  }
+  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB, /*enabled=*/false);
+  AssertItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, /*enabled=*/true);
 }
 
 // TODO(crbug.com/1165655): Add test to new tab long-press menu.

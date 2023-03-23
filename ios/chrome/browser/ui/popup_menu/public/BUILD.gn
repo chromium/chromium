@@ -4,10 +4,7 @@
 
 source_set("public") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "popup_menu_long_press_delegate.h",
-    "popup_menu_ui_updating.h",
-  ]
+  sources = [ "popup_menu_ui_updating.h" ]
   deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }

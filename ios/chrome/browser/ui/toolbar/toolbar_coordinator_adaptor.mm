@@ -83,9 +83,9 @@
 
 #pragma mark - PopupMenuUIUpdating
 
-- (void)updateUIForIPHDisplayed:(PopupMenuType)popupType {
+- (void)updateUIForOverflowMenuIPHDisplayed {
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
-    [coordinator.popupMenuUIUpdater updateUIForIPHDisplayed:popupType];
+    [coordinator.popupMenuUIUpdater updateUIForOverflowMenuIPHDisplayed];
   }
 }
 

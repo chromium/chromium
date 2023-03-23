@@ -17,8 +17,6 @@ source_set("util") {
     "attributed_string_util.mm",
     "dynamic_type_util.h",
     "dynamic_type_util.mm",
-    "force_touch_long_press_gesture_recognizer.h",
-    "force_touch_long_press_gesture_recognizer.mm",
     "keyboard_observer_helper.h",
     "keyboard_observer_helper.mm",
     "layout_guide_names.h",
@@ -115,7 +113,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "force_touch_long_press_gesture_recognizer_unittest.mm",
     "frame_layout_guide_unittest.mm",
     "layout_guide_center_unittest.mm",
     "named_guide_unittest.mm",

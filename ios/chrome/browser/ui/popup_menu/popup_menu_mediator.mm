@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
-#import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_navigation_item.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_text_item.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -172,9 +171,6 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 @property(nonatomic, strong)
     NSArray<NSArray<TableViewItem<PopupMenuItem>*>*>* items;
 
-// Type of this mediator.
-@property(nonatomic, assign) PopupMenuType type;
-
 // The current web state associated with the toolbar.
 @property(nonatomic, assign) web::WebState* webState;
 
@@ -228,16 +224,14 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 #pragma mark - Public
 
-- (instancetype)initWithType:(PopupMenuType)type
-                  isIncognito:(BOOL)isIncognito
-             readingListModel:(ReadingListModel*)readingListModel
-    triggerNewIncognitoTabTip:(BOOL)triggerNewIncognitoTabTip
-       browserPolicyConnector:
-           (BrowserPolicyConnectorIOS*)browserPolicyConnector {
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito
+                   readingListModel:(ReadingListModel*)readingListModel
+          triggerNewIncognitoTabTip:(BOOL)triggerNewIncognitoTabTip
+             browserPolicyConnector:
+                 (BrowserPolicyConnectorIOS*)browserPolicyConnector {
   self = [super init];
   if (self) {
     _isIncognito = isIncognito;
-    _type = type;
     _readingListMenuNotifier =
         [[ReadingListMenuNotifier alloc] initWithReadingList:readingListModel];
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
@@ -522,37 +516,13 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 - (NSArray<NSArray<TableViewItem<PopupMenuItem>*>*>*)items {
   if (!_items) {
-    switch (self.type) {
-      case PopupMenuTypeToolsMenu:
-        [self createToolsMenuItems];
-        if (self.webState && self.followItem) {
-          FollowTabHelper* followTabHelper =
-              FollowTabHelper::FromWebState(self.webState);
-          if (followTabHelper) {
-            followTabHelper->SetFollowMenuUpdater(self);
-          }
-        }
-        break;
-      case PopupMenuTypeNavigationForward:
-        DCHECK(!UseSymbols());
-        [self createNavigationItemsForType:PopupMenuTypeNavigationForward];
-        break;
-      case PopupMenuTypeNavigationBackward:
-        DCHECK(!UseSymbols());
-        [self createNavigationItemsForType:PopupMenuTypeNavigationBackward];
-        break;
-      case PopupMenuTypeTabGrid:
-        DCHECK(!UseSymbols());
-        [self createTabGridMenuItems];
-        break;
-      case PopupMenuTypeTabStripTabGrid:
-        DCHECK(!UseSymbols());
-        [self createTabGridMenuItems];
-        break;
-      case PopupMenuTypeNewTab:
-        DCHECK(!UseSymbols());
-        [self createSearchMenuItems];
-        break;
+    [self createToolsMenuItems];
+    if (self.webState && self.followItem) {
+      FollowTabHelper* followTabHelper =
+          FollowTabHelper::FromWebState(self.webState);
+      if (followTabHelper) {
+        followTabHelper->SetFollowMenuUpdater(self);
+      }
     }
     NSMutableArray* specificItems = [NSMutableArray array];
     if (self.reloadStopItem)
@@ -607,18 +577,6 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
   reading_list::AddToReadingListUsingCanonicalUrl(self.browserCommandsHandler,
                                                   webState);
-}
-
-- (void)navigateToPageForItem:(TableViewItem<PopupMenuItem>*)item {
-  if (!self.webState)
-    return;
-
-  web::NavigationItem* navigationItem =
-      base::mac::ObjCCastStrict<PopupMenuNavigationItem>(item).navigationItem;
-  int index =
-      self.webState->GetNavigationManager()->GetIndexOfItem(navigationItem);
-  DCHECK_NE(index, -1);
-  self.webState->GetNavigationManager()->GoToIndex(index);
 }
 
 - (void)recordSettingsMetricsPerProfile {
@@ -907,148 +865,6 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 }
 
 #pragma mark - Item creation (Private)
-
-- (void)setPopupMenuItemsOnClipboardItemsReceived:
-    (const std::set<ClipboardContentType>&)types {
-  NSMutableArray* items = [NSMutableArray array];
-  // The consumer is expecting an array of arrays of items. Each sub array
-  // represent a section in the popup menu. Having one sub array means
-  // having all the items in the same section.
-  PopupMenuToolsItem* copiedContentItem = nil;
-  if (search_engines::SupportsSearchImageWithLens(self.templateURLService) &&
-      ios::provider::IsLensSupported() &&
-      base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
-      base::Contains(types, ClipboardContentType::Image)) {
-    copiedContentItem = CreateTableViewItem(
-        IDS_IOS_TOOLS_MENU_LENS_COPIED_IMAGE, PopupMenuActionLensCopiedImage,
-        @"popup_menu_paste_and_go", kToolsMenuLensCopiedImage);
-  } else if (search_engines::SupportsSearchByImage(self.templateURLService) &&
-             base::Contains(types, ClipboardContentType::Image)) {
-    copiedContentItem = CreateTableViewItem(
-        IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE,
-        PopupMenuActionSearchCopiedImage, @"popup_menu_paste_and_go",
-        kToolsMenuCopiedImageSearch);
-  } else if (base::Contains(types, ClipboardContentType::URL)) {
-    copiedContentItem = CreateTableViewItem(
-        IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK, PopupMenuActionVisitCopiedLink,
-        @"popup_menu_paste_and_go", kToolsMenuPasteAndGo);
-  } else if (base::Contains(types, ClipboardContentType::Text)) {
-    copiedContentItem = CreateTableViewItem(
-        IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT, PopupMenuActionSearchCopiedText,
-        @"popup_menu_paste_and_go", kToolsMenuPasteAndGo);
-  }
-  if (copiedContentItem) {
-    [items addObject:@[ copiedContentItem ]];
-  }
-
-  [items addObject:[self searchMenuStaticItems]];
-  self.items = items;
-  [self.popupMenu setPopupMenuItems:self.items];
-}
-
-- (void)createNavigationItemsForType:(PopupMenuType)type {
-  DCHECK(type == PopupMenuTypeNavigationForward ||
-         type == PopupMenuTypeNavigationBackward);
-  if (!self.webState)
-    return;
-
-  web::NavigationManager* navigationManager =
-      self.webState->GetNavigationManager();
-  std::vector<web::NavigationItem*> navigationItems;
-  if (type == PopupMenuTypeNavigationForward) {
-    navigationItems = navigationManager->GetForwardItems();
-  } else {
-    navigationItems = navigationManager->GetBackwardItems();
-  }
-  NSMutableArray* items = [NSMutableArray array];
-  for (web::NavigationItem* navigationItem : navigationItems) {
-    PopupMenuNavigationItem* item =
-        [[PopupMenuNavigationItem alloc] initWithType:kItemTypeEnumZero];
-    if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
-                                                       ->GetVirtualURL()]) {
-      item.title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
-      UIImage* image;
-      if (@available(iOS 15, *)) {
-        image = SymbolWithPalette(
-            CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
-                                      kSymbolActionPointSize),
-            SmallIncognitoPalette());
-      } else {
-        image = [UIImage imageNamed:@"incognito_badge_ios14"];
-      }
-      item.favicon = image;
-    } else {
-      item.title =
-          base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
-      const gfx::Image& image = navigationItem->GetFaviconStatus().image;
-      if (!image.IsEmpty())
-        item.favicon = image.ToUIImage();
-    }
-    item.actionIdentifier = PopupMenuActionNavigate;
-    item.navigationItem = navigationItem;
-    [items addObject:item];
-  }
-
-  self.items = @[ items ];
-}
-
-// Creates the menu items for the tab grid menu.
-- (void)createTabGridMenuItems {
-  PopupMenuToolsItem* closeTab =
-      CreateTableViewItem(IDS_IOS_TOOLS_MENU_CLOSE_TAB, PopupMenuActionCloseTab,
-                          @"popup_menu_close_tab", kToolsMenuCloseTabId);
-  closeTab.destructiveAction = YES;
-  self.items = @[ [self itemsForNewTab], @[ closeTab ] ];
-}
-
-// Creates the menu items for the search menu.
-- (void)createSearchMenuItems {
-  self.items = @[ [self searchMenuStaticItems] ];
-
-  ClipboardRecentContent* clipboardRecentContent =
-      ClipboardRecentContent::GetInstance();
-
-  std::set<ClipboardContentType> clipboard_types;
-  clipboard_types.insert(ClipboardContentType::URL);
-  clipboard_types.insert(ClipboardContentType::Text);
-  clipboard_types.insert(ClipboardContentType::Image);
-
-  __weak PopupMenuMediator* weakSelf = self;
-  clipboardRecentContent->HasRecentContentFromClipboard(
-      clipboard_types,
-      base::BindOnce(^(std::set<ClipboardContentType> matched_types) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [weakSelf setPopupMenuItemsOnClipboardItemsReceived:matched_types];
-        });
-      }));
-}
-
-// Creates and returns the search menu items that are static (i.e. always in
-// the search menu).
-- (NSArray<TableViewItem<PopupMenuItem>*>*)searchMenuStaticItems {
-  PopupMenuToolsItem* QRCodeSearch = CreateTableViewItem(
-      IDS_IOS_TOOLS_MENU_QR_SCANNER, PopupMenuActionQRCodeSearch,
-      @"popup_menu_qr_scanner", kToolsMenuQRCodeSearch);
-  PopupMenuToolsItem* voiceSearch = CreateTableViewItem(
-      IDS_IOS_TOOLS_MENU_VOICE_SEARCH, PopupMenuActionVoiceSearch,
-      @"popup_menu_voice_search", kToolsMenuVoiceSearch);
-
-  PopupMenuToolsItem* newSearch =
-      CreateTableViewItem(IDS_IOS_TOOLS_MENU_NEW_SEARCH, PopupMenuActionSearch,
-                          @"popup_menu_search", kToolsMenuSearch);
-  // Disable the new search if the incognito mode is forced by enterprise
-  // policy.
-  newSearch.enabled = !IsIncognitoModeForced(self.prefService);
-
-  PopupMenuToolsItem* newIncognitoSearch = CreateTableViewItem(
-      IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH, PopupMenuActionIncognitoSearch,
-      @"popup_menu_new_incognito_tab", kToolsMenuIncognitoSearch);
-  // Disable the new incognito search if the incognito mode is disabled by
-  // enterprise policy.
-  newIncognitoSearch.enabled = !IsIncognitoModeDisabled(self.prefService);
-
-  return @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
-}
 
 // Creates the menu items for the tools menu.
 - (void)createToolsMenuItems {

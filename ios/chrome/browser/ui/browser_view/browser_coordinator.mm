@@ -770,9 +770,6 @@ enum class ToolbarKind {
   // behavior but helps command handler setup below.
   [self.popupMenuCoordinator start];
 
-  _primaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
-  _secondaryToolbarCoordinator.longPressDelegate = self.popupMenuCoordinator;
-
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       _tabStripCoordinator =
@@ -780,7 +777,6 @@ enum class ToolbarKind {
     } else {
       _legacyTabStripCoordinator =
           [[TabStripLegacyCoordinator alloc] initWithBrowser:self.browser];
-      _legacyTabStripCoordinator.longPressDelegate = self.popupMenuCoordinator;
       _legacyTabStripCoordinator.animationWaitDuration =
           kLegacyFullscreenControllerToolbarAnimationDuration.InSecondsF();
 

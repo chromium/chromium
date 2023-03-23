@@ -2979,7 +2979,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self addURLsToReadingList:command.URLs];
 }
 
-- (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type {
+- (void)prepareForOverflowMenuPresentation {
   DCHECK(self.browserState);
   DCHECK(self.visible || self.dismissingModal);
 
@@ -2993,9 +2993,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Allow the non-modal promo scheduler to close the promo.
   [self.nonModalPromoScheduler logPopupMenuEntered];
 
-  if (type == PopupMenuCommandTypeToolsMenu) {
-    [_bubblePresenter toolsMenuDisplayed];
-  }
+  [_bubblePresenter toolsMenuDisplayed];
 }
 
 #pragma mark - TabConsumer (Public)

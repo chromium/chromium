@@ -56,45 +56,6 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   return self;
 }
 
-- (void)selectRowAtPoint:(CGPoint)point {
-  NSIndexPath* rowIndexPath = [self indexPathForInnerRowAtPoint:point];
-  if (!rowIndexPath)
-    return;
-
-  UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:rowIndexPath];
-  if (!cell.userInteractionEnabled)
-    return;
-
-  base::RecordAction(base::UserMetricsAction("MobilePopupMenuSwipeToSelect"));
-  [self.delegate popupMenuTableViewController:self
-                                didSelectItem:[self.tableViewModel
-                                                  itemAtIndexPath:rowIndexPath]
-                                       origin:[cell convertPoint:cell.center
-                                                          toView:nil]];
-}
-
-- (void)focusRowAtPoint:(CGPoint)point {
-  NSIndexPath* rowIndexPath = [self indexPathForInnerRowAtPoint:point];
-
-  BOOL rowAlreadySelected = NO;
-  NSArray<NSIndexPath*>* selectedRows =
-      [self.tableView indexPathsForSelectedRows];
-  for (NSIndexPath* selectedIndexPath in selectedRows) {
-    if (selectedIndexPath == rowIndexPath) {
-      rowAlreadySelected = YES;
-      continue;
-    }
-    [self.tableView deselectRowAtIndexPath:selectedIndexPath animated:NO];
-  }
-
-  if (!rowAlreadySelected && rowIndexPath) {
-    [self.tableView selectRowAtIndexPath:rowIndexPath
-                                animated:NO
-                          scrollPosition:UITableViewScrollPositionNone];
-    TriggerHapticFeedbackForSelectionChange();
-  }
-}
-
 #pragma mark - PopupMenuConsumer
 
 - (void)setItemToHighlight:(TableViewItem<PopupMenuItem>*)itemToHighlight {

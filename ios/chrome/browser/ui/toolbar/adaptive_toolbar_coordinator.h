@@ -13,7 +13,6 @@
 
 @class AdaptiveToolbarViewController;
 class Browser;
-@protocol PopupMenuLongPressDelegate;
 
 // Coordinator for the adaptive toolbar. This Coordinator is the super class of
 // the specific coordinator (primary or secondary).
@@ -29,9 +28,6 @@ class Browser;
 
 // The Toolbar view controller owned by this coordinator.
 @property(nonatomic, strong) AdaptiveToolbarViewController* viewController;
-
-// Delegate for the long press gesture recognizer triggering popup menu.
-@property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
 
 @end
 

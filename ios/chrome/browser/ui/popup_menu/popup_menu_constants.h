@@ -10,8 +10,6 @@
 // Accessibility IDs for the table view in various kinds of popup menus.
 extern NSString* const kPopupMenuToolsMenuTableViewId;
 extern NSString* const kPopupMenuToolsMenuActionListId;
-extern NSString* const kPopupMenuNavigationTableViewId;
-extern NSString* const kPopupMenuTabGridMenuTableViewId;
 
 // Accessibility IDs for the Tools Menu items.
 // Downloads item accessibility Identifier.
@@ -30,12 +28,6 @@ extern NSString* const kToolsMenuNewIncognitoTabId;
 extern NSString* const kToolsMenuPinTabId;
 // Unpin Tab item accessibility Identifier.
 extern NSString* const kToolsMenuUnpinTabId;
-// Close all Tabs item accessibility Identifier.
-extern NSString* const kToolsMenuCloseAllTabsId;
-// Close all incognito Tabs item accessibility Identifier.
-extern NSString* const kToolsMenuCloseAllIncognitoTabsId;
-// Close the current tab item accessibility Identifier.
-extern NSString* const kToolsMenuCloseTabId;
 // Follow item accessibility Identifier.
 extern NSString* const kToolsMenuFollowId;
 // Bookmarks item accessibility Identifier.
@@ -62,8 +54,6 @@ extern NSString* const kToolsMenuSettingsId;
 extern NSString* const kToolsMenuSettingsActionId;
 // Help item accessibility Identifier.
 extern NSString* const kToolsMenuHelpId;
-// Lens Copied Image item accessibility Identifier.
-extern NSString* const kToolsMenuLensCopiedImage;
 // Request mobile item accessibility Identifier.
 extern NSString* const kToolsMenuRequestMobileId;
 // ReadLater item accessibility Identifier.
@@ -74,18 +64,8 @@ extern NSString* const kToolsMenuAddToBookmarks;
 extern NSString* const kToolsMenuEditBookmark;
 // SiteInformation item accessibility Identifier.
 extern NSString* const kToolsMenuSiteInformation;
-// Paste and Go item accessibility Identifier.
-extern NSString* const kToolsMenuPasteAndGo;
-// Voice Search item accessibility Identifier.
-extern NSString* const kToolsMenuVoiceSearch;
-// Search item accessibility Identifier.
-extern NSString* const kToolsMenuSearch;
 // Incognito Search item accessibility Identifier.
 extern NSString* const kToolsMenuIncognitoSearch;
-// QR Code Search item accessibility Identifier.
-extern NSString* const kToolsMenuQRCodeSearch;
-// Copied Image Search item accessibility Identifier.
-extern NSString* const kToolsMenuCopiedImageSearch;
 // Text Zoom item accessibility identifier.
 extern NSString* const kToolsMenuTextZoom;
 // Text Enterprise info item accessibility identifier.

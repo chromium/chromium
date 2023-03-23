@@ -21,7 +21,6 @@
 @end
 
 @implementation TabStripLegacyCoordinator
-@synthesize longPressDelegate = _longPressDelegate;
 @synthesize presentationProvider = _presentationProvider;
 @synthesize started = _started;
 @synthesize tabStripController = _tabStripController;
@@ -31,11 +30,6 @@
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
   return [super initWithBaseViewController:nil browser:browser];
-}
-
-- (void)setLongPressDelegate:(id<PopupMenuLongPressDelegate>)longPressDelegate {
-  _longPressDelegate = longPressDelegate;
-  self.tabStripController.longPressDelegate = longPressDelegate;
 }
 
 - (UIView<TabStripContaining>*)view {
@@ -88,7 +82,6 @@
                            style:style];
   self.tabStripController.presentationProvider = self.presentationProvider;
   self.tabStripController.animationWaitDuration = self.animationWaitDuration;
-  self.tabStripController.longPressDelegate = self.longPressDelegate;
   [self.presentationProvider showTabStripView:[self.tabStripController view]];
   self.started = YES;
 }

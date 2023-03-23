@@ -19574,6 +19574,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuIncognitoSearch">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     The user tapped the &quot;Incognito Search&quot; button in the mobile menu
@@ -19582,6 +19583,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuLensCopiedImage">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>hujasonx@google.com</owner>
   <owner>schechter@google.com</owner>
   <description>User pressed 'Lens Copied Image' in the app menu.</description>
@@ -19639,6 +19641,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuPasteAndGo">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Paste and Go' in the app menu.</description>
 </action>
@@ -19710,11 +19713,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuScanQRCode">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Scan QR Code' in the app menu.</description>
 </action>
 
 <action name="MobileMenuSearch">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     The user tapped the &quot;New Search&quot; button in the mobile menu
@@ -19723,6 +19728,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuSearchCopiedImage">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>rkgibson@google.com</owner>
   <description>User pressed 'Search Copied Image' in the app menu.</description>
 </action>
@@ -19800,6 +19806,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuVoiceSearch">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Voice Search' in the app menu.</description>
 </action>
@@ -20368,6 +20375,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePopupMenuSwipeToSelect">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     The user selected an option in the Popup Menu without lifting the finger
@@ -21823,6 +21831,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarShowNewTabMenu">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     The user long-pressed on the NewTab button in the toolbar
@@ -21843,6 +21852,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarShowTabGridMenu">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User long pressed the Tab Grid button to display the menu associated with
@@ -21851,6 +21861,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarShowTabHistoryMenu">
+  <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>
   <description>
     User long pressed the toolbar navigation buttons to display the tab history

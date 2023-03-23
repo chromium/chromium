@@ -62,7 +62,6 @@
 
   self.started = YES;
 
-  self.viewController.longPressDelegate = self.longPressDelegate;
   self.viewController.overrideUserInterfaceStyle =
       browser->GetBrowserState()->IsOffTheRecord()
           ? UIUserInterfaceStyleDark
@@ -91,13 +90,6 @@
   [super stop];
   [self.mediator disconnect];
   self.mediator = nil;
-}
-
-#pragma mark - Properties
-
-- (void)setLongPressDelegate:(id<PopupMenuLongPressDelegate>)longPressDelegate {
-  _longPressDelegate = longPressDelegate;
-  self.viewController.longPressDelegate = longPressDelegate;
 }
 
 #pragma mark - SideSwipeToolbarSnapshotProviding

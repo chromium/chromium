@@ -12,10 +12,6 @@ NSString* const kPopupMenuToolsMenuTableViewId =
     @"kPopupMenuToolsMenuTableViewId";
 NSString* const kPopupMenuToolsMenuActionListId =
     @"kPopupMenuToolsMenuActionListId";
-NSString* const kPopupMenuNavigationTableViewId =
-    @"kPopupMenuNavigationTableViewId";
-NSString* const kPopupMenuTabGridMenuTableViewId =
-    @"kPopupMenuTabGridMenuTableViewId";
 
 NSString* const kToolsMenuDownloadsId = @"kToolsMenuDownloadsId";
 NSString* const kToolsMenuReload = @"kToolsMenuReload";
@@ -25,10 +21,6 @@ NSString* const kToolsMenuNewWindowId = @"kToolsMenuNewWindowId";
 NSString* const kToolsMenuNewIncognitoTabId = @"kToolsMenuNewIncognitoTabId";
 NSString* const kToolsMenuPinTabId = @"kToolsMenuPinTabId";
 NSString* const kToolsMenuUnpinTabId = @"kToolsMenuUnpinTabId";
-NSString* const kToolsMenuCloseAllTabsId = @"kToolsMenuCloseAllTabsId";
-NSString* const kToolsMenuCloseAllIncognitoTabsId =
-    @"kToolsMenuCloseAllIncognitoTabsId";
-NSString* const kToolsMenuCloseTabId = @"kToolsMenuCloseTabId";
 NSString* const kToolsMenuFollowId = @"kToolsMenuFollowId";
 NSString* const kToolsMenuBookmarksId = @"kToolsMenuBookmarksId";
 NSString* const kToolsMenuReadingListId = @"kToolsMenuReadingListId";
@@ -42,18 +34,12 @@ NSString* const kToolsMenuRequestDesktopId = @"kToolsMenuRequestDesktopId";
 NSString* const kToolsMenuSettingsId = @"kToolsMenuSettingsId";
 NSString* const kToolsMenuSettingsActionId = @"kToolsMenuSettingsActionId";
 NSString* const kToolsMenuHelpId = @"kToolsMenuHelpId";
-NSString* const kToolsMenuLensCopiedImage = @"kToolsMenuLensCopiedImage";
 NSString* const kToolsMenuRequestMobileId = @"kToolsMenuRequestMobileId";
 NSString* const kToolsMenuReadLater = @"kToolsMenuReadLater";
 NSString* const kToolsMenuAddToBookmarks = @"kToolsMenuAddToBookmarks";
 NSString* const kToolsMenuEditBookmark = @"kToolsMenuEditBookmark";
 NSString* const kToolsMenuSiteInformation = @"kToolsMenuSiteInformation";
-NSString* const kToolsMenuPasteAndGo = @"kToolsMenuPasteAndGo";
-NSString* const kToolsMenuVoiceSearch = @"kToolsMenuVoiceSearch";
-NSString* const kToolsMenuSearch = @"kToolsMenuSearch";
 NSString* const kToolsMenuIncognitoSearch = @"kToolsMenuIncognitoSearch";
-NSString* const kToolsMenuQRCodeSearch = @"kToolsMenuQRCodeSearch";
-NSString* const kToolsMenuCopiedImageSearch = @"kToolsMenuCopiedImageSearch";
 NSString* const kToolsMenuTextZoom = @"kToolsMenuTextZoom";
 NSString* const kTextMenuEnterpriseInfo = @"kTextMenuEnterpriseInfo";
 NSString* const kToolsMenuFollow = @"kToolsMenuFollow";

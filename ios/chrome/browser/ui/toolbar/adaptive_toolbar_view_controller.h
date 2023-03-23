@@ -17,7 +17,6 @@
 @class LayoutGuideCenter;
 @protocol OmniboxCommands;
 @protocol PopupMenuCommands;
-@protocol PopupMenuLongPressDelegate;
 @class ToolbarButton;
 @class ToolbarButtonFactory;
 
@@ -39,8 +38,6 @@
 @property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
 // Popup menu commands handler for the ViewController.
 @property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
-// Delegate for the long press gesture recognizer triggering popup menu.
-@property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
 
 // Provider for the context menus.
 @property(nonatomic, weak) id<AdaptiveToolbarMenusProvider> menuProvider;

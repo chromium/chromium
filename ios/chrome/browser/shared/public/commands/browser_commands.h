@@ -20,8 +20,8 @@
 // TODO(crbug.com/1272540): Remove this command.
 - (void)addToReadingList:(ReadingListAddCommand*)command;
 
-// Prepares the browser to display a popup menu.
-- (void)prepareForPopupMenuPresentation:(PopupMenuCommandType)type;
+// Prepares the browser to display the overflow menu.
+- (void)prepareForOverflowMenuPresentation;
 
 @end
 

@@ -137,10 +137,7 @@ source_set("toolbar_ui") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "adaptive_toolbar_view_controller_unittest.mm",
-    "toolbar_mediator_unittest.mm",
-  ]
+  sources = [ "toolbar_mediator_unittest.mm" ]
   deps = [
     ":toolbar",
     ":toolbar_ui",

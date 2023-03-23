@@ -35,24 +35,6 @@ typedef NS_ENUM(NSInteger, PopupMenuAction) {
   PopupMenuActionRecentTabs,
   PopupMenuActionHistory,
   PopupMenuActionSettings,
-  PopupMenuActionCloseTab,
-  PopupMenuActionNavigate,
-  PopupMenuActionVoiceSearch,
-  PopupMenuActionSearch,
-  PopupMenuActionIncognitoSearch,
-  PopupMenuActionQRCodeSearch,
-  PopupMenuActionLensCopiedImage,
-  PopupMenuActionSearchCopiedImage,
-  PopupMenuActionSearchCopiedText,
-  PopupMenuActionVisitCopiedLink,
-  // Language selection popup menu
-  PopupMenuActionSelectLanguage,
-  // Translate option selection popup menu
-  PopupMenuActionChangeTargetLanguage,
-  PopupMenuActionAlwaysTranslateSourceLanguage,
-  PopupMenuActionNeverTranslateSourceLanguage,
-  PopupMenuActionNeverTranslateSite,
-  PopupMenuActionChangeSourceLanguage,
   // Textual popup menu
   PopupMenuActionEnterpriseInfoMessage,
 };

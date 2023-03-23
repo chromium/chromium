@@ -214,7 +214,7 @@
       presentInViewController:self.baseViewController
                          view:self.baseViewController.view
                   anchorPoint:anchorPoint];
-  [self.UIUpdater updateUIForIPHDisplayed:PopupMenuTypeToolsMenu];
+  [self.UIUpdater updateUIForOverflowMenuIPHDisplayed];
 }
 
 #pragma mark - Overflow Menu Bubble methods

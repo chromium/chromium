@@ -67,10 +67,6 @@
   return self.tabStripViewController;
 }
 
-- (void)setLongPressDelegate:(id<PopupMenuLongPressDelegate>)longPressDelegate {
-  _longPressDelegate = longPressDelegate;
-}
-
 - (UIView<TabStripContaining>*)view {
   return static_cast<UIView<TabStripContaining>*>(self.viewController.view);
 }

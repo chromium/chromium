@@ -11,25 +11,11 @@ namespace web {
 class WebState;
 }
 
-// Type of a popup menu command.
-typedef NS_ENUM(NSInteger, PopupMenuCommandType) {
-  PopupMenuCommandTypeToolsMenu,
-  PopupMenuCommandTypeDefault,
-};
-
 // Commands for the popup menu.
 @protocol PopupMenuCommands
 
-// Shows the navigation history popup containing the back history.
-- (void)showNavigationHistoryBackPopupMenu;
-// Shows the navigation history popup containing the forward history.
-- (void)showNavigationHistoryForwardPopupMenu;
 // Shows the tools menu.
 - (void)showToolsMenuPopup;
-// Shows the popup for the tab grid button.
-- (void)showTabGridButtonPopup;
-// Shows the popup for the new tab button.
-- (void)showNewTabButtonPopup;
 // Dismisses the currently presented popup.
 - (void)dismissPopupMenuAnimated:(BOOL)animated;
 // Shows a snackbar that allows the user to UNDO its pin/unpin action.
