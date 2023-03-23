@@ -11,8 +11,8 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -105,15 +105,13 @@ class PipelineImplTest : public ::testing::Test {
   };
 
   PipelineImplTest()
-      : demuxer_(new StrictMock<MockDemuxer>()),
-        demuxer_host_(nullptr),
-        scoped_renderer_(new StrictMock<MockRenderer>()),
-        renderer_(scoped_renderer_.get()),
-        renderer_client_(nullptr) {
+      : demuxer_(std::make_unique<StrictMock<MockDemuxer>>()),
+        scoped_renderer_(std::make_unique<StrictMock<MockRenderer>>()),
+        renderer_(scoped_renderer_->AsWeakPtr()) {
     pipeline_ = std::make_unique<PipelineImpl>(
         task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMainThreadTaskRunner(),
-        base::BindRepeating(&PipelineImplTest::CreateRenderer,
+        base::BindRepeating(&PipelineImplTest::TakeRenderer,
                             base::Unretained(this)),
         &media_log_);
 
@@ -167,9 +165,7 @@ class PipelineImplTest : public ::testing::Test {
 
   std::unique_ptr<StrictMock<MockDemuxerStream>> CreateStream(
       DemuxerStream::Type type) {
-    std::unique_ptr<StrictMock<MockDemuxerStream>> stream(
-        new StrictMock<MockDemuxerStream>(type));
-    return stream;
+    return std::make_unique<StrictMock<MockDemuxerStream>>(type);
   }
 
   // Sets up expectations to allow the renderer to initialize.
@@ -299,7 +295,7 @@ class PipelineImplTest : public ::testing::Test {
     ResetRenderer();
   }
 
-  std::unique_ptr<Renderer> CreateRenderer(
+  std::unique_ptr<Renderer> TakeRenderer(
       absl::optional<RendererType> /* renderer_type */) {
     return std::move(scoped_renderer_);
   }
@@ -307,7 +303,7 @@ class PipelineImplTest : public ::testing::Test {
   void ResetRenderer() {
     // |renderer_| has been deleted, replace it.
     scoped_renderer_ = std::make_unique<StrictMock<MockRenderer>>();
-    renderer_ = scoped_renderer_.get();
+    renderer_ = scoped_renderer_->AsWeakPtr();
     EXPECT_CALL(*renderer_, SetPreservesPitch(_)).Times(AnyNumber());
   }
 
@@ -365,15 +361,15 @@ class PipelineImplTest : public ::testing::Test {
   std::unique_ptr<StrictMock<MockDemuxer>> demuxer_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION DemuxerHost* demuxer_host_;
+  RAW_PTR_EXCLUSION DemuxerHost* demuxer_host_ = nullptr;
   std::unique_ptr<StrictMock<MockRenderer>> scoped_renderer_;
-  raw_ptr<StrictMock<MockRenderer>> renderer_;
+  base::WeakPtr<MockRenderer> renderer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
   std::vector<DemuxerStream*> streams_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION RendererClient* renderer_client_;
+  RAW_PTR_EXCLUSION RendererClient* renderer_client_ = nullptr;
   VideoDecoderConfig video_decoder_config_;
   PipelineMetadata metadata_;
   base::TimeDelta start_time_;
