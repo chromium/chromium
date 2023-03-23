@@ -119,9 +119,11 @@ void Label::SetText(const std::u16string& new_text) {
   stored_selection_range_ = gfx::Range::InvalidRange();
 }
 
-const std::u16string& Label::GetAccessibleName() const {
-  return View::GetAccessibleName().empty() ? full_text_->GetDisplayText()
-                                           : View::GetAccessibleName();
+void Label::AdjustAccessibleName(std::u16string& new_name,
+                                 ax::mojom::NameFrom& name_from) {
+  if (new_name.empty()) {
+    new_name = full_text_->GetDisplayText();
+  }
 }
 
 int Label::GetTextContext() const {

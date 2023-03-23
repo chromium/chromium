@@ -102,9 +102,8 @@ class VIEWS_EXPORT Label : public View,
   const std::u16string& GetText() const;
   virtual void SetText(const std::u16string& text);
 
-  // Returns the value of `accessible_name_` if it has been set, otherwise the
-  // text value.
-  const std::u16string& GetAccessibleName() const override;
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override;
 
   // Where the label appears in the UI. Passed in from the constructor. This is
   // a value from views::style::TextContext or an enum that extends it.
