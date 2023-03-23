@@ -3714,9 +3714,6 @@ crbug.com/1052642 external/wpt/service-workers/service-worker/unregister-immedia
 # Sheriff failures 2017-07-03
 crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html [ Pass Timeout ]
 
-# Crashes with CSSTransitionDiscrete enabled
-crbug.com/1399631 transitions/unanimatable-properties.html [ Crash Failure Pass Timeout ]
-
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
 crbug.com/832169 media/media-controls-fit-properly-while-zoomed.html [ Failure Pass ]

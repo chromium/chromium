@@ -1,8 +1,0 @@
-PASS - "counter-increment" property for "box" element at 0.1s saw something close to: counter 2
-PASS - "overflow" property for "box" element at 0.1s saw something close to: hidden
-PASS - "transition-duration" property for "box" element at 0.1s saw something close to: 0.5s
-PASS - "top" property for "box" element at 0.25s saw something close to: 25
-PASS - "counter-increment" property for "box" element at 0.4s saw something close to: counter 2
-PASS - "overflow" property for "box" element at 0.4s saw something close to: hidden
-PASS - "transition-duration" property for "box" element at 0.4s saw something close to: 0.5s
-
