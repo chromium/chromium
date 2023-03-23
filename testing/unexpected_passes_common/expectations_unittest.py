@@ -578,7 +578,7 @@ crbug.com/1234 [ win ] foo/test [ Failure ]
     stale_expectations = [
         data_types.Expectation('foo/test', ['win'], ['Failure'],
                                'crbug.com/1234'),
-        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure']),
     ]
 
     expected_contents = self.header + """
@@ -597,6 +597,66 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     removed_urls = self.instance.RemoveExpectationsFromFile(
         stale_expectations, self.filename, expectations.RemovalType.STALE)
     self.assertEqual(removed_urls, set(['crbug.com/1234']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testLargeGroupBlockAllRemovable(self):
+    """Tests that a large group with all members removable is removed."""
+    # This test exists because we've had issues that passed tests with
+    # relatively small groups, but failed on larger ones.
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+
+# finder:group-start some group name
+[ linux ] a [ RetryOnFailure ]
+[ linux ] b [ RetryOnFailure ]
+[ linux ] c [ RetryOnFailure ]
+[ linux ] d [ RetryOnFailure ]
+[ linux ] e [ RetryOnFailure ]
+[ linux ] f [ RetryOnFailure ]
+[ linux ] g [ RetryOnFailure ]
+[ linux ] h [ RetryOnFailure ]
+[ linux ] i [ RetryOnFailure ]
+[ linux ] j [ RetryOnFailure ]
+[ linux ] k [ RetryOnFailure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('a', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('b', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('c', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('d', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('e', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('f', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('g', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('h', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('i', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('j', ['linux'], ['RetryOnFailure']),
+        data_types.Expectation('k', ['linux'], ['RetryOnFailure']),
+    ]
+
+    expected_contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set([]))
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 

@@ -309,6 +309,7 @@ class Expectations(object):
     output_contents = ''
     removed_urls = set()
     removed_lines = set()
+    num_removed_lines = 0
     for line_number, line in enumerate(input_contents.splitlines(True)):
       # Auto-add any comments or empty lines
       stripped_line = line.strip()
@@ -354,7 +355,8 @@ class Expectations(object):
           # the content we're outputting rather than relative to the input
           # content. This also has the effect of automatically compressing
           # contiguous blocks of removal into a single line number.
-          removed_lines.add(line_number - len(removed_lines))
+          removed_lines.add(line_number - num_removed_lines)
+          num_removed_lines += 1
       else:
         output_contents += line
 

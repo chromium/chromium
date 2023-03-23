@@ -193,7 +193,7 @@ crbug.com/1201009 [ linux ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanv
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1201009 [ fuchsia ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
-
+# WebGL drawingBufferStorage does not work on Pixel 4, Samsung A23, nexus-5x or
 # Lacros FYI x64 Release (Intel) yet.
 crbug.com/1230619 [ android android-nexus-5x passthrough ] TraceTest_WebGLFloat [ Failure ]
 
