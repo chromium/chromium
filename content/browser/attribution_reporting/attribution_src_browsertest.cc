@@ -332,6 +332,47 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   // AttributionsBrowserTest.
 }
 
+// See crbug.com/1426892, where attributionsrc window.open features are
+// incorrectly handled if multiple attributionsrc features are specified.
+// Multiple attributionsrc features should not issue multiple background
+// requests, and we should only handle the last attributionsrc entry to comply
+// with
+// https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-window-open-features-tokenize
+IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
+                       AttributionSrcWindowOpen_MultipleFeatures_UsesLast) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+
+  auto register_response1 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/source1");
+  auto register_response2 =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/source2");
+  ASSERT_TRUE(https_server->Start());
+
+  SourceObserver source_observer(web_contents());
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    window.open("page_with_conversion_redirect.html", "_top",
+                "attributionsrc=/source1 attributionsrc=/source2");
+  )"));
+
+  register_response2->WaitForRequest();
+  register_response2->Done();
+
+  // Only the last feature's value should be used.
+  EXPECT_FALSE(register_response1->has_received_request());
+}
+
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        AnchorClickEmptyAttributionSrc_ImpressionReceived) {
   GURL page_url =

@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/page/create_window.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -89,6 +90,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   PopupState popup_state = PopupState::kUnknown;
   unsigned key_begin, key_end;
   unsigned value_begin, value_end;
+  String attributionsrc;
 
   const String buffer = feature_string.LowerASCII();
   const unsigned length = buffer.length();
@@ -219,28 +221,30 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
       // attributionsrc values are encoded in order to support embedded special
       // characters, such as '='.
-      const String decoded = DecodeURLEscapeSequences(
+      attributionsrc = DecodeURLEscapeSequences(
           original_case_value_string.ToString(), DecodeURLMode::kUTF8);
+    }
+  }
 
-      if (!decoded.empty()) {
-        window_features.impression =
-            dom_window->GetFrame()
-                ->GetAttributionSrcLoader()
-                ->RegisterNavigation(
-                    dom_window->CompleteURL(decoded),
-                    mojom::blink::AttributionNavigationType::kWindowOpen);
-      }
+  if (!attributionsrc.IsNull()) {
+    DCHECK(attribution_reporting_enabled);
 
-      // If the impression could not be set, or if the value was empty, mark
-      // attribution eligibility by adding an impression.
-      if (!window_features.impression &&
-          dom_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-              url,
-              /*element=*/nullptr,
-              /*request_id=*/absl::nullopt)) {
-        window_features.impression = blink::Impression{
-            .nav_type = mojom::blink::AttributionNavigationType::kWindowOpen};
-      }
+    if (!attributionsrc.empty()) {
+      window_features.impression =
+          dom_window->GetFrame()->GetAttributionSrcLoader()->RegisterNavigation(
+              dom_window->CompleteURL(attributionsrc),
+              mojom::blink::AttributionNavigationType::kWindowOpen);
+    }
+
+    // If the impression could not be set, or if the value was empty, mark
+    // attribution eligibility by adding an impression.
+    if (!window_features.impression &&
+        dom_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
+            url,
+            /*element=*/nullptr,
+            /*request_id=*/absl::nullopt)) {
+      window_features.impression = blink::Impression{
+          .nav_type = mojom::blink::AttributionNavigationType::kWindowOpen};
     }
   }
 
