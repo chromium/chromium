@@ -13138,7 +13138,8 @@
                 {
                     "name": "UserLevelMemoryPressureSignalOn4GbDevices",
                     "params": {
-                        "memory_threshold_mb": "169"
+                        "inert_interval_after_loading": "5m",
+                        "memory_threshold_mb": "339"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn4GbDevices"
@@ -13157,7 +13158,8 @@
                 {
                     "name": "UserLevelMemoryPressureSignalOn6GbDevices",
                     "params": {
-                        "memory_threshold_mb": "197"
+                        "inert_interval_after_loading": "5m",
+                        "memory_threshold_mb": "373"
                     },
                     "enable_features": [
                         "UserLevelMemoryPressureSignalOn6GbDevices"
