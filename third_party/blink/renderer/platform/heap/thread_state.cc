@@ -174,7 +174,7 @@ void ThreadState::NotifyGarbageCollection(v8::GCType type,
     // required for testing code that cannot use GC internals but rather has
     // to rely on window.gc(). Only schedule additional GCs if the last GC was
     // using conservative stack scanning.
-    if (type == v8::kGCTypeScavenge) {
+    if (type == v8::kGCTypeScavenge || type == v8::kGCTypeMinorMarkCompact) {
       forced_scheduled_gc_for_testing_ = true;
     } else if (type == v8::kGCTypeMarkSweepCompact) {
       forced_scheduled_gc_for_testing_ =
