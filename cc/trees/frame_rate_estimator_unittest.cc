@@ -37,16 +37,16 @@ class FrameRateEstimatorTest : public testing::Test {
 TEST_F(FrameRateEstimatorTest, ToggleEstimationEnabled) {
   EXPECT_EQ(estimator_->GetPreferredInterval(),
             viz::BeginFrameArgs::MinInterval());
-  estimator_->SetFrameEstimationEnabled(true);
+  estimator_->SetVideoConferenceMode(true);
   EXPECT_NE(estimator_->GetPreferredInterval(),
             viz::BeginFrameArgs::MinInterval());
-  estimator_->SetFrameEstimationEnabled(false);
+  estimator_->SetVideoConferenceMode(false);
   EXPECT_EQ(estimator_->GetPreferredInterval(),
             viz::BeginFrameArgs::MinInterval());
 }
 
 TEST_F(FrameRateEstimatorTest, FrameHistoryUsed) {
-  estimator_->SetFrameEstimationEnabled(true);
+  estimator_->SetVideoConferenceMode(true);
   EXPECT_NE(estimator_->GetPreferredInterval(),
             viz::BeginFrameArgs::MinInterval());
   base::TimeTicks time;
@@ -63,7 +63,7 @@ TEST_F(FrameRateEstimatorTest, FrameHistoryUsed) {
 }
 
 TEST_F(FrameRateEstimatorTest, InputPriorityMode) {
-  estimator_->SetFrameEstimationEnabled(true);
+  estimator_->SetVideoConferenceMode(true);
   estimator_->NotifyInputEvent();
   EXPECT_EQ(estimator_->GetPreferredInterval(),
             viz::BeginFrameArgs::MinInterval());
@@ -74,7 +74,7 @@ TEST_F(FrameRateEstimatorTest, InputPriorityMode) {
 }
 
 TEST_F(FrameRateEstimatorTest, RafAtHalfFps) {
-  estimator_->SetFrameEstimationEnabled(true);
+  estimator_->SetVideoConferenceMode(true);
   // Recorded rAF intervals at 30 fps.
   const base::TimeDelta kIntervals[] = {
       base::Microseconds(33425), base::Microseconds(33298),

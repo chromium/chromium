@@ -1477,8 +1477,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   // Only enable frame rate estimation if it would help lower the composition
   // rate for videos.
-  const bool enable_frame_rate_estimation = num_of_layers_with_videos > 1;
-  frame_rate_estimator_.SetFrameEstimationEnabled(enable_frame_rate_estimation);
+  const bool assumes_video_conference_mode = num_of_layers_with_videos > 1;
+  frame_rate_estimator_.SetVideoConferenceMode(assumes_video_conference_mode);
 
   // When doing a resourceless software draw, we don't have control over the
   // surface the compositor draws to, so even though the frame may not be
