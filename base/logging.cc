@@ -20,6 +20,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/immediate_crash.h"
 #include "base/pending_task.h"
+#include "base/record_replay.h"
 #include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
@@ -738,6 +739,24 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
   stream_ << "Check failed: " << condition << ". ";
 }
 
+// Using V8RecordReplayPrintVA directly from this code causes link
+// errors when libbase is built statically.  Work around this by
+// loading the symbol dynamically.
+static void RecordReplayDynamicPrintLog(const char *format, ...) {
+  // load the symbol for V8RecordReplayAssertVA.
+  typedef void (*V8RecordReplayPrintVAFunction)(const char* format,
+                                                 va_list ap);
+  static V8RecordReplayPrintVAFunction V8RecordReplayPrintVA =
+      reinterpret_cast<V8RecordReplayPrintVAFunction>(
+          dlsym(RTLD_DEFAULT, "V8RecordReplayPrintVA"));
+  if (V8RecordReplayPrintVA) {
+    va_list ap;
+    va_start(ap, format);
+    V8RecordReplayPrintVA(format, ap);
+    va_end(ap);
+  }
+}
+
 LogMessage::~LogMessage() {
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
@@ -988,6 +1007,9 @@ LogMessage::~LogMessage() {
 #endif
 
       // Crash the process to generate a dump.
+      // Replace this with an API call to `RecordReplaySetCrashReasonCallback`
+      // See RUN-1562: https://linear.app/replay/issue/RUN-1562
+      RecordReplayDynamicPrintLog("ErrorFatal %s:%d %s", file_, line_, str_newline.c_str());
       IMMEDIATE_CRASH();
     }
   }
