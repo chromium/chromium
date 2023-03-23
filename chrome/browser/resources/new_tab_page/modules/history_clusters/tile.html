@@ -145,6 +145,20 @@
   #dot {
     line-height: 16px;
   }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    /* Set focus outline since box-shadow isn't visible in hcm */
+    :host-context(.focus-outline-visible) a:focus {
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    /* Set outline since background isn't visible in hcm */
+    a {
+      border-radius: 12px;
+      outline: var(--cr-border-hcm);
+    }
+  }
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]"
    aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">

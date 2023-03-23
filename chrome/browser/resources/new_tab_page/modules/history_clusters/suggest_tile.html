@@ -55,6 +55,24 @@
     font-size: var(--ntp-module-text-size);
     margin: auto 0;
   }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    /* Set focus outline since box-shadow isn't visible in hcm */
+    :host-context(.focus-outline-visible) a:focus {
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    /* Set outline since background isn't visible in hcm. */
+    a {
+      outline: var(--cr-border-hcm);
+    }
+
+    /* Set magnifying class color for hcm. Otherwise, it isn't visible. */
+    .icon {
+      background-color: LinkText;
+    }
+  }
 </style>
 <div id="content">
   <template is="dom-repeat" items="[[relatedSearches]]"
