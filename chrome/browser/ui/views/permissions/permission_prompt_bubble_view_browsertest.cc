@@ -975,14 +975,8 @@ class OneTimePermissionPromptBubbleViewBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1427075): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_geolocation DISABLED_InvokeUi_geolocation
-#else
-#define MAYBE_InvokeUi_geolocation InvokeUi_geolocation
-#endif
 IN_PROC_BROWSER_TEST_P(OneTimePermissionPromptBubbleViewBrowserTest,
-                       MAYBE_InvokeUi_geolocation) {
+                       InvokeUi_geolocation) {
   ShowAndVerifyUi();
 }
 
