@@ -10,6 +10,8 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
@@ -281,12 +283,17 @@
 
 #pragma mark - PasswordCoordinatorDelegate
 
-- (void)openPasswordSettings {
+- (void)openPasswordManager {
   [self reset];
-  [self.navigator openPasswordSettings];
+  [self.navigator openPasswordManager];
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
+}
+
+- (void)openPasswordSettings {
+  [self reset];
+  [self.navigator openPasswordSettings];
 }
 
 - (void)openAllPasswordsPicker {

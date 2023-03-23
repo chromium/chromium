@@ -11,6 +11,9 @@
 // Requests to open the list of all passwords.
 - (void)openAllPasswordsList;
 
+// Opens password manager.
+- (void)openPasswordManager;
+
 // Opens passwords settings.
 - (void)openPasswordSettings;
 

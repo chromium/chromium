@@ -1820,29 +1820,25 @@ enum class ToolbarKind {
 
 #pragma mark - FormInputAccessoryCoordinatorNavigator
 
-- (void)openPasswordSettings {
-  // TODO(crbug.com/1361357) Remove call to
-  // `showSavedPasswordsSettingsFromViewController` once `kIOSPasswordUISplit`
-  // is on by default.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSPasswordUISplit)) {
-    DCHECK(!self.passwordSettingsCoordinator);
+- (void)openPasswordManager {
+  [HandlerForProtocol(self.dispatcher, ApplicationCommands)
+      showSavedPasswordsSettingsFromViewController:self.viewController
+                                  showCancelButton:YES
+                                startPasswordCheck:NO];
+}
 
-    // Use main browser to open the password settings.
-    SceneState* sceneState =
-        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-    self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:sceneState.interfaceProvider.mainInterface
-                                       .browser];
-    self.passwordSettingsCoordinator.delegate = self;
-    [self.passwordSettingsCoordinator start];
-  } else {
-    [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-        showSavedPasswordsSettingsFromViewController:self.viewController
-                                    showCancelButton:YES
-                                  startPasswordCheck:NO];
-  }
+- (void)openPasswordSettings {
+  CHECK(!self.passwordSettingsCoordinator);
+
+  // Use main browser to open the password settings.
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  self.passwordSettingsCoordinator = [[PasswordSettingsCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:sceneState.interfaceProvider.mainInterface
+                                     .browser];
+  self.passwordSettingsCoordinator.delegate = self;
+  [self.passwordSettingsCoordinator start];
 }
 
 - (void)openAddressSettings {

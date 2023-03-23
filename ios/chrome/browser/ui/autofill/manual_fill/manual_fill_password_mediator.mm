@@ -44,6 +44,8 @@ namespace manual_fill {
 
 NSString* const ManagePasswordsAccessibilityIdentifier =
     @"kManualFillManagePasswordsAccessibilityIdentifier";
+NSString* const ManageSettingsAccessibilityIdentifier =
+    @"kManualFillManageSettingsAccessibilityIdentifier";
 NSString* const OtherPasswordsAccessibilityIdentifier =
     @"kManualFillOtherPasswordsAccessibilityIdentifier";
 NSString* const SuggestPasswordAccessibilityIdentifier =
@@ -291,21 +293,36 @@ BOOL AreCredentialsAtIndexesConnected(
         manual_fill::OtherPasswordsAccessibilityIdentifier;
     [actions addObject:otherPasswordsItem];
 
-    // TODO(crbug.com/1361357) Remove IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS
-    // after kIOSPasswordUISplit is on by default.
-    NSString* managePasswordsTitle = l10n_util::GetNSString(
-        useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS
-                          : IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
+    // "Manage Passwords..." is available in both configurations.
+    NSString* managePasswordsTitle =
+        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
     ManualFillActionItem* managePasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:managePasswordsTitle
                action:^{
                  base::RecordAction(base::UserMetricsAction(
                      "ManualFallback_Password_OpenManagePassword"));
-                 [weakSelf.navigator openPasswordSettings];
+                 [weakSelf.navigator openPasswordManager];
                }];
     managePasswordsItem.accessibilityIdentifier =
         manual_fill::ManagePasswordsAccessibilityIdentifier;
     [actions addObject:managePasswordsItem];
+
+    // "Manage Settings..." also appears when updated strings are enabled.
+    if (useUpdatedStrings) {
+      NSString* manageSettingsTitle =
+          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS);
+      ManualFillActionItem* manageSettingsItem = [[ManualFillActionItem alloc]
+          initWithTitle:manageSettingsTitle
+                 action:^{
+                   base::RecordAction(base::UserMetricsAction(
+                       "ManualFallback_Password_OpenManageSettings"));
+                   [weakSelf.navigator openPasswordSettings];
+                 }];
+      manageSettingsItem.accessibilityIdentifier =
+          manual_fill::ManageSettingsAccessibilityIdentifier;
+
+      [actions addObject:manageSettingsItem];
+    }
 
     [self.consumer presentActions:actions];
   }

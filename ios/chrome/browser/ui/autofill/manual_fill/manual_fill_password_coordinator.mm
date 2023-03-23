@@ -118,6 +118,14 @@
   }];
 }
 
+- (void)openPasswordManager {
+  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
+
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [weakDelegate openPasswordManager];
+  }];
+}
+
 - (void)openPasswordSettings {
   __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
 

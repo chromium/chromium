@@ -781,6 +781,10 @@ id<GREYMatcher> ManualFallbackManagePasswordsMatcher() {
   return [ChromeMatchersAppInterface manualFallbackManagePasswordsMatcher];
 }
 
+id<GREYMatcher> ManualFallbackManageSettingsMatcher() {
+  return [ChromeMatchersAppInterface manualFallbackManageSettingsMatcher];
+}
+
 id<GREYMatcher> ManualFallbackOtherPasswordsMatcher() {
   return [ChromeMatchersAppInterface manualFallbackOtherPasswordsMatcher];
 }

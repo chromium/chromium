@@ -30,6 +30,7 @@ class SyncSetupService;
 namespace manual_fill {
 
 extern NSString* const ManagePasswordsAccessibilityIdentifier;
+extern NSString* const ManageSettingsAccessibilityIdentifier;
 extern NSString* const OtherPasswordsAccessibilityIdentifier;
 extern NSString* const SuggestPasswordAccessibilityIdentifier;
 

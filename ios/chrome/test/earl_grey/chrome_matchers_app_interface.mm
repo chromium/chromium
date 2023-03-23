@@ -1189,6 +1189,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       manual_fill::ManagePasswordsAccessibilityIdentifier);
 }
 
++ (id<GREYMatcher>)manualFallbackManageSettingsMatcher {
+  return grey_accessibilityID(
+      manual_fill::ManageSettingsAccessibilityIdentifier);
+}
+
 + (id<GREYMatcher>)manualFallbackOtherPasswordsMatcher {
   return grey_accessibilityID(
       manual_fill::OtherPasswordsAccessibilityIdentifier);

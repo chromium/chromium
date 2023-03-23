@@ -14,7 +14,10 @@
 // Delegate for the coordinator actions.
 @protocol FormInputAccessoryCoordinatorNavigator <NSObject>
 
-// Opens the passwords settings.
+// Opens the Password Manager screen.
+- (void)openPasswordManager;
+
+// Opens the Password Settings screen.
 - (void)openPasswordSettings;
 
 // Opens the addresses settings.

@@ -609,6 +609,10 @@
 
 // Returns a matcher for the button to open password settings in manual
 // fallback.
++ (id<GREYMatcher>)manualFallbackManageSettingsMatcher;
+
+// Returns a matcher for the button to open Password Manager in manual
+// fallback.
 + (id<GREYMatcher>)manualFallbackManagePasswordsMatcher;
 
 // Returns a matcher for the button to open all passwords in manual fallback.

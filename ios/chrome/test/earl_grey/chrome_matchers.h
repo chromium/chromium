@@ -596,9 +596,13 @@ id<GREYMatcher> ManualFallbackPasswordTableViewMatcher();
 // Returns a matcher for the password search bar in manual fallback.
 id<GREYMatcher> ManualFallbackPasswordSearchBarMatcher();
 
-// Returns a matcher for the button to open password settings in manual
+// Returns a matcher for the button to open Password Manager in manual
 // fallback.
 id<GREYMatcher> ManualFallbackManagePasswordsMatcher();
+
+// Returns a matcher for the button to open password settings in manual
+// fallback.
+id<GREYMatcher> ManualFallbackManageSettingsMatcher();
 
 // Returns a matcher for the button to open all passwords in manual fallback.
 id<GREYMatcher> ManualFallbackOtherPasswordsMatcher();

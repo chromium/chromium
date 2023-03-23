@@ -16927,6 +16927,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_Password_OpenManageSettings">
+  <owner>tmartino@chromium.org</owner>
+  <description>
+    The user opened the Password Settings submenu using the &quot;Manage
+    Settings...&quot; link in the Password Manual Fallback View.
+  </description>
+</action>
+
 <action name="ManualFallback_Password_OpenOtherPassword">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -26293,6 +26301,14 @@ should be able to be added at any place in this file.
     The user submitted a password form and the website appeared to accept the
     credentials. This action reflects the password manager component's logic for
     whether or not to offer to save a password.
+  </description>
+</action>
+
+<action name="PasswordManager_OpenSettings">
+  <owner>tmartino@chromium.org</owner>
+  <description>
+    The user opened the Password Settings submenu from within the main Password
+    Manager screen. iOS only.
   </description>
 </action>
 

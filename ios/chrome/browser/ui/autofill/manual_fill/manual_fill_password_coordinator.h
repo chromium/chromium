@@ -12,6 +12,9 @@ class GURL;
 // Delegate for the coordinator actions.
 @protocol PasswordCoordinatorDelegate <FallbackCoordinatorDelegate>
 
+// Opens the password manager.
+- (void)openPasswordManager;
+
 // Opens the passwords settings.
 - (void)openPasswordSettings;
 
