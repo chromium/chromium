@@ -66,6 +66,7 @@ const NSTimeInterval kDuration = 0.2;
           webStateList:self.browser->GetWebStateList()
          snapshotCache:snapshotCache];
   self.viewController.gridViewController.imageDataSource = self.mediator;
+  self.viewController.gridViewController.menuProvider = self.menuProvider;
 
   // Add the view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;

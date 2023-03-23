@@ -529,6 +529,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                 atIndexPath:(NSIndexPath*)indexPath {
   switch (_mode) {
     case TabGridModeNormal: {
+      // The Regular Tabs grid has a button to inform about the hidden inactive
+      // tabs.
       DCHECK(IsInactiveTabsEnabled());
       InactiveTabsButtonHeader* header = [collectionView
           dequeueReusableSupplementaryViewOfKind:kind
@@ -574,6 +576,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       }
       return headerView;
     }
+    case TabGridModeInactive:
+      // The Inactive Tabs grid doesn’t have a header.
+      NOTREACHED();
+      return nil;
   }
 }
 
@@ -670,10 +676,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       if (!IsInactiveTabsEnabled() || self.inactiveTabsCount == 0) {
         return CGSizeZero;
       }
+      // The Regular Tabs grid has a button to inform about the hidden inactive
+      // tabs.
       return [self inactiveTabsButtonHeaderSize];
     case TabGridModeSelection:
       return CGSizeZero;
-    case TabGridModeSearch:
+    case TabGridModeSearch: {
       if (_searchText.length == 0) {
         return CGSizeZero;
       }
@@ -683,6 +691,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                            ? kGridHeaderAccessibilityHeight
                            : kGridHeaderHeight;
       return CGSizeMake(collectionView.bounds.size.width, height);
+    }
+    case TabGridModeInactive:
+      // The Inactive Tabs grid doesn’t have a header.
+      return CGSizeZero;
   }
 }
 
@@ -756,6 +768,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   MenuScenarioHistogram scenario;
   if (_mode == TabGridModeSearch) {
     scenario = MenuScenarioHistogram::kTabGridSearchResult;
+  } else if (_mode == TabGridModeInactive) {
+    scenario = MenuScenarioHistogram::kInactiveTabsEntry;
   } else if (self.currentLayout == self.horizontalLayout) {
     scenario = MenuScenarioHistogram::kThumbStrip;
   } else {

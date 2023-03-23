@@ -84,6 +84,7 @@
       [[ActionFactory alloc] initWithScenario:scenario];
 
   const BOOL pinned = scenario == MenuScenarioHistogram::kPinnedTabsEntry;
+  const BOOL inactive = scenario == MenuScenarioHistogram::kInactiveTabsEntry;
 
   TabItem* item = [self tabItemForIdentifier:cell.itemIdentifier pinned:pinned];
 
@@ -93,7 +94,7 @@
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  if (IsPinnedTabsEnabled() && !self.incognito) {
+  if (IsPinnedTabsEnabled() && !self.incognito && !inactive) {
     if (pinned) {
       [menuElements addObject:[actionFactory actionToUnpinTabWithBlock:^{
                       [self.contextMenuDelegate
@@ -149,11 +150,12 @@
     }
   }
 
-  // Thumb strip, pinned tabs and search results menus don't support tab
-  // selection.
+  // Thumb strip, pinned tabs, inactive tabs and search results menus don't
+  // support tab selection.
   BOOL scenarioDisablesSelection =
       scenario == MenuScenarioHistogram::kTabGridSearchResult ||
       scenario == MenuScenarioHistogram::kPinnedTabsEntry ||
+      scenario == MenuScenarioHistogram::kInactiveTabsEntry ||
       scenario == MenuScenarioHistogram::kThumbStrip;
   if (!scenarioDisablesSelection) {
     [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{

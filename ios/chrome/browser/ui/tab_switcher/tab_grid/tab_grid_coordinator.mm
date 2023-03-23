@@ -1082,6 +1082,7 @@
       initWithBaseViewController:self.baseViewController
                          browser:_inactiveBrowser];
   self.inactiveTabsCoordinator.delegate = self;
+  self.inactiveTabsCoordinator.menuProvider = self.regularTabContextMenuHelper;
   [self.inactiveTabsCoordinator start];
 }
 

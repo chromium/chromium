@@ -50,6 +50,8 @@ const char kPinnedTabsEntryActionsHistogram[] =
     "Mobile.ContextMenu.PinnedTabsEntry.Actions";
 const char kTabStripEntryActionsHistogram[] =
     "Mobile.ContextMenu.TabStrip.Actions";
+const char kInactiveTabsEntryActionsHistogram[] =
+    "Mobile.ContextMenu.InactiveTabsEntry.Actions";
 }  // namespace
 
 void RecordMenuShown(MenuScenarioHistogram scenario) {
@@ -95,5 +97,7 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       return kPinnedTabsEntryActionsHistogram;
     case MenuScenarioHistogram::kTabStripEntry:
       return kTabStripEntryActionsHistogram;
+    case MenuScenarioHistogram::kInactiveTabsEntry:
+      return kInactiveTabsEntryActionsHistogram;
   }
 }

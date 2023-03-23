@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class InactiveTabsCoordinator;
+@protocol TabContextMenuProvider;
 
 // Delegate for the coordinator.
 @protocol InactiveTabsCoordinatorDelegate
@@ -28,6 +29,9 @@
 
 // Delegate for dismissing the coordinator.
 @property(nonatomic, weak) id<InactiveTabsCoordinatorDelegate> delegate;
+
+// Provides the context menu for the tabs on the grid.
+@property(nonatomic, weak) id<TabContextMenuProvider> menuProvider;
 
 @end
 
