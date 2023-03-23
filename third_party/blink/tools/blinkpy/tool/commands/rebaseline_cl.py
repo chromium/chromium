@@ -372,9 +372,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A sorted list of tests to rebaseline for this build.
         """
         unexpected_results = web_test_results.didnt_run_as_expected_results()
-        tests = sorted(
-            r.test_name() for r in unexpected_results
-            if r.is_missing_baseline() or r.has_non_reftest_mismatch())
+        tests = sorted(r.test_name() for r in unexpected_results
+                       if r.is_missing_baseline() or r.has_mismatch())
         if not tests:
             # no need to fetch retry summary in this case
             return []

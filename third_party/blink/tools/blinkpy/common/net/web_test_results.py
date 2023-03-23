@@ -97,7 +97,7 @@ class WebTestResult:
     def last_retry_result(self):
         return self.actual_results()[-1]
 
-    def has_non_reftest_mismatch(self):
+    def has_mismatch(self):
         """Returns true if a test without reference failed due to mismatch.
 
         This happens when the actual output of a non-reftest does not match the
@@ -107,9 +107,7 @@ class WebTestResult:
         artifact_names = self._result_dict.get('artifacts', {}).keys()
         return ('FAIL' in actual_results and any(
             artifact_name.startswith('actual')
-            for artifact_name in artifact_names)
-                and 'reference_file_mismatch' not in artifact_names
-                and 'reference_file_match' not in artifact_names)
+            for artifact_name in artifact_names))
 
     def is_missing_baseline(self):
         return (self.is_missing_image() or self.is_missing_text()

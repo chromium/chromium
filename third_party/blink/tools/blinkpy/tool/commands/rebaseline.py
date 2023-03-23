@@ -311,9 +311,14 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         build_steps_to_fetch_from = self.build_steps_to_fetch_from(
             test_baseline_set.all_build_steps())
         rebaselinable_set = TestBaselineSet(self._tool.builders)
+        port = self._tool.port_factory.get()
         for test, build, step_name, port_name in test_baseline_set:
             if (build.builder_name,
                     step_name) not in build_steps_to_fetch_from:
+                continue
+            if port.reference_files(test):
+                # TODO(crbug.com/1149035): Add a `[ Failure ]` line here
+                # instead.
                 continue
             suffixes = list(
                 self._suffixes_for_actual_failures(test, build, step_name))
