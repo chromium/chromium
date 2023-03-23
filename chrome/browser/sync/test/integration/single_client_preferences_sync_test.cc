@@ -212,6 +212,33 @@ class SingleClientPreferencesWithAccountStorageSyncTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldPreserveLocalPrefsAndNotUploadToAccountOnSignin) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Local value is preserved as the pref doesn't exist on the account.
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "local value");
+  // No data is uploaded to the account.
+  EXPECT_FALSE(preferences_helper::GetPreferenceInFakeServer(
+                   syncer::PREFERENCES,
+                   sync_preferences::kSyncablePrefForTesting, GetFakeServer())
+                   .has_value());
+}
+
 // ChromeOS does not support signing out of a primary account.
 #if !BUILDFLAG(IS_CHROMEOS)
 
@@ -286,6 +313,92 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   // Account value gets cleared. Local value persists.
   EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
             "local value");
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldChangeSyncablePrefLocallyAndOnAccount) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register `sync_preferences::kSyncablePrefForTesting`.
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "local value");
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               sync_preferences::kSyncablePrefForTesting,
+                               base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "account value");
+  // Change pref value.
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "new value");
+
+  // Change is synced to account.
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::ModelType::PREFERENCES,
+                  sync_preferences::kSyncablePrefForTesting,
+                  ConvertToSyncedPrefValue(base::Value("new value")))
+                  .Wait());
+
+  // Disable syncing preferences.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Change was also made to local store.
+  EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
+            "new value");
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldNotSyncNonSyncablePrefToAccount) {
+  constexpr char kNonSyncablePref[] = "non-syncable pref";
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  // Register prefs.
+  GetRegistry(GetProfile(0))->RegisterStringPref(kNonSyncablePref, "", 0);
+  GetRegistry(GetProfile(0))
+      ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
+                           user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  preferences_helper::ChangeStringPref(0, kNonSyncablePref, "local value");
+  InjectPreferenceToFakeServer(syncer::PREFERENCES, kNonSyncablePref,
+                               base::Value("account value"));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Update prefs.
+  preferences_helper::ChangeStringPref(0, kNonSyncablePref, "new local value");
+  preferences_helper::ChangeStringPref(
+      0, sync_preferences::kSyncablePrefForTesting, "new value");
+
+  // Change is synced to account.
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::ModelType::PREFERENCES,
+                  sync_preferences::kSyncablePrefForTesting,
+                  ConvertToSyncedPrefValue(base::Value("new value")))
+                  .Wait());
+  // Not the right way to test this but the non-syncable pref has not been
+  // synced to the new value.
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
+                  syncer::ModelType::PREFERENCES, kNonSyncablePref,
+                  ConvertToSyncedPrefValue(base::Value("account value")))
+                  .Wait());
 }
 
 }  // namespace
