@@ -17,3 +17,8 @@ per-file luci-analysis*=mdraz@google.com
 # For Code Coverage configs
 per-file subprojects/chromium/ci/chromium.coverage.star=jeffyoon@google.com
 per-file subprojects/chromium/ci/chromium.coverage.star=pasthana@google.com
+
+# Fuchsia owners
+per-file subprojects/chromium/ci/chromium.fuchsia.fyi.star=file://build/fuchsia/test/OWNERS
+per-file subprojects/chromium/ci/chromium.fuchsia.star=file://build/fuchsia/test/OWNERS
+per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/fuchsia/test/OWNERS
