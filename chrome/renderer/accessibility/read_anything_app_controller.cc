@@ -331,15 +331,15 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // distillation request.
   model_.ClearPendingUpdates();
 
+  // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
+  // replace this function call with firing an event.
+  std::string script = "chrome.readAnything.showLoading();";
+  render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
   // case, do not distill.
   if (model_.active_tree_id() != ui::AXTreeIDUnknown() &&
       model_.ContainsTree(model_.active_tree_id())) {
-    // TODO(b/1266555): Use v8::Function rather than javascript. If possible,
-    // replace this function call with firing an event.
-    std::string script = "chrome.readAnything.showLoading();";
-    render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
     Distill();
   }
 }
