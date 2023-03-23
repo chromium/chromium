@@ -1476,8 +1476,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // on a view which may or may not have a name depending on circumstances. Also
   // please seek review from accessibility OWNERs when removing the name,
   // especially for views which are focusable or otherwise interactive.
-  void SetAccessibleName(const std::u16string& name,
-                         ax::mojom::NameFrom name_from);
+  void SetAccessibleName(std::u16string name, ax::mojom::NameFrom name_from);
 
   // Sets the accessible name of this view to that of `naming_view`. Often
   // `naming_view` is a `views::Label`, but any view with an accessible name
@@ -1602,6 +1601,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Called when the accessible name of the View changed.
   virtual void OnAccessibleNameChanged(const std::u16string& new_name) {}
+
+  // Called by `SetAccessibleName` to allow subclasses to adjust the new name.
+  // Potential use cases include setting the accessible name to the tooltip
+  // text when the new name is empty and prepending/appending additional text
+  // to the new name.
+  virtual void AdjustAccessibleName(std::u16string& new_name,
+                                    ax::mojom::NameFrom& name_from) {}
 
   // Size and disposition ------------------------------------------------------
 
@@ -2397,7 +2403,7 @@ BuilderT&& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) && {
 VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, const std::u16string&)
 VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, View*)
 VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName,
-                             const std::u16string&,
+                             std::u16string,
                              ax::mojom::NameFrom)
 VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, const std::u16string&)
 VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, View*)

@@ -1980,8 +1980,11 @@ void View::SetAccessibleName(const std::u16string& name) {
                 ax::mojom::IntAttribute::kNameFrom)));
 }
 
-void View::SetAccessibleName(const std::u16string& name,
+void View::SetAccessibleName(std::u16string name,
                              ax::mojom::NameFrom name_from) {
+  // Allow subclasses to adjust the name.
+  AdjustAccessibleName(name, name_from);
+
   // Ensure we have a current `name_from` value. For instance, the name might
   // still be an empty string, but a view is now indicating that this is by
   // design by setting `NameFrom::kAttributeExplicitlyEmpty`.

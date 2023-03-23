@@ -299,7 +299,32 @@ class A11yTestView : public TestView {
   }
 
   ~A11yTestView() override = default;
+
+  // Overridden from views::View:
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override {
+    if (name_prefix_.has_value()) {
+      new_name.insert(0, name_prefix_.value());
+    }
+
+    if (name_from_.has_value()) {
+      name_from = name_from_.value();
+    }
+  }
+
+  void SetAccessibleNamePrefix(absl::optional<std::u16string> name_prefix) {
+    name_prefix_ = std::move(name_prefix);
+  }
+
+  void SetAccessibleNameFrom(absl::optional<ax::mojom::NameFrom> name_from) {
+    name_from_ = std::move(name_from);
+  }
+
+ private:
+  absl::optional<std::u16string> name_prefix_;
+  absl::optional<ax::mojom::NameFrom> name_from_;
 };
+
 ////////////////////////////////////////////////////////////////////////////////
 // Metadata
 ////////////////////////////////////////////////////////////////////////////////
@@ -547,6 +572,26 @@ TEST_F(ViewTest, SetAccessibleNameToStringWithRoleAlreadySet) {
   EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
 }
 
+TEST_F(ViewTest, AdjustAccessibleNameStringWithRoleAlreadySet) {
+  A11yTestView v(ax::mojom::Role::kButton);
+  v.SetAccessibleNamePrefix(u"Prefix: ");
+
+  ui::AXNodeData data;
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  v.SetAccessibleName(u"Name");
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Prefix: Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Prefix: Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+}
+
 TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
   TestView label;
   label.SetAccessibleName(u"Label's Name");
@@ -577,6 +622,62 @@ TEST_F(ViewTest, SetAccessibleNameToLabelWithRoleAlreadySet) {
             ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Label's Name");
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+}
+
+TEST_F(ViewTest, AdjustAccessibleNameFrom) {
+  A11yTestView v(ax::mojom::Role::kTextField);
+  v.SetAccessibleNameFrom(ax::mojom::NameFrom::kPlaceholder);
+
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  v.SetAccessibleName(u"Name");
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Name");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Name");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kPlaceholder);
+  EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
+}
+
+TEST_F(ViewTest, AdjustAccessibleNameFromLabelWithRoleAlreadySet) {
+  TestView label;
+  label.SetAccessibleName(u"Label's Name");
+
+  A11yTestView v(ax::mojom::Role::kButton);
+  v.SetAccessibleNamePrefix(u"Prefix: ");
+
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kNone);
+  EXPECT_FALSE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
+
+  v.last_a11y_event_ = ax::mojom::Event::kNone;
+  data = ui::AXNodeData();
+
+  v.SetAccessibleName(&label);
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleName(), u"Prefix: Label's Name");
+  EXPECT_TRUE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds));
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kRelatedElement);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Prefix: Label's Name");
   EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kTextChanged);
 }
 
