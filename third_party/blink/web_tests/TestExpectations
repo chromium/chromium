@@ -6671,3 +6671,11 @@ crbug.com/1422630 external/wpt/long-animation-frame/tentative/loaf-script-block.
 
 # Sheriff 2023-03-23
 crbug.com/952717 [ Win10.20h2 ] http/tests/xmlhttprequest/redirect-cross-origin-post.html [ Failure Pass ]
+
+# Sheriff 2023-02-23 flaking on Mac
+crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-below-and-on-top-of-viewport-partially-onscreen-new.html [ Failure Pass ]
+crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-left-of-viewport-offscreen-new.html [ Failure Pass ]
+crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-new.html [ Failure Pass ]
+crbug.com/1427239 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
+crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-new.html [ Failure Pass ]
+crbug.com/1427239 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-new.html [ Failure Pass ]
