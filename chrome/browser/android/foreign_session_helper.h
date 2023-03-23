@@ -14,6 +14,8 @@
 
 using base::android::ScopedJavaLocalRef;
 
+// TODO(crbug.com/1426935): Move this class to chrome/browser/recent_tabs module
+// once dependency issues have been resolved.
 class ForeignSessionHelper {
  public:
   explicit ForeignSessionHelper(Profile* profile);
@@ -41,9 +43,7 @@ class ForeignSessionHelper {
   void DeleteForeignSession(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& session_tag);
-  void SetInvalidationsForSessionsEnabled(
-      JNIEnv* env,
-      jboolean enabled);
+  void SetInvalidationsForSessionsEnabled(JNIEnv* env, jboolean enabled);
 
  private:
   // Fires |callback_| if it is not null.

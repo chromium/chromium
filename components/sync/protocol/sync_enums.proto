@@ -138,8 +138,7 @@ message SyncEnums {
     UNKNOWN_ACTION = 5;  // This is the default.
   }
 
-  // Please keep in sync with chrome/android/java/.../ForeignSessionHelper.java
-  // New enums to describe the device type  were introduced; OsType and
+  // New enums to describe the device type were introduced; OsType and
   // FormFactor. Deprecated 12/2022.
   // TODO(1395353): Remove deprecated values from DeviceType enum.
   enum DeviceType {

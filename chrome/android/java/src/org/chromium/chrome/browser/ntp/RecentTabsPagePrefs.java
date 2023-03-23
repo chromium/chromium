@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.ntp;
 
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 
 /**
  * Allows Java code to read and modify preferences related to the {@link RecentTabsPage}.

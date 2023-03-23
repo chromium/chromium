@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ntp;
+package org.chromium.chrome.browser.recent_tabs;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -24,7 +24,7 @@ public class ForeignSessionHelper {
     /**
      * Callback interface for getting notified when foreign session sync is updated.
      */
-    interface ForeignSessionCallback {
+    public interface ForeignSessionCallback {
         /**
          * This method will be called every time foreign session sync is updated.
          *
@@ -38,7 +38,7 @@ public class ForeignSessionHelper {
     /**
      * Represents synced foreign session.
      */
-    static class ForeignSession {
+    public static class ForeignSession {
         public final String tag;
         public final String name;
         public final long modifiedTime;
@@ -55,7 +55,7 @@ public class ForeignSessionHelper {
      * Represents synced foreign window. Note that desktop Chrome can have multiple windows in a
      * session.
      */
-    static class ForeignSessionWindow {
+    public static class ForeignSessionWindow {
         public final long timestamp;
         public final int sessionId;
         public final List<ForeignSessionTab> tabs = new ArrayList<ForeignSessionTab>();
@@ -69,7 +69,7 @@ public class ForeignSessionHelper {
     /**
      * Represents synced foreign tab.
      */
-    static class ForeignSessionTab {
+    public static class ForeignSessionTab {
         public final GURL url;
         public final String title;
         public final long timestamp;
@@ -126,14 +126,14 @@ public class ForeignSessionHelper {
     /**
      * @return {@code True} iff Tab sync is enabled.
      */
-    boolean isTabSyncEnabled() {
+    public boolean isTabSyncEnabled() {
         return ForeignSessionHelperJni.get().isTabSyncEnabled(mNativeForeignSessionHelper);
     }
 
     /**
      * Force a sync for sessions.
      */
-    void triggerSessionSync() {
+    public void triggerSessionSync() {
         ForeignSessionHelperJni.get().triggerSessionSync(mNativeForeignSessionHelper);
     }
 
@@ -141,7 +141,7 @@ public class ForeignSessionHelper {
      * Sets callback instance that will be called on every foreign session sync update.
      * @param callback The callback to be invoked.
      */
-    void setOnForeignSessionCallback(ForeignSessionCallback callback) {
+    public void setOnForeignSessionCallback(ForeignSessionCallback callback) {
         ForeignSessionHelperJni.get().setOnForeignSessionCallback(
                 mNativeForeignSessionHelper, callback);
     }
@@ -150,7 +150,7 @@ public class ForeignSessionHelper {
      * @return The list of synced foreign sessions. If it fails to get them for some reason will
      * return an empty list.
      */
-    List<ForeignSession> getForeignSessions() {
+    public List<ForeignSession> getForeignSessions() {
         if (!isTabSyncEnabled()) {
             return Collections.emptyList();
         }
@@ -172,7 +172,7 @@ public class ForeignSessionHelper {
      * @param windowOpenDisposition The WindowOpenDisposition flag.
      * @return {@code True} iff the tab is successfully opened.
      */
-    boolean openForeignSessionTab(Tab tab, ForeignSession session,
+    public boolean openForeignSessionTab(Tab tab, ForeignSession session,
             ForeignSessionTab foreignTab, int windowOpenDisposition) {
         return ForeignSessionHelperJni.get().openForeignSessionTab(mNativeForeignSessionHelper, tab,
                 session.tag, foreignTab.id, windowOpenDisposition);
@@ -185,7 +185,7 @@ public class ForeignSessionHelper {
      * the future.
      * @param session Session to be deleted.
      */
-    void deleteForeignSession(ForeignSession session) {
+    public void deleteForeignSession(ForeignSession session) {
         ForeignSessionHelperJni.get().deleteForeignSession(
                 mNativeForeignSessionHelper, session.tag);
     }
