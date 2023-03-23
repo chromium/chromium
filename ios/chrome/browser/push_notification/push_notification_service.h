@@ -91,7 +91,7 @@ class PushNotificationService {
   // notification server.
   virtual void SetPreferences(NSString* account_id,
                               PreferenceMap preference_map,
-                              CompletionHandler completion_handler);
+                              CompletionHandler completion_handler) = 0;
 
  private:
   // The PushNotificationClientManager manages all interactions between the
