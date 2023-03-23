@@ -51,6 +51,8 @@ class AwGLSurface : public gl::GLSurfaceEGL {
   // This doesn't take into account if fbo was created by Android.
   virtual bool IsDrawingToFBO();
 
+  bool is_angle() { return is_angle_; }
+
  protected:
   ~AwGLSurface() override;
 

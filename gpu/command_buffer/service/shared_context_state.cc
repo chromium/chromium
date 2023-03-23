@@ -255,6 +255,16 @@ SharedContextState::~SharedContextState() {
   // current, or the GrContext was already abandoned if the GLContext was lost.
   owned_gr_context_.reset();
 
+  // |surface_| needs to be destroyed while there is a current GL context if
+  // using GL, as some implementations make calls to the GL bindings. Any such
+  // implementations will themselves ensure that the context is current in their
+  // destructor (we cannot blindly make the context current here, as there are
+  // other implementations that crash if the context is made current at this
+  // point :\). However, we drop our reference to |surface_| before releasing
+  // the context below so that the release has the intended effect.
+  last_current_surface_ = nullptr;
+  surface_.reset();
+
   if (context_->IsCurrent(nullptr))
     context_->ReleaseCurrent(nullptr);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
