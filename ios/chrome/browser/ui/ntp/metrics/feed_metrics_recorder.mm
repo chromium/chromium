@@ -115,10 +115,8 @@ using feed::FeedUserActionType;
 }
 
 - (void)recordFeedScrolled:(int)scrollDistance {
-  if (IsGoodVisitsMetricEnabled()) {
-    self.goodVisitScroll = YES;
-    [self checkEngagementGoodVisitWithInteraction:NO];
-  }
+  self.goodVisitScroll = YES;
+  [self checkEngagementGoodVisitWithInteraction:NO];
 
   // If neither feed has been scrolled into, log "AllFeeds" scrolled.
   if (!self.scrolledReportedDiscover && !self.scrolledReportedFollowing) {
@@ -172,9 +170,6 @@ using feed::FeedUserActionType;
                                   asInteraction:NO];
   }
 
-  if (!IsGoodVisitsMetricEnabled()) {
-    return;
-  }
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   if (visible) {
     NSDate* lastInteractionTimeForGoodVisitsDate = base::mac::ObjCCast<NSDate>(
@@ -855,9 +850,6 @@ using feed::FeedUserActionType;
   // Check if actionType warrants a Good Explicit Visit
   // If actionType is any of the cases below, trigger a Good Explicit
   // interaction by calling recordEngagementGoodVisit
-  if (!IsGoodVisitsMetricEnabled()) {
-    return;
-  }
   switch (actionType) {
     case FeedUserActionType::kAddedToReadLater:
     case FeedUserActionType::kOpenedNativeContextMenu:
@@ -923,7 +915,6 @@ using feed::FeedUserActionType;
 // Checks if a Good Visit should be recorded. `interacted` is YES if it was
 // triggered by an explicit interaction. (e.g. Opening a new Tab in Incognito.)
 - (void)checkEngagementGoodVisitWithInteraction:(BOOL)interacted {
-  DCHECK(IsGoodVisitsMetricEnabled());
   // Determine if this interaction is part of a new session.
   base::Time now = base::Time::Now();
   if ((now - self.lastInteractionTimeForGoodVisits) >
@@ -1084,7 +1075,6 @@ using feed::FeedUserActionType;
   // Check if the user has previously engaged with the feed in the same
   // session.
   // If neither feed has been engaged with, log "AllFeeds" engagement.
-  DCHECK(IsGoodVisitsMetricEnabled());
   if (!self.goodVisitReportedAllFeeds) {
     // Log for the all feeds aggregate.
     UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,

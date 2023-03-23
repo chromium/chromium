@@ -1654,10 +1654,8 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     // Check if feed is visible before reporting NTP visibility as the feed
     // needs to be visible in order to use for metrics.
     // TODO(crbug.com/1373650) Move isFeedVisible check to the metrics recorder
-    if (IsGoodVisitsMetricEnabled()) {
-      if ([self isFeedVisible]) {
-        [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
-      }
+    if ([self isFeedVisible]) {
+      [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
     }
   }
 
