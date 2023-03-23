@@ -2708,13 +2708,13 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MOUSE_TITLE" desc="In Device Settings, the title of the mouse settings subpage.">
     Mouse
   </message>
-  <message name="IDS_SETTINGS_BUILT_IN_POINTING_STICK_NAME" translateable="false" desc="In Device Settings, the name of the built-in/internal pointing stick device within the settings app.">
+  <message name="IDS_SETTINGS_BUILT_IN_POINTING_STICK_NAME" desc="In Device Settings, the name of the built-in/internal pointing stick device within the settings app.">
     Built-in TrackPoint
   </message>
   <message name="IDS_SETTINGS_POINTING_STICK_TITLE" desc="In Device Settings, the title of the pointing stick settings subpage. In most cases this will just be 'TrackPoint', the brand name of the pointing sticks used on Chromebooks.">
     TrackPoint
   </message>
-  <message name="IDS_SETTINGS_BUILT_IN_TOUCHPAD_NAME" translateable="false" desc="In Device Settings, the name of the built-in/internal touchpad device within the settings app.">
+  <message name="IDS_SETTINGS_BUILT_IN_TOUCHPAD_NAME" desc="In Device Settings, the name of the built-in/internal touchpad device within the settings app.">
     Built-in Touchpad
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_TITLE" desc="In Device Settings, the title of the touchpad settings subpage.">
@@ -4641,36 +4641,36 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Per Device Keyboard page (OS settings) -->
-  <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" translateable="false" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
+  <message name="IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME" desc="In Device Settings, the name of the built-in/internal keyboard device within the settings app.">
     Built-in Keyboard
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL" translateable="false" desc="In per-device keyboard Settings, the label of the Remap Keyboard Keys row.">
+  <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_LABEL" desc="In per-device keyboard Settings, the label of the Remap Keyboard Keys row.">
     Remap keyboard keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_SUB_LABEL" translateable="false" desc="Sub-label with number of remapped keys for the Remap Keyboard Keys row.">
+  <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_ROW_SUB_LABEL" desc="Sub-label with number of remapped keys for the Remap Keyboard Keys row.">
     {COUNT, plural,
      =1 {1 remapped key}
      other {{COUNT} remapped keys}}
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION" translateable="false" desc="In Keyboard remap keys subpage, the description label above remapping keys to describe the actions user can perform.">
+  <message name="IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION" desc="In Keyboard remap keys subpage, the description label above remapping keys to describe the actions user can perform.">
     For each key listed below, choose the action you want it to perform
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS" translateable="false" desc="In Device Settings, the inverted checkbox label for interpreting the top-row keys as function keys instead.">
+  <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS" desc="In Device Settings, the inverted checkbox label for interpreting the top-row keys as function keys instead.">
     Convert F keys to ChromeOS top-row keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION" translateable="false" desc="In Device Settings, the inverted label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
+  <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the inverted label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
     Change the behavior of F keys to ChromeOS top-row actions
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES" translateable="false" desc="In Device Settings, the checkbox label to enable the meta key to switch the behavior of the top-row keys.">
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES" desc="In Device Settings, the checkbox label to enable the meta key to switch the behavior of the top-row keys.">
     Enable System/Launcher key to switch the behavior of the top-row keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION" translateable="false" desc="In Device Settings, the label describing how to use the meta key to switch the behavior of the top-row keys.">
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION" desc="In Device Settings, the label describing how to use the meta key to switch the behavior of the top-row keys.">
     Hold the key to switch between F keys and ChromeOS actions
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" translateable="false" desc="In Keyboard remap keys subpage, the restore defaults button label.">
+  <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" desc="In Keyboard remap keys subpage, the restore defaults button label.">
     Restore defaults
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE" translateable="false" desc="In Keyboard remap keys subpage, the message that notifies users that no keyboards are connected.">
+  <message name="IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE" desc="In Keyboard remap keys subpage, the message that notifies users that no keyboards are connected.">
     No keyboard detected
   </message>
 
