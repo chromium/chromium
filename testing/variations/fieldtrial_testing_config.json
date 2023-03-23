@@ -923,7 +923,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20221208",
+                    "name": "Enabled_20230323",
                     "enable_features": [
                         "AutocorrectByDefault"
                     ]
@@ -6848,6 +6848,36 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ImageControllerWaitOnlyForRunningTask"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ImeFstDecoderParamsUpdate": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230323",
+                    "enable_features": [
+                        "ImeFstDecoderParamsUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ImeUsEnglishModelUpdate": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230323",
+                    "enable_features": [
+                        "ImeUsEnglishModelUpdate"
                     ]
                 }
             ]
