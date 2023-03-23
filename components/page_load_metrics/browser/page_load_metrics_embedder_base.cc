@@ -13,6 +13,7 @@
 #include "components/page_load_metrics/browser/observers/early_hints_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/fenced_frames_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/privacy_sandbox_ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/same_origin_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/shared_storage_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
@@ -45,6 +46,8 @@ void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
       tracker->AddObserver(
           std::make_unique<SharedStoragePageLoadMetricsObserver>());
     }
+    tracker->AddObserver(
+        std::make_unique<PrivacySandboxAdsPageLoadMetricsObserver>());
   }
   // Allow the embedder to register any embedder-specific observers
   RegisterEmbedderObservers(tracker);

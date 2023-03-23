@@ -30,6 +30,15 @@ chromium-metrics-reviews@google.com.
   <variant name="5000ms"/>
 </variants>
 
+<variants name="PrivacySandboxAdsApi">
+  <variant name="AttributionReporting"/>
+  <variant name="FencedFrames"/>
+  <variant name="Fledge"/>
+  <variant name="PrivateAggregation"/>
+  <variant name="SharedStorage"/>
+  <variant name="Topics"/>
+</variants>
+
 <variants name="RequestDestination">
   <variant name="audio"/>
   <variant name="audioworklet"/>
@@ -1097,6 +1106,58 @@ chromium-metrics-reviews@google.com.
 -->
 
   <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PrivacySandboxAds.InteractiveTiming.FirstInputDelay4.{PrivacySandboxAdsApi}"
+    units="ms" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    PageLoad.InteractiveTiming.FirstInputDelay4, but recorded iff
+    {PrivacySandboxAdsApi} was used in the page.
+  </summary>
+  <token key="PrivacySandboxAdsApi" variants="PrivacySandboxAdsApi"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PrivacySandboxAds.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.{PrivacySandboxAdsApi}"
+    units="ms" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2,
+    but recorded iff {PrivacySandboxAdsApi} was used in the page.
+  </summary>
+  <token key="PrivacySandboxAdsApi" variants="PrivacySandboxAdsApi"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PrivacySandboxAds.PaintTiming.NavigationToFirstContentfulPaint.{PrivacySandboxAdsApi}"
+    units="ms" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint, but recorded iff
+    {PrivacySandboxAdsApi} was used in the page.
+  </summary>
+  <token key="PrivacySandboxAdsApi" variants="PrivacySandboxAdsApi"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.PrivacySandboxAds.PaintTiming.NavigationToLargestContentfulPaint2.{PrivacySandboxAdsApi}"
+    units="ms" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, but recorded iff
+    {PrivacySandboxAdsApi} was used in the page.
+  </summary>
+  <token key="PrivacySandboxAdsApi" variants="PrivacySandboxAdsApi"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat"

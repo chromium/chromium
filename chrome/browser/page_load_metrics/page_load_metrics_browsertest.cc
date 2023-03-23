@@ -3695,6 +3695,37 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithFencedFrames,
   observer.WaitForNavigationFinished();
 }
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithFencedFrames,
+                       PageLoadPrivacySandboxAdsFencedFramesMetrics) {
+  ASSERT_TRUE(https_server().Start());
+
+  static constexpr char
+      kHistogramPrivacySandboxAdsNavigationToFirstContentfulPaint[] =
+          "PageLoad.Clients.PrivacySandboxAds.PaintTiming."
+          "NavigationToFirstContentfulPaint.FencedFrames";
+
+  // Not recorded as fenced frame is not created.
+  auto waiter1 = CreatePageLoadMetricsTestWaiter("waiter1");
+  waiter1->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server().GetURL("a.test", "/title1.html")));
+  waiter1->Wait();
+
+  histogram_tester_->ExpectTotalCount(
+      kHistogramPrivacySandboxAdsNavigationToFirstContentfulPaint, 0);
+
+  // Recorded as fenced frame is created.
+  auto waiter2 = CreatePageLoadMetricsTestWaiter("waiter2");
+  waiter2->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server().GetURL("c.test", "/fenced_frames/basic_title.html")));
+  waiter2->Wait();
+
+  histogram_tester_->ExpectTotalCount(
+      kHistogramPrivacySandboxAdsNavigationToFirstContentfulPaint, 1);
+}
+
 class PageLoadMetricsBrowserTestWithBackForwardCache
     : public PageLoadMetricsBrowserTest {
  public:
