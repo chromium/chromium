@@ -18,6 +18,7 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -1682,8 +1684,14 @@ public class TabImpl implements Tab {
             return userAgentOverrideOption;
         }
 
+        CommandLine commandLine = CommandLine.getInstance();
+        // For --request-desktop-sites, always override the user agent.
+        boolean alwaysRequestDesktopSite =
+                commandLine.hasSwitch(ChromeSwitches.REQUEST_DESKTOP_SITES);
+
         boolean shouldRequestDesktopSite =
-                TabUtils.readRequestDesktopSiteContentSettings(profile, url);
+                TabUtils.readRequestDesktopSiteContentSettings(profile, url)
+                || alwaysRequestDesktopSite;
         if (!shouldRequestDesktopSite
                 && ContentFeatureList.isEnabled(
                         ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {

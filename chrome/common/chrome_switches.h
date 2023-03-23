@@ -208,6 +208,7 @@ extern const char kForceDisableSigninFRE[];
 extern const char kForceUpdateMenuType[];
 extern const char kForceHideNonDisplayableAccountEmailFRE[];
 extern const char kMarketUrlForTesting[];
+extern const char kRequestDesktopSites[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

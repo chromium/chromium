@@ -687,6 +687,9 @@ const char kForceHideNonDisplayableAccountEmailFRE[] =
 
 // Sets the market URL for Chrome for use in testing.
 const char kMarketUrlForTesting[] = "market-url-for-testing";
+
+// Force enable user agent overrides to request desktop sites in Clank.
+const char kRequestDesktopSites[] = "request-desktop-sites";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

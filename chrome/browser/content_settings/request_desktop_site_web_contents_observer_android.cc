@@ -4,9 +4,11 @@
 
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -72,6 +74,9 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
       url, url, ContentSettingsType::REQUEST_DESKTOP_SITE, &setting_info);
   bool use_rds =
       content_settings::ValueToContentSetting(setting) == CONTENT_SETTING_ALLOW;
+  // For --request-desktop-sites, always override the user agent.
+  use_rds |= base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kRequestDesktopSites);
   bool is_global_setting = setting_info.primary_pattern.MatchesAllHosts();
 
   // Take secondary settings into account if ContentSetting is global setting.
