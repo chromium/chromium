@@ -280,6 +280,10 @@ Config::Config() {
     content_clustering_enabled = base::FeatureList::IsEnabled(
         features::kOnDeviceClusteringContentClustering);
 
+    content_clustering_search_visits_only = GetFieldTrialParamByFeatureAsBool(
+        features::kOnDeviceClusteringContentClustering, "search_visits_only",
+        content_clustering_search_visits_only);
+
     content_clustering_similarity_threshold =
         GetFieldTrialParamByFeatureAsDouble(
             features::kOnDeviceClusteringContentClustering,

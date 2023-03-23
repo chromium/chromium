@@ -237,5 +237,96 @@ TEST_F(ContentAnnotationsSimilarityVariousCollectionsFilteringTest,
                           ElementsAre(testing::VisitResult(10, 1.0))));
 }
 
+class ContentAnnotationsSearchVisitsOnlyTest
+    : public ContentAnnotationsClusterProcessorTest {
+ public:
+  ContentAnnotationsSearchVisitsOnlyTest() {
+    config_.content_clustering_enabled = true;
+    config_.content_clustering_search_visits_only = true;
+    SetConfigForTesting(config_);
+  }
+
+ private:
+  Config config_;
+};
+
+TEST_F(ContentAnnotationsSearchVisitsOnlyTest,
+       NoSearchVisitsShouldNotBeClustered) {
+  std::vector<history::Cluster> clusters;
+
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  visit.content_annotations.model_annotations.entities = {{"github", 1}};
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  visit2.content_annotations.model_annotations.entities = {{"baz", 1}};
+  history::AnnotatedVisit visit4 =
+      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  visit4.content_annotations.model_annotations.entities = {{"otherentity", 1}};
+  history::Cluster cluster1;
+  cluster1.visits = {testing::CreateClusterVisit(visit),
+                     testing::CreateClusterVisit(visit2),
+                     testing::CreateClusterVisit(visit4)};
+  clusters.push_back(cluster1);
+
+  // After the context clustering, visit5 will not be in the same cluster as
+  // visit, visit2, and visit4. Although 2/3 of the entities are the same as the
+  // first cluster, they are not compliant with the configuration. Hence, the
+  // bag for visit5 will be empty and this cluster will not be merged.
+  history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
+      10, GURL("https://nonexistentreferrer.com/"));
+  visit5.content_annotations.model_annotations.entities = {{"otherentity", 1},
+                                                           {"baz", 1}};
+  history::Cluster cluster2;
+  cluster2.visits = {testing::CreateClusterVisit(visit5)};
+  clusters.push_back(cluster2);
+
+  ProcessClusters(&clusters);
+  EXPECT_THAT(testing::ToVisitResults(clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
+                                      testing::VisitResult(2, 1.0),
+                                      testing::VisitResult(4, 1.0)),
+                          ElementsAre(testing::VisitResult(10, 1.0))));
+}
+
+TEST_F(ContentAnnotationsSearchVisitsOnlyTest, SearchVisitsShouldBeClustered) {
+  std::vector<history::Cluster> clusters;
+
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  visit.content_annotations.model_annotations.entities = {{"github", 1}};
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  visit2.content_annotations.model_annotations.entities = {{"baz", 1}};
+  history::AnnotatedVisit visit4 =
+      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  visit4.content_annotations.model_annotations.entities = {{"otherentity", 1}};
+  visit4.content_annotations.search_terms = u"some search";
+  history::Cluster cluster1;
+  cluster1.visits = {testing::CreateClusterVisit(visit),
+                     testing::CreateClusterVisit(visit2),
+                     testing::CreateClusterVisit(visit4)};
+  clusters.push_back(cluster1);
+
+  // After the context clustering, visit5 will not be in the same cluster as
+  // visit, visit2, and visit4. 1/2 of the entities overlap across search visits
+  // and should be merged.
+  history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
+      10, GURL("https://nonexistentreferrer.com/"));
+  visit5.content_annotations.model_annotations.entities = {{"otherentity", 1},
+                                                           {"baz", 1}};
+  visit5.content_annotations.search_terms = u"some other search";
+  history::Cluster cluster2;
+  cluster2.visits = {testing::CreateClusterVisit(visit5)};
+  clusters.push_back(cluster2);
+
+  ProcessClusters(&clusters);
+  EXPECT_THAT(testing::ToVisitResults(clusters),
+              ElementsAre(ElementsAre(
+                  testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
+                  testing::VisitResult(4, 1.0, {}, u"some search"),
+                  testing::VisitResult(10, 1.0, {}, u"some other search"))));
+}
+
 }  // namespace
 }  // namespace history_clusters

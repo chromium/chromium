@@ -249,6 +249,11 @@ ContentAnnotationsClusterProcessor::CreateOccurrenceMapForCluster(
     const history::Cluster& cluster) {
   base::flat_map<std::string, float> occurrence_map;
   for (const auto& visit : cluster.visits) {
+    if (GetConfig().content_clustering_search_visits_only &&
+        visit.annotated_visit.content_annotations.search_terms.empty()) {
+      continue;
+    }
+
     for (const auto& entity :
          visit.annotated_visit.content_annotations.model_annotations.entities) {
       auto entity_metadata_it =

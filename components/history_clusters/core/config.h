@@ -280,6 +280,10 @@ struct Config {
   // should be performed by the clustering backend.
   bool content_clustering_enabled = false;
 
+  // Returns whether content clustering should only be done across clusters that
+  // contain a search.
+  bool content_clustering_search_visits_only = false;
+
   // Returns the similarity threshold, between 0 and 1, used to determine if
   // two clusters are similar enough to be combined into
   // a single cluster.
