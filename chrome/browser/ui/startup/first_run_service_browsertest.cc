@@ -490,15 +490,26 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
                                                   kStudyTestGroupName1));
 }
 
+// Flaky on Mac: crbug.com/1427094
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PRE_PRE_GroupViaPrefs DISABLED_PRE_PRE_GroupViaPrefs
+#define MAYBE_PRE_GroupViaPrefs DISABLED_PRE_GroupViaPrefs
+#define MAYBE_GroupViaPrefs DISABLED_GroupViaPrefs
+#else
+#define MAYBE_PRE_PRE_GroupViaPrefs PRE_PRE_GroupViaPrefs
+#define MAYBE_PRE_GroupViaPrefs PRE_GroupViaPrefs
+#define MAYBE_GroupViaPrefs GroupViaPrefs
+#endif
 IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
-                       PRE_PRE_GroupViaPrefs) {
+                       MAYBE_PRE_PRE_GroupViaPrefs) {
   // Setting the pref, we expect it to get picked up in an upcoming startup.
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kFirstRunStudyGroup, kStudyTestGroupName2);
 
   EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
 }
-IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, PRE_GroupViaPrefs) {
+IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
+                       MAYBE_PRE_GroupViaPrefs) {
   // The synthetic group should not be registered yet since we didn't go through
   // the FRE.
   EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
@@ -507,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, PRE_GroupViaPrefs) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(prefs::kFirstRunFinished, true);
 }
-IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, GroupViaPrefs) {
+IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, MAYBE_GroupViaPrefs) {
   // The registered group is read from the prefs, not from the feature param.
   EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
                                                   kStudyTestGroupName2));
