@@ -98,7 +98,7 @@ void ChromeBrowserFieldTrials::SetUpClientSideFieldTrials(
     ash::multidevice_setup::CreateFirstRunFieldTrial(feature_list);
 #endif
   }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_WIN)
   FirstRunService::SetUpClientSideFieldTrialIfNeeded(
       entropy_providers.default_entropy(), feature_list);
 #endif
