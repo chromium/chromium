@@ -20,11 +20,14 @@
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
+#include <lib/vfs/cpp/remote_dir.h>
 
 #include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
 #include "base/run_loop.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 #include "fuchsia_web/runners/cast/fidl/fidl/hlcpp/chromium/cast/cpp/fidl.h"
@@ -33,6 +36,7 @@
 using ::component_testing::ChildRef;
 using ::component_testing::Directory;
 using ::component_testing::DirectoryContents;
+using ::component_testing::FrameworkRef;
 using ::component_testing::ParentRef;
 using ::component_testing::Protocol;
 using ::component_testing::RealmBuilder;
@@ -40,6 +44,48 @@ using ::component_testing::Route;
 using ::component_testing::Storage;
 
 namespace test {
+
+namespace {
+
+// Name and path under which components must define a writable directory
+// capability, for DynamicComponentHost to dynamically offer per-component
+// service directories from.
+constexpr char kDynamicComponentCapabilitiesName[] =
+    "for_dynamic_component_host";
+constexpr char kDynamicComponentCapabilitiesPath[] =
+    "/for_dynamic_component_host";
+
+class TestProxyLocalComponent : public component_testing::LocalComponentImpl {
+ public:
+  TestProxyLocalComponent() = default;
+
+  // LocalComponentImpl implementation.
+  void OnStart() override {
+    // Create a new Directory capability serving the contents of the
+    // "for_dynamic_component_host" sub-directory of the calling process'
+    // outgoing directory.
+    vfs::PseudoDir* capability_dir =
+        base::ComponentContextForProcess()->outgoing()->GetOrCreateDirectory(
+            kDynamicComponentCapabilitiesName);
+    fidl::InterfaceHandle<fuchsia::io::Directory> services;
+    zx_status_t status =
+        capability_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
+                                  fuchsia::io::OpenFlags::RIGHT_WRITABLE |
+                                  fuchsia::io::OpenFlags::DIRECTORY,
+                              services.NewRequest().TakeChannel());
+    ZX_CHECK(status == ZX_OK, status) << "Serve()";
+
+    // Bind that Directory capability under the same path of this virtual
+    // component's outgoing-directory, so that attempts to open files under
+    // it will be routed back to the calling process' outgoing directory.
+    status = outgoing()->root_dir()->AddEntry(
+        kDynamicComponentCapabilitiesName,
+        std::make_unique<vfs::RemoteDir>(std::move(services)));
+    ZX_CHECK(status == ZX_OK, status) << "AddEntry";
+  }
+};
+
+}  // namespace
 
 CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features)
     : runner_features_(runner_features) {}
@@ -56,27 +102,28 @@ CastRunnerLauncher::~CastRunnerLauncher() {
 std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
   auto realm_builder = RealmBuilder::Create();
 
-  static constexpr char kCastRunnerService[] = "cast_runner";
-  realm_builder.AddChild(kCastRunnerService, "#meta/cast_runner.cm");
+  static constexpr char kCastRunnerComponentName[] = "cast_runner";
+  realm_builder.AddChild(kCastRunnerComponentName, "#meta/cast_runner.cm");
 
   base::CommandLine command_line = CommandLineFromFeatures(runner_features_);
   constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
   command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                 kSwitchesToCopy, std::size(kSwitchesToCopy));
-  AppendCommandLineArguments(realm_builder, kCastRunnerService, command_line);
+  AppendCommandLineArguments(realm_builder, kCastRunnerComponentName,
+                             command_line);
 
   // Register the fake fuchsia.feedback service component; plumbing its
   // protocols to cast_runner.
-  FakeFeedbackService::RouteToChild(realm_builder, kCastRunnerService);
+  FakeFeedbackService::RouteToChild(realm_builder, kCastRunnerComponentName);
 
-  AddSyslogRoutesFromParent(realm_builder, kCastRunnerService);
-  AddVulkanRoutesFromParent(realm_builder, kCastRunnerService);
+  AddSyslogRoutesFromParent(realm_builder, kCastRunnerComponentName);
+  AddVulkanRoutesFromParent(realm_builder, kCastRunnerComponentName);
 
   // Run an isolated font service for cast_runner.
-  AddFontService(realm_builder, kCastRunnerService);
+  AddFontService(realm_builder, kCastRunnerComponentName);
 
   // Run the test-ui-stack and route the protocols needed by cast_runner to it.
-  AddTestUiStack(realm_builder, kCastRunnerService);
+  AddTestUiStack(realm_builder, kCastRunnerComponentName);
 
   realm_builder.AddRoute(Route{
       .capabilities =
@@ -104,7 +151,7 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
               Storage{.name = "cache", .path = "/cache"},
           },
       .source = ParentRef(),
-      .targets = {ChildRef{kCastRunnerService}}});
+      .targets = {ChildRef{kCastRunnerComponentName}}});
 
   // Provide a fake Cast "agent", providing some necessary services.
   static constexpr char kFakeCastAgentName[] = "fake-cast-agent";
@@ -125,7 +172,7 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
                     Protocol{fuchsia::media::Audio::Name_},
                 },
             .source = ChildRef{kFakeCastAgentName},
-            .targets = {ChildRef{kCastRunnerService}}});
+            .targets = {ChildRef{kCastRunnerComponentName}}});
 
   // Either route the fake AudioDeviceEnumerator or the system one.
   if (runner_features_ & kCastRunnerFeaturesFakeAudioDeviceEnumerator) {
@@ -138,13 +185,13 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
         Route{.capabilities = {Protocol{
                   fuchsia::media::AudioDeviceEnumerator::Name_}},
               .source = ChildRef{kAudioDeviceEnumerator},
-              .targets = {ChildRef{kCastRunnerService}}});
+              .targets = {ChildRef{kCastRunnerComponentName}}});
   } else {
     realm_builder.AddRoute(
         Route{.capabilities = {Protocol{
                   fuchsia::media::AudioDeviceEnumerator::Name_}},
               .source = ParentRef(),
-              .targets = {ChildRef{kCastRunnerService}}});
+              .targets = {ChildRef{kCastRunnerComponentName}}});
   }
 
   // Route capabilities from the cast_runner back up to the test.
@@ -152,9 +199,115 @@ std::unique_ptr<sys::ServiceDirectory> CastRunnerLauncher::StartCastRunner() {
       Route{.capabilities = {Protocol{chromium::cast::DataReset::Name_},
                              Protocol{fuchsia::web::FrameHost::Name_},
                              Protocol{fuchsia::sys::Runner::Name_}},
-            .source = ChildRef{kCastRunnerService},
+            .source = ChildRef{kCastRunnerComponentName},
             .targets = {ParentRef()}});
 
+  // Define a pseudo-component to bridge from test-scoped outgoing directory
+  // into the RealmBuilder scope.
+  static constexpr char kTestProxyName[] = "test_proxy";
+  realm_builder.AddLocalChild(kTestProxyName,
+                              std::make_unique<TestProxyLocalComponent>);
+
+  // Define an environment that uses the exposed Resolver and Runner, and a
+  // child component collection that uses that environment, in the test proxy
+  // component.
+  static constexpr char kCastResolverName[] = "cast-resolver";
+  static constexpr char kCastRunnerName[] = "cast-runner";
+  {
+    auto test_proxy_decl = realm_builder.GetComponentDecl(kTestProxyName);
+
+    static constexpr char kEnvironmentName[] = "cast-test-environment";
+    static constexpr char kCastUrlScheme[] = "cast";
+
+    fuchsia::component::decl::ResolverRegistration resolver_decl;
+    resolver_decl.set_resolver(kCastResolverName);
+    resolver_decl.set_source(fuchsia::component::decl::Ref::WithParent({}));
+    resolver_decl.set_scheme(kCastUrlScheme);
+
+    fuchsia::component::decl::RunnerRegistration runner_decl;
+    runner_decl.set_source_name(kCastRunnerName);
+    runner_decl.set_source(fuchsia::component::decl::Ref::WithParent({}));
+    runner_decl.set_target_name(kCastRunnerName);
+
+    fuchsia::component::decl::Environment environment_decl;
+    environment_decl.set_name(kEnvironmentName);
+    environment_decl.set_extends(
+        fuchsia::component::decl::EnvironmentExtends::NONE);
+    environment_decl.set_stop_timeout_ms(1000);  // Matches cast_runner.cml
+    environment_decl.mutable_resolvers()->emplace_back(
+        std::move(resolver_decl));
+    environment_decl.mutable_runners()->emplace_back(std::move(runner_decl));
+    test_proxy_decl.mutable_environments()->emplace_back(
+        std::move(environment_decl));
+
+    fuchsia::component::decl::Collection collection_decl;
+    collection_decl.set_name(kTestCollectionName);
+    collection_decl.set_environment(kEnvironmentName);
+    collection_decl.set_durability(
+        fuchsia::component::decl::Durability::TRANSIENT);
+    collection_decl.set_allowed_offers(
+        fuchsia::component::decl::AllowedOffers::STATIC_AND_DYNAMIC);
+    test_proxy_decl.mutable_collections()->emplace_back(
+        std::move(collection_decl));
+
+    test_proxy_decl.mutable_capabilities()->emplace_back(
+        fuchsia::component::decl::Capability::WithDirectory(std::move(
+            fuchsia::component::decl::Directory()
+                .set_name(kDynamicComponentCapabilitiesName)
+                .set_rights(fuchsia::io::RW_STAR_DIR)
+                .set_source_path(kDynamicComponentCapabilitiesPath))));
+
+    test_proxy_decl.mutable_exposes()->emplace_back(
+        fuchsia::component::decl::Expose::WithProtocol(std::move(
+            fuchsia::component::decl::ExposeProtocol()
+                .set_source(fuchsia::component::decl::Ref::WithFramework({}))
+                .set_source_name(fuchsia::component::Realm::Name_)
+                .set_target(fuchsia::component::decl::Ref::WithParent({}))
+                .set_target_name(fuchsia::component::Realm::Name_))));
+
+    realm_builder.ReplaceComponentDecl(kTestProxyName,
+                                       std::move(test_proxy_decl));
+  }
+
+  // Offer the test-proxy the Cast Resolver and Runner capabilities, and
+  // expose its framework-provided Realm protocol out to the test.
+  {
+    auto realm_decl = realm_builder.GetRealmDecl();
+    realm_decl.mutable_exposes()->emplace_back(
+        fuchsia::component::decl::Expose::WithProtocol(std::move(
+            fuchsia::component::decl::ExposeProtocol()
+                .set_source(fuchsia::component::decl::Ref::WithChild(
+                    fuchsia::component::decl::ChildRef{.name = kTestProxyName}))
+                .set_source_name(fuchsia::component::Realm::Name_)
+                .set_target(fuchsia::component::decl::Ref::WithParent({}))
+                .set_target_name(fuchsia::component::Realm::Name_))));
+
+    realm_decl.mutable_offers()->emplace_back(
+        fuchsia::component::decl::Offer::WithResolver(std::move(
+            fuchsia::component::decl::OfferResolver()
+                .set_source(fuchsia::component::decl::Ref::WithChild(
+                    fuchsia::component::decl::ChildRef{
+                        .name = kCastRunnerComponentName}))
+                .set_source_name(kCastResolverName)
+                .set_target(fuchsia::component::decl::Ref::WithChild(
+                    fuchsia::component::decl::ChildRef{.name = kTestProxyName}))
+                .set_target_name(kCastResolverName))));
+
+    realm_decl.mutable_offers()->emplace_back(
+        fuchsia::component::decl::Offer::WithRunner(std::move(
+            fuchsia::component::decl::OfferRunner()
+                .set_source(fuchsia::component::decl::Ref::WithChild(
+                    fuchsia::component::decl::ChildRef{
+                        .name = kCastRunnerComponentName}))
+                .set_source_name(kCastRunnerName)
+                .set_target(fuchsia::component::decl::Ref::WithChild(
+                    fuchsia::component::decl::ChildRef{.name = kTestProxyName}))
+                .set_target_name(kCastRunnerName))));
+
+    realm_builder.ReplaceRealmDecl(std::move(realm_decl));
+  }
+
+  // Create the test Realm and connect to its exposed services.
   realm_root_ = realm_builder.Build();
   return std::make_unique<sys::ServiceDirectory>(
       realm_root_->component().CloneExposedDir());

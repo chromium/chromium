@@ -22,6 +22,11 @@ namespace test {
 // component_testing.RealmBuilder to start the cast runner component.
 class CastRunnerLauncher {
  public:
+  // Name of a component collection defined under this launcher's `Realm`,
+  // into which Cast activities may be launched using the `cast_runner`
+  // managed by this launcher.
+  static constexpr char kTestCollectionName[] = "cast-test-collection";
+
   explicit CastRunnerLauncher(CastRunnerFeatures runner_features);
   CastRunnerLauncher(const CastRunnerLauncher&) = delete;
   CastRunnerLauncher& operator=(const CastRunnerLauncher&) = delete;
