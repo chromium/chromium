@@ -995,6 +995,7 @@ class ChromeAndroidBase(Product):
             yield
 
     def update_options(self):
+        super().update_options()
         self._options.device_serial.extend(sorted(self.devices))
         self._options.package_name = (self._options.package_name
                                       or self.get_browser_package_name())
