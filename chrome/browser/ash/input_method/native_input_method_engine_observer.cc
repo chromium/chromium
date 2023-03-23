@@ -341,6 +341,62 @@ mojom::DomCode DomCodeToMojom(const ui::DomCode code) {
       return mojom::DomCode::kControlRight;
     case ui::DomCode::CAPS_LOCK:
       return mojom::DomCode::kCapsLock;
+    case ui::DomCode::ESCAPE:
+      return mojom::DomCode::kEscape;
+    case ui::DomCode::TAB:
+      return mojom::DomCode::kTab;
+    case ui::DomCode::NUMPAD_MULTIPLY:
+      return mojom::DomCode::kNumpadMultiply;
+    case ui::DomCode::KANA_MODE:
+      return mojom::DomCode::kKanaMode;
+    case ui::DomCode::PAGE_UP:
+      return mojom::DomCode::kPageUp;
+    case ui::DomCode::END:
+      return mojom::DomCode::kEnd;
+    case ui::DomCode::DEL:
+      return mojom::DomCode::kDelete;
+    case ui::DomCode::HOME:
+      return mojom::DomCode::kHome;
+    case ui::DomCode::PAGE_DOWN:
+      return mojom::DomCode::kPageDown;
+    case ui::DomCode::ARROW_UP:
+      return mojom::DomCode::kArrowUp;
+    case ui::DomCode::ARROW_LEFT:
+      return mojom::DomCode::kArrowLeft;
+    case ui::DomCode::ARROW_RIGHT:
+      return mojom::DomCode::kArrowRight;
+    case ui::DomCode::ARROW_DOWN:
+      return mojom::DomCode::kArrowDown;
+    case ui::DomCode::NUMPAD0:
+      return mojom::DomCode::kNumpad0;
+    case ui::DomCode::NUMPAD1:
+      return mojom::DomCode::kNumpad1;
+    case ui::DomCode::NUMPAD2:
+      return mojom::DomCode::kNumpad2;
+    case ui::DomCode::NUMPAD3:
+      return mojom::DomCode::kNumpad3;
+    case ui::DomCode::NUMPAD4:
+      return mojom::DomCode::kNumpad4;
+    case ui::DomCode::NUMPAD5:
+      return mojom::DomCode::kNumpad5;
+    case ui::DomCode::NUMPAD6:
+      return mojom::DomCode::kNumpad6;
+    case ui::DomCode::NUMPAD7:
+      return mojom::DomCode::kNumpad7;
+    case ui::DomCode::NUMPAD8:
+      return mojom::DomCode::kNumpad8;
+    case ui::DomCode::NUMPAD9:
+      return mojom::DomCode::kNumpad9;
+    case ui::DomCode::NUMPAD_SUBTRACT:
+      return mojom::DomCode::kNumpadSubtract;
+    case ui::DomCode::NUMPAD_ADD:
+      return mojom::DomCode::kNumpadAdd;
+    case ui::DomCode::NUMPAD_DECIMAL:
+      return mojom::DomCode::kNumpadDecimal;
+    case ui::DomCode::NUMPAD_ENTER:
+      return mojom::DomCode::kNumpadEnter;
+    case ui::DomCode::NUMPAD_DIVIDE:
+      return mojom::DomCode::kNumpadDivide;
     default:
       return mojom::DomCode::kOther;
   }

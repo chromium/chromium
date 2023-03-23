@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 18
+// Next MinVersion: 19
 
 module ash.ime.mojom;
 
@@ -173,6 +173,34 @@ enum DomCode {
   kControlLeft = 58,
   kControlRight = 59,
   kCapsLock = 60,
+  [MinVersion=18] kEscape = 61,
+  [MinVersion=18] kTab = 62,
+  [MinVersion=18] kNumpadMultiply = 63,
+  [MinVersion=18] kKanaMode = 64,
+  [MinVersion=18] kPageUp = 65,
+  [MinVersion=18] kEnd = 66,
+  [MinVersion=18] kDelete = 67,
+  [MinVersion=18] kHome = 68,
+  [MinVersion=18] kPageDown = 69,
+  [MinVersion=18] kArrowUp = 70,
+  [MinVersion=18] kArrowLeft = 71,
+  [MinVersion=18] kArrowRight = 72,
+  [MinVersion=18] kArrowDown = 73,
+  [MinVersion=18] kNumpad0 = 74,
+  [MinVersion=18] kNumpad1 = 75,
+  [MinVersion=18] kNumpad2 = 76,
+  [MinVersion=18] kNumpad3 = 77,
+  [MinVersion=18] kNumpad4 = 78,
+  [MinVersion=18] kNumpad5 = 79,
+  [MinVersion=18] kNumpad6 = 80,
+  [MinVersion=18] kNumpad7 = 81,
+  [MinVersion=18] kNumpad8 = 82,
+  [MinVersion=18] kNumpad9 = 83,
+  [MinVersion=18] kNumpadSubtract = 84,
+  [MinVersion=18] kNumpadAdd = 85,
+  [MinVersion=18] kNumpadDecimal = 86,
+  [MinVersion=18] kNumpadEnter = 87,
+  [MinVersion=18] kNumpadDivide = 88,
 };
 
 // Information about a physical key event.
