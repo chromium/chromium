@@ -83,6 +83,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPrivateAggregationApiEnabledInFledge;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPrivateAggregationApiFledgeExtensionsEnabled;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kPrivateAggregationApiMaxBudgetPerScope;
 
 enum class SharedStorageWorkletImplementationType {
   // The worklet thread is created via base::SequenceBound, and JS bindings are

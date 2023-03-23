@@ -73,9 +73,6 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
     kMaxValue = kContainsNonPositiveValue,
   };
 
-  // Maximum budget allowed to be claimed per-origin per-day per-API.
-  static constexpr int kMaxBudgetPerScope = 65536;
-
   // To avoid unbounded memory growth, limit the number of pending calls during
   // initialization. Data clearing calls can be posted even if it would exceed
   // this limit.

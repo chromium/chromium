@@ -27,6 +27,7 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 #include "url/gurl.h"
@@ -81,7 +82,8 @@ void ComputeAndRecordBudgetValidity(
       RecordBudgetValidity(ValidityStatus::kContainsTimestampNotRoundedToHour);
       return;
 
-    } else if (budget > PrivateAggregationBudgeter::kMaxBudgetPerScope) {
+    } else if (budget >
+               blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get()) {
       RecordBudgetValidity(ValidityStatus::kContainsValueExceedingLimit);
       return;
 
@@ -236,6 +238,9 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(RequestResult)> on_done) {
+  const int kMaxBudgetPerScope =
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get();
+
   switch (storage_status_) {
     case StorageStatus::kInitializing:
       NOTREACHED();

@@ -24,6 +24,7 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
@@ -31,6 +32,7 @@
 #include "content/browser/private_aggregation/proto/private_aggregation_budgets.pb.h"
 #include "content/browser/storage_partition_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "url/gurl.h"
@@ -245,13 +247,14 @@ TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
           url::Origin::Create(GURL("https://a.example/")),
           base::Time::FromJavaTime(1652984901234),
           PrivateAggregationBudgetKey::Api::kFledge);
-  budgeter()->ConsumeBudget(PrivateAggregationBudgeter::kMaxBudgetPerScope,
-                            example_key,
-                            base::BindLambdaForTesting(
-                                [&num_queries_processed](RequestResult result) {
-                                  EXPECT_EQ(result, RequestResult::kApproved);
-                                  ++num_queries_processed;
-                                }));
+  budgeter()->ConsumeBudget(
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key,
+      base::BindLambdaForTesting(
+          [&num_queries_processed](RequestResult result) {
+            EXPECT_EQ(result, RequestResult::kApproved);
+            ++num_queries_processed;
+          }));
 
   // Ensure database has a chance to persist storage.
   EnsureDbFlushes();
@@ -282,13 +285,14 @@ TEST_F(PrivateAggregationBudgeterTest,
           url::Origin::Create(GURL("https://a.example/")),
           base::Time::FromJavaTime(1652984901234),
           PrivateAggregationBudgetKey::Api::kFledge);
-  budgeter()->ConsumeBudget(PrivateAggregationBudgeter::kMaxBudgetPerScope,
-                            example_key,
-                            base::BindLambdaForTesting(
-                                [&num_queries_processed](RequestResult result) {
-                                  EXPECT_EQ(result, RequestResult::kApproved);
-                                  ++num_queries_processed;
-                                }));
+  budgeter()->ConsumeBudget(
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key,
+      base::BindLambdaForTesting(
+          [&num_queries_processed](RequestResult result) {
+            EXPECT_EQ(result, RequestResult::kApproved);
+            ++num_queries_processed;
+          }));
 
   // Ensure database has a chance to persist storage.
   EnsureDbFlushes();
@@ -330,7 +334,8 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
 
   // Budget can be increased to max
   budgeter()->ConsumeBudget(
-      /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope - 1),
+      /*budget=*/(
+          blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() - 1),
       example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -372,9 +377,9 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentTimeWindows) {
   // Consuming this budget 24 times in a day would not exceed the daily budget,
   // but 25 times would.
   int budget_to_use_per_hour =
-      PrivateAggregationBudgeter::kMaxBudgetPerScope / 24;
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() / 24;
   EXPECT_GT(budget_to_use_per_hour * 25,
-            PrivateAggregationBudgeter::kMaxBudgetPerScope);
+            blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get());
 
   // Use budget in the first 24 keys.
   for (int i = 0; i < 24; ++i) {
@@ -431,7 +436,8 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
           PrivateAggregationBudgetKey::Api::kSharedStorage);
 
   budgeter()->ConsumeBudget(
-      PrivateAggregationBudgeter::kMaxBudgetPerScope, fledge_key,
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      fledge_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult request) {
             EXPECT_EQ(request, RequestResult::kApproved);
@@ -442,7 +448,8 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
 
   // The budget for one API does not interfere with the other.
   budgeter()->ConsumeBudget(
-      PrivateAggregationBudgeter::kMaxBudgetPerScope, shared_storage_key,
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      shared_storage_key,
       base::BindLambdaForTesting([&](RequestResult request) {
         EXPECT_EQ(request, RequestResult::kApproved);
         ++num_queries_processed;
@@ -469,18 +476,18 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOrigins) {
           base::Time::FromJavaTime(1652984901234),
           PrivateAggregationBudgetKey::Api::kFledge);
 
-  budgeter()->ConsumeBudget(PrivateAggregationBudgeter::kMaxBudgetPerScope,
-                            key_a,
-                            base::BindLambdaForTesting(
-                                [&num_queries_processed](RequestResult result) {
-                                  EXPECT_EQ(result, RequestResult::kApproved);
-                                  ++num_queries_processed;
-                                }));
+  budgeter()->ConsumeBudget(
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(), key_a,
+      base::BindLambdaForTesting(
+          [&num_queries_processed](RequestResult result) {
+            EXPECT_EQ(result, RequestResult::kApproved);
+            ++num_queries_processed;
+          }));
 
   base::RunLoop run_loop;
   // The budget for one origin does not interfere with the other.
   budgeter()->ConsumeBudget(
-      PrivateAggregationBudgeter::kMaxBudgetPerScope, key_b,
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(), key_b,
       base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
@@ -521,7 +528,8 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
 
   // Request will be rejected if budget exceeds maximum
   budgeter()->ConsumeBudget(
-      /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope + 1),
+      /*budget=*/(
+          blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() + 1),
       example_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kRequestedMoreThanTotalBudget);
         ++num_queries_processed;
@@ -552,7 +560,8 @@ TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
   int64_t after_latest_window_start = latest_window_start + window_duration;
   int64_t before_oldest_window_start = oldest_window_start - window_duration;
 
-  constexpr int max_budget = PrivateAggregationBudgeter::kMaxBudgetPerScope;
+  const int max_budget =
+      blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get();
 
   struct HourlyBudget {
     int budget;
@@ -645,7 +654,8 @@ TEST_F(PrivateAggregationBudgeterTest,
             EXPECT_EQ(++num_queries_processed, 1);
           }));
   budgeter()->ConsumeBudget(
-      /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope - 1),
+      /*budget=*/(
+          blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() - 1),
       example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -697,7 +707,8 @@ TEST_F(PrivateAggregationBudgeterTest,
             EXPECT_EQ(++num_queries_processed, 1);
           }));
   budgeter()->ConsumeBudget(
-      /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope - 1),
+      /*budget=*/(
+          blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() - 1),
       example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -848,7 +859,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
           PrivateAggregationBudgetKey::Api::kFledge);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kApproved);
@@ -876,8 +888,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
-      base::BindLambdaForTesting([&](RequestResult result) {
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
       }));
@@ -913,7 +925,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
           }));
 
   budgeter()->ConsumeBudget(
-      /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope - 1),
+      /*budget=*/(
+          blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() - 1),
       example_key_2,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
@@ -945,8 +958,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
 
   // After clearing, we can use the full budget again.
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_2,
-      base::BindLambdaForTesting([&](RequestResult result) {
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_2, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
       }));
@@ -994,7 +1007,8 @@ TEST_F(PrivateAggregationBudgeterTest,
       /*budget=*/1, key_before, expect_approved);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope - 2),
+      /*budget=*/(
+          blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() - 2),
       key_to_clear, expect_approved);
 
   budgeter()->ConsumeBudget(
@@ -1022,9 +1036,11 @@ TEST_F(PrivateAggregationBudgeterTest,
                         }));
 
   // After clearing, we can have a budget of exactly
-  // (`PrivateAggregationBudgeter::kMaxBudgetPerScope` - 2) that we can use.
+  // (`blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get()` - 2) that
+  // we can use.
   budgeter()->ConsumeBudget(
-      /*budget=*/(PrivateAggregationBudgeter::kMaxBudgetPerScope - 2),
+      /*budget=*/(
+          blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() - 2),
       key_after, expect_approved);
 
   budgeter()->ConsumeBudget(
@@ -1066,15 +1082,15 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
           });
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, fledge_key,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      fledge_key, expect_approved);
 
   // Maximum budget has been used so this should fail.
   budgeter()->ConsumeBudget(
       /*budget=*/1, fledge_key, expect_insufficient_budget);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope,
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
       shared_storage_key, expect_approved);
 
   // Maximum budget has been used so this should fail.
@@ -1093,11 +1109,11 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, fledge_key,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      fledge_key, expect_approved);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope,
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
       shared_storage_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
@@ -1117,7 +1133,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
           PrivateAggregationBudgetKey::Api::kFledge);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kApproved);
@@ -1145,8 +1162,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
-      base::BindLambdaForTesting([&](RequestResult result) {
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
       }));
@@ -1165,7 +1182,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
           PrivateAggregationBudgetKey::Api::kFledge);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kApproved);
@@ -1193,8 +1211,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
-      base::BindLambdaForTesting([&](RequestResult result) {
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
       }));
@@ -1213,7 +1231,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
           PrivateAggregationBudgetKey::Api::kFledge);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kApproved);
@@ -1241,8 +1260,8 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
 
   // After clearing, we can use the full budget again
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
-      base::BindLambdaForTesting([&](RequestResult result) {
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key, base::BindLambdaForTesting([&](RequestResult result) {
         EXPECT_EQ(result, RequestResult::kApproved);
         ++num_queries_processed;
       }));
@@ -1280,16 +1299,16 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
           });
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_a,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_a, expect_approved);
 
   // Maximum budget has been used so this should fail.
   budgeter()->ConsumeBudget(
       /*budget=*/1, example_key_a, expect_insufficient_budget);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_b,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_b, expect_approved);
 
   // Maximum budget has been used so this should fail.
   budgeter()->ConsumeBudget(
@@ -1310,11 +1329,11 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
 
   // After clearing, we can use the full budget again for the cleared origin.
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_a,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_a, expect_approved);
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_b,
-      expect_insufficient_budget);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_b, expect_insufficient_budget);
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
 }
@@ -1349,16 +1368,16 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
           });
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_a,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_a, expect_approved);
 
   // Maximum budget has been used so this should fail.
   budgeter()->ConsumeBudget(
       /*budget=*/1, example_key_a, expect_insufficient_budget);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_b,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_b, expect_approved);
 
   // Maximum budget has been used so this should fail.
   budgeter()->ConsumeBudget(
@@ -1379,12 +1398,12 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
 
   // After clearing, we can use the full budget again for the cleared origin.
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_a,
-      expect_approved);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_a, expect_approved);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key_b,
-      expect_insufficient_budget);
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key_b, expect_insufficient_budget);
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 7);
 }
@@ -1401,7 +1420,8 @@ TEST_F(PrivateAggregationBudgeterTest,
           PrivateAggregationBudgetKey::Api::kFledge);
 
   budgeter()->ConsumeBudget(
-      /*budget=*/PrivateAggregationBudgeter::kMaxBudgetPerScope, example_key,
+      /*budget=*/blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get(),
+      example_key,
       base::BindLambdaForTesting(
           [&num_queries_processed](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kApproved);
@@ -1420,6 +1440,58 @@ TEST_F(PrivateAggregationBudgeterTest,
   // Callback still run even though the budgeter was immediately destroyed.
   run_loop.Run();
   EXPECT_EQ(num_queries_processed, 2);
+}
+
+TEST_F(PrivateAggregationBudgeterTest, DifferentMaxScope_StillFunctions) {
+  for (const std::string& max_budget_param : {"10", "16777216"}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        blink::features::kPrivateAggregationApi,
+        {{"max_budget_per_scope", max_budget_param}});
+
+    int num_queries_processed = 0;
+
+    CreateBudgeterAndWait();
+
+    PrivateAggregationBudgetKey example_key =
+        PrivateAggregationBudgetKey::CreateForTesting(
+            url::Origin::Create(GURL("https://a.example/")),
+            base::Time::FromJavaTime(1652984901234),
+            PrivateAggregationBudgetKey::Api::kFledge);
+
+    // Budget can be increased to below max
+    budgeter()->ConsumeBudget(
+        /*budget=*/1, example_key,
+        base::BindLambdaForTesting(
+            [&num_queries_processed](RequestResult result) {
+              EXPECT_EQ(result, RequestResult::kApproved);
+              ++num_queries_processed;
+            }));
+
+    // Budget can be increased to max
+    budgeter()->ConsumeBudget(
+        /*budget=*/(
+            blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get() - 1),
+        example_key,
+        base::BindLambdaForTesting(
+            [&num_queries_processed](RequestResult result) {
+              EXPECT_EQ(result, RequestResult::kApproved);
+              ++num_queries_processed;
+            }));
+
+    base::RunLoop run_loop;
+
+    // Budget cannot be increased above max
+    budgeter()->ConsumeBudget(
+        /*budget=*/1, example_key,
+        base::BindLambdaForTesting([&](RequestResult result) {
+          EXPECT_EQ(result, RequestResult::kInsufficientBudget);
+          ++num_queries_processed;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    EXPECT_EQ(num_queries_processed, 3);
+  }
 }
 
 }  // namespace
