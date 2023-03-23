@@ -2558,9 +2558,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (URLInfo*)tableView:(UITableView*)tableView
     URLInfoAtIndexPath:(NSIndexPath*)indexPath {
-  if (indexPath.section ==
-      [self.tableViewModel
-          sectionForSectionIdentifier:BookmarksHomeSectionIdentifierMessages]) {
+  if (indexPath.section !=
+      [self.tableViewModel sectionForSectionIdentifier:
+                               BookmarksHomeSectionIdentifierBookmarks]) {
     return nil;
   }
 
