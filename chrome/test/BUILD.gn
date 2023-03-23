@@ -4463,6 +4463,7 @@ if (!is_android) {
         "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
         "//chromeos/ash/services/network_config",
         "//chromeos/components/onc:test_support",
+        "//chromeos/components/quick_answers:quick_answers",
         "//chromeos/components/quick_answers/public/cpp:cpp",
         "//chromeos/components/quick_answers/public/cpp:prefs",
         "//chromeos/components/remote_apps/mojom:mojom",

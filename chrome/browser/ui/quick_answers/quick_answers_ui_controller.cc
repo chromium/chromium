@@ -102,15 +102,16 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
-  if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
+  if (chromeos::features::IsQuickAnswersRichCardEnabled() &&
+      controller_->quick_answer() != nullptr &&
+      controller_->quick_answer()->result_type !=
+          quick_answers::ResultType::kNoResult) {
     auto* const rich_answers_view = new quick_answers::RichAnswersView(
         quick_answers_view_tracker_.view()->bounds(),
-        weak_factory_.GetWeakPtr());
-    rich_answers_view_tracker_.SetView(rich_answers_view);
+        weak_factory_.GetWeakPtr(), *controller_->quick_answer());
     rich_answers_view->GetWidget()->ShowInactive();
 
-    // Temporarily set rich-answers visibility here. Will move after
-    // setting up rich-answers request handling.
+    rich_answers_view_tracker_.SetView(rich_answers_view);
     controller_->SetVisibility(QuickAnswersVisibility::kRichAnswersVisible);
     return;
   }

@@ -16,16 +16,20 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_browsertest_base.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -225,6 +229,21 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
       quick_answers_view_widget_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(quick_answers_view_widget != nullptr);
 
+  // Simulate having received a valid QuickAnswer response, which is necessary
+  // for triggering the rich answers view.
+  std::unique_ptr<quick_answers::QuickAnswer> quick_answer =
+      std::make_unique<quick_answers::QuickAnswer>();
+  quick_answer->result_type = ResultType::kTranslationResult;
+  quick_answer->title.push_back(
+      std::make_unique<quick_answers::QuickAnswerText>(
+          l10n_util::GetStringFUTF8(IDS_QUICK_ANSWERS_TRANSLATION_TITLE_TEXT,
+                                    u"prodotto", u"Italian")));
+  quick_answer->first_answer_row.push_back(
+      std::make_unique<quick_answers::QuickAnswerResultText>(
+          l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_TRANSLATION_INTENT)));
+  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
+      std::move(quick_answer));
+
   // Click on the quick answers view to trigger the rich answers view.
   views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
       views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
@@ -232,11 +251,13 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
       quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
   event_generator_->ClickLeftButton();
 
-  // Check that the quick answers view closes and the rich answers view pops up.
+  // Check that the quick answers view closes when the rich answers view shows.
   views::Widget* rich_answers_view_widget =
       rich_answers_view_widget_waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(quick_answers_view_widget->IsClosed());
   ASSERT_TRUE(rich_answers_view_widget != nullptr);
+  ASSERT_TRUE(controller()->GetVisibilityForTesting() ==
+              QuickAnswersVisibility::kRichAnswersVisible);
 
   // Click outside the rich answers view window bounds to dismiss it.
   gfx::Rect rich_answers_bounds =
@@ -247,6 +268,39 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
 
   // Check that the rich answers view is dismissed.
   ASSERT_TRUE(rich_answers_view_widget->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
+                       RichAnswersNotTriggeredOnInvalidResult) {
+  std::unique_ptr<ui::test::EventGenerator> event_generator_ =
+      std::make_unique<ui::test::EventGenerator>(
+          ash::Shell::GetPrimaryRootWindow());
+
+  views::NamedWidgetShownWaiter quick_answers_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), QuickAnswersView::kWidgetName);
+
+  ShowMenuParams params;
+  params.selected_text = kTestQuery;
+  params.x = kCursorXToOverlapWithANotification;
+  params.y = kCursorYToOverlapWithANotification;
+  ShowMenu(params);
+
+  views::Widget* quick_answers_view_widget =
+      quick_answers_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(quick_answers_view_widget != nullptr);
+
+  // Click on the quick answers view. This should not trigger the
+  // rich answers view since no valid QuickAnswer result is provided.
+  views::NamedWidgetShownWaiter rich_answers_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(), RichAnswersView::kWidgetName);
+  event_generator_->MoveMouseTo(
+      quick_answers_view_widget->GetWindowBoundsInScreen().CenterPoint());
+  event_generator_->ClickLeftButton();
+
+  // Check that all quick answers views are closed.
+  ASSERT_TRUE(quick_answers_view_widget->IsClosed());
+  ASSERT_TRUE(controller()->GetVisibilityForTesting() ==
+              QuickAnswersVisibility::kClosed);
 }
 
 }  // namespace quick_answers

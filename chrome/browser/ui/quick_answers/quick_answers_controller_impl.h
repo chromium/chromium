@@ -71,6 +71,8 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
     return quick_answers_ui_controller_.get();
   }
 
+  quick_answers::QuickAnswer* quick_answer() { return quick_answer_.get(); }
+
  private:
   void HandleQuickAnswerRequest(
       const quick_answers::QuickAnswersRequest& request);

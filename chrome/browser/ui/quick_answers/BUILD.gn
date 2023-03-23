@@ -20,6 +20,8 @@ source_set("quick_answers") {
     "ui/quick_answers_view.h",
     "ui/rich_answers_pre_target_handler.cc",
     "ui/rich_answers_pre_target_handler.h",
+    "ui/rich_answers_translation_view.cc",
+    "ui/rich_answers_translation_view.h",
     "ui/rich_answers_view.cc",
     "ui/rich_answers_view.h",
     "ui/user_consent_view.cc",

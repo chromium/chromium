@@ -22,15 +22,18 @@ class ImageButton;
 class QuickAnswersUiController;
 
 namespace quick_answers {
+
+struct QuickAnswer;
 class RichAnswersPreTargetHandler;
 
-// A bubble style view to show QuickAnswer.
+// A bubble style view to show RichAnswer.
 class RichAnswersView : public views::View {
  public:
   static constexpr char kWidgetName[] = "RichAnswersViewWidget";
 
   RichAnswersView(const gfx::Rect& anchor_view_bounds,
-                  base::WeakPtr<QuickAnswersUiController> controller);
+                  base::WeakPtr<QuickAnswersUiController> controller,
+                  const quick_answers::QuickAnswer& result);
 
   RichAnswersView(const RichAnswersView&) = delete;
   RichAnswersView& operator=(const RichAnswersView&) = delete;
@@ -45,7 +48,7 @@ class RichAnswersView : public views::View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  void InitLayout();
+  void InitLayout(const quick_answers::QuickAnswer& result);
   void InitWidget();
   void AddFrameButtons();
   void UpdateBounds();
@@ -59,6 +62,7 @@ class RichAnswersView : public views::View {
   base::WeakPtr<QuickAnswersUiController> controller_;
 
   raw_ptr<views::View> base_view_ = nullptr;
+  raw_ptr<views::View> content_view_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   std::unique_ptr<quick_answers::RichAnswersPreTargetHandler>
@@ -69,4 +73,4 @@ class RichAnswersView : public views::View {
 
 }  // namespace quick_answers
 
-#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_RICH_ANSWERS_VIEW_H_
