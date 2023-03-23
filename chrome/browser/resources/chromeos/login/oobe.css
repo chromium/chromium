@@ -11,6 +11,7 @@
   --oobe-oobe-dialog-height-base: 504px;
   --oobe-oobe-dialog-width-base: 461px;
   --oobe-bg-color: var(--cros-bg-color);
+  --oobe-container-border-radius: 2px;
 }
 :root.jelly-enabled {
   --oobe-bg-color: var(--cros-sys-app_base_shaded);
@@ -139,18 +140,6 @@ span.bold {
 Styles related to the `md-screen-container`
 */
 
-#outer-container {
-  height: 100%;
-  z-index: 1;
-}
-
-.oobe-vertical-margin {
-  align-self: stretch;
-  flex: 0 1 auto; /* grow shrink basis */
-  height: var(--oobe-dialog-side-margin);
-  min-height: 0;
-}
-
 #scroll-container {
   bottom: var(--shelf-area-height);  /* Leave space for the shelf */
   left: 0;
@@ -165,14 +154,31 @@ Styles related to the `md-screen-container`
   overflow-y: hidden;
 }
 
-#inner-container {
-  border-radius: 2px;
-  position: relative;
+#outer-container {
+  height: 100%;
+  z-index: 1;
+}
+
+.oobe-vertical-margin {
+  align-self: stretch;
+  flex: 0 1 auto; /* grow shrink basis */
+  height: var(--oobe-dialog-side-margin);
+  min-height: 0;
+}
+
+#oobe {
+  display: grid;
+  flex: 1 0 auto; /* grow shrink basis */
+  min-height: var(--oobe-dialog-min-height);
+  place-items: center;
+  width: 100%;
 }
 
 #inner-container {
+  border-radius: var(--oobe-container-border-radius);
   display: grid;
   place-items: center;
+  position: relative;
 }
 
 #inner-container.animation {
@@ -196,14 +202,6 @@ Styles related to the `md-screen-container`
 
 .oobe-display #inner-container.down {
   transform: translateY(50px) rotateX(-2.5deg);
-}
-
-#oobe {
-  display: grid;
-  flex: 1 0 auto; /* grow shrink basis */
-  min-height: var(--oobe-dialog-min-height);
-  place-items: center;
-  width: 100%;
 }
 
 /* Styles related to the `top_header_bar` */
