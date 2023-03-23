@@ -88,6 +88,16 @@ class SmartCardProviderPrivateAPI
   void SetResponseTimeLimitForTesting(base::TimeDelta);
 
  private:
+  template <typename Callback>
+  struct PendingResult {
+    base::OneShotTimer timer;
+    Callback callback;
+  };
+
+  template <typename Callback>
+  using PendingResultMap =
+      std::map<RequestId, std::unique_ptr<PendingResult<Callback>>>;
+
   // BrowserContextKeyedAPI:
   static const bool kServiceIsCreatedWithBrowserContext = false;
   static const char* service_name() { return "SmartCardProviderPrivateAPI"; }
@@ -124,6 +134,17 @@ class SmartCardProviderPrivateAPI
   void OnDisconnectTimeout(const std::string& provider_extension_id,
                            RequestId request_id);
 
+  template <typename ResultPtr, typename Callback>
+  void DispatchEventWithTimeout(
+      const std::string& event_name,
+      extensions::events::HistogramValue histogram_value,
+      base::OnceCallback<void(ResultPtr)> callback,
+      PendingResultMap<Callback>& pending_results,
+      void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
+                                                     RequestId),
+      base::Value::List event_arguments = base::Value::List(),
+      absl::optional<base::TimeDelta> timeout = absl::nullopt);
+
   device::mojom::SmartCardConnectResultPtr CreateSmartCardConnection(
       Handle handle,
       device::mojom::SmartCardProtocol active_protocol);
@@ -132,27 +153,16 @@ class SmartCardProviderPrivateAPI
 
   base::TimeDelta response_time_limit_{base::Minutes(5)};
 
-  struct PendingEstablishContext;
-  std::map<RequestId, std::unique_ptr<PendingEstablishContext>>
-      pending_establish_context_;
+  PendingResultMap<CreateContextCallback> pending_establish_context_;
 
   struct PendingReleaseContext;
   std::map<RequestId, std::unique_ptr<PendingReleaseContext>>
       pending_release_context_;
 
-  struct PendingListReaders;
-  std::map<RequestId, std::unique_ptr<PendingListReaders>>
-      pending_list_readers_;
-
-  struct PendingGetStatusChange;
-  std::map<RequestId, std::unique_ptr<PendingGetStatusChange>>
-      pending_get_status_change_;
-
-  struct PendingConnect;
-  std::map<RequestId, std::unique_ptr<PendingConnect>> pending_connect_;
-
-  struct PendingDisconnect;
-  std::map<RequestId, std::unique_ptr<PendingDisconnect>> pending_disconnect_;
+  PendingResultMap<ListReadersCallback> pending_list_readers_;
+  PendingResultMap<GetStatusChangeCallback> pending_get_status_change_;
+  PendingResultMap<ConnectCallback> pending_connect_;
+  PendingResultMap<DisconnectCallback> pending_disconnect_;
 
   RequestId::Generator request_id_generator_;
   const raw_ref<content::BrowserContext> browser_context_;

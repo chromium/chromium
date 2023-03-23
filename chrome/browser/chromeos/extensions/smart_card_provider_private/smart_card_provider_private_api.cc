@@ -263,33 +263,8 @@ std::unique_ptr<PendingType> Extract(
 
 namespace extensions {
 
-struct SmartCardProviderPrivateAPI::PendingEstablishContext {
-  base::OneShotTimer timer;
-  CreateContextCallback callback;
-};
-
 struct SmartCardProviderPrivateAPI::PendingReleaseContext {
   base::OneShotTimer timer;
-};
-
-struct SmartCardProviderPrivateAPI::PendingListReaders {
-  base::OneShotTimer timer;
-  device::mojom::SmartCardContext::ListReadersCallback callback;
-};
-
-struct SmartCardProviderPrivateAPI::PendingGetStatusChange {
-  base::OneShotTimer timer;
-  device::mojom::SmartCardContext::GetStatusChangeCallback callback;
-};
-
-struct SmartCardProviderPrivateAPI::PendingConnect {
-  base::OneShotTimer timer;
-  device::mojom::SmartCardContext::ConnectCallback callback;
-};
-
-struct SmartCardProviderPrivateAPI::PendingDisconnect {
-  base::OneShotTimer timer;
-  DisconnectCallback callback;
 };
 
 // static
@@ -326,37 +301,13 @@ SmartCardProviderPrivateAPI::~SmartCardProviderPrivateAPI() = default;
 void SmartCardProviderPrivateAPI::CreateContext(
     CreateContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RequestId request_id = request_id_generator_.GenerateNextId();
 
-  base::Value::List event_args;
-  event_args.Append(request_id.GetUnsafeValue());
-
-  auto event = std::make_unique<extensions::Event>(
+  DispatchEventWithTimeout(
+      scard_api::OnEstablishContextRequested::kEventName,
       extensions::events::
           SMART_CARD_PROVIDER_PRIVATE_ON_ESTABLISH_CONTEXT_REQUESTED,
-      scard_api::OnEstablishContextRequested::kEventName, std::move(event_args),
-      &*browser_context_);
-
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-
-  if (provider_extension_id.empty()) {
-    std::move(callback).Run(
-        SmartCardCreateContextResult::NewError(SmartCardError::kNoService));
-    return;
-  }
-
-  auto pending = std::make_unique<PendingEstablishContext>();
-  pending->callback = std::move(callback);
-  pending->timer.Start(
-      FROM_HERE, response_time_limit_,
-      base::BindOnce(&SmartCardProviderPrivateAPI::OnEstablishContextTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), provider_extension_id,
-                     request_id));
-
-  pending_establish_context_[request_id] = std::move(pending);
-
-  event_router_->DispatchEventToExtension(provider_extension_id,
-                                          std::move(event));
+      std::move(callback), pending_establish_context_,
+      &SmartCardProviderPrivateAPI::OnEstablishContextTimeout);
 }
 
 void SmartCardProviderPrivateAPI::OnMojoContextDisconnected() {
@@ -425,40 +376,15 @@ void SmartCardProviderPrivateAPI::ProviderDisconnect(
     Handle scard_handle,
     device::mojom::SmartCardDisposition disposition,
     DisconnectCallback callback) {
-  RequestId request_id = request_id_generator_.GenerateNextId();
-
-  base::Value::List event_args;
-  event_args.Append(request_id.GetUnsafeValue());
-  event_args.Append(scard_handle.GetUnsafeValue());
-  event_args.Append(ToValue(disposition));
-
-  auto event = std::make_unique<extensions::Event>(
+  DispatchEventWithTimeout(
+      scard_api::OnDisconnectRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED,
-      scard_api::OnDisconnectRequested::kEventName, std::move(event_args),
-      base::to_address(browser_context_));
-
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-
-  if (provider_extension_id.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       SmartCardResult::NewError(SmartCardError::kNoService)));
-    return;
-  }
-
-  auto pending = std::make_unique<PendingDisconnect>();
-  pending->callback = std::move(callback);
-  pending->timer.Start(
-      FROM_HERE, response_time_limit_,
-      base::BindOnce(&SmartCardProviderPrivateAPI::OnDisconnectTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), provider_extension_id,
-                     request_id));
-
-  pending_disconnect_[request_id] = std::move(pending);
-
-  event_router_->DispatchEventToExtension(provider_extension_id,
-                                          std::move(event));
+      std::move(callback), pending_disconnect_,
+      &SmartCardProviderPrivateAPI::OnDisconnectTimeout,
+      /*event_arguments=*/
+      base::Value::List()
+          .Append(scard_handle.GetUnsafeValue())
+          .Append(ToValue(disposition)));
 }
 
 void SmartCardProviderPrivateAPI::ReportEstablishContextResult(
@@ -467,7 +393,7 @@ void SmartCardProviderPrivateAPI::ReportEstablishContextResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<PendingEstablishContext> pending =
+  std::unique_ptr<PendingResult<CreateContextCallback>> pending =
       Extract(pending_establish_context_, request_id);
   if (!pending) {
     if (result->is_success() && scard_context) {
@@ -525,7 +451,7 @@ void SmartCardProviderPrivateAPI::ReportListReadersResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<PendingListReaders> pending =
+  std::unique_ptr<PendingResult<ListReadersCallback>> pending =
       Extract(pending_list_readers_, request_id);
   if (!pending) {
     return;
@@ -543,7 +469,7 @@ void SmartCardProviderPrivateAPI::ReportGetStatusChangeResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<PendingGetStatusChange> pending =
+  std::unique_ptr<PendingResult<GetStatusChangeCallback>> pending =
       Extract(pending_get_status_change_, request_id);
   if (!pending) {
     return;
@@ -589,7 +515,7 @@ void SmartCardProviderPrivateAPI::ReportConnectResult(
     SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<PendingConnect> pending =
+  std::unique_ptr<PendingResult<ConnectCallback>> pending =
       Extract(pending_connect_, request_id);
   if (!pending) {
     // TODO(crbug.com/1386175): Send disconnect request to PC/SC provider
@@ -614,7 +540,7 @@ void SmartCardProviderPrivateAPI::ReportDisconnectResult(
     device::mojom::SmartCardResultPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<PendingDisconnect> pending =
+  std::unique_ptr<PendingResult<DisconnectCallback>> pending =
       Extract(pending_disconnect_, request_id);
   if (!pending) {
     return;
@@ -649,42 +575,64 @@ std::string SmartCardProviderPrivateAPI::GetListenerExtensionId(
   return (*listener_set.cbegin())->extension_id();
 }
 
+template <typename ResultPtr,
+          typename Callback = base::OnceCallback<void(ResultPtr)>>
+void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
+    const std::string& event_name,
+    extensions::events::HistogramValue histogram_value,
+    base::OnceCallback<void(ResultPtr)> callback,
+    PendingResultMap<Callback>& pending_results,
+    void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
+                                                   RequestId),
+    base::Value::List event_arguments,
+    absl::optional<base::TimeDelta> timeout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RequestId request_id = request_id_generator_.GenerateNextId();
+
+  event_arguments.Insert(event_arguments.begin(),
+                         base::Value(request_id.GetUnsafeValue()));
+
+  auto event = std::make_unique<extensions::Event>(histogram_value, event_name,
+                                                   std::move(event_arguments),
+                                                   &*browser_context_);
+
+  const std::string provider_extension_id = GetListenerExtensionId(*event);
+  if (provider_extension_id.empty()) {
+    ResultPtr error(absl::in_place);
+    error->set_error(SmartCardError::kNoService);
+    std::move(callback).Run(std::move(error));
+    return;
+  }
+
+  auto pending = std::make_unique<PendingResult<Callback>>();
+  pending->callback = std::move(callback);
+  pending->timer.Start(FROM_HERE,
+                       timeout ? timeout.value() : response_time_limit_,
+                       base::BindOnce(OnTimeout, weak_ptr_factory_.GetWeakPtr(),
+                                      provider_extension_id, request_id));
+
+  pending_results[request_id] = std::move(pending);
+
+  event_router_->DispatchEventToExtension(provider_extension_id,
+                                          std::move(event));
+}
+
 void SmartCardProviderPrivateAPI::ListReaders(ListReadersCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const ContextId scard_context = context_receivers_.current_context();
   DCHECK(!scard_context.is_null());
 
-  RequestId request_id = request_id_generator_.GenerateNextId();
-
   base::Value::List event_args;
-  event_args.Append(request_id.GetUnsafeValue());
   event_args.Append(scard_context.GetUnsafeValue());
 
-  auto event = std::make_unique<extensions::Event>(
+  DispatchEventWithTimeout(
+      scard_api::OnListReadersRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_LIST_READERS_REQUESTED,
-      scard_api::OnListReadersRequested::kEventName, std::move(event_args),
-      &*browser_context_);
-
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-  if (provider_extension_id.empty()) {
-    std::move(callback).Run(
-        SmartCardListReadersResult::NewError(SmartCardError::kNoService));
-    return;
-  }
-
-  auto pending = std::make_unique<PendingListReaders>();
-  pending->callback = std::move(callback);
-  pending->timer.Start(
-      FROM_HERE, response_time_limit_,
-      base::BindOnce(&SmartCardProviderPrivateAPI::OnListReadersTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), provider_extension_id,
-                     request_id));
-
-  pending_list_readers_[request_id] = std::move(pending);
-
-  event_router_->DispatchEventToExtension(provider_extension_id,
-                                          std::move(event));
+      std::move(callback), pending_list_readers_,
+      &SmartCardProviderPrivateAPI::OnListReadersTimeout,
+      std::move(event_args));
 }
 
 void SmartCardProviderPrivateAPI::GetStatusChange(
@@ -696,10 +644,7 @@ void SmartCardProviderPrivateAPI::GetStatusChange(
   const ContextId scard_context = context_receivers_.current_context();
   DCHECK(!scard_context.is_null());
 
-  RequestId request_id = request_id_generator_.GenerateNextId();
-
   base::Value::List event_args;
-  event_args.Append(request_id.GetUnsafeValue());
   event_args.Append(scard_context.GetUnsafeValue());
 
   const bool finite_timeout =
@@ -718,31 +663,13 @@ void SmartCardProviderPrivateAPI::GetStatusChange(
   }
   event_args.Append(std::move(reader_states_list));
 
-  auto event = std::make_unique<extensions::Event>(
-      events::SMART_CARD_PROVIDER_PRIVATE_ON_GET_STATUS_CHANGE_REQUESTED,
-      scard_api::OnGetStatusChangeRequested::kEventName, std::move(event_args),
-      &*browser_context_);
-
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-  if (provider_extension_id.empty()) {
-    std::move(callback).Run(
-        SmartCardStatusChangeResult::NewError(SmartCardError::kNoService));
-    return;
-  }
-
-  auto pending = std::make_unique<PendingGetStatusChange>();
-  pending->callback = std::move(callback);
-  if (finite_timeout) {
-    pending->timer.Start(
-        FROM_HERE, std::max(base::Milliseconds(500), time_delta * 2),
-        base::BindOnce(&SmartCardProviderPrivateAPI::OnGetStatusChangeTimeout,
-                       weak_ptr_factory_.GetWeakPtr(), provider_extension_id,
-                       request_id));
-  }
-  pending_get_status_change_[request_id] = std::move(pending);
-
-  event_router_->DispatchEventToExtension(provider_extension_id,
-                                          std::move(event));
+  DispatchEventWithTimeout(
+      scard_api::OnGetStatusChangeRequested::kEventName,
+      extensions::events::
+          SMART_CARD_PROVIDER_PRIVATE_ON_GET_STATUS_CHANGE_REQUESTED,
+      std::move(callback), pending_get_status_change_,
+      &SmartCardProviderPrivateAPI::OnGetStatusChangeTimeout,
+      std::move(event_args), std::max(base::Milliseconds(500), time_delta * 2));
 }
 
 void SmartCardProviderPrivateAPI::Connect(
@@ -755,41 +682,17 @@ void SmartCardProviderPrivateAPI::Connect(
   const ContextId scard_context = context_receivers_.current_context();
   CHECK(!scard_context.is_null());
 
-  RequestId request_id = request_id_generator_.GenerateNextId();
-
   base::Value::List event_args;
-  event_args.Append(request_id.GetUnsafeValue());
   event_args.Append(scard_context.GetUnsafeValue());
   event_args.Append(reader);
   event_args.Append(ToValue(share_mode));
   event_args.Append(ToValue(*preferred_protocols.get()));
 
-  auto event = std::make_unique<extensions::Event>(
+  DispatchEventWithTimeout(
+      scard_api::OnConnectRequested::kEventName,
       extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_CONNECT_REQUESTED,
-      scard_api::OnConnectRequested::kEventName, std::move(event_args),
-      &*browser_context_);
-
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-  if (provider_extension_id.empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), SmartCardConnectResult::NewError(
-                                                SmartCardError::kNoService)));
-    return;
-  }
-
-  auto pending = std::make_unique<PendingConnect>();
-  pending->callback = std::move(callback);
-  pending->timer.Start(
-      FROM_HERE, response_time_limit_,
-      base::BindOnce(&SmartCardProviderPrivateAPI::OnConnectTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), provider_extension_id,
-                     request_id));
-
-  pending_connect_[request_id] = std::move(pending);
-
-  event_router_->DispatchEventToExtension(provider_extension_id,
-                                          std::move(event));
+      std::move(callback), pending_connect_,
+      &SmartCardProviderPrivateAPI::OnConnectTimeout, std::move(event_args));
 }
 
 void SmartCardProviderPrivateAPI::Disconnect(
