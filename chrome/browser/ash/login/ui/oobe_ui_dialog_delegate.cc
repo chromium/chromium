@@ -225,7 +225,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
 
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  ash_util::SetupWidgetInitParamsForContainer(
+  ash_util::SetupWidgetInitParamsForContainerInPrimary(
       &params, kShellWindowId_LockScreenContainer);
   layout_view_ = new LayoutWidgetDelegateView(this, dialog_view_);
   params.delegate = layout_view_;
