@@ -19,12 +19,10 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyboardSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
-import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
@@ -139,6 +137,9 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
       keyboards: {
         type: Array,
+        // Prevents the `onKeyboardListUpdated` observer from firing
+        // when the page is first initialized.
+        value: undefined,
       },
 
       metaKeyLabel: {
@@ -159,6 +160,11 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         type: Boolean,
         value: false,
       },
+
+      keyboardId: {
+        type: Number,
+        value: -1,
+      },
     };
   }
 
@@ -171,6 +177,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           'fakeBackspacePref.value,' +
           'fakeAssistantPref.value,' +
           'fakeCapsLockPref.value)',
+      'onKeyboardListUpdated(keyboards.*)',
     ];
   }
 
@@ -180,7 +187,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
   protected keyboard: Keyboard;
   private keyboards: Keyboard[];
-  private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
+  protected keyboardId: number;
   protected defaultRemappings: {[key: number]: ModifierKey} = {
     [ModifierKey.kMeta]: ModifierKey.kMeta,
     [ModifierKey.kControl]: ModifierKey.kControl,
@@ -204,17 +211,15 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private metaKeyLabel: string;
   private isInitialized: boolean;
 
-  constructor() {
-    super();
-    this.observeKeyboardSettings();
-  }
-
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
       return;
     }
-    this.getKeyboard();
+    if (this.hasKeyboards() &&
+        this.keyboardId !== this.getKeyboardIdFromUrl()) {
+      this.initializeKeyboard();
+    }
   }
 
   private computeModifierRemappings(): Map<ModifierKey, ModifierKey> {
@@ -236,19 +241,13 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
    * Get the keyboard to display according to the keyboardId in the url query,
    * initializing the page and pref with the keyboard data.
    */
-  private async getKeyboard(): Promise<void> {
+  private initializeKeyboard(): void {
     // Set isInitialized to false to prevent calling update keyboard settings
     // api while the prefs are initializing.
     this.isInitialized = false;
-
-    const urlSearchQuery =
-        Router.getInstance().getQueryParameters().get('keyboardId');
-    assert(!!urlSearchQuery);
-
-    // Get the correct keyboard from inputDeviceSettingsProvider with the id.
-    const keyboardId = Number(urlSearchQuery);
-    const searchedKeyboard =
-        this.keyboards.find((keyboard: Keyboard) => keyboard.id === keyboardId);
+    this.keyboardId = this.getKeyboardIdFromUrl();
+    const searchedKeyboard = this.keyboards.find(
+        (keyboard: Keyboard) => keyboard.id === this.keyboardId);
     assert(!!searchedKeyboard);
     this.keyboard = searchedKeyboard;
     this.updateDefaultRemapping();
@@ -269,35 +268,23 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.isInitialized = true;
   }
 
-  private observeKeyboardSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
-        FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
-      return;
-    }
-
-    this.keyboardSettingsObserverReceiver =
-        new KeyboardSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observeKeyboardSettings(
-        this.keyboardSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
+  private keyboardWasDisconnected(id: number): boolean {
+    return !this.keyboards.find(keyboard => keyboard.id === id);
   }
 
-  onKeyboardListUpdated(keyboards: Keyboard[]): void {
-    this.keyboards = keyboards;
+  onKeyboardListUpdated(): void {
     if (Router.getInstance().currentRoute !==
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
       return;
     }
 
-    const keyboardFound = this.keyboard?.id &&
-        keyboards.find(keyboard => keyboard.id === this.keyboard.id);
-
-    // If the keyboard is disconnected in remapping page, go back to
-    // per_device_keyboard page.
-    if (!keyboardFound) {
+    if (!this.hasKeyboards() ||
+        this.keyboardWasDisconnected(this.getKeyboardIdFromUrl())) {
+      this.keyboardId = -1;
       Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
+      return;
     }
+    this.initializeKeyboard();
   }
 
   private defaultInitializePrefs(): void {
@@ -414,6 +401,14 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           this.keyboard.metaKey === MetaKey.kCommand ? ModifierKey.kMeta :
                                                        ModifierKey.kControl,
     };
+  }
+
+  private getKeyboardIdFromUrl(): number {
+    return Number(Router.getInstance().getQueryParameters().get('keyboardId'));
+  }
+
+  private hasKeyboards(): boolean {
+    return this.keyboards?.length > 0;
   }
 }
 

@@ -28,19 +28,24 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     provider = null;
   });
 
-  async function initializeRemapKeysPage() {
+  async function initializeRemapKeysPage(keyboards = fakeKeyboards) {
     page = document.createElement('settings-per-device-keyboard-remap-keys');
-    assertFalse(page.isInitialized);
+    page.keyboards = keyboards;
     // Set the current route with keyboardId as search param and notify
     // the observer to update keyboard settings.
     const url = new URLSearchParams(
-        'keyboardId=' + encodeURIComponent(fakeKeyboards[0].id));
+        'keyboardId=' + encodeURIComponent(keyboards[0].id));
     await Router.getInstance().setCurrentRoute(
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
         /* dynamicParams= */ url, /* removeSearch= */ true);
 
     document.body.appendChild(page);
     assertTrue(page != null);
+    return flushTasks();
+  }
+
+  async function setKeyboards(keyboards) {
+    page.keyboards = keyboards;
     return flushTasks();
   }
 
@@ -61,11 +66,6 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     assertEquals(page.fakeCtrlPref.value, ctrlDefaultMapping);
     assertEquals(page.fakeEscPref.value, ModifierKey.kEscape);
     assertEquals(page.fakeMetaPref.value, metaDefaultMapping);
-  }
-
-  async function getConnectedKeyboardSettings() {
-    const keyboards = await provider.getConnectedKeyboardSettings();
-    return keyboards;
   }
 
   /**
@@ -241,8 +241,9 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     assertEquals(
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
         Router.getInstance().currentRoute);
+    assertEquals(page.keyboardId, page.keyboards[0].id);
     const updatedKeyboards = [fakeKeyboards[1], fakeKeyboards[2]];
-    page.onKeyboardListUpdated(updatedKeyboards);
+    await setKeyboards(updatedKeyboards);
     assertEquals(routes.PER_DEVICE_KEYBOARD, Router.getInstance().currentRoute);
   });
 
@@ -266,7 +267,7 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     page.set('fakeEscPref.value', ModifierKey.kVoid);
 
     // Verify that the keyboard settings in the provider are updated.
-    const keyboards = await getConnectedKeyboardSettings();
+    const keyboards = page.keyboards;
     assertTrue(!!keyboards);
     const updatedRemapping = keyboards[0].settings.modifierRemappings;
     assertTrue(!!updatedRemapping);
