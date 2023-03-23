@@ -110,7 +110,8 @@ void ClientTagBasedModelTypeProcessor::ModelReadyToSync(
   }
 
   if (CheckForInvalidPersistedMetadata(*batch)) {
-    if (IsInitialSyncDone(model_type_state.initial_sync_state())) {
+    if (IsInitialSyncAtLeastPartiallyDone(
+            model_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
           model_type_state, batch->TakeAllMetadata());
     } else {
@@ -880,9 +881,12 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
       bridge_->CreateMetadataChangeList();
   DCHECK(model_ready_to_sync_);
 
-  // Check that the worker correctly marked initial sync as done for this
-  // update.
-  DCHECK(IsInitialSyncDone(model_type_state.initial_sync_state()));
+  // Check that the worker correctly marked initial sync as (at least) partially
+  // done for this update.
+  DCHECK(IsInitialSyncDone(model_type_state.initial_sync_state()) ||
+         (ApplyUpdatesImmediatelyTypes().Has(type_) &&
+          IsInitialSyncAtLeastPartiallyDone(
+              model_type_state.initial_sync_state())));
 
   // Ensure that this is the initial sync, and it was not already marked done.
   DCHECK(HasClearAllDirective(gc_directive) || !entity_tracker_);
@@ -997,7 +1001,10 @@ ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
     UpdateResponseDataList updates) {
   DCHECK(model_ready_to_sync_);
-  DCHECK(IsInitialSyncDone(model_type_state.initial_sync_state()));
+  DCHECK(IsInitialSyncDone(model_type_state.initial_sync_state()) ||
+         (ApplyUpdatesImmediatelyTypes().Has(type_) &&
+          IsInitialSyncAtLeastPartiallyDone(
+              model_type_state.initial_sync_state())));
   DCHECK(entity_tracker_);
 
   ClientTagBasedRemoteUpdateHandler updates_handler(type_, bridge_,
