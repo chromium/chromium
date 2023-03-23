@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "storage/browser/quota/quota_manager.h"
 
 namespace storage {
 class QuotaOverrideHandle;
@@ -129,12 +130,21 @@ class StorageHandler
       const std::string& owner_origin_string,
       std::unique_ptr<ResetSharedStorageBudgetCallback> callback) override;
 
+  DispatchResponse SetStorageBucketTracking(
+      const std::string& serialized_storage_key,
+      bool enable) override;
+
+  DispatchResponse DeleteStorageBucket(
+      const std::string& serialized_storage_key,
+      const std::string& bucket_name) override;
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;
   class IndexedDBObserver;
   class InterestGroupObserver;
   class SharedStorageObserver;
+  class QuotaManagerObserver;
 
   // Not thread safe.
   CacheStorageObserver* GetCacheStorageObserver();
@@ -143,6 +153,7 @@ class StorageHandler
   SharedStorageWorkletHostManager* GetSharedStorageWorkletHostManager();
   absl::variant<protocol::Response, storage::SharedStorageManager*>
   GetSharedStorageManager();
+  storage::QuotaManagerProxy* GetQuotaManagerProxy();
 
   // content::InterestGroupManagerImpl::InterestGroupObserver
   void OnInterestGroupAccessed(
@@ -168,6 +179,8 @@ class StorageHandler
                                      const std::string& storage_key,
                                      const std::u16string& database_name,
                                      const std::u16string& object_store_name);
+  void NotifyCreateOrUpdateBucket(const storage::BucketInfo& bucket_info);
+  void NotifyDeleteBucket(const storage::BucketLocator& bucket_locator);
 
   Response FindStoragePartition(const Maybe<std::string>& browser_context_id,
                                 StoragePartition** storage_partition);
@@ -178,6 +191,7 @@ class StorageHandler
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
   std::unique_ptr<SharedStorageObserver> shared_storage_observer_;
+  std::unique_ptr<QuotaManagerObserver> quota_manager_observer_;
 
   // Exposes the API for managing storage quota overrides.
   std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;

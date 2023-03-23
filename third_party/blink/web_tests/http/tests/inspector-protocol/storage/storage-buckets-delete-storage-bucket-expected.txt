@@ -1,0 +1,9 @@
+Tests that deleting a bucket works correctly
+
+Create bucket
+buckets added successfully
+Delete bucket
+Deleted bucket: {
+    bucketId : <string>
+}
+

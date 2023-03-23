@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -29,11 +31,14 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_impl.h"
+#include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -118,6 +123,30 @@ void GetUsageAndQuotaOnIOThread(
       base::BindOnce(&GotUsageAndQuotaDataCallback, std::move(callback)));
 }
 
+std::unique_ptr<protocol::Storage::StorageBucketInfo> BuildBucketInfo(
+    const storage::BucketInfo& bucket) {
+  std::string durability_enum;
+  switch (bucket.durability) {
+    case blink::mojom::BucketDurability::kRelaxed:
+      durability_enum = Storage::StorageBucketsDurabilityEnum::Relaxed;
+      break;
+    case blink::mojom::BucketDurability::kStrict:
+      durability_enum = Storage::StorageBucketsDurabilityEnum::Strict;
+      break;
+  }
+
+  return protocol::Storage::StorageBucketInfo::Create()
+      .SetStorageKey(bucket.storage_key.Serialize())
+      .SetId(base::NumberToString(bucket.id.value()))
+      .SetName(bucket.name)
+      .SetIsDefault(bucket.is_default())
+      .SetExpiration(bucket.expiration.ToDoubleT())
+      .SetQuota(bucket.quota)
+      .SetPersistent(bucket.persistent)
+      .SetDurability(durability_enum)
+      .Build();
+}
+
 }  // namespace
 
 // Observer that listens on the UI thread for cache storage notifications and
@@ -140,8 +169,9 @@ class StorageHandler::CacheStorageObserver
 
   void TrackStorageKey(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (storage_keys_.find(storage_key) != storage_keys_.end())
+    if (storage_keys_.find(storage_key) != storage_keys_.end()) {
       return;
+    }
     storage_keys_.insert(storage_key);
   }
 
@@ -153,16 +183,18 @@ class StorageHandler::CacheStorageObserver
   void OnCacheListChanged(const blink::StorageKey& storage_key) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto found = storage_keys_.find(storage_key);
-    if (found == storage_keys_.end())
+    if (found == storage_keys_.end()) {
       return;
+    }
     owner_->NotifyCacheStorageListChanged(storage_key);
   }
 
   void OnCacheContentChanged(const blink::StorageKey& storage_key,
                              const std::string& cache_name) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (storage_keys_.find(storage_key) == storage_keys_.end())
+    if (storage_keys_.find(storage_key) == storage_keys_.end()) {
       return;
+    }
     owner_->NotifyCacheStorageContentChanged(storage_key, cache_name);
   }
 
@@ -196,8 +228,9 @@ class StorageHandler::IndexedDBObserver
 
   void TrackStorageKey(const blink::StorageKey& storage_key) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (storage_keys_.find(storage_key) != storage_keys_.end())
+    if (storage_keys_.find(storage_key) != storage_keys_.end()) {
       return;
+    }
     storage_keys_.insert(storage_key);
   }
 
@@ -209,12 +242,14 @@ class StorageHandler::IndexedDBObserver
   void OnIndexedDBListChanged(
       const storage::BucketLocator& bucket_locator) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (!owner_)
+    if (!owner_) {
       return;
+    }
     // TODO(crbug.com/1315371): Allow custom bucket names.
     auto found = storage_keys_.find(bucket_locator.storage_key);
-    if (found == storage_keys_.end())
+    if (found == storage_keys_.end()) {
       return;
+    }
 
     owner_->NotifyIndexedDBListChanged(
         bucket_locator.storage_key.origin().Serialize(),
@@ -226,12 +261,14 @@ class StorageHandler::IndexedDBObserver
       const std::u16string& database_name,
       const std::u16string& object_store_name) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (!owner_)
+    if (!owner_) {
       return;
+    }
     // TODO(crbug.com/1315371): Allow custom bucket names.
     auto found = storage_keys_.find(bucket_locator.storage_key);
-    if (found == storage_keys_.end())
+    if (found == storage_keys_.end()) {
       return;
+    }
 
     owner_->NotifyIndexedDBContentChanged(
         bucket_locator.storage_key.origin().Serialize(),
@@ -242,8 +279,9 @@ class StorageHandler::IndexedDBObserver
  private:
   void ReconnectObserver() {
     DCHECK(!receiver_.is_bound());
-    if (!owner_)
+    if (!owner_) {
       return;
+    }
 
     auto& control = owner_->storage_partition_->GetIndexedDBControl();
     mojo::PendingRemote<storage::mojom::IndexedDBObserver> remote;
@@ -307,6 +345,69 @@ class StorageHandler::SharedStorageObserver
       scoped_observation_{this};
 };
 
+class StorageHandler::QuotaManagerObserver
+    : storage::mojom::QuotaManagerObserver {
+ public:
+  QuotaManagerObserver(base::WeakPtr<StorageHandler> owner_storage_handler,
+                       storage::QuotaManagerProxy* quota_manager_proxy)
+      : owner_(owner_storage_handler) {
+    quota_manager_proxy->AddObserver(receiver_.BindNewPipeAndPassRemote());
+  }
+
+  QuotaManagerObserver(const QuotaManagerObserver&) = delete;
+  QuotaManagerObserver& operator=(const QuotaManagerObserver&) = delete;
+
+  ~QuotaManagerObserver() override = default;
+
+  void TrackStorageKey(const blink::StorageKey& storage_key,
+                       storage::QuotaManagerProxy* manager) {
+    if (!storage_keys_.insert(storage_key).second) {
+      return;
+    }
+    manager->GetBucketsForStorageKey(
+        storage_key, blink::mojom::StorageType::kTemporary, false,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::BindOnce(
+            [](base::WeakPtr<StorageHandler> owner_storage_handler,
+               storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
+              if (!buckets.has_value()) {
+                return;
+              }
+
+              for (const storage::BucketInfo& bucket : buckets.value()) {
+                owner_storage_handler->NotifyCreateOrUpdateBucket(bucket);
+              }
+            },
+            owner_));
+  }
+
+  void UntrackStorageKey(const blink::StorageKey& storage_key) {
+    storage_keys_.erase(storage_key);
+  }
+
+ private:
+  void OnCreateOrUpdateBucket(const storage::BucketInfo& bucket_info) override {
+    auto found = storage_keys_.find(bucket_info.storage_key);
+    if (found == storage_keys_.end()) {
+      return;
+    }
+    owner_->NotifyCreateOrUpdateBucket(bucket_info);
+  }
+
+  void OnDeleteBucket(const storage::BucketLocator& bucket_locator) override {
+    auto found = storage_keys_.find(bucket_locator.storage_key);
+    if (found == storage_keys_.end()) {
+      return;
+    }
+    owner_->NotifyDeleteBucket(bucket_locator);
+  }
+
+  base::flat_set<blink::StorageKey> storage_keys_;
+
+  base::WeakPtr<StorageHandler> owner_;
+  mojo::Receiver<storage::mojom::QuotaManagerObserver> receiver_{this};
+};
+
 StorageHandler::StorageHandler(bool client_is_trusted)
     : DevToolsDomainHandler(Storage::Metainfo::domainName),
       client_is_trusted_(client_is_trusted) {}
@@ -334,13 +435,15 @@ Response StorageHandler::Disable() {
   quota_override_handle_.reset();
   SetInterestGroupTracking(false);
   shared_storage_observer_.reset();
+  quota_manager_observer_.reset();
   return Response::Success();
 }
 
 void StorageHandler::GetCookies(Maybe<std::string> browser_context_id,
                                 std::unique_ptr<GetCookiesCallback> callback) {
-  if (!client_is_trusted_)
+  if (!client_is_trusted_) {
     callback->sendFailure(Response::ServerError("Permission denied"));
+  }
   StoragePartition* storage_partition = nullptr;
   Response response = StorageHandler::FindStoragePartition(browser_context_id,
                                                            &storage_partition);
@@ -405,17 +508,20 @@ void StorageHandler::ClearCookies(
 Response StorageHandler::GetStorageKeyForFrame(
     const std::string& frame_id,
     std::string* serialized_storage_key) {
-  if (!frame_host_)
+  if (!frame_host_) {
     return Response::InvalidParams("Frame host not found");
+  }
   FrameTreeNode* node = protocol::FrameTreeNodeFromDevToolsFrameToken(
       frame_host_->frame_tree_node(), frame_id);
-  if (!node)
+  if (!node) {
     return Response::InvalidParams("Frame tree node for given frame not found");
+  }
   RenderFrameHostImpl* rfh = node->current_frame_host();
-  if (rfh->storage_key().origin().opaque())
+  if (rfh->storage_key().origin().opaque()) {
     return Response::ServerError(
         "Frame corresponds to an opaque origin and its storage key cannot be "
         "serialized");
+  }
   *serialized_storage_key = rfh->storage_key().Serialize();
   return Response::Success();
 }
@@ -426,28 +532,39 @@ uint32_t GetRemoveDataMask(const std::string& storage_types) {
       storage_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   std::unordered_set<std::string> set(types.begin(), types.end());
   uint32_t remove_mask = 0;
-  if (set.count(Storage::StorageTypeEnum::Cookies))
+  if (set.count(Storage::StorageTypeEnum::Cookies)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
-  if (set.count(Storage::StorageTypeEnum::File_systems))
+  }
+  if (set.count(Storage::StorageTypeEnum::File_systems)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS;
-  if (set.count(Storage::StorageTypeEnum::Indexeddb))
+  }
+  if (set.count(Storage::StorageTypeEnum::Indexeddb)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
-  if (set.count(Storage::StorageTypeEnum::Local_storage))
+  }
+  if (set.count(Storage::StorageTypeEnum::Local_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE;
-  if (set.count(Storage::StorageTypeEnum::Shader_cache))
+  }
+  if (set.count(Storage::StorageTypeEnum::Shader_cache)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE;
-  if (set.count(Storage::StorageTypeEnum::Websql))
+  }
+  if (set.count(Storage::StorageTypeEnum::Websql)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_WEBSQL;
-  if (set.count(Storage::StorageTypeEnum::Service_workers))
+  }
+  if (set.count(Storage::StorageTypeEnum::Service_workers)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;
-  if (set.count(Storage::StorageTypeEnum::Cache_storage))
+  }
+  if (set.count(Storage::StorageTypeEnum::Cache_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE;
-  if (set.count(Storage::StorageTypeEnum::Interest_groups))
+  }
+  if (set.count(Storage::StorageTypeEnum::Interest_groups)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
-  if (set.count(Storage::StorageTypeEnum::Shared_storage))
+  }
+  if (set.count(Storage::StorageTypeEnum::Shared_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
-  if (set.count(Storage::StorageTypeEnum::All))
+  }
+  if (set.count(Storage::StorageTypeEnum::All)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_ALL;
+  }
   return remove_mask;
 }
 }  // namespace
@@ -456,8 +573,9 @@ void StorageHandler::ClearDataForOrigin(
     const std::string& origin,
     const std::string& storage_types,
     std::unique_ptr<ClearDataForOriginCallback> callback) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return callback->sendFailure(Response::InternalError());
+  }
 
   uint32_t remove_mask = GetRemoveDataMask(storage_types);
 
@@ -478,8 +596,9 @@ void StorageHandler::ClearDataForStorageKey(
     const std::string& storage_key,
     const std::string& storage_types,
     std::unique_ptr<ClearDataForStorageKeyCallback> callback) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return callback->sendFailure(Response::InternalError());
+  }
 
   uint32_t remove_mask = GetRemoveDataMask(storage_types);
 
@@ -504,8 +623,9 @@ void StorageHandler::ClearDataForStorageKey(
 void StorageHandler::GetUsageAndQuota(
     const String& origin_string,
     std::unique_ptr<GetUsageAndQuotaCallback> callback) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return callback->sendFailure(Response::InternalError());
+  }
 
   GURL origin_url(origin_string);
   url::Origin origin = url::Origin::Create(origin_url);
@@ -555,13 +675,15 @@ void StorageHandler::OverrideQuotaForOrigin(
 
 Response StorageHandler::TrackCacheStorageForOrigin(
     const std::string& origin_string) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   GURL origin_url(origin_string);
   url::Origin origin = url::Origin::Create(origin_url);
-  if (!origin_url.is_valid() || origin.opaque())
+  if (!origin_url.is_valid() || origin.opaque()) {
     return Response::InvalidParams(origin_string + " is not a valid URL");
+  }
 
   GetCacheStorageObserver()->TrackStorageKey(
       blink::StorageKey::CreateFirstParty(origin));
@@ -570,13 +692,15 @@ Response StorageHandler::TrackCacheStorageForOrigin(
 
 Response StorageHandler::TrackCacheStorageForStorageKey(
     const std::string& storage_key) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   absl::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
-  if (!key)
+  if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
+  }
 
   GetCacheStorageObserver()->TrackStorageKey(*key);
   return Response::Success();
@@ -584,13 +708,15 @@ Response StorageHandler::TrackCacheStorageForStorageKey(
 
 Response StorageHandler::UntrackCacheStorageForOrigin(
     const std::string& origin_string) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   GURL origin_url(origin_string);
   url::Origin origin = url::Origin::Create(origin_url);
-  if (!origin_url.is_valid() || origin.opaque())
+  if (!origin_url.is_valid() || origin.opaque()) {
     return Response::InvalidParams(origin_string + " is not a valid URL");
+  }
 
   GetCacheStorageObserver()->UntrackStorageKey(
       blink::StorageKey::CreateFirstParty(origin));
@@ -599,13 +725,15 @@ Response StorageHandler::UntrackCacheStorageForOrigin(
 
 Response StorageHandler::UntrackCacheStorageForStorageKey(
     const std::string& storage_key) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   absl::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
-  if (!key)
+  if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
+  }
 
   GetCacheStorageObserver()->UntrackStorageKey(*key);
   return Response::Success();
@@ -613,13 +741,15 @@ Response StorageHandler::UntrackCacheStorageForStorageKey(
 
 Response StorageHandler::TrackIndexedDBForOrigin(
     const std::string& origin_string) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   GURL origin_url(origin_string);
   url::Origin origin = url::Origin::Create(origin_url);
-  if (!origin_url.is_valid() || origin.opaque())
+  if (!origin_url.is_valid() || origin.opaque()) {
     return Response::InvalidParams(origin_string + " is not a valid URL");
+  }
 
   GetIndexedDBObserver()->TrackStorageKey(
       blink::StorageKey::CreateFirstParty(origin));
@@ -628,13 +758,15 @@ Response StorageHandler::TrackIndexedDBForOrigin(
 
 Response StorageHandler::TrackIndexedDBForStorageKey(
     const std::string& storage_key) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   absl::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
-  if (!key)
+  if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
+  }
 
   GetIndexedDBObserver()->TrackStorageKey(*key);
   return Response::Success();
@@ -642,13 +774,15 @@ Response StorageHandler::TrackIndexedDBForStorageKey(
 
 Response StorageHandler::UntrackIndexedDBForOrigin(
     const std::string& origin_string) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   GURL origin_url(origin_string);
   url::Origin origin = url::Origin::Create(origin_url);
-  if (!origin_url.is_valid() || origin.opaque())
+  if (!origin_url.is_valid() || origin.opaque()) {
     return Response::InvalidParams(origin_string + " is not a valid URL");
+  }
 
   GetIndexedDBObserver()->UntrackStorageKey(
       blink::StorageKey::CreateFirstParty(origin));
@@ -657,13 +791,15 @@ Response StorageHandler::UntrackIndexedDBForOrigin(
 
 Response StorageHandler::UntrackIndexedDBForStorageKey(
     const std::string& storage_key) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   absl::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
-  if (!key)
+  if (!key) {
     return Response::InvalidParams("Unable to deserialize storage key");
+  }
 
   GetIndexedDBObserver()->UntrackStorageKey(*key);
   return Response::Success();
@@ -701,14 +837,22 @@ StorageHandler::GetSharedStorageWorkletHostManager() {
 
 absl::variant<protocol::Response, storage::SharedStorageManager*>
 StorageHandler::GetSharedStorageManager() {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   if (auto* manager = static_cast<StoragePartitionImpl*>(storage_partition_)
                           ->GetSharedStorageManager()) {
     return manager;
   }
   return Response::ServerError("Shared storage is disabled");
+}
+
+storage::QuotaManagerProxy* StorageHandler::GetQuotaManagerProxy() {
+  DCHECK(storage_partition_);
+
+  return static_cast<StoragePartitionImpl*>(storage_partition_)
+      ->GetQuotaManagerProxy();
 }
 
 void StorageHandler::NotifyCacheStorageListChanged(
@@ -750,11 +894,13 @@ Response StorageHandler::FindStoragePartition(
   BrowserContext* browser_context = nullptr;
   Response response =
       BrowserHandler::FindBrowserContext(browser_context_id, &browser_context);
-  if (!response.IsSuccess())
+  if (!response.IsSuccess()) {
     return response;
+  }
   *storage_partition = browser_context->GetDefaultStoragePartition();
-  if (!*storage_partition)
+  if (!*storage_partition) {
     return Response::InternalError();
+  }
   return Response::Success();
 }
 
@@ -874,8 +1020,9 @@ void SendGetInterestGroup(
   auto trusted_bidding_signals_keys =
       std::make_unique<protocol::Array<std::string>>();
   if (group.trusted_bidding_signals_keys) {
-    for (const auto& key : group.trusted_bidding_signals_keys.value())
+    for (const auto& key : group.trusted_bidding_signals_keys.value()) {
       trusted_bidding_signals_keys->push_back(key);
+    }
   }
   auto ads =
       std::make_unique<protocol::Array<protocol::Storage::InterestGroupAd>>();
@@ -884,8 +1031,9 @@ void SendGetInterestGroup(
       auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
                              .SetRenderUrl(ad.render_url.spec())
                              .Build();
-      if (ad.metadata)
+      if (ad.metadata) {
         protocol_ad->SetMetadata(*ad.metadata);
+      }
       ads->push_back(std::move(protocol_ad));
     }
   }
@@ -896,8 +1044,9 @@ void SendGetInterestGroup(
       auto protocol_ad = protocol::Storage::InterestGroupAd::Create()
                              .SetRenderUrl(ad.render_url.spec())
                              .Build();
-      if (ad.metadata)
+      if (ad.metadata) {
         protocol_ad->SetMetadata(*ad.metadata);
+      }
       ad_components->push_back(std::move(protocol_ad));
     }
   }
@@ -911,19 +1060,23 @@ void SendGetInterestGroup(
           .SetAds(std::move(ads))
           .SetAdComponents(std::move(ad_components))
           .Build();
-  if (group.bidding_url)
+  if (group.bidding_url) {
     protocol_group->SetBiddingUrl(group.bidding_url->spec());
-  if (group.bidding_wasm_helper_url)
+  }
+  if (group.bidding_wasm_helper_url) {
     protocol_group->SetBiddingWasmHelperUrl(
         group.bidding_wasm_helper_url->spec());
+  }
   if (group.update_url) {
     protocol_group->SetUpdateUrl(group.update_url->spec());
   }
-  if (group.trusted_bidding_signals_url)
+  if (group.trusted_bidding_signals_url) {
     protocol_group->SetTrustedBiddingSignalsUrl(
         group.trusted_bidding_signals_url->spec());
-  if (group.user_bidding_signals)
+  }
+  if (group.user_bidding_signals) {
     protocol_group->SetUserBiddingSignals(*group.user_bidding_signals);
+  }
 
   callback->sendSuccess(std::move(protocol_group));
 }
@@ -961,20 +1114,23 @@ void StorageHandler::GetInterestGroupDetails(
 }
 
 Response StorageHandler::SetInterestGroupTracking(bool enable) {
-  if (!storage_partition_)
+  if (!storage_partition_) {
     return Response::InternalError();
+  }
 
   InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
       storage_partition_->GetInterestGroupManager());
-  if (!manager)
+  if (!manager) {
     return Response::ServerError("Interest group storage is disabled.");
+  }
 
   if (enable) {
     // Only add if we are not already registered as an observer. We only
     // observe the interest group manager, so if we're observing anything then
     // we are already registered.
-    if (!IsInObserverList())
+    if (!IsInObserverList()) {
       manager->AddInterestGroupObserver(this);
+    }
   } else {
     // Removal doesn't care if we are not registered.
     manager->RemoveInterestGroupObserver(this);
@@ -1231,8 +1387,9 @@ void StorageHandler::ClearSharedStorageEntries(
 
 Response StorageHandler::SetSharedStorageTracking(bool enable) {
   if (enable) {
-    if (!GetSharedStorageWorkletHostManager())
+    if (!GetSharedStorageWorkletHostManager()) {
       return Response::ServerError("Shared storage is disabled.");
+    }
     shared_storage_observer_ = std::make_unique<SharedStorageObserver>(this);
   } else {
     shared_storage_observer_.reset();
@@ -1334,16 +1491,21 @@ void StorageHandler::NotifySharedStorageAccessed(
   auto protocol_params =
       protocol::Storage::SharedStorageAccessParams::Create().Build();
 
-  if (params.script_source_url)
+  if (params.script_source_url) {
     protocol_params->SetScriptSourceUrl(*params.script_source_url);
-  if (params.operation_name)
+  }
+  if (params.operation_name) {
     protocol_params->SetOperationName(*params.operation_name);
-  if (params.serialized_data)
+  }
+  if (params.serialized_data) {
     protocol_params->SetSerializedData(*params.serialized_data);
-  if (params.key)
+  }
+  if (params.key) {
     protocol_params->SetKey(*params.key);
-  if (params.value)
+  }
+  if (params.value) {
     protocol_params->SetValue(*params.value);
+  }
 
   if (params.urls_with_metadata) {
     auto protocol_urls = std::make_unique<
@@ -1376,6 +1538,56 @@ void StorageHandler::NotifySharedStorageAccessed(
   frontend_->SharedStorageAccessed(access_time.ToDoubleT(), type_enum,
                                    main_frame_id, owner_origin,
                                    std::move(protocol_params));
+}
+
+DispatchResponse StorageHandler::SetStorageBucketTracking(
+    const std::string& serialized_storage_key,
+    bool enable) {
+  auto storage_key = blink::StorageKey::Deserialize(serialized_storage_key);
+  if (!storage_key.has_value()) {
+    return Response::InvalidParams("Invalid Storage Key given.");
+  }
+
+  if (enable) {
+    storage::QuotaManagerProxy* manager = GetQuotaManagerProxy();
+    if (!quota_manager_observer_) {
+      quota_manager_observer_ =
+          std::make_unique<StorageHandler::QuotaManagerObserver>(
+              weak_ptr_factory_.GetWeakPtr(), manager);
+    }
+    quota_manager_observer_->TrackStorageKey(storage_key.value(), manager);
+  } else if (quota_manager_observer_) {
+    quota_manager_observer_->UntrackStorageKey(storage_key.value());
+  }
+  return Response::Success();
+}
+
+DispatchResponse StorageHandler::DeleteStorageBucket(
+    const std::string& serialized_storage_key,
+    const std::string& bucket_name) {
+  storage::QuotaManagerProxy* manager = GetQuotaManagerProxy();
+  DCHECK(manager);
+
+  auto storage_key = blink::StorageKey::Deserialize(serialized_storage_key);
+  if (!storage_key.has_value()) {
+    return Response::InvalidParams("Invalid Storage Key given.");
+  }
+
+  manager->DeleteBucket(storage_key.value(), bucket_name,
+                        base::SingleThreadTaskRunner::GetCurrentDefault(),
+                        base::DoNothing());
+  return Response::Success();
+}
+
+void StorageHandler::NotifyCreateOrUpdateBucket(
+    const storage::BucketInfo& bucket_info) {
+  frontend_->StorageBucketCreatedOrUpdated(BuildBucketInfo(bucket_info));
+}
+
+void StorageHandler::NotifyDeleteBucket(
+    const storage::BucketLocator& bucket_locator) {
+  frontend_->StorageBucketDeleted(
+      base::NumberToString(bucket_locator.id.value()));
 }
 
 }  // namespace protocol

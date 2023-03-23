@@ -1,0 +1,39 @@
+Tests that tracking and untracking Storage Bucket for storage key works
+
+Create bucket
+bucket created successfully
+Created bucket: {
+    durability : relaxed
+    expiration : <number>
+    id : <string>
+    isDefault : false
+    name : test-bucket
+    persistent : false
+    quota : 0
+    storageKey : <string>
+}
+bucket.expiration equals zero
+
+Update bucket
+bucket updated successfully
+Updated bucket: {
+    durability : relaxed
+    expiration : <number>
+    id : <string>
+    isDefault : false
+    name : test-bucket
+    persistent : false
+    quota : 0
+    storageKey : <string>
+}
+bucket.expiration does not equal zero
+
+Delete bucket
+bucket deleted successfully
+Deleted bucket: {
+    bucketId : <string>
+}
+
+Create another bucket after untracking.
+Another bucket opened successfully
+

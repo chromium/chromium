@@ -8984,6 +8984,7 @@ experimental domain Storage
       cache_storage
       interest_groups
       shared_storage
+      storage_buckets
       all
       other
 
@@ -9118,6 +9119,23 @@ experimental domain Storage
       # Present only for SharedStorageAccessType.documentSet and
       # SharedStorageAccessType.workletSet.
       optional boolean ignoreIfPresent
+
+  type StorageBucketsDurability extends string
+    enum
+      relaxed
+      strict
+
+  type StorageBucketInfo extends object
+    properties
+      SerializedStorageKey storageKey
+      string id
+      string name
+      boolean isDefault
+      Network.TimeSinceEpoch expiration
+      # Storage quota (bytes).
+      number quota
+      boolean persistent
+      StorageBucketsDurability durability
 
   # Returns a storage key given a frame id.
   command getStorageKeyForFrame
@@ -9315,6 +9333,18 @@ experimental domain Storage
     parameters
       boolean enable
 
+  # Set tracking for a storage key's buckets.
+  experimental command setStorageBucketTracking
+    parameters
+      string storageKey
+      boolean enable
+
+  # Deletes the Storage Bucket with the given storage key and bucket name.
+  experimental command deleteStorageBucket
+    parameters
+      string storageKey
+      string bucketName
+
   # A cache's contents have been modified.
   event cacheStorageContentUpdated
     parameters
@@ -9376,6 +9406,14 @@ experimental domain Storage
       # The sub-parameters warapped by `params` are all optional and their
       # presence/absence depends on `type`.
       SharedStorageAccessParams params
+
+  event storageBucketCreatedOrUpdated
+    parameters
+      StorageBucketInfo bucket
+
+  event storageBucketDeleted
+    parameters
+      string bucketId
 
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
