@@ -58,6 +58,7 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
 
     private static class TestFileEnumWorkerTask extends FileEnumWorkerTask {
         private boolean mShouldShowCameraTile = true;
+        private boolean mShouldShowBrowseTile = true;
 
         public TestFileEnumWorkerTask(WindowAndroid windowAndroid, FilesEnumeratedCallback callback,
                 MimeTypeFilter filter, List<String> mimeTypes, ContentResolver contentResolver) {
@@ -66,6 +67,10 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
 
         public void setShouldShowCameraTile(boolean shouldShow) {
             mShouldShowCameraTile = shouldShow;
+        }
+
+        public void setShouldShowBrowseTile(boolean shouldShow) {
+            mShouldShowBrowseTile = shouldShow;
         }
 
         @Override
@@ -84,6 +89,11 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
         @Override
         protected boolean shouldShowCameraTile() {
             return mShouldShowCameraTile;
+        }
+
+        @Override
+        protected boolean shouldShowBrowseTile() {
+            return mShouldShowBrowseTile;
         }
     }
 
@@ -274,6 +284,28 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
 
         PickerBitmap tile = mFilesReturned.get(0);
         Assert.assertEquals(PickerBitmap.TileTypes.GALLERY, tile.type());
+        Assert.assertEquals(0, tile.getLastModifiedForTesting());
+        Assert.assertEquals(null, tile.getUri());
+    }
+
+    @Test
+    @SmallTest
+    public void testNoBrowseTile() throws Exception {
+        List<String> mimeTypes = Collections.singletonList("");
+        TestFileEnumWorkerTask task = new TestFileEnumWorkerTask(/* windowAndroid= */ null, this,
+                new MimeTypeFilter(mimeTypes, true), mimeTypes, /* contentResolver= */ null);
+        task.setShouldShowBrowseTile(false);
+        task.executeOnExecutor(mRoboExecutorService);
+        mOnWorkerCompleteCallback.waitForFirst();
+
+        // If this assert hits, then onCancelled has been called in FileEnumWorkerTask, most likely
+        // due to an exception thrown inside doInBackground. To surface the exception message, call
+        // task.doInBackground() directly, instead of task.executeOnExecutor(...).
+        Assert.assertTrue(mFilesReturned != null);
+        Assert.assertEquals(1, mFilesReturned.size());
+
+        PickerBitmap tile = mFilesReturned.get(0);
+        Assert.assertEquals(PickerBitmap.TileTypes.CAMERA, tile.type());
         Assert.assertEquals(0, tile.getLastModifiedForTesting());
         Assert.assertEquals(null, tile.getUri());
     }

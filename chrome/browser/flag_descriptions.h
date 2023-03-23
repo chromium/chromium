@@ -2034,9 +2034,6 @@ extern const char kAImageReaderDescription[];
 extern const char kAndroidForceAppLanguagePromptName[];
 extern const char kAndroidForceAppLanguagePromptDescription[];
 
-extern const char kAndroidMediaPickerSupportName[];
-extern const char kAndroidMediaPickerSupportDescription[];
-
 extern const char kAndroidSurfaceControlName[];
 extern const char kAndroidSurfaceControlDescription[];
 
@@ -2191,6 +2188,9 @@ extern const char kInterestFeedV2HeartsDescription[];
 
 extern const char kInterestFeedV2AutoplayName[];
 extern const char kInterestFeedV2AutoplayDescription[];
+
+extern const char kMediaPickerAdoptionStudyName[];
+extern const char kMediaPickerAdoptionStudyDescription[];
 
 extern const char kMessagesForAndroidAdsBlockedName[];
 extern const char kMessagesForAndroidAdsBlockedDescription[];

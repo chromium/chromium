@@ -3536,10 +3536,6 @@ const char kAndroidForceAppLanguagePromptDescription[] =
     "When enabled the app language prompt to change the UI language will"
     "always be shown.";
 
-const char kAndroidMediaPickerSupportName[] = "Android Media Picker";
-const char kAndroidMediaPickerSupportDescription[] =
-    "When enabled the Android Media picker is used instead of the Chrome one.";
-
 const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
 const char kAndroidSurfaceControlDescription[] =
     " Enables SurfaceControl to manage the buffer queue for the "
@@ -3812,6 +3808,10 @@ const char kInterestFeedV2HeartsDescription[] = "Enable hearts on Feedv2.";
 
 const char kInterestFeedV2AutoplayName[] = "Interest Feed v2 Autoplay";
 const char kInterestFeedV2AutoplayDescription[] = "Enable autoplay on Feedv2.";
+
+const char kMediaPickerAdoptionStudyName[] = "Android Media Picker Adoption";
+const char kMediaPickerAdoptionStudyDescription[] =
+    "Controls how to launch the Android Media Picker";
 
 const char kMessagesForAndroidAdsBlockedName[] = "Ads Blocked Messages UI";
 const char kMessagesForAndroidAdsBlockedDescription[] =

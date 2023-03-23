@@ -2644,6 +2644,32 @@ const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
      std::size(kOmniboxModernizeVisualUpdateIncludeTablets), nullptr},
 };
 
+const FeatureEntry::FeatureParam kPhotoPickerAdoptionStudyActionGetContent[] = {
+    {"use_action_get_content", "true"}};
+const FeatureEntry::FeatureParam kPhotoPickerAdoptionStudyActionPickImages[] = {
+    {"use_action_pick_images", "true"}};
+const FeatureEntry::FeatureParam
+    kPhotoPickerAdoptionStudyActionPickImagesPlus[] = {
+        {"use_action_pick_images_plus", "true"}};
+const FeatureEntry::FeatureParam
+    kPhotoPickerAdoptionStudyChromePickerWithoutBrowse[] = {
+        {"chrome_picker_suppress_browse", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kPhotoPickerAdoptionStudyFeatureVariations[] = {
+        {"(Android Picker w/ACTION_GET_CONTENT)",
+         kPhotoPickerAdoptionStudyActionGetContent,
+         std::size(kPhotoPickerAdoptionStudyActionGetContent), nullptr},
+        {"(Android Picker w/ACTION_PICK_IMAGES)",
+         kPhotoPickerAdoptionStudyActionPickImages,
+         std::size(kPhotoPickerAdoptionStudyActionPickImages), nullptr},
+        {"(Android Picker w/ACTION_PICK_IMAGES Plus)",
+         kPhotoPickerAdoptionStudyActionPickImagesPlus,
+         std::size(kPhotoPickerAdoptionStudyActionPickImagesPlus), nullptr},
+        {"(Chrome Picker without Browse)",
+         kPhotoPickerAdoptionStudyChromePickerWithoutBrowse,
+         std::size(kPhotoPickerAdoptionStudyChromePickerWithoutBrowse),
+         nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/991082,1015377): Remove after proper support for back/forward
@@ -4244,9 +4270,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
          kAdaptiveButtonInTopToolbarCustomizationVariations,
          "OptionalToolbarButtonCustomization")},
-    {"android-media-picker", flag_descriptions::kAndroidMediaPickerSupportName,
-     flag_descriptions::kAndroidMediaPickerSupportDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(photo_picker::features::kAndroidMediaPickerSupport)},
     {"contextual-page-actions", flag_descriptions::kContextualPageActionsName,
      flag_descriptions::kContextualPageActionsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
@@ -7884,6 +7907,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"media-picker-adoption", flag_descriptions::kMediaPickerAdoptionStudyName,
+     flag_descriptions::kMediaPickerAdoptionStudyDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         photo_picker::features::kAndroidMediaPickerAdoption,
+         kPhotoPickerAdoptionStudyFeatureVariations,
+         "MediaPickerAdoption")},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"privacy-sandbox-ads-apis",
      flag_descriptions::kPrivacySandboxAdsAPIsOverrideName,

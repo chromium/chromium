@@ -58492,7 +58492,6 @@ from previous Chrome versions.
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
   <int value="-2097515669" label="disable-cast"/>
   <int value="-2095519429" label="FtpProtocol:enabled"/>
-  <int value="-2094986558" label="AndroidMediaPickerSupport:enabled"/>
   <int value="-2094897448" label="TranslateIntent:disabled"/>
   <int value="-2093047873"
       label="AbusiveOriginNotificationPermissionRevocation:enabled"/>
@@ -62342,6 +62341,7 @@ from previous Chrome versions.
   <int value="-9322265" label="ShowBluetoothDebugLogToggle:enabled"/>
   <int value="-8063095" label="AutofillEnableRemadeDownstreamMetrics:enabled"/>
   <int value="-7996532" label="ThrottleIntersectionObserverUMA:disabled"/>
+  <int value="-7008077" label="MediaPickerAdoption:enabled"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
   <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
   <int value="-5052940" label="enable-simplified-fullscreen"/>
@@ -64214,7 +64214,6 @@ from previous Chrome versions.
   <int value="1047110483" label="ShelfHotseat:disabled"/>
   <int value="1049339770" label="AppMenuMobileSiteOption:enabled"/>
   <int value="1049346775" label="OmniboxDocumentProviderAso:disabled"/>
-  <int value="1049475027" label="AndroidMediaPickerSupport:disabled"/>
   <int value="1049885154" label="OfflinePagesPrefetching:disabled"/>
   <int value="1050048304" label="enable-font-cache-scaling"/>
   <int value="1050321458" label="new-profile-management"/>
@@ -65030,6 +65029,7 @@ from previous Chrome versions.
   <int value="1493006959" label="AutofillServerBehaviors:disabled"/>
   <int value="1493223152" label="CloseAllTabsModalDialog:enabled"/>
   <int value="1493727661" label="ChromeRootStoreUsed:disabled"/>
+  <int value="1494628887" label="MediaPickerAdoption:disabled"/>
   <int value="1495059835" label="VirtualKeyboardMultipasteSuggestion:enabled"/>
   <int value="1495341532" label="disable-mtp-write-support"/>
   <int value="1495748045" label="SignedHTTPExchange:enabled"/>
@@ -68433,8 +68433,9 @@ Called by update_use_counter_css.py.-->
 
 <enum name="MediaPickerShown">
   <int value="0" label="Chrome Media Picker"/>
-  <int value="1" label="Android Media Picker"/>
+  <int value="1" label="Android Media Picker directly (ACTION_PICK_IMAGES)"/>
   <int value="2" label="None (null delegate)"/>
+  <int value="3" label="Android Media Picker indirectly (ACTION_GET_CONTENT)"/>
 </enum>
 
 <enum name="MediaPlaybackPowerTypes">

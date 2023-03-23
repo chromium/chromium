@@ -198,7 +198,9 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
         }
         imageCursor.close();
 
-        pickerBitmaps.add(0, new PickerBitmap(null, 0, PickerBitmap.TileTypes.GALLERY));
+        if (shouldShowBrowseTile()) {
+            pickerBitmaps.add(0, new PickerBitmap(null, 0, PickerBitmap.TileTypes.GALLERY));
+        }
         if (shouldShowCameraTile()) {
             pickerBitmaps.add(0, new PickerBitmap(null, 0, PickerBitmap.TileTypes.CAMERA));
         }
@@ -244,5 +246,12 @@ class FileEnumWorkerTask extends AsyncTask<List<PickerBitmap>> {
                 (mWindowAndroid.hasPermission(Manifest.permission.CAMERA)
                         || mWindowAndroid.canRequestPermission(Manifest.permission.CAMERA));
         return hasCameraAppAvailable && hasOrCanRequestCameraPermission;
+    }
+
+    /**
+     * Returns whether to include the Browse tile also.
+     */
+    protected boolean shouldShowBrowseTile() {
+        return !PhotoPickerFeatures.launchRegularWithoutBrowse();
     }
 }

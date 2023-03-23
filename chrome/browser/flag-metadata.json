@@ -157,11 +157,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "android-media-picker",
-    "owners": [ "finnur@google.com", "beverloo@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "android-widget-fullscreen-toast",
     "owners": [ "jinsukkim", "twellington" ],
     "expiry_milestone": 118
@@ -4802,6 +4797,11 @@
     "name": "mbi-mode",
     "owners": [ "dom", "blink-isolation-dev@chromium.org" ],
     "expiry_milestone": 120
+  },
+  {
+    "name": "media-picker-adoption",
+    "owners": [ "finnur@google.com", "beverloo@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "media-remoting-without-fullscreen",

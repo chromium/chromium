@@ -10,8 +10,8 @@
 namespace photo_picker {
 namespace features {
 
-// Whether to use the Android stock media picker instead of the Chrome picker.
-BASE_DECLARE_FEATURE(kAndroidMediaPickerSupport);
+// Controls how the Android Media Picker will be introduced.
+BASE_DECLARE_FEATURE(kAndroidMediaPickerAdoption);
 
 }  // namespace features
 }  // namespace photo_picker
