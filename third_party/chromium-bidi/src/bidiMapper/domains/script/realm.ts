@@ -20,6 +20,7 @@ import {Protocol} from 'devtools-protocol';
 import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
+import {IEventManager} from '../events/EventManager.js';
 
 import {SHARED_ID_DIVIDER, ScriptEvaluator} from './scriptEvaluator.js';
 import {RealmStorage} from './realmStorage.js';
@@ -35,6 +36,7 @@ export class Realm {
   readonly #origin: string;
   readonly #type: RealmType;
   readonly #cdpClient: CdpClient;
+  readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
 
   readonly sandbox?: string;
@@ -50,7 +52,8 @@ export class Realm {
     type: RealmType,
     sandbox: string | undefined,
     cdpSessionId: string,
-    cdpClient: CdpClient
+    cdpClient: CdpClient,
+    eventManager: IEventManager
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
@@ -62,7 +65,8 @@ export class Realm {
     this.#cdpClient = cdpClient;
     this.#realmStorage = realmStorage;
     this.#browsingContextStorage = browsingContextStorage;
-    this.#scriptEvaluator = new ScriptEvaluator();
+    this.#eventManager = eventManager;
+    this.#scriptEvaluator = new ScriptEvaluator(this.#eventManager);
 
     this.#realmStorage.realmMap.set(this.#realmId, this);
   }

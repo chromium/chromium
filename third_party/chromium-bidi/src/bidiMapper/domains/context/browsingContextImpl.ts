@@ -329,7 +329,8 @@ export class BrowsingContextImpl {
             ? params.context.name
             : undefined,
           this.#cdpTarget.cdpSessionId,
-          this.#cdpTarget.cdpClient
+          this.#cdpTarget.cdpClient,
+          this.#eventManager
         );
 
         if (params.context.auxData.isDefault) {

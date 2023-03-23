@@ -659,3 +659,74 @@ async def test_deserialization_handleAndValue(websocket, context_id):
         },
         "realm": ANY_STR
     } == result
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [(1, {
+        'type': 'number',
+        'value': 1
+    }), ("2n", {
+        'type': 'bigint',
+        'value': '2'
+    }), ('"3"', {
+        'type': 'string',
+        'value': '3'
+    }),
+     ("{'a': 'x', b: 'y'}", {
+         'handle': ANY_STR,
+         'type': 'object',
+         'value': [['a', {
+             'type': 'string',
+             'value': 'x'
+         }], ['b', {
+             'type': 'string',
+             'value': 'y'
+         }]]
+     }), ("() => {}", {
+         'handle': ANY_STR,
+         'type': 'function'
+     })])
+async def test_channel_complexTypes(test_input, expected, websocket,
+                                    context_id):
+    await subscribe(websocket, "script.message")
+
+    await execute_command(
+        websocket,
+        {
+            "method": "script.callFunction",
+            "params": {
+                # A small delay is needed to avoid a race condition.
+                "functionDeclaration": """(binding) => {
+                    setTimeout(() => {"""
+                                       f'binding({test_input});\n'
+                                       """}, 1);
+                }""",
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "MY_CHANNEL",
+                        "ownership": "root",
+                    },
+                }],
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": False,
+                "resultOwnership": "root"
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "script.message",
+        "params": {
+            "channel": "MY_CHANNEL",
+            "data": expected,
+            "source": {
+                "context": context_id,
+                "realm": ANY_STR,
+            }
+        }
+    }

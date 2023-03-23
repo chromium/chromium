@@ -607,7 +607,8 @@ export namespace Script {
   export type ArgumentValue =
     | CommonDataTypes.RemoteReference
     | CommonDataTypes.SharedReference
-    | CommonDataTypes.LocalValue;
+    | CommonDataTypes.LocalValue
+    | Script.Channel;
 
   export type CallFunctionParameters = {
     functionDeclaration: string;
@@ -657,7 +658,7 @@ export namespace Script {
   };
 
   export type MessageParameters = {
-    channel: Channel;
+    channel: ChannelId;
     data: CommonDataTypes.RemoteValue;
     source: Source;
   };
