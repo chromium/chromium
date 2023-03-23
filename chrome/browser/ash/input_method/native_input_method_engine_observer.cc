@@ -462,6 +462,8 @@ ui::ImeTextSpan::Thickness GetCompositionSpanThickness(
       return ui::ImeTextSpan::Thickness::kNone;
     case mojom::CompositionSpanStyle::kDefault:
       return ui::ImeTextSpan::Thickness::kThin;
+    case mojom::CompositionSpanStyle::kHighlight:
+      return ui::ImeTextSpan::Thickness::kThick;
   }
 }
 

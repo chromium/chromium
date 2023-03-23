@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module ash.ime.mojom;
 
@@ -20,13 +20,16 @@ enum CommitTextCursorBehavior {
   kMoveCursorBeforeText = 1,
 };
 
-// Next ordinal: 1
+// Next ordinal: 3
 [Stable, Extensible, RenamedFrom="chromeos.ime.mojom.CompositionSpanStyle"]
 enum CompositionSpanStyle {
   // Default composition style. Usually, this adds an underline to the span.
   [Default] kDefault = 0,
   // No styling.
   kNone = 1,
+  // A stronger style that emphasizes the span, distinguishing it from kDefault.
+  // Usually, this uses a thicker underline than kDefault.
+  [MinVersion=9] kHighlight = 2,
 };
 
 // A span with the composition text, used for styling parts of the composition.
