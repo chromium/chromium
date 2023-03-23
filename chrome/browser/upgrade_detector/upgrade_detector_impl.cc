@@ -240,29 +240,32 @@ void UpgradeDetectorImpl::StartOutdatedBuildDetector() {
 
 void UpgradeDetectorImpl::DetectOutdatedInstall() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Time network_time;
+  base::Time current_time;
   base::TimeDelta uncertainty;
-  if (g_browser_process->network_time_tracker()->GetNetworkTime(&network_time,
+  bool is_network_time = true;
+  if (g_browser_process->network_time_tracker()->GetNetworkTime(&current_time,
                                                                 &uncertainty) !=
       network_time::NetworkTimeTracker::NETWORK_TIME_AVAILABLE) {
     // When network time has not been initialized yet, simply rely on the
     // machine's current time.
-    network_time = base::Time::Now();
+    is_network_time = false;
+    current_time = base::Time::Now();
   }
 
-  if (network_time.is_null() || build_date_.is_null() ||
-      (!simulating_outdated_ && build_date_ > network_time)) {
-    // TODO(crbug.com/1407664): Figure out why this is failing and either fix it
-    // and turn the conditional above into a CHECK or document how this can fail
-    // in the wild and either keep the DumpWithoutCrashing() or remove it.
+  CHECK(!current_time.is_null());
+  CHECK(!build_date_.is_null());
+
+  if (!simulating_outdated_ && is_network_time && build_date_ > current_time) {
     base::Time build_date = build_date_;
-    base::debug::Alias(&network_time);
+    base::debug::Alias(&current_time);
     base::debug::Alias(&build_date);
+    // TODO(crbug.com/1407664): Once this is shown to no longer be hitting,
+    // change this to a NOTREACHED_NORETURN().
     base::debug::DumpWithoutCrashing();
     return;
   }
 
-  if (network_time - build_date_ > kOutdatedBuildAge) {
+  if (current_time - build_date_ > kOutdatedBuildAge) {
     UpgradeDetected(is_auto_update_enabled_
                         ? UPGRADE_NEEDED_OUTDATED_INSTALL
                         : UPGRADE_NEEDED_OUTDATED_INSTALL_NO_AU);
