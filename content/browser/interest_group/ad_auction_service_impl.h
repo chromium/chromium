@@ -119,8 +119,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                                  const url::Origin& origin) const;
 
   // Deletes `auction`.
-  // TODO(crbug.com/1410340): Handle non reserved private aggregation requests,
-  // which are currently ignored.
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
       GURL urn_uuid,
