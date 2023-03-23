@@ -51,14 +51,6 @@
   return [UIColor colorNamed:kSolidButtonTextColor];
 }
 
-- (UIColor*)buttonsSpotlightColor {
-  return [UIColor colorNamed:@"tab_toolbar_button_halo_color"];
-}
-
-- (UIColor*)dimmedButtonsSpotlightColor {
-  return [UIColor colorNamed:@"tab_toolbar_button_halo_color"];
-}
-
 - (UIColor*)buttonsIPHHighlightColor {
   return [UIColor colorNamed:kBlueColor];
 }

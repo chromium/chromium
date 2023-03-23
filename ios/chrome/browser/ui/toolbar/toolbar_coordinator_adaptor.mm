@@ -58,12 +58,6 @@
 
 #pragma mark - ToolbarCommands
 
-- (void)triggerToolsMenuButtonAnimation {
-  for (id<ToolbarCommands> coordinator in self.coordinators) {
-    [coordinator triggerToolsMenuButtonAnimation];
-  }
-}
-
 - (void)triggerToolbarSlideInAnimation {
   for (id<ToolbarCommands> coordinator in self.coordinators) {
     [coordinator triggerToolbarSlideInAnimation];
@@ -88,18 +82,6 @@
 }
 
 #pragma mark - PopupMenuUIUpdating
-
-- (void)updateUIForMenuDisplayed:(PopupMenuType)popupType {
-  for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
-    [coordinator.popupMenuUIUpdater updateUIForMenuDisplayed:popupType];
-  }
-}
-
-- (void)updateUIForMenuDismissed {
-  for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
-    [coordinator.popupMenuUIUpdater updateUIForMenuDismissed];
-  }
-}
 
 - (void)updateUIForIPHDisplayed:(PopupMenuType)popupType {
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {

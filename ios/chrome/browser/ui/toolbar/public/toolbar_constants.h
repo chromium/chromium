@@ -39,7 +39,6 @@ extern const CGFloat kAdaptiveToolbarButtonHeight;
 extern const CGFloat kAdaptiveToolbarButtonWidth;
 extern const CGFloat kSearchButtonWidth;
 extern const CGFloat kCancelButtonHorizontalInset;
-extern const CGFloat kToolbarDimmedButtonAlpha;
 
 // Background color of the blur view.
 extern const CGFloat kBlurBackgroundGrayscaleComponent;

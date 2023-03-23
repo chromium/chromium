@@ -27,7 +27,6 @@ const CGFloat kAdaptiveToolbarButtonHeight = 44.0f;
 const CGFloat kAdaptiveToolbarButtonWidth = 44.0f;
 const CGFloat kSearchButtonWidth = 70.0f;
 const CGFloat kCancelButtonHorizontalInset = 8;
-const CGFloat kToolbarDimmedButtonAlpha = 0.5;
 
 const CGFloat kBlurBackgroundGrayscaleComponent = 0.98;
 const CGFloat kBlurBackgroundAlpha = 0.4;

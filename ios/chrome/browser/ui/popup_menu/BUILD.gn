@@ -145,10 +145,7 @@ source_set("metrics_protocols") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "popup_menu_coordinator_unittest.mm",
-    "popup_menu_mediator_unittest.mm",
-  ]
+  sources = [ "popup_menu_mediator_unittest.mm" ]
   deps = [
     ":constants",
     ":popup_menu",

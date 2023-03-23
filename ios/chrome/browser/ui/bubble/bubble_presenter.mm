@@ -531,8 +531,6 @@ presentBubbleForFeature:(const base::Feature&)feature
     return;
 
   self.incognitoTabTipBubblePresenter = presenter;
-
-  [self.toolbarHandler triggerToolsMenuButtonAnimation];
 }
 
 #pragma mark - Private Utils

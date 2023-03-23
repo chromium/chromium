@@ -14,9 +14,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_new_tab_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -50,10 +48,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 #pragma mark - Buttons
 
 - (ToolbarButton*)backButton {
-  UIImage* backImage;
-  backImage = UseSymbols() ? DefaultSymbolWithPointSize(kBackSymbol,
-                                                        kSymbolToolbarPointSize)
-                           : [UIImage imageNamed:@"toolbar_back"];
+  UIImage* backImage =
+      DefaultSymbolWithPointSize(kBackSymbol, kSymbolToolbarPointSize);
   ToolbarButton* backButton = [ToolbarButton
       toolbarButtonWithImage:[backImage
                                  imageFlippedForRightToLeftLayoutDirection]];
@@ -69,9 +65,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
 // Returns a forward button without visibility mask configured.
 - (ToolbarButton*)forwardButton {
   UIImage* forwardImage =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize)
-          : [UIImage imageNamed:@"toolbar_forward"];
+      DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize);
   ToolbarButton* forwardButton = [ToolbarButton
       toolbarButtonWithImage:[forwardImage
                                  imageFlippedForRightToLeftLayoutDirection]];
@@ -88,9 +82,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
 - (ToolbarTabGridButton*)tabGridButton {
   UIImage* tabGridImage =
-      UseSymbols() ? CustomSymbolWithPointSize(kSquareNumberSymbol,
-                                               kSymbolToolbarPointSize)
-                   : tabGridImage = [UIImage imageNamed:@"toolbar_switcher"];
+      CustomSymbolWithPointSize(kSquareNumberSymbol, kSymbolToolbarPointSize);
   ToolbarTabGridButton* tabGridButton =
       [ToolbarTabGridButton toolbarButtonWithImage:tabGridImage];
   [self configureButton:tabGridButton width:kAdaptiveToolbarButtonWidth];
@@ -108,14 +100,9 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)toolsMenuButton {
-  ToolbarButton* toolsMenuButton;
-  if (UseSymbols()) {
-    toolsMenuButton = [ToolbarButton
-        toolbarButtonWithImage:DefaultSymbolWithPointSize(
-                                   kMenuSymbol, kSymbolToolbarPointSize)];
-  } else {
-    toolsMenuButton = [[ToolbarToolsMenuButton alloc] initWithFrame:CGRectZero];
-  }
+  ToolbarButton* toolsMenuButton = [ToolbarButton
+      toolbarButtonWithImage:DefaultSymbolWithPointSize(
+                                 kMenuSymbol, kSymbolToolbarPointSize)];
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kToolbarToolsMenuButtonIdentifier);
@@ -133,9 +120,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
 - (ToolbarButton*)shareButton {
   UIImage* shareImage =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize)
-          : [UIImage imageNamed:@"toolbar_share"];
+      DefaultSymbolWithPointSize(kShareSymbol, kSymbolToolbarPointSize);
   ToolbarButton* shareButton =
       [ToolbarButton toolbarButtonWithImage:shareImage];
   [self configureButton:shareButton width:kAdaptiveToolbarButtonWidth];
@@ -152,9 +137,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
 - (ToolbarButton*)reloadButton {
   UIImage* reloadImage =
-      UseSymbols() ? CustomSymbolWithPointSize(kArrowClockWiseSymbol,
-                                               kSymbolToolbarPointSize)
-                   : [UIImage imageNamed:@"toolbar_reload"];
+      CustomSymbolWithPointSize(kArrowClockWiseSymbol, kSymbolToolbarPointSize);
   ToolbarButton* reloadButton = [ToolbarButton
       toolbarButtonWithImage:[reloadImage
                                  imageFlippedForRightToLeftLayoutDirection]];
@@ -170,9 +153,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarButton*)stopButton {
-  UIImage* stopImage = UseSymbols() ? DefaultSymbolWithPointSize(
-                                          kXMarkSymbol, kSymbolToolbarPointSize)
-                                    : [UIImage imageNamed:@"toolbar_stop"];
+  UIImage* stopImage =
+      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolToolbarPointSize);
   ToolbarButton* stopButton = [ToolbarButton toolbarButtonWithImage:stopImage];
   [self configureButton:stopButton width:kAdaptiveToolbarButtonWidth];
   stopButton.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_STOP);
@@ -185,24 +167,18 @@ const CGFloat kSymbolToolbarPointSize = 24;
 
 - (ToolbarButton*)openNewTabButton {
   ToolbarButton* newTabButton;
-  if (UseSymbols()) {
-    if (@available(iOS 15, *)) {
-      UIImage* image = SymbolWithPalette(
-          CustomSymbolWithPointSize(kNewTabSymbol, kSymbolToolbarPointSize), @[
-            [UIColor colorNamed:kGrey600Color],
-            [self.toolbarConfiguration
-                locationBarBackgroundColorWithVisibility:1]
-          ]);
-      newTabButton = [ToolbarButton toolbarButtonWithImage:image];
-    } else {
-      newTabButton = [ToolbarButton
-          toolbarButtonWithImage:
-              [[UIImage imageNamed:@"plus_circle_fill_ios14"]
-                  imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-    }
+  if (@available(iOS 15, *)) {
+    UIImage* image = SymbolWithPalette(
+        CustomSymbolWithPointSize(kNewTabSymbol, kSymbolToolbarPointSize), @[
+          [UIColor colorNamed:kGrey600Color],
+          [self.toolbarConfiguration locationBarBackgroundColorWithVisibility:1]
+        ]);
+    newTabButton = [ToolbarButton toolbarButtonWithImage:image];
   } else {
-    newTabButton = [ToolbarNewTabButton
-        toolbarButtonWithImage:[UIImage imageNamed:@"toolbar_new_tab_page"]];
+    newTabButton = [ToolbarButton
+        toolbarButtonWithImage:
+            [[UIImage imageNamed:@"plus_circle_fill_ios14"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
   }
 
   [newTabButton addTarget:self.actionHandler

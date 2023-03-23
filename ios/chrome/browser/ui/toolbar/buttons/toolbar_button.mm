@@ -27,7 +27,22 @@ const CGFloat kSpotlightCornerRadius = 7;
   ToolbarButton* button = [[self class] buttonWithType:UIButtonTypeSystem];
   [button setImage:image forState:UIControlStateNormal];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  [button configureSpotlightView];
+
+  UIView* spotlightView = [[UIView alloc] init];
+  spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
+  spotlightView.hidden = YES;
+  spotlightView.userInteractionEnabled = NO;
+  spotlightView.layer.cornerRadius = kSpotlightCornerRadius;
+  // Make sure that the spotlightView is below the image to avoid changing the
+  // color of the image.
+  [button insertSubview:spotlightView belowSubview:button.imageView];
+  AddSameCenterConstraints(button, spotlightView);
+  [spotlightView.widthAnchor constraintEqualToConstant:kSpotlightSize].active =
+      YES;
+  [spotlightView.heightAnchor constraintEqualToConstant:kSpotlightSize].active =
+      YES;
+  button.spotlightView = spotlightView;
+
   return button;
 }
 
@@ -81,65 +96,14 @@ const CGFloat kSpotlightCornerRadius = 7;
   [self updateSpotlightView];
 }
 
-- (void)setSpotlighted:(BOOL)spotlighted {
-  if (spotlighted == _spotlighted)
-    return;
-
-  _spotlighted = spotlighted;
-  [self updateTintColor];
-  [self updateSpotlightView];
-}
-
-- (void)setDimmed:(BOOL)dimmed {
-  if (dimmed == _dimmed)
-    return;
-  _dimmed = dimmed;
-  if (!self.toolbarConfiguration)
-    return;
-
-  if (dimmed) {
-    self.alpha = kToolbarDimmedButtonAlpha;
-  } else {
-    self.alpha = 1;
-  }
-  [self updateSpotlightView];
-}
-
-- (UIControlState)state {
-  DCHECK(kControlStateSpotlighted & UIControlStateApplication);
-  UIControlState state = [super state];
-  if (self.spotlighted)
-    state |= kControlStateSpotlighted;
-  return state;
-}
-
 - (void)setToolbarConfiguration:(ToolbarConfiguration*)toolbarConfiguration {
   _toolbarConfiguration = toolbarConfiguration;
   if (!toolbarConfiguration)
     return;
+  self.spotlightView.backgroundColor =
+      self.toolbarConfiguration.buttonsIPHHighlightColor;
   [self updateTintColor];
   [self updateSpotlightView];
-}
-
-#pragma mark - Subclassing
-
-- (void)configureSpotlightView {
-  UIView* spotlightView = [[UIView alloc] init];
-  spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
-  spotlightView.hidden = YES;
-  spotlightView.userInteractionEnabled = NO;
-  spotlightView.layer.cornerRadius = kSpotlightCornerRadius;
-  spotlightView.backgroundColor =
-      self.toolbarConfiguration.buttonsSpotlightColor;
-  // Make sure that the spotlightView is below the image to avoid changing the
-  // color of the image.
-  [self insertSubview:spotlightView belowSubview:self.imageView];
-  AddSameCenterConstraints(self, spotlightView);
-  [spotlightView.widthAnchor constraintEqualToConstant:kSpotlightSize].active =
-      YES;
-  [spotlightView.heightAnchor constraintEqualToConstant:kSpotlightSize].active =
-      YES;
-  self.spotlightView = spotlightView;
 }
 
 #pragma mark - Private
@@ -162,23 +126,7 @@ const CGFloat kSpotlightCornerRadius = 7;
 
 // Updates the spotlight view's appearance according to the current state.
 - (void)updateSpotlightView {
-  self.spotlightView.hidden = !self.iphHighlighted && !self.spotlighted;
-
-  // IPH Highlight color takes precendence over spotlight color if both states
-  // are set.
-  if (self.iphHighlighted) {
-    self.spotlightView.backgroundColor =
-        self.toolbarConfiguration.buttonsIPHHighlightColor;
-  } else if (self.spotlighted) {
-    self.spotlightView.backgroundColor =
-        self.dimmed ? self.toolbarConfiguration.dimmedButtonsSpotlightColor
-                    : self.toolbarConfiguration.buttonsSpotlightColor;
-  } else {
-    // The view should always be hidden in this state, but reset to default
-    // color just in case.
-    self.spotlightView.backgroundColor =
-        self.toolbarConfiguration.buttonsSpotlightColor;
-  }
+  self.spotlightView.hidden = !self.iphHighlighted;
 }
 
 // Updates the tint color according to the current state.

@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ui/base/device_form_factor.h"
@@ -276,48 +275,6 @@ const base::TimeDelta kToobarSlideInAnimationDuration = base::Milliseconds(500);
 }
 
 #pragma mark - PopupMenuUIUpdating
-
-- (void)updateUIForMenuDisplayed:(PopupMenuType)popupType {
-  ToolbarButton* selectedButton = nil;
-  switch (popupType) {
-    case PopupMenuTypeNavigationForward:
-      selectedButton = self.view.forwardButton;
-      break;
-    case PopupMenuTypeNavigationBackward:
-      selectedButton = self.view.backButton;
-      break;
-    case PopupMenuTypeNewTab:
-      selectedButton = self.view.openNewTabButton;
-      break;
-    case PopupMenuTypeTabGrid:
-      selectedButton = self.view.tabGridButton;
-      break;
-    case PopupMenuTypeToolsMenu:
-      selectedButton = self.view.toolsMenuButton;
-      break;
-    case PopupMenuTypeTabStripTabGrid:
-      // ignore
-      break;
-  }
-
-  selectedButton.spotlighted = YES;
-
-  for (ToolbarButton* button in self.view.allButtons) {
-    button.dimmed = YES;
-  }
-}
-
-- (void)updateUIForMenuDismissed {
-  self.view.backButton.spotlighted = NO;
-  self.view.forwardButton.spotlighted = NO;
-  self.view.openNewTabButton.spotlighted = NO;
-  self.view.tabGridButton.spotlighted = NO;
-  self.view.toolsMenuButton.spotlighted = NO;
-
-  for (ToolbarButton* button in self.view.allButtons) {
-    button.dimmed = NO;
-  }
-}
 
 - (void)updateUIForIPHDisplayed:(PopupMenuType)popupType {
   ToolbarButton* selectedButton = nil;

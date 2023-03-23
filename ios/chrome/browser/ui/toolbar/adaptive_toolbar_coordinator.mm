@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_actions_handler.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tools_menu_button.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -127,16 +126,6 @@
 }
 
 #pragma mark - ToolbarCommands
-
-- (void)triggerToolsMenuButtonAnimation {
-  if (UseSymbols())
-    return;
-
-  ToolbarToolsMenuButton* toolsMenuButton =
-      base::mac::ObjCCastStrict<ToolbarToolsMenuButton>(
-          self.viewController.toolsMenuButton);
-  [toolsMenuButton triggerAnimation];
-}
 
 - (void)triggerToolbarSlideInAnimation {
   // Implemented in primary and secondary toolbars directly.

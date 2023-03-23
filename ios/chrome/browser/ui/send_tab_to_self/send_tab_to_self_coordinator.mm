@@ -112,8 +112,6 @@ void ShowSendingMessage(CommandDispatcher* dispatcher, NSString* deviceName) {
     return;
   }
 
-  [HandlerForProtocol(dispatcher, ToolbarCommands)
-      triggerToolsMenuButtonAnimation];
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   NSString* text =
       l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,

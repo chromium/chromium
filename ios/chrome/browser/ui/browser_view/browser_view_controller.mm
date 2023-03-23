@@ -2094,8 +2094,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self addURLToReadingList:urlWithTitle.URL withTitle:urlWithTitle.title];
   }
 
-  [self.toolbarCommandsHandler triggerToolsMenuButtonAnimation];
-
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
   CoreAccountId accountId =
