@@ -746,16 +746,6 @@ public final class ChromePreferenceKeys {
     /**
      * Keys used to store user actions for behavioral targeting of showing Start surface on startup.
      */
-    public static final String START_SHOW_ON_STARTUP = "Chrome.StartSurface.ShownOnStartup";
-    public static final String START_NEXT_SHOW_ON_STARTUP_DECISION_MS =
-            "Chrome.StartSurface.ShownOnStartupDecisionMs";
-    public static final String TAP_MV_TILES_COUNT = "Chrome.StartSurface.TapMVTilesCount";
-    public static final String TAP_FEED_CARDS_COUNT = "Chrome.StartSurface.TapFeedCardsCount";
-    public static final String OPEN_NEW_TAB_PAGE_COUNT = "Chrome.StartSurface.OpenNewTabPageCount";
-    public static final String OPEN_HISTORY_COUNT = "Chrome.StartSurface.OpenHistoryCount";
-    public static final String OPEN_RECENT_TABS_COUNT = "Chrome.StartSurface.OpenRecentTabCount";
-    public static final String SHOW_START_SEGMENTATION_RESULT =
-            "Chrome.StartSurface.ShowSegmentationResult";
     public static final String START_RETURN_TIME_SEGMENTATION_RESULT_MS =
             "Chrome.StartSurface.StartReturnTimeSegmentationResultMs";
 
@@ -1097,9 +1087,6 @@ public final class ChromePreferenceKeys {
                 OFFLINE_MEASUREMENTS_SYSTEM_STATE_LIST,
                 OFFLINE_MEASUREMENTS_USER_AGENT_STRING,
                 OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
-                OPEN_HISTORY_COUNT,
-                OPEN_NEW_TAB_PAGE_COUNT,
-                OPEN_RECENT_TABS_COUNT,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
                 PASSWORD_PROTECTION_ACCOUNT,
                 PASSWORD_PROTECTION_HASHED_PASSWORD,
@@ -1129,18 +1116,13 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
-                SHOW_START_SEGMENTATION_RESULT,
                 START_RETURN_TIME_SEGMENTATION_RESULT_MS,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
                 SYNC_PROMO_TOTAL_SHOW_COUNT,
-                START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
                 SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
-                START_SHOW_ON_STARTUP,
                 TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
-                TAP_FEED_CARDS_COUNT,
-                TAP_MV_TILES_COUNT,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 USB_NOTIFICATION_IDS,
                 USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,

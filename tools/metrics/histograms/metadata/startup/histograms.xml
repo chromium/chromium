@@ -344,27 +344,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.ShowChromeStartSegmentationResult"
-    enum="ShowChromeStartSegmentationResult" expires_after="2023-04-09">
-  <owner>hanxi@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    The result from segmentation platform that determines whether or not to show
-    Start surface at startup. Recorded during startup.
-  </summary>
-</histogram>
-
-<histogram name="Startup.Android.ShowChromeStartSegmentationResultComparison"
-    enum="ShowChromeStartSegmentationResultComparison"
-    expires_after="2023-06-30">
-  <owner>hanxi@chromium.org</owner>
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Records the comparison of result from segmentation and code logic for when
-    to show Start surface at startup. Recorded during startup.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
     units="ms" expires_after="2023-06-30">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->

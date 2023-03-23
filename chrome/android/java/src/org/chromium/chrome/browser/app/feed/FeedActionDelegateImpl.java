@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -90,7 +89,6 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 onVisitComplete.onResult(result);
             });
         }
-        ReturnToChromeUtil.onFeedCardOpened();
 
         BrowserUiUtils.recordModuleClickHistogram(
                 mHostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
