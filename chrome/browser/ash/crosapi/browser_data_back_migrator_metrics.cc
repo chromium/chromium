@@ -78,6 +78,21 @@ void RecordNumberOfLacrosSecondaryProfiles(
       number_of_secondary_profiles);
 }
 
+void RecordBackwardMigrationTimeDelta(
+    absl::optional<base::Time> forward_migration_completion_time) {
+  if (!forward_migration_completion_time.has_value()) {
+    VLOG(1) << "Forward migration completion time not found.";
+    return;
+  }
+
+  base::TimeDelta time_delta =
+      base::Time::Now() - forward_migration_completion_time.value();
+
+  base::UmaHistogramCustomTimes(
+      browser_data_back_migrator_metrics::kElapsedTimeBetweenDataMigrations,
+      time_delta, base::Minutes(1), base::Days(24), 100);
+}
+
 std::string TaskStatusToString(
     BrowserDataBackMigrator::TaskStatus task_status) {
   switch (task_status) {

@@ -187,4 +187,18 @@ TEST(BrowserDataBackMigratorMetricsTest,
       browser_data_back_migrator_metrics::IsSecondaryProfileDirectory(""));
 }
 
+TEST(BrowserDataBackMigratorMetricsTest, RecordBackwardMigrationTimeDelta) {
+  base::HistogramTester histogram_tester;
+
+  browser_data_back_migrator_metrics::RecordBackwardMigrationTimeDelta(
+      absl::nullopt);
+  histogram_tester.ExpectTotalCount(
+      browser_data_back_migrator_metrics::kElapsedTimeBetweenDataMigrations, 0);
+
+  browser_data_back_migrator_metrics::RecordBackwardMigrationTimeDelta(
+      base::Time::UnixEpoch());
+  histogram_tester.ExpectTotalCount(
+      browser_data_back_migrator_metrics::kElapsedTimeBetweenDataMigrations, 1);
+}
+
 }  // namespace ash

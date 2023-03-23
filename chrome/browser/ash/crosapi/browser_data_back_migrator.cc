@@ -100,6 +100,18 @@ void BrowserDataBackMigrator::Migrate(
   browser_data_back_migrator_metrics::RecordNumberOfLacrosSecondaryProfiles(
       ash_profile_dir_);
 
+  // Get the forward migration timestamp, record the delta and then clear the
+  // timestamp right away. This prevents the scenario in which the time is
+  // recorded, then backward migration fails and is retried and then the time is
+  // recorded again.
+  auto forward_migration_completion_time =
+      crosapi::browser_util::GetProfileMigrationCompletionTimeForUser(
+          local_state_, user_id_hash_);
+  browser_data_back_migrator_metrics::RecordBackwardMigrationTimeDelta(
+      forward_migration_completion_time);
+  crosapi::browser_util::ClearProfileMigrationCompletionTimeForUser(
+      local_state_, user_id_hash_);
+
   running_ = true;
   migration_start_time_ = base::TimeTicks::Now();
 

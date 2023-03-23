@@ -312,6 +312,8 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
 
   crosapi::browser_util::ClearProfileMigrationCompletedForUser(local_state,
                                                                user_id_hash);
+  crosapi::browser_util::ClearProfileMigrationCompletionTimeForUser(
+      local_state, user_id_hash);
 
   local_state->CommitPendingWrite();
 
@@ -434,6 +436,13 @@ void BrowserDataMigratorImpl::MigrateInternalFinishedUIThread(
   if (result.data_migration_result.kind == ResultKind::kSucceeded) {
     crosapi::browser_util::SetProfileMigrationCompletedForUser(
         local_state_, user_id_hash_, mode);
+
+    // Profile migration is marked as completed both when the migration is
+    // performed (here) and for a new user without actually performing data
+    // migration (`ProfileImpl::OnLocaleReady`). The timestamp of completed
+    // migration is only recorded when the migration is actually performed.
+    crosapi::browser_util::SetProfileMigrationCompletionTimeForUser(
+        local_state_, user_id_hash_);
 
     ClearMigrationAttemptCountForUser(local_state_, user_id_hash_);
   }

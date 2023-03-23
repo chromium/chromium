@@ -438,6 +438,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeBetweenDataMigrations"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time elapsed from the completion of a successful forward migration to
+    the start of a backward migration, with a maximum of 24 days. Recorded every
+    time backward migration is started, if forward migration was performed prior
+    to it.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeDeleteAshItems"
     units="ms" expires_after="2023-12-01">
   <owner>janagrill@google.com</owner>

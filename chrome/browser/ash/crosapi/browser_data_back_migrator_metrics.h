@@ -15,6 +15,8 @@ constexpr char kSuccessfulMigrationTimeUMA[] =
     "Ash.BrowserDataBackMigrator.SuccessfulMigrationTime";
 constexpr char kNumberOfLacrosSecondaryProfilesUMA[] =
     "Ash.BrowserDataBackMigrator.NumberOfLacrosSecondaryProfiles";
+constexpr char kElapsedTimeBetweenDataMigrations[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimeBetweenDataMigrations";
 
 constexpr char kPreMigrationCleanUpTimeUMA[] =
     "Ash.BrowserDataBackMigrator.ElapsedTimePreMigrationCleanUp";
@@ -47,6 +49,11 @@ void RecordMigrationTimeIfSuccessful(BrowserDataBackMigrator::TaskResult result,
 // profiles in Lacros at the time of starting backward migration.
 void RecordNumberOfLacrosSecondaryProfiles(
     const base::FilePath& ash_profile_dir);
+
+// Records `kElapsedTimeBetweenDataMigrations` with the amount of time between
+// successfully completing forward migration and starting backward migration.
+void RecordBackwardMigrationTimeDelta(
+    absl::optional<base::Time> forward_migration_completion_time);
 
 // Converts `TaskStatus` to string.
 std::string TaskStatusToString(BrowserDataBackMigrator::TaskStatus task_status);

@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -425,19 +426,38 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
                                         const std::string& user_id_hash,
                                         MigrationMode mode);
 
-// Sets the value of `kProfileMigrationCompletedForUser1Pref` to be true
-// for the user identified by `user_id_hash`.
+// Sets the value of `kProfileMigrationCompletedForUserPref` or
+// `kProfileMoveMigrationCompletedForUserPref` to be true for the user
+// identified by `user_id_hash`, depending on `mode`.
 void SetProfileMigrationCompletedForUser(PrefService* local_state,
                                          const std::string& user_id_hash,
                                          MigrationMode mode);
 
-// Clears the value of `kProfileMigrationCompletedForUser1Pref` for user
-// identified by `user_id_hash`.
+// Clears the values of `kProfileMigrationCompletedForUserPref` and
+// `kProfileMoveMigrationCompletedForUserPref` prefs for user identified by
+// `user_id_hash`:
 void ClearProfileMigrationCompletedForUser(PrefService* local_state,
                                            const std::string& user_id_hash);
 
+// Sets the value of `kProfileMigrationCompletionTimeForUserPref` for the user
+// identified by `user_id_hash` to the current time.
+void SetProfileMigrationCompletionTimeForUser(PrefService* local_state,
+                                              const std::string& user_id_hash);
+
+// Gets the value of `kProfileMigrationCompletionTimeForUserPref` for the user
+// identified by `user_id_hash`.
+absl::optional<base::Time> GetProfileMigrationCompletionTimeForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash);
+
+// Clears the value of `kProfileMigrationCompletionTimeForUserPref` for the user
+// identified by `user_id_hash`.
+void ClearProfileMigrationCompletionTimeForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash);
+
 // Sets the value of `kProfileDataBackwardMigrationCompletedForUserPref` for the
-// user identified by `user_id_hash`;
+// user identified by `user_id_hash`.
 void SetProfileDataBackwardMigrationCompletedForUser(
     PrefService* local_state,
     const std::string& user_id_hash);
