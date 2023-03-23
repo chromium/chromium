@@ -254,7 +254,20 @@ CSSMathExpressionNumericLiteral::CSSMathExpressionNumericLiteral(
     : CSSMathExpressionNode(UnitCategory(value->GetType()),
                             false /* has_comparisons*/,
                             false /* needs_tree_scope_population*/),
-      value_(value) {}
+      value_(value) {
+  if (!value_->IsNumber() && CanEagerlySimplify(Category())) {
+    // "If root is a dimension that is not expressed in its canonical unit, and
+    // there is enough information available to convert it to the canonical
+    // unit, do so, and return the value."
+    // https://w3c.github.io/csswg-drafts/css-values/#calc-simplification
+    //
+    // However, Numbers should not be eagerly simplified here since that would
+    // result in converting Integers to Doubles (kNumber, canonical unit for
+    // Numbers).
+
+    value_ = value_->CreateCanonicalUnitValue();
+  }
+}
 
 bool CSSMathExpressionNumericLiteral::IsZero() const {
   return !value_->GetDoubleValue();

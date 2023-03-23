@@ -115,6 +115,11 @@ double CSSNumericLiteralValue::ComputeDotsPerPixel() const {
   return DoubleValue() * ConversionToCanonicalUnitsScaleFactor(GetType());
 }
 
+double CSSNumericLiteralValue::ComputeInCanonicalUnit() const {
+  return DoubleValue() *
+         CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(GetType());
+}
+
 double CSSNumericLiteralValue::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
   DCHECK(IsLength());
@@ -337,6 +342,15 @@ bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
     default:
       return false;
   }
+}
+
+CSSPrimitiveValue::UnitType CSSNumericLiteralValue::CanonicalUnit() const {
+  return CanonicalUnitTypeForCategory(UnitTypeToUnitCategory(GetType()));
+}
+
+CSSNumericLiteralValue* CSSNumericLiteralValue::CreateCanonicalUnitValue()
+    const {
+  return Create(ComputeInCanonicalUnit(), CanonicalUnit());
 }
 
 }  // namespace blink
