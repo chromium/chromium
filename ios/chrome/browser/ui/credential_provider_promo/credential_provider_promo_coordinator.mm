@@ -11,11 +11,13 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_mediator.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
 
@@ -24,7 +26,8 @@
 #endif
 
 @interface CredentialProviderPromoCoordinator () <
-    ConfirmationAlertActionHandler>
+    ConfirmationAlertActionHandler,
+    UIAdaptivePresentationControllerDelegate>
 
 // Main mediator for this coordinator.
 @property(nonatomic, strong) CredentialProviderPromoMediator* mediator;
@@ -86,6 +89,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.mediator.consumer = self.viewController;
   self.viewController.actionHandler = self;
+  self.viewController.presentationController.delegate = self;
   self.promoContext = CredentialProviderPromoContext::kFirstStep;
   [self.mediator configureConsumerWithTrigger:trigger
                                       context:self.promoContext];
@@ -114,6 +118,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
     // Open iOS settings.
     ios::provider::PasswordsInOtherAppsOpensSettings();
     [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
+    [self promoWasDismissed];
   }
 }
 
@@ -124,12 +129,21 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
       prefs::kIosCredentialProviderPromoStopPromo, true);
 
   [self recordAction:IOSCredentialProviderPromoAction::kNo];
+  [self promoWasDismissed];
 }
 
 - (void)confirmationAlertTertiaryAction {
   [self hidePromo];
   [self.mediator registerPromoWithPromosManager];
   [self recordAction:IOSCredentialProviderPromoAction::kRemindMeLater];
+  [self promoWasDismissed];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self promoWasDismissed];
 }
 
 #pragma mark - Private
@@ -138,6 +152,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 - (void)presentLearnMore {
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.viewController.actionHandler = self;
+  self.viewController.presentationController.delegate = self;
   self.mediator.consumer = self.viewController;
   self.promoContext = CredentialProviderPromoContext::kLearnMore;
   [self.mediator configureConsumerWithTrigger:self.trigger
@@ -155,6 +170,13 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+}
+
+// Does any clean up for when the promo is fully dismissed.
+- (void)promoWasDismissed {
+  if (self.trigger == CredentialProviderPromoTrigger::RemindMeLater) {
+    [self.promosUIHandler promoWasDismissed];
+  }
 }
 
 // Help function for metrics.

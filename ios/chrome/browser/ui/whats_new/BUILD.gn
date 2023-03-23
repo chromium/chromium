@@ -33,6 +33,7 @@ source_set("whats_new") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/browser/ui/whats_new/cells",
     "//ios/chrome/browser/ui/whats_new/data_source",
     "//ios/chrome/browser/url_loading",

@@ -1107,6 +1107,8 @@ enum class ToolbarKind {
         [[CredentialProviderPromoCoordinator alloc]
             initWithBaseViewController:self.viewController
                                browser:self.browser];
+    _credentialProviderPromoCoordinator.promosUIHandler =
+        _promosManagerCoordinator;
     [_credentialProviderPromoCoordinator start];
   }
   if (!IsOpenInActivitiesInShareButtonEnabled()) {
@@ -1782,6 +1784,10 @@ enum class ToolbarKind {
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
         initWithBaseViewController:self.viewController
                            browser:self.browser];
+    // CredentialProviderPromoCoordinator is initialized earlier than this, so
+    // make sure to set its UI handler.
+    _credentialProviderPromoCoordinator.promosUIHandler =
+        self.promosManagerCoordinator;
   }
 
   [self.promosManagerCoordinator start];
@@ -1793,11 +1799,17 @@ enum class ToolbarKind {
         [SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState()
             scene];
     [SKStoreReviewController requestReviewInScene:scene];
+
+    // Apple doesn't tell whether the app store review window will show or
+    // provide a callback for when it is dismissed, so alert the coordinator
+    // here so it can do any necessary cleanup.
+    [self.promosManagerCoordinator promoWasDismissed];
   }
 }
 
 - (void)showWhatsNewPromo {
   [self showWhatsNew];
+  self.whatsNewCoordinator.promosUIHandler = self.promosManagerCoordinator;
   self.whatsNewCoordinator.shouldShowBubblePromoOnDismiss = YES;
 }
 

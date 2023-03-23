@@ -12,7 +12,9 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator.h"
@@ -99,6 +101,8 @@ NSString* const kTableViewNavigationDismissButtonId =
   base::RecordAction(base::UserMetricsAction("WhatsNew.Dismissed"));
   UmaHistogramMediumTimes("IOS.WhatsNew.TimeSpent",
                           base::TimeTicks::Now() - self.whatsNewStartTime);
+
+  [self.promosUIHandler promoWasDismissed];
 
   if (self.shouldShowBubblePromoOnDismiss) {
     [self.handler showWhatsNewIPH];

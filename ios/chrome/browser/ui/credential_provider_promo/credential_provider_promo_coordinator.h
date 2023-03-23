@@ -9,8 +9,13 @@
 
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 
+@protocol PromosManagerUIHandler;
+
 @interface CredentialProviderPromoCoordinator
     : ChromeCoordinator <CredentialProviderPromoCommands>
+
+// The promos manager ui handler to alert about UI changes.
+@property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
 
 @end
 
