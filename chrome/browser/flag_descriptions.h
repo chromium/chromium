@@ -749,10 +749,6 @@ extern const char kEnableCssSelectorFragmentAnchorDescription[];
 extern const char kEnablePreferencesAccountStorageName[];
 extern const char kEnablePreferencesAccountStorageDescription[];
 
-extern const char kEnableResamplingInputEventsName[];
-extern const char kEnableResamplingInputEventsDescription[];
-extern const char kEnableResamplingScrollEventsName[];
-extern const char kEnableResamplingScrollEventsDescription[];
 extern const char kEnableResamplingScrollEventsExperimentalPredictionName[];
 extern const char
     kEnableResamplingScrollEventsExperimentalPredictionDescription[];
@@ -822,9 +818,6 @@ extern const char kExtensionWebFileHandlersDescription[];
 
 extern const char kExtensionsOnChromeUrlsName[];
 extern const char kExtensionsOnChromeUrlsDescription[];
-
-extern const char kFilteringScrollPredictionName[];
-extern const char kFilteringScrollPredictionDescription[];
 
 extern const char kFractionalScrollOffsetsName[];
 extern const char kFractionalScrollOffsetsDescription[];

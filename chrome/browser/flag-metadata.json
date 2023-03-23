@@ -2444,11 +2444,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "enable-filtering-scroll-events",
-    "owners": [ "eirage", "nzolghadr", "input-dev" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "enable-first-party-sets",
     "owners": [ "chrome-first-party-sets@chromium.org" ],
     "expiry_milestone": 120
@@ -3030,16 +3025,6 @@
     "name": "enable-refine-data-source-reload-reporting",
     "owners": [ "sczs", "tinazwang" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "enable-resampling-input-events",
-    "owners": [ "eirage", "nzolghadr", "input-dev" ],
-    "expiry_milestone": 85
-  },
-  {
-    "name": "enable-resampling-scroll-events",
-    "owners": [ "eirage", "nzolghadr", "input-dev" ],
-    "expiry_milestone": 85
   },
   {
     "name": "enable-resampling-scroll-events-experimental-prediction",

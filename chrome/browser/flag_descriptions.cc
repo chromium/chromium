@@ -1341,15 +1341,6 @@ const char kEnablePreferencesAccountStorageDescription[] =
     "Enables storing preferences in a second, Gaia-account-scoped storage for "
     "syncing users";
 
-const char kEnableResamplingInputEventsName[] =
-    "Enable resampling input events";
-const char kEnableResamplingInputEventsDescription[] =
-    "Predicts mouse and touch inputs position at rAF time based on previous "
-    "input";
-const char kEnableResamplingScrollEventsName[] =
-    "Enable resampling scroll events";
-const char kEnableResamplingScrollEventsDescription[] =
-    "Predicts the scroll amount at vsync time based on previous input";
 const char kEnableResamplingScrollEventsExperimentalPredictionName[] =
     "Enable experimental prediction for scroll events";
 const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
@@ -1480,10 +1471,6 @@ const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
 const char kExtensionsOnChromeUrlsDescription[] =
     "Enables running extensions on chrome:// URLs, where extensions explicitly "
     "request this permission.";
-
-const char kFilteringScrollPredictionName[] = "Filtering scroll prediction";
-const char kFilteringScrollPredictionDescription[] =
-    "Enable filtering of predicted scroll events";
 
 const char kFractionalScrollOffsetsName[] = "Fractional Scroll Offsets";
 const char kFractionalScrollOffsetsDescription[] =

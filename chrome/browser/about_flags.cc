@@ -2168,33 +2168,6 @@ const FeatureEntry::FeatureVariation
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kResamplingInputEventsLSQEnabled[] = {
-    {"predictor", features::kPredictorNameLsq}};
-const FeatureEntry::FeatureParam kResamplingInputEventsKalmanEnabled[] = {
-    {"predictor", features::kPredictorNameKalman}};
-const FeatureEntry::FeatureParam kResamplingInputEventsLinearFirstEnabled[] = {
-    {"predictor", features::kPredictorNameLinearFirst}};
-const FeatureEntry::FeatureParam kResamplingInputEventsLinearSecondEnabled[] = {
-    {"predictor", features::kPredictorNameLinearSecond}};
-const FeatureEntry::FeatureParam
-    kResamplingInputEventsLinearResamplingEnabled[] = {
-        {"predictor", features::kPredictorNameLinearResampling}};
-
-const FeatureEntry::FeatureVariation kResamplingInputEventsFeatureVariations[] =
-    {{features::kPredictorNameLsq, kResamplingInputEventsLSQEnabled,
-      std::size(kResamplingInputEventsLSQEnabled), nullptr},
-     {features::kPredictorNameKalman, kResamplingInputEventsKalmanEnabled,
-      std::size(kResamplingInputEventsKalmanEnabled), nullptr},
-     {features::kPredictorNameLinearFirst,
-      kResamplingInputEventsLinearFirstEnabled,
-      std::size(kResamplingInputEventsLinearFirstEnabled), nullptr},
-     {features::kPredictorNameLinearSecond,
-      kResamplingInputEventsLinearSecondEnabled,
-      std::size(kResamplingInputEventsLinearSecondEnabled), nullptr},
-     {features::kPredictorNameLinearResampling,
-      kResamplingInputEventsLinearResamplingEnabled,
-      std::size(kResamplingInputEventsLinearResamplingEnabled), nullptr}};
-
 const FeatureEntry::FeatureParam
     kResamplingScrollEventsPredictionTimeBasedEnabled[] = {
         {"mode", features::kPredictionTypeTimeBased},
@@ -2212,17 +2185,6 @@ const FeatureEntry::FeatureVariation
          kResamplingScrollEventsPredictionFramesBasedEnabled,
          std::size(kResamplingScrollEventsPredictionFramesBasedEnabled),
          nullptr}};
-
-const FeatureEntry::FeatureParam kFilteringPredictionEmptyFilterEnabled[] = {
-    {"filter", features::kFilterNameEmpty}};
-const FeatureEntry::FeatureParam kFilteringPredictionOneEuroFilterEnabled[] = {
-    {"filter", features::kFilterNameOneEuro}};
-
-const FeatureEntry::FeatureVariation kFilteringPredictionFeatureVariations[] = {
-    {features::kFilterNameEmpty, kFilteringPredictionEmptyFilterEnabled,
-     std::size(kFilteringPredictionEmptyFilterEnabled), nullptr},
-    {features::kFilterNameOneEuro, kFilteringPredictionOneEuroFilterEnabled,
-     std::size(kFilteringPredictionOneEuroFilterEnabled), nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabGroupsContinuationAndroid_LowEndSupport[] =
@@ -6688,20 +6650,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDropInputEventsBeforeFirstPaintDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kDropInputEventsBeforeFirstPaint)},
 
-    {"enable-resampling-input-events",
-     flag_descriptions::kEnableResamplingInputEventsName,
-     flag_descriptions::kEnableResamplingInputEventsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kResamplingInputEvents,
-                                    kResamplingInputEventsFeatureVariations,
-                                    "ResamplingInputEvents")},
-
-    {"enable-resampling-scroll-events",
-     flag_descriptions::kEnableResamplingScrollEventsName,
-     flag_descriptions::kEnableResamplingScrollEventsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kResamplingScrollEvents,
-                                    kResamplingInputEventsFeatureVariations,
-                                    "ResamplingScrollEvents")},
-
     // Should only be available if kResamplingScrollEvents is on, and using
     // linear resampling.
     {"enable-resampling-scroll-events-experimental-prediction",
@@ -6713,13 +6661,6 @@ const FeatureEntry kFeatureEntries[] = {
          ::features::kResamplingScrollEventsExperimentalPrediction,
          kResamplingScrollEventsExperimentalPredictionVariations,
          "ResamplingScrollEventsExperimentalLatency")},
-
-    {"enable-filtering-scroll-events",
-     flag_descriptions::kFilteringScrollPredictionName,
-     flag_descriptions::kFilteringScrollPredictionDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kFilteringScrollPrediction,
-                                    kFilteringPredictionFeatureVariations,
-                                    "FilteringScrollPrediction")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-vaapi-jpeg-image-decode-acceleration",
