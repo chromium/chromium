@@ -53,8 +53,17 @@ enum class GwpAsanCrashAnalysisResult {
   kErrorOutdatedMetadataIndex = 11,
   // Failed to read the crashing process' slot to metadata mapping.
   kErrorFailedToReadSlotMetadataMapping = 12,
+
+  // The crash is caused by the Lightweight UAF Detector.
+  kLightweightDetectorCrash = 13,
+  // Failed to read the crashing process' memory of the Lightweight UAF Detector
+  // metadata store.
+  kErrorFailedToReadLightweightSlotMetadata = 14,
+  // The computed lightweight metadata index was outdated.
+  kErrorOutdatedLightweightMetadataIndex = 15,
+
   // Number of values in this enumeration, required by UMA.
-  kMaxValue = kErrorFailedToReadSlotMetadataMapping
+  kMaxValue = kErrorOutdatedLightweightMetadataIndex
 };
 
 class CrashAnalyzer {

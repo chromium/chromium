@@ -22,7 +22,8 @@ namespace internal {
 
 absl::optional<AllocatorSettings> GetAllocatorSettings(
     const base::Feature& feature,
-    bool boost_sampling);
+    bool boost_sampling,
+    const char* process_type);
 
 namespace {
 
@@ -48,8 +49,10 @@ size_t processSamplingTest(const char* process_sampling,
 
   size_t enabled = 0;
   for (size_t i = 0; i < kLoopIterations; i++) {
-    if (GetAllocatorSettings(kTestFeature1, process_sampling_boost != nullptr))
+    if (GetAllocatorSettings(kTestFeature1, process_sampling_boost != nullptr,
+                             "")) {
       enabled++;
+    }
   }
 
   return enabled;
@@ -71,8 +74,9 @@ std::set<size_t> allocationSamplingTest(
 
   std::set<size_t> frequencies;
   for (size_t i = 0; i < kLoopIterations; i++) {
-    if (auto settings = GetAllocatorSettings(kTestFeature2, false))
+    if (auto settings = GetAllocatorSettings(kTestFeature2, false, "")) {
       frequencies.insert(settings->sampling_frequency);
+    }
   }
 
   return frequencies;

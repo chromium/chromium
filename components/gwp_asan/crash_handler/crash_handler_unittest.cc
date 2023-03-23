@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -108,11 +109,11 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     return kSuccess;
   }
 
-  LightweightDetectorState lightweight_detector_state =
-      LightweightDetectorState::kDisabled;
+  LightweightDetector::State lightweight_detector_state =
+      LightweightDetector::State::kDisabled;
   size_t num_lightweight_detector_metadata = 0;
   if (cmd_line->HasSwitch("enable-lightweight-detector")) {
-    lightweight_detector_state = LightweightDetectorState::kEnabled;
+    lightweight_detector_state = LightweightDetector::State::kEnabled;
     num_lightweight_detector_metadata = 1;
   }
 

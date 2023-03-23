@@ -19,6 +19,7 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
@@ -289,7 +290,7 @@ void InstallMallocHooks(size_t max_allocated_pages,
   static crash_reporter::CrashKeyString<24> malloc_crash_key(kMallocCrashKey);
   gpa = new GuardedPageAllocator();
   gpa->Init(max_allocated_pages, num_metadata, total_pages, std::move(callback),
-            false, LightweightDetectorState::kDisabled, 0);
+            false, LightweightDetector::State::kDisabled, 0);
   malloc_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(sampling_frequency);
   allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);

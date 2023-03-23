@@ -35,8 +35,8 @@ class BaseGpaTest : public testing::Test {
               size_t max_metadata,
               size_t max_slots,
               bool is_partition_alloc,
-              LightweightDetectorState lightweight_detector_state =
-                  LightweightDetectorState::kDisabled,
+              LightweightDetector::State lightweight_detector_state =
+                  LightweightDetector::State::kDisabled,
               size_t max_lightweight_detector_metadata = 0) {
     gpa_.Init(max_allocated_pages, max_metadata, max_slots,
               base::BindLambdaForTesting(
@@ -402,7 +402,7 @@ class LightweightDetectorAllocatorTest : public BaseGpaTest {
                     kMaxMetadata,
                     kMaxSlots,
                     /* is_partition_alloc = */ true,
-                    LightweightDetectorState::kEnabled,
+                    LightweightDetector::State::kEnabled,
                     kMaxLightweightDetectorMetadata) {}
 };
 

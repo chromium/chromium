@@ -178,7 +178,7 @@ void GuardedPageAllocator::Init(
     size_t total_pages,
     OutOfMemoryCallback oom_callback,
     bool is_partition_alloc,
-    LightweightDetectorState lightweight_detector_state,
+    LightweightDetector::State lightweight_detector_state,
     size_t num_lightweight_detector_metadata) {
   CHECK_GT(max_alloced_pages, 0U);
   CHECK_LE(max_alloced_pages, num_metadata);
@@ -243,7 +243,7 @@ void GuardedPageAllocator::Init(
       std::make_unique<AllocatorState::SlotMetadata[]>(state_.num_metadata);
   state_.metadata_addr = reinterpret_cast<uintptr_t>(metadata_.get());
 
-  if (lightweight_detector_state == LightweightDetectorState::kEnabled) {
+  if (lightweight_detector_state == LightweightDetector::State::kEnabled) {
     state_.num_lightweight_detector_metadata =
         num_lightweight_detector_metadata;
     lightweight_detector_metadata_ =

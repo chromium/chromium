@@ -18,6 +18,7 @@
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
+#include "components/gwp_asan/common/lightweight_detector.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +90,7 @@ class BaseCrashAnalyzerTest : public testing::Test {
   using testing::Test::SetUp;
 
   void SetUp(bool is_partition_alloc,
-             LightweightDetectorState lightweight_detector_state,
+             LightweightDetector::State lightweight_detector_state,
              size_t num_lightweight_detector_metadata) {
     is_partition_alloc_ = is_partition_alloc;
     gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc,
@@ -150,7 +151,7 @@ class BaseCrashAnalyzerTest : public testing::Test {
 class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
   void SetUp() final {
     BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ false,
-                                 LightweightDetectorState::kDisabled, 0);
+                                 LightweightDetector::State::kDisabled, 0);
     InitializeSnapshot(0);
   }
 };
@@ -231,7 +232,7 @@ TEST_F(CrashAnalyzerTest, InternalError) {
 class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
   void SetUp() final {
     BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ true,
-                                 LightweightDetectorState::kEnabled, 1);
+                                 LightweightDetector::State::kEnabled, 1);
   }
 };
 
