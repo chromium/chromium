@@ -10,6 +10,7 @@
 // appended to script URLs to make the python scripts that generate bidding
 // logic and decision logic scripts with errors.
 const COMMON_SCRIPT_ERRORS = [
+  'error=close-connection',
   'error=http-error',
   'error=no-content-type',
   'error=wrong-content-type',

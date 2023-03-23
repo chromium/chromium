@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+PASS Bidding logic script: error=close-connection
 PASS Bidding logic script: error=http-error
 PASS Bidding logic script: error=no-content-type
 PASS Bidding logic script: error=wrong-content-type
@@ -18,6 +19,7 @@ PASS Bidding logic script: generateBid=return {bid: 1};
 PASS Bidding logic script: generateBid=return {render: interestGroup.ads[0].renderUrl};
 PASS Bidding logic script: generateBid=return {bid:0, render: interestGroup.ads[0].renderUrl};
 PASS Bidding logic script: generateBid=return {bid:-1, render: interestGroup.ads[0].renderUrl};
+PASS Decision logic script: error=close-connection
 PASS Decision logic script: error=http-error
 PASS Decision logic script: error=no-content-type
 PASS Decision logic script: error=wrong-content-type
