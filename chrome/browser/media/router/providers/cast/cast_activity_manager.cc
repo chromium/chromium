@@ -328,13 +328,9 @@ void CastActivityManager::JoinSession(
   const MediaSinkInternal* sink =
       media_sink_service_->GetSinkById(activity->route().media_sink_id());
   if (!sink) {
-    logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
-                      "Cannot find the sink to join with sink_id.",
-                      activity->route().media_sink_id(),
-                      cast_source.source_id(), presentation_id);
-    std::move(callback).Run(absl::nullopt, nullptr,
-                            std::string("Sink not found"),
-                            mojom::RouteRequestResultCode::SINK_NOT_FOUND);
+    HandleMissingSinkOnJoin(std::move(callback),
+                            activity->route().media_sink_id(),
+                            cast_source.source_id(), presentation_id);
     return;
   }
 
@@ -342,27 +338,18 @@ void CastActivityManager::JoinSession(
       activity->AddClient(cast_source, origin, frame_tree_node_id);
 
   if (!activity->session_id()) {
-    // This should never happen, but it looks like maybe it does.  See
-    // crbug.com/1114067.
-    NOTREACHED();
-    static const char kErrorMessage[] = "Internal error: missing session ID";
-    // Checking for |logger_| here is pure paranoia, but this code only exists
-    // to fix a crash we can't reproduce, so creating even a tiny possibility of
-    // a different crash seems like a bad idea.
-    if (logger_) {
-      // The empty string parameters could have real values, but they're omitted
-      // out of an abundance of caution, and they're not especially relevant to
-      // this error anyway.
-      logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
-                        kErrorMessage, "", "", "");
-    }
-    std::move(callback).Run(absl::nullopt, nullptr, kErrorMessage,
-                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
+    HandleMissingSessionIdOnJoin(std::move(callback));
     return;
   }
 
   const CastSession* session =
       session_tracker_->GetSessionById(*activity->session_id());
+  if (!session) {
+    HandleMissingSessionOnJoin(std::move(callback),
+                               activity->route().media_sink_id(),
+                               cast_source.source_id(), presentation_id);
+    return;
+  }
   const std::string& client_id = cast_source.client_id();
   activity->SendMessageToClient(
       client_id,
@@ -1101,6 +1088,52 @@ CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
       callback(std::move(callback)) {
   if (app_params)
     this->app_params = app_params->Clone();
+}
+
+void CastActivityManager::HandleMissingSinkOnJoin(
+    mojom::MediaRouteProvider::JoinRouteCallback callback,
+    const std::string& sink_id,
+    const std::string& source_id,
+    const std::string& session_id) {
+  logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
+                    "Cannot find the sink to join with sink_id.", sink_id,
+                    source_id, session_id);
+  std::move(callback).Run(absl::nullopt, nullptr, std::string("Sink not found"),
+                          mojom::RouteRequestResultCode::SINK_NOT_FOUND);
+}
+
+void CastActivityManager::HandleMissingSessionIdOnJoin(
+    mojom::MediaRouteProvider::JoinRouteCallback callback) {
+  // This should never happen, but it looks like maybe it does.  See
+  // crbug.com/1114067.
+  NOTREACHED();
+  static const char kErrorMessage[] = "Internal error: missing session ID";
+  // Checking for |logger_| here is pure paranoia, but this code only exists
+  // to fix a crash we can't reproduce, so creating even a tiny possibility of
+  // a different crash seems like a bad idea.
+  if (logger_) {
+    // The empty string parameters could have real values, but they're omitted
+    // out of an abundance of caution, and they're not especially relevant to
+    // this error anyway.
+    logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
+                      kErrorMessage, "", "", "");
+  }
+  std::move(callback).Run(absl::nullopt, nullptr, kErrorMessage,
+                          mojom::RouteRequestResultCode::UNKNOWN_ERROR);
+}
+
+void CastActivityManager::HandleMissingSessionOnJoin(
+    mojom::MediaRouteProvider::JoinRouteCallback callback,
+    const std::string& sink_id,
+    const std::string& source_id,
+    const std::string& session_id) {
+  static const char kErrorMessage[] = "Could not find the session to join.";
+  if (logger_) {
+    logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
+                      kErrorMessage, sink_id, source_id, session_id);
+  }
+  std::move(callback).Run(absl::nullopt, nullptr, kErrorMessage,
+                          mojom::RouteRequestResultCode::ROUTE_NOT_FOUND);
 }
 
 CastActivityManager::DoLaunchSessionParams::DoLaunchSessionParams(
