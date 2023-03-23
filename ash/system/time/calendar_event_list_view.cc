@@ -18,6 +18,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_event_list_item_view_jelly.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -269,11 +270,16 @@ void CalendarEventListView::UpdateListItems() {
 
     content_view_->InvalidateLayout();
 
+    calendar_metrics::RecordEventListEventCount(multi_day_events.size() +
+                                                all_other_events.size());
+
     if (!multi_day_events.empty() || !all_other_events.empty())
       return;
   } else {
     std::list<google_apis::calendar::CalendarEvent> events =
         calendar_view_controller_->SelectedDateEvents();
+
+    calendar_metrics::RecordEventListEventCount(events.size());
 
     if (events.size() > 0) {
       for (auto& event : events) {

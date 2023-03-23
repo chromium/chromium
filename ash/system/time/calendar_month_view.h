@@ -160,6 +160,9 @@ class ASH_EXPORT CalendarMonthView : public views::View,
   // Returns the index of this month view's last row.
   int last_row_index() const { return last_row_index_; }
 
+  // If this month contains any events.
+  bool has_events() { return has_events_; }
+
  private:
   // For unit tests.
   friend class CalendarMonthViewTest;
@@ -184,6 +187,8 @@ class ASH_EXPORT CalendarMonthView : public views::View,
 
   // The index of this month view's last row.
   int last_row_index_;
+
+  bool has_events_ = false;
 
   // The cells of each row that should be first focused on. These
   // `CalendarDateCellView`s are the children of this view.

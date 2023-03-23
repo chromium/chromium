@@ -960,6 +960,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.EventsDisplayedToUser" enum="Boolean"
+    expires_after="2024-03-23">
+  <owner>samcackett@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded whenever a user sees any calendar event in the CalendarView.
+    Recorded once per lifetime of the calendar view.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.FetchEvents.FetchDuration" units="ms"
     expires_after="2023-09-18">
   <owner>rtinkoff@google.com</owner>

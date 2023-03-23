@@ -16,6 +16,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -524,6 +525,41 @@ TEST_F(CalendarMonthViewFetchTest, UpdateEvents) {
       u"Wednesday, August 18, 2021, 4 events",
       static_cast<CalendarDateCellView*>(calendar_month_view_->children()[17])
           ->GetTooltipText());
+}
+
+TEST_F(CalendarMonthViewFetchTest, RecordEventsDisplayedToUserOnce) {
+  base::HistogramTester histogram_tester;
+  // Create a monthview based on Aug,1st 2021. Today is set to 18th.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
+  base::Time today;
+  ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
+  SetTodayFromTime(today);
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+
+  CreateMonthView(date);
+  WaitUntilPainted();
+
+  // Nothing logged before we've fetched events.
+  histogram_tester.ExpectTotalCount("Ash.Calendar.EventsDisplayedToUser", 0);
+
+  // Sets the event list response and fetches the events.
+  auto event_list = CreateMockEventList();
+  SetEventList(std::move(event_list));
+  calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
+  WaitUntilFetched();
+
+  // After fetching, we expect the metric to be logged.
+  histogram_tester.ExpectTotalCount("Ash.Calendar.EventsDisplayedToUser", 1);
+
+  // Fetch new events.
+  auto event_list_2 = CreateMockEventList();
+  SetEventList(std::move(event_list_2));
+  calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
+  WaitUntilFetched();
+
+  // After fetching again, we don't expect any additional logs of the metric.
+  histogram_tester.ExpectTotalCount("Ash.Calendar.EventsDisplayedToUser", 1);
 }
 
 TEST_F(CalendarMonthViewFetchTest, TimeZone) {

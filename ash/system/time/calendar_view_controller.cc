@@ -257,6 +257,17 @@ void CalendarViewController::OnTodaysEventFetchComplete() {
   todays_date_cell_fetch_recorded_ = true;
 }
 
+void CalendarViewController::EventsDisplayedToUser() {
+  // Only record this once per lifetime of the `CalendarView` (and therefore the
+  // controller).
+  if (events_shown_to_user_recorded_) {
+    return;
+  }
+
+  calendar_metrics::RecordEventsDisplayedToUser();
+  events_shown_to_user_recorded_ = true;
+}
+
 bool CalendarViewController::IsSelectedDateInCurrentMonth() {
   if (!selected_date_.has_value())
     return false;

@@ -179,6 +179,9 @@ TEST_F(CalendarViewEventListViewTest, LaunchEmptyList) {
 
   histogram_tester.ExpectTotalCount(
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
+  EXPECT_EQ(histogram_tester.GetTotalSum(
+                "Ash.Calendar.EventListView.EventDisplayedCount"),
+            0);
 }
 
 TEST_F(CalendarViewEventListViewTest, LaunchItem) {
@@ -186,8 +189,6 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   CreateEventListView(date);
-
-  SetSelectedDate(date);
   EXPECT_EQ(3u, content_view()->children().size());
 
   // Launch the first item.
@@ -199,6 +200,9 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
   histogram_tester.ExpectTotalCount(
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
   histogram_tester.ExpectTotalCount("Ash.Calendar.EventListItem.Activated", 1);
+  EXPECT_EQ(histogram_tester.GetTotalSum(
+                "Ash.Calendar.EventListView.EventDisplayedCount"),
+            3);
 }
 
 TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {

@@ -514,8 +514,20 @@ void CalendarMonthView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,
     const base::Time start_time,
     const google_apis::calendar::EventList* events) {
-  if (status == CalendarModel::kSuccess && start_time == fetch_month_)
+  if (status == CalendarModel::kSuccess && start_time == fetch_month_) {
     UpdateIsFetchedAndRepaint(true);
+  }
+
+  if (!events || events->items().size() == 0) {
+    return;
+  }
+
+  has_events_ = true;
+
+  if (start_time ==
+      calendar_view_controller_->GetOnScreenMonthFirstDayUTC().UTCMidnight()) {
+    calendar_view_controller_->EventsDisplayedToUser();
+  }
 }
 
 void CalendarMonthView::EnableFocus() {

@@ -104,6 +104,10 @@ void RecordJoinButtonPressedFromEventListView(const ui::Event& event);
 
 void RecordJoinButtonPressedFromUpNextView(const ui::Event& event);
 
+void RecordEventListEventCount(const int event_count);
+
+void RecordEventsDisplayedToUser();
+
 }  // namespace calendar_metrics
 
 }  // namespace ash

@@ -22,7 +22,6 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
@@ -1391,6 +1390,10 @@ void CalendarView::ScrollUpOneMonth() {
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), position);
 
   MaybeResetContentViewFocusBehavior();
+
+  if (current_month_->has_events()) {
+    calendar_view_controller_->EventsDisplayedToUser();
+  }
 }
 
 void CalendarView::ScrollDownOneMonth() {
@@ -1428,6 +1431,10 @@ void CalendarView::ScrollDownOneMonth() {
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), position);
 
   MaybeResetContentViewFocusBehavior();
+
+  if (current_month_->has_events()) {
+    calendar_view_controller_->EventsDisplayedToUser();
+  }
 }
 
 void CalendarView::ScrollOneMonthAndAutoScroll(bool scroll_up) {

@@ -2700,4 +2700,46 @@ TEST_F(
   EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
 }
 
+TEST_F(CalendarViewWithJellyEnabledTest, RecordEventsDisplayedToUserOnce) {
+  base::HistogramTester histogram_tester;
+  base::Time now;
+  ASSERT_TRUE(base::Time::FromString("1 Oct 2021 10:00 GMT", &now));
+  base::Time next_month;
+  ASSERT_TRUE(base::Time::FromString("1 Nov 2021 10:00 GMT", &next_month));
+  // Set time override.
+  SetFakeNow(now);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  // Mock events will be in the `next_month` so when the calendar opens we don't
+  // record the metric.
+  MockEventsFetched(
+      calendar_utils::GetStartOfMonthUTC(next_month),
+      CreateMockEventListWithEventStartTimeMoreThanTwoHoursAway());
+
+  // Make sure we're on the current month and no events have been displayed to
+  // the user.
+  EXPECT_EQ(u"October", GetCurrentLabelText());
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+  histogram_tester.ExpectTotalCount("Ash.Calendar.EventsDisplayedToUser", 0);
+
+  // Scroll down a month, this month should contain events.
+  ScrollDownOneMonth();
+
+  EXPECT_EQ(u"November", GetCurrentLabelText());
+  EXPECT_EQ(u"November", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+  histogram_tester.ExpectTotalCount("Ash.Calendar.EventsDisplayedToUser", 1);
+
+  // Scroll back and forward to land on the month containing events again.
+  ScrollDownOneMonth();
+  ScrollUpOneMonth();
+
+  // We should still have only logged the metric once.
+  histogram_tester.ExpectTotalCount("Ash.Calendar.EventsDisplayedToUser", 1);
+}
+
 }  // namespace ash

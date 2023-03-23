@@ -89,6 +89,10 @@ class ASH_EXPORT CalendarViewController {
   // Called when the CalendarDateCellView representing today gets a fetch.
   void OnTodaysEventFetchComplete();
 
+  // Called when the on screen month has finished loading and has any events to
+  // display to the user. Logs a metric once per CalendarView lifetime.
+  void EventsDisplayedToUser();
+
   // If the selected date in the current month. This is used to inform the
   // `CalendarView` if the month should be updated when a date is selected.
   bool IsSelectedDateInCurrentMonth();
@@ -227,6 +231,10 @@ class ASH_EXPORT CalendarViewController {
   // Whether the metric for recording time to show the user the first fetch of
   // events has been recorded.
   bool todays_date_cell_fetch_recorded_ = false;
+
+  // Record if any events are displayed (via the dots in the current month) on
+  // screen to the user.
+  bool events_shown_to_user_recorded_ = false;
 
   // The currently selected date.
   absl::optional<base::Time> selected_date_;
