@@ -13,7 +13,9 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace ash::eol_incentive_util {
 namespace {
@@ -59,6 +61,12 @@ EolIncentiveType ShouldShowEolIncentive(Profile* profile,
   if (time_since_creation.InDays() < kMinimumUseTimeInDays &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEolIgnoreProfileCreationTime)) {
+    return EolIncentiveType::kNone;
+  }
+
+  const user_manager::User* user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (user && user->GetType() != user_manager::USER_TYPE_REGULAR) {
     return EolIncentiveType::kNone;
   }
 
