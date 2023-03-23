@@ -928,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   EXPECT_TRUE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-  EXPECT_EQ("Live Caption - English",
+  EXPECT_EQ("Live Caption - English (United States)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Click the Live Caption toggle again to toggle it off.
@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   EXPECT_TRUE(ui_.WaitForDialogOpened());
   EXPECT_TRUE(ui_.IsDialogVisible());
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-  EXPECT_EQ("Live Caption - English",
+  EXPECT_EQ("Live Caption - English (United States)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Click the Live Caption toggle to toggle it off.
@@ -1039,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   OnSodaInstalled();
-  EXPECT_EQ("Live Caption - English",
+  EXPECT_EQ("Live Caption - English (United States)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }
 
@@ -1071,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   // When Live Caption is enabled, the title should show the language.
   ClickEnableLiveCaptionOnDialog();
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-  EXPECT_EQ("Live Caption - English",
+  EXPECT_EQ("Live Caption - English (United States)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // Close dialog and change live caption language. Reopen dialog.
@@ -1085,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Live Caption is enabled so the title should show the new language.
   EXPECT_TRUE(GetLiveCaptionTitleLabel()->GetVisible());
-  EXPECT_EQ("Live Caption - German",
+  EXPECT_EQ("Live Caption - German (Germany)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
   // When Live Caption is disabled, the title should not show the language.

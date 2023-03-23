@@ -114,6 +114,11 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
       {"captionsColorCyan", IDS_SETTINGS_CAPTIONS_COLOR_CYAN},
       {"captionsColorMagenta", IDS_SETTINGS_CAPTIONS_COLOR_MAGENTA},
       {"captionsDefaultSetting", IDS_SETTINGS_CAPTIONS_DEFAULT_SETTING},
+      {"captionsLanguage", IDS_SETTINGS_CAPTIONS_LANGUAGE},
+      {"captionsManageLanguagesTitle",
+       IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_TITLE},
+      {"captionsLiveTranslateTargetLanguage",
+       IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -124,9 +129,19 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedString(
       "captionsEnableLiveCaptionTitle",
       IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_TITLE);
+  html_source->AddLocalizedString(
+      "captionsEnableLiveTranslateTitle",
+      IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_TITLE);
+  html_source->AddLocalizedString(
+      "captionsEnableLiveTranslateSubtitle",
+      IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_TRANSLATE_SUBTITLE);
 
   const bool liveCaptionMultiLanguageEnabled =
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage);
+
+  const bool liveTranslateEnabled =
+      base::FeatureList::IsEnabled(media::kLiveTranslate);
+
   const int live_caption_subtitle_message =
       liveCaptionMultiLanguageEnabled
           ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE
@@ -138,41 +153,57 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
       speech::GetLanguageComponentConfig(speech::LanguageCode::kEnUs);
   html_source->AddString("sodaLanguageCodeEnglish",
                          englishConfig->language_name);
-  html_source->AddLocalizedString("sodaLanguageDisplayNameEnglish",
-                                  englishConfig->display_name);
-  absl::optional<speech::SodaLanguagePackComponentConfig> frenchConfig =
+  html_source->AddString("sodaLanguageDisplayNameEnglish",
+                         speech::GetLanguageDisplayName(
+                             englishConfig->language_name,
+                             g_browser_process->GetApplicationLocale()));
+  absl::optional<speech::SodaLanguagePackComponentConfig> french_config =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kFrFr);
-  html_source->AddString("sodaLanguageCodeFrench", frenchConfig->language_name);
-  html_source->AddLocalizedString("sodaLanguageDisplayNameFrench",
-                                  frenchConfig->display_name);
-  absl::optional<speech::SodaLanguagePackComponentConfig> germanConfig =
+  html_source->AddString("sodaLanguageCodeFrench",
+                         french_config->language_name);
+  html_source->AddString("sodaLanguageDisplayNameFrench",
+                         speech::GetLanguageDisplayName(
+                             french_config->language_name,
+                             g_browser_process->GetApplicationLocale()));
+  absl::optional<speech::SodaLanguagePackComponentConfig> german_config =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kDeDe);
-  html_source->AddString("sodaLanguageCodeGerman", germanConfig->language_name);
-  html_source->AddLocalizedString("sodaLanguageDisplayNameGerman",
-                                  germanConfig->display_name);
-  absl::optional<speech::SodaLanguagePackComponentConfig> italianConfig =
+  html_source->AddString("sodaLanguageCodeGerman",
+                         german_config->language_name);
+  html_source->AddString("sodaLanguageDisplayNameGerman",
+                         speech::GetLanguageDisplayName(
+                             german_config->language_name,
+                             g_browser_process->GetApplicationLocale()));
+  absl::optional<speech::SodaLanguagePackComponentConfig> italian_config =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kItIt);
   html_source->AddString("sodaLanguageCodeItalian",
-                         italianConfig->language_name);
-  html_source->AddLocalizedString("sodaLanguageDisplayNameItalian",
-                                  italianConfig->display_name);
-  absl::optional<speech::SodaLanguagePackComponentConfig> japaneseConfig =
+                         italian_config->language_name);
+  html_source->AddString("sodaLanguageDisplayNameItalian",
+                         speech::GetLanguageDisplayName(
+                             italian_config->language_name,
+                             g_browser_process->GetApplicationLocale()));
+  absl::optional<speech::SodaLanguagePackComponentConfig> japanese_config =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kJaJp);
   html_source->AddString("sodaLanguageCodeJapanese",
-                         japaneseConfig->language_name);
-  html_source->AddLocalizedString("sodaLanguageDisplayNameJapanese",
-                                  japaneseConfig->display_name);
-  absl::optional<speech::SodaLanguagePackComponentConfig> spanishConfig =
+                         japanese_config->language_name);
+  html_source->AddString("sodaLanguageDisplayNameJapanese",
+                         speech::GetLanguageDisplayName(
+                             japanese_config->language_name,
+                             g_browser_process->GetApplicationLocale()));
+  absl::optional<speech::SodaLanguagePackComponentConfig> spanish_config =
       speech::GetLanguageComponentConfig(speech::LanguageCode::kEsEs);
   html_source->AddString("sodaLanguageCodeSpanish",
-                         spanishConfig->language_name);
-  html_source->AddLocalizedString("sodaLanguageDisplayNameSpanish",
-                                  spanishConfig->display_name);
+                         spanish_config->language_name);
+  html_source->AddString("sodaLanguageDisplayNameSpanish",
+                         speech::GetLanguageDisplayName(
+                             spanish_config->language_name,
+                             g_browser_process->GetApplicationLocale()));
 
   html_source->AddBoolean("enableLiveCaption",
                           captions::IsLiveCaptionFeatureSupported());
   html_source->AddBoolean("enableLiveCaptionMultiLanguage",
                           liveCaptionMultiLanguageEnabled);
+
+  html_source->AddBoolean("enableLiveTranslate", liveTranslateEnabled);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

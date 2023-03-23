@@ -94,6 +94,15 @@
   <message name="IDS_SETTINGS_CAPTIONS_DEFAULT_SETTING" desc="Name of the default setting for the caption text.">
     Default
   </message>
+  <message name="IDS_SETTINGS_CAPTIONS_LANGUAGE" desc="Name of the language setting for the caption text.">
+    Caption language
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_TITLE" desc="Name of the caption settings section for managing language packs.">
+    Manage languages
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE" desc="Description of the target language setting for the Live Translate feature.">
+    Translate to
+  </message>
 
   <!-- Nearby Share -->
   <message name="IDS_SETTINGS_NEARBY_SHARE_TITLE" desc="Name of the settings page for the Nearby Share feature">

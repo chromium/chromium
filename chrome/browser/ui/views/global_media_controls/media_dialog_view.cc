@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
@@ -69,13 +70,11 @@ std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
   }
   // The selected language is only shown when Live Caption is enabled.
   if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
-    int language_message_id = speech::GetLanguageDisplayName(
-        prefs::GetLiveCaptionLanguageCode(profile_prefs));
-    if (language_message_id) {
-      std::u16string language = l10n_util::GetStringUTF16(language_message_id);
-      return l10n_util::GetStringFUTF16(
-          IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_SHOW_LANGUAGE, language);
-    }
+    std::u16string language = speech::GetLanguageDisplayName(
+        prefs::GetLiveCaptionLanguageCode(profile_prefs),
+        g_browser_process->GetApplicationLocale());
+    return l10n_util::GetStringFUTF16(
+        IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_SHOW_LANGUAGE, language);
   }
   return l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION);
 }

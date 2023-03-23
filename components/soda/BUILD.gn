@@ -58,6 +58,7 @@ source_set("constants") {
     "//components/component_updater",
     "//components/crx_file",
     "//components/strings/",
+    "//ui/base",
   ]
 }
 
