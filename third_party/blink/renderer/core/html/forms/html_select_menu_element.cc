@@ -344,12 +344,14 @@ void HTMLSelectMenuElement::setValueForBinding(const String& value) {
 void HTMLSelectMenuElement::setValue(const String& value, bool send_events) {
   // Find the option with value matching the given parameter and make it the
   // current selection.
+  HTMLOptionElement* selected_option = nullptr;
   for (auto& option : option_parts_) {
     if (option->value() == value) {
-      SetSelectedOption(option);
+      selected_option = option;
       break;
     }
   }
+  SetSelectedOption(selected_option);
 }
 
 bool HTMLSelectMenuElement::open() const {
