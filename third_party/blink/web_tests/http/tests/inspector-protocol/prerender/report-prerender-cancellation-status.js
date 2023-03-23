@@ -11,6 +11,6 @@
   await page.navigate('resources/simple-prerender.html');
   page.navigate('resources/empty.html?navigateaway');
   const statusReport = await dp.Preload.oncePrerenderAttemptCompleted();
-  testRunner.log(statusReport, '', ['initiatingFrameId', 'sessionId']);
+  testRunner.log(statusReport, '', ['loaderId', 'initiatingFrameId', 'sessionId']);
   testRunner.completeTest();
 });

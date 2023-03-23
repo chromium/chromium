@@ -4,6 +4,11 @@ Test that prerender navigations report the final status
     params : {
         finalStatus : TriggerDestroyed
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        }
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
     }
     sessionId : <string>

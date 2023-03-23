@@ -81,7 +81,8 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->UpdateSpeculationCandidates(candidates);
+  preloading_decider->UpdateSpeculationCandidates(devtools_navigation_token,
+                                                  candidates);
 }
 
 void SpeculationHostImpl::EnableNoVarySearchSupport() {

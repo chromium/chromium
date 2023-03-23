@@ -111,6 +111,8 @@ PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
 // Please follow go/preloading-dashboard-updates if a new outcome enum or a
 // failure reason enum is added.
 void SetTriggeringOutcomeAndFailureReasonFromStatus(
+    const absl::optional<base::UnguessableToken>&
+        initiator_devtools_navigation_token,
     PreloadingAttempt* attempt,
     FrameTreeNode* ftn,
     const GURL& url,
@@ -127,15 +129,21 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
   if (attempt) {
     switch (new_prefetch_status) {
       case PrefetchStatus::kPrefetchNotFinishedInTime:
-        devtools_instrumentation::DidUpdatePrefetchStatus(
-            ftn, url, PreloadingTriggeringOutcome::kRunning);
+        if (initiator_devtools_navigation_token.has_value()) {
+          devtools_instrumentation::DidUpdatePrefetchStatus(
+              ftn, initiator_devtools_navigation_token.value(), url,
+              PreloadingTriggeringOutcome::kRunning);
+        }
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
         break;
       case PrefetchStatus::kPrefetchSuccessful:
         // A successful prefetch means the response is ready to be used for the
         // next navigation.
-        devtools_instrumentation::DidUpdatePrefetchStatus(
-            ftn, url, PreloadingTriggeringOutcome::kReady);
+        if (initiator_devtools_navigation_token.has_value()) {
+          devtools_instrumentation::DidUpdatePrefetchStatus(
+              ftn, initiator_devtools_navigation_token.value(), url,
+              PreloadingTriggeringOutcome::kReady);
+        }
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         break;
       case PrefetchStatus::kPrefetchUsedNoProbe:
@@ -151,8 +159,11 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
           attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         }
 
-        devtools_instrumentation::DidUpdatePrefetchStatus(
-            ftn, url, PreloadingTriggeringOutcome::kSuccess);
+        if (initiator_devtools_navigation_token.has_value()) {
+          devtools_instrumentation::DidUpdatePrefetchStatus(
+              ftn, initiator_devtools_navigation_token.value(), url,
+              PreloadingTriggeringOutcome::kSuccess);
+        }
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
         break;
       // A decoy is considered eligible because a network request is made for
@@ -164,8 +175,11 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchFailedMIMENotSupported:
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
-        devtools_instrumentation::DidUpdatePrefetchStatus(
-            ftn, url, PreloadingTriggeringOutcome::kFailure);
+        if (initiator_devtools_navigation_token.has_value()) {
+          devtools_instrumentation::DidUpdatePrefetchStatus(
+              ftn, initiator_devtools_navigation_token.value(), url,
+              PreloadingTriggeringOutcome::kFailure);
+        }
         attempt->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));
         break;
@@ -234,7 +248,11 @@ PrefetchContainer::PrefetchContainer(
                          ? prefetch_document_manager_->render_frame_host()
                                .GetPageUkmSourceId()
                          : ukm::kInvalidSourceId),
-      request_id_(base::UnguessableToken::Create().ToString()) {
+      request_id_(base::UnguessableToken::Create().ToString()),
+      initiator_devtools_navigation_token_(
+          prefetch_document_manager
+              ? prefetch_document_manager->initiator_devtools_navigation_token()
+              : absl::nullopt) {
   auto* rfh = RenderFrameHost::FromID(referring_render_frame_host_id_);
   if (rfh) {
     auto* preloading_data = PreloadingData::GetOrCreateForWebContents(
@@ -285,7 +303,7 @@ void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
   FrameTreeNode* ftn = FrameTreeNode::From(
       RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
   SetTriggeringOutcomeAndFailureReasonFromStatus(
-      attempt_.get(), ftn, prefetch_url_,
+      initiator_devtools_navigation_token_, attempt_.get(), ftn, prefetch_url_,
       /*old_prefetch_status=*/prefetch_status_,
       /*new_prefetch_status=*/prefetch_status);
   prefetch_status_ = prefetch_status;

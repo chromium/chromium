@@ -9,6 +9,11 @@ Test that prerender navigations receives the status updates
     method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        }
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
         status : Pending
     }
@@ -18,6 +23,11 @@ Test that prerender navigations receives the status updates
     method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        }
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
         status : Running
     }
@@ -27,6 +37,11 @@ Test that prerender navigations receives the status updates
     method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        }
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
         status : Ready
     }
@@ -36,6 +51,11 @@ Test that prerender navigations receives the status updates
     method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        }
         prerenderingUrl : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
         status : Success
     }

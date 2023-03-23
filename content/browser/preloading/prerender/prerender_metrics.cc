@@ -230,9 +230,13 @@ void RecordFailedPrerenderFinalStatus(
     DCHECK(ftn);
     // TODO(https://crbug.com/1332377): Discuss with devtools to finalize the
     // message protocol.
-    devtools_instrumentation::DidCancelPrerender(
-        attributes.prerendering_url, ftn, cancellation_reason.final_status(),
-        cancellation_reason.ToDevtoolReasonString());
+    if (attributes.initiator_devtools_navigation_token.has_value()) {
+      devtools_instrumentation::DidCancelPrerender(
+          ftn, attributes.prerendering_url,
+          attributes.initiator_devtools_navigation_token.value(),
+          cancellation_reason.final_status(),
+          cancellation_reason.ToDevtoolReasonString());
+    }
   }
 }
 

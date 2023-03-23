@@ -232,8 +232,8 @@ std::vector<PreloadHandler*> PreloadHandler::ForAgentHost(
 }
 
 void PreloadHandler::DidActivatePrerender(
+    const base::UnguessableToken& initiator_devtools_navigation_token,
     const NavigationRequest& nav_request) {
-  has_dispatched_stored_prerender_activation_ = false;
   if (!enabled_) {
     return;
   }
@@ -241,17 +241,27 @@ void PreloadHandler::DidActivatePrerender(
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   const GURL& prerendering_url = nav_request.common_params().url;
+  last_activated_prerender_initiator_devtools_navigation_token_ =
+      initiator_devtools_navigation_token;
+  // TODO(crbug/1384419): Handle target_hint.
+  auto preloading_attempt_key =
+      protocol::Preload::PreloadingAttemptKey::Create()
+          .SetLoaderId(initiator_devtools_navigation_token.ToString())
+          .SetAction(Preload::SpeculationActionEnum::Prerender)
+          .SetUrl(prerendering_url.spec())
+          .Build();
   frontend_->PrerenderAttemptCompleted(
-      initiating_frame_id, prerendering_url.spec(),
-      Preload::PrerenderFinalStatusEnum::Activated);
+      std::move(preloading_attempt_key), initiating_frame_id,
+      prerendering_url.spec(), Preload::PrerenderFinalStatusEnum::Activated);
 }
 
 void PreloadHandler::DidCancelPrerender(
     const GURL& prerendering_url,
+    const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::string& initiating_frame_id,
     PrerenderFinalStatus status,
     const std::string& disallowed_api_method) {
-  has_dispatched_stored_prerender_activation_ = false;
+  last_activated_prerender_initiator_devtools_navigation_token_.reset();
   if (!enabled_) {
     return;
   }
@@ -259,39 +269,60 @@ void PreloadHandler::DidCancelPrerender(
   Maybe<std::string> opt_disallowed_api_method =
       disallowed_api_method.empty() ? Maybe<std::string>()
                                     : Maybe<std::string>(disallowed_api_method);
-  frontend_->PrerenderAttemptCompleted(initiating_frame_id,
-                                       prerendering_url.spec(),
-                                       PrerenderFinalStatusToProtocol(status),
-                                       std::move(opt_disallowed_api_method));
+  // TODO(crbug/1384419): Handle target_hint.
+  auto preloading_attempt_key =
+      protocol::Preload::PreloadingAttemptKey::Create()
+          .SetLoaderId(initiator_devtools_navigation_token.ToString())
+          .SetAction(Preload::SpeculationActionEnum::Prerender)
+          .SetUrl(prerendering_url.spec())
+          .Build();
+  frontend_->PrerenderAttemptCompleted(
+      std::move(preloading_attempt_key), initiating_frame_id,
+      prerendering_url.spec(), PrerenderFinalStatusToProtocol(status),
+      std::move(opt_disallowed_api_method));
 }
 
 void PreloadHandler::DidUpdatePrefetchStatus(
+    const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::string& initiating_frame_id,
     const GURL& prefetch_url,
     PreloadingTriggeringOutcome status) {
   if (!enabled_) {
     return;
   }
-
+  // TODO(crbug/1384419): Handle target_hint.
+  auto preloading_attempt_key =
+      protocol::Preload::PreloadingAttemptKey::Create()
+          .SetLoaderId(initiator_devtools_navigation_token.ToString())
+          .SetAction(Preload::SpeculationActionEnum::Prefetch)
+          .SetUrl(prefetch_url.spec())
+          .Build();
   if (PreloadingTriggeringOutcomeSupportedByPrefetch(status)) {
     frontend_->PrefetchStatusUpdated(
-        initiating_frame_id, prefetch_url.spec(),
-        PreloadingTriggeringOutcomeToProtocol(status));
+        std::move(preloading_attempt_key), initiating_frame_id,
+        prefetch_url.spec(), PreloadingTriggeringOutcomeToProtocol(status));
   }
 }
 
 void PreloadHandler::DidUpdatePrerenderStatus(
+    const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::string& initiating_frame_id,
     const GURL& prerender_url,
     PreloadingTriggeringOutcome status) {
   if (!enabled_) {
     return;
   }
-
+  // TODO(crbug/1384419): Handle target_hint.
+  auto preloading_attempt_key =
+      protocol::Preload::PreloadingAttemptKey::Create()
+          .SetLoaderId(initiator_devtools_navigation_token.ToString())
+          .SetAction(Preload::SpeculationActionEnum::Prerender)
+          .SetUrl(prerender_url.spec())
+          .Build();
   if (PreloadingTriggeringOutcomeSupportedByPrerender(status)) {
     frontend_->PrerenderStatusUpdated(
-        initiating_frame_id, prerender_url.spec(),
-        PreloadingTriggeringOutcomeToProtocol(status));
+        std::move(preloading_attempt_key), initiating_frame_id,
+        prerender_url.spec(), PreloadingTriggeringOutcomeToProtocol(status));
   }
 }
 
@@ -323,12 +354,24 @@ void PreloadHandler::RetrievePrerenderActivationFromWebContents() {
   WebContentsImpl* web_contents =
       WebContentsImpl::FromRenderFrameHostImpl(host_);
   if (web_contents->last_navigation_was_prerender_activation_for_devtools() &&
-      !has_dispatched_stored_prerender_activation_) {
+      last_activated_prerender_initiator_devtools_navigation_token_
+          .has_value()) {
     std::string frame_token = host_->devtools_frame_token().ToString();
-    has_dispatched_stored_prerender_activation_ = true;
+    // TODO(crbug/1384419): Handle target_hint.
+    auto preloading_attempt_key =
+        protocol::Preload::PreloadingAttemptKey::Create()
+            .SetLoaderId(
+                last_activated_prerender_initiator_devtools_navigation_token_
+                    .value()
+                    .ToString())
+            .SetAction(Preload::SpeculationActionEnum::Prerender)
+            .SetUrl(host_->GetLastCommittedURL().spec())
+            .Build();
     frontend_->PrerenderAttemptCompleted(
-        frame_token, host_->GetLastCommittedURL().spec(),
+        std::move(preloading_attempt_key), frame_token,
+        host_->GetLastCommittedURL().spec(),
         Preload::PrerenderFinalStatusEnum::Activated);
+    last_activated_prerender_initiator_devtools_navigation_token_.reset();
   }
 }
 

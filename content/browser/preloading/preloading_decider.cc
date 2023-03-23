@@ -162,11 +162,14 @@ void PreloadingDecider::OnPointerHover(const GURL& url) {
 }
 
 void PreloadingDecider::UpdateSpeculationCandidates(
+    const base::UnguessableToken& initiator_devtools_navigation_token,
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_for_testing_) {
     observer_for_testing_->UpdateSpeculationCandidates(candidates);
   }
+
+  initiator_devtools_navigation_token_ = initiator_devtools_navigation_token;
 
   // Here we look for all preloading candidates that are safe to perform, but
   // their eagerness level is not high enough to perform without the trigger
@@ -203,8 +206,11 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   on_standby_candidates_.clear();
   base::EraseIf(candidates, should_mark_as_on_standby);
 
-  prefetcher_.ProcessCandidatesForPrefetch(candidates);
-  prerenderer_->ProcessCandidatesForPrerender(candidates);
+  prefetcher_.ProcessCandidatesForPrefetch(initiator_devtools_navigation_token,
+                                           candidates);
+
+  prerenderer_->ProcessCandidatesForPrerender(
+      initiator_devtools_navigation_token, candidates);
 }
 
 bool PreloadingDecider::MaybePrefetch(const GURL& url,
@@ -226,7 +232,10 @@ bool PreloadingDecider::MaybePrefetch(const GURL& url,
   // directly send the candidate to it instead of passing it as a vector.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   candidates.push_back(inner_it->Clone());
-  prefetcher_.ProcessCandidatesForPrefetch(candidates);
+  // TODO(crbug/1384419): initiator_devtools_navigation_token can be
+  // uninitialized/initialized depending on the code path currently.
+  prefetcher_.ProcessCandidatesForPrefetch(initiator_devtools_navigation_token_,
+                                           candidates);
   bool result = candidates.empty();
 
   on_standby_candidates_.erase(it);
@@ -257,7 +266,10 @@ bool PreloadingDecider::MaybePrerender(const GURL& url,
     return false;
   }
 
-  bool result = prerenderer_->MaybePrerender(inner_it->Clone());
+  // TODO(crbug/1384419): initiator_devtools_navigation_token can be
+  // uninitialized/initialized depending on the code path currently.
+  bool result = prerenderer_->MaybePrerender(
+      initiator_devtools_navigation_token_, inner_it->Clone());
 
   on_standby_candidates_.erase(it);
   processed_candidates_.insert(std::move(key));

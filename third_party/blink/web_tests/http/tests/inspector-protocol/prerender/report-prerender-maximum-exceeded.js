@@ -6,7 +6,7 @@
   // Navigate to speculation rules Prerender Page.
   page.navigate('resources/multiple-prerender.html');
   const statusReport = await dp.Preload.oncePrerenderAttemptCompleted();
-  testRunner.log(statusReport, '', ['initiatingFrameId', 'sessionId']);
+  testRunner.log(statusReport, '', ['loaderId', 'initiatingFrameId', 'sessionId']);
 
   testRunner.completeTest();
 });

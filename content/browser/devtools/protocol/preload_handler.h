@@ -33,18 +33,26 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
 
   static std::vector<PreloadHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
-  void DidActivatePrerender(const NavigationRequest& nav_request);
-  void DidCancelPrerender(const GURL& prerendering_url,
-                          const std::string& initiating_frame_id,
-                          PrerenderFinalStatus status,
-                          const std::string& disallowed_api_method);
+  void DidActivatePrerender(
+      const base::UnguessableToken& initiator_devtools_navigation_token,
+      const NavigationRequest& nav_request);
+  void DidCancelPrerender(
+      const GURL& prerendering_url,
+      const base::UnguessableToken& initiator_devtools_navigation_token,
+      const std::string& initiating_frame_id,
+      PrerenderFinalStatus status,
+      const std::string& disallowed_api_method);
 
-  void DidUpdatePrefetchStatus(const std::string& initiating_frame_id,
-                               const GURL& prefetch_url,
-                               PreloadingTriggeringOutcome status);
-  void DidUpdatePrerenderStatus(const std::string& initiating_frame_id,
-                                const GURL& prerender_url,
-                                PreloadingTriggeringOutcome status);
+  void DidUpdatePrefetchStatus(
+      const base::UnguessableToken& initiator_devtools_navigation_token,
+      const std::string& initiating_frame_id,
+      const GURL& prefetch_url,
+      PreloadingTriggeringOutcome status);
+  void DidUpdatePrerenderStatus(
+      const base::UnguessableToken& initiator_devtools_navigation_token,
+      const std::string& initiating_frame_id,
+      const GURL& prerender_url,
+      PreloadingTriggeringOutcome status);
 
  private:
   Response Enable() override;
@@ -59,11 +67,12 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
 
   RenderFrameHostImpl* host_ = nullptr;
 
-  // Whether stored prerender activation has been dispatched to Devtools. Reset
-  // whenever a new prerender event received.
-  bool has_dispatched_stored_prerender_activation_ = false;
-
   bool enabled_ = false;
+
+  // `initiator_devtools_navigation_token` of the most recently activated
+  // prerender.
+  absl::optional<base::UnguessableToken>
+      last_activated_prerender_initiator_devtools_navigation_token_;
 
   std::unique_ptr<Preload::Frontend> frontend_;
 };

@@ -4,6 +4,11 @@ Test that prerender navigations reports bad http status failure on triggering
     params : {
         finalStatus : NavigationBadHttpStatus
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/echo?status=204
+        }
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204
     }
     sessionId : <string>

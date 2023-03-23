@@ -414,6 +414,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // Used to match URLs based on no vary search params.
   scoped_refptr<NoVarySearchHelper> no_vary_search_helper_;
 
+  // A DevTools token used to identify initiator document if the prefetch is
+  // triggered by SpeculationRules.
+  const absl::optional<base::UnguessableToken>
+      initiator_devtools_navigation_token_;
+
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };
 

@@ -166,7 +166,8 @@ TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
   candidate1->referrer = blink::mojom::Referrer::New();
   candidates.push_back(std::move(candidate1));
 
-  prefetcher.ProcessCandidatesForPrefetch(candidates);
+  prefetcher.ProcessCandidatesForPrefetch(base::UnguessableToken::Create(),
+                                          candidates);
   EXPECT_TRUE(delegate->Candidates().empty());
   EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
 
@@ -234,7 +235,8 @@ TEST_F(PrefetcherTest, MockPrefetcher) {
   candidate1->referrer = blink::mojom::Referrer::New();
   candidates.push_back(std::move(candidate1));
 
-  prefetcher.ProcessCandidatesForPrefetch(candidates);
+  prefetcher.ProcessCandidatesForPrefetch(base::UnguessableToken::Create(),
+                                          candidates);
   EXPECT_TRUE(delegate->Candidates().empty());
   EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
 

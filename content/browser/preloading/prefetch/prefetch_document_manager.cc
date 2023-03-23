@@ -119,6 +119,8 @@ void PrefetchDocumentManager::DidStartNavigation(
 }
 
 void PrefetchDocumentManager::ProcessCandidates(
+    const absl::optional<base::UnguessableToken>&
+        initiator_devtools_navigation_token,
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
   // Filter out candidates that can be handled by |PrefetchService| and
@@ -129,6 +131,15 @@ void PrefetchDocumentManager::ProcessCandidates(
   // code can handle up a layer to |SpeculationHostImpl|.
   const url::Origin& referring_origin =
       render_frame_host().GetLastCommittedOrigin();
+
+  // `initiator_devtools_navigation_token_` is expected to be consistent since
+  // all candidates should be in the same document.
+  if (!initiator_devtools_navigation_token_.has_value()) {
+    initiator_devtools_navigation_token_ = initiator_devtools_navigation_token;
+  } else if (initiator_devtools_navigation_token.has_value()) {
+    CHECK_EQ(*initiator_devtools_navigation_token_,
+             *initiator_devtools_navigation_token);
+  }
 
   std::vector<std::tuple<GURL, PrefetchType, blink::mojom::Referrer>>
       prefetches;

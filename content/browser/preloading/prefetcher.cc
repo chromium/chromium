@@ -72,6 +72,8 @@ Prefetcher::MakeSelfOwnedNetworkServiceDevToolsObserver() {
 }
 
 void Prefetcher::ProcessCandidatesForPrefetch(
+    const absl::optional<base::UnguessableToken>&
+        initiator_devtools_navigation_token,
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   if (base::FeatureList::IsEnabled(features::kPrefetchUseContentRefactor)) {
     PrefetchDocumentManager* prefetch_document_manager =
@@ -79,7 +81,8 @@ void Prefetcher::ProcessCandidatesForPrefetch(
             &render_frame_host());
 
     prefetch_document_manager->ProcessCandidates(
-        candidates, weak_ptr_factory_.GetWeakPtr());
+        initiator_devtools_navigation_token, candidates,
+        weak_ptr_factory_.GetWeakPtr());
   }
 
   // Let `delegate_` process the candidates that it is interested in.

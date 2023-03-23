@@ -51,6 +51,7 @@ class CONTENT_EXPORT PreloadingDecider
 
   // Processes the received speculation rules candidates list.
   void UpdateSpeculationCandidates(
+      const base::UnguessableToken& initiator_devtools_navigation_token,
       std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
 
   // Returns true if the |url|, |action| pair is in the on-standby list.
@@ -110,6 +111,8 @@ class CONTENT_EXPORT PreloadingDecider
   // so that it does not span unit tests.
   struct BehaviorConfig;
   std::unique_ptr<const BehaviorConfig> behavior_config_;
+
+  absl::optional<base::UnguessableToken> initiator_devtools_navigation_token_;
 
   raw_ptr<PreloadingDeciderObserverForTesting> observer_for_testing_;
   Preconnector preconnector_;

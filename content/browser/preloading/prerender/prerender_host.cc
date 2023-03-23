@@ -542,8 +542,10 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
 
   // Prerender is activated. Set the status to kSuccess.
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
-
-  devtools_instrumentation::DidActivatePrerender(navigation_request);
+  if (initiator_devtools_navigation_token().has_value()) {
+    devtools_instrumentation::DidActivatePrerender(
+        navigation_request, initiator_devtools_navigation_token().value());
+  }
   return page;
 }
 
@@ -921,8 +923,12 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
 }
 
 void PrerenderHost::SetTriggeringOutcome(PreloadingTriggeringOutcome outcome) {
-  devtools_instrumentation::DidUpdatePrerenderStatus(
-      initiator_frame_tree_node_id(), prerendering_url(), outcome);
+  if (initiator_devtools_navigation_token().has_value()) {
+    devtools_instrumentation::DidUpdatePrerenderStatus(
+        initiator_frame_tree_node_id(),
+        initiator_devtools_navigation_token().value(), prerendering_url(),
+        outcome);
+  }
 
   if (!attempt_)
     return;
@@ -1009,9 +1015,12 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation:
     case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
       // SetFailureReason() will call SetTriggeringOutcome() with kFailure.
-      devtools_instrumentation::DidUpdatePrerenderStatus(
-          initiator_frame_tree_node_id(), prerendering_url(),
-          PreloadingTriggeringOutcome::kFailure);
+      if (initiator_devtools_navigation_token().has_value()) {
+        devtools_instrumentation::DidUpdatePrerenderStatus(
+            initiator_frame_tree_node_id(),
+            initiator_devtools_navigation_token().value(), prerendering_url(),
+            PreloadingTriggeringOutcome::kFailure);
+      }
 
       if (attempt_) {
         attempt_->SetFailureReason(ToPreloadingFailureReason(status));

@@ -7,7 +7,7 @@
   await page.navigate('resources/simple-prerender.html');
   session.evaluate(`document.getElementById('link').click()`);
   const statusReport = await dp.Preload.oncePrerenderAttemptCompleted();
-  testRunner.log(statusReport, '', ['initiatingFrameId', 'sessionId']);
+  testRunner.log(statusReport, '', ['loaderId', 'initiatingFrameId', 'sessionId']);
 
   testRunner.completeTest();
 });

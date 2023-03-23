@@ -231,6 +231,11 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return attributes_.initiator_origin;
   }
 
+  absl::optional<base::UnguessableToken> initiator_devtools_navigation_token()
+      const {
+    return attributes_.initiator_devtools_navigation_token;
+  }
+
   const GURL& prerendering_url() const { return attributes_.prerendering_url; }
 
   bool IsBrowserInitiated() { return attributes_.IsBrowserInitiated(); }

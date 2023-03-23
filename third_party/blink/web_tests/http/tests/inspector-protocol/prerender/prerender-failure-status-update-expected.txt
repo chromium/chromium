@@ -3,6 +3,11 @@ Test that prerender navigations receives the failure status updates
     method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/echo?status=204
+        }
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204
         status : Pending
     }
@@ -12,6 +17,11 @@ Test that prerender navigations receives the failure status updates
     method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/echo?status=204
+        }
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204
         status : Running
     }
@@ -21,6 +31,11 @@ Test that prerender navigations receives the failure status updates
     method : Preload.prerenderStatusUpdated
     params : {
         initiatingFrameId : <string>
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/echo?status=204
+        }
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204
         status : Failure
     }

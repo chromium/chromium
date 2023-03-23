@@ -83,6 +83,7 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
 // about making preloading decisions and could be moved to PreloadingDecider
 // class.
 void PrerendererImpl::ProcessCandidatesForPrerender(
+    const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   if (!registry_)
     return;
@@ -188,11 +189,13 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Actually start the candidates once the diffing is done.
   for (const auto& candidate : candidates_to_start) {
-    MaybePrerender(candidate);
+    MaybePrerender(initiator_devtools_navigation_token, candidate);
   }
 }
 
 bool PrerendererImpl::MaybePrerender(
+    const absl::optional<base::UnguessableToken>&
+        initiator_devtools_navigation_token,
     const blink::mojom::SpeculationCandidatePtr& candidate) {
   DCHECK_EQ(candidate->action, blink::mojom::SpeculationAction::kPrerender);
 
@@ -247,7 +250,8 @@ bool PrerendererImpl::MaybePrerender(
       rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
       rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
       rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-      /*url_match_predicate=*/absl::nullopt);
+      /*url_match_predicate=*/absl::nullopt,
+      initiator_devtools_navigation_token);
 
   // TODO(crbug.com/1354049): Handle the case where multiple speculation rules
   // have the same URL but its `target_browsing_context_name_hint` is

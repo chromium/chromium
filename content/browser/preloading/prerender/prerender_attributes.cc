@@ -28,7 +28,9 @@ PrerenderAttributes::PrerenderAttributes(
     ukm::SourceId initiator_ukm_id,
     ui::PageTransition transition_type,
     absl::optional<base::RepeatingCallback<bool(const GURL&)>>
-        url_match_predicate)
+        url_match_predicate,
+    const absl::optional<base::UnguessableToken>&
+        initiator_devtools_navigation_token)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
       embedder_histogram_suffix(embedder_histogram_suffix),
@@ -40,7 +42,11 @@ PrerenderAttributes::PrerenderAttributes(
       initiator_frame_tree_node_id(initiator_frame_tree_node_id),
       initiator_ukm_id(initiator_ukm_id),
       transition_type(transition_type),
-      url_match_predicate(std::move(url_match_predicate)) {}
+      url_match_predicate(std::move(url_match_predicate)),
+      initiator_devtools_navigation_token(initiator_devtools_navigation_token) {
+  CHECK(!IsBrowserInitiated() ||
+        !initiator_devtools_navigation_token.has_value());
+}
 
 PrerenderAttributes::~PrerenderAttributes() = default;
 
@@ -59,6 +65,8 @@ PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&& attributes)
       initiator_frame_tree_node_id(attributes.initiator_frame_tree_node_id),
       initiator_ukm_id(attributes.initiator_ukm_id),
       transition_type(attributes.transition_type),
-      url_match_predicate(attributes.url_match_predicate) {}
+      url_match_predicate(attributes.url_match_predicate),
+      initiator_devtools_navigation_token(
+          attributes.initiator_devtools_navigation_token) {}
 
 }  // namespace content

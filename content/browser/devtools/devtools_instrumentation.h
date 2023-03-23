@@ -189,24 +189,32 @@ void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node);
 void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 
 void WillInitiatePrerender(FrameTree& frame_tree);
-void DidActivatePrerender(const NavigationRequest& nav_request);
+void DidActivatePrerender(
+    const NavigationRequest& nav_request,
+    const base::UnguessableToken& initiator_devtools_navigation_token);
 // This function reports cancellation status to DevTools with the
 // `disallowed_api_method`, which is used to give users more information about
 // the cancellation details if the prerendering uses disallowed API method, and
 // disallowed_api_method will be formatted for display in the DevTools. See the
 // DevTools implementation for the format.
-void DidCancelPrerender(const GURL& prerendering_url,
-                        FrameTreeNode* ftn,
-                        PrerenderFinalStatus status,
-                        const std::string& disallowed_api_method);
+void DidCancelPrerender(
+    FrameTreeNode* ftn,
+    const GURL& prerendering_url,
+    const base::UnguessableToken& initiator_devtools_navigation_token,
+    PrerenderFinalStatus status,
+    const std::string& disallowed_api_method);
 
-void DidUpdatePrefetchStatus(FrameTreeNode* ftn,
-                             const GURL& prefetch_url,
-                             PreloadingTriggeringOutcome status);
+void DidUpdatePrefetchStatus(
+    FrameTreeNode* ftn,
+    const base::UnguessableToken& initiator_devtools_navigation_token,
+    const GURL& prefetch_url,
+    PreloadingTriggeringOutcome status);
 
-void DidUpdatePrerenderStatus(int initiator_frame_tree_node_id,
-                              const GURL& prerender_url,
-                              PreloadingTriggeringOutcome status);
+void DidUpdatePrerenderStatus(
+    int initiator_frame_tree_node_id,
+    const base::UnguessableToken& initiator_devtools_navigation_token,
+    const GURL& prerender_url,
+    PreloadingTriggeringOutcome status);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,

@@ -7,11 +7,11 @@
   await page.navigate('resources/simple-prerender.html');
   session.evaluate(`document.getElementById('link').click()`);
   const statusReport = await dp.Preload.oncePrerenderAttemptCompleted();
-  testRunner.log(statusReport, '', ['initiatingFrameId', 'sessionId']);
+  testRunner.log(statusReport, '', ['loaderId', 'initiatingFrameId', 'sessionId']);
   await dp.Preload.disable();
   dp.Preload.enable();
   const resentStatusReport = await dp.Preload.oncePrerenderAttemptCompleted();
-  testRunner.log(resentStatusReport, '', ['initiatingFrameId', 'sessionId']);
+  testRunner.log(resentStatusReport, '', ['loaderId', 'initiatingFrameId', 'sessionId']);
 
   testRunner.completeTest();
 });
