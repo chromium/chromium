@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/animation/css_custom_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_custom_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_display_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_filter_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_size_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_stretch_interpolation_type.h"
@@ -404,6 +405,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kObjectViewBox:
         applicable_types->push_back(
             std::make_unique<CSSBasicShapeInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kDisplay:
+        DCHECK(RuntimeEnabledFeatures::CSSDisplayAnimationEnabled());
+        applicable_types->push_back(
+            std::make_unique<CSSDisplayInterpolationType>(used_property));
         break;
       default:
         DCHECK(!css_property.IsInterpolable());
