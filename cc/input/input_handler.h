@@ -218,9 +218,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
           main_thread_scrolling_reasons(main_thread_scrolling_reasons),
           needs_main_thread_hit_test(needs_main_thread_hit_test) {}
     ScrollThread thread = ScrollThread::SCROLL_ON_IMPL_THREAD;
-    // TODO(crbug.com/1155663): Make sure to set main_thread_scrolling_reasons
-    // only when ScrollStatus.thread is set to
-    // InputHander::ScrollThread::SCROLL_ON_MAIN_THREAD
+    // This should be set to nonzero iff `thread` is SCROLL_ON_MAIN_THREAD.
     uint32_t main_thread_scrolling_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
     // TODO(crbug.com/1155758): This is a temporary workaround for GuestViews

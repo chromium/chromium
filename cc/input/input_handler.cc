@@ -164,8 +164,6 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
         // freshly created scroller hasn't yet been committed or a
         // scroller-destroying commit beats the hit test back to the compositor
         // thread. However, these cases shouldn't be user perceptible.
-        scroll_status.main_thread_scrolling_reasons =
-            MainThreadScrollingReason::kNoScrollingLayer;
         scroll_status.thread = InputHandler::ScrollThread::SCROLL_IGNORED;
         return scroll_status;
       }
@@ -185,8 +183,6 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
           // drop the scroll as continuing could cause us to infinitely bounce
           // back and forth between here and hit testing on the main thread.
           NOTREACHED();
-          scroll_status.main_thread_scrolling_reasons =
-              MainThreadScrollingReason::kNoScrollingLayer;
           scroll_status.thread = InputHandler::ScrollThread::SCROLL_IGNORED;
           return scroll_status;
         }
@@ -261,11 +257,6 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     scroll_status.thread = InputHandler::ScrollThread::SCROLL_ON_MAIN_THREAD;
     return scroll_status;
   } else if (!scrolling_node) {
-    // TODO(crbug.com/1155663): Make sure to set main_thread_scrolling_reasons
-    // only when ScrollStatus.thread is set to
-    // InputHander::ScrollThread::SCROLL_ON_MAIN_THREAD
-    scroll_status.main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kNoScrollingLayer;
     if (compositor_delegate_->GetSettings().is_for_embedded_frame) {
       // OOPIFs or fenced frames never have a viewport scroll node so if we
       // can't scroll we need to be bubble up to the parent frame. This happens
@@ -323,8 +314,6 @@ InputHandler::ScrollStatus InputHandler::RootScrollBegin(
   if (!OuterViewportScrollNode()) {
     InputHandler::ScrollStatus scroll_status;
     scroll_status.thread = InputHandler::ScrollThread::SCROLL_IGNORED;
-    scroll_status.main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kNoScrollingLayer;
     return scroll_status;
   }
 
@@ -1302,16 +1291,12 @@ InputHandler::ScrollStatus InputHandler::TryScroll(
   if (!screen_space_transform.IsInvertible()) {
     TRACE_EVENT0("cc", "LayerImpl::TryScroll: Ignored NonInvertibleTransform");
     scroll_status.thread = InputHandler::ScrollThread::SCROLL_IGNORED;
-    scroll_status.main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kNonInvertibleTransform;
     return scroll_status;
   }
 
   if (!scroll_node->scrollable) {
     TRACE_EVENT0("cc", "LayerImpl::tryScroll: Ignored not scrollable");
     scroll_status.thread = InputHandler::ScrollThread::SCROLL_IGNORED;
-    scroll_status.main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kNotScrollable;
     return scroll_status;
   }
 
@@ -1341,8 +1326,6 @@ InputHandler::ScrollStatus InputHandler::TryScroll(
                  "LayerImpl::tryScroll: Ignored. Technically scrollable,"
                  " but has no affordance in either direction.");
     scroll_status.thread = InputHandler::ScrollThread::SCROLL_IGNORED;
-    scroll_status.main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kNotScrollable;
     return scroll_status;
   }
 
