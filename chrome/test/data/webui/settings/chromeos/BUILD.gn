@@ -123,7 +123,6 @@ build_webui_tests("build") {
     "per_device_keyboard_subsection_test.js",
     "per_device_keyboard_remap_keys_test.js",
     "per_device_keyboard_test.js",
-    "per_device_mouse_subsection_test.js",
     "per_device_pointing_stick_subsection_test.js",
     "per_device_touchpad_subsection_test.js",
     "per_device_touchpad_test.js",
@@ -206,6 +205,7 @@ build_webui_tests("build") {
     "date_time_page/timezone_selector_test.ts",
     "date_time_page/timezone_subpage_test.ts",
 
+    "device_page/per_device_mouse_subsection_test.ts",
     "device_page/per_device_mouse_test.ts",
     "device_page/per_device_pointing_stick_test.ts",
 
