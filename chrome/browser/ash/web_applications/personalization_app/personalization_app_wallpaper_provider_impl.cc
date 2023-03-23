@@ -890,18 +890,22 @@ void PersonalizationAppWallpaperProviderImpl::OnFetchCollectionImages(
     const std::vector<backdrop::Image>& images) {
   absl::optional<std::vector<backdrop::Image>> result;
   if (success && !images.empty()) {
-    for (const auto& proto_image : images) {
-      if (!proto_image.has_asset_id() || !proto_image.has_unit_id() ||
-          !proto_image.has_image_url()) {
-        LOG(WARNING) << "Invalid image discarded";
-        continue;
+    // Do first pass to clear all unit_id associated with the images.
+    base::ranges::for_each(images, [&](auto& proto_image) {
+      image_unit_id_map_.erase(proto_image.unit_id());
+    });
+    // Do second pass to repopulate the map with fresh data.
+    base::ranges::for_each(images, [&](auto& proto_image) {
+      if (proto_image.has_asset_id() && proto_image.has_unit_id() &&
+          proto_image.has_image_url()) {
+        image_unit_id_map_[proto_image.unit_id()].push_back(
+            ImageInfo(GURL(proto_image.image_url()), collection_id,
+                      proto_image.asset_id(), proto_image.unit_id(),
+                      proto_image.has_image_type()
+                          ? proto_image.image_type()
+                          : backdrop::Image::IMAGE_TYPE_UNKNOWN));
       }
-      image_unit_id_map_[proto_image.unit_id()].push_back(ImageInfo(
-          GURL(proto_image.image_url()), collection_id, proto_image.asset_id(),
-          proto_image.unit_id(),
-          proto_image.has_image_type() ? proto_image.image_type()
-                                       : backdrop::Image::IMAGE_TYPE_UNKNOWN));
-    }
+    });
     result = std::move(images);
   }
   std::move(callback).Run(std::move(result));
