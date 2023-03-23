@@ -3204,11 +3204,9 @@ public class AwContents implements SmartClipProvider {
         mAwViewMethods.onAttachedToWindow();
         mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
-        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE)) {
-            AwWindowCoverageTracker tracker = AwWindowCoverageTracker.getOrCreateForRootView(
-                    this, mContainerView.getRootView());
-            tracker.trackContents(this);
-        }
+        AwWindowCoverageTracker tracker =
+                AwWindowCoverageTracker.getOrCreateForRootView(this, mContainerView.getRootView());
+        tracker.trackContents(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();

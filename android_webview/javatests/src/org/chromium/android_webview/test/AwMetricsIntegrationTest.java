@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.base.ContextUtils;
@@ -577,7 +576,6 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_MEASURE_SCREEN_COVERAGE})
     public void testScreenCoverageReporting() throws Throwable {
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());

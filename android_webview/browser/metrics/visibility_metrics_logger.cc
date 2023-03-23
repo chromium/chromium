@@ -4,8 +4,6 @@
 
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
-#include "android_webview/common/aw_features.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
@@ -358,8 +356,6 @@ void VisibilityMetricsLogger::RecordVisibleSchemeMetrics() {
 }
 
 void VisibilityMetricsLogger::RecordScreenCoverageMetrics() {
-  if (!base::FeatureList::IsEnabled(features::kWebViewMeasureScreenCoverage))
-    return;
   for (size_t i = 0; i < std::size(global_coverage_percentage_durations_);
        i++) {
     int32_t seconds = global_coverage_percentage_durations_[i].InSeconds();

@@ -88,15 +88,6 @@ BASE_FEATURE(kWebViewJavaJsBridgeMojo,
              "WebViewJavaJsBridgeMojo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Measure the number of pixels occupied by one or more WebViews as a
-// proportion of the total screen size. Depending on the number of
-// WebVieaws and the size of the screen this might be expensive so
-// hidden behind a feature flag until the true runtime cost can be
-// measured.
-BASE_FEATURE(kWebViewMeasureScreenCoverage,
-             "WebViewMeasureScreenCoverage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Field trial feature for controlling support of Origin Trials on WebView.
 BASE_FEATURE(kWebViewOriginTrials,
              "WebViewOriginTrials",

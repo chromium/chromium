@@ -4,10 +4,8 @@
 
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
-#include "android_webview/common/aw_features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "content/public/test/browser_task_environment.h"
@@ -336,9 +334,6 @@ TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverage) {
   // Time displaying data scheme with 100% coverage: 5
 
   base::HistogramTester histograms;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewMeasureScreenCoverage);
   std::unique_ptr<TestClient> client = std::make_unique<TestClient>(logger());
 
   task_environment().FastForwardBy(base::Seconds(10));
@@ -407,9 +402,6 @@ TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverage) {
 
 TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageByScheme) {
   base::HistogramTester histograms;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewMeasureScreenCoverage);
   std::unique_ptr<TestClient> client = std::make_unique<TestClient>(logger());
 
   client->SetViewVisible(true);
@@ -535,9 +527,6 @@ TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageByScheme) {
 
 TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageTwoClientsOverlapping) {
   base::HistogramTester histograms;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewMeasureScreenCoverage);
 
   // The first client's coverage is 10 percent.
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());
@@ -593,9 +582,6 @@ TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageTwoClientsOverlapping) {
 
 TEST_F(VisibilityMetricsLoggerTest, TestScreenCoverageTwoClientsNoOverlap) {
   base::HistogramTester histograms;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      android_webview::features::kWebViewMeasureScreenCoverage);
 
   // The first client's coverage is 10 percent.
   std::unique_ptr<TestClient> client1 = std::make_unique<TestClient>(logger());

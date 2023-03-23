@@ -29,7 +29,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewDisplayCutout,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
-    &features::kWebViewMeasureScreenCoverage,
     &features::kWebViewJavaJsBridgeMojo,
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewXRequestedWithHeaderControl,

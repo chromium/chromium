@@ -29,7 +29,6 @@ BASE_DECLARE_FEATURE(kWebViewForceDarkModeMatchTheme);
 BASE_DECLARE_FEATURE(kWebViewHitTestInBlinkOnTouchStart);
 BASE_DECLARE_FEATURE(kWebViewImageDrag);
 BASE_DECLARE_FEATURE(kWebViewJavaJsBridgeMojo);
-BASE_DECLARE_FEATURE(kWebViewMeasureScreenCoverage);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
 BASE_DECLARE_FEATURE(kWebViewOriginTrials);
 BASE_DECLARE_FEATURE(kWebViewRecordAppDataDirectorySize);
