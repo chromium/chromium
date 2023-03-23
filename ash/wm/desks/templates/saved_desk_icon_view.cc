@@ -9,6 +9,7 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -262,7 +263,10 @@ void SavedDeskRegularIconView::LoadDefaultIcon() {
           ui::ResourceBundle::GetSharedInstance()
               .GetImageNamed(resource_id)
               .AsImageSkia(),
-          GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)),
+          // TODO(shidi): Replace the ash color provider with MaterialNext color
+          // provider.
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)),
       /*is_default=*/true));
 }
 
