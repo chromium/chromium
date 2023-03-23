@@ -370,9 +370,7 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
     case AudioCodec::kAMR_NB:
     case AudioCodec::kAMR_WB:
     case AudioCodec::kGSM_MS:
-    case AudioCodec::kEAC3:
     case AudioCodec::kALAC:
-    case AudioCodec::kAC3:
     case AudioCodec::kMpegHAudio:
     case AudioCodec::kUnknown:
       return false;
@@ -380,6 +378,13 @@ bool IsDefaultSupportedAudioType(const AudioType& type) {
     case AudioCodec::kDTSXP2:
     case AudioCodec::kDTSE:
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+      return true;
+#else
+      return false;
+#endif
+    case AudioCodec::kAC3:
+    case AudioCodec::kEAC3:
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
       return true;
 #else
       return false;

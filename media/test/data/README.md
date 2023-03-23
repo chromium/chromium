@@ -1118,15 +1118,17 @@ present.
 ### MP4 files with AC3 and EAC3 audio
 
 #### bear-ac3-only-frag.mp4
-AC3 audio in framented MP4, generated with
+AC3 audio in framented MP4, generated with bento4 by the following command:
 ```
-ffmpeg -i bear.ac3 -acodec copy -movflags frag_keyframe bear-ac3-only-frag.mp4
+mp4mux --track bear.ac3 bear-ac3-only.mp4
+mp4fragment bear-ac3-only.mp4 bear-ac3-only-frag.mp4
 ```
 
 #### bear-eac3-only-frag.mp4
-EAC3 audio in framented MP4, generated with
+EAC3 audio in framented MP4, generated with bento4 by the following command:
 ```
-ffmpeg -i bear.eac3 -acodec copy -movflags frag_keyframe bear-eac3-only-frag.mp4
+mp4mux --track bear.eac3 bear-eac3-only.mp4
+mp4fragment bear-eac3-only.mp4 bear-eac3-only-frag.mp4
 ```
 
 ### Mpeg2ts stream with AAC HE audio that uses SBR

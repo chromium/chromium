@@ -220,11 +220,13 @@ source_set("filters") {
       "win/media_foundation_utils.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
-    if (enable_platform_dts_audio) {
+    if (enable_platform_dts_audio || enable_platform_ac3_eac3_audio) {
       sources += [
         "win/media_foundation_audio_decoder.cc",
         "win/media_foundation_audio_decoder.h",
       ]
+    }
+    if (enable_platform_dts_audio) {
       ldflags = [
         "/DELAYLOAD:packages/Microsoft.VCRTForwarders.140.1.0.6/runtimes/win10-x64/native/release/concrt140_app.dll",
         "/DELAYLOAD:packages/Microsoft.VCRTForwarders.140.1.0.6/runtimes/win10-x64/native/release/msvcp140_1_app.dll",

@@ -66,9 +66,8 @@ declare_args() {
   # Override to dynamically link the cras (ChromeOS audio) library.
   use_cras = is_chromeos_device
 
-  # Enables AC3/EAC3 audio demuxing. This is enabled only on Chromecast, since
-  # it only provides demuxing, and is only useful for AC3/EAC3 audio
-  # pass-through to HDMI sink on Chromecast.
+  # Enables AC3/EAC3 audio handling in chromium. This includes demuxing,
+  # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_ac3_eac3_audio = proprietary_codecs && is_cast_media_device
 
   enable_platform_mpeg_h_audio = proprietary_codecs && is_cast_media_device
@@ -267,7 +266,8 @@ if (is_cast_media_device) {
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"
-} else if (is_mac || (is_win && enable_platform_dts_audio)) {
+} else if (is_mac || (is_win && (enable_platform_dts_audio ||
+                                 enable_platform_ac3_eac3_audio))) {
   _default_mojo_media_services = [
     "audio_decoder",
     "audio_encoder",

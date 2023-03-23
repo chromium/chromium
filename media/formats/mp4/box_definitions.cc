@@ -1520,6 +1520,48 @@ bool DtsUhdSpecificBox::Parse(BoxReader* reader) {
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+EC3SpecificBox::EC3SpecificBox() {}
+
+EC3SpecificBox::EC3SpecificBox(const EC3SpecificBox& other) = default;
+
+EC3SpecificBox::~EC3SpecificBox() = default;
+
+FourCC EC3SpecificBox::BoxType() const {
+  return FOURCC_DEC3;
+}
+
+bool EC3SpecificBox::Parse(BoxReader* reader) {
+  // Read ddts into buffer.
+  std::vector<uint8_t> eac3_data;
+
+  RCHECK(reader->ReadVec(&eac3_data, reader->box_size() - reader->pos()));
+  RCHECK(dec3.Parse(eac3_data, reader->media_log()));
+
+  return true;
+}
+
+AC3SpecificBox::AC3SpecificBox() {}
+
+AC3SpecificBox::AC3SpecificBox(const AC3SpecificBox& other) = default;
+
+AC3SpecificBox::~AC3SpecificBox() = default;
+
+FourCC AC3SpecificBox::BoxType() const {
+  return FOURCC_DAC3;
+}
+
+bool AC3SpecificBox::Parse(BoxReader* reader) {
+  // Read ddts into buffer.
+  std::vector<uint8_t> ac3_data;
+
+  RCHECK(reader->ReadVec(&ac3_data, reader->box_size() - reader->pos()));
+  RCHECK(dac3.Parse(ac3_data, reader->media_log()));
+
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
 AudioSampleEntry::AudioSampleEntry()
     : format(FOURCC_NULL),
       data_reference_index(0),
@@ -1580,6 +1622,17 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
                         "Failure parsing DtsUhdSpecificBox (udts)");
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  if (format == FOURCC_AC3) {
+    RCHECK_MEDIA_LOGGED(reader->ReadChild(&ac3), reader->media_log(),
+                        "Failure parsing AC3SpecificBox (dac3)");
+  }
+  if (format == FOURCC_EAC3) {
+    RCHECK_MEDIA_LOGGED(reader->ReadChild(&eac3), reader->media_log(),
+                        "Failure parsing EC3SpecificBox (dec3)");
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
   // Read the FLACSpecificBox, even if CENC is signalled.
   if (format == FOURCC_FLAC ||

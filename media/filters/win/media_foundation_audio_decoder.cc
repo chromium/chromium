@@ -84,18 +84,24 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                              InitCB init_cb,
                                              const OutputCB& output_cb,
                                              const WaitingCB& waiting_cb) {
+  switch (config.codec()) {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-  if (config.codec() != AudioCodec::kDTS &&
-      config.codec() != AudioCodec::kDTSE &&
-      config.codec() != AudioCodec::kDTSXP2) {
-    std::move(init_cb).Run(
-        DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec,
-                      "MFT Codec does not support DTS content"));
-    return;
-  }
-#else  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-#error "MediaFoundationAudioDecoder requires proprietary codecs and DTS audio"
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSE:
+    case AudioCodec::kDTSXP2:
+      break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    case AudioCodec::kAC3:
+    case AudioCodec::kEAC3:
+      break;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    default:
+      std::move(init_cb).Run(
+          DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec,
+                        "Codec is not supported by MFT"));
+      return;
+  }
 
   // FIXME: MFT will need to be signed by a Microsoft Certificate
   //        to support a secured chain of custody on Windows.
@@ -118,17 +124,9 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
   config_ = config;
   output_cb_ = output_cb;
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-  if (config.codec() == AudioCodec::kDTS ||
-      config.codec() == AudioCodec::kDTSE ||
-      config.codec() == AudioCodec::kDTSXP2) {
-    std::move(init_cb).Run(
-        CreateDecoder()
-            ? DecoderStatus(OkStatus())
-            : DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec,
-                            "MFT Codec does not support DTS content"));
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  std::move(init_cb).Run(
+      CreateDecoder() ? DecoderStatus(OkStatus())
+                      : DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
 }
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -242,8 +240,16 @@ bool MediaFoundationAudioDecoder::CreateDecoder() {
       type_info = {MFMediaType_Audio, MFAudioFormat_DTS_RAW};
       break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    case AudioCodec::kAC3:
+      type_info = {MFMediaType_Audio, MFAudioFormat_Dolby_AC3};
+      break;
+    case AudioCodec::kEAC3:
+      type_info = {MFMediaType_Audio, MFAudioFormat_Dolby_DDPlus};
+      break;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
     default:
-      type_info = {MFMediaType_Audio, MFAudioFormat_Base};
+      return false;
   }
 
   base::win::ScopedCoMem<IMFActivate*> acts;
@@ -317,6 +323,40 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
       }
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    if (config_.codec() == AudioCodec::kAC3 ||
+        config_.codec() == AudioCodec::kEAC3) {
+      if (out_subtype == MFAudioFormat_Float) {
+        WAVEFORMATEX* wave_format;
+        UINT32 wave_format_size;
+        RETURN_ON_HR_FAILURE(
+            MFCreateWaveFormatExFromMFMediaType(output_type.Get(), &wave_format,
+                                                &wave_format_size),
+            "Failed to get waveformat for media type", false);
+        if (config_.channels() == wave_format->nChannels &&
+            config_.samples_per_second() ==
+                static_cast<int>(wave_format->nSamplesPerSec) &&
+            wave_format->nBlockAlign ==
+                wave_format->nChannels * sizeof(float)) {
+          RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
+                               "Failed to set output type IMFTransform", false);
+
+          MFT_OUTPUT_STREAM_INFO info = {0};
+          RETURN_ON_HR_FAILURE(decoder_->GetOutputStreamInfo(0, &info),
+                               "Failed to get output stream info", false);
+
+          output_sample_ =
+              CreateEmptySampleWithBuffer(info.cbSize, info.cbAlignment);
+          RETURN_ON_FAILURE(!!output_sample_, "Failed to create staging sample",
+                            false);
+
+          channel_count_ = wave_format->nChannels;
+        }
+        CoTaskMemFree(wave_format);
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
     if (!output_sample_) {
       output_type.Reset();
       continue;
@@ -424,12 +464,13 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   if (!pool_)
     pool_ = base::MakeRefCounted<AudioBufferMemoryPool>();
 
-  auto audio_buffer =
+  scoped_refptr<AudioBuffer> audio_buffer;
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  audio_buffer =
       AudioBuffer::CreateBuffer(kSampleFormatF32, channel_layout_,
                                 channel_count_, sample_rate_, frames, pool_);
   audio_buffer->set_timestamp(timestamp_helper_->GetTimestamp());
-
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   // DTS Sound Unbound MFT v1.3.0 outputs 24-bit PCM samples, and will
   // be converted to 32-bit float
   if (config_.codec() == AudioCodec::kDTS ||
@@ -449,8 +490,20 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+  // AC3,EAC3 MFT is configured to output 32-bit float always
+  if (config_.codec() == AudioCodec::kAC3 ||
+      config_.codec() == AudioCodec::kEAC3) {
+    audio_buffer = AudioBuffer::CopyFrom(
+        kSampleFormatF32, channel_layout_, channel_count_, sample_rate_, frames,
+        &destination, timestamp_helper_->GetTimestamp(), pool_);
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
   timestamp_helper_->AddFrames(frames);
 
+  // Important to reset length to 0 since we reuse a same output buffer
+  output_buffer->SetCurrentLength(0);
   output_buffer->Unlock();
 
   output_cb_.Run(std::move(audio_buffer));

@@ -144,6 +144,15 @@ source_set("formats") {
     ]
   }
 
+  if (enable_platform_ac3_eac3_audio) {
+    sources += [
+      "mp4/ac3.cc",
+      "mp4/ac3.h",
+      "mp4/eac3.cc",
+      "mp4/eac3.h",
+    ]
+  }
+
   if (proprietary_codecs && enable_mse_mpeg2ts_stream_parser) {
     deps += [ "//ui/gfx/geometry" ]
     sources += [
