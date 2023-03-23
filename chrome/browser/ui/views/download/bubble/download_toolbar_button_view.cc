@@ -286,7 +286,7 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(bool show_animation) {
 }
 
 bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() {
-  return browser_->window()->IsFullscreen() &&
+  return browser_->window() && browser_->window()->IsFullscreen() &&
          !browser_->window()->IsToolbarVisible();
 }
 

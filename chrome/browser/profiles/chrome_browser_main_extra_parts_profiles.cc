@@ -228,6 +228,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
+#include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
@@ -598,6 +599,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   DocumentSuggestionsServiceFactory::GetInstance();
   DomainDiversityReporterFactory::GetInstance();
   dom_distiller::DomDistillerServiceFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  DownloadBubbleUpdateServiceFactory::GetInstance();
+#endif
   DownloadCoreServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   DriveServiceFactory::GetInstance();

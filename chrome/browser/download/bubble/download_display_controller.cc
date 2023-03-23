@@ -4,8 +4,10 @@
 
 #include "chrome/browser/download/bubble/download_display_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
@@ -31,6 +33,7 @@
 namespace {
 
 using DownloadIconState = download::DownloadIconState;
+using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 
 // The amount of time for the toolbar icon to be visible after a download is
 // completed.
@@ -64,7 +67,7 @@ struct AllDownloadUIModelsInfo {
 };
 
 AllDownloadUIModelsInfo GetAllModelsInfo(
-    std::vector<std::unique_ptr<DownloadUIModel>>& all_models) {
+    const std::vector<DownloadUIModelPtr>& all_models) {
   AllDownloadUIModelsInfo info;
   for (const auto& model : all_models) {
     if (model->GetDangerType() ==
@@ -99,12 +102,12 @@ DownloadDisplayController::DownloadDisplayController(
     : display_(display),
       browser_(browser),
       download_manager_(browser_->profile()->GetDownloadManager()),
-      download_notifier_(download_manager_, this),
       bubble_controller_(bubble_controller) {
-  bubble_controller_->InitOfflineItems(
-      this,
-      base::BindOnce(&DownloadDisplayController::MaybeShowButtonWhenCreated,
-                     weak_factory_.GetWeakPtr()));
+  bubble_controller_->SetDownloadDisplayController(this);
+  // |display| can be null in tests.
+  if (display) {
+    MaybeShowButtonWhenCreated();
+  }
   base::PowerMonitor::AddPowerSuspendObserver(this);
 }
 
@@ -117,9 +120,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
     return;
   }
 
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
-  UpdateToolbarButtonState(all_models);
+  UpdateButtonStateFromAllModels(true);
   if (display_->IsFullscreenWithParentViewHidden()) {
     fullscreen_notification_shown_ = true;
     ExclusiveAccessContext* exclusive_access_context =
@@ -143,8 +144,8 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
+  std::vector<DownloadUIModelPtr> all_models =
+      UpdateButtonStateFromAllModels(true);
   AllDownloadUIModelsInfo info = GetAllModelsInfo(all_models);
   bool will_show_details =
       may_show_details && ((is_done && info.all_done) || is_deep_scanning);
@@ -160,28 +161,19 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   if (will_show_details) {
     display_->ShowDetails();
   }
-  UpdateToolbarButtonState(all_models);
 }
 
 void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
   if (!download::ShouldShowDownloadBubble(browser_->profile())) {
     return;
   }
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
+  std::vector<DownloadUIModelPtr> all_models =
+      UpdateButtonStateFromAllModels(true);
   // Hide the button if there is only one download item left and that item is
   // about to be removed.
   if (all_models.size() == 1 && all_models[0]->GetContentId() == id) {
     HideToolbarButton();
     return;
-  }
-  UpdateToolbarButtonState(all_models);
-}
-
-void DownloadDisplayController::OnManagerGoingDown(
-    content::DownloadManager* manager) {
-  if (download_manager_ == manager) {
-    download_manager_ = nullptr;
   }
 }
 
@@ -235,9 +227,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
   }
   fullscreen_notification_shown_ = false;
 
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
-  UpdateToolbarButtonState(all_models);
+  UpdateButtonStateFromAllModels(true);
   if (download::ShouldShowDownloadBubble(browser_->profile()) &&
       details_shown_while_fullscreen_) {
     display_->ShowDetails();
@@ -246,9 +236,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
 }
 
 void DownloadDisplayController::OnResume() {
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
-  UpdateToolbarButtonState(all_models);
+  UpdateButtonStateFromAllModels(true);
 }
 
 void DownloadDisplayController::UpdateToolbarButtonState(
@@ -258,8 +246,7 @@ void DownloadDisplayController::UpdateToolbarButtonState(
     return;
   }
   AllDownloadUIModelsInfo info = GetAllModelsInfo(all_models);
-  base::Time last_complete_time =
-      GetLastCompleteTime(bubble_controller_->GetOfflineItems());
+  base::Time last_complete_time = GetLastCompleteTime(all_models);
 
   if (info.in_progress_count > 0) {
     icon_info_.icon_state = DownloadIconState::kProgress;
@@ -298,6 +285,23 @@ void DownloadDisplayController::UpdateDownloadIconToInactive() {
   display_->UpdateDownloadIcon(/*show_animation=*/false);
 }
 
+std::vector<DownloadUIModelPtr>
+DownloadDisplayController::UpdateButtonStateFromAllModels(bool may_retry) {
+  std::vector<std::unique_ptr<DownloadUIModel>> all_models;
+  bool results_complete =
+      bubble_controller_->update_service()->GetAllModelsToDisplay(all_models);
+  UpdateToolbarButtonState(all_models);
+  if (!results_complete && may_retry) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(
+                &DownloadDisplayController::UpdateButtonStateFromAllModels),
+            weak_factory_.GetWeakPtr(), /*may_retry=*/false));
+  }
+  return all_models;
+}
+
 void DownloadDisplayController::ScheduleToolbarDisappearance(
     base::TimeDelta interval) {
   icon_disappearance_timer_.Stop();
@@ -314,13 +318,13 @@ void DownloadDisplayController::ScheduleToolbarInactive(
 }
 
 base::Time DownloadDisplayController::GetLastCompleteTime(
-    const offline_items_collection::OfflineContentAggregator::OfflineItemList&
-        offline_items) {
+    const std::vector<std::unique_ptr<DownloadUIModel>>& all_models) {
   base::Time last_time = DownloadPrefs::FromDownloadManager(download_manager_)
                              ->GetLastCompleteTime();
-  for (const auto& offline_item : offline_items) {
-    if (last_time < offline_item.completion_time)
-      last_time = offline_item.completion_time;
+  for (const auto& model : all_models) {
+    if (last_time < model->GetEndTime()) {
+      last_time = model->GetEndTime();
+    }
   }
   return last_time;
 }
@@ -330,14 +334,12 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
     return;
   }
 
-  std::vector<std::unique_ptr<DownloadUIModel>> all_models =
-      bubble_controller_->GetAllItemsToDisplay();
-  UpdateToolbarButtonState(all_models);
+  std::vector<DownloadUIModelPtr> all_models =
+      UpdateButtonStateFromAllModels(true);
   if (display_->IsShowing()) {
     ScheduleToolbarDisappearance(
         kToolbarIconVisibilityTimeInterval -
-        (base::Time::Now() -
-         GetLastCompleteTime(bubble_controller_->GetOfflineItems())));
+        (base::Time::Now() - GetLastCompleteTime(all_models)));
   }
 }
 
@@ -363,26 +365,5 @@ bool DownloadDisplayController::IsDisplayShowingDetails() {
 
 DownloadDisplayController::ProgressInfo
 DownloadDisplayController::GetProgress() {
-  ProgressInfo progress_info;
-  std::vector<std::unique_ptr<DownloadUIModel>> in_progress_models =
-      bubble_controller_->GetInProgressItems();
-  progress_info.download_count = in_progress_models.size();
-  int64_t received_bytes = 0;
-  int64_t total_bytes = 0;
-
-  for (const auto& model : in_progress_models) {
-    if (model->GetTotalBytes() <= 0) {
-      // There may or may not be more data coming down this pipe.
-      progress_info.progress_certain = false;
-    } else {
-      received_bytes += model->GetCompletedBytes();
-      total_bytes += model->GetTotalBytes();
-    }
-  }
-
-  if (total_bytes > 0) {
-    progress_info.progress_percentage =
-        base::ClampFloor(received_bytes * 100.0 / total_bytes);
-  }
-  return progress_info;
+  return bubble_controller_->update_service()->GetProgressInfo();
 }

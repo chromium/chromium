@@ -14,8 +14,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
+#include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
@@ -24,6 +26,9 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -54,6 +59,16 @@ constexpr size_t kDefaultExtraItemsToCache = 20u;
 // Amount of time to show an item in the bubble. Items older than this duration
 // ago will be pruned.
 constexpr base::TimeDelta kShowItemInBubbleDuration = base::Hours(24);
+// Don't send the "download started" notification for an extension or theme
+// (crx) download until 2 seconds after it has begun. If it is a small download
+// that finishes in under 2 seconds, the download UI does not show at all. If it
+// is a large download that takes longer than 2 seconds, show the UI so that the
+// user knows Chrome is working on it.
+constexpr base::TimeDelta kCrxShowNewItemDelay = base::Seconds(2);
+// Limit the size of the |delayed_crx_guids_| set so it doesn't grow
+// unboundedly. It is unlikely that the user would have 20 active crx downloads
+// simultaneously.
+constexpr int kMaxDelayedCrxGuids = 20;
 
 template <typename Item>
 ItemSortKey::State GetState(const Item& item) {
@@ -168,6 +183,11 @@ DownloadBubbleUpdateService::DownloadBubbleUpdateService(Profile* profile)
 }
 
 DownloadBubbleUpdateService::~DownloadBubbleUpdateService() = default;
+
+void DownloadBubbleUpdateService::Shutdown() {
+  offline_content_provider_observation_.Reset();
+  weak_factory_.InvalidateWeakPtrs();
+}
 
 size_t DownloadBubbleUpdateService::GetMaxNumItemsToShow() const {
   size_t max =
@@ -327,13 +347,57 @@ void DownloadBubbleUpdateService::OnDownloadCreated(
   if (download_manager_shut_down_) {
     return;
   }
+  if (download_crx_util::IsExtensionDownload(*item) &&
+      delayed_crx_guids_.size() < kMaxDelayedCrxGuids) {
+    const std::string& guid = item->GetGuid();
+    CHECK(!delayed_crx_guids_.contains(guid));
+    delayed_crx_guids_.insert(guid);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &DownloadBubbleUpdateService::OnDelayedCrxDownloadCreated,
+            weak_factory_.GetWeakPtr(), guid),
+        kCrxShowNewItemDelay);
+    return;
+  }
   MaybeAddDownloadItemToCache(item, /*is_new=*/true);
+}
+
+void DownloadBubbleUpdateService::OnDelayedCrxDownloadCreated(
+    const std::string& guid) {
+  if (download_manager_shut_down_) {
+    return;
+  }
+  // This assumes that for extension/theme downloads, the DownloadItem is
+  // removed from the DownloadManager upon completion.
+  download::DownloadItem* item =
+      download_item_notifier_.GetManager()->GetDownloadByGuid(guid);
+  if (item && !item->IsDone()) {
+    MaybeAddDownloadItemToCache(item, /*is_new=*/true);
+
+    Browser* browser_to_show_animation =
+        FindBrowserToShowAnimation(item, profile_);
+    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+      if (browser->window() &&
+          browser->window()->GetDownloadBubbleUIController()) {
+        browser->window()->GetDownloadBubbleUIController()->OnDownloadItemAdded(
+            item, /*may_show_animation=*/browser == browser_to_show_animation);
+      }
+    }
+  }
+  size_t erased = delayed_crx_guids_.erase(guid);
+  CHECK_EQ(erased, 1u);
 }
 
 void DownloadBubbleUpdateService::OnDownloadUpdated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
   if (download_manager_shut_down_) {
+    return;
+  }
+  // If the item is an extension or theme download waiting out its 2-second
+  // delay, don't show a UI update for it.
+  if (delayed_crx_guids_.contains(item->GetGuid())) {
     return;
   }
   bool cache_was_at_max = IsCacheAtMax(download_items_);
@@ -344,6 +408,14 @@ void DownloadBubbleUpdateService::OnDownloadUpdated(
     const ItemSortKey& last_key =
         std::prev(GetLastIter(download_items_))->first;
     StartBackfillDownloadItems(last_key);
+  }
+
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    if (browser->window() &&
+        browser->window()->GetDownloadBubbleUIController()) {
+      browser->window()->GetDownloadBubbleUIController()->OnDownloadItemUpdated(
+          item);
+    }
   }
 }
 
@@ -359,6 +431,14 @@ void DownloadBubbleUpdateService::OnDownloadRemoved(
     const ItemSortKey& last_key = GetLastIter(download_items_)->first;
     StartBackfillDownloadItems(last_key);
   }
+
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    if (browser->window() &&
+        browser->window()->GetDownloadBubbleUIController()) {
+      browser->window()->GetDownloadBubbleUIController()->OnDownloadItemRemoved(
+          item);
+    }
+  }
 }
 
 void DownloadBubbleUpdateService::OnManagerGoingDown(
@@ -370,6 +450,14 @@ void DownloadBubbleUpdateService::OnManagerGoingDown(
     download_manager_shut_down_ = true;
     download_items_.clear();
     download_items_iter_map_.clear();
+    for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+      if (browser->window() &&
+          browser->window()->GetDownloadBubbleUIController()) {
+        browser->window()
+            ->GetDownloadBubbleUIController()
+            ->OnDownloadManagerGoingDown();
+      }
+    }
   }
 }
 
@@ -386,6 +474,14 @@ void DownloadBubbleUpdateService::OnItemsAdded(
   }
   for (const OfflineItem& item : items) {
     MaybeAddOfflineItemToCache(item, /*is_new=*/true);
+  }
+
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    if (browser->window() &&
+        browser->window()->GetDownloadBubbleUIController()) {
+      browser->window()->GetDownloadBubbleUIController()->OnOfflineItemsAdded(
+          items);
+    }
   }
 }
 
@@ -404,6 +500,14 @@ void DownloadBubbleUpdateService::OnItemRemoved(const ContentId& id) {
     CHECK_EQ(offline_items_.size(), GetNumItemsToCache() - 1);
     const ItemSortKey& last_key = GetLastIter(offline_items_)->first;
     StartBackfillOfflineItems(last_key);
+  }
+
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    if (browser->window() &&
+        browser->window()->GetDownloadBubbleUIController()) {
+      browser->window()->GetDownloadBubbleUIController()->OnOfflineItemRemoved(
+          id);
+    }
   }
 }
 
@@ -426,6 +530,14 @@ void DownloadBubbleUpdateService::OnItemUpdated(
     CHECK_EQ(offline_items_.size(), GetNumItemsToCache());
     const ItemSortKey& last_key = std::prev(GetLastIter(offline_items_))->first;
     StartBackfillOfflineItems(last_key);
+  }
+
+  for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
+    if (browser->window() &&
+        browser->window()->GetDownloadBubbleUIController()) {
+      browser->window()->GetDownloadBubbleUIController()->OnOfflineItemUpdated(
+          item);
+    }
   }
 }
 
@@ -566,12 +678,18 @@ void DownloadBubbleUpdateService::StartBackfillDownloadItems(
 
 void DownloadBubbleUpdateService::BackfillDownloadItems(
     const ItemSortKey& last_key) {
+  if (download_manager_shut_down_) {
+    return;
+  }
   BackfillItemsImpl(last_key, GetAllDownloadItems(), download_items_,
                     download_items_iter_map_);
 }
 
 void DownloadBubbleUpdateService::StartBackfillOfflineItems(
     const ItemSortKey& last_key) {
+  if (offline_content_provider_shut_down_) {
+    return;
+  }
   offline_items_collection::OfflineContentProvider* provider =
       OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
   provider->GetAllItems(

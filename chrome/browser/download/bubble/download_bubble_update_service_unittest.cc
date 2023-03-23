@@ -117,6 +117,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
                         const std::string& guid,
                         bool is_paused,
                         base::Time start_time = base::Time::Now(),
+                        bool is_crx = false,
                         bool observe = true) {
     size_t index = download_items_.size();
     download_items_.push_back(std::make_unique<NiceMockDownloadItem>());
@@ -138,6 +139,12 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
     EXPECT_CALL(item, IsDone()).WillRepeatedly(Return(false));
     EXPECT_CALL(item, IsTransient()).WillRepeatedly(Return(false));
     EXPECT_CALL(item, IsPaused()).WillRepeatedly(Return(is_paused));
+    EXPECT_CALL(item, GetTargetDisposition())
+        .WillRepeatedly(
+            Return(is_crx ? download::DownloadItem::TARGET_DISPOSITION_OVERWRITE
+                          : download::DownloadItem::TARGET_DISPOSITION_PROMPT));
+    EXPECT_CALL(item, GetMimeType())
+        .WillRepeatedly(Return(is_crx ? "application/x-chrome-extension" : ""));
     std::vector<download::DownloadItem*> items;
     for (size_t i = 0; i < download_items_.size(); ++i) {
       items.push_back(&GetDownloadItem(i));
@@ -270,13 +277,43 @@ TEST_F(DownloadBubbleUpdateServiceTest, PopulatesCaches) {
   EXPECT_EQ(models[5]->GetContentId().id, "completed_offline_item");
 }
 
-TEST_F(DownloadBubbleUpdateServiceTest, AddsDownloadItems) {
+TEST_F(DownloadBubbleUpdateServiceTest, AddsNonCrxDownloadItems) {
   InitDownloadItem(DownloadState::IN_PROGRESS, "new_download",
-                   /*is_paused=*/false);
+                   /*is_paused=*/false, base::Time::Now(), /*is_crx=*/false,
+                   /*observe=*/false);
+  // Manually notify the service of the new download rather than going through
+  // the observer update notification in InitDownloadItem().
+  update_service_->OnDownloadCreated(download_manager_, &GetDownloadItem(0));
   DownloadUIModelPtrVector models;
   EXPECT_TRUE(update_service_->GetAllModelsToDisplay(models));
   ASSERT_EQ(models.size(), 1u);
   EXPECT_EQ(models[0]->GetContentId().id, "new_download");
+}
+
+TEST_F(DownloadBubbleUpdateServiceTest, DelaysCrx) {
+  InitDownloadItem(DownloadState::IN_PROGRESS, "in_progress_crx",
+                   /*is_paused=*/false, base::Time::Now(), /*is_crx=*/true,
+                   /*observe=*/false);
+  // Manually notify the service of the new download rather than going through
+  // the observer update notification in InitDownloadItem().
+  update_service_->OnDownloadCreated(download_manager_, &GetDownloadItem(0));
+
+  DownloadUIModelPtrVector models;
+  EXPECT_TRUE(update_service_->GetAllModelsToDisplay(models));
+  // The crx download does not show up immediately.
+  EXPECT_EQ(models.size(), 0u);
+
+  // Updates are also withheld.
+  UpdateDownloadItem(0, DownloadState::IN_PROGRESS, /*is_paused=*/true);
+  EXPECT_TRUE(update_service_->GetAllModelsToDisplay(models));
+  EXPECT_EQ(models.size(), 0u);
+
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  // After the delay, the crx is added.
+  EXPECT_TRUE(update_service_->GetAllModelsToDisplay(models));
+  ASSERT_EQ(models.size(), 1u);
+  EXPECT_EQ(models[0]->GetContentId().id, "in_progress_crx");
 }
 
 TEST_F(DownloadBubbleUpdateServiceTest, EvictsExcessItemsAndBackfills) {

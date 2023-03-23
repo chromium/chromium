@@ -13,6 +13,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/download/bubble/download_bubble_utils.h"
+#include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/download_stats.h"
@@ -138,29 +140,14 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
     download::DownloadItem* item) {
   if (!DownloadItemModel(item).ShouldShowInBubble())
     return;
-
-  content::WebContents* web_contents =
-      content::DownloadItemUtils::GetWebContents(item);
-  // For the case of DevTools web contents, we'd like to use target browser
-  // shelf although saving from the DevTools web contents.
-  if (web_contents && DevToolsWindow::IsDevToolsWindow(web_contents)) {
-    DevToolsWindow* devtools_window =
-        DevToolsWindow::AsDevToolsWindow(web_contents);
-    content::WebContents* inspected =
-        devtools_window->GetInspectedWebContents();
-    // Do not overwrite web contents for the case of remote debugging.
-    if (inspected)
-      web_contents = inspected;
+  // crx downloads are handled by the DownloadBubbleUpdateService.
+  // TODO(chlily): Consolidate these code paths.
+  if (download_crx_util::IsExtensionDownload(*item)) {
+    return;
   }
+
   Browser* browser_to_show_animation =
-      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
-
-  // As a last resort, use the last active browser for this profile. Not ideal,
-  // but better than not showing the download at all.
-  if (browser_to_show_animation == nullptr) {
-    browser_to_show_animation = chrome::FindLastActiveWithProfile(profile_);
-  }
-
+      FindBrowserToShowAnimation(item, profile_);
   BrowserList* browser_list = BrowserList::GetInstance();
   if (!browser_list)
     return;
@@ -168,7 +155,7 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
   for (auto* browser : *browser_list) {
     if (browser && browser->window() &&
         browser->window()->GetDownloadBubbleUIController()) {
-      browser->window()->GetDownloadBubbleUIController()->OnNewItem(
+      browser->window()->GetDownloadBubbleUIController()->OnDownloadItemAdded(
           item, /*may_show_animation=*/(browser == browser_to_show_animation));
     }
   }

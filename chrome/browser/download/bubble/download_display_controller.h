@@ -33,10 +33,8 @@ class DownloadDisplay;
 // future OfflineItems include regular Download on Desktop platforms,
 // we can remove AllDownloadItemNotifier::Observer.
 // TODO(chlily): Consolidate this with DownloadBubbleUIController.
-class DownloadDisplayController
-    : public download::AllDownloadItemNotifier::Observer,
-      public FullscreenObserver,
-      public base::PowerSuspendObserver {
+class DownloadDisplayController : public FullscreenObserver,
+                                  public base::PowerSuspendObserver {
  public:
   DownloadDisplayController(DownloadDisplay* display,
                             Browser* browser,
@@ -61,9 +59,8 @@ class DownloadDisplayController
   // Returns a ProgressInfo where |download_count| is the number of currently
   // active downloads. If we know the final size of all downloads,
   // |progress_certain| is true. |progress_percentage| is the percentage
-  // complete of all in-progress  downloads.
-  //
-  // This implementation will match the one in download_status_updater.cc
+  // complete of all in-progress downloads. Forwards to the
+  // DownloadBubbleUpdateService.
   ProgressInfo GetProgress();
 
   // Returns an IconInfo that contains current state of the icon.
@@ -118,16 +115,20 @@ class DownloadDisplayController
   // Returns the DownloadDisplay. Should always return a valid display.
   DownloadDisplay* download_display_for_testing() { return display_; }
 
-  download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
-    return download_notifier_;
-  }
-
   void set_manager_for_testing(content::DownloadManager* manager) {
     download_manager_ = manager;
   }
 
  private:
   friend class DownloadDisplayControllerTest;
+
+  // Gets all models to display, then updates the toolbar button state
+  // accordingly. Returns the vector of all models. If the
+  // DownloadBubbleUpdateService indicated that results might not have been
+  // complete, |may_retry| specifies whether to post a task to retry fetching
+  // all models and updating the button.
+  std::vector<DownloadUIModel::DownloadUIModelPtr>
+  UpdateButtonStateFromAllModels(bool may_retry);
 
   // Stops and restarts `icon_disappearance_timer_`. The toolbar button will
   // be hidden after the `interval`.
@@ -153,12 +154,8 @@ class DownloadDisplayController
   bool HasRecentCompleteDownload(base::TimeDelta interval,
                                  base::Time last_complete_time);
 
-  // AllDownloadItemNotifier::Observer
-  void OnManagerGoingDown(content::DownloadManager* manager) override;
-
   base::Time GetLastCompleteTime(
-      const offline_items_collection::OfflineContentAggregator::OfflineItemList&
-          offline_items);
+      const std::vector<std::unique_ptr<DownloadUIModel>>& all_models);
 
   // The pointer is created in ToolbarView and owned by ToolbarView.
   raw_ptr<DownloadDisplay> const display_;
@@ -166,7 +163,6 @@ class DownloadDisplayController
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       observation_{this};
   raw_ptr<content::DownloadManager> download_manager_;
-  download::AllDownloadItemNotifier download_notifier_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   IconInfo icon_info_;

@@ -40,4 +40,9 @@ bool IsModelInProgress(const DownloadUIModel* model);
 bool IsItemPaused(const download::DownloadItem* item);
 bool IsItemPaused(const offline_items_collection::OfflineItem& item);
 
+// Finds the browser most appropriate to show the "download started" animation
+// in.
+Browser* FindBrowserToShowAnimation(download::DownloadItem* item,
+                                    Profile* profile);
+
 #endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UTILS_H_

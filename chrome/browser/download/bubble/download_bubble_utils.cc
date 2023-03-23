@@ -5,10 +5,15 @@
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
+#include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 
 base::Time GetItemStartTime(const download::DownloadItem* item) {
   return item->GetStartTime();
@@ -104,4 +109,31 @@ bool IsItemPaused(const download::DownloadItem* item) {
 
 bool IsItemPaused(const offline_items_collection::OfflineItem& item) {
   return item.state == offline_items_collection::OfflineItemState::PAUSED;
+}
+
+Browser* FindBrowserToShowAnimation(download::DownloadItem* item,
+                                    Profile* profile) {
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(item);
+  // For the case of DevTools web contents, we'd like to use target browser
+  // shelf although saving from the DevTools web contents.
+  if (web_contents && DevToolsWindow::IsDevToolsWindow(web_contents)) {
+    DevToolsWindow* devtools_window =
+        DevToolsWindow::AsDevToolsWindow(web_contents);
+    content::WebContents* inspected =
+        devtools_window->GetInspectedWebContents();
+    // Do not overwrite web contents for the case of remote debugging.
+    if (inspected) {
+      web_contents = inspected;
+    }
+  }
+  Browser* browser_to_show_animation =
+      web_contents ? chrome::FindBrowserWithWebContents(web_contents) : nullptr;
+
+  // As a last resort, use the last active browser for this profile. Not ideal,
+  // but better than not showing the download at all.
+  if (browser_to_show_animation == nullptr) {
+    browser_to_show_animation = chrome::FindLastActiveWithProfile(profile);
+  }
+  return browser_to_show_animation;
 }

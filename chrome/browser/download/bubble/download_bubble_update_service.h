@@ -15,6 +15,7 @@
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/download/content/public/all_download_item_notifier.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,10 +33,9 @@ class DownloadItem;
 // Caches download items and offline items in sorted order, so that UI updates
 // can be processed more quickly without fetching and sorting all items every
 // time. Passes notifications on to the window-level UI controllers.
-// TODO(chlily): Instantiate this as a KeyedService.
-// TODO(chlily): Hook this up to the window-level UI controllers.
 class DownloadBubbleUpdateService
-    : public download::AllDownloadItemNotifier::Observer,
+    : public KeyedService,
+      public download::AllDownloadItemNotifier::Observer,
       public offline_items_collection::OfflineContentProvider::Observer {
  public:
   // Defines sort priority for items.
@@ -85,8 +85,8 @@ class DownloadBubbleUpdateService
   // be backfilled synchronously if necessary; offline items will not be
   // backfilled synchronously). |models| is cleared. Returns whether results are
   // complete. Results may not be complete if there might be more items to be
-  // returned after backfilling.
-  bool GetAllModelsToDisplay(
+  // returned after backfilling. Virtual for testing.
+  virtual bool GetAllModelsToDisplay(
       std::vector<DownloadUIModel::DownloadUIModelPtr>& models,
       bool force_backfill_download_items = false);
 
@@ -94,8 +94,11 @@ class DownloadBubbleUpdateService
   // cache or backfill missing items, so the returned progress info may be
   // slightly inaccurate in edge cases. This is ok, as it is only for the
   // purpose of showing a progress ring around the icon, which is not precise
-  // anyway.
-  DownloadDisplayController::ProgressInfo GetProgressInfo() const;
+  // anyway. Virtual for testing.
+  virtual DownloadDisplayController::ProgressInfo GetProgressInfo() const;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // download::AllDownloadItemNotifier::Observer:
   void OnDownloadCreated(content::DownloadManager* manager,
@@ -237,6 +240,11 @@ class DownloadBubbleUpdateService
       base::Time cutoff_time,
       std::vector<DownloadUIModel::DownloadUIModelPtr>& models);
 
+  // Called when a crx download has waited out its 2 second delay. Adds the
+  // item to the cache if it's not already done, and notifies window-level
+  // controllers.
+  void OnDelayedCrxDownloadCreated(const std::string& guid);
+
 #if DCHECK_IS_ON()
   // Checks that the cache data structures are consistent.
   bool ConsistencyCheckCaches() const;
@@ -283,6 +291,11 @@ class DownloadBubbleUpdateService
 
   bool download_manager_shut_down_ = false;
   bool offline_content_provider_shut_down_ = false;
+
+  // Set of GUIDs for extension/theme (crx) downloads that are pending notifying
+  // the UI. GUIDs are added here when the download begins, and are removed
+  // when the 2 second delay is up.
+  std::set<std::string> delayed_crx_guids_;
 
   // Observes the offline content provider.
   base::ScopedObservation<

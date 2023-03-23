@@ -34,7 +34,7 @@ class MockDownloadBubbleUIController : public DownloadBubbleUIController {
  public:
   explicit MockDownloadBubbleUIController(Browser* browser)
       : DownloadBubbleUIController(browser) {}
-  ~MockDownloadBubbleUIController() override = default;
+  ~MockDownloadBubbleUIController() = default;
 };
 
 class MockDownloadBubbleNavigationHandler
