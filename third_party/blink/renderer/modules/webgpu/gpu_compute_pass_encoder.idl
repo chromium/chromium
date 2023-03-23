@@ -8,15 +8,15 @@
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPUComputePassEncoder {
-    void setPipeline(GPUComputePipeline pipeline);
+    [NoAllocDirectCall] void setPipeline(GPUComputePipeline pipeline);
     [NoAllocDirectCall] void dispatchWorkgroups(GPUSize32 workgroupCountX,
                                                 optional GPUSize32 workgroupCountY = 1,
                                                 optional GPUSize32 workgroupCountZ = 1);
-    void dispatchWorkgroupsIndirect(GPUBuffer indirectBuffer,
-                                    GPUSize64 indirectOffset);
+    [NoAllocDirectCall] void dispatchWorkgroupsIndirect(GPUBuffer indirectBuffer,
+                                                        GPUSize64 indirectOffset);
     [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
-    void end();
+    [NoAllocDirectCall] void end();
 };
 GPUComputePassEncoder includes GPUObjectBase;
 GPUComputePassEncoder includes GPUProgrammablePassEncoder;
