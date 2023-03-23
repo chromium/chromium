@@ -130,7 +130,6 @@ build_webui_tests("build") {
     "privacy_hub_subpage_tests.js",
     "quick_unlock_authenticate_browsertest_chromeos.js",
     "search_engine_test.js",
-    "search_subpage_test.js",
     "select_to_speak_subpage_tests.js",
     "settings_scheduler_slider_test.js",
     "settings_traffic_counters_test.js",
@@ -232,6 +231,8 @@ build_webui_tests("build") {
     "os_people_page/add_user_dialog_tests.ts",
 
     "os_printing_page/os_printing_page_tests.ts",
+
+    "os_search_page/search_subpage_test.ts",
 
     "os_settings_ui/os_settings_ui_about_page_test.js",
     "os_settings_ui/os_settings_ui_menu_test.js",

@@ -127,3 +127,4 @@ export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_p
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {GoogleAssistantBrowserProxyImpl} from './os_search_page/google_assistant_browser_proxy.js';
 export {ConsentStatus, DspHotwordState} from './os_search_page/google_assistant_subpage.js';
+export {SettingsSearchSubpageElement} from './os_search_page/search_subpage.js';

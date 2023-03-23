@@ -37,7 +37,8 @@ import {getTemplate} from './search_subpage.html.js';
 const SettingsSearchSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
-class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {
+export class SettingsSearchSubpageElement extends
+    SettingsSearchSubpageElementBase {
   static get is() {
     return 'settings-search-subpage';
   }
