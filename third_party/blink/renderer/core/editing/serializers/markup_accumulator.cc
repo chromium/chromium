@@ -167,7 +167,8 @@ void MarkupAccumulator::AppendStartMarkup(const Node& node) {
     case Node::kAttributeNode:
       // Only XMLSerializer can pass an Attr.  So, |documentIsHTML| flag is
       // false.
-      formatter_.AppendAttributeValue(markup_, To<Attr>(node).value(), false);
+      formatter_.AppendAttributeValue(markup_, To<Attr>(node).value(), false,
+                                      node.GetDocument());
       break;
     default:
       formatter_.AppendStartMarkup(markup_, node);
@@ -315,7 +316,8 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     formatter_.AppendStartTagOpen(markup_, prefix, element.localName());
     data.serialized_prefix_ = prefix;
     // 12.5.5. Append the following to markup, in the order listed:
-    MarkupFormatter::AppendAttribute(markup_, g_xmlns_atom, prefix, ns, false);
+    MarkupFormatter::AppendAttribute(markup_, g_xmlns_atom, prefix, ns, false,
+                                     element.GetDocument());
     // 12.5.5.7. If local default namespace is not null (there exists a
     // locally-defined default namespace declaration attribute), then let
     // inherited ns get the value of local default namespace unless the local
@@ -336,7 +338,7 @@ MarkupAccumulator::AppendStartTagOpen(const Element& element) {
     formatter_.AppendStartTagOpen(markup_, element);
     // 12.6.5. Append the following to markup, in the order listed:
     MarkupFormatter::AppendAttribute(markup_, g_null_atom, g_xmlns_atom, ns,
-                                     false);
+                                     false, element.GetDocument());
     return data;
   }
 
@@ -357,7 +359,8 @@ void MarkupAccumulator::AppendAttribute(const Element& element,
                                         const Attribute& attribute) {
   String value = formatter_.ResolveURLIfNeeded(element, attribute);
   if (SerializeAsHTML()) {
-    MarkupFormatter::AppendAttributeAsHTML(markup_, attribute, value);
+    MarkupFormatter::AppendAttributeAsHTML(markup_, attribute, value,
+                                           element.GetDocument());
   } else {
     AppendAttributeAsXMLWithNamespace(element, attribute, value);
   }
@@ -377,7 +380,8 @@ void MarkupAccumulator::AppendAttributeAsXMLWithNamespace(
 
   if (attribute_namespace.IsNull()) {
     MarkupFormatter::AppendAttribute(markup_, candidate_prefix,
-                                     attribute.LocalName(), value, false);
+                                     attribute.LocalName(), value, false,
+                                     element.GetDocument());
     return;
   }
   // 3.5. If attribute namespace is not null, then run these sub-steps:
@@ -404,15 +408,17 @@ void MarkupAccumulator::AppendAttributeAsXMLWithNamespace(
         // 3.5.3.2. Append the following to result, in the order listed:
         MarkupFormatter::AppendAttribute(markup_, g_xmlns_atom,
                                          candidate_prefix, attribute_namespace,
-                                         false);
+                                         false, element.GetDocument());
       } else {
         DCHECK(candidate_prefix);
-        AppendNamespace(candidate_prefix, attribute_namespace);
+        AppendNamespace(candidate_prefix, attribute_namespace,
+                        element.GetDocument());
       }
     }
   }
   MarkupFormatter::AppendAttribute(markup_, candidate_prefix,
-                                   attribute.LocalName(), value, false);
+                                   attribute.LocalName(), value, false,
+                                   element.GetDocument());
 }
 
 bool MarkupAccumulator::ShouldAddNamespaceAttribute(
@@ -434,16 +440,17 @@ bool MarkupAccumulator::ShouldAddNamespaceAttribute(
 }
 
 void MarkupAccumulator::AppendNamespace(const AtomicString& prefix,
-                                        const AtomicString& namespace_uri) {
+                                        const AtomicString& namespace_uri,
+                                        const Document& document) {
   AtomicString found_uri = LookupNamespaceURI(prefix);
   if (!EqualIgnoringNullity(found_uri, namespace_uri)) {
     AddPrefix(prefix, namespace_uri);
     if (prefix.empty()) {
       MarkupFormatter::AppendAttribute(markup_, g_null_atom, g_xmlns_atom,
-                                       namespace_uri, false);
+                                       namespace_uri, false, document);
     } else {
       MarkupFormatter::AppendAttribute(markup_, g_xmlns_atom, prefix,
-                                       namespace_uri, false);
+                                       namespace_uri, false, document);
     }
   }
 }

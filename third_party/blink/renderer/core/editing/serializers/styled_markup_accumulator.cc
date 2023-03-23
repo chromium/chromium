@@ -109,7 +109,8 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
 
     result_.Append("<span style=\"");
     MarkupFormatter::AppendAttributeValue(
-        result_, inline_style->Style()->AsText(), IsA<HTMLDocument>(document_));
+        result_, inline_style->Style()->AsText(), IsA<HTMLDocument>(document_),
+        *document_);
     result_.Append("\">");
   }
   if (!ShouldAnnotate()) {
@@ -154,8 +155,8 @@ void StyledMarkupAccumulator::AppendElementWithInlineStyle(
   }
   if (style && !style->IsEmpty()) {
     out.Append(" style=\"");
-    MarkupFormatter::AppendAttributeValue(out, style->Style()->AsText(),
-                                          document_is_html);
+    MarkupFormatter::AppendAttributeValue(
+        out, style->Style()->AsText(), document_is_html, element.GetDocument());
     out.Append('\"');
   }
   formatter_.AppendStartTagClose(out, element);
@@ -179,10 +180,11 @@ void StyledMarkupAccumulator::AppendAttribute(StringBuilder& result,
                                               const Attribute& attribute) {
   String value = formatter_.ResolveURLIfNeeded(element, attribute);
   if (formatter_.SerializeAsHTML()) {
-    MarkupFormatter::AppendAttributeAsHTML(result, attribute, value);
+    MarkupFormatter::AppendAttributeAsHTML(result, attribute, value,
+                                           element.GetDocument());
   } else {
-    MarkupFormatter::AppendAttributeAsXMLWithoutNamespace(result, attribute,
-                                                          value);
+    MarkupFormatter::AppendAttributeAsXMLWithoutNamespace(
+        result, attribute, value, element.GetDocument());
   }
 }
 
@@ -195,8 +197,8 @@ void StyledMarkupAccumulator::WrapWithStyleNode(CSSPropertyValueSet* style) {
 
   StringBuilder open_tag;
   open_tag.Append("<div style=\"");
-  MarkupFormatter::AppendAttributeValue(open_tag, style->AsText(),
-                                        IsA<HTMLDocument>(document_));
+  MarkupFormatter::AppendAttributeValue(
+      open_tag, style->AsText(), IsA<HTMLDocument>(document_), *document_);
   open_tag.Append("\">");
   reversed_preceding_markup_.push_back(open_tag.ToString());
 

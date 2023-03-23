@@ -250,8 +250,8 @@ std::pair<Node*, Element*> SerializerMarkupAccumulator::GetAuxiliaryDOMTree(
 
 void SerializerMarkupAccumulator::AppendAttributeValue(
     const String& attribute_value) {
-  MarkupFormatter::AppendAttributeValue(markup_, attribute_value,
-                                        IsA<HTMLDocument>(document_));
+  MarkupFormatter::AppendAttributeValue(
+      markup_, attribute_value, IsA<HTMLDocument>(document_), *document_);
 }
 
 void SerializerMarkupAccumulator::AppendRewrittenAttribute(
