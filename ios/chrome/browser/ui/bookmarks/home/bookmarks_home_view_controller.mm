@@ -1342,7 +1342,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return nodeItem.bookmarkNode;
   }
 
-  NOTREACHED();
+  NOTREACHED() << "Unexpected item type " << item.type;
   return nullptr;
 }
 
