@@ -77,12 +77,6 @@ public class FirstRunFlowSequencerTest {
         public boolean isSyncAllowed() {
             return isSyncAllowed;
         }
-
-        // TODO(https://crbug.com/1409385): Delete this method after launch is complete.
-        @Override
-        public boolean shouldSkipFirstUseHints(Activity activity) {
-            return shouldSkipFirstUseHints;
-        }
     }
 
     private static class TestFirstRunFlowSequencer extends FirstRunFlowSequencer {

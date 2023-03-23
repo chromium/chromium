@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -90,14 +89,6 @@ public abstract class FirstRunFlowSequencer  {
                     Profile.getLastUsedRegularProfile());
             return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
                     && signinManager.isSigninSupported();
-        }
-
-        /** @return true if first use hints should be skipped. */
-        @VisibleForTesting
-        protected boolean shouldSkipFirstUseHints(Activity activity) {
-            return Settings.Secure.getInt(
-                           activity.getContentResolver(), Settings.Secure.SKIP_FIRST_USE_HINTS, 0)
-                    != 0;
         }
     }
 
