@@ -12,11 +12,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-
-namespace eche_app {
-class EcheConnectionStatusHandler;
-}
-
 namespace phonehub {
 
 class BrowserTabsModelProvider;
@@ -69,11 +64,6 @@ class PhoneHubManager {
   virtual UserActionRecorder* GetUserActionRecorder() = 0;
   virtual IconDecoder* GetIconDecoder() = 0;
   virtual AppStreamManager* GetAppStreamManager() = 0;
-  virtual eche_app::EcheConnectionStatusHandler*
-  GetEcheConnectionStatusHandler() = 0;
-  virtual void SetEcheConnectionStatusHandler(
-      eche_app::EcheConnectionStatusHandler*
-          eche_connection_status_handler) = 0;
 
   // Retrieves the timestamp of the last successful discovery for active host,
   // or nullopt if it hasn't been seen in the current Chrome session.

@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
-#include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -47,8 +45,7 @@ class PhoneHubUiControllerTest : public AshTestBase,
 
   // AshTestBase:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kEcheSWA, features::kEcheNetworkConnectionState}, {});
+    feature_list_.InitWithFeatures({features::kEcheSWA}, {});
 
     AshTestBase::SetUp();
 
@@ -92,11 +89,6 @@ class PhoneHubUiControllerTest : public AshTestBase,
       const absl::optional<phonehub::PhoneStatusModel>& phone_status_model) {
     phone_hub_manager_.mutable_phone_model()->SetPhoneStatusModel(
         phone_status_model);
-  }
-
-  void SetEcheConnectionStatusHandler(
-      eche_app::EcheConnectionStatusHandler* handler) {
-    phone_hub_manager_.set_eche_connection_hander(handler);
   }
 
   std::unique_ptr<PhoneHubContentView> OpenBubbleAndCreateView() {
@@ -279,21 +271,6 @@ TEST_F(PhoneHubUiControllerTest, TetherConnectionPending) {
 TEST_F(PhoneHubUiControllerTest, PhoneConnected) {
   base::HistogramTester histograms;
   SetPhoneStatusModel(phonehub::CreateFakePhoneStatusModel());
-  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
-  EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
-            controller_->ui_state());
-
-  auto content_view = OpenBubbleAndCreateView();
-  EXPECT_EQ(kPhoneConnectedView, content_view->GetID());
-  histograms.ExpectBucketCount(kScreenOnOpenedMetric,
-                               phone_hub_metrics::Screen::kPhoneConnected, 1);
-}
-
-TEST_F(PhoneHubUiControllerTest, PhoneConnected_HasConnectionHandler) {
-  base::HistogramTester histograms;
-  SetPhoneStatusModel(phonehub::CreateFakePhoneStatusModel());
-  SetEcheConnectionStatusHandler(
-      std::make_unique<eche_app::EcheConnectionStatusHandler>().get());
   GetFeatureStatusProvider()->SetStatus(FeatureStatus::kEnabledAndConnected);
   EXPECT_EQ(PhoneHubUiController::UiState::kPhoneConnected,
             controller_->ui_state());

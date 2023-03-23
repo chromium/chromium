@@ -103,15 +103,5 @@ AppStreamManager* FakePhoneHubManager::GetAppStreamManager() {
   return &app_stream_manager_;
 }
 
-eche_app::EcheConnectionStatusHandler*
-FakePhoneHubManager::GetEcheConnectionStatusHandler() {
-  return eche_connection_status_handler_;
-}
-
-void FakePhoneHubManager::SetEcheConnectionStatusHandler(
-    eche_app::EcheConnectionStatusHandler* eche_connection_status_handler) {
-  eche_connection_status_handler_ = eche_connection_status_handler;
-}
-
 }  // namespace phonehub
 }  // namespace ash
