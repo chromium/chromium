@@ -482,6 +482,53 @@ TEST_F(DualLayerUserPrefStoreTest, NotifiesOfPrefChanges) {
   store()->RemoveObserver(&observer);
 }
 
+TEST_F(DualLayerUserPrefStoreTest,
+       NotifiesOfPrefChangesOnlyIfEffectiveValueChanges) {
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Add a pref to both stores but with different values.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1, base::Value("local_value1"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref1, base::Value("account_value1"), 0);
+
+  // Should not lead to a notification since the effective value hasn't changed.
+  store()->SetValue(kPref1, base::Value("account_value1"), 0);
+  // But should still update the local pref store.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, "account_value1"));
+
+  // Add a pref to the local store only.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref2, base::Value("local_value2"), 0);
+
+  // Should not lead to a notification since the effective value hasn't changed.
+  store()->SetValue(kPref2, base::Value("local_value2"), 0);
+  // But should still update the account pref store.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetAccountPrefStore(), kPref2, "local_value2"));
+
+  // Add a pref to the account store only.
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref3, base::Value("account_value3"), 0);
+
+  // Should not lead to a notification since the effective value hasn't changed.
+  store()->SetValue(kPref3, base::Value("account_value3"), 0);
+  // But should still update the local pref store.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref3, "account_value3"));
+
+  // Add the same pref to both stores.
+  store()->SetValueSilently(kPrefName, base::Value("value"), 0);
+
+  EXPECT_CALL(observer, OnPrefValueChanged(kPrefName));
+  // Effective value changes, so expect a notification.
+  store()->SetValue(kPrefName, base::Value("new_value"), 0);
+
+  store()->RemoveObserver(&observer);
+}
+
 TEST_F(DualLayerUserPrefStoreTest, NotifiesOfPrefChangesInUnderlyingStores) {
   // Three prefs: One is set in both stores, one only in the local store, and
   // one only in the account store.
@@ -513,6 +560,54 @@ TEST_F(DualLayerUserPrefStoreTest, NotifiesOfPrefChangesInUnderlyingStores) {
   // when the *effective* value changes, i.e. not when a pref is changed in the
   // local store that also has a value in the account store. (Though this
   // shouldn't happen in practice anyway.)
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTest,
+       NotifiesOfPrefChangesInUnderlyingStoresOnlyIfEffectiveValueChanges) {
+  // Two prefs: One is set only in the local store, the other set in both
+  // stores.
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref1, base::Value("local_value1"), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(
+      kPref2, base::Value("local_value2"), 0);
+  store()->GetAccountPrefStore()->SetValueSilently(
+      kPref2, base::Value("account_value2"), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Update the prefs by writing directly to the underlying stores.
+  // The dual-layer store should notify about these changes only when the
+  // the *effective* value changes, i.e. not when a pref is changed in the
+  // local store that also has a value in the account store.
+  EXPECT_CALL(observer, OnPrefValueChanged(kPref1));
+  store()->GetLocalPrefStore()->SetValue(kPref1, base::Value("new_value1"), 0);
+  // Should not lead to a notification since the effective value has not
+  // changed.
+  store()->GetLocalPrefStore()->SetValue(kPref2, base::Value("new_value2"), 0);
+
+  // Same with removals directly in the underlying stores.
+  EXPECT_CALL(observer, OnPrefValueChanged(kPref1));
+  store()->GetLocalPrefStore()->RemoveValue(kPref1, 0);
+  store()->GetLocalPrefStore()->RemoveValue(kPref2, 0);
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTest, NotifiesOfRemoveOnlyIfPrefExists) {
+  // Add a single pref.
+  store()->SetValueSilently(kPref1, base::Value("value"), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // Only the added pref should raise a notification.
+  EXPECT_CALL(observer, OnPrefValueChanged(kPref1));
+  store()->RemoveValue(kPref1, 0);
+  // `kPref2` was not added and should not raise any notification.
+  store()->RemoveValue(kPref2, 0);
 
   store()->RemoveObserver(&observer);
 }

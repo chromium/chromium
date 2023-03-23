@@ -36,9 +36,17 @@ void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
   }
   // Otherwise: This must've been a write directly to the underlying store, so
   // notify any observers.
-  // TODO(crbug.com/1416477): Observers should only be notified if the
-  // effective value of a pref changes - i.e. not if a pref gets modified in the
-  // local store which also has a value in the account store.
+  // Note: Observers should only be notified if the effective value of a pref
+  // changes - i.e. not if a pref gets modified in the local store which also
+  // has a value in the account store.
+  // TODO(crbug.com/1416479): Update the logic for mergeable prefs, since for
+  // those, a change in the local store should generally lead to a change in the
+  // effective value.
+  if (!is_account_store_ &&
+      outer_->GetAccountPrefStore()->GetValue(key, nullptr)) {
+    return;
+  }
+
   for (PrefStore::Observer& observer : outer_->observers_) {
     observer.OnPrefValueChanged(key);
   }
@@ -139,6 +147,12 @@ base::Value::Dict DualLayerUserPrefStore::GetValues() const {
 void DualLayerUserPrefStore::SetValue(const std::string& key,
                                       base::Value value,
                                       uint32_t flags) {
+  const base::Value* initial_value = nullptr;
+  // Only notify if something actually changed.
+  // Note: `value` is still added to the stores in case `key` was missing from
+  // any or had a different value.
+  bool should_notify =
+      !GetValue(key, &initial_value) || (*initial_value != value);
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
     // TODO(crbug.com/1416479): Implement un-merging, i.e. split updates and
@@ -149,14 +163,20 @@ void DualLayerUserPrefStore::SetValue(const std::string& key,
     local_pref_store_->SetValue(key, std::move(value), flags);
   }
 
-  // TODO(crbug.com/1416477): Only notify if something actually changed.
-  for (PrefStore::Observer& observer : observers_) {
-    observer.OnPrefValueChanged(key);
+  if (should_notify) {
+    for (PrefStore::Observer& observer : observers_) {
+      observer.OnPrefValueChanged(key);
+    }
   }
 }
 
 void DualLayerUserPrefStore::RemoveValue(const std::string& key,
                                          uint32_t flags) {
+  // Only proceed if the pref exists.
+  if (!GetValue(key, nullptr)) {
+    return;
+  }
+
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
     local_pref_store_->RemoveValue(key, flags);
@@ -165,7 +185,6 @@ void DualLayerUserPrefStore::RemoveValue(const std::string& key,
     }
   }
 
-  // TODO(crbug.com/1416477): Only notify if something was actually removed.
   for (PrefStore::Observer& observer : observers_) {
     observer.OnPrefValueChanged(key);
   }
