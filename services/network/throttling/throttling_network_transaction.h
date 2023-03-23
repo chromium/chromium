@@ -122,7 +122,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   // User callback.
   net::CompletionOnceCallback callback_;
 
-  raw_ptr<const net::HttpRequestInfo> request_;
+  // TODO(https://crbug.com/1427078): Prevent this pointer from dangling.
+  raw_ptr<const net::HttpRequestInfo, DanglingUntriaged> request_;
 
   // True if Fail was already invoked.
   bool failed_;
