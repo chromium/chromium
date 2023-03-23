@@ -90,6 +90,18 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
+			<string>App close background refresh interval in seconds</string>
+			<key>Key</key>
+			<string>AppCloseBackgroundRefreshIntervalInSeconds</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
 			<string>Refresh timer timeout in seconds</string>
 			<key>Key</key>
 			<string>FeedRefreshTimerTimeoutInSeconds</string>

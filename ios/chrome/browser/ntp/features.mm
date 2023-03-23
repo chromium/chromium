@@ -238,6 +238,11 @@ FeedRefreshEngagementCriteriaType GetFeedRefreshEngagementCriteriaType() {
 }
 
 double GetAppCloseBackgroundRefreshIntervalInSeconds() {
+  double override_value = [[NSUserDefaults standardUserDefaults]
+      doubleForKey:@"AppCloseBackgroundRefreshIntervalInSeconds"];
+  if (override_value > 0.0) {
+    return override_value;
+  }
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedInvisibleForegroundRefresh,
       kAppCloseBackgroundRefreshIntervalInSeconds,
