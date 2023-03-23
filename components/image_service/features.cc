@@ -14,9 +14,9 @@ BASE_FEATURE(kImageServiceSuggestPoweredImages,
              "ImageServiceSuggestPoweredImages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disabled by default, usage is approved but we still want to control rollout.
+// Enabled the capability by default, can be used as a killswitch.
 BASE_FEATURE(kImageServiceOptimizationGuideSalientImages,
              "ImageServiceOptimizationGuideSalientImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace image_service
