@@ -148,8 +148,8 @@ void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateLoaderAndStart(
       request_id, options, resource_request, std::move(client),
       traffic_annotation, current_context->factory,
       base::PassKey<KeepAliveURLLoaderService>());
-  // Binds `loader` with the pending `receiver` from a renderer to handle URL
-  // requests.
+  // Adds a new receiver to the set, binding the pending `receiver` from a
+  // renderer to `raw_loader` with the context `loader` to handle URL requests.
   auto* raw_loader = loader.get();
   auto receiver_id = service_->loader_receivers_.Add(
       raw_loader, std::move(receiver), std::move(loader));
@@ -174,6 +174,10 @@ KeepAliveURLLoaderService::KeepAliveURLLoaderService() {
   factory_ =
       std::make_unique<KeepAliveURLLoaderService::KeepAliveURLLoaderFactory>(
           this);
+  // `Unretained(this)` is safe because `this` owns `loader_receivers_`.
+  loader_receivers_.set_disconnect_handler(
+      base::BindRepeating(&KeepAliveURLLoaderService::OnLoaderDisconnected,
+                          base::Unretained(this)));
 }
 
 KeepAliveURLLoaderService::~KeepAliveURLLoaderService() = default;
@@ -186,6 +190,19 @@ void KeepAliveURLLoaderService::BindFactory(
   factory_->BindFactory(std::move(receiver), std::move(pending_factory));
 }
 
+void KeepAliveURLLoaderService::OnLoaderDisconnected() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto disconnected_loader_receiver_id = loader_receivers_.current_receiver();
+  TRACE_EVENT1("loading", "KeepAliveURLLoaderService::OnLoaderDisconnected",
+               "loader_id", disconnected_loader_receiver_id);
+
+  // The context of `disconnected_loader_receiver_id`, an KeepAliveURLLoader
+  // object, has been removed from `loader_receivers_`, but it has to stay alive
+  // to handle subsequent updates from network service.
+  disconnected_loaders_.emplace(disconnected_loader_receiver_id,
+                                std::move(loader_receivers_.current_context()));
+}
+
 void KeepAliveURLLoaderService::RemoveLoader(
     mojo::ReceiverId loader_receiver_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -193,10 +210,15 @@ void KeepAliveURLLoaderService::RemoveLoader(
                "loader_id", loader_receiver_id);
 
   loader_receivers_.Remove(loader_receiver_id);
+  disconnected_loaders_.erase(loader_receiver_id);
 }
 
 size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {
-  return loader_receivers_.size();
+  return loader_receivers_.size() + disconnected_loaders_.size();
+}
+
+size_t KeepAliveURLLoaderService::NumDisconnectedLoadersForTesting() const {
+  return disconnected_loaders_.size();
 }
 
 }  // namespace content

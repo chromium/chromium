@@ -106,6 +106,7 @@ class FakeRemoteURLLoaderFactory {
   bool is_remote_url_loader_connected() {
     return remote_url_loader.is_connected();
   }
+  void reset_remote_url_loader() { remote_url_loader.reset(); }
 
  private:
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -150,12 +151,6 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
 
   void ExpectMojoBadMessage(const std::string& message) {
     EXPECT_EQ(mojo_bad_message_, message);
-  }
-  void ExpectNumPendingRequests(int num_requests) {
-    EXPECT_EQ(network_url_loader_factory_->NumPending(), num_requests);
-  }
-  void ExpectNumKeepAliveURLLoaders(size_t num_loaders) {
-    EXPECT_EQ(loader_service_->NumLoadersForTesting(), num_loaders);
   }
 
   // Asks KeepAliveURLLoaderService to bind a KeepAliveURLLoaderFactory to the
@@ -231,6 +226,11 @@ class KeepAliveURLLoaderServiceTest : public RenderViewHostTestHarness {
     return &network_url_loader_factory_->pending_requests()->back();
   }
 
+  network::TestURLLoaderFactory& network_url_loader_factory() {
+    return *network_url_loader_factory_;
+  }
+  KeepAliveURLLoaderService& loader_service() { return *loader_service_; }
+
  private:
   // Intercepts network facotry requests instead of using production factory.
   std::unique_ptr<network::TestURLLoaderFactory> network_url_loader_factory_ =
@@ -250,8 +250,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadNonKeepaliveRequestAndTerminate) {
       CreateResourceRequest(GURL(kTestRequestUrl), /*keepalive=*/false),
       renderer_loader_client.BindNewPipeAndPassRemote());
 
-  ExpectNumPendingRequests(0);
-  ExpectNumKeepAliveURLLoaders(0);
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
   EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
   ExpectMojoBadMessage(
       "Unexpected `resource_request` in "
@@ -270,8 +270,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, LoadTrustedRequestAndTerminate) {
                             /*is_trusted=*/true),
       renderer_loader_client.BindNewPipeAndPassRemote());
 
-  ExpectNumPendingRequests(0);
-  ExpectNumKeepAliveURLLoaders(0);
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
   EXPECT_FALSE(renderer_loader_factory.is_remote_url_loader_connected());
   ExpectMojoBadMessage(
       "Unexpected `resource_request` in "
@@ -288,8 +288,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveResponse) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnReceiveResponse:
   // Expects underlying KeepAliveURLLoader forwards to `renderer_loader_client`.
@@ -303,11 +303,11 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveResponse) {
       CreateResponseHead({{kTestResponseHeaderName, kTestResponseHeaderValue}}),
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
-  ExpectNumKeepAliveURLLoaders(1);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest,
-       OnReceiveResponseWhenRendererIsDisconnected) {
+       OnReceiveResponseAfterRendererIsDisconnected) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -316,12 +316,17 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  base::RunLoop().RunUntilIdle();
 
   // OnReceiveResponse:
-  // Disconnects and unbinds the receiver client from KeepAliveURLLoader.
-  renderer_loader_client.ResetReceiver();
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
   // Expects no forwarding.
   EXPECT_CALL(renderer_loader_client, OnReceiveResponse(_, _, _)).Times(0);
   // Simluates receiving response in the network service.
@@ -330,7 +335,7 @@ TEST_F(KeepAliveURLLoaderServiceTest,
       /*body=*/{}, absl::nullopt);
   base::RunLoop().RunUntilIdle();
   // The loader should have been deleted by the service.
-  ExpectNumKeepAliveURLLoaders(0);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveRedirect) {
@@ -342,8 +347,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveRedirect) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnReceiveRedirect:
   // Expects underlying KeepAliveURLLoader forwards to `renderer_loader_client`.
@@ -359,7 +364,7 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveRedirect) {
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest,
-       OnReceiveRedirectWhenRendererIsDisconnected) {
+       OnReceiveRedirectAfterRendererIsDisconnected) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -368,12 +373,17 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  base::RunLoop().RunUntilIdle();
 
   // OnReceiveRedirect:
-  // Disconnects the receiver client from KeepAliveURLLoader.
-  renderer_loader_client.ResetReceiver();
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
   // Expects no forwarding.
   EXPECT_CALL(renderer_loader_client, OnReceiveRedirect(_, _)).Times(0);
   // Simluates receiving redirect in the network service.
@@ -392,8 +402,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveEarlyHints) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnReceiveEarlyHints:
   // Expects underlying KeepAliveURLLoader forwards to `renderer_loader_client`.
@@ -405,7 +415,7 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveEarlyHints) {
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest,
-       OnReceiveEarlyHintsWhenRendererIsDisconnected) {
+       OnReceiveEarlyHintsAfterRendererIsDisconnected) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -414,12 +424,17 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  base::RunLoop().RunUntilIdle();
 
   // OnReceiveEarlyHints:
-  // Disconnects the receiver client from KeepAliveURLLoader.
-  renderer_loader_client.ResetReceiver();
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
   // Expects no forwarding.
   EXPECT_CALL(renderer_loader_client, OnReceiveEarlyHints(_)).Times(0);
   // Simluates receiving early hints in the network service.
@@ -437,8 +452,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnUploadProgress) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnUploadProgress:
   const int64_t current_position = 5;
@@ -467,8 +482,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnTransferSizeUpdated) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnTransferSizeUpdated:
   const int32_t size_diff = 5;
@@ -481,7 +496,7 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnTransferSizeUpdated) {
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest,
-       OnTransferSizeUpdatedWhenRendererIsDisconnected) {
+       OnTransferSizeUpdatedAfterRendererIsDisconnected) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -490,16 +505,21 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  base::RunLoop().RunUntilIdle();
 
   // OnTransferSizeUpdated:
-  // Disconnects the receiver client from KeepAliveURLLoader.
-  renderer_loader_client.ResetReceiver();
-  const int32_t size_diff = 5;
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
   // Expects no forwarding.
   EXPECT_CALL(renderer_loader_client, OnTransferSizeUpdated(_)).Times(0);
   // Simluates receiving transfer size update in the network service.
+  const int32_t size_diff = 5;
   GetLastPendingRequest()->client->OnTransferSizeUpdated(size_diff);
   base::RunLoop().RunUntilIdle();
 }
@@ -513,8 +533,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnComplete) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnComplete:
   const network::URLLoaderCompletionStatus status{net::OK};
@@ -523,9 +543,11 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnComplete) {
   // Simluates receiving completion status in the network service.
   GetLastPendingRequest()->client->OnComplete(status);
   base::RunLoop().RunUntilIdle();
+  // The KeepAliveURLLoader should have been deleted.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
 }
 
-TEST_F(KeepAliveURLLoaderServiceTest, OnCompleteWhenRendererIsDisconnected) {
+TEST_F(KeepAliveURLLoaderServiceTest, OnCompleteAfterRendererIsDisconnected) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -534,18 +556,25 @@ TEST_F(KeepAliveURLLoaderServiceTest, OnCompleteWhenRendererIsDisconnected) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  base::RunLoop().RunUntilIdle();
 
   // OnComplete:
-  // Disconnects the receiver client from KeepAliveURLLoader.
-  renderer_loader_client.ResetReceiver();
-  const network::URLLoaderCompletionStatus status{net::OK};
+  // Disconnected KeepAliveURLLoader is still alive.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 1u);
   // Expects no forwarding.
   EXPECT_CALL(renderer_loader_client, OnComplete(_)).Times(0);
   // Simluates receiving completion status in the network service.
+  const network::URLLoaderCompletionStatus status{net::OK};
   GetLastPendingRequest()->client->OnComplete(status);
   base::RunLoop().RunUntilIdle();
+  // The KeepAliveURLLoader should have been deleted.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest, RendererDisconnectedBeforeOnComplete) {
@@ -557,8 +586,8 @@ TEST_F(KeepAliveURLLoaderServiceTest, RendererDisconnectedBeforeOnComplete) {
   renderer_loader_factory.CreateLoaderAndStart(
       CreateResourceRequest(GURL(kTestRequestUrl)),
       renderer_loader_client.BindNewPipeAndPassRemote());
-  ExpectNumPendingRequests(1);
-  ExpectNumKeepAliveURLLoaders(1);
+  ASSERT_EQ(network_url_loader_factory().NumPending(), 1);
+  ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnReceiveResponse
   // Simluates receiving response in the network service.
@@ -566,12 +595,13 @@ TEST_F(KeepAliveURLLoaderServiceTest, RendererDisconnectedBeforeOnComplete) {
       CreateResponseHead({{kTestResponseHeaderName, kTestResponseHeaderValue}}),
       /*body=*/{}, absl::nullopt);
 
-  // Disconnects the receiver client from KeepAliveURLLoader.
+  // Disconnects and unbinds the receiver client & remote loader.
   renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
   base::RunLoop().RunUntilIdle();
 
-  // The loader should have been deleted.
-  ExpectNumKeepAliveURLLoaders(0);
+  // The KeepAliveURLLoader should have been deleted.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
 }
 
 }  // namespace content

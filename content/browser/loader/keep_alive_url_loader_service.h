@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_SERVICE_H_
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_SERVICE_H_
 
+#include <map>
 #include <memory>
 
 #include "content/common/content_export.h"
@@ -50,11 +51,16 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
 
   // For testing only:
   size_t NumLoadersForTesting() const;
+  size_t NumDisconnectedLoadersForTesting() const;
 
  private:
   class KeepAliveURLLoaderFactory;
 
-  // Removes the loader receiver held by `loader_receivers_`.
+  // Handles every disconnection notification for `loader_receivers_`.
+  void OnLoaderDisconnected();
+
+  // Removes the KeepAliveURLLoader kept by this service, either from
+  // `loader_receivers_` or `disconnected_loaders_`.
   void RemoveLoader(mojo::ReceiverId loader_receiver_id);
 
   // Many-to-one mojo receiver of URLLoaderFactory.
@@ -62,9 +68,17 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
 
   // Holds all the KeepAliveURLLoader connected with remotes in renderers.
   // Each of them corresponds to the handling of one pending keepalive request.
+  // Once a receiver is disconnected, its context should be moved to
+  // `disconnected_loaders_`.
   mojo::ReceiverSet<network::mojom::URLLoader,
                     std::unique_ptr<network::mojom::URLLoader>>
       loader_receivers_;
+
+  // Holds all the KeepAliveURLLoader that has been disconnected from renderers.
+  // They should be kept alive until the request completes or fails.
+  // The key is the mojo::ReceiverId assigned by `loader_receivers_`.
+  std::map<mojo::ReceiverId, std::unique_ptr<network::mojom::URLLoader>>
+      disconnected_loaders_;
 };
 
 }  // namespace content
