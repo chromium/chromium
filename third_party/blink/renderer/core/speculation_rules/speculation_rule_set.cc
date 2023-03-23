@@ -392,38 +392,57 @@ SpeculationRuleSet::SpeculationRuleSet(base::PassKey<SpeculationRuleSet>,
                                        Source* source)
     : inspector_id_(IdentifiersFactory::CreateIdentifier()), source_(source) {}
 
+void SpeculationRuleSet::SetError(SpeculationRuleSetErrorType error_type,
+                                  String error_message) {
+  // Only the first error will be reported.
+  if (error_type_ != SpeculationRuleSetErrorType::kNoError) {
+    return;
+  }
+
+  error_type_ = error_type;
+  error_message_ = error_message;
+}
+
 // static
 SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
-                                              ExecutionContext* context,
-                                              String* out_error) {
+                                              ExecutionContext* context) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-speculation-rules
 
   const String& source_text = source->GetSourceText();
   const KURL& base_url = source->GetBaseURL();
+
+  // Let result be an empty speculation rule set.
+  SpeculationRuleSet* result = MakeGarbageCollected<SpeculationRuleSet>(
+      base::PassKey<SpeculationRuleSet>(), source);
 
   // Let parsed be the result of parsing a JSON string to an Infra value given
   // input.
   JSONParseError parse_error;
   auto parsed = JSONObject::From(ParseJSON(source_text, &parse_error));
 
-  // If parsed is not a map, then return null.
+  // If parsed is not a map, then return an empty rule sets.
   if (!parsed) {
-    SetParseErrorMessage(out_error,
-                         parse_error.type != JSONParseErrorType::kNoError
-                             ? parse_error.message
-                             : "Parsed JSON must be an object.");
-    return nullptr;
+    result->SetError(SpeculationRuleSetErrorType::kSourceIsNotJsonObject,
+                     parse_error.type != JSONParseErrorType::kNoError
+                         ? parse_error.message
+                         : "Parsed JSON must be an object.");
+    return result;
   }
-
-  // Let result be an empty speculation rule set.
-  SpeculationRuleSet* result = MakeGarbageCollected<SpeculationRuleSet>(
-      base::PassKey<SpeculationRuleSet>(), source);
 
   const auto parse_for_action =
       [&](const char* key, HeapVector<Member<SpeculationRule>>& destination,
           bool allow_target_hint) {
-        JSONArray* array = parsed->GetArray(key);
+        // If key doesn't exist, it is not an error and is nop.
+        JSONValue* value = parsed->Get(key);
+        if (!value) {
+          return;
+        }
+
+        JSONArray* array = JSONArray::Cast(value);
         if (!array) {
+          result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                           "A rule set for a key must be an array: path = [\"" +
+                               String(key) + "\"]");
           return;
         }
 
@@ -431,26 +450,37 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           // If prefetch/prerenderRule is not a map, then continue.
           JSONObject* input_rule = JSONObject::Cast(array->at(i));
           if (!input_rule) {
-            SetParseErrorMessage(out_error, "A rule must be an object.");
+            result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                             "A rule must be an object: path = [\"" +
+                                 String(key) + "\"][" + String::Number(i) +
+                                 "]");
             continue;
           }
 
           // Let rule be the result of parsing a speculation rule given
           // prefetch/prerenderRule and baseURL.
-          SpeculationRule* rule =
-              ParseSpeculationRule(input_rule, base_url, context, out_error);
+          //
+          // TODO(https://crbug.com/1410709): Refactor
+          // ParseSpeculationRule to return
+          // `std::tuple<SpeculationRule*, String>`.
+          String error_message;
+          SpeculationRule* rule = ParseSpeculationRule(input_rule, base_url,
+                                                       context, &error_message);
 
-          // If rule is null, then continue.
-          if (!rule)
+          // If parse failed for a rule, then ignore it and continue.
+          if (!rule) {
+            result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                             error_message);
             continue;
+          }
 
           // If rule's target browsing context name hint is not null, then
           // continue.
           if (!allow_target_hint &&
               rule->target_browsing_context_name_hint().has_value()) {
-            SetParseErrorMessage(
-                out_error, "\"target_hint\" may not be set for " + String(key) +
-                               " rules.");
+            result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
+                             "\"target_hint\" may not be set for " +
+                                 String(key) + " rules.");
             continue;
           }
 
@@ -476,6 +506,21 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
   parse_for_action("prerender", result->prerender_rules_, true);
 
   return result;
+}
+
+bool SpeculationRuleSet::HasError() const {
+  return error_type_ != SpeculationRuleSetErrorType::kNoError;
+}
+
+bool SpeculationRuleSet::ShouldReportUMAForError() const {
+  // We report UMAs only if entire parse failed.
+  switch (error_type_) {
+    case SpeculationRuleSetErrorType::kSourceIsNotJsonObject:
+      return true;
+    case SpeculationRuleSetErrorType::kNoError:
+    case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
+      return false;
+  }
 }
 
 void SpeculationRuleSet::Trace(Visitor* visitor) const {

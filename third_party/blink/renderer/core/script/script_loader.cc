@@ -1011,22 +1011,23 @@ PendingScript* ScriptLoader::PrepareScript(
         // If the script’s result is not null, append it to the element’s node
         // document's list of speculation rule sets.
         DCHECK(RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window));
-        String parse_error;
         auto* source = MakeGarbageCollected<SpeculationRuleSet::Source>(
             source_text, element_document);
-        if (auto* rule_set = SpeculationRuleSet::Parse(source, context_window,
-                                                       &parse_error)) {
-          speculation_rule_set_ = rule_set;
-          DocumentSpeculationRules::From(element_document).AddRuleSet(rule_set);
-        } else {
-          CountSpeculationRulesLoadOutcome(
-              SpeculationRulesLoadOutcome::kParseErrorInline);
-        }
-        if (!parse_error.IsNull()) {
+        speculation_rule_set_ =
+            SpeculationRuleSet::Parse(source, context_window);
+        CHECK(speculation_rule_set_);
+        DocumentSpeculationRules::From(element_document)
+            .AddRuleSet(speculation_rule_set_);
+        if (speculation_rule_set_->HasError()) {
+          if (speculation_rule_set_->ShouldReportUMAForError()) {
+            CountSpeculationRulesLoadOutcome(
+                SpeculationRulesLoadOutcome::kParseErrorInline);
+          }
           auto* console_message = MakeGarbageCollected<ConsoleMessage>(
               mojom::ConsoleMessageSource::kOther,
               mojom::ConsoleMessageLevel::kWarning,
-              "While parsing speculation rules: " + parse_error);
+              "While parsing speculation rules: " +
+                  speculation_rule_set_->error_message());
           console_message->SetNodes(element_document.GetFrame(),
                                     {element_->GetDOMNodeId()});
           element_document.AddConsoleMessage(console_message);

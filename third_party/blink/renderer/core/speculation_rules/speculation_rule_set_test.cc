@@ -119,16 +119,14 @@ class SpeculationRuleSetTest : public ::testing::Test {
 
   SpeculationRuleSet* CreateRuleSet(const String& source_text,
                                     const KURL& base_url,
-                                    ExecutionContext* context,
-                                    String* parse_error = nullptr) {
+                                    ExecutionContext* context) {
     return SpeculationRuleSet::Parse(
         MakeGarbageCollected<SpeculationRuleSet::Source>(source_text, base_url),
-        context, parse_error);
+        context);
   }
 
   SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
-      const char* target_hint,
-      String* parse_error = nullptr) {
+      const char* target_hint) {
     return CreateRuleSet(String::Format(R"({
         "prefetch": [{
           "source": "list",
@@ -147,8 +145,7 @@ class SpeculationRuleSetTest : public ::testing::Test {
         }]
       })",
                                         target_hint, target_hint, target_hint),
-                         KURL("https://example.com/"), execution_context_,
-                         parse_error);
+                         KURL("https://example.com/"), execution_context_);
   }
 
   NullExecutionContext* execution_context() {
@@ -166,14 +163,44 @@ TEST_F(SpeculationRuleSetTest, Empty) {
   auto* rule_set =
       CreateRuleSet("{}", KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
-TEST_F(SpeculationRuleSetTest, CommentsAreInvalid) {
+void AssertParseError(const SpeculationRuleSet* rule_set) {
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kSourceIsNotJsonObject);
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
+  auto* rule_set = CreateRuleSet("[invalid]", KURL("https://example.com"),
+                                 execution_context());
+  ASSERT_TRUE(rule_set);
+  AssertParseError(rule_set);
+  EXPECT_TRUE(rule_set->error_message().Contains("Syntax error"))
+      << rule_set->error_message();
+}
+
+TEST_F(SpeculationRuleSetTest, RejectsNonObject) {
+  auto* rule_set =
+      CreateRuleSet("42", KURL("https://example.com"), execution_context());
+  ASSERT_TRUE(rule_set);
+  AssertParseError(rule_set);
+  EXPECT_TRUE(rule_set->error_message().Contains("must be an object"))
+      << rule_set->error_message();
+}
+
+TEST_F(SpeculationRuleSetTest, RejectsComments) {
   auto* rule_set = CreateRuleSet(
       "{ /* comments! */ }", KURL("https://example.com/"), execution_context());
-  EXPECT_FALSE(rule_set);
+  ASSERT_TRUE(rule_set);
+  AssertParseError(rule_set);
+  EXPECT_TRUE(rule_set->error_message().Contains("Syntax error"))
+      << rule_set->error_message();
 }
 
 TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
@@ -186,6 +213,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
       })",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(
       rule_set->prefetch_rules(),
       ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
@@ -204,6 +232,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrerenderRule) {
       })",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(
       rule_set->prerender_rules(),
       ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
@@ -221,6 +250,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
       })",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(
       rule_set->prefetch_with_subresources_rules(),
@@ -243,6 +273,7 @@ TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
       })",
       KURL("https://example.com/foo/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs(
                   "https://example.com/foo/bar", "https://example.com/baz",
@@ -270,6 +301,7 @@ TEST_F(SpeculationRuleSetTest, ResolvesURLsWithRelativeTo) {
       })",
       KURL("https://example.com/foo/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs(
                   "https://example.com/foo/bar", "https://example.com/baz",
@@ -291,6 +323,7 @@ TEST_F(SpeculationRuleSetTest, ResolvesURLsWithRelativeTo) {
       })",
       KURL("https://example.com/foo/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs(
                   "https://document.com/foo/bar", "https://document.com/baz",
@@ -311,28 +344,13 @@ TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
       })",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(
       rule_set->prefetch_rules(),
       ElementsAre(AllOf(MatchesListOfURLs("https://example.net/anonymous.html"),
                         RequiresAnonymousClientIPWhenCrossOrigin()),
                   AllOf(MatchesListOfURLs("https://example.net/direct.html"),
                         Not(RequiresAnonymousClientIPWhenCrossOrigin()))));
-}
-
-TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
-  String parse_error;
-  auto* rule_set = CreateRuleSet("[invalid]", KURL("https://example.com"),
-                                 execution_context(), &parse_error);
-  EXPECT_FALSE(rule_set);
-  EXPECT_TRUE(parse_error.Contains("Syntax error"));
-}
-
-TEST_F(SpeculationRuleSetTest, RejectsNonObject) {
-  String parse_error;
-  auto* rule_set = CreateRuleSet("42", KURL("https://example.com"),
-                                 execution_context(), &parse_error);
-  EXPECT_FALSE(rule_set);
-  EXPECT_TRUE(parse_error.Contains("must be an object"));
 }
 
 TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
@@ -344,12 +362,13 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
       })",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
-  String parse_error;
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
@@ -416,24 +435,26 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
         "urls": ["no-source.html"],
         "no_vary_search_expected": "params=(\"a\")"
       }]})nvs",
-      KURL("https://example.com/"), execution_context(), &parse_error);
+      KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   // The rule set itself is valid, however many of the individual rules are
   // invalid. So we should have populated a warning message.
-  EXPECT_FALSE(parse_error.empty());
+  EXPECT_FALSE(rule_set->error_message().empty());
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/valid.html")));
 }
 
 // Test that only prerender rule can process a "_blank" target hint.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Blank) {
-  String parse_error;
-  auto* rule_set =
-      CreateSpeculationRuleSetWithTargetHint("_blank", &parse_error);
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_blank");
   ASSERT_TRUE(rule_set);
-  EXPECT_TRUE(
-      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
-      << parse_error;
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "\"target_hint\" may not be set for prefetch"))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -444,13 +465,13 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Blank) {
 
 // Test that only prerender rule can process a "_self" target hint.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Self) {
-  String parse_error;
-  auto* rule_set =
-      CreateSpeculationRuleSetWithTargetHint("_self", &parse_error);
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_self");
   ASSERT_TRUE(rule_set);
-  EXPECT_TRUE(
-      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
-      << parse_error;
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "\"target_hint\" may not be set for prefetch"))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -464,13 +485,13 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Self) {
 // TODO(https://crbug.com/1354049): Support the "_parent" keyword for
 // prerendering.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Parent) {
-  String parse_error;
-  auto* rule_set =
-      CreateSpeculationRuleSetWithTargetHint("_parent", &parse_error);
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_parent");
   ASSERT_TRUE(rule_set);
-  EXPECT_TRUE(
-      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
-      << parse_error;
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "\"target_hint\" may not be set for prefetch"))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -484,12 +505,13 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Parent) {
 // Test that rules with a "_top" hint are ignored.
 // TODO(https://crbug.com/1354049): Support the "_top" keyword for prerendering.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Top) {
-  String parse_error;
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_top", &parse_error);
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_top");
   ASSERT_TRUE(rule_set);
-  EXPECT_TRUE(
-      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
-      << parse_error;
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "\"target_hint\" may not be set for prefetch"))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -500,10 +522,12 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_Top) {
 
 // Test that rules with an empty target hint are ignored.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_EmptyString) {
-  String parse_error;
-  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("", &parse_error);
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("");
   ASSERT_TRUE(rule_set);
-  EXPECT_TRUE(parse_error.Contains("invalid \"target_hint\"")) << parse_error;
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains("invalid \"target_hint\""))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
@@ -513,13 +537,13 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_EmptyString) {
 // but treat it as no hint.
 // TODO(https://crbug.com/1354049): Support valid browsing context names.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_ValidBrowsingContextName) {
-  String parse_error;
-  auto* rule_set =
-      CreateSpeculationRuleSetWithTargetHint("valid", &parse_error);
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("valid");
   ASSERT_TRUE(rule_set);
-  EXPECT_TRUE(
-      parse_error.Contains("\"target_hint\" may not be set for prefetch"))
-      << parse_error;
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "\"target_hint\" may not be set for prefetch"))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -531,11 +555,12 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_ValidBrowsingContextName) {
 // Test that rules with an invalid browsing context name target hint are
 // ignored.
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_InvalidBrowsingContextName) {
-  String parse_error;
-  auto* rule_set =
-      CreateSpeculationRuleSetWithTargetHint("_invalid", &parse_error);
+  auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_invalid");
   ASSERT_TRUE(rule_set);
-  EXPECT_TRUE(parse_error.Contains("invalid \"target_hint\"")) << parse_error;
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains("invalid \"target_hint\""))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
@@ -546,6 +571,8 @@ TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_InvalidBrowsingContextName) {
 TEST_F(SpeculationRuleSetTest, RulesWithTargetHint_CaseInsensitive) {
   auto* rule_set = CreateSpeculationRuleSetWithTargetHint("_BlAnK");
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(),
@@ -568,6 +595,7 @@ TEST_F(SpeculationRuleSetTest, ReferrerPolicy) {
       })",
                     KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(
       rule_set->prefetch_rules(),
       ElementsAre(AllOf(MatchesListOfURLs("https://example.com/index2.html"),
@@ -590,6 +618,7 @@ TEST_F(SpeculationRuleSetTest, EmptyReferrerPolicy) {
       })",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(), SpeculationRuleSetErrorType::kNoError);
   EXPECT_THAT(
       rule_set->prefetch_rules(),
       ElementsAre(AllOf(MatchesListOfURLs("https://example.com/index2.html"),
@@ -1032,7 +1061,41 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForInvalidRule) {
       }));
 }
 
-TEST_F(SpeculationRuleSetTest, RejectsWhereClause) {
+TEST_F(SpeculationRuleSetTest, DropNotArrayAtRuleSetPosition) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prefetch": "invalid"
+      })",
+      KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "A rule set for a key must be an array: path = [\"prefetch\"]"))
+      << rule_set->error_message();
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, DropNotObjectAtRulePosition) {
+  auto* rule_set = CreateRuleSet(
+      R"({
+        "prefetch": ["invalid"]
+      })",
+      KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "A rule must be an object: path = [\"prefetch\"][0]"))
+      << rule_set->error_message();
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, DropWhereClause) {
   auto* rule_set = CreateRuleSet(
       R"({
         "prefetch": [{
@@ -1041,6 +1104,12 @@ TEST_F(SpeculationRuleSetTest, RejectsWhereClause) {
         }]
       })",
       KURL("https://example.com/"), execution_context());
+  ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
+  EXPECT_TRUE(rule_set->error_message().Contains(
+      "A rule has an unknown source: \"document\"."))
+      << rule_set->error_message();
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
@@ -1257,27 +1326,23 @@ class DocumentRulesTest : public SpeculationRuleSetTest {
   DocumentRulePredicate* CreatePredicate(
       String where_text,
       KURL base_url = KURL("https://example.com/")) {
-    String parse_error;
-    auto* rule_set =
-        CreateRuleSetWithPredicate(where_text, base_url, &parse_error);
+    auto* rule_set = CreateRuleSetWithPredicate(where_text, base_url);
     DCHECK(!rule_set->prefetch_rules().empty())
-        << "Invalid predicate: " << parse_error;
+        << "Invalid predicate: " << rule_set->error_message();
     return rule_set->prefetch_rules()[0]->predicate();
   }
 
   String CreateInvalidPredicate(String where_text) {
-    String parse_error;
-    auto* rule_set = CreateRuleSetWithPredicate(
-        where_text, KURL("https://example.com"), &parse_error);
+    auto* rule_set =
+        CreateRuleSetWithPredicate(where_text, KURL("https://example.com"));
     EXPECT_TRUE(!rule_set || rule_set->prefetch_rules().empty())
         << "Rule set is valid.";
-    return parse_error;
+    return rule_set->error_message();
   }
 
  private:
   SpeculationRuleSet* CreateRuleSetWithPredicate(String where_text,
-                                                 KURL base_url,
-                                                 String* parse_error) {
+                                                 KURL base_url) {
     // clang-format off
     auto* rule_set =
         CreateRuleSet(
@@ -1289,7 +1354,7 @@ class DocumentRulesTest : public SpeculationRuleSetTest {
               }]
             })",
             where_text.Latin1().c_str()),
-          base_url, execution_context(), parse_error);
+          base_url, execution_context());
     // clang-format on
     return rule_set;
   }
@@ -1591,6 +1656,8 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
     }]})",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
+  EXPECT_EQ(rule_set->error_type(),
+            SpeculationRuleSetErrorType::kInvalidRulesSkipped);
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesPredicate(
                   And({Or({Href({URLPattern("/hello.html")}),
@@ -1625,24 +1692,24 @@ TEST_F(DocumentRulesTest, ConsoleWarningForInvalidRule) {
 }
 
 TEST_F(DocumentRulesTest, DocumentRuleParseErrors) {
-  String parse_error;
-  CreateRuleSet(R"({"prefetch": [{
+  auto* rule_set1 =
+      CreateRuleSet(R"({"prefetch": [{
     "source": "document", "relative_to": "document"
   }]})",
-                KURL("https://example.com"), execution_context(), &parse_error);
+                    KURL("https://example.com"), execution_context());
   EXPECT_THAT(
-      parse_error.Utf8(),
+      rule_set1->error_message().Utf8(),
       ::testing::HasSubstr("A document rule cannot have \"relative_to\" "
                            "outside the \"where\" clause"));
 
-  parse_error = String();
-  CreateRuleSet(R"({"prefetch": [{
+  auto* rule_set2 =
+      CreateRuleSet(R"({"prefetch": [{
     "source": "document",
     "urls": ["/one",  "/two"]
   }]})",
-                KURL("https://example.com"), execution_context(), &parse_error);
+                    KURL("https://example.com"), execution_context());
   EXPECT_THAT(
-      parse_error.Utf8(),
+      rule_set2->error_message().Utf8(),
       ::testing::HasSubstr("A document rule cannot have a \"urls\" key"));
 }
 
@@ -3855,38 +3922,36 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
   ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
       true};
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
           "no_vary_search_expected": 0
         }]
       })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
-    EXPECT_THAT(parse_error.Utf8(),
+                      KURL("https://example.com"), execution_context());
+    EXPECT_THAT(rule_set->error_message().Utf8(),
                 ::testing::HasSubstr(
                     "no_vary_search_expected's value must be a string"));
   }
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
           "no_vary_search_expected": "?1"
         }]
       })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
+                      KURL("https://example.com"), execution_context());
     EXPECT_THAT(
-        parse_error.Utf8(),
+        rule_set->error_message().Utf8(),
         ::testing::HasSubstr("No-Vary-Search hint value is not a dictionary"));
   }
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
@@ -3894,17 +3959,16 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
         }
       ]
     })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
+                      KURL("https://example.com"), execution_context());
     EXPECT_THAT(
-        parse_error.Utf8(),
+        rule_set->error_message().Utf8(),
         ::testing::HasSubstr(
             "No-Vary-Search hint value is equivalent to the default search"
             " variance"));
   }
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
@@ -3912,16 +3976,15 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
         }
       ]
     })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
+                      KURL("https://example.com"), execution_context());
     EXPECT_THAT(
-        parse_error.Utf8(),
+        rule_set->error_message().Utf8(),
         ::testing::HasSubstr(
             "No-Vary-Search hint value contains unknown dictionary keys"));
   }
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
@@ -3929,16 +3992,15 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
         }
       ]
     })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
+                      KURL("https://example.com"), execution_context());
     EXPECT_THAT(
-        parse_error.Utf8(),
+        rule_set->error_message().Utf8(),
         ::testing::HasSubstr(
             "No-Vary-Search hint value contains a \"key-order\" dictionary"));
   }
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [
         {
           "source": "list",
@@ -3947,16 +4009,15 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
         }
       ]
     })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
+                      KURL("https://example.com"), execution_context());
     EXPECT_THAT(
-        parse_error.Utf8(),
+        rule_set->error_message().Utf8(),
         ::testing::HasSubstr("contains a \"params\" dictionary value"
                              " that is not a list of strings or a boolean"));
   }
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
@@ -3964,15 +4025,14 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
         }
       ]
     })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
-    EXPECT_THAT(parse_error.Utf8(),
+                      KURL("https://example.com"), execution_context());
+    EXPECT_THAT(rule_set->error_message().Utf8(),
                 ::testing::HasSubstr("contains an \"except\" dictionary value"
                                      " that is not a list of strings"));
   }
   {
-    String parse_error;
-    CreateRuleSet(R"({
+    auto* rule_set =
+        CreateRuleSet(R"({
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
@@ -3980,10 +4040,9 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
         }
       ]
     })",
-                  KURL("https://example.com"), execution_context(),
-                  &parse_error);
+                      KURL("https://example.com"), execution_context());
     EXPECT_THAT(
-        parse_error.Utf8(),
+        rule_set->error_message().Utf8(),
         ::testing::HasSubstr(
             "contains an \"except\" dictionary key"
             " without the \"params\" dictionary key being set to true."));

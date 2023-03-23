@@ -17,14 +17,43 @@ using protocol::Response;
 
 namespace {
 
+absl::optional<protocol::Preload::RuleSetErrorType> GetProtocolRuleSetErrorType(
+    SpeculationRuleSetErrorType error_type) {
+  switch (error_type) {
+    case SpeculationRuleSetErrorType::kNoError:
+      return absl::nullopt;
+    case SpeculationRuleSetErrorType::kSourceIsNotJsonObject:
+      return protocol::Preload::RuleSetErrorTypeEnum::SourceIsNotJsonObject;
+    case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
+      return protocol::Preload::RuleSetErrorTypeEnum::InvalidRulesSkipped;
+  }
+}
+
+String GetProtocolRuleSetErrorMessage(const SpeculationRuleSet& rule_set) {
+  switch (rule_set.error_type()) {
+    case SpeculationRuleSetErrorType::kNoError:
+      return String();
+    case SpeculationRuleSetErrorType::kSourceIsNotJsonObject:
+    case SpeculationRuleSetErrorType::kInvalidRulesSkipped:
+      return rule_set.error_message();
+  }
+}
+
 std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
     const SpeculationRuleSet& rule_set,
     const String& loader_id) {
-  return protocol::Preload::RuleSet::create()
-      .setId(rule_set.InspectorId())
-      .setLoaderId(loader_id)
-      .setSourceText(rule_set.source()->GetSourceText())
-      .build();
+  auto builder = protocol::Preload::RuleSet::create()
+                     .setId(rule_set.InspectorId())
+                     .setLoaderId(loader_id)
+                     .setSourceText(rule_set.source()->GetSourceText())
+                     .build();
+
+  if (auto error_type = GetProtocolRuleSetErrorType(rule_set.error_type())) {
+    builder->setErrorType(error_type.value());
+    builder->setErrorMessage(GetProtocolRuleSetErrorMessage(rule_set));
+  }
+
+  return builder;
 }
 
 // Struct to represent a unique preloading attempt (corresponds to

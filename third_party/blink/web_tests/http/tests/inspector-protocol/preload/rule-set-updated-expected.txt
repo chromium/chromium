@@ -42,6 +42,45 @@ Tests that Preload.ruleSetUpdated and Preload.ruleSetDeleted are dispatched.
     sessionId : <string>
 }
 {
+    method : Preload.ruleSetUpdated
+    params : {
+        ruleSet : {
+            errorMessage : Line: 4, column: 7, Syntax error.
+            errorType : SourceIsNotJsonObject
+            id : <string>
+            loaderId : <string>
+            sourceText : {"prefetch":[
+        }
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.ruleSetUpdated
+    params : {
+        ruleSet : {
+            errorMessage : Parsed JSON must be an object.
+            errorType : SourceIsNotJsonObject
+            id : <string>
+            loaderId : <string>
+            sourceText : "invalid"
+        }
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.ruleSetUpdated
+    params : {
+        ruleSet : {
+            errorMessage : A rule set for a key must be an array: path = ["prerender"]
+            errorType : InvalidRulesSkipped
+            id : <string>
+            loaderId : <string>
+            sourceText : {"prefetch":[{"source":"list","urls":["/subresource.js"]}],"prerender":"invalid"}
+        }
+    }
+    sessionId : <string>
+}
+{
     method : Preload.ruleSetRemoved
     params : {
         id : <string>
