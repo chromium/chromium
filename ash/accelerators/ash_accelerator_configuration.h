@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/containers/flat_set.h"
@@ -115,6 +116,11 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration {
 
   // Remove the accelerator, does not notify observers.
   mojom::AcceleratorConfigResult DoRemoveAccelerator(
+      AcceleratorActionId action_id,
+      const ui::Accelerator& accelerator);
+
+  // Adds the accelerator, does not notify observers.
+  mojom::AcceleratorConfigResult DoAddAccelerator(
       AcceleratorActionId action_id,
       const ui::Accelerator& accelerator);
 

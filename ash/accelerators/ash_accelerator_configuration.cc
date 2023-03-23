@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/containers/contains.h"
@@ -163,7 +164,19 @@ const AcceleratorAction* AshAcceleratorConfiguration::FindAcceleratorAction(
 AcceleratorConfigResult AshAcceleratorConfiguration::AddUserAccelerator(
     AcceleratorActionId action_id,
     const ui::Accelerator& accelerator) {
-  return AcceleratorConfigResult::kActionLocked;
+  CHECK(::features::IsShortcutCustomizationEnabled());
+  const AcceleratorConfigResult result =
+      DoAddAccelerator(action_id, accelerator);
+
+  if (result == AcceleratorConfigResult::kSuccess) {
+    UpdateAndNotifyAccelerators();
+  }
+
+  VLOG(1) << "AddAccelerator called for ActionID: " << action_id
+          << ", Accelerator: " << accelerator.GetShortcutText()
+          << " returned: " << static_cast<int>(result);
+
+  return result;
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RemoveAccelerator(
@@ -355,6 +368,37 @@ AcceleratorConfigResult AshAcceleratorConfiguration::DoRemoveAccelerator(
   // Remove accelerator from reverse lookup map.
   accelerator_to_id_.Erase(accelerator);
 
+  return AcceleratorConfigResult::kSuccess;
+}
+
+AcceleratorConfigResult AshAcceleratorConfiguration::DoAddAccelerator(
+    AcceleratorActionId action_id,
+    const ui::Accelerator& accelerator) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+
+  const auto& accelerators_iter = id_to_accelerators_.find(action_id);
+  if (accelerators_iter == id_to_accelerators_.end()) {
+    return AcceleratorConfigResult::kNotFound;
+  }
+
+  // Check if `accelerator` is already used, in-use or deprecated. If so
+  // remove/disable it.
+  const auto* conflict_action_id = FindAcceleratorAction(accelerator);
+  if (conflict_action_id) {
+    const AcceleratorConfigResult remove_result =
+        DoRemoveAccelerator(*conflict_action_id, accelerator);
+    if (remove_result != AcceleratorConfigResult::kSuccess) {
+      return remove_result;
+    }
+  }
+
+  // Add the accelerator.
+  auto& accelerators = accelerators_iter->second;
+  accelerators.push_back(accelerator);
+  accelerator_to_id_.InsertNew(
+      {accelerator, static_cast<AcceleratorAction>(action_id)});
+
+  // TODO(jimmyxgong): Update prefs to match updated state.
   return AcceleratorConfigResult::kSuccess;
 }
 
