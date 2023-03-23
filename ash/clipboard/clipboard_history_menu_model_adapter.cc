@@ -131,7 +131,10 @@ void ClipboardHistoryMenuModelAdapter::Run(
   }
 
   // Start async rendering of HTML, if any exists.
-  ClipboardImageModelFactory::Get()->Activate();
+  // This factory may be nullptr in tests.
+  if (auto* clipboard_image_factory = ClipboardImageModelFactory::Get()) {
+    clipboard_image_factory->Activate();
+  }
 
   root_view_ = CreateMenu();
   root_view_->SetTitle(
@@ -447,7 +450,10 @@ void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
   // Because when hitting here, this instance is going to be destructed soon.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  ClipboardImageModelFactory::Get()->Deactivate();
+  // This factory may be nullptr in tests.
+  if (auto* clipboard_image_factory = ClipboardImageModelFactory::Get()) {
+    clipboard_image_factory->Deactivate();
+  }
   const base::TimeDelta user_journey_time =
       base::TimeTicks::Now() - menu_open_time_;
   UMA_HISTOGRAM_TIMES("Ash.ClipboardHistory.ContextMenu.UserJourneyTime",

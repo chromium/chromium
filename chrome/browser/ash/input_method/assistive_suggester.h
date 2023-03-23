@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
+#include "chrome/browser/ash/input_method/longpress_control_v_suggester.h"
 #include "chrome/browser/ash/input_method/longpress_diacritics_suggester.h"
 #include "chrome/browser/ash/input_method/multi_word_suggester.h"
 #include "chrome/browser/ash/input_method/suggester.h"
@@ -22,8 +23,7 @@
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 
 // An agent to suggest assistive information when the user types, and adopt or
 // dismiss the suggestion according to the user action.
@@ -167,10 +167,15 @@ class AssistiveSuggester : public SuggestionsSource {
 
   void OnLongpressDetected();
 
+  // Accepts or dismisses a Ctrl+V long-press suggestion based on the exit
+  // status of the clipboard history menu, as indicated by `will_paste_item`.
+  void OnClipboardHistoryMenuClosing(bool will_paste_item);
+
   Profile* profile_;
   EmojiSuggester emoji_suggester_;
   MultiWordSuggester multi_word_suggester_;
   LongpressDiacriticsSuggester longpress_diacritics_suggester_;
+  LongpressControlVSuggester longpress_control_v_suggester_;
   std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch_;
 
   // The id of the currently active input engine.
@@ -204,7 +209,6 @@ class AssistiveSuggester : public SuggestionsSource {
   base::WeakPtrFactory<AssistiveSuggester> weak_ptr_factory_{this};
 };
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_SUGGESTER_H_

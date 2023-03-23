@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
@@ -25,12 +30,16 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 namespace {
 
 using ime::AssistiveSuggestion;
@@ -290,6 +299,24 @@ TEST_F(AssistiveSuggesterTest,
                         /*diacritics_on_longpress_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
+  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       AssistiveControlVLongpressFlagEnabled_AssistiveFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kClipboardHistoryLongpress);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
+  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
+TEST_F(AssistiveSuggesterTest,
+       AssistiveControlVLongpressFlagDisabled_AssistiveFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kClipboardHistoryLongpress);
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
+                        /*diacritics_on_longpress_enabled=*/false);
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
@@ -1298,5 +1325,150 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
   EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←;↑;→");
 }
-}  // namespace input_method
-}  // namespace ash
+
+class AssistiveSuggesterControlVLongpressTest : public AshTestBase {
+ protected:
+  AssistiveSuggesterControlVLongpressTest()
+      : AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
+        assistive_suggester_(
+            &suggestion_handler_,
+            &profile_,
+            std::make_unique<AssistiveSuggesterClientFilter>(
+                base::BindRepeating(&GetFocusedTabUrl),
+                base::BindRepeating(&GetFocusedWindowProperties))) {
+    feature_list_.InitAndEnableFeature(features::kClipboardHistoryLongpress);
+  }
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    Shell::Get()
+        ->clipboard_history_controller()
+        ->set_confirmed_operation_callback_for_test(
+            operation_confirmed_future_.GetCallback());
+
+    // Write content to the clipboard so that the clipboard history menu can
+    // appear.
+    SetClipboardText("B");
+    SetClipboardText("A");
+
+    // Create a test window for the clipboard history controller to recognize as
+    // a paste target.
+    gfx::Rect test_window_rect(100, 100, 100, 100);
+    std::unique_ptr<aura::Window> window(CreateTestWindow(test_window_rect));
+  }
+
+  void SetClipboardText(const std::string& text) {
+    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+        .WriteText(base::UTF8ToUTF16(text));
+
+    // Clipboard history will post a task to process clipboard data in order to
+    // debounce multiple clipboard writes occurring in sequence. Here we give
+    // clipboard history the chance to run its posted tasks before proceeding.
+    EXPECT_TRUE(operation_confirmed_future_.Take());
+  }
+
+  ui::KeyEvent CreateControlVEvent(int extra_flags = ui::EF_NONE) {
+    return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_V,
+                        ui::EF_CONTROL_DOWN | extra_flags);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  TestingProfile profile_;
+  FakeSuggestionHandler suggestion_handler_;
+  AssistiveSuggester assistive_suggester_;
+  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(AssistiveSuggesterControlVLongpressTest,
+       ClipboardHistoryTriggeredOnControlVLongpress) {
+  assistive_suggester_.OnFocus(5);
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(CreateControlVEvent()));
+  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_TRUE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+  histogram_tester_.ExpectUniqueSample(
+      "Ash.ClipboardHistory.ContextMenu.ShowMenu",
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kControlVLongpress,
+      1);
+}
+
+TEST_F(AssistiveSuggesterControlVLongpressTest,
+       ControlVLongpressPasteSuccessRecorded) {
+  assistive_suggester_.OnFocus(5);
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(CreateControlVEvent()));
+  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_TRUE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+
+  // Paste an item from the clipboard history menu.
+  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Success", 1);
+  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Success",
+                                       AssistiveType::kLongpressControlV, 1);
+}
+
+TEST_F(AssistiveSuggesterControlVLongpressTest,
+       ClipboardHistoryDismissedNoSuccessRecorded) {
+  assistive_suggester_.OnFocus(5);
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(CreateControlVEvent()));
+  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_TRUE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+
+  // Dismiss the clipboard history menu without pasting.
+  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Success", 0);
+}
+
+TEST_F(AssistiveSuggesterControlVLongpressTest,
+       ClipboardHistoryNotTriggeredIfShiftDown) {
+  assistive_suggester_.OnFocus(5);
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(
+      CreateControlVEvent(/*extra_flags=*/ui::EF_SHIFT_DOWN)));
+  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+}
+
+TEST_F(AssistiveSuggesterControlVLongpressTest,
+       ClipboardHistoryNotTriggeredIfNoContextForControlVLongpress) {
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(CreateControlVEvent()));
+  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+}
+
+TEST_F(AssistiveSuggesterControlVLongpressTest,
+       ClipboardHistoryNotTriggeredIfControlVLongpressInterrupted) {
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(CreateControlVEvent()));
+  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
+  task_environment()->FastForwardBy(
+      base::Milliseconds(100));  // Not long enough to trigger longpress.
+
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(
+      ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_V, ui::EF_CONTROL_DOWN)));
+  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+}
+
+TEST_F(AssistiveSuggesterControlVLongpressTest,
+       RepeatedControlVNotPropagatedIfControlVLongpressEnabled) {
+  assistive_suggester_.OnFocus(5);
+  EXPECT_FALSE(assistive_suggester_.OnKeyEvent(CreateControlVEvent()));
+  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
+
+  // Returning true tells IME to not propagate this event.
+  EXPECT_TRUE(assistive_suggester_.OnKeyEvent(
+      CreateControlVEvent(/*extra_flags=*/ui::EF_IS_REPEAT)));
+}
+}  // namespace ash::input_method

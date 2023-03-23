@@ -17619,6 +17619,7 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="3" label="Virtual Keyboard"/>
   <int value="4" label="Unknown"/>
   <int value="5" label="Toast"/>
+  <int value="6" label="Ctrl+V Longpress"/>
 </enum>
 
 <enum name="ClipboardPastedImageUrls">
@@ -51920,6 +51921,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="13" label="MULTIWORD_PREDICTION"/>
   <int value="14" label="MULTIWORD_COMPLETION"/>
   <int value="15" label="LONGPRESS_DIACRITICS"/>
+  <int value="16" label="LONGPRESS_CONTROL_V"/>
 </enum>
 
 <enum name="IMEAssistiveDisabledReason">

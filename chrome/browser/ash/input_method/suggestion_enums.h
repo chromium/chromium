@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_ENUMS_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_ENUMS_H_
 
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 
 // Must match with IMEAssistiveAction in enums.xml
 enum class AssistiveType {
@@ -26,7 +25,8 @@ enum class AssistiveType {
   kMultiWordPrediction = 13,
   kMultiWordCompletion = 14,
   kLongpressDiacritics = 15,
-  kMaxValue = kLongpressDiacritics,
+  kLongpressControlV = 16,
+  kMaxValue = kLongpressControlV,
 };
 
 enum class SuggestionStatus {
@@ -69,7 +69,6 @@ enum class MultiWordSuggestionType {
   kMaxValue = kCompletion,
 };
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_SUGGESTION_ENUMS_H_

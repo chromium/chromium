@@ -25,6 +25,8 @@ enum ClipboardHistoryControllerShowSource {
   [Default] kUnknown,
   // Shown by a toast.
   [MinVersion=1] kToast,
+  // Shown by long-pressing Ctrl+V.
+  [MinVersion=2] kControlVLongpress,
 };
 
 // This interface is implemented by Ash-Chrome.

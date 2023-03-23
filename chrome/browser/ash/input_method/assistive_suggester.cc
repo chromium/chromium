@@ -4,11 +4,14 @@
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 #include <string>
 
+#include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,16 +30,21 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_ukm.h"
 #include "ui/base/ime/ash/text_input_target.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace input_method {
+namespace ash::input_method {
 
 namespace {
 
 using ime::AssistiveSuggestion;
 using ime::AssistiveSuggestionMode;
 using ime::AssistiveSuggestionType;
+
+constexpr int kModifierKeysMask = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
+                                  ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
+                                  ui::EF_FUNCTION_DOWN | ui::EF_ALTGR_DOWN;
 
 const char kMaxTextBeforeCursorLength = 50;
 
@@ -143,6 +151,16 @@ void RecordTextInputStateMetric(AssistiveTextInputState state) {
                                 state);
 }
 
+// Returns whether Ctrl+V is pressed with Ctrl+V long-press behavior enabled.
+bool IsLongpressEnabledControlV(const ui::KeyEvent& event) {
+  if (!features::IsClipboardHistoryLongpressEnabled()) {
+    return false;
+  }
+
+  return event.key_code() == ui::VKEY_V &&
+         (event.flags() & kModifierKeysMask) == ui::EF_CONTROL_DOWN;
+}
+
 void RecordMultiWordTextInputState(
     PrefService* pref_service,
     const std::string& engine_id,
@@ -177,6 +195,7 @@ AssistiveSuggester::AssistiveSuggester(
       emoji_suggester_(suggestion_handler, profile),
       multi_word_suggester_(suggestion_handler, profile),
       longpress_diacritics_suggester_(suggestion_handler),
+      longpress_control_v_suggester_(suggestion_handler),
       suggester_switch_(std::move(suggester_switch)) {
   RecordAssistiveUserPrefForEmoji(
       profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled));
@@ -187,7 +206,8 @@ AssistiveSuggester::~AssistiveSuggester() = default;
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
   return IsEmojiSuggestAdditionEnabled() || IsMultiWordSuggestEnabled() ||
          IsEnhancedEmojiSuggestEnabled() ||
-         IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
+         IsDiacriticsOnPhysicalKeyboardLongpressEnabled() ||
+         features::IsClipboardHistoryLongpressEnabled();
 }
 
 void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
@@ -311,6 +331,7 @@ void AssistiveSuggester::OnFocus(int context_id) {
   emoji_suggester_.OnFocus(context_id);
   multi_word_suggester_.OnFocus(context_id);
   longpress_diacritics_suggester_.OnFocus(context_id);
+  longpress_control_v_suggester_.OnFocus(context_id);
   enabled_suggestions_from_last_onfocus_ = absl::nullopt;
   suggester_switch_->FetchEnabledSuggestionsThen(
       base::BindOnce(&AssistiveSuggester::HandleEnabledSuggestionsOnFocus,
@@ -329,6 +350,7 @@ void AssistiveSuggester::OnBlur() {
   emoji_suggester_.OnBlur();
   multi_word_suggester_.OnBlur();
   longpress_diacritics_suggester_.OnBlur();
+  longpress_control_v_suggester_.OnBlur();
 }
 
 bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
@@ -376,22 +398,26 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 
 bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     const ui::KeyEvent& event) {
-  if (!IsDiacriticsOnPhysicalKeyboardLongpressEnabled() ||
-      !enabled_suggestions_from_last_onfocus_ ||
-      !enabled_suggestions_from_last_onfocus_->diacritic_suggestions ||
-      !kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
+  const bool is_enabled_diacritic_long_press =
+      IsDiacriticsOnPhysicalKeyboardLongpressEnabled() &&
+      enabled_suggestions_from_last_onfocus_ &&
+      enabled_suggestions_from_last_onfocus_->diacritic_suggestions &&
+      kDefaultLongpressEnabledKeys.contains(event.GetCharacter());
+  if (!is_enabled_diacritic_long_press && !IsLongpressEnabledControlV(event)) {
     return false;
   }
 
   // Longpress diacritics behaviour overrides the longpress to repeat key
   // behaviour for alphabetical keys.
-  if (event.is_repeat() &&
-      kDefaultLongpressEnabledKeys.contains(event.GetCharacter())) {
-    // Only emit the metric if `auto_repeat_suppress_metric_emitted_` is false
-    // as the metric should only be emitted once per Press->Release cycle.
+  if (event.is_repeat()) {
+    // Check for cases where auto-repeat behavior is suppressed for characters
+    // with no available diacritic suggestion. Only emit the metric if
+    // `auto_repeat_suppress_metric_emitted_` is false as the metric should only
+    // be emitted once per Press->Release cycle.
     if (!auto_repeat_suppress_metric_emitted_ &&
         !longpress_diacritics_suggester_.HasDiacriticSuggestions(
-            event.GetCharacter())) {
+            event.GetCharacter()) &&
+        !IsLongpressEnabledControlV(event)) {
       auto_repeat_suppress_metric_emitted_ = true;
       RecordLongPressDiacriticAutoRepeatSuppressedMetric();
     }
@@ -402,6 +428,9 @@ bool AssistiveSuggester::HandleLongpressEnabledKeyEvent(
   if (current_longpress_keydown_ == absl::nullopt &&
       event.type() == ui::EventType::ET_KEY_PRESSED) {
     current_longpress_keydown_ = event;
+
+    // TODO(b/267694199): Set the suggester's pre-paste input field state.
+
     longpress_timer_.Start(
         FROM_HERE, kLongpressActivationDelay,
         base::BindOnce(&AssistiveSuggester::OnLongpressDetected,
@@ -426,15 +455,37 @@ void AssistiveSuggester::OnLongpressDetected() {
       // support IME operations.
       last_surrounding_text_.empty() || last_cursor_pos_ <= 0 ||
       static_cast<int>(last_surrounding_text_.length()) < last_cursor_pos_ ||
-      last_surrounding_text_[last_cursor_pos_ - 1] !=
-          current_longpress_keydown_->GetCharacter()) {
+      (!IsLongpressEnabledControlV(current_longpress_keydown_.value()) &&
+       last_surrounding_text_[last_cursor_pos_ - 1] !=
+           current_longpress_keydown_->GetCharacter())) {
     return;
   }
-  if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
-          current_longpress_keydown_->GetCharacter())) {
+
+  if (IsLongpressEnabledControlV(current_longpress_keydown_.value())) {
+    current_suggester_ = &longpress_control_v_suggester_;
+    const auto anchor_rect =
+        IMEBridge::Get()->GetInputContextHandler()->GetTextFieldBounds();
+    Shell::Get()->clipboard_history_controller()->ShowMenu(
+        anchor_rect, ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+        crosapi::mojom::ClipboardHistoryControllerShowSource::
+            kControlVLongpress,
+        base::BindOnce(&AssistiveSuggester::OnClipboardHistoryMenuClosing,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
+                 current_longpress_keydown_->GetCharacter())) {
     current_suggester_ = &longpress_diacritics_suggester_;
   }
   current_longpress_keydown_ = absl::nullopt;
+}
+
+void AssistiveSuggester::OnClipboardHistoryMenuClosing(bool will_paste_item) {
+  DCHECK_EQ(current_suggester_, &longpress_control_v_suggester_);
+  if (will_paste_item) {
+    // Note: The suggestion index is irrelevant for long-pressed Ctrl+V.
+    AcceptSuggestion(/*index=*/-1);
+  } else {
+    DismissSuggestion();
+  }
 }
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
@@ -623,5 +674,4 @@ void AssistiveSuggester::OnActivate(const std::string& engine_id) {
   }
 }
 
-}  // namespace input_method
-}  // namespace ash
+}  // namespace ash::input_method
