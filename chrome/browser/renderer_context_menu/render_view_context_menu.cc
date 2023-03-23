@@ -1046,7 +1046,8 @@ void RenderViewContextMenu::InitMenu() {
     AppendLinkToTextItems();
   }
 
-  if (user_notes::IsUserNotesEnabled()) {
+  if (user_notes::IsUserNotesEnabled() && GetBrowser() &&
+      GetBrowser()->is_type_normal()) {
     AppendUserNotesItems();
   }
 
