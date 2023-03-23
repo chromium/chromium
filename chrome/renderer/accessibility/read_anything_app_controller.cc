@@ -370,18 +370,18 @@ void ReadAnythingAppController::OnAtomicUpdateFinished(
       tree->GetAXTreeID() != model_.active_tree_id()) {
     return;
   }
-  bool need_to_distill = false;
   bool need_to_draw = false;
   for (Change change : changes) {
     switch (change.type) {
       case NODE_CREATED:
       case SUBTREE_CREATED:
-        need_to_distill = true;
-        break;
+        Distill();
+        return;
       case NODE_REPARENTED:
       case SUBTREE_REPARENTED:
         if (base::Contains(model_.content_node_ids(), change.node->id())) {
-          need_to_distill = true;
+          Distill();
+          return;
         } else if (base::Contains(model_.display_node_ids(),
                                   change.node->id())) {
           need_to_draw = true;
@@ -391,9 +391,7 @@ void ReadAnythingAppController::OnAtomicUpdateFinished(
         break;
     }
   }
-  if (need_to_distill) {
-    Distill();
-  } else if (need_to_draw) {
+  if (need_to_draw) {
     Draw();
   }
 }
