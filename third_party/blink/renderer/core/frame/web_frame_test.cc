@@ -10531,15 +10531,7 @@ TEST_F(WebFrameTest, SendBeaconFromChildWithRemoteMainFrame) {
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(local_frame);
 }
 
-#if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
-#define MAYBE_SiteForCookiesFromChildWithRemoteMainFrame \
-  DISABLED_SiteForCookiesFromChildWithRemoteMainFrame
-#else
-#define MAYBE_SiteForCookiesFromChildWithRemoteMainFrame \
-  SiteForCookiesFromChildWithRemoteMainFrame
-#endif  // BUILDFLAG(IS_IOS)
-TEST_F(WebFrameTest, MAYBE_SiteForCookiesFromChildWithRemoteMainFrame) {
+TEST_F(WebFrameTest, SiteForCookiesFromChildWithRemoteMainFrame) {
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeRemote(SecurityOrigin::Create(ToKURL(not_base_url_)));
 

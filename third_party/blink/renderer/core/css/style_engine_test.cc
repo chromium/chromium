@@ -4034,13 +4034,7 @@ TEST_F(StyleEngineTest, CSSViewportUnits4RuntimeFlag) {
   }
 }
 
-#if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
-#define MAYBE_VideoControlsReject DISABLED_VideoControlsReject
-#else
-#define MAYBE_VideoControlsReject VideoControlsReject
-#endif  // BUILDFLAG(IS_IOS)
-TEST_F(StyleEngineTest, MAYBE_VideoControlsReject) {
+TEST_F(StyleEngineTest, VideoControlsReject) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <video controls></video>
     <div id="target"></div>

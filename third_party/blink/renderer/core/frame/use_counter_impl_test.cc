@@ -131,16 +131,10 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            "http://foo.com",
                                            "https://bar.com"));
 
-#if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
-#define MAYBE_ReportOnlyHTTPFamily DISABLED_ReportOnlyHTTPFamily
-#else
-#define MAYBE_ReportOnlyHTTPFamily ReportOnlyHTTPFamily
-#endif  // BUILDFLAG(IS_IOS)
 // UseCounter should not send events to browser when handling page with
 // Non HTTP Family URLs, as these events will be discarded on the browser side
 // in |MetricsWebContentsObserver::DoesTimingUpdateHaveError|.
-TEST_P(UseCounterImplBrowserReportTest, MAYBE_ReportOnlyHTTPFamily) {
+TEST_P(UseCounterImplBrowserReportTest, ReportOnlyHTTPFamily) {
   KURL url = url_test_helpers::ToKURL(GetParam());
   SetURL(url);
   UseCounterImpl use_counter;
