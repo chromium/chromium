@@ -166,6 +166,7 @@ class WebApkInstallerRunner {
 
  private:
   void OnCompleted(webapps::WebApkInstallResult result,
+                   std::unique_ptr<std::string> serialized_webapk,
                    bool relax_updates,
                    const std::string& webapk_package) {
     result_ = result;

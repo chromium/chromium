@@ -226,11 +226,14 @@ class WebApkInstaller {
       absl::optional<std::map<std::string, webapps::WebApkIconHasher::Icon>>
           hashes);
 
+  // Called with the serialized proto for the WebAPK install.
+  void OnInstallProtoBuilt(std::unique_ptr<std::string> serialized_proto);
+
   // Sends a request to WebAPK server to create/update WebAPK. During a
   // successful request the WebAPK server responds with a token to send to
   // Google Play.
   void SendRequest(const net::NetworkTrafficAnnotationTag& traffic_annotation,
-                   std::unique_ptr<std::string> serialized_proto);
+                   const std::string& serialized_proto);
 
   // Returns the WebAPK server URL based on the command line.
   GURL GetServerUrl();

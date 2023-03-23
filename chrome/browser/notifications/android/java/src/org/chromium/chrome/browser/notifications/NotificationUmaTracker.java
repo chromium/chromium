@@ -127,7 +127,7 @@ public class NotificationUmaTracker {
             ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN,
             ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN,
             ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT,
-            ActionType.WEB_APK_ACTION_BACK_TO_SITE})
+            ActionType.WEB_APK_ACTION_BACK_TO_SITE, ActionType.WEB_APK_ACTION_RETRY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionType {
         int UNKNOWN = -1;
@@ -186,8 +186,10 @@ public class NotificationUmaTracker {
 
         // Back to site button on WebAPK install error notification.
         int WEB_APK_ACTION_BACK_TO_SITE = 28;
+        // Retry button on WebAPK install error notification.
+        int WEB_APK_ACTION_RETRY = 29;
 
-        int NUM_ENTRIES = 29;
+        int NUM_ENTRIES = 30;
     }
 
     /**

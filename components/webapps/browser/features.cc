@@ -51,6 +51,13 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow user to retry install WebAPK with the failure notification if the
+// initial install failed. This needs to be used with
+// |kWebApkInstallFailureNotification| Enabled.
+BASE_FEATURE(kWebApkInstallFailureRetry,
+             "WebApkInstallFailureRetry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables PWA Unique IDs for WebAPKs.
 BASE_FEATURE(kWebApkUniqueId,
              "WebApkUniqueId",

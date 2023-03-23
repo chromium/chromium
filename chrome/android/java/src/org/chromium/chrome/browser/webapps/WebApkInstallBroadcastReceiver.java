@@ -31,6 +31,7 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
 
     private static final String NOTIFICATION_ID = "WebApkInstallNotification.notification_id";
     private static final String WEBAPK_START_URL = "WebApkInstallNotification.start_url";
+    private static final String RETRY_PROTO = "WebApkInstallNotification.retry_proto";
 
     private final WebApkInstallCoordinatorBridge mBridge;
 
@@ -47,22 +48,27 @@ public class WebApkInstallBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        assert intent != null && !intent.hasExtra(NOTIFICATION_ID);
+        assert intent != null && intent.hasExtra(NOTIFICATION_ID);
 
         String id = intent.getStringExtra(NOTIFICATION_ID);
+
         WebApkInstallService.cancelNotification(id);
 
+        if (ACTION_RETRY_INSTALL.equals(intent.getAction())) {
+            // TODO(crbug/1409642): Implement the retry.
+        }
         if (ACTION_OPEN_IN_BROWSER.equals(intent.getAction())) {
             openInChrome(context, intent.getStringExtra(WEBAPK_START_URL));
         }
     }
 
-    static PendingIntentProvider createPendingIntent(
-            Context context, String notificationId, String url, String action) {
+    static PendingIntentProvider createPendingIntent(Context context, String notificationId,
+            String url, String action, byte[] serializedProto) {
         Intent intent = new Intent(action);
         intent.setClass(context, WebApkInstallBroadcastReceiver.class);
         intent.putExtra(NOTIFICATION_ID, notificationId);
         intent.putExtra(WEBAPK_START_URL, url);
+        intent.putExtra(RETRY_PROTO, serializedProto);
 
         int requestCode = 0;
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;

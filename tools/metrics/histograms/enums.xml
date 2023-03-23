@@ -100950,6 +100950,8 @@ would be helpful to identify which type is being sent.
   <int value="23" label="Media notification seek backward button."/>
   <int value="24" label="Price drop notification visit site button."/>
   <int value="25" label="Price drop notification turn off alert button."/>
+  <int value="28" label="WebApk install notification 'Back to site' button."/>
+  <int value="29" label="WebApk install notification retry button."/>
 </enum>
 
 <enum name="SystemNotificationType">

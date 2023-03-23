@@ -267,7 +267,10 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
 
 void WebApkInstaller::OnResult(webapps::WebApkInstallResult result) {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  std::move(finish_callback_).Run(result, relax_updates_, webapk_package_);
+
+  std::move(finish_callback_)
+      .Run(result, std::move(serialized_webapk_), relax_updates_,
+           webapk_package_);
 
   if (task_type_ == WebApkInstaller::INSTALL) {
     if (result == webapps::WebApkInstallResult::SUCCESS) {
@@ -463,7 +466,7 @@ void WebApkInstaller::OnReadUpdateRequest(
         }
         )");
 
-  SendRequest(traffic_annotation_update_request, std::move(update_request));
+  SendRequest(traffic_annotation_update_request, *update_request);
 }
 
 void WebApkInstaller::OnURLLoaderComplete(
@@ -565,8 +568,7 @@ void WebApkInstaller::OnHaveSufficientSpaceForInstall() {
         }
         )");
 
-    SendRequest(traffic_annotation_install_from_service,
-                std::move(serialized_webapk_));
+    SendRequest(traffic_annotation_install_from_service, *serialized_webapk_);
     return;
   }
 
@@ -597,6 +599,22 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
 
   DCHECK(!install_from_webapk_service_);
   DCHECK(install_shortcut_info_);
+
+  // Using empty string for |primary_icon_data| and |splash_icon_data| here
+  // because in WebApk installs, we are using the icon data from |hashes|.
+  webapps::BuildProto(
+      *install_shortcut_info_, install_shortcut_info_->manifest_id,
+      std::string() /* primary_icon_data */, is_primary_icon_maskable_,
+      std::string() /* splash_icon_data */, "" /* package_name */,
+      "" /* version */, std::move(*hashes), false /* is_manifest_stale */,
+      false /* is_app_identity_update_supported */,
+      base::BindOnce(&WebApkInstaller::OnInstallProtoBuilt,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebApkInstaller::OnInstallProtoBuilt(
+    std::unique_ptr<std::string> serialized_proto) {
+  serialized_webapk_ = std::move(serialized_proto);
 
   net::NetworkTrafficAnnotationTag traffic_annotation_install_from_chrome =
       net::DefineNetworkTrafficAnnotation("webapk_create", R"(
@@ -642,22 +660,12 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
         }
         )");
 
-  // Using empty string for |primary_icon_data| and |splash_icon_data| here
-  // because in WebApk installs, we are using the icon data from |hashes|.
-  webapps::BuildProto(
-      *install_shortcut_info_, install_shortcut_info_->manifest_id,
-      std::string() /* primary_icon_data */, is_primary_icon_maskable_,
-      std::string() /* splash_icon_data */, "" /* package_name */,
-      "" /* version */, std::move(*hashes), false /* is_manifest_stale */,
-      false /* is_app_identity_update_supported */,
-      base::BindOnce(&WebApkInstaller::SendRequest,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     traffic_annotation_install_from_chrome));
+  SendRequest(traffic_annotation_install_from_chrome, *serialized_webapk_);
 }
 
 void WebApkInstaller::SendRequest(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    std::unique_ptr<std::string> serialized_proto) {
+    const std::string& serialized_proto) {
   DCHECK(server_url_.is_valid());
 
   timer_.Start(
@@ -672,7 +680,7 @@ void WebApkInstaller::SendRequest(
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  loader_->AttachStringForUpload(*serialized_proto, kProtoMimeType);
+  loader_->AttachStringForUpload(serialized_proto, kProtoMimeType);
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       GetURLLoaderFactory(browser_context_),
       base::BindOnce(&WebApkInstaller::OnURLLoaderComplete,

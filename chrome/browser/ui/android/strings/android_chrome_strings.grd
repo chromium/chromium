@@ -2623,11 +2623,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_NOTIFICATION_WEBAPK_INSTALL_FAILED" desc="Indicates that the WebAPK install was unsuccessful.">
         Couldn’t install <ph name="WEBAPK_NAME">%1$s<ex>Progressive Web Apps</ex></ph>.
       </message>
-      <message name="IDS_NOTIFICATION_WEBAPK_INSTALL_FAILED_CONTENTS_GENERAL" desc="Indicates that the WebAPK install was unsuccessful.">
+      <message name="IDS_NOTIFICATION_WEBAPK_INSTALL_FAILED_CONTENTS_GENERAL" desc="Message content indicates that the WebAPK install was unsuccessful for a general reason.">
         Something went wrong.
       </message>
-      <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_OPEN" desc="Indicates that the WebAPK install was unsuccessful.">
+      <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_OPEN" desc="The label of the button which upon click would open the site user was trying to install as PWA. ">
         Go back to site
+      </message>
+      <message name="IDS_WEBAPK_INSTALL_FAILED_ACTION_RETRY" desc="The label of the button which upon click would retry installing the PWA" translateable="false">
+        Try again
       </message>
       <message name="IDS_IPH_PWA_INSTALL_AVAILABLE_TEXT" desc="The in-product-help message for PWAs that can be installed to the device.">
         Install this app

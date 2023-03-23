@@ -401,6 +401,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &webapps::features::kInstallableAmbientBadgeInfoBar,
     &webapps::features::kInstallableAmbientBadgeMessage,
     &webapps::features::kWebApkInstallFailureNotification,
+    &webapps::features::kWebApkInstallFailureRetry,
     &webapps::features::kWebApkUniqueId,
     &network::features::kPrivateStateTokens,
 };

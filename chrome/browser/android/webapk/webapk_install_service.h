@@ -42,11 +42,14 @@ class WebApkInstallService : public KeyedService {
   // Called when the creation/updating of a WebAPK is finished or failed.
   // Parameters:
   // - the result of the installation.
+  // - serialized proto for the installation, if exist.
   // - true if Chrome received a "request updates less frequently" directive.
   //   from the WebAPK server.
   // - the package name of the WebAPK.
-  using FinishCallback = base::OnceCallback<
-      void(webapps::WebApkInstallResult, bool, const std::string&)>;
+  using FinishCallback = base::OnceCallback<void(webapps::WebApkInstallResult,
+                                                 std::unique_ptr<std::string>,
+                                                 bool,
+                                                 const std::string&)>;
 
   // Called when the installation of a WebAPK that was scheduled by the
   // WebApkInstallCoordinatorService finished or failed to pass the result back
@@ -103,32 +106,37 @@ class WebApkInstallService : public KeyedService {
                          const SkBitmap& primary_icon,
                          bool is_priamry_icon_maskable,
                          webapps::WebApkInstallResult result,
+                         std::unique_ptr<std::string> serialized_webapk,
                          bool relax_updates,
                          const std::string& webapk_package_name);
 
   // Called once the install scheduled from the service completed or failed.
   // Triggers the callback to propagate the |WebApkInstallResult| to the
   // scheduling Client.
-  void OnFinishedInstallForService(const GURL& manifest_url,
-                                   const GURL& manifest_id,
-                                   const GURL& url,
-                                   const std::u16string& short_name,
-                                   const SkBitmap& primary_icon,
-                                   bool is_primary_icon_maskable,
-                                   ServiceInstallFinishCallback done_callback,
-                                   webapps::WebApkInstallResult result,
-                                   bool relax_updates,
-                                   const std::string& webapk_package_name);
+  void OnFinishedInstallForService(
+      const GURL& manifest_url,
+      const GURL& manifest_id,
+      const GURL& url,
+      const std::u16string& short_name,
+      const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
+      ServiceInstallFinishCallback done_callback,
+      webapps::WebApkInstallResult result,
+      std::unique_ptr<std::string> serialized_webapk,
+      bool relax_updates,
+      const std::string& webapk_package_name);
 
   // Removes current notifications about an ongoing install and adds a
   // installed-notification if the installation was successful.
-  void HandleFinishInstallNotifications(const GURL& manifest_url,
-                                        const GURL& url,
-                                        const std::u16string& short_name,
-                                        const SkBitmap& primary_icon,
-                                        bool is_primary_icon_maskable,
-                                        webapps::WebApkInstallResult result,
-                                        const std::string& webapk_package_name);
+  void HandleFinishInstallNotifications(
+      const GURL& manifest_url,
+      const GURL& url,
+      const std::u16string& short_name,
+      const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
+      webapps::WebApkInstallResult result,
+      std::unique_ptr<std::string> serialized_webapk,
+      const std::string& webapk_package_name);
 
   // Shows a notification that an install is in progress.
   static void ShowInstallInProgressNotification(
@@ -153,7 +161,8 @@ class WebApkInstallService : public KeyedService {
       const GURL& url,
       const SkBitmap& primary_icon,
       bool is_primary_icon_maskable,
-      webapps::WebApkInstallResult result);
+      webapps::WebApkInstallResult result,
+      std::unique_ptr<std::string> serialized_webapk);
 
   raw_ptr<content::BrowserContext> browser_context_;
 

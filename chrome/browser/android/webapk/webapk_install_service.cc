@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -141,6 +142,7 @@ void WebApkInstallService::OnFinishedInstall(
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     webapps::WebApkInstallResult result,
+    std::unique_ptr<std::string> serialized_proto,
     bool relax_updates,
     const std::string& webapk_package_name) {
   installs_.erase(shortcut_info.manifest_url);
@@ -149,7 +151,8 @@ void WebApkInstallService::OnFinishedInstall(
   HandleFinishInstallNotifications(
       GetNotificationId(shortcut_info.manifest_url, shortcut_info.manifest_id),
       shortcut_info.url, shortcut_info.short_name, primary_icon,
-      is_primary_icon_maskable, result, webapk_package_name);
+      is_primary_icon_maskable, result, std::move(serialized_proto),
+      webapk_package_name);
 
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebApkInstallFailureNotification)) {
@@ -182,13 +185,15 @@ void WebApkInstallService::OnFinishedInstallForService(
     bool is_primary_icon_maskable,
     ServiceInstallFinishCallback finish_callback,
     webapps::WebApkInstallResult result,
+    std::unique_ptr<std::string> serialized_proto,
     bool relax_updates,
     const std::string& webapk_package_name) {
   installs_.erase(manifest_url);
   install_ids_.erase(manifest_id);
   HandleFinishInstallNotifications(
       GetNotificationId(manifest_url, manifest_id), url, short_name,
-      primary_icon, is_primary_icon_maskable, result, webapk_package_name);
+      primary_icon, is_primary_icon_maskable, result,
+      std::move(serialized_proto), webapk_package_name);
 
   std::move(finish_callback).Run(result);
 }
@@ -200,6 +205,7 @@ void WebApkInstallService::HandleFinishInstallNotifications(
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
     webapps::WebApkInstallResult result,
+    std::unique_ptr<std::string> serialized_proto,
     const std::string& webapk_package_name) {
   if (result == webapps::WebApkInstallResult::SUCCESS) {
     ShowInstalledNotification(notification_id, short_name, url, primary_icon,
@@ -209,7 +215,7 @@ void WebApkInstallService::HandleFinishInstallNotifications(
              result != webapps::WebApkInstallResult::PROBABLE_FAILURE) {
     ShowInstallFailedNotification(notification_id, short_name, url,
                                   primary_icon, is_primary_icon_maskable,
-                                  result);
+                                  result, std::move(serialized_proto));
   } else {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::ScopedJavaLocalRef<jstring> java_notification_id =
@@ -272,7 +278,8 @@ void WebApkInstallService::ShowInstallFailedNotification(
     const GURL& url,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
-    webapps::WebApkInstallResult result) {
+    webapps::WebApkInstallResult result,
+    std::unique_ptr<std::string> serialized_proto) {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> java_notification_id =
       base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
@@ -282,8 +289,11 @@ void WebApkInstallService::ShowInstallFailedNotification(
       base::android::ConvertUTF8ToJavaString(env, url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
       gfx::ConvertToJavaBitmap(primary_icon);
+  base::android::ScopedJavaLocalRef<jbyteArray> java_serialized_proto =
+      base::android::ToJavaByteArray(env, *serialized_proto);
 
   Java_WebApkInstallService_showInstallFailedNotification(
       env, java_notification_id, java_short_name, java_url, java_primary_icon,
-      is_primary_icon_maskable, static_cast<int>(result));
+      is_primary_icon_maskable, static_cast<int>(result),
+      java_serialized_proto);
 }
