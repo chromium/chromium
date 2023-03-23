@@ -371,7 +371,7 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
   void OpenUrlsWithPermissionAndWindowInfo(
       mojom::OpenUrlsRequestPtr request,
       mojom::WindowInfoPtr window_info,
-      DEPRECATED_OpenUrlsWithPermissionCallback callback) override;
+      OpenUrlsWithPermissionAndWindowInfoCallback callback) override;
 
  private:
   // A pair of an authority and a document ID which identifies the location
