@@ -971,6 +971,12 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     public void addCustomView(@NonNull View customView, @Nullable Runnable backPressRunnable) {
         assert mCustomView == null : "Only one client at a time is supported to add a custom view.";
 
+        // Hide any tab grid dialog before we add the custom view.
+        if (mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()) {
+            mTabGridDialogControllerSupplier.get().hideDialog(false);
+        }
+
         // The grid tab switcher for tablets translates up over top of the browser controls, causing
         // the custom view to do the same.
         if (mIsTablet) {
