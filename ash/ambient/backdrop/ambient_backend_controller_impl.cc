@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -420,11 +421,10 @@ void AmbientBackendControllerImpl::UpdateSettings(
   // TODO(wutao): Use observer pattern. Need to future narrow down
   // the clear up only on albums changes, not on temperature unit
   // changes. Do this synchronously and not in |OnUpdateSettings| to avoid
-  // race condition with |AmbientPhotoController| possibly being destructed if
+  // race condition with |AmbientPhotoCache| possibly being destructed if
   // |kAmbientModeEnabled| pref is toggled off.
-  auto* photo_controller = ambient_controller->ambient_photo_controller();
-  CHECK(photo_controller) << "Photo controller is required to update settings";
-  photo_controller->ClearCache();
+  CHECK(ambient_controller->ambient_photo_cache());
+  ambient_controller->ambient_photo_cache()->Clear();
 
   ambient_controller->RequestAccessToken(base::BindOnce(
       &AmbientBackendControllerImpl::StartToUpdateSettings,

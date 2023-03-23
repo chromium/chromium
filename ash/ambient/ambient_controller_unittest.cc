@@ -1682,7 +1682,7 @@ TEST_F(AmbientControllerForManagedScreensaver,
   EXPECT_TRUE(
       GetContainerView()->GetViewByID(AmbientViewID::kAmbientPhotoView));
   SetAmbientModeManagedScreensaverEnabled(false);
-  SetUpPhotoControllerForTesting();
+  DisableBackupCacheDownloads();
   UnlockScreen();
   LockScreen();
   FastForwardToLockScreenTimeout();

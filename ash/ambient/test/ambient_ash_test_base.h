@@ -227,8 +227,7 @@ class AmbientAshTestBase : public AshTestBase {
                                size_t width,
                                size_t height,
                                SkColor color);
-
-  void SetUpPhotoControllerForTesting();
+  void DisableBackupCacheDownloads();
 
  private:
   void SpinWaitForAmbientViewAvailable(

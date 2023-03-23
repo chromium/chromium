@@ -52,6 +52,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/path_service.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -155,6 +156,13 @@ bool IsAmbientModeManagedScreensaverEnabled() {
 
 bool IsAmbientModeEnabled() {
   return IsUserAmbientModeEnabled() || IsAmbientModeManagedScreensaverEnabled();
+}
+
+// Get the cache root path for ambient mode.
+base::FilePath GetCacheRootPath() {
+  base::FilePath home_dir;
+  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
+  return home_dir.Append(FILE_PATH_LITERAL(kAmbientModeDirectoryName));
 }
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {
@@ -803,6 +811,14 @@ void AmbientController::OnEnabledPrefChanged() {
 
     AddAmbientModeUserSettingsPolicyPrefObservers();
 
+    photo_cache_ = AmbientPhotoCache::Create(
+        GetCacheRootPath().Append(
+            FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)),
+        *AmbientClient::Get(), access_token_controller_);
+    backup_photo_cache_ = AmbientPhotoCache::Create(
+        GetCacheRootPath().Append(
+            FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)),
+        *AmbientClient::Get(), access_token_controller_);
     CreateUiLauncher();
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
@@ -834,6 +850,8 @@ void AmbientController::ResetAmbientControllerResources() {
   power_manager_client_observer_.Reset();
 
   DestroyUiLauncher();
+  backup_photo_cache_.reset();
+  photo_cache_.reset();
 
   if (fingerprint_observer_receiver_.is_bound()) {
     fingerprint_observer_receiver_.reset();
@@ -890,12 +908,8 @@ void AmbientController::OnAmbientUiSettingsChanged() {
   // The UI may just not be optimal. Furthermore, the cache gradually gets
   // overwritten with topics reflecting the new theme anyways, so ambient mode
   // should not be stuck with a mismatched cache indefinitely.
-  if (ambient_photo_controller_) {
-    ambient_photo_controller_->ClearCache();
-  } else {
-    LOG(WARNING) << "AmbientUiSettings changed while ambient mode pref is "
-                    "disabled. Can't clear ambient photo cache.";
-  }
+  CHECK(photo_cache_);
+  photo_cache_->Clear();
 
   // The |AmbientUiLauncher| implementation to use is largely dependent on
   // the current |AmbientUiSettings|, so this needs to be recreated.
@@ -1168,9 +1182,10 @@ void AmbientController::CreateUiLauncher() {
   } else {
     // TODO(b/274164306): Remove when slideshow and animation themes are
     // migrated to AmbientUiLauncher.
-    DCHECK(AmbientClient::Get());
+    CHECK(photo_cache_);
+    CHECK(backup_photo_cache_);
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
-        *AmbientClient::Get(), access_token_controller_, delegate_,
+        *photo_cache_, *backup_photo_cache_, delegate_,
         // The type of photo config specified here is actually irrelevant as
         // it always gets reset with the correct configuration anyways in
         // StartRefreshingImages() before ambient mode starts.

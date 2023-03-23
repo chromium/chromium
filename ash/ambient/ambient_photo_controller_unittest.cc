@@ -11,6 +11,7 @@
 
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model.h"
@@ -662,7 +663,7 @@ TEST_F(AmbientPhotoControllerTest, UsesBackupCacheAfterPrimaryCacheCleared) {
   // photos from the last "screen update". ClearCache() should only clear the
   // primary cache, leaving photos in the backup cache to use.
   ASSERT_FALSE(GetBackupCachedFiles().empty());
-  photo_controller()->ClearCache();
+  ambient_controller()->ambient_photo_cache()->Clear();
   // Simulate an IMAX failure to leave the photo controller no choice but to
   // resort to the backup cache.
   backend_controller()->SetFetchScreenUpdateInfoResponseSize(0);

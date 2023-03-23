@@ -70,6 +70,10 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
   TestAmbientPhotoCacheImpl() = default;
   ~TestAmbientPhotoCacheImpl() override = default;
 
+  static std::unique_ptr<AmbientPhotoCache> Create() {
+    return std::make_unique<TestAmbientPhotoCacheImpl>();
+  }
+
   // AmbientPhotoCache:
   void DownloadPhoto(
       const std::string& url,
@@ -197,6 +201,8 @@ AmbientAshTestBase::AmbientAshTestBase()
 AmbientAshTestBase::~AmbientAshTestBase() = default;
 
 void AmbientAshTestBase::SetUp() {
+  AmbientPhotoCache::SetFactoryForTesting(
+      base::BindRepeating(&TestAmbientPhotoCacheImpl::Create));
   AshTestBase::SetUp();
 
   // Need to reset first and then assign the TestPhotoClient because can only
@@ -211,6 +217,7 @@ void AmbientAshTestBase::SetUp() {
 
 void AmbientAshTestBase::TearDown() {
   AshTestBase::TearDown();
+  AmbientPhotoCache::SetFactoryForTesting(base::NullCallback());
 }
 
 void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
@@ -218,7 +225,7 @@ void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
       ambient::prefs::kAmbientModeEnabled, enabled);
 
   if (enabled) {
-    SetUpPhotoControllerForTesting();
+    DisableBackupCacheDownloads();
   }
 }
 
@@ -226,19 +233,15 @@ void AmbientAshTestBase::SetAmbientUiSettings(
     const AmbientUiSettings& settings) {
   settings.WriteToPrefService(
       *Shell::Get()->session_controller()->GetActivePrefService());
-  SetUpPhotoControllerForTesting();
+  DisableBackupCacheDownloads();
 }
 
-void AmbientAshTestBase::SetUpPhotoControllerForTesting() {
-  // Some |AmbientUiSettings| legitimately don't use a photo controller.
-  if (!photo_controller()) {
-    return;
+void AmbientAshTestBase::DisableBackupCacheDownloads() {
+  // Some |AmbientUiSettings| legitimately don't use a photo controller, in
+  // which case backup photos are not downloaded anyways.
+  if (photo_controller()) {
+    photo_controller()->backup_photo_refresh_timer_for_testing().Stop();
   }
-  photo_controller()->set_photo_cache_for_testing(
-      std::make_unique<TestAmbientPhotoCacheImpl>());
-  photo_controller()->set_backup_photo_cache_for_testing(
-      std::make_unique<TestAmbientPhotoCacheImpl>());
-  photo_controller()->backup_photo_refresh_timer_for_testing().Stop();
 }
 
 void AmbientAshTestBase::SetAmbientModeManagedScreensaverEnabled(bool enabled) {
@@ -386,14 +389,14 @@ void AmbientAshTestBase::SimulateMediaPlaybackStateChanged(
 
 void AmbientAshTestBase::SetDecodedPhotoSize(int width, int height) {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_photo_cache_for_testing());
+      ambient_controller()->ambient_photo_cache());
 
   photo_cache->SetDecodedPhotoSize(width, height);
 }
 
 void AmbientAshTestBase::SetDecodedPhotoColor(SkColor color) {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_photo_cache_for_testing());
+      ambient_controller()->ambient_photo_cache());
 
   photo_cache->SetDecodedPhotoColor(color);
 }
@@ -561,7 +564,7 @@ base::TimeDelta AmbientAshTestBase::GetRefreshTokenDelay() {
 const std::map<int, ::ambient::PhotoCacheEntry>&
 AmbientAshTestBase::GetCachedFiles() {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_photo_cache_for_testing());
+      ambient_controller()->ambient_photo_cache());
 
   return photo_cache->get_files();
 }
@@ -569,7 +572,7 @@ AmbientAshTestBase::GetCachedFiles() {
 const std::map<int, ::ambient::PhotoCacheEntry>&
 AmbientAshTestBase::GetBackupCachedFiles() {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_backup_photo_cache_for_testing());
+      ambient_controller()->get_backup_photo_cache_for_testing());
 
   return photo_cache->get_files();
 }
@@ -593,7 +596,7 @@ AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {
 }
 
 AmbientPhotoCache* AmbientAshTestBase::photo_cache() {
-  return photo_controller()->get_photo_cache_for_testing();
+  return ambient_controller()->ambient_photo_cache();
 }
 
 AmbientWeatherController* AmbientAshTestBase::weather_controller() {
@@ -649,42 +652,42 @@ void AmbientAshTestBase::FetchBackupImages() {
 
 void AmbientAshTestBase::SetDownloadPhotoData(std::string data) {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_photo_cache_for_testing());
+      ambient_controller()->ambient_photo_cache());
 
   photo_cache->SetDownloadData(std::make_unique<std::string>(std::move(data)));
 }
 
 void AmbientAshTestBase::ClearDownloadPhotoData() {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_photo_cache_for_testing());
+      ambient_controller()->ambient_photo_cache());
 
   photo_cache->SetDownloadData(nullptr);
 }
 
 void AmbientAshTestBase::SetBackupDownloadPhotoData(std::string data) {
   auto* backup_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_backup_photo_cache_for_testing());
+      ambient_controller()->get_backup_photo_cache_for_testing());
 
   backup_cache->SetDownloadData(std::make_unique<std::string>(std::move(data)));
 }
 
 void AmbientAshTestBase::ClearBackupDownloadPhotoData() {
   auto* backup_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_backup_photo_cache_for_testing());
+      ambient_controller()->get_backup_photo_cache_for_testing());
 
   backup_cache->SetDownloadData(nullptr);
 }
 
 void AmbientAshTestBase::SetDecodePhotoImage(const gfx::ImageSkia& image) {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_photo_cache_for_testing());
+      ambient_controller()->ambient_photo_cache());
 
   photo_cache->SetDecodedPhoto(image);
 }
 
 void AmbientAshTestBase::SetPhotoDownloadDelay(base::TimeDelta delay) {
   auto* photo_cache = static_cast<TestAmbientPhotoCacheImpl*>(
-      photo_controller()->get_photo_cache_for_testing());
+      ambient_controller()->ambient_photo_cache());
 
   photo_cache->SetPhotoDownloadDelay(delay);
 }

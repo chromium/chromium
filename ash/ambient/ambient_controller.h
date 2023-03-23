@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
+#include "ash/ambient/ambient_photo_cache.h"
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
@@ -153,10 +154,6 @@ class ASH_EXPORT AmbientController
     return ambient_backend_controller_.get();
   }
 
-  AmbientPhotoController* ambient_photo_controller() {
-    return ambient_photo_controller_.get();
-  }
-
   AmbientUiLauncher* ambient_ui_launcher() {
     return ambient_ui_launcher_.get();
   }
@@ -169,6 +166,8 @@ class ASH_EXPORT AmbientController
 
   AmbientViewDelegate* ambient_view_delegate() { return &delegate_; }
 
+  AmbientPhotoCache* ambient_photo_cache() { return photo_cache_.get(); }
+
   void set_backend_controller_for_testing(
       std::unique_ptr<AmbientBackendController> backend_controller) {
     ambient_backend_controller_ = std::move(backend_controller);
@@ -180,6 +179,14 @@ class ASH_EXPORT AmbientController
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest,
                            BindsObserversWhenAmbientEnabled);
   FRIEND_TEST_ALL_PREFIXES(AmbientControllerTest, BindsObserversWhenAmbientOn);
+
+  AmbientPhotoController* ambient_photo_controller() {
+    return ambient_photo_controller_.get();
+  }
+
+  AmbientPhotoCache* get_backup_photo_cache_for_testing() {
+    return backup_photo_cache_.get();
+  }
 
   // Hide or close Ambient mode UI.
   void DismissUI();
@@ -248,6 +255,8 @@ class ASH_EXPORT AmbientController
 
   AmbientAccessTokenController access_token_controller_;
   std::unique_ptr<AmbientBackendController> ambient_backend_controller_;
+  std::unique_ptr<AmbientPhotoCache> photo_cache_;
+  std::unique_ptr<AmbientPhotoCache> backup_photo_cache_;
   std::unique_ptr<AmbientPhotoController> ambient_photo_controller_;
   std::unique_ptr<AmbientWeatherController> ambient_weather_controller_;
   std::unique_ptr<AmbientAnimationProgressTracker>

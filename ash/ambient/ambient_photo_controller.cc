@@ -16,7 +16,6 @@
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
-#include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/shell.h"
@@ -29,7 +28,6 @@
 #include "base/functional/callback.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"
-#include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -71,32 +69,17 @@ const std::array<const char*, 2>& GetBackupPhotoUrls() {
       ->GetBackupPhotoUrls();
 }
 
-// Get the cache root path for ambient mode.
-base::FilePath GetCacheRootPath() {
-  base::FilePath home_dir;
-  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  return home_dir.Append(FILE_PATH_LITERAL(kAmbientModeDirectoryName));
-}
-
 }  // namespace
 
 AmbientPhotoController::AmbientPhotoController(
-    AmbientClient& ambient_client,
-    AmbientAccessTokenController& access_token_controller,
+    AmbientPhotoCache& photo_cache,
+    AmbientPhotoCache& backup_photo_cache,
     AmbientViewDelegate& view_delegate,
     AmbientPhotoConfig photo_config)
     : ambient_backend_model_(std::move(photo_config)),
       resume_fetch_image_backoff_(&kResumeFetchImageBackoffPolicy),
-      photo_cache_(AmbientPhotoCache::Create(
-          GetCacheRootPath().Append(
-              FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)),
-          ambient_client,
-          access_token_controller)),
-      backup_photo_cache_(AmbientPhotoCache::Create(
-          GetCacheRootPath().Append(
-              FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)),
-          ambient_client,
-          access_token_controller)),
+      photo_cache_(&photo_cache),
+      backup_photo_cache_(&backup_photo_cache),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
   scoped_view_delegate_observation_.Observe(&view_delegate);
@@ -195,11 +178,6 @@ void AmbientPhotoController::FetchWeather() {
       ->ambient_controller()
       ->ambient_weather_controller()
       ->FetchWeather();
-}
-
-void AmbientPhotoController::ClearCache() {
-  DCHECK(photo_cache_);
-  photo_cache_->Clear();
 }
 
 void AmbientPhotoController::ScheduleFetchBackupImages() {

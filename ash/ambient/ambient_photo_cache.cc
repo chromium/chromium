@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -149,6 +150,14 @@ bool WriteOrDeleteFile(const base::FilePath& path,
 
 base::FilePath GetCachePath(int cache_index, const base::FilePath& root_path) {
   return root_path.Append(base::NumberToString(cache_index) + kPhotoCacheExt);
+}
+
+base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()>&
+GetCustomFactoryFunction() {
+  static base::NoDestructor<
+      base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()>>
+      g_custom_factory;
+  return *g_custom_factory;
 }
 
 // -----------------AmbientPhotoCacheImpl---------------------------------------
@@ -400,8 +409,16 @@ std::unique_ptr<AmbientPhotoCache> AmbientPhotoCache::Create(
     base::FilePath root_path,
     AmbientClient& ambient_client,
     AmbientAccessTokenController& access_token_controller) {
-  return std::make_unique<AmbientPhotoCacheImpl>(root_path, ambient_client,
-                                                 access_token_controller);
+  return GetCustomFactoryFunction()
+             ? GetCustomFactoryFunction().Run()
+             : std::make_unique<AmbientPhotoCacheImpl>(
+                   root_path, ambient_client, access_token_controller);
+}
+
+// static
+void AmbientPhotoCache::SetFactoryForTesting(
+    base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()> create_cb) {
+  GetCustomFactoryFunction() = std::move(create_cb);
 }
 
 }  // namespace ash

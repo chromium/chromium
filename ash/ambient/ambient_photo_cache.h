@@ -41,6 +41,11 @@ class ASH_EXPORT AmbientPhotoCache {
       AmbientClient& ambient_client,
       AmbientAccessTokenController& access_token_controller);
 
+  // Overrides the output of |Create()| for testing. This is global and can be
+  // reset back to a null callback to disable the override.
+  static void SetFactoryForTesting(
+      base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()> factory_fn);
+
   virtual void DownloadPhoto(
       const std::string& url,
       base::OnceCallback<void(std::string&&)> callback) = 0;
