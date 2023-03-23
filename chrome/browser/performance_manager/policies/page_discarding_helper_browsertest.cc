@@ -4,12 +4,12 @@
 
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -33,6 +33,8 @@
 namespace performance_manager::policies {
 
 namespace {
+
+using DiscardReason = PageDiscardingHelper::DiscardReason;
 
 class FaviconWatcher final : public content::WebContentsObserver {
  public:
@@ -106,18 +108,39 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
     favicon_watcher.Wait();
   }
 
-  void ExpectImmediateDiscard(int index, bool expected_result) {
+  void ExpectImmediateDiscard(
+      int index,
+      DiscardReason discard_reason,
+      bool expected_result,
+      const base::Location& location = base::Location::Current()) {
+    const char* discard_string;
+    switch (discard_reason) {
+      case DiscardReason::URGENT:
+        discard_string = "Urgent";
+        break;
+      case DiscardReason::PROACTIVE:
+        discard_string = "Proactive";
+        break;
+      case DiscardReason::EXTERNAL:
+        discard_string = "External";
+        break;
+    }
+    SCOPED_TRACE(::testing::Message()
+                 << discard_string << " discard from " << location.ToString());
     base::WeakPtr<PageNode> page_node =
         PerformanceManager::GetPrimaryPageNodeForWebContents(
             browser()->tab_strip_model()->GetWebContentsAt(index));
     base::RunLoop run_loop;
     PerformanceManager::CallOnGraph(
         FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
+          SCOPED_TRACE(::testing::Message()
+                       << discard_string << " discard, called on graph from "
+                       << location.ToString());
           ASSERT_TRUE(page_node);
           auto* helper = PageDiscardingHelper::GetFromGraph(graph);
           ASSERT_TRUE(helper);
           helper->ImmediatelyDiscardSpecificPage(
-              page_node.get(), ::mojom::LifecycleUnitDiscardReason::URGENT,
+              page_node.get(), discard_reason,
               base::BindLambdaForTesting([&](bool success) {
                 EXPECT_EQ(success, expected_result);
                 run_loop.Quit();
@@ -132,38 +155,59 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
-  // Background pages can be discarded.
-  const int index1 = OpenNewBackgroundPage();
-  ExpectImmediateDiscard(index1, true);
+  // Test urgent and proactive discards in a loop to avoid the overhead of
+  // starting a new browser every time.
+  // TODO(crbug.com/1426484): Add tests for all the other heuristics in
+  // PageDiscardingHelper::CanDiscard().
+  for (auto discard_reason :
+       {DiscardReason::URGENT, DiscardReason::PROACTIVE}) {
+    {
+      // Background pages can be discarded.
+      const int index1 = OpenNewBackgroundPage();
+      ExpectImmediateDiscard(index1, discard_reason, true);
 
-  // Foreground page should be blocked.
-  const int index2 = OpenNewBackgroundPage();
-  browser()->tab_strip_model()->ActivateTabAt(index2);
-  ExpectImmediateDiscard(index2, false);
+      // Foreground page should be blocked.
+      // TODO(crbug.com/1426484): Also test when the browser window is occluded.
+      // They should still be blocked.
+      const int index2 = OpenNewBackgroundPage();
+      browser()->tab_strip_model()->ActivateTabAt(index2);
+      ExpectImmediateDiscard(index2, discard_reason, false);
+    }
 
-  // Updating the title while in the background should block the discard.
-  const int index3 = OpenNewBackgroundPage();
-  UpdatePageTitle(index3);
-  ExpectImmediateDiscard(index3, false);
+    {
+      // Updating the title while in the background should block only proactive
+      // discards.
+      const int index1 = OpenNewBackgroundPage();
+      UpdatePageTitle(index1);
+      ExpectImmediateDiscard(index1, discard_reason,
+                             discard_reason == DiscardReason::URGENT);
 
-  // Updating the page title while in the foreground should not.
-  const int index4 = OpenNewBackgroundPage();
-  browser()->tab_strip_model()->ActivateTabAt(index4);
-  UpdatePageTitle(index4);
-  browser()->tab_strip_model()->ActivateTabAt(index3);
-  ExpectImmediateDiscard(index4, true);
+      // Updating the page title while in the foreground should not block any
+      // discards.
+      const int index2 = OpenNewBackgroundPage();
+      browser()->tab_strip_model()->ActivateTabAt(index2);
+      UpdatePageTitle(index2);
+      browser()->tab_strip_model()->ActivateTabAt(index1);
+      ExpectImmediateDiscard(index2, discard_reason, true);
+    }
 
-  // Updating the favicon while in the background should block the discard.
-  const int index5 = OpenNewBackgroundPage();
-  UpdateFavicon(index5);
-  ExpectImmediateDiscard(index5, false);
+    {
+      // Updating the favicon while in the background should block only
+      // proactive discards.
+      const int index1 = OpenNewBackgroundPage();
+      UpdateFavicon(index1);
+      ExpectImmediateDiscard(index1, discard_reason,
+                             discard_reason == DiscardReason::URGENT);
 
-  // Updating the favicon while in the foreground should not.
-  const int index6 = OpenNewBackgroundPage();
-  browser()->tab_strip_model()->ActivateTabAt(index6);
-  UpdateFavicon(index6);
-  browser()->tab_strip_model()->ActivateTabAt(index5);
-  ExpectImmediateDiscard(index6, true);
+      // Updating the favicon while in the foreground should not block any
+      // discards.
+      const int index2 = OpenNewBackgroundPage();
+      browser()->tab_strip_model()->ActivateTabAt(index2);
+      UpdateFavicon(index2);
+      browser()->tab_strip_model()->ActivateTabAt(index1);
+      ExpectImmediateDiscard(index2, discard_reason, true);
+    }
+  }
 }
 
 }  // namespace

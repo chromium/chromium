@@ -80,7 +80,7 @@ void HeuristicMemorySaverPolicy::OnHeartbeatCallback() {
       static_cast<float>(pmf_threshold_percent_)) {
     PageDiscardingHelper::GetFromGraph(graph_)->DiscardAPage(
         /*post_discard_cb=*/base::DoNothing(),
-        /*discard_reason=*/::mojom::LifecycleUnitDiscardReason::PROACTIVE,
+        PageDiscardingHelper::DiscardReason::PROACTIVE,
         /*minimum_time_in_background=*/minimum_time_in_background_);
     next_interval = threshold_reached_heartbeat_interval_;
   }

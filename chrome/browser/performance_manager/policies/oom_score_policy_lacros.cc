@@ -46,13 +46,13 @@ void OomScorePolicyLacros::AssignOomScores() {
 
   std::vector<PageNodeSortProxy> candidates;
   for (const auto* page_node : page_nodes) {
-    PageDiscardingHelper::CanUrgentlyDiscardResult can_discard_result =
-        discarding_helper->CanUrgentlyDiscard(page_node);
-    bool is_marked = (can_discard_result ==
-                      PageDiscardingHelper::CanUrgentlyDiscardResult::kMarked);
-    bool is_protected =
-        (can_discard_result ==
-         PageDiscardingHelper::CanUrgentlyDiscardResult::kProtected);
+    PageDiscardingHelper::CanDiscardResult can_discard_result =
+        discarding_helper->CanDiscard(
+            page_node, PageDiscardingHelper::DiscardReason::URGENT);
+    bool is_marked =
+        (can_discard_result == PageDiscardingHelper::CanDiscardResult::kMarked);
+    bool is_protected = (can_discard_result ==
+                         PageDiscardingHelper::CanDiscardResult::kProtected);
     candidates.emplace_back(page_node, is_marked, is_protected,
                             page_node->GetTimeSinceLastVisibilityChange());
   }

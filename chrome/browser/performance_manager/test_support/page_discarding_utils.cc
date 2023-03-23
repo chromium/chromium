@@ -91,6 +91,9 @@ void GraphTestHarnessWithMockDiscarder::TearDown() {
 
 void MakePageNodeDiscardable(PageNodeImpl* page_node,
                              content::BrowserTaskEnvironment& task_env) {
+  using CanDiscardResult = policies::PageDiscardingHelper::CanDiscardResult;
+  using DiscardReason = policies::PageDiscardingHelper::DiscardReason;
+
   page_node->SetIsVisible(false);
   page_node->SetIsAudible(false);
   const auto kUrl = GURL("https://foo.com");
@@ -98,8 +101,14 @@ void MakePageNodeDiscardable(PageNodeImpl* page_node,
                                             kUrl, "text/html");
   (*page_node->main_frame_nodes().begin())->OnNavigationCommitted(kUrl, false);
   task_env.FastForwardBy(base::Minutes(10));
-  DCHECK(policies::PageDiscardingHelper::GetFromGraph(page_node->graph())
-             ->CanUrgentlyDiscardForTesting(page_node));
+  const auto* helper =
+      policies::PageDiscardingHelper::GetFromGraph(page_node->graph());
+  CHECK_EQ(helper->CanDiscard(page_node, DiscardReason::URGENT),
+           CanDiscardResult::kEligible);
+  CHECK_EQ(helper->CanDiscard(page_node, DiscardReason::PROACTIVE),
+           CanDiscardResult::kEligible);
+  CHECK_EQ(helper->CanDiscard(page_node, DiscardReason::EXTERNAL),
+           CanDiscardResult::kEligible);
 }
 
 }  // namespace testing

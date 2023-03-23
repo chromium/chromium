@@ -64,7 +64,7 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
             policy->handling_memory_pressure_notification_ = false;
           },
           base::Unretained(this)),
-      ::mojom::LifecycleUnitDiscardReason::URGENT);
+      PageDiscardingHelper::DiscardReason::URGENT);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -107,7 +107,7 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
           // won't ever run after the destruction of this class and so it's safe
           // to use Unretained.
           base::Unretained(this)),
-      ::mojom::LifecycleUnitDiscardReason::URGENT);
+      PageDiscardingHelper::DiscardReason::URGENT);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
