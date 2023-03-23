@@ -132,7 +132,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   virtual void SetCallback(PressedCallback callback);
 
-  const std::u16string& GetAccessibleName() const override;
+  void AdjustAccessibleName(std::u16string& new_name,
+                            ax::mojom::NameFrom& name_from) override;
 
   // Get/sets the current display state of the button.
   ButtonState GetState() const;

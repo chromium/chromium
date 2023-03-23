@@ -161,11 +161,15 @@ Button::~Button() = default;
 void Button::SetTooltipText(const std::u16string& tooltip_text) {
   if (tooltip_text == tooltip_text_)
     return;
+
+  if (GetAccessibleName().empty() || GetAccessibleName() == tooltip_text_) {
+    SetAccessibleName(tooltip_text);
+  }
+
   tooltip_text_ = tooltip_text;
   OnSetTooltipText(tooltip_text);
   TooltipTextChanged();
   OnPropertyChanged(&tooltip_text_, kPropertyEffectsNone);
-  NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 std::u16string Button::GetTooltipText() const {
@@ -176,9 +180,11 @@ void Button::SetCallback(PressedCallback callback) {
   callback_ = std::move(callback);
 }
 
-const std::u16string& Button::GetAccessibleName() const {
-  return View::GetAccessibleName().empty() ? tooltip_text_
-                                           : View::GetAccessibleName();
+void Button::AdjustAccessibleName(std::u16string& new_name,
+                                  ax::mojom::NameFrom& name_from) {
+  if (new_name.empty()) {
+    new_name = tooltip_text_;
+  }
 }
 
 Button::ButtonState Button::GetState() const {
