@@ -211,8 +211,9 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     if (prerender_host_->IsBrowserInitiated()) {
       // Cancel an embedder triggered prerendering if it is redirected to a URL
       // cross-site to the initial prerendering URL.
-      if (is_redirection && prerender_navigation_utils::IsCrossSite(
-                                navigation_url, initial_prerendering_origin)) {
+      if (prerender_navigation_utils::IsCrossSite(
+              navigation_url, initial_prerendering_origin)) {
+        CHECK(is_redirection);
         AnalyzeCrossOriginRedirection(
             navigation_origin, initial_prerendering_origin,
             prerender_host_->trigger_type(),
