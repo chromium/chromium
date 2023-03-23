@@ -23,23 +23,6 @@ namespace views {
 
 namespace {
 
-// Returns the appropriate font to use for the badge based on the font
-// currently being used to render the title of the menu item.
-gfx::FontList DeriveBadgeFont(const gfx::FontList& primary_font) {
-  if (features::IsChromeRefresh2023()) {
-    return views::style::GetFont(views::style::CONTEXT_BADGE,
-                                 views::style::STYLE_SECONDARY);
-  }
-
-  // Preferred font is slightly smaller and slightly more bold than the title
-  // font. The size change is required to make it look correct in the badge; we
-  // add a small degree of bold to prevent color smearing/blurring due to font
-  // smoothing. This ensures readability on all platforms and in both light and
-  // dark modes.
-  return primary_font.Derive(BadgePainter::kBadgeFontSizeAdjustment,
-                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
-}
-
 // Returns the highlight rect for the badge given the font and text rect
 // for the badge text.
 gfx::Rect GetBadgeRectOutsetAroundText(const gfx::FontList& badge_font,
@@ -59,7 +42,7 @@ void BadgePainter::PaintBadge(gfx::Canvas* canvas,
                               int text_top_y,
                               const std::u16string& text,
                               const gfx::FontList& primary_font) {
-  gfx::FontList badge_font = DeriveBadgeFont(primary_font);
+  gfx::FontList badge_font = GetBadgeFont(primary_font);
 
   // Calculate bounding box for badge text.
   unmirrored_badge_left_x += kBadgeInternalPadding;
@@ -91,9 +74,24 @@ void BadgePainter::PaintBadge(gfx::Canvas* canvas,
 // static
 gfx::Size BadgePainter::GetBadgeSize(const std::u16string& text,
                                      const gfx::FontList& primary_font) {
-  gfx::FontList badge_font = DeriveBadgeFont(primary_font);
+  gfx::FontList badge_font = GetBadgeFont(primary_font);
   const gfx::Size text_size = gfx::GetStringSize(text, badge_font);
   return GetBadgeRectOutsetAroundText(badge_font, gfx::Rect(text_size)).size();
+}
+
+gfx::FontList BadgePainter::GetBadgeFont(const gfx::FontList& context_font) {
+  if (features::IsChromeRefresh2023()) {
+    return views::style::GetFont(views::style::CONTEXT_BADGE,
+                                 views::style::STYLE_SECONDARY);
+  }
+
+  // Preferred font is slightly smaller and slightly more bold than the title
+  // font. The size change is required to make it look correct in the badge; we
+  // add a small degree of bold to prevent color smearing/blurring due to font
+  // smoothing. This ensures readability on all platforms and in both light and
+  // dark modes.
+  return context_font.Derive(BadgePainter::kBadgeFontSizeAdjustment,
+                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
 }
 
 }  // namespace views
