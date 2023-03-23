@@ -959,6 +959,30 @@ void NetworkContext::ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
       std::move(filter), std::move(done)));
 }
 
+void NetworkContext::ClearTrustTokenSessionOnlyData(
+    ClearTrustTokenSessionOnlyDataCallback callback) {
+  // Only called when Private State Tokens is enabled, i.e.,
+  // `trust_token_store_` is non-null.
+  DCHECK(trust_token_store_);
+  DCHECK(cookie_manager_);
+
+  DeleteCookiePredicate cookie_predicate =
+      cookie_manager_->cookie_settings().CreateDeleteCookieOnExitPredicate();
+
+  auto store_predicate = base::BindRepeating(
+      [](DeleteCookiePredicate predicate, const std::string& origin) {
+        return predicate.Run(origin, true);
+      },
+      std::move(cookie_predicate));
+  trust_token_store_->ExecuteOrEnqueue(base::BindOnce(
+      [](base::RepeatingCallback<bool(const std::string&)> pred,
+         ClearTrustTokenSessionOnlyDataCallback cb, TrustTokenStore* store) {
+        bool any_data_deleted = store->ClearDataForPredicate(std::move(pred));
+        std::move(cb).Run(any_data_deleted);
+      },
+      std::move(store_predicate), std::move(callback)));
+}
+
 void NetworkContext::ClearNetworkingHistoryBetween(
     base::Time start_time,
     base::Time end_time,

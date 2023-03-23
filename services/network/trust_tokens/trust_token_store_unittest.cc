@@ -780,4 +780,93 @@ TEST(TrustTokenStore, RedemptionLimit) {
   EXPECT_FALSE(store->IsRedemptionLimitHit(issuer, top_level));
 }
 
+TEST(TrustTokenStore, ClearDataForPredicate) {
+  // Test setup adds following data.
+  // 1. Add two tokens for issuer1.
+  // 2. Add a token for issuer2.
+  // 3. Add two tokens for issuer3.
+  // 4. Add a redemption record for issuer1-toplevel2 pair
+  // 5. Add a redemption record for issuer3-toplevel1 pair
+  // 6. Add a redemption record for issuer3-toplevel2 pair
+  //
+  // Test creates a predicate that returns true for issuer1, issuer2 and
+  // toplevel1.
+  //
+  // ClearDataForPredicate should delete following data.
+  // 1. Two tokens from issuer1.
+  // 2. Token from issuer2.
+  // 3. Redemption record for issuer1-toplevel1 pair.
+  // 4. Redemption record for issuer3-toplevel1 pair.
+  //
+  // Following data should remain.
+  // 1. Two tokens from issuer3.
+  // 2. Redemption records for issuer3-toplevel2 pair.
+  //
+  auto store = TrustTokenStore::CreateForTesting();
+  auto issuer1 =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuerone.com"));
+  auto issuer2 =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuertwo.com"));
+  auto issuer3 =
+      *SuitableTrustTokenOrigin::Create(GURL("https://issuerthree.com"));
+  auto toplevel1 =
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevelone.com"));
+  auto toplevel2 =
+      *SuitableTrustTokenOrigin::Create(GURL("https://topleveltwo.com"));
+
+  // Add tokens.
+  store->AddTokens(
+      issuer1,
+      std::vector<std::string>{"issuer1-token-one", "issuer1-token-two"},
+      "key");
+  store->AddTokens(issuer2, std::vector<std::string>{"issuer2-token"}, "key");
+  store->AddTokens(
+      issuer3,
+      std::vector<std::string>{"issuer3-token-one", "issuer3-token-two"},
+      "key");
+
+  // Add redemption records.
+  ASSERT_TRUE(store->SetAssociation(issuer1, toplevel2));
+  store->SetRedemptionRecord(issuer1, toplevel2, TrustTokenRedemptionRecord{});
+  ASSERT_TRUE(store->SetAssociation(issuer3, toplevel1));
+  store->SetRedemptionRecord(issuer3, toplevel1, TrustTokenRedemptionRecord{});
+  ASSERT_TRUE(store->SetAssociation(issuer3, toplevel2));
+  store->SetRedemptionRecord(issuer3, toplevel2, TrustTokenRedemptionRecord{});
+
+  // Create predicate that returns true for issuer1, issuer2 and toplevel1.
+  // Predicate will match issuerone.com when https://issuerone.com is added
+  // to clear on exit list.
+  auto predicate = base::BindRepeating([](const std::string& origin) -> bool {
+    if (origin == "issuerone.com" || origin == "issuertwo.com" ||
+        origin == "toplevelone.com") {
+      return true;
+    }
+    return false;
+  });
+
+  EXPECT_TRUE(store->ClearDataForPredicate(std::move(predicate)));
+
+  // Check whether tokens are cleared as expected.
+  EXPECT_EQ(store->CountTokens(issuer1), 0);
+  EXPECT_EQ(store->CountTokens(issuer2), 0);
+  EXPECT_EQ(store->CountTokens(issuer3), 2);
+
+  // Check whether redemption records are cleared as expected.
+  EXPECT_FALSE(store->RetrieveNonstaleRedemptionRecord(issuer1, toplevel1));
+  EXPECT_FALSE(store->RetrieveNonstaleRedemptionRecord(issuer3, toplevel1));
+  EXPECT_TRUE(store->RetrieveNonstaleRedemptionRecord(issuer3, toplevel2));
+
+  // Recall data clearing with the same predicate. Should return false this
+  // time.
+  predicate = base::BindRepeating([](const std::string& origin) -> bool {
+    if (origin == "issuerone.com" || origin == "issuertwo.com" ||
+        origin == "toplevelone.com") {
+      return true;
+    }
+    return false;
+  });
+
+  EXPECT_FALSE(store->ClearDataForPredicate(std::move(predicate)));
+}
+
 }  // namespace network::trust_tokens

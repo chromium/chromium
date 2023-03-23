@@ -200,6 +200,9 @@ class TrustTokenStore {
   [[nodiscard]] virtual bool ClearDataForFilter(
       mojom::ClearDataFilterPtr filter);
 
+  [[nodiscard]] virtual bool ClearDataForPredicate(
+      base::RepeatingCallback<bool(const std::string&)> predicate);
+
   // Deletes all stored tokens issued by |issuer| but leaves other stored
   // data, including the issuer's Redemption Records (RRs), intact.
   // Returns whether any data was deleted.

@@ -32,6 +32,7 @@
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_util.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -68,6 +69,7 @@ class SessionDataDeleterInternal
   // cookie and storage deletions are done. This way the keep alives ensure that
   // the profile does not shut down during the deletion.
   void OnCookieDeletionDone(uint32_t count) {}
+  void OnTrustTokenDeletionDone(bool any_data_deleted) {}
   void OnStorageDeletionDone() {}
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
@@ -138,6 +140,13 @@ void SessionDataDeleterInternal::Run(
 
   cookie_manager_->DeleteSessionOnlyCookies(
       base::BindOnce(&SessionDataDeleterInternal::OnCookieDeletionDone, this));
+
+  if (base::FeatureList::IsEnabled(network::features::kPrivateStateTokens)) {
+    storage_partition->GetNetworkContext()->ClearTrustTokenSessionOnlyData(
+        base::BindOnce(&SessionDataDeleterInternal::OnTrustTokenDeletionDone,
+                       this));
+  }
+
   // Note that from this point on |*this| is kept alive by scoped_refptr<>
   // references automatically taken by |Bind()|, so when the last callback
   // created by Bind() is released (after execution of that function), the

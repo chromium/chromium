@@ -905,6 +905,10 @@ interface NetworkContext {
   // A null |filter| indicates that all Trust Tokens data should be cleared.
   ClearTrustTokenData(ClearDataFilter? filter) => ();
 
+  // Clears session only Trust Tokens data. Depends on CookieSettings
+  // at determining which data is session only.
+  ClearTrustTokenSessionOnlyData() => (bool any_data_deleted);
+
   // Returns the number of signed-but-not-spent Trust Tokens.
   GetStoredTrustTokenCounts()
       => (array<StoredTrustTokensForIssuer> tokens);
