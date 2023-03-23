@@ -674,12 +674,6 @@ const char kForceEnableNightMode[] = "force-enable-night-mode";
 // Forces the update menu badge to show.
 const char kForceShowUpdateMenuBadge[] = "force-show-update-menu-badge";
 
-// Forces signin FRE flow.
-const char kForceEnableSigninFRE[] = "force-enable-signin-fre";
-
-// Forces the FRE to go through the legacy sync consent flow for testing.
-const char kForceDisableSigninFRE[] = "force-disable-signin-fre";
-
 // Forces the update menu type to a specific type.
 const char kForceUpdateMenuType[] = "force-update-menu-type";
 

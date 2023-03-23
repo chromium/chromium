@@ -87,7 +87,7 @@ import java.util.Set;
  * Render tests for sync consent fragment.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE})
+@Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncConsentFragmentTest {
     private static final int RENDER_REVISION = 1;
     private static final String RENDER_DESCRIPTION = "Change button style";

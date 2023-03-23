@@ -55,7 +55,6 @@ chrome_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
   apk_name = "ChromePageControllerTests"
   sources = [
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/ExampleTest.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/tests/FirstRunControllerTest.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/NewTabPageControllerTest.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/tests/TabSwitcherControllerTest.java",
   ]
