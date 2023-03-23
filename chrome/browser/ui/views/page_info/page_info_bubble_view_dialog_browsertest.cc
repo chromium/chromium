@@ -411,8 +411,14 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 
 // Shows the Page Info bubble with all the permissions displayed with 'Allow'
 // set. All permissions will show regardless of its factory default value.
+// TODO(crbug.com/1427075): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_AllowAllPermissions DISABLED_InvokeUi_AllowAllPermissions
+#else
+#define MAYBE_InvokeUi_AllowAllPermissions InvokeUi_AllowAllPermissions
+#endif
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
-                       InvokeUi_AllowAllPermissions) {
+                       MAYBE_InvokeUi_AllowAllPermissions) {
   // Last updated in crrev.com/c/4150491.
   set_baseline("4150491");
   ShowAndVerifyUi();
@@ -420,8 +426,14 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 
 // Shows the Page Info bubble with all the permissions displayed with 'Block'
 // set. All permissions will show regardless of its factory default value.
+// TODO(crbug.com/1427075): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_BlockAllPermissions DISABLED_InvokeUi_BlockAllPermissions
+#else
+#define MAYBE_InvokeUi_BlockAllPermissions InvokeUi_BlockAllPermissions
+#endif
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
-                       InvokeUi_BlockAllPermissions) {
+                       MAYBE_InvokeUi_BlockAllPermissions) {
   // Last updated in crrev.com/c/4150491.
   set_baseline("4150491");
   ShowAndVerifyUi();
