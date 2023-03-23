@@ -116,6 +116,11 @@ class ChromiumDepGraph {
             url: 'https://github.com/bcgit/bc-java',
             licensePath: 'licenses/Bouncy_Castle-2015.txt',
             licenseName: 'MIT'),
+        org_bouncycastle_bcprov_jdk18on: new PropertyOverride(
+            cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.68',
+            url: 'https://github.com/bcgit/bc-java',
+            licensePath: 'licenses/Bouncy_Castle-2015.txt',
+            licenseName: 'MIT'),
         org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
             url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
             description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
@@ -157,6 +162,10 @@ class ChromiumDepGraph {
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
             licenseName: 'Apache 2.0'),
+        net_sf_kxml_kxml2: new PropertyOverride(
+            url: 'https://github.com/kobjects/kxml2',
+            licenseUrl: 'https://raw.githubusercontent.com/kobjects/kxml2/master/license.txt',
+            licenseName: 'The MIT License'),
         org_checkerframework_checker_compat_qual: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
             licenseName: 'GPL v2 with the classpath exception'),
@@ -217,6 +226,9 @@ class ChromiumDepGraph {
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
         org_robolectric_nativeruntime: new PropertyOverride(
+            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseName: 'MIT'),
+        org_robolectric_nativeruntime_dist_compat: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
         org_robolectric_pluginapi: new PropertyOverride(
