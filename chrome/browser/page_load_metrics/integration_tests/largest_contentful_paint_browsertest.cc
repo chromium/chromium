@@ -73,13 +73,8 @@ bool compare_candidate_index(const TraceEvent* lhs, const TraceEvent* rhs) {
 
 }  // namespace
 
-// TODO(crbug.com/1369012): Fix flakiness.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LargestContentfulPaint DISABLED_LargestContentfulPaint
-#else
-#define MAYBE_LargestContentfulPaint LargestContentfulPaint
-#endif
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
+// TODO(crbug.com/1369012, crbug.com/1426420): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   Start();
