@@ -15,10 +15,16 @@ namespace ash {
 namespace eche_app {
 
 EcheStreamStatusChangeHandler::EcheStreamStatusChangeHandler(
-    AppsLaunchInfoProvider* apps_launch_info_provider)
-    : apps_launch_info_provider_(apps_launch_info_provider) {}
+    AppsLaunchInfoProvider* apps_launch_info_provider,
+    EcheConnectionStatusHandler* eche_connection_status_handler)
+    : apps_launch_info_provider_(apps_launch_info_provider),
+      eche_connection_status_handler_(eche_connection_status_handler) {
+  eche_connection_status_handler_->AddObserver(this);
+}
 
-EcheStreamStatusChangeHandler::~EcheStreamStatusChangeHandler() = default;
+EcheStreamStatusChangeHandler::~EcheStreamStatusChangeHandler() {
+  eche_connection_status_handler_->RemoveObserver(this);
+}
 
 void EcheStreamStatusChangeHandler::StartStreaming() {
   PA_LOG(INFO) << "echeapi EcheStreamStatusChangeHandler StartStreaming";
@@ -52,6 +58,10 @@ void EcheStreamStatusChangeHandler::SetStreamActionObserver(
   PA_LOG(INFO) << "echeapi EcheDisplayStreamHandler SetStreamActionObserver";
   observer_remote_.reset();
   observer_remote_.Bind(std::move(observer));
+}
+
+void EcheStreamStatusChangeHandler::OnRequestCloseConnnection() {
+  CloseStream();
 }
 
 void EcheStreamStatusChangeHandler::AddObserver(Observer* observer) {

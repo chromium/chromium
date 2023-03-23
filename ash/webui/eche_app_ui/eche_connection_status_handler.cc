@@ -20,7 +20,7 @@ void EcheConnectionStatusHandler::Observer::OnConnectionStatusForUiChanged(
     mojom::ConnectionStatus connection_status) {}
 void EcheConnectionStatusHandler::Observer::
     OnRequestBackgroundConnectionAttempt() {}
-void EcheConnectionStatusHandler::Observer::OnPhoneHubDisconnected() {}
+void EcheConnectionStatusHandler::Observer::OnRequestCloseConnnection() {}
 
 void EcheConnectionStatusHandler::OnConnectionStatusChanged(
     mojom::ConnectionStatus connection_status) {
@@ -49,6 +49,7 @@ void EcheConnectionStatusHandler::OnConnectionStatusChanged(
 
 void EcheConnectionStatusHandler::OnFeatureStatusChanged(
     FeatureStatus feature_status) {
+  PA_LOG(INFO) << __func__ << ": " << feature_status;
   feature_status_ = feature_status;
   switch (feature_status) {
     case FeatureStatus::kIneligible:
@@ -83,6 +84,7 @@ void EcheConnectionStatusHandler::RemoveObserver(Observer* observer) {
 
 void EcheConnectionStatusHandler::SetConnectionStatusForUi(
     mojom::ConnectionStatus connection_status) {
+  PA_LOG(INFO) << __func__ << ": " << connection_status;
   last_update_timestamp_ = base::Time::Now();
   if (connection_status_for_ui_ == connection_status) {
     return;
@@ -106,10 +108,14 @@ void EcheConnectionStatusHandler::CheckConnectionStatusForUi() {
       base::Time::Now() - last_update_timestamp_;
   if (time_since_last_check >
       features::kEcheBackgroundConnectionAttemptThrottleTimeout.Get()) {
+    PA_LOG(INFO) << __func__ << ": Requesting background connection attempt";
     NotifyRequestBackgroundConnectionAttempt();
   }
   if (time_since_last_check >
-      features::kEcheConnectionStatusResetTimeout.Get()) {
+          features::kEcheConnectionStatusResetTimeout.Get() &&
+      connection_status_for_ui_ ==
+          mojom::ConnectionStatus::kConnectionStatusConnected) {
+    PA_LOG(INFO) << __func__ << ": blocking ui";
     connection_status_for_ui_ =
         mojom::ConnectionStatus::kConnectionStatusConnecting;
   }
@@ -133,6 +139,12 @@ void EcheConnectionStatusHandler::NotifyConnectionStatusForUiChanged(
     mojom::ConnectionStatus connection_status) {
   for (auto& observer : observer_list_) {
     observer.OnConnectionStatusForUiChanged(connection_status);
+  }
+}
+
+void EcheConnectionStatusHandler::NotifyRequestCloseConnection() {
+  for (auto& observer : observer_list_) {
+    observer.OnRequestCloseConnnection();
   }
 }
 

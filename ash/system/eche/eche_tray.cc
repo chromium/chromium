@@ -117,6 +117,9 @@ constexpr float kMaxHeightPercentage = 0.85;
 // Unload timeout to close Eche Bubble in case error from Ech web during closing
 constexpr base::TimeDelta kUnloadTimeoutDuration = base::Milliseconds(500);
 
+// Timeout for initializer connection attempts.
+constexpr base::TimeDelta kInitializerTimeout = base::Seconds(6);
+
 // The ID for the "Copy/paste not yet implemented" toast.
 constexpr char kEcheTrayCopyPasteNotImplementedToastId[] =
     "eche_tray_toast_ids.copy_paste_not_implemented";
@@ -417,7 +420,6 @@ void EcheTray::OnKeyboardHidden(bool is_temporary_hide) {
 
 void EcheTray::OnConnectionStatusChanged(
     eche_app::mojom::ConnectionStatus connection_status) {
-  // TODO(b/274799846): Reintroduce timeout to conditional
   if (!features::IsEcheNetworkConnectionStateEnabled() ||
       !initializer_webview_) {
     return;
@@ -430,13 +432,25 @@ void EcheTray::OnConnectionStatusChanged(
     case eche_app::mojom::ConnectionStatus::kConnectionStatusConnected:
       eche_connection_status_handler_->SetConnectionStatusForUi(
           connection_status);
+      has_reported_initializer_result_ = true;
+      base::UmaHistogramBoolean("Eche.NetworkCheck.Result", true);
       break;
     case eche_app::mojom::ConnectionStatus::kConnectionStatusFailed:
       eche_connection_status_handler_->SetConnectionStatusForUi(
           connection_status);
+      base::UmaHistogramBoolean("Eche.NetworkCheck.Result", false);
+      has_reported_initializer_result_ = true;
       break;
     case eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected:
-      // TODO(b/274799846): Cleanup shutdown
+      if (!has_reported_initializer_result_) {
+        // If we've timedout or been disconnected before a success/failure has
+        // come in, report failure.
+        base::UmaHistogramBoolean("Eche.NetworkCheck.Result", false);
+        eche_connection_status_handler_->SetConnectionStatusForUi(
+            eche_app::mojom::ConnectionStatus::kConnectionStatusFailed);
+      }
+
+      StartGracefulCloseInitializer();
       break;
   }
 }
@@ -445,14 +459,30 @@ void EcheTray::OnRequestBackgroundConnectionAttempt() {
   if (!features::IsEcheNetworkConnectionStateEnabled() || IsInitialized()) {
     return;
   }
-
+  has_reported_initializer_result_ = false;
   initializer_webview_ = CreateWebview();
   initializer_webview_->Navigate(GURL(kEchePrewarmConnectionUrl));
+  initializer_timeout_ = std::make_unique<base::DelayTimer>(
+      FROM_HERE, kInitializerTimeout, this,
+      &EcheTray::StartGracefulCloseInitializer);
+  initializer_timeout_->Reset();  // Starts the timer.
   SetIconVisibility(false);
 }
 
-void EcheTray::OnPhoneHubDisconnected() {
+void EcheTray::CloseInitializer() {
   initializer_webview_.reset();
+}
+
+void EcheTray::StartGracefulCloseInitializer() {
+  if (!initializer_webview_) {
+    return;
+  }
+
+  initializer_timeout_.reset();
+  eche_connection_status_handler_->NotifyRequestCloseConnection();
+  unload_timer_ = std::make_unique<base::DelayTimer>(
+      FROM_HERE, kUnloadTimeoutDuration, this, &EcheTray::CloseInitializer);
+  unload_timer_->Reset();  // Starts the timer.
 }
 
 void EcheTray::SetUrl(const GURL& url) {
@@ -646,6 +676,9 @@ void EcheTray::StartGracefulClose() {
         base::TimeTicks::Now() - *init_stream_timestamp_);
     init_stream_timestamp_.reset();
   }
+
+  // If there's an initializer session running it should also be shutdown.
+  StartGracefulCloseInitializer();
 
   if (!graceful_close_callback_) {
     PurgeAndClose();
@@ -965,6 +998,10 @@ void EcheTray::SetEcheConnectionStatusHandler(
     eche_connection_status_handler_ = eche_connection_status_handler;
     eche_connection_status_handler_->AddObserver(this);
   }
+}
+
+bool EcheTray::IsBackgroundConnectionAttemptInProgress() {
+  return initializer_webview_ ? true : false;
 }
 
 BEGIN_METADATA(EcheTray, TrayBackgroundView)

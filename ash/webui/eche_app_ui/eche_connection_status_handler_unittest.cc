@@ -30,8 +30,8 @@ class FakeObserver : public EcheConnectionStatusHandler::Observer {
     return num_request_background_connection_attempt_calls_;
   }
 
-  size_t num_phone_hub_disconnected_calls() const {
-    return num_phone_hub_disconnected_calls_;
+  size_t num_request_close_connection_calls() const {
+    return num_request_close_connection_calls_;
   }
 
   mojom::ConnectionStatus last_connection_changed_status() const {
@@ -59,15 +59,15 @@ class FakeObserver : public EcheConnectionStatusHandler::Observer {
     ++num_request_background_connection_attempt_calls_;
   }
 
-  void OnPhoneHubDisconnected() override {
-    ++num_phone_hub_disconnected_calls_;
+  void OnRequestCloseConnnection() override {
+    ++num_request_close_connection_calls_;
   }
 
  private:
   size_t num_connection_status_changed_calls_ = 0;
   size_t num_connection_status_for_ui_changed_calls_ = 0;
   size_t num_request_background_connection_attempt_calls_ = 0;
-  size_t num_phone_hub_disconnected_calls_ = 0;
+  size_t num_request_close_connection_calls_ = 0;
   mojom::ConnectionStatus last_connection_changed_status_ =
       mojom::ConnectionStatus::kConnectionStatusDisconnected;
   mojom::ConnectionStatus last_connection_for_ui_changed_status_ =
@@ -124,8 +124,8 @@ class EcheConnectionStatusHandlerTest : public testing::Test {
     return fake_observer_.num_request_background_connection_attempt_calls();
   }
 
-  size_t GetNumPhoneHubDisconnectedCalls() const {
-    return fake_observer_.num_phone_hub_disconnected_calls();
+  size_t GetNumRequestCloceConnectionCalls() const {
+    return fake_observer_.num_request_close_connection_calls();
   }
 
   mojom::ConnectionStatus GetLastConnectionChangedStatus() const {
@@ -229,6 +229,7 @@ TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 1u);
 
   handler().CheckConnectionStatusForUi();
 
@@ -236,15 +237,21 @@ TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
 
+  NotifyConnectionStatusChanged(
+      mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+
   SetFeatureStatus(FeatureStatus::kConnected);
   handler().CheckConnectionStatusForUi();
 
   EXPECT_EQ(GetLastConnectionChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusConnecting);
-  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 1u);
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 2u);
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusConnecting);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
 }
 
 TEST_F(EcheConnectionStatusHandlerTest,
@@ -257,32 +264,42 @@ TEST_F(EcheConnectionStatusHandlerTest,
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 0u);
 
+  NotifyConnectionStatusChanged(
+      mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+
   // After more than 10 seconds pass, extra calls should happen.
   SetFeatureStatus(FeatureStatus::kConnected);
   task_environment_.FastForwardBy(base::Seconds(11));
   handler().CheckConnectionStatusForUi();
 
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusConnecting);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
 
   // Reset to Disconnected
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
 
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
 
   // After more than 10 minutes pass, state should go back to Connecting.
+  handler().SetConnectionStatusForUi(
+      mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 4u);
+
   task_environment_.FastForwardBy(base::Minutes(11));
   handler().CheckConnectionStatusForUi();
 
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnecting);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 5u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 2u);
 }
 

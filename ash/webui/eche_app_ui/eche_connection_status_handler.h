@@ -33,7 +33,7 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
 
     virtual void OnRequestBackgroundConnectionAttempt();
 
-    virtual void OnPhoneHubDisconnected();
+    virtual void OnRequestCloseConnnection();
   };
 
   EcheConnectionStatusHandler();
@@ -60,6 +60,9 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
   // override.
   // EcheFeatureStatusProvider::Observer:
   void OnFeatureStatusChanged(FeatureStatus feature_status);
+
+  // Proxy to request that the webui shut down the connection.
+  void NotifyRequestCloseConnection();
 
   void Bind(mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver);
 

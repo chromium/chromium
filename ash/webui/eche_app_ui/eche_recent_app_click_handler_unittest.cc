@@ -59,7 +59,7 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
         connection_status_handler_.get());
     stream_status_change_handler_ =
         std::make_unique<EcheStreamStatusChangeHandler>(
-            apps_launch_info_provider_.get());
+            apps_launch_info_provider_.get(), connection_status_handler_.get());
     handler_ = std::make_unique<EcheRecentAppClickHandler>(
         &fake_phone_hub_manager_, &fake_feature_status_provider_,
         launch_app_helper_.get(), stream_status_change_handler_.get(),

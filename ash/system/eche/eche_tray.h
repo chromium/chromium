@@ -156,7 +156,6 @@ class ASH_EXPORT EcheTray
   void OnConnectionStatusChanged(
       eche_app::mojom::ConnectionStatus connection_status) override;
   void OnRequestBackgroundConnectionAttempt() override;
-  void OnPhoneHubDisconnected() override;
 
   // Sets the url that will be passed to the webview.
   // Setting a new value will cause the current bubble be destroyed.
@@ -235,6 +234,8 @@ class ASH_EXPORT EcheTray
 
   void SetEcheConnectionStatusHandler(
       eche_app::EcheConnectionStatusHandler* eche_connection_status_handler);
+
+  bool IsBackgroundConnectionAttemptInProgress();
 
   // Test helpers
   bool get_is_landscape_for_test() { return is_landscape_; }
@@ -319,6 +320,12 @@ class ASH_EXPORT EcheTray
   // Returns true only if the bubble is initialized and visible.
   bool IsBubbleVisible();
 
+  // Starts graceful shutdown for the initializer.
+  void StartGracefulCloseInitializer();
+
+  // Kills the renderer.
+  void CloseInitializer();
+
   // The url that is transferred to the web view.
   // In the current implementation, this is supposed to be
   // Eche window URL. However, the bubble does not interpret,
@@ -338,6 +345,8 @@ class ASH_EXPORT EcheTray
   // Webview used to create a prewarming channel, before we have a video to
   // attach to.
   std::unique_ptr<AshWebView> initializer_webview_{};
+  std::unique_ptr<base::DelayTimer> initializer_timeout_{};
+  bool has_reported_initializer_result_ = false;
 
   eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
       nullptr;

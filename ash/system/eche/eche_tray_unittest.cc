@@ -124,6 +124,8 @@ class EcheTrayTest : public AshTestBase {
     eche_connection_status_handler_->AddObserver(
         &fake_connection_status_observer_);
     eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
+    eche_tray_->SetEcheConnectionStatusHandler(
+        eche_connection_status_handler_.get());
     phone_hub_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
 
@@ -701,14 +703,12 @@ TEST_F(EcheTrayTest, OnConnectionStatusChanged) {
   eche_tray()->OnConnectionStatusChanged(
       ConnectionStatus::kConnectionStatusConnecting);
 
-  EXPECT_EQ(GetLastConnectionChangedForUiStatus(),
-            ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
   EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
 
   eche_tray()->OnConnectionStatusChanged(
-      ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+      ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
   EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
 }
 

@@ -5426,6 +5426,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.NetworkCheck.FailureReason" enum="ConnectionFailReason"
+    expires_after="2023-08-20">
+  <owner>jonmann@google.com</owner>
+  <owner>nayebi@google.com</owner>
+  <summary>
+    Failure reason emitted by EcheSignaler on background connect attempt
+    failures.
+  </summary>
+</histogram>
+
+<histogram name="Eche.NetworkCheck.Result" enum="BooleanSuccess"
+    expires_after="2023-08-27">
+  <owner>jonmann@google.com</owner>
+  <owner>nayebi@google.com</owner>
+  <summary>
+    Emitted on success or failure of a background network connection attempt.
+    Triggered when Phone Hub first connects, and on each bubble opened event.
+  </summary>
+</histogram>
+
 <histogram name="Eche.NotificationClicked" enum="EcheNotificationInteraction"
     expires_after="2023-04-16">
   <obsolete>

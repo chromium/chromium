@@ -4,6 +4,7 @@
 
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/software_feature.h"
@@ -130,8 +131,10 @@ void EcheFeatureStatusProvider::UpdateStatus() {
   *status_ = computed_status;
   NotifyStatusChanged();
 
-  // TODO(b/274530047): refactor to make this a normal observer.
-  eche_connection_status_handler_->OnFeatureStatusChanged(computed_status);
+  if (features::IsEcheNetworkConnectionStateEnabled()) {
+    // TODO(b/274530047): refactor to make this a normal observer.
+    eche_connection_status_handler_->OnFeatureStatusChanged(computed_status);
+  }
 }
 
 FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {

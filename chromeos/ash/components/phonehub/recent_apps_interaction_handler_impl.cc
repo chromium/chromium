@@ -271,6 +271,13 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
     NotifyRecentAppsViewUiStateUpdated();
     return;
   }
+
+  if (features::IsEcheNetworkConnectionStateEnabled()) {
+    ui_state_ = GetUiStateFromConnectionStatus();
+    NotifyRecentAppsViewUiStateUpdated();
+    return;
+  }
+
   if (recent_app_metadata_list_.empty()) {
     bool notifications_enabled =
         multidevice_setup_client_->GetFeatureState(
@@ -282,11 +289,6 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
       ui_state_ = RecentAppsUiState::PLACEHOLDER_VIEW;
     }
   } else {
-    if (features::IsEcheNetworkConnectionStateEnabled()) {
-      ui_state_ = GetUiStateFromConnectionStatus();
-      NotifyRecentAppsViewUiStateUpdated();
-      return;
-    }
     ui_state_ = RecentAppsUiState::ITEMS_VISIBLE;
   }
   NotifyRecentAppsViewUiStateUpdated();

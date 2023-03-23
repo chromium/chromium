@@ -588,7 +588,7 @@ TEST_F(RecentAppsInteractionHandlerTest,
   SetAppsAccessStatus(true);
   SetNotificationAccess(true);
 
-  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::LOADING,
             handler().ui_state());
 }
 
@@ -599,34 +599,34 @@ TEST_F(RecentAppsInteractionHandlerTest,
   SetAppsAccessStatus(true);
   SetNotificationAccess(true);
 
-  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::LOADING,
             handler().ui_state());
 
-  // Disable notification access permission on the host device.
-  SetNotificationAccess(false);
+  // Disable apps access permission on the host device.
+  SetAppsAccessStatus(false);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
             handler().ui_state());
 
-  // Disable notification access permission on the local device.
-  SetNotificationAccess(true);
-  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+  // Disable apps access permission on the local device.
+  SetAppsAccessStatus(true);
+  SetEcheFeatureState(FeatureState::kDisabledByUser);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
             handler().ui_state());
 
-  // Disable notification access permission on both devices.
-  SetNotificationAccess(false);
-  SetPhoneHubNotificationsFeatureState(FeatureState::kDisabledByUser);
+  // Disable apps access permission on both devices.
+  SetAppsAccessStatus(false);
+  SetEcheFeatureState(FeatureState::kDisabledByUser);
 
   EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
             handler().ui_state());
 
-  // Enable notification access permission back on both devices.
-  SetNotificationAccess(true);
-  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
+  // Enable apps access permission back on both devices.
+  SetAppsAccessStatus(true);
+  SetEcheFeatureState(FeatureState::kEnabledByUser);
 
-  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::LOADING,
             handler().ui_state());
 }
 
@@ -693,6 +693,11 @@ TEST_F(RecentAppsInteractionHandlerTest,
 
 TEST_F(RecentAppsInteractionHandlerTest,
        UiStateChangedToVisibleWhenRecentAppBeAdded) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA},
+      /*disabled_features=*/{features::kEcheNetworkConnectionState});
+
   SetEcheFeatureState(FeatureState::kEnabledByUser);
   SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
   SetConnectionStatus(ConnectionStatus::kConnectionStatusConnected);

@@ -97,7 +97,7 @@ class EcheStreamStatusChangeHandlerTest : public testing::Test {
     apps_launch_info_provider_ = std::make_unique<AppsLaunchInfoProvider>(
         connection_status_handler_.get());
     handler_ = std::make_unique<EcheStreamStatusChangeHandler>(
-        apps_launch_info_provider_.get());
+        apps_launch_info_provider_.get(), connection_status_handler_.get());
     handler_->AddObserver(&fake_observer_);
   }
 

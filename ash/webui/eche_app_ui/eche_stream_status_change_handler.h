@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_STREAM_STATUS_CHANGE_HANDLER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_STREAM_STATUS_CHANGE_HANDLER_H_
 
+#include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -21,7 +22,9 @@ class AppsLaunchInfoProvider;
 // status of the video streaming for Eche, e.g. When the video streaming is
 // started in the Eche Web, we can register `Observer` and get this status via
 // `OnStartStreaming` and `OnStreamStatusChanged` event.
-class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
+class EcheStreamStatusChangeHandler
+    : public mojom::DisplayStreamHandler,
+      public EcheConnectionStatusHandler::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -31,8 +34,9 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
     virtual void OnStreamStatusChanged(mojom::StreamStatus status) = 0;
   };
 
-  explicit EcheStreamStatusChangeHandler(
-      AppsLaunchInfoProvider* apps_launch_info_provider);
+  EcheStreamStatusChangeHandler(
+      AppsLaunchInfoProvider* apps_launch_info_provider,
+      EcheConnectionStatusHandler* eche_connection_status_handler);
   ~EcheStreamStatusChangeHandler() override;
 
   EcheStreamStatusChangeHandler(const EcheStreamStatusChangeHandler&) = delete;
@@ -44,6 +48,9 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
   void OnStreamStatusChanged(mojom::StreamStatus status) override;
   void SetStreamActionObserver(
       mojo::PendingRemote<mojom::StreamActionObserver> observer) override;
+
+  // EcheConnectionStatusHandler::Observer:
+  void OnRequestCloseConnnection() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -59,6 +66,7 @@ class EcheStreamStatusChangeHandler : public mojom::DisplayStreamHandler {
 
  private:
   AppsLaunchInfoProvider* apps_launch_info_provider_;
+  EcheConnectionStatusHandler* eche_connection_status_handler_;
   mojo::Receiver<mojom::DisplayStreamHandler> display_stream_receiver_{this};
   mojo::Remote<mojom::StreamActionObserver> observer_remote_;
   base::ObserverList<Observer> observer_list_;

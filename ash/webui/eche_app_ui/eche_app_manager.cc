@@ -72,7 +72,8 @@ EcheAppManager::EcheAppManager(
           eche_connection_status_handler_.get())),
       stream_status_change_handler_(
           std::make_unique<EcheStreamStatusChangeHandler>(
-              apps_launch_info_provider_.get())),
+              apps_launch_info_provider_.get(),
+              eche_connection_status_handler_.get())),
       eche_notification_click_handler_(
           std::make_unique<EcheNotificationClickHandler>(
               phone_hub_manager,

@@ -68,7 +68,7 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
         connection_status_handler_.get());
     stream_status_change_handler_ =
         std::make_unique<EcheStreamStatusChangeHandler>(
-            apps_launch_info_provider_.get());
+            apps_launch_info_provider_.get(), connection_status_handler_.get());
     observer_ = std::make_unique<EcheTrayStreamStatusObserver>(
         stream_status_change_handler_.get(), &fake_feature_status_provider_);
   }
