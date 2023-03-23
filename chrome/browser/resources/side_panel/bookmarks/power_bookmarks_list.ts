@@ -33,6 +33,7 @@ import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_act
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util_ts.js';
@@ -62,6 +63,7 @@ export interface PowerBookmarksListElement {
     contextMenu: PowerBookmarksContextMenuElement,
     deletionToast: CrLazyRenderElement<CrToastElement>,
     powerBookmarksContainer: HTMLElement,
+    searchField: CrToolbarSearchFieldElement,
     shownBookmarksIronList: IronListElement,
     sortMenu: CrActionMenuElement,
     editDialog: PowerBookmarksEditDialogElement,
@@ -535,6 +537,8 @@ export class PowerBookmarksListElement extends PolymerElement {
     if (!this.editing_) {
       if (event.detail.bookmark.children) {
         this.push('activeFolderPath_', event.detail.bookmark);
+        // Cancel search when changing active folder.
+        this.$.searchField.setValue('');
       } else {
         this.bookmarksApi_.openBookmark(
             event.detail.bookmark.id, this.activeFolderPath_.length, {
@@ -611,7 +615,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private shouldHideHeader_(): boolean {
-    return this.hasActiveLabels_() || this.hasNoBookmarks_();
+    return this.hasActiveLabels_() || !!this.searchQuery_ ||
+        this.hasNoBookmarks_();
   }
 
   private hasNoBookmarks_(): boolean {

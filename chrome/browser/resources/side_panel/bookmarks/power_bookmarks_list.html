@@ -109,7 +109,7 @@
     margin: 0 14px;
   }
 
-  .label-row[active-labels] {
+  .label-row[header-hidden] {
     margin-bottom: 14px;
   }
 
@@ -141,12 +141,13 @@
 </style>
 
 <div class="column" id="powerBookmarksContainer">
-  <cr-toolbar-search-field label="$i18n{searchBookmarks}"
+  <cr-toolbar-search-field id="searchField" label="$i18n{searchBookmarks}"
       clear-label="$i18n{clearSearch}" on-search-changed="onSearchChanged_"
       disabled="[[editing_]]" hidden="[[guestMode_]]">
   </cr-toolbar-search-field>
   <div class="label-row" hidden="[[guestMode_]]"
-      active-labels$="[[hasActiveLabels_(labels_.*)]]">
+      header-hidden$="[[shouldHideHeader_(
+          labels_.*, searchQuery_, shownBookmarks_)]]">
     <template is="dom-repeat" items="[[labels_]]">
       <sp-filter-chip
           selected="[[item.active]]"
@@ -159,7 +160,9 @@
   </div>
 
   <div class="sp-card">
-    <sp-heading hidden$="[[shouldHideHeader_(labels_.*, shownBookmarks_)]]"
+    <sp-heading
+        hidden$="[[shouldHideHeader_(
+            labels_.*, searchQuery_, shownBookmarks_)]]"
         back-button-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
         hide-back-button="[[!activeFolderPath_.length]]"
