@@ -851,6 +851,7 @@ static_library("extensions") {
     "//components/guest_view/browser",
     "//components/guest_view/common:mojom",
     "//components/history/core/browser",
+    "//components/history/core/common",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/javascript_dialogs",

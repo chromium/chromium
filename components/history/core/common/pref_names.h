@@ -12,6 +12,7 @@
 namespace prefs {
 
 extern const char kSavingBrowserHistoryDisabled[];
+extern const char kAllowDeletingBrowserHistory[];
 
 }  // namespace prefs
 

@@ -1138,10 +1138,6 @@ const char kShowHomeButton[] = "browser.show_home_button";
 const char kSpeechRecognitionFilterProfanities[] =
     "browser.speechinput_censor_results";
 
-// Boolean controlling whether deleting browsing and download history is
-// permitted.
-const char kAllowDeletingBrowserHistory[] = "history.deleting_enabled";
-
 // Comma separated list of domain names (e.g. "google.com,school.edu").
 // When this pref is set, the user will be able to access Google Apps
 // only using an account that belongs to one of the domains from this pref.

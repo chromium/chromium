@@ -9,4 +9,8 @@ namespace prefs {
 // Boolean controlling whether history saving is disabled.
 const char kSavingBrowserHistoryDisabled[] = "history.saving_disabled";
 
+// Boolean controlling whether deleting browsing and download history is
+// permitted.
+const char kAllowDeletingBrowserHistory[] = "history.deleting_enabled";
+
 }  // namespace prefs

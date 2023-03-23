@@ -45,6 +45,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
