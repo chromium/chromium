@@ -9,6 +9,8 @@ assert(use_blink, "Content is only supported in Blink builds.")
 source_set("content") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "content_browser_context.h",
+    "content_browser_context.mm",
     "js_messaging/content_web_frames_manager.h",
     "js_messaging/content_web_frames_manager.mm",
     "navigation/content_navigation_context.h",
@@ -25,7 +27,7 @@ source_set("content") {
   deps = [
     "//base",
     "//build:blink_buildflags",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//ios/web/common:user_agent",
     "//ios/web/find_in_page:find_in_page",
     "//ios/web/navigation:core",
