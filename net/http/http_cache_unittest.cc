@@ -11199,7 +11199,6 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
   if (!IsSplitCacheEnabled()) {
     return;
   }
-  base::HistogramTester histograms;
   MockHttpCache cache;
   HttpResponseInfo response;
 
@@ -11216,10 +11215,6 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheWithNetworkIsolationKey) {
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
-  histograms.ExpectBucketCount(
-      "HttpCache.NetworkIsolationKeyPresent2",
-      HttpCache::Transaction::NetworkIsolationKeyPresent::kPresent, 1);
-  histograms.ExpectTotalCount("HttpCache.NetworkIsolationKeyPresent2", 1);
 
   // The second request should be cached.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
@@ -11428,7 +11423,6 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
   if (!IsSplitCacheEnabled()) {
     return;
   }
-  base::HistogramTester histograms;
   MockHttpCache cache;
   HttpResponseInfo response;
 
@@ -11443,11 +11437,6 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
-  histograms.ExpectUniqueSample(
-      "HttpCache.NetworkIsolationKeyPresent2",
-      HttpCache::Transaction::NetworkIsolationKeyPresent::
-          kNotPresentNonCacheableRequest,
-      1);
 
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
@@ -11462,10 +11451,6 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCache) {
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
-  histograms.ExpectBucketCount(
-      "HttpCache.NetworkIsolationKeyPresent2",
-      HttpCache::Transaction::NetworkIsolationKeyPresent::kPresent, 1);
-  histograms.ExpectTotalCount("HttpCache.NetworkIsolationKeyPresent2", 3);
 
   // The second request should be cached.
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
@@ -11589,7 +11574,6 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheUsesRegistrableDomain) {
   if (!IsSplitCacheEnabled()) {
     return;
   }
-  base::HistogramTester histograms;
   MockHttpCache cache;
   HttpResponseInfo response;
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
@@ -11604,9 +11588,6 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SplitCacheUsesRegistrableDomain) {
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
-  histograms.ExpectBucketCount(
-      "HttpCache.NetworkIsolationKeyPresent2",
-      HttpCache::Transaction::NetworkIsolationKeyPresent::kPresent, 1);
 
   // The second request with a different origin but the same registrable domain
   // should be a cache hit.
@@ -11634,7 +11615,6 @@ TEST_F(HttpCacheTest, NonSplitCache) {
   feature_list.InitAndDisableFeature(
       net::features::kSplitCacheByNetworkIsolationKey);
 
-  base::HistogramTester histograms;
   MockHttpCache cache;
   HttpResponseInfo response;
 
@@ -11660,10 +11640,6 @@ TEST_F(HttpCacheTest, NonSplitCache) {
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
-  histograms.ExpectBucketCount(
-      "HttpCache.NetworkIsolationKeyPresent2",
-      HttpCache::Transaction::NetworkIsolationKeyPresent::kPresent, 1);
-  histograms.ExpectTotalCount("HttpCache.NetworkIsolationKeyPresent2", 3);
 }
 
 TEST_F(HttpCacheTest, SkipVaryCheck) {

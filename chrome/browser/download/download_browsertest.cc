@@ -2611,14 +2611,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
   ASSERT_EQ(url, download_items[0]->GetOriginalUrl());
   ASSERT_EQ(url, download_items[1]->GetOriginalUrl());
 
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Assert that the NIK is populated for 4 requests:
-  // - Navigation: image.jpg
-  // - favicon.ico
-  // - SavePage: image.jpg
-  // - context menu: image.jpg
-  histogram_tester().ExpectBucketCount("HttpCache.NetworkIsolationKeyPresent2",
-                                       2 /*kPresent*/, 4 /*count*/);
   ResetURLLoaderInterceptor();
 }
 

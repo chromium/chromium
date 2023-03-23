@@ -1322,8 +1322,7 @@ class AutofillInteractiveTestWithHistogramTester
 
 // Test the basic form-fill flow.
 // TODO(https://crbug.com/1045709): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestWithHistogramTester,
-                       BasicFormFill) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicFormFill) {
   CreateTestProfile();
   SetTestUrlResponse(kTestShippingFormString);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
@@ -1333,15 +1332,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestWithHistogramTester,
                             .after_select = ExpectValues(MergeValue(
                                 kEmptyAddress, {"firstname", "M"}))}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
-
-  ::metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  // Assert that the network isolation key is populated for 2 requests:
-  // - Navigation: /internal/test_url_path
-  // - Autofill query: https://clients1.google.com/tbproxy/af/query?...
-  //   or "https://content-autofill.googleapis.com/..." (depending on the
-  //   finch configuration of the AutofillUseApi feature).
-  histogram_tester().ExpectBucketCount("HttpCache.NetworkIsolationKeyPresent2",
-                                       2 /*kPresent*/, 2 /*count*/);
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicClear) {

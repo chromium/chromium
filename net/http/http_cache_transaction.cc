@@ -2753,16 +2753,6 @@ bool HttpCache::Transaction::ShouldPassThrough() {
     cacheable = false;
   }
 
-  NetworkIsolationKeyPresent nik_present_enum =
-      request_->network_isolation_key.IsFullyPopulated()
-          ? NetworkIsolationKeyPresent::kPresent
-          : cacheable
-                ? NetworkIsolationKeyPresent::kNotPresentCacheableRequest
-                : NetworkIsolationKeyPresent::kNotPresentNonCacheableRequest;
-
-  UMA_HISTOGRAM_ENUMERATION("HttpCache.NetworkIsolationKeyPresent2",
-                            nik_present_enum);
-
   return !cacheable;
 }
 
