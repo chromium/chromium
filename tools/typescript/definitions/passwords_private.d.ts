@@ -57,6 +57,7 @@ declare global {
         MAX_FILE_SIZE = 'MAX_FILE_SIZE',
         IMPORT_ALREADY_ACTIVE = 'IMPORT_ALREADY_ACTIVE',
         NUM_PASSWORDS_EXCEEDED = 'NUM_PASSWORDS_EXCEEDED',
+        CONFLICTS = 'CONFLICTS',
       }
 
       export enum ImportEntryStatus {
@@ -72,18 +73,21 @@ declare global {
         CONFLICT_ACCOUNT = 'CONFLICT_ACCOUNT',
         LONG_NOTE = 'LONG_NOTE',
         LONG_CONCATENATED_NOTE = 'LONG_CONCATENATED_NOTE',
+        VALID = 'VALID',
       }
 
       export interface ImportEntry {
         status: ImportEntryStatus;
         url: string;
         username: string;
+        password: string;
+        id: number;
       }
 
       export interface ImportResults {
         status: ImportResultsStatus;
         numberImported: number;
-        failedImports: ImportEntry[];
+        displayedEntries: ImportEntry[];
         fileName: string;
       }
 
@@ -180,6 +184,9 @@ declare global {
       export function movePasswordsToAccount(ids: number[]): void;
       export function importPasswords(toStore: PasswordStoreSet):
           Promise<ImportResults>;
+      export function continueImport(selectedIds: number[]):
+          Promise<ImportResults>;
+      export function resetImporter(deleteFile: boolean): Promise<void>;
       export function exportPasswords(): Promise<void>;
       export function requestExportProgressStatus():
           Promise<ExportProgressStatus>;

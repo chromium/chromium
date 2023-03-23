@@ -197,7 +197,7 @@ export class PasswordsImportDialogElement extends
       return true;
     }
     assert(this.results_);
-    return !!this.results_.failedImports.length;
+    return !!this.results_.displayedEntries.length;
   }
 
   private shouldHideDeleteFileOption_(): boolean {
@@ -210,7 +210,7 @@ export class PasswordsImportDialogElement extends
       return true;
     }
     assert(this.results_);
-    return !!this.results_.failedImports.length;
+    return !!this.results_.displayedEntries.length;
   }
 
   private shouldHideFailuresSummary_(): boolean {
@@ -218,7 +218,7 @@ export class PasswordsImportDialogElement extends
       return true;
     }
     assert(this.results_);
-    return !this.results_.failedImports.length;
+    return !this.results_.displayedEntries.length;
   }
 
   private shouldShowStorePicker_(): boolean {
@@ -287,20 +287,21 @@ export class PasswordsImportDialogElement extends
 
   private async handleSuccess_() {
     assert(this.results_);
-    if (this.results_.failedImports.length) {
+    if (this.results_.displayedEntries.length) {
       const rowsWithUnknownErrorCount =
-          this.results_.failedImports
+          this.results_.displayedEntries
               .filter(
                   (entry) => entry.status ===
                       chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR)
               .length;
-      this.failedImportsWithKnownErrors_ = this.results_.failedImports.filter(
-          (entry) => entry.status !==
-              chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR);
+      this.failedImportsWithKnownErrors_ =
+          this.results_.displayedEntries.filter(
+              (entry) => entry.status !==
+                  chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR);
       this.failedImportsSummary_ =
           await PluralStringProxyImpl.getInstance().getPluralString(
               'importPasswordsFailuresSummary',
-              this.results_.failedImports.length);
+              this.results_.displayedEntries.length);
       if (rowsWithUnknownErrorCount) {
         this.rowsWithUnknownErrorsSummary_ =
             await PluralStringProxyImpl.getInstance().getPluralString(
@@ -387,7 +388,7 @@ export class PasswordsImportDialogElement extends
         return this.i18n('importPasswordsErrorTitle');
       case ImportDialogState.SUCCESS:
         assert(this.results_);
-        if (!this.results_.failedImports.length) {
+        if (!this.results_.displayedEntries.length) {
           return this.i18n('importPasswordsSuccessTitle');
         }
         return this.i18n('importPasswordsCompleteTitle');

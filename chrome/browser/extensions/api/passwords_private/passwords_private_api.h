@@ -186,6 +186,33 @@ class PasswordsPrivateImportPasswordsFunction : public ExtensionFunction {
       const api::passwords_private::ImportResults& results);
 };
 
+class PasswordsPrivateContinueImportFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.continueImport",
+                             PASSWORDSPRIVATE_CONTINUEIMPORT)
+
+ protected:
+  ~PasswordsPrivateContinueImportFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void ImportCompleted(const api::passwords_private::ImportResults& results);
+};
+
+class PasswordsPrivateResetImporterFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.resetImporter",
+                             PASSWORDSPRIVATE_RESETIMPORTER)
+
+ protected:
+  ~PasswordsPrivateResetImporterFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class PasswordsPrivateExportPasswordsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.exportPasswords",

@@ -41,18 +41,26 @@ struct ImportEntry {
     LONG_NOTE = 11,
     // Concatenation of imported and local notes is too long.
     LONG_CONCATENATED_NOTE = 12,
-    kMaxValue = LONG_CONCATENATED_NOTE
+    // Valid credential.
+    VALID = 13,
+    kMaxValue = VALID
   };
 
   // The status of parsing for individual row that represents a credential
   // during import process.
-  Status status;
+  Status status = UNKNOWN_ERROR;
 
   // The url of the credential.
   std::string url;
 
   // The username of the credential.
   std::string username;
+
+  // The password of the credential.
+  std::string password;
+
+  // Unique identifier of the credential.
+  int id = 0;
 
   ImportEntry();
   ImportEntry(const ImportEntry& other);
@@ -84,7 +92,9 @@ struct ImportResults {
     IMPORT_ALREADY_ACTIVE = 7,
     // User tried to import too many passwords from one file.
     NUM_PASSWORDS_EXCEEDED = 8,
-    kMaxValue = NUM_PASSWORDS_EXCEEDED
+    // Conflicts found and they need to be resolved by the user.
+    CONFLICTS = 9,
+    kMaxValue = CONFLICTS
   };
 
   // General status of the triggered password import process.
@@ -93,8 +103,8 @@ struct ImportResults {
   // Number of successfully imported passwords.
   size_t number_imported = 0;
 
-  // Possibly empty, list of credentials that couldn't be imported.
-  std::vector<ImportEntry> failed_imports;
+  // Possibly empty, list of credentials that should be shown to the user.
+  std::vector<ImportEntry> displayed_entries;
 
   // Possibly not set, name of file that user has chosen for the import.
   std::string file_name;

@@ -282,6 +282,27 @@ var availableTests = [
       callback);
   },
 
+  function continueImport() {
+    let callback = function(importResults) {
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(!!importResults);
+      chrome.test.assertEq(
+          chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+          importResults.status);
+      chrome.test.assertEq(42, importResults.numberImported);
+      chrome.test.assertEq('test.csv', importResults.fileName);
+      chrome.test.succeed();
+    };
+    chrome.passwordsPrivate.continueImport([0, 1], callback);
+  },
+
+  function resetImporter() {
+    chrome.passwordsPrivate.resetImporter(false, () => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
+
   function exportPasswords() {
     let callback = function() {
       chrome.test.assertNoLastError();

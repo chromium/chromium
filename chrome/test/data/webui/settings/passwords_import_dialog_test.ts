@@ -150,7 +150,7 @@ suite('PasswordsImportDialog', function() {
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
       numberImported: 42,
-      failedImports: [],
+      displayedEntries: [],
       fileName: 'test.csv',
     });
 
@@ -187,7 +187,7 @@ suite('PasswordsImportDialog', function() {
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
       numberImported: 42,
-      failedImports: [],
+      displayedEntries: [],
       fileName: 'test.csv',
     });
 
@@ -226,7 +226,7 @@ suite('PasswordsImportDialog', function() {
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.BAD_FORMAT,
       numberImported: 0,
-      failedImports: [],
+      displayedEntries: [],
       fileName: 'test.csv',
     });
 
@@ -249,7 +249,7 @@ suite('PasswordsImportDialog', function() {
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR,
       numberImported: 0,
-      failedImports: [],
+      displayedEntries: [],
       fileName: 'test.csv',
     });
 
@@ -265,7 +265,7 @@ suite('PasswordsImportDialog', function() {
       status:
           chrome.passwordsPrivate.ImportResultsStatus.NUM_PASSWORDS_EXCEEDED,
       numberImported: 0,
-      failedImports: [],
+      displayedEntries: [],
       fileName: 'test.csv',
     });
 
@@ -280,7 +280,7 @@ suite('PasswordsImportDialog', function() {
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE,
       numberImported: 0,
-      failedImports: [],
+      displayedEntries: [],
       fileName: 'test.csv',
     });
 
@@ -295,56 +295,76 @@ suite('PasswordsImportDialog', function() {
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
       numberImported: 42,
-      failedImports: [
+      displayedEntries: [
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.MISSING_PASSWORD,
           username: 'username',
           url: 'https://google.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.MISSING_URL,
           username: 'username',
           url: '',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.INVALID_URL,
           username: 'username',
           url: 'http/google.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.LONG_URL,
           username: 'username',
           url: 'https://morethan2048chars.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.NON_ASCII_URL,
           username: 'username',
           url: 'https://أهلا.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.LONG_PASSWORD,
           username: 'username',
           url: 'https://google.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.LONG_USERNAME,
           username: 'morethan1000chars',
           url: 'https://google.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_PROFILE,
           username: 'username',
           url: 'https://google.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.CONFLICT_ACCOUNT,
           username: 'username',
           url: 'https://google.com',
+          password: '',
+          id: 0,
         },
         {
           status: chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR,
           username: '',
           url: '',
+          password: '',
+          id: 0,
         },
       ],
       fileName: 'test.csv',
@@ -380,7 +400,7 @@ suite('PasswordsImportDialog', function() {
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.IMPORT_ALREADY_ACTIVE,
       numberImported: 0,
-      failedImports: [],
+      displayedEntries: [],
       fileName: '',
     });
 

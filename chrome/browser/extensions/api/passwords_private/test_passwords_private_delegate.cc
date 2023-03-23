@@ -198,6 +198,22 @@ void TestPasswordsPrivateDelegate::ImportPasswords(
   std::move(results_callback).Run(import_results_);
 }
 
+void TestPasswordsPrivateDelegate::ContinueImport(
+    const std::vector<int>& selected_ids,
+    ImportResultsCallback results_callback) {
+  continue_import_triggered_ = true;
+
+  import_results_.status = api::passwords_private::ImportResultsStatus::
+      IMPORT_RESULTS_STATUS_SUCCESS;
+  import_results_.file_name = "test.csv";
+  import_results_.number_imported = 42;
+  std::move(results_callback).Run(import_results_);
+}
+
+void TestPasswordsPrivateDelegate::ResetImporter(bool delete_file) {
+  reset_importer_triggered_ = true;
+}
+
 void TestPasswordsPrivateDelegate::ExportPasswords(
     base::OnceCallback<void(const std::string&)> callback,
     content::WebContents* web_contents) {

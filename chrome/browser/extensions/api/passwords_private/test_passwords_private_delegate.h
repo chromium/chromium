@@ -62,6 +62,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ImportPasswords(api::passwords_private::PasswordStoreSet to_store,
                        ImportResultsCallback results_callback,
                        content::WebContents* web_contents) override;
+  void ContinueImport(const std::vector<int>& selected_ids,
+                      ImportResultsCallback results_callback) override;
+  void ResetImporter(bool delete_file) override;
   void ExportPasswords(base::OnceCallback<void(const std::string&)> callback,
                        content::WebContents* web_contents) override;
   void CancelExportPasswords() override;
@@ -106,6 +109,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void ClearSavedPasswordsList() { current_entries_.clear(); }
   void ResetPlaintextPassword() { plaintext_password_.reset(); }
   bool ImportPasswordsTriggered() const { return import_passwords_triggered_; }
+  bool ContinueImportTriggered() const { return continue_import_triggered_; }
+  bool ResetImporterTriggered() const { return reset_importer_triggered_; }
   bool ExportPasswordsTriggered() const { return export_passwords_triggered_; }
   bool CancelExportPasswordsTriggered() const {
     return cancel_export_passwords_triggered_;
@@ -173,6 +178,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Flags for detecting whether import/export operations have been invoked.
   bool import_passwords_triggered_ = false;
+  bool continue_import_triggered_ = false;
+  bool reset_importer_triggered_ = false;
   bool export_passwords_triggered_ = false;
   bool cancel_export_passwords_triggered_ = false;
 

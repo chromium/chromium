@@ -74,6 +74,14 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return test_delegate_->ImportPasswordsTriggered();
   }
 
+  bool continue_import_was_triggered() {
+    return test_delegate_->ContinueImportTriggered();
+  }
+
+  bool reset_importer_was_triggered() {
+    return test_delegate_->ResetImporterTriggered();
+  }
+
   bool exportPasswordsWasTriggered() {
     return test_delegate_->ExportPasswordsTriggered();
   }
@@ -238,6 +246,18 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ImportPasswords) {
   EXPECT_FALSE(importPasswordsWasTriggered());
   EXPECT_TRUE(RunPasswordsSubtest("importPasswords")) << message_;
   EXPECT_TRUE(importPasswordsWasTriggered());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ContinueImport) {
+  EXPECT_FALSE(continue_import_was_triggered());
+  EXPECT_TRUE(RunPasswordsSubtest("continueImport")) << message_;
+  EXPECT_TRUE(continue_import_was_triggered());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ResetImporter) {
+  EXPECT_FALSE(reset_importer_was_triggered());
+  EXPECT_TRUE(RunPasswordsSubtest("resetImporter")) << message_;
+  EXPECT_TRUE(reset_importer_was_triggered());
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ExportPasswords) {

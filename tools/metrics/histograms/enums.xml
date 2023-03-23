@@ -36351,6 +36351,8 @@ Called by update_extension_histograms.py.-->
   <int value="1771" label="AUTOFILLPRIVATE_ISVALIDIBAN"/>
   <int value="1772" label="ACCESSIBILITY_PRIVATE_ISLACROSPRIMARY"/>
   <int value="1773" label="POWER_REPORTACTIVITY"/>
+  <int value="1774" label="PASSWORDSPRIVATE_CONTINUEIMPORT"/>
+  <int value="1775" label="PASSWORDSPRIVATE_RESETIMPORTER"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -80360,6 +80362,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Conflict account"/>
   <int value="11" label="Long note"/>
   <int value="12" label="Long concatenated note"/>
+  <int value="13" label="Valid"/>
 </enum>
 
 <enum name="PasswordManagerImportResultsStatus">
@@ -80372,6 +80375,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Chosen file exceeds max file size"/>
   <int value="7" label="Import already active"/>
   <int value="8" label="Number of allowed passwords exceeded"/>
+  <int value="9" label="Conflicts need to be resolved by the user."/>
 </enum>
 
 <enum name="PasswordManagerMatchedFormType">

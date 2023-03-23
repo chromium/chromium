@@ -1143,6 +1143,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
           static_cast<int>(
               password_manager::ImportEntry::Status::LONG_CONCATENATED_NOTE),
       "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportEntryStatus::
+                           IMPORT_ENTRY_STATUS_VALID) ==
+          static_cast<int>(password_manager::ImportEntry::Status::VALID),
+      "");
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
@@ -1192,6 +1197,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
                            IMPORT_RESULTS_STATUS_NUM_PASSWORDS_EXCEEDED) ==
           static_cast<int>(
               password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED),
+      "");
+  static_assert(
+      static_cast<int>(api::passwords_private::ImportResultsStatus::
+                           IMPORT_RESULTS_STATUS_CONFLICTS) ==
+          static_cast<int>(password_manager::ImportResults::Status::CONFLICTS),
       "");
 }
 

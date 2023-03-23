@@ -84,7 +84,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private importResults_: chrome.passwordsPrivate.ImportResults = {
     status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
     numberImported: 0,
-    failedImports: [],
+    displayedEntries: [],
     fileName: '',
   };
   private isOptedInForAccountStorage_: boolean = false;
@@ -107,6 +107,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getUrlCollection',
       'getSavedPasswordList',
       'importPasswords',
+      'continueImport',
+      'resetImporter',
       'isAccountStoreDefault',
       'isOptedInForAccountStorage',
       'movePasswordsToAccount',
@@ -401,6 +403,16 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
     this.methodCalled('importPasswords', toStore);
     return Promise.resolve(this.importResults_);
+  }
+
+  continueImport(selectedIds: number[]) {
+    this.methodCalled('continueImport', selectedIds);
+    return Promise.resolve(this.importResults_);
+  }
+
+  resetImporter(deleteFile: boolean) {
+    this.methodCalled('resetImporter', deleteFile);
+    return Promise.resolve();
   }
 
   /**

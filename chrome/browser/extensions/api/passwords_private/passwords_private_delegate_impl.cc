@@ -189,9 +189,10 @@ extensions::api::passwords_private::ImportResults ConvertImportResults(
           results.status);
   private_results.number_imported = results.number_imported;
   private_results.file_name = results.file_name;
-  private_results.failed_imports.reserve(results.failed_imports.size());
-  for (const auto& entry : results.failed_imports)
-    private_results.failed_imports.emplace_back(ConvertImportEntry(entry));
+  private_results.displayed_entries.reserve(results.displayed_entries.size());
+  for (const auto& entry : results.displayed_entries) {
+    private_results.displayed_entries.emplace_back(ConvertImportEntry(entry));
+  }
   return private_results;
 }
 
@@ -632,6 +633,22 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
   if (client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
     client->GetPasswordFeatureManager()->SetDefaultPasswordStore(store_to_use);
   }
+}
+
+void PasswordsPrivateDelegateImpl::ContinueImport(
+    const std::vector<int>& selected_ids,
+    ImportResultsCallback results_callback) {
+  // TODO(crbug/1417650): Implement PasswordManagerPorter::ContinueImport
+  // TODO(crbug/1417650): Add re-auth before ContinueImport.
+  extensions::api::passwords_private::ImportResults private_results;
+  private_results.status = extensions::api::passwords_private::
+      ImportResultsStatus::IMPORT_RESULTS_STATUS_UNKNOWN_ERROR;
+  std::move(results_callback).Run(private_results);
+}
+
+void PasswordsPrivateDelegateImpl::ResetImporter(bool delete_file) {
+  // TODO(crbug/1417650): Implement PasswordManagerPorter::ResetImporter.
+  return;
 }
 
 void PasswordsPrivateDelegateImpl::ExportPasswords(

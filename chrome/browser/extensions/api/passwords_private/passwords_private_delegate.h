@@ -155,6 +155,20 @@ class PasswordsPrivateDelegate
       ImportResultsCallback results_callback,
       content::WebContents* web_contents) = 0;
 
+  // Resumes the password import process when user has selected which passwords
+  // to replace.
+  // |selected_ids|: The ids of passwords that need to be replaced.
+  // |results_callback|: Used to communicate the status and summary of the
+  // import process.
+  virtual void ContinueImport(const std::vector<int>& selected_ids,
+                              ImportResultsCallback results_callback) = 0;
+
+  // Resets the PasswordImporter if it is in the CONFLICTS/FINISHED state and
+  // the user closes the dialog. Only when the PasswordImporter is in FINISHED
+  // state, |deleteFile| option is taken into account.
+  // |delete_file|: whether to trigger deletion of the last imported file.
+  virtual void ResetImporter(bool delete_file) = 0;
+
   // Trigger the password export procedure, allowing the user to save a file
   // containing their passwords. |callback| will be called with an error
   // message if the request is rejected, because another export is in progress.

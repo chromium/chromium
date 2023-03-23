@@ -289,6 +289,44 @@ void PasswordsPrivateImportPasswordsFunction::ImportRequestCompleted(
       api::passwords_private::ImportPasswords::Results::Create(result)));
 }
 
+// PasswordsPrivateContinueImportFunction
+ResponseAction PasswordsPrivateContinueImportFunction::Run() {
+  if (!GetDelegate(browser_context())) {
+    return RespondNow(Error(kNoDelegateError));
+  }
+
+  auto parameters =
+      api::passwords_private::ContinueImport::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  GetDelegate(browser_context())
+      ->ContinueImport(
+          parameters->selected_ids,
+          base::BindOnce(
+              &PasswordsPrivateContinueImportFunction::ImportCompleted, this));
+
+  // `ImportCompleted()` might respond before we reach this point.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void PasswordsPrivateContinueImportFunction::ImportCompleted(
+    const api::passwords_private::ImportResults& result) {
+  Respond(ArgumentList(
+      api::passwords_private::ImportPasswords::Results::Create(result)));
+}
+
+// PasswordsPrivateResetImporterFunction
+ResponseAction PasswordsPrivateResetImporterFunction::Run() {
+  if (!GetDelegate(browser_context())) {
+    return RespondNow(Error(kNoDelegateError));
+  }
+
+  auto parameters =
+      api::passwords_private::ResetImporter::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+  GetDelegate(browser_context())->ResetImporter(parameters->delete_file);
+  return RespondNow(NoArguments());
+}
+
 // PasswordsPrivateExportPasswordsFunction
 ResponseAction PasswordsPrivateExportPasswordsFunction::Run() {
   if (!GetDelegate(browser_context())) {
