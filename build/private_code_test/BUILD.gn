@@ -32,14 +32,14 @@ if (!is_component_build) {
     inputs = [ "//../.gclient_entries" ]
   }
 
-  shared_library("private_code_test_lib") {
+  shared_library("private_code_test_inputs") {
     deps = [ "//v8" ]
     ldflags = [ "--collect-inputs-only" ]
   }
 
   # Test that ensures the checker fails when it is supposed to.
   private_code_test("private_code_failure_test") {
-    linker_inputs_dep = ":private_code_test_lib"
+    linker_inputs_dep = ":private_code_test_inputs"
     private_paths_dep = ":private_code_test_gclient_deps"
     private_paths_file = "$target_gen_dir/test_private_paths.txt"
     expect_failure = true

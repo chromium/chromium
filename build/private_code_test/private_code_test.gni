@@ -13,14 +13,17 @@ template("private_code_test") {
                            ])
     script = "//build/private_code_test/private_code_test.py"
     _linker_inputs_dep = invoker.linker_inputs_dep
-    if (is_android) {
-      _so_name = "lib" + get_label_info(_linker_inputs_dep, "name")
-      _so_name = string_replace(_so_name, "liblib", "lib")
-      _linker_inputs_file = get_label_info(_linker_inputs_dep, "root_out_dir") +
-                            "/lib.unstripped/${_so_name}$shlib_extension"
-    } else {
-      assert(false, "TODO: Add non-android support")
+    if (shlib_prefix != "") {
+      _so_name = shlib_prefix + get_label_info(_linker_inputs_dep, "name")
+      _so_name = string_replace(_so_name,
+                                "${shlib_prefix}${shlib_prefix}",
+                                shlib_prefix)
     }
+    _dir = get_label_info(_linker_inputs_dep, "root_out_dir")
+    if (is_android) {
+      _dir += "/lib.unstripped"
+    }
+    _linker_inputs_file = "$_dir/${_so_name}$shlib_extension"
     if (defined(invoker.private_paths_dep)) {
       _private_paths_dep = invoker.private_paths_dep
       _private_paths_file = invoker.private_paths_file
