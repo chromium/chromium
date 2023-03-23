@@ -200,7 +200,10 @@ public class BookmarkFolderSelectActivity
 
     private void updateFolderList() {
         List<BookmarkId> folderList = new ArrayList<>();
-        folderList.add(mModel.getReadingListFolder());
+        // Reading List doesn't support folders as children.
+        if (!mIsCreatingFolder) {
+            folderList.add(mModel.getReadingListFolder());
+        }
         List<Integer> depthList = new ArrayList<>();
         depthList.add(0);
         mModel.getMoveDestinations(folderList, depthList, mBookmarksToMove);
