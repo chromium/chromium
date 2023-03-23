@@ -6,7 +6,7 @@
 #define ASH_WM_DESKS_DESK_NAME_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/desks/desks_textfield.h"
+#include "ash/wm/desks/desk_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -17,7 +17,7 @@ class DeskMiniView;
 // the name of its corresponding desk.
 // When Bento is enabled and the user creates a new desk, the accessible name
 // for `this` will be the default desk name.
-class ASH_EXPORT DeskNameView : public DesksTextfield {
+class ASH_EXPORT DeskNameView : public DeskTextfield {
  public:
   METADATA_HEADER(DeskNameView);
 
@@ -26,7 +26,7 @@ class ASH_EXPORT DeskNameView : public DesksTextfield {
   DeskNameView& operator=(const DeskNameView&) = delete;
   ~DeskNameView() override;
 
-  // DesksTextfield:
+  // DeskTextfield:
   void OnViewHighlighted() override;
 
  private:
@@ -34,7 +34,7 @@ class ASH_EXPORT DeskNameView : public DesksTextfield {
   DeskMiniView* const mini_view_;
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, DeskNameView, DesksTextfield)
+BEGIN_VIEW_BUILDER(/* no export */, DeskNameView, DeskTextfield)
 END_VIEW_BUILDER
 
 }  // namespace ash

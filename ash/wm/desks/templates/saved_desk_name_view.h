@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/wm/desks/desks_textfield.h"
+#include "ash/wm/desks/desk_textfield.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -15,7 +15,7 @@ namespace ash {
 
 // Defines a textfield styled to normally look like a label. Allows modifying
 // the name of its corresponding saved desk.
-class SavedDeskNameView : public DesksTextfield {
+class SavedDeskNameView : public DeskTextfield {
  public:
   METADATA_HEADER(SavedDeskNameView);
 
@@ -40,7 +40,7 @@ class SavedDeskNameView : public DesksTextfield {
   // size of `this`, which invalidates the layout.
   void OnContentsChanged();
 
-  // DesksTextfield:
+  // DeskTextfield:
   gfx::Size CalculatePreferredSize() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
@@ -49,7 +49,7 @@ class SavedDeskNameView : public DesksTextfield {
   absl::optional<std::u16string> temporary_name_;
 };
 
-BEGIN_VIEW_BUILDER(/* no export */, SavedDeskNameView, DesksTextfield)
+BEGIN_VIEW_BUILDER(/* no export */, SavedDeskNameView, DeskTextfield)
 END_VIEW_BUILDER
 
 }  // namespace ash

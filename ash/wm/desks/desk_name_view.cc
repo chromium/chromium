@@ -45,11 +45,11 @@ void DeskNameView::OnViewHighlighted() {
             IDS_ASH_DESKS_NAME_HIGHLIGHT_NOTIFICATION));
   }
 
-  DesksTextfield::OnViewHighlighted();
+  DeskTextfield::OnViewHighlighted();
   mini_view_->owner_bar()->ScrollToShowMiniViewIfNecessary(mini_view_);
 }
 
-BEGIN_METADATA(DeskNameView, DesksTextfield)
+BEGIN_METADATA(DeskNameView, DeskTextfield)
 END_METADATA
 
 }  // namespace ash

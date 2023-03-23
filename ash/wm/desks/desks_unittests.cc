@@ -40,6 +40,7 @@
 #include "ash/style/color_util.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_button_base.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
@@ -50,6 +51,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
@@ -129,6 +131,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -3038,21 +3041,22 @@ TEST_P(DesksEditableNamesTest, MaxLength) {
   SendKey(ui::VKEY_BACK);
 
   // Simulate user is typing text beyond the max length.
-  std::u16string expected_desk_name(DesksTextfield::kMaxLength, L'a');
-  for (size_t i = 0; i < DesksTextfield::kMaxLength + 10; ++i)
+  std::u16string expected_desk_name(DeskTextfield::kMaxLength, L'a');
+  for (size_t i = 0; i < DeskTextfield::kMaxLength + 10; ++i) {
     SendKey(ui::VKEY_A);
+  }
   SendKey(ui::VKEY_RETURN);
 
   // Desk name has been trimmed.
   auto* desk_1 = controller()->desks()[0].get();
-  EXPECT_EQ(DesksTextfield::kMaxLength, desk_1->name().size());
+  EXPECT_EQ(DeskTextfield::kMaxLength, desk_1->name().size());
   EXPECT_EQ(expected_desk_name, desk_1->name());
   EXPECT_TRUE(desk_1->is_name_set_by_user());
 
   // Test that pasting a large amount of text is trimmed at the max length.
-  std::u16string clipboard_text(DesksTextfield::kMaxLength + 10, L'b');
-  expected_desk_name = std::u16string(DesksTextfield::kMaxLength, L'b');
-  EXPECT_GT(clipboard_text.size(), DesksTextfield::kMaxLength);
+  std::u16string clipboard_text(DeskTextfield::kMaxLength + 10, L'b');
+  expected_desk_name = std::u16string(DeskTextfield::kMaxLength, L'b');
+  EXPECT_GT(clipboard_text.size(), DeskTextfield::kMaxLength);
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(clipboard_text);
 
@@ -3064,7 +3068,7 @@ TEST_P(DesksEditableNamesTest, MaxLength) {
   // Paste text.
   SendKey(ui::VKEY_V, ui::EF_CONTROL_DOWN);
   SendKey(ui::VKEY_RETURN);
-  EXPECT_EQ(DesksTextfield::kMaxLength, desk_1->name().size());
+  EXPECT_EQ(DeskTextfield::kMaxLength, desk_1->name().size());
   EXPECT_EQ(expected_desk_name, desk_1->name());
 }
 
@@ -6463,8 +6467,9 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
 
   // Set a super long desk name.
   ClickOnView(GetDefaultDeskButton(desks_bar_view), event_generator);
-  for (size_t i = 0; i < DesksTextfield::kMaxLength + 5; i++)
+  for (size_t i = 0; i < DeskTextfield::kMaxLength + 5; i++) {
     SendKey(ui::VKEY_A);
+  }
   SendKey(ui::VKEY_RETURN);
   ExitOverview();
   EnterOverview();
@@ -6472,7 +6477,7 @@ TEST_P(DesksTest, ZeroStateDeskButtonText) {
   desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
   auto* zero_state_default_desk_button = GetDefaultDeskButton(desks_bar_view);
   std::u16string desk_button_text = zero_state_default_desk_button->GetText();
-  std::u16string expected_desk_name(DesksTextfield::kMaxLength, L'a');
+  std::u16string expected_desk_name(DeskTextfield::kMaxLength, L'a');
   // Zero state desk button should show the elided name as the DeskNameView.
   EXPECT_EQ(expected_desk_name,
             DesksController::Get()->desks()[0].get()->name());
@@ -9194,6 +9199,26 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
   EXPECT_FALSE(window.is_valid());
 }
 
+using BentoButtonTest = DesksTest;
+
+// Tests that `DeskTextfield` can be used outside overview.
+TEST_P(BentoButtonTest, DeskTextfieldOutsideOverview) {
+  auto widget =
+      TestWidgetBuilder()
+          .SetDelegate(nullptr)
+          .SetBounds(gfx::Rect(0, 0, 300, 300))
+          .SetParent(Shell::GetPrimaryRootWindow())
+          .SetShow(true)
+          .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
+          .BuildOwnsNativeWidget();
+  auto* desk_text_view =
+      widget->SetContentsView(std::make_unique<DeskTextfield>());
+
+  // There is no crash for committing name changes for `DeskTextfield` outside
+  // overview.
+  desk_text_view->CommitChanges(widget.get());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
@@ -9245,6 +9270,7 @@ INSTANTIATE_TEST_SUITE_P(All, DesksMockTimeTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, PersistentDesksBarTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, DesksCloseAllTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, BentoButtonTest, ValuesIn(kAllCombinations));
 
 }  // namespace
 

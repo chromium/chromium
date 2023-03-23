@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/desks_textfield.h"
+#include "ash/wm/desks/desk_textfield.h"
 
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -26,35 +26,14 @@ namespace ash {
 namespace {
 
 // The border radius on the text field.
-constexpr int kDesksTextfieldBorderRadius = 4;
+constexpr int kDeskTextfieldBorderRadius = 4;
 
-constexpr int kDesksTextfieldMinHeight = 16;
-
-#if DCHECK_IS_ON()
-bool IsDesksBarOrSavedDeskLibraryWidget(const views::Widget* widget) {
-  if (!widget)
-    return false;
-
-  auto* overview_controller = Shell::Get()->overview_controller();
-  if (!overview_controller->InOverviewSession())
-    return false;
-
-  auto* session = overview_controller->overview_session();
-  for (const auto& grid : session->grid_list()) {
-    if (widget == grid->saved_desk_library_widget() ||
-        widget == grid->desks_widget()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-#endif  // DCHECK_IS_ON()
+constexpr int kDeskTextfieldMinHeight = 16;
 
 }  // namespace
 
-DesksTextfield::DesksTextfield() {
-  views::Builder<DesksTextfield>(this)
+DeskTextfield::DeskTextfield() {
+  views::Builder<DeskTextfield>(this)
       .SetBorder(nullptr)
       .SetCursorEnabled(true)
       .BuildChildren();
@@ -62,7 +41,7 @@ DesksTextfield::DesksTextfield() {
   views::FocusRing* focus_ring =
       StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
   focus_ring->SetHasFocusPredicate([](views::View* view) {
-    return static_cast<DesksTextfield*>(view)->IsViewHighlighted() ||
+    return static_cast<DeskTextfield*>(view)->IsViewHighlighted() ||
            view->HasFocus();
   });
   focus_ring->SetColorId(ui::kColorAshFocusRing);
@@ -70,17 +49,13 @@ DesksTextfield::DesksTextfield() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
 }
 
-DesksTextfield::~DesksTextfield() = default;
+DeskTextfield::~DeskTextfield() = default;
 
 // static
-constexpr size_t DesksTextfield::kMaxLength;
+constexpr size_t DeskTextfield::kMaxLength;
 
 // static
-void DesksTextfield::CommitChanges(views::Widget* widget) {
-#if DCHECK_IS_ON()
-  DCHECK(IsDesksBarOrSavedDeskLibraryWidget(widget));
-#endif  // DCHECK_IS_ON()
-
+void DeskTextfield::CommitChanges(views::Widget* widget) {
   auto* focus_manager = widget->GetFocusManager();
   focus_manager->ClearFocus();
   // Avoid having the focus restored to the same view when the parent view is
@@ -88,7 +63,7 @@ void DesksTextfield::CommitChanges(views::Widget* widget) {
   focus_manager->SetStoredFocusView(nullptr);
 }
 
-gfx::Size DesksTextfield::CalculatePreferredSize() const {
+gfx::Size DeskTextfield::CalculatePreferredSize() const {
   const std::u16string& text = GetText();
   int width = 0;
   int height = 0;
@@ -97,17 +72,17 @@ gfx::Size DesksTextfield::CalculatePreferredSize() const {
   gfx::Size size{width + GetCaretBounds().width(), height};
   const auto insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
-  size.SetToMax(gfx::Size(0, kDesksTextfieldMinHeight));
+  size.SetToMax(gfx::Size(0, kDeskTextfieldMinHeight));
   return size;
 }
 
-void DesksTextfield::SetBorder(std::unique_ptr<views::Border> b) {
+void DeskTextfield::SetBorder(std::unique_ptr<views::Border> b) {
   // `views::Textfield` override of `SetBorder()` removes an installed focus
   // ring, which we want to keep.
   views::View::SetBorder(std::move(b));
 }
 
-bool DesksTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
+bool DeskTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   // The default behavior of the tab key is that it moves the focus to the next
   // available view.
   // We want that to be handled by OverviewHighlightController as part of moving
@@ -115,27 +90,27 @@ bool DesksTextfield::SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) {
   return event.key_code() == ui::VKEY_TAB;
 }
 
-std::u16string DesksTextfield::GetTooltipText(const gfx::Point& p) const {
+std::u16string DeskTextfield::GetTooltipText(const gfx::Point& p) const {
   return GetPreferredSize().width() > width() ? GetText() : std::u16string();
 }
 
-void DesksTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void DeskTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
   node_data->SetNameChecked(GetAccessibleName());
 }
 
-void DesksTextfield::OnMouseEntered(const ui::MouseEvent& event) {
+void DeskTextfield::OnMouseEntered(const ui::MouseEvent& event) {
   UpdateViewAppearance();
 }
 
-void DesksTextfield::OnMouseExited(const ui::MouseEvent& event) {
+void DeskTextfield::OnMouseExited(const ui::MouseEvent& event) {
   UpdateViewAppearance();
 }
 
-void DesksTextfield::OnThemeChanged() {
+void DeskTextfield::OnThemeChanged() {
   Textfield::OnThemeChanged();
-  SetBackground(views::CreateRoundedRectBackground(
-      GetBackgroundColor(), kDesksTextfieldBorderRadius));
+  SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
+                                                   kDeskTextfieldBorderRadius));
   AshColorProvider* color_provider = AshColorProvider::Get();
   const SkColor text_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
@@ -149,17 +124,17 @@ void DesksTextfield::OnThemeChanged() {
   UpdateFocusRingState();
 }
 
-ui::Cursor DesksTextfield::GetCursor(const ui::MouseEvent& event) {
+ui::Cursor DeskTextfield::GetCursor(const ui::MouseEvent& event) {
   return ui::mojom::CursorType::kIBeam;
 }
 
-void DesksTextfield::OnFocus() {
+void DeskTextfield::OnFocus() {
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
   views::Textfield::OnFocus();
   UpdateViewAppearance();
 }
 
-void DesksTextfield::OnBlur() {
+void DeskTextfield::OnBlur() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   views::Textfield::OnBlur();
   UpdateViewAppearance();
@@ -173,49 +148,50 @@ void DesksTextfield::OnBlur() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<views::Widget> w) {
-                       if (w)
+                       if (w) {
                          w->GetFocusManager()->SetStoredFocusView(nullptr);
+                       }
                      },
                      GetWidget()->GetWeakPtr()));
 }
 
-void DesksTextfield::OnDragEntered(const ui::DropTargetEvent& event) {
+void DeskTextfield::OnDragEntered(const ui::DropTargetEvent& event) {
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
   views::Textfield::OnDragEntered(event);
 }
 
-void DesksTextfield::OnDragExited() {
+void DeskTextfield::OnDragExited() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   views::Textfield::OnDragExited();
 }
 
-views::View* DesksTextfield::GetView() {
+views::View* DeskTextfield::GetView() {
   return this;
 }
 
-void DesksTextfield::MaybeActivateHighlightedView() {
+void DeskTextfield::MaybeActivateHighlightedView() {
   RequestFocus();
 }
 
-void DesksTextfield::MaybeCloseHighlightedView(bool primary_action) {}
+void DeskTextfield::MaybeCloseHighlightedView(bool primary_action) {}
 
-void DesksTextfield::MaybeSwapHighlightedView(bool right) {}
+void DeskTextfield::MaybeSwapHighlightedView(bool right) {}
 
-void DesksTextfield::OnViewHighlighted() {
+void DeskTextfield::OnViewHighlighted() {
   UpdateFocusRingState();
 }
 
-void DesksTextfield::OnViewUnhighlighted() {
+void DeskTextfield::OnViewUnhighlighted() {
   UpdateFocusRingState();
 }
 
-void DesksTextfield::UpdateFocusRingState() {
+void DeskTextfield::UpdateFocusRingState() {
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   DCHECK(focus_ring);
   focus_ring->SchedulePaint();
 }
 
-void DesksTextfield::UpdateViewAppearance() {
+void DeskTextfield::UpdateViewAppearance() {
   background()->SetNativeControlColor(GetBackgroundColor());
   // Paint the whole view to update the background. The `SchedulePaint` in
   // `UpdateFocusRingState` will only repaint the focus ring.
@@ -223,10 +199,11 @@ void DesksTextfield::UpdateViewAppearance() {
   UpdateFocusRingState();
 }
 
-SkColor DesksTextfield::GetBackgroundColor() const {
+SkColor DeskTextfield::GetBackgroundColor() const {
   // Admin desk templates may be read only.
-  if (GetReadOnly())
+  if (GetReadOnly()) {
     return SK_ColorTRANSPARENT;
+  }
 
   return HasFocus() || IsMouseHovered()
              ? AshColorProvider::Get()->GetControlsLayerColor(
@@ -235,7 +212,7 @@ SkColor DesksTextfield::GetBackgroundColor() const {
              : SK_ColorTRANSPARENT;
 }
 
-BEGIN_METADATA(DesksTextfield, views::Textfield)
+BEGIN_METADATA(DeskTextfield, views::Textfield)
 END_METADATA
 
 }  // namespace ash

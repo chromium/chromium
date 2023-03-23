@@ -14,7 +14,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
-#include "ash/wm/desks/desks_textfield.h"
+#include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
@@ -254,7 +254,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
   }
 
   // Use a border to create spacing between `name_view_`s background (set in
-  // `DesksTextfield`) and the actual text. Shift the parent by the same amount
+  // `DeskTextfield`) and the actual text. Shift the parent by the same amount
   // so that the text stays aligned with the text in `time_view`. We shift the
   // parent here and not `name_view_` itself otherwise its bounds will be
   // outside the parent bounds and the background will get clipped.
@@ -603,9 +603,9 @@ void SavedDeskItemView::ContentsChanged(views::Textfield* sender,
   // names to have an unbounded length. Therefore we trim if needed at
   // `kMaxLength` UTF-16 boundary. Note that we don't care about code point
   // boundaries in this case.
-  if (new_contents.size() > DesksTextfield::kMaxLength) {
+  if (new_contents.size() > DeskTextfield::kMaxLength) {
     std::u16string trimmed_new_contents = new_contents;
-    trimmed_new_contents.resize(DesksTextfield::kMaxLength);
+    trimmed_new_contents.resize(DeskTextfield::kMaxLength);
     name_view_->SetText(trimmed_new_contents);
   }
 
