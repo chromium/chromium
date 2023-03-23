@@ -110,6 +110,14 @@ bool AuraOutputManager::SendOutputMetrics(wl_resource* output_resource,
   return true;
 }
 
+void AuraOutputManager::SendOutputActivated(wl_resource* output_resource) {
+  if (wl_resource_get_version(manager_resource_) >=
+      ZAURA_OUTPUT_MANAGER_ACTIVATED_SINCE_VERSION) {
+    CHECK_EQ(client_, wl_resource_get_client(output_resource));
+    zaura_output_manager_send_activated(manager_resource_, output_resource);
+  }
+}
+
 void bind_aura_output_manager(wl_client* client,
                               void* data,
                               uint32_t version,

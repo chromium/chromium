@@ -201,7 +201,12 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
   return true;
 }
 
-void WaylandDisplayHandler::SendActiveDisplay() {}
+void WaylandDisplayHandler::SendActiveDisplay() {
+  wl_client* client = wl_resource_get_client(output_resource_);
+  if (auto* output_manager = AuraOutputManager::Get(client)) {
+    output_manager->SendOutputActivated(output_resource_);
+  }
+}
 
 void WaylandDisplayHandler::OnOutputDestroyed() {
   // destroying itself.

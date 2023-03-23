@@ -1188,7 +1188,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_output_manager" version="1">
+  <interface name="zaura_output_manager" version="2">
     <description summary="aura shell interface to the output manager">
       A global responsible for ensuring clients have a complete view of a given
       output's state immediately following the bind of wl_output, and
@@ -1346,6 +1346,15 @@
       </description>
       <arg name="output" type="object" interface="wl_output" />
       <arg name="description" type="string" summary="output description" />
+    </event>
+
+    <!-- Version 2 additions -->
+    <event name="activated" since="2">
+      <description summary="target display for new windows">
+        Notifies that this output is now active output. It is typically used as
+        a target when a new window is created without specific bounds.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
     </event>
   </interface>
 </protocol>

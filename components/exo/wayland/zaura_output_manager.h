@@ -44,6 +44,10 @@ class AuraOutputManager {
                          const display::Display& display,
                          uint32_t changed_metrics);
 
+  // Dispatches the activated event for the `output_resource` to the associated
+  // client.
+  void SendOutputActivated(wl_resource* output_resource);
+
  private:
   raw_ptr<wl_client> client_;
   raw_ptr<wl_resource> manager_resource_;
