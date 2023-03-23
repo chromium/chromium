@@ -381,7 +381,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                    bool force_fallback) const;
 
   // Decide if a device feature is exposed to render process.
-  bool IsFeatureExposed(WGPUFeatureName feature) const;
+  bool IsFeatureExposed(WGPUAdapter adapter, WGPUFeatureName feature) const;
 
   // Dawn wire uses procs which forward their calls to these methods.
   void RequestAdapterImpl(WGPUInstance instance,
@@ -444,6 +444,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<std::string> require_disabled_toggles_;
   bool allow_unsafe_apis_;
   bool tiered_adapter_limits_;
+  bool use_dxc_ = false;
 
   // Isolation key that is necessary for device requests. Optional to
   // differentiate between an empty isolation key, and an unset one.
@@ -1115,6 +1116,8 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   tiered_adapter_limits_ =
       !base::Contains(require_disabled_toggles_, "tiered_adapter_limits");
 
+  use_dxc_ = base::Contains(require_enabled_toggles_, "use_dxc");
+
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
       [](const WGPUInstanceDescriptor*) -> WGPUInstance {
@@ -1178,7 +1181,8 @@ ContextResult WebGPUDecoderImpl::Initialize(
   return ContextResult::kSuccess;
 }
 
-bool WebGPUDecoderImpl::IsFeatureExposed(WGPUFeatureName feature) const {
+bool WebGPUDecoderImpl::IsFeatureExposed(WGPUAdapter adapter,
+                                         WGPUFeatureName feature) const {
   switch (feature) {
     case WGPUFeatureName_TimestampQuery:
     case WGPUFeatureName_TimestampQueryInsidePasses:
@@ -1199,6 +1203,18 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUFeatureName feature) const {
     case WGPUFeatureName_RG11B10UfloatRenderable:
     case WGPUFeatureName_BGRA8UnormStorage:
       return true;
+    case WGPUFeatureName_ShaderF16: {
+      if (!use_dxc_) {
+        WGPUAdapterProperties properties{};
+        dawn::native::GetProcs().adapterGetProperties(adapter, &properties);
+        if (properties.backendType == WGPUBackendType_D3D12) {
+          // On D3D12, shader-f16 requires DXC. Hide it if the use_dxc toggle is
+          // not enabled.
+          return false;
+        }
+      }
+      return true;
+    }
     default:
       return false;
   }
@@ -1259,7 +1275,7 @@ bool WebGPUDecoderImpl::AdapterHasFeatureImpl(WGPUAdapter adapter,
   if (!dawn::native::GetProcs().adapterHasFeature(adapter, feature)) {
     return false;
   }
-  return IsFeatureExposed(feature);
+  return IsFeatureExposed(adapter, feature);
 }
 
 size_t WebGPUDecoderImpl::AdapterEnumerateFeaturesImpl(
@@ -1270,9 +1286,9 @@ size_t WebGPUDecoderImpl::AdapterEnumerateFeaturesImpl(
   std::vector<WGPUFeatureName> features(count);
   dawn::native::GetProcs().adapterEnumerateFeatures(adapter, features.data());
 
-  auto it =
-      std::partition(features.begin(), features.end(),
-                     [&](WGPUFeatureName f) { return IsFeatureExposed(f); });
+  auto it = std::partition(
+      features.begin(), features.end(),
+      [&](WGPUFeatureName f) { return IsFeatureExposed(adapter, f); });
   count = std::distance(features.begin(), it);
 
   if (features_out != nullptr) {
@@ -1312,7 +1328,7 @@ void WebGPUDecoderImpl::RequestDeviceImpl(
     // Check that no disallowed features were requested. They should be hidden
     // by AdapterEnumerateFeaturesImpl.
     for (const WGPUFeatureName& f : required_features) {
-      if (!IsFeatureExposed(f)) {
+      if (!IsFeatureExposed(adapter, f)) {
         callback(WGPURequestDeviceStatus_Error, nullptr,
                  "Disallowed feature requested.", userdata);
         return;

@@ -677,8 +677,6 @@ WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return WGPUFeatureName_TimestampQuery;
     case V8GPUFeatureName::Enum::kTimestampQueryInsidePasses:
       return WGPUFeatureName_TimestampQueryInsidePasses;
-    case V8GPUFeatureName::Enum::kShaderFloat16:
-      return WGPUFeatureName_DawnShaderFloat16;
     case V8GPUFeatureName::Enum::kDepthClipControl:
       return WGPUFeatureName_DepthClipControl;
     case V8GPUFeatureName::Enum::kDepth32FloatStencil8:
@@ -691,6 +689,8 @@ WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return WGPUFeatureName_RG11B10UfloatRenderable;
     case V8GPUFeatureName::Enum::kBgra8UnormStorage:
       return WGPUFeatureName_BGRA8UnormStorage;
+    case V8GPUFeatureName::Enum::kShaderF16:
+      return WGPUFeatureName_ShaderF16;
   }
 }
 

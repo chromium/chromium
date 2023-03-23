@@ -11,13 +11,13 @@ enum GPUFeatureName {
     "texture-compression-astc",
     "timestamp-query",
     "timestamp-query-inside-passes",
-    "shader-float16",
     "depth-clip-control",
     "depth32float-stencil8",
     "indirect-first-instance",
     "chromium-experimental-dp4a",
     "rg11b10ufloat-renderable",
     "bgra8unorm-storage",
+    "shader-f16",
 };
 
 [
