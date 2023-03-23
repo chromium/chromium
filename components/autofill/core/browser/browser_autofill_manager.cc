@@ -1610,8 +1610,7 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
     return true;
   }
 
-  NOTREACHED();
-  return false;
+  return false;  // The ID was valid. The entry may have been deleted in a race.
 }
 
 bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(int unique_id) {
@@ -1629,8 +1628,7 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(int unique_id) {
     return is_local;
   }
 
-  NOTREACHED();
-  return false;
+  return false;  // The ID was valid. The entry may have been deleted in a race.
 }
 
 void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
