@@ -9098,7 +9098,6 @@ test("unit_tests") {
       "../browser/supervised_user/supervised_user_metrics_service_unittest.cc",
       "../browser/supervised_user/supervised_user_pref_store_unittest.cc",
       "../browser/supervised_user/supervised_user_service_unittest.cc",
-      "../browser/supervised_user/web_approvals_manager_unittest.cc",
     ]
     if (is_chromeos_ash) {
       sources += [ "../browser/supervised_user/chromeos/web_content_handler_impl_unittest.cc" ]

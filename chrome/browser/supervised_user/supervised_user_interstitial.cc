@@ -21,7 +21,6 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -229,8 +228,9 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
   std::string profile_image_url2 = pref_service->GetString(
       prefs::kSupervisedUserSecondCustodianProfileImageURL);
 
-  bool allow_access_requests = supervised_user_service->web_approvals_manager()
-                                   .AreRemoteApprovalRequestsEnabled();
+  bool allow_access_requests =
+      supervised_user_service->remote_web_approvals_manager()
+          .AreApprovalRequestsEnabled();
 
   return supervised_user::BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
@@ -257,7 +257,7 @@ void SupervisedUserInterstitial::RequestUrlAccessRemote(
                             Commands::HISTOGRAM_BOUNDING_VALUE);
   OutputRequestPermissionSourceMetric();
 
-  supervised_user_service_->web_approvals_manager().RequestRemoteApproval(
+  supervised_user_service_->remote_web_approvals_manager().RequestApproval(
       url_, std::move(callback));
 }
 

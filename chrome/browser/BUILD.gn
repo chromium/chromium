@@ -7408,7 +7408,6 @@ static_library("browser") {
       "supervised_user/kids_chrome_management/kids_profile_manager.h",
       "supervised_user/parental_control_metrics.cc",
       "supervised_user/parental_control_metrics.h",
-      "supervised_user/permission_request_creator.h",
       "supervised_user/supervised_user_browser_utils.cc",
       "supervised_user/supervised_user_browser_utils.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
@@ -7431,8 +7430,6 @@ static_library("browser") {
       "supervised_user/supervised_user_service_factory.h",
       "supervised_user/supervised_user_settings_service_factory.cc",
       "supervised_user/supervised_user_settings_service_factory.h",
-      "supervised_user/web_approvals_manager.cc",
-      "supervised_user/web_approvals_manager.h",
     ]
     if (is_chromeos_ash) {
       sources += [

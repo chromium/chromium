@@ -92,7 +92,7 @@ PermissionRequestCreatorApiary::PermissionRequestCreatorApiary(
 PermissionRequestCreatorApiary::~PermissionRequestCreatorApiary() {}
 
 // static
-std::unique_ptr<PermissionRequestCreator>
+std::unique_ptr<supervised_user::PermissionRequestCreator>
 PermissionRequestCreatorApiary::CreateWithProfile(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<PermissionRequestCreatorApiary>(

@@ -19,9 +19,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/file_downloader.h"
-#include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "components/supervised_user/core/common/supervised_users.h"
@@ -134,8 +134,8 @@ class SupervisedUserService
 
   static base::FilePath GetDenylistPathForTesting();
 
-  WebApprovalsManager& web_approvals_manager() {
-    return web_approvals_manager_;
+  supervised_user::RemoteWebApprovalsManager& remote_web_approvals_manager() {
+    return remote_web_approvals_manager_;
   }
 
   // Initializes this object.
@@ -421,8 +421,8 @@ class SupervisedUserService
   supervised_user::SupervisedUserDenylist denylist_;
   std::unique_ptr<FileDownloader> denylist_downloader_;
 
-  // Manages local and remote web approvals.
-  WebApprovalsManager web_approvals_manager_;
+  // Manages remote web approvals.
+  supervised_user::RemoteWebApprovalsManager remote_web_approvals_manager_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   base::ScopedObservation<extensions::ExtensionRegistry,

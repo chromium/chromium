@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_WEB_APPROVALS_MANAGER_H_
-#define CHROME_BROWSER_SUPERVISED_USER_WEB_APPROVALS_MANAGER_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_REMOTE_WEB_APPROVALS_MANAGER_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_REMOTE_WEB_APPROVALS_MANAGER_H_
 
 #include <stddef.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,9 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "ui/gfx/image/image_skia.h"
 
 class GURL;
+
+namespace supervised_user {
+
 class PermissionRequestCreator;
 
 // Manages remote web approval requests from Family Link users.
@@ -26,59 +27,62 @@ class PermissionRequestCreator;
 // Remote requests are forwarded to the guardian and processed asynchronously.
 // The result of the remote approval syncs as a new web rule to the client and
 // is not handled in this class.
-class WebApprovalsManager {
+class RemoteWebApprovalsManager {
  public:
   // Callback indicating whether the URL access request was initiated
   // successfully.
   using ApprovalRequestInitiatedCallback = base::OnceCallback<void(bool)>;
 
-  WebApprovalsManager();
+  RemoteWebApprovalsManager();
 
-  WebApprovalsManager(const WebApprovalsManager&) = delete;
-  WebApprovalsManager& operator=(const WebApprovalsManager&) = delete;
+  RemoteWebApprovalsManager(const RemoteWebApprovalsManager&) = delete;
+  RemoteWebApprovalsManager& operator=(const RemoteWebApprovalsManager&) =
+      delete;
 
-  ~WebApprovalsManager();
+  ~RemoteWebApprovalsManager();
 
-  // Adds a remote approval request for the `url`.
+  // Adds a appnroval request for the `url`.
   // The `callback` is run when the request was sent or sending of the request
   // failed.
-  void RequestRemoteApproval(const GURL& url,
-                             ApprovalRequestInitiatedCallback callback);
+  void RequestApproval(const GURL& url,
+                       ApprovalRequestInitiatedCallback callback);
 
-  // Returns whether remote approval requests are enabled.
-  bool AreRemoteApprovalRequestsEnabled() const;
+  // Returns whether approval requests are enabled.
+  bool AreApprovalRequestsEnabled() const;
 
   // Adds remote approval request `creator` to handle remote approval requests.
-  void AddRemoteApprovalRequestCreator(
+  void AddApprovalRequestCreator(
       std::unique_ptr<PermissionRequestCreator> creator);
 
-  // Clears all remote approval requests creators.
-  void ClearRemoteApprovalRequestsCreators();
+  // Clears all approval requests creators.
+  void ClearApprovalRequestsCreators();
 
  private:
-  using CreateRemoteApprovalRequestCallback =
+  using CreateApprovalRequestCallback =
       base::RepeatingCallback<void(PermissionRequestCreator*,
                                    ApprovalRequestInitiatedCallback)>;
 
   size_t FindEnabledRemoteApprovalRequestCreator(size_t start) const;
 
-  void AddRemoteApprovalRequestInternal(
-      const CreateRemoteApprovalRequestCallback& create_request,
+  void AddApprovalRequestInternal(
+      const CreateApprovalRequestCallback& create_request,
       ApprovalRequestInitiatedCallback callback,
       size_t index);
 
-  void OnRemoteApprovalRequestIssued(
-      const CreateRemoteApprovalRequestCallback& create_request,
+  void OnApprovalRequestIssued(
+      const CreateApprovalRequestCallback& create_request,
       ApprovalRequestInitiatedCallback callback,
       size_t index,
       bool success);
 
-  // Stores remote approval request creators.
+  // Stores approval request creators.
   // The creators are cleared during shutdown.
   std::vector<std::unique_ptr<PermissionRequestCreator>>
-      remote_approval_request_creators_;
+      approval_request_creators_;
 
-  base::WeakPtrFactory<WebApprovalsManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RemoteWebApprovalsManager> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_WEB_APPROVALS_MANAGER_H_
+}  // namespace supervised_user
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_REMOTE_WEB_APPROVALS_MANAGER_H_

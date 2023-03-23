@@ -177,8 +177,8 @@ void KidsManagementService::SetActive(bool newValue) {
         << "StartFetchFamilyMembers should make the status started";
 
     // Registers a request for permission for the user to access a blocked site.
-    supervised_user_service_->web_approvals_manager()
-        .AddRemoteApprovalRequestCreator(
+    supervised_user_service_->remote_web_approvals_manager()
+        .AddApprovalRequestCreator(
             PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
     StopFetchFamilyMembers();

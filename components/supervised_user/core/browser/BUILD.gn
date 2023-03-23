@@ -12,6 +12,9 @@ static_library("browser") {
     "kids_chrome_management_client.h",
     "kids_management_url_checker_client.cc",
     "kids_management_url_checker_client.h",
+    "permission_request_creator.h",
+    "remote_web_approvals_manager.cc",
+    "remote_web_approvals_manager.h",
     "supervised_user_error_page.cc",
     "supervised_user_error_page.h",
     "supervised_user_service_observer.h",
@@ -56,6 +59,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "kids_management_url_checker_client_unittest.cc",
+    "remote_web_approvals_manager_unittest.cc",
     "supervised_user_error_page_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
     "supervised_user_sync_model_type_controller_unittest.cc",

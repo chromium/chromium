@@ -23,7 +23,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -205,7 +204,7 @@ void ChildAccountService::SetActive(bool active) {
 
     SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_);
-    service->web_approvals_manager().AddRemoteApprovalRequestCreator(
+    service->remote_web_approvals_manager().AddApprovalRequestCreator(
         PermissionRequestCreatorApiary::CreateWithProfile(profile_));
   } else {
     CancelFetchingFamilyInfo();

@@ -450,13 +450,13 @@ void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
 
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
-  std::unique_ptr<PermissionRequestCreator> creator =
+  std::unique_ptr<supervised_user::PermissionRequestCreator> creator =
       std::make_unique<PermissionRequestCreatorMock>(browser()->profile());
   permission_creator_ =
       static_cast<PermissionRequestCreatorMock*>(creator.get());
   permission_creator_->SetEnabled();
-  service->web_approvals_manager().ClearRemoteApprovalRequestsCreators();
-  service->web_approvals_manager().AddRemoteApprovalRequestCreator(
+  service->remote_web_approvals_manager().ClearApprovalRequestsCreators();
+  service->remote_web_approvals_manager().AddApprovalRequestCreator(
       std::move(creator));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();

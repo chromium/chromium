@@ -7,12 +7,13 @@
 
 #include <vector>
 
-#include "chrome/browser/supervised_user/permission_request_creator.h"
+#include "components/supervised_user/core/browser/permission_request_creator.h"
 #include "url/gurl.h"
 
 class Profile;
 
-class PermissionRequestCreatorMock : public PermissionRequestCreator {
+class PermissionRequestCreatorMock
+    : public supervised_user::PermissionRequestCreator {
  public:
   explicit PermissionRequestCreatorMock(Profile* profile);
 

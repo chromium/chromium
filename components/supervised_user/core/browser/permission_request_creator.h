@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_H_
-#define CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_H_
 
 #include "base/functional/callback_forward.h"
 
 class GURL;
 
+namespace supervised_user {
 class PermissionRequestCreator {
  public:
   typedef base::OnceCallback<void(bool)> SuccessCallback;
@@ -27,4 +28,6 @@ class PermissionRequestCreator {
                                       SuccessCallback callback) = 0;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_H_
+}  // namespace supervised_user
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_H_

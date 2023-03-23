@@ -11,7 +11,6 @@
 #include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/supervised_user/web_approvals_manager.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"

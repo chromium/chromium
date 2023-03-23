@@ -432,7 +432,7 @@ void SupervisedUserService::SetActive(bool active) {
     BrowserList::AddObserver(this);
 #endif
   } else {
-    web_approvals_manager_.ClearRemoteApprovalRequestsCreators();
+    remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
     pref_change_registrar_.Remove(
         prefs::kDefaultSupervisedUserFilteringBehavior);
