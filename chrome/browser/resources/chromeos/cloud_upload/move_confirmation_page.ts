@@ -6,10 +6,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
+import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {getTemplate} from './move_confirmation_page.html.js';
-import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
 export enum CloudProvider {
   GOOGLE_DRIVE,
@@ -101,9 +101,20 @@ export class MoveConfirmationPageElement extends HTMLElement {
       }
     }
 
-    const animationUrl = this.cloudProvider === CloudProvider.ONE_DRIVE ?
-        'move_confirmation_animation_onedrive.json' :
-        'move_confirmation_animation_drive.json';
+    this.updateAnimation(
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+    window.matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', event => {
+          this.updateAnimation(event.matches);
+        });
+  }
+
+  private updateAnimation(isDarkMode: boolean) {
+    const provider =
+        this.cloudProvider === CloudProvider.ONE_DRIVE ? 'onedrive' : 'drive';
+    const colorScheme = isDarkMode ? 'dark' : 'light';
+    const animationUrl =
+        `animations/move_confirmation_${provider}_${colorScheme}.json`;
     this.shadowRoot!.querySelector('cr-lottie')!.setAttribute(
         'animation-url', animationUrl);
   }

@@ -8,6 +8,10 @@ build_webui("build") {
   grd_prefix = "cloud_upload"
 
   static_files = [
+    "animations/move_confirmation_drive_dark.json",
+    "animations/move_confirmation_drive_light.json",
+    "animations/move_confirmation_onedrive_dark.json",
+    "animations/move_confirmation_onedrive_light.json",
     "icons/check.svg",
     "icons/chevron.svg",
     "icons/download.svg",
@@ -21,8 +25,6 @@ build_webui("build") {
     "images/one_drive_success.svg",
     "images/welcome.svg",
     "main.html",
-    "move_confirmation_animation_drive.json",
-    "move_confirmation_animation_onedrive.json",
   ]
   web_component_files = [
     "base_setup_page.ts",
