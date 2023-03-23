@@ -58,7 +58,7 @@ constexpr float kBorderThickness = 2.0f;
 // This value comes from tab_group_style.cc (kEmptyChipSize). Since this
 // button and the tab_group_header are rendered on different surfaces, keep
 // the value here in case we want to change one but not the other.
-constexpr float kCircleRadius = 20.0f;
+constexpr float kCircleRadius = 14.0f;
 }  // namespace
 
 SavedTabGroupButton::SavedTabGroupButton(
