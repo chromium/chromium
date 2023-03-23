@@ -20,7 +20,7 @@ The input is taken on stdin and is a dict with the following keys:
       with the key will be restricted to the set of SPKIs extracted from the
       files in the values.
   - Sequence: An optional integer sequence number to use for the CRLSet. If
-      not present, defaults to 0.
+      not present, defaults to 1.
 
 For example:
 
@@ -288,7 +288,7 @@ def main():
   header_json = {
       'Version': 0,
       'ContentType': 'CRLSet',
-      'Sequence': int(config.get("Sequence", 0)),
+      'Sequence': int(config.get("Sequence", 1)),
       'NumParents': len(parents),
       'BlockedSPKIs': blocked_spkis,
       'LimitedSubjects': limited_subjects,
