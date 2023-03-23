@@ -506,6 +506,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   base::flat_set<Site> site_remember_deny_open_file_;
   base::AutoReset<absl::optional<web_app::AppIdentityUpdate>>
       update_dialog_scope_;
+
+  base::TimeTicks start_time_ = base::TimeTicks::Now();
 };
 
 // Simple base browsertest class usable by all non-sync web app integration

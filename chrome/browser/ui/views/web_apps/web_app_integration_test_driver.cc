@@ -160,6 +160,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
+
+#include "base/process/launch.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_main.h"
@@ -889,6 +891,22 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
           }));
       debug_info_loop.Run();
     }
+    // On Mac OS also include system log output, as that is the only place logs
+    // from app shims would end up. Do note that this log will include messages
+    // from all tests that were running at the time, not just this test.
+#if BUILDFLAG(IS_MAC)
+    base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
+    std::vector<std::string> log_argv = {
+        "log",
+        "show",
+        "--process",
+        "app_mode_loader",
+        "--last",
+        base::StringPrintf("%" PRId64 "s", log_time.InSeconds() + 1)};
+    std::string log_output;
+    base::GetAppOutputAndError(log_argv, &log_output);
+    LOG(INFO) << "System logs:\n" << log_output;
+#endif
   }
 }
 
