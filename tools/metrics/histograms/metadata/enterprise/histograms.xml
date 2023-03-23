@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Enterprise.AccountStatusCheckResult"
-    enum="EnterpriseAccountStatus" expires_after="2023-04-01">
+    enum="EnterpriseAccountStatus" expires_after="2023-12-01">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
