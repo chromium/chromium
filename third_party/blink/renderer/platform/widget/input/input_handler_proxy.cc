@@ -418,6 +418,15 @@ void InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest(
     DispatchSingleInputEvent(std::move(event_with_callback),
                              tick_clock_->NowTicks());
   } else {
+    // TODO(bokan): This looks odd but is actually what happens in the
+    // non-unified path. If a scroll is DROP_EVENT'ed, we still call
+    // RecordMainThreadScrollingReasons and then LTHI::RecordScrollEnd when we
+    // DROP the ScrollEnd. We call this to ensure symmetry between
+    // RecordScrollBegin and RecordScrollEnd but we should probably be avoiding
+    // this if the scroll never starts. https://crbug.com/1082601.
+    RecordMainThreadScrollingReasons(gesture_event->SourceDevice(), 0, false,
+                                     0);
+
     // If the main thread failed to return a scroller for whatever reason,
     // consider the ScrollBegin to be dropped.
     scroll_sequence_ignored_ = true;
@@ -841,7 +850,7 @@ WebInputEventAttribution InputHandlerProxy::PerformEventAttribution(
   }
 }
 
-void InputHandlerProxy::RecordScrollBegin(
+void InputHandlerProxy::RecordMainThreadScrollingReasons(
     WebGestureDevice device,
     uint32_t reasons_from_scroll_begin,
     bool was_main_thread_hit_tested,
@@ -983,8 +992,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
     scroll_status = input_handler_->ScrollBegin(
         &scroll_state, GestureScrollInputType(gesture_event.SourceDevice()));
   }
-  DCHECK_EQ(scroll_status.thread == ScrollThread::SCROLL_ON_MAIN_THREAD,
-            !!scroll_status.main_thread_scrolling_reasons);
 
   // If we need a hit test from the main thread, we'll reinject this scroll
   // begin event once the hit test is complete so avoid everything below for
@@ -995,12 +1002,10 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
     return REQUIRES_MAIN_THREAD_HIT_TEST;
   }
 
-  if (scroll_status.thread != ScrollThread::SCROLL_IGNORED) {
-    RecordScrollBegin(gesture_event.SourceDevice(),
-                      scroll_status.main_thread_scrolling_reasons,
-                      scroll_state.is_main_thread_hit_tested(),
-                      scroll_status.main_thread_repaint_reasons);
-  }
+  RecordMainThreadScrollingReasons(gesture_event.SourceDevice(),
+                                   scroll_status.main_thread_scrolling_reasons,
+                                   scroll_state.is_main_thread_hit_tested(),
+                                   scroll_status.main_thread_repaint_reasons);
 
   InputHandlerProxy::EventDisposition result = DID_NOT_HANDLE;
   scroll_sequence_ignored_ = false;
@@ -1147,13 +1152,19 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollEnd(
     const WebGestureEvent& gesture_event) {
   TRACE_EVENT0("input", "InputHandlerProxy::HandleGestureScrollEnd");
 
+  // TODO(bokan): It seems odd that we'd record a ScrollEnd for a scroll
+  // secuence that was ignored (i.e. the ScrollBegin was dropped). However,
+  // RecordScrollBegin does get called in that case so this needs to be this
+  // way for now. This makes life rather awkward for the unified scrolling path
+  // so perhaps we should only record a scrolling thread if a scroll actually
+  // started? https://crbug.com/1082601.
+  input_handler_->RecordScrollEnd(
+      GestureScrollInputType(gesture_event.SourceDevice()));
+
   if (scroll_sequence_ignored_) {
     DCHECK(!currently_active_gesture_device_.has_value());
     return DROP_EVENT;
   }
-
-  input_handler_->RecordScrollEnd(
-      GestureScrollInputType(gesture_event.SourceDevice()));
 
   if (!handling_gesture_on_impl_thread_) {
     DCHECK(!currently_active_gesture_device_.has_value());
