@@ -24,9 +24,8 @@ const makeFileViewer = async (launchFile) => {
   return element;
 };
 
-var resolveLaunchFinished;
-
 var launchFinishedPromise = new Promise(resolve => {
+  window.addEventListener("load", () => {
     window.launchQueue.setConsumer(async (launchParams) => {
       console.log("Launched with: ", launchParams);
       const viewersContainer = document.getElementById("viewers-container");
@@ -50,5 +49,6 @@ var launchFinishedPromise = new Promise(resolve => {
         results.push(fileContent.value);
       }
       resolve(results);
-    })
+    });
   });
+});
