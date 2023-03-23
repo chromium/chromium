@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+
 namespace content {
 
 FakeIdentityRequestDialogController::FakeIdentityRequestDialogController(
@@ -26,7 +28,26 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
   // support multiple IDPs.
   std::vector<IdentityRequestAccount> accounts =
       identity_provider_data[0].accounts;
-  DCHECK_GT(accounts.size(), 0ul);
+  CHECK_GT(accounts.size(), 0ul);
+  CHECK_GT(identity_provider_data.size(), 0ul);
+
+  // We're faking this so that browser automation and tests can verify that
+  // the RP context was read properly.
+  switch (identity_provider_data[0].rp_context) {
+    case blink::mojom::RpContext::kSignIn:
+      title_ = "Sign in";
+      break;
+    case blink::mojom::RpContext::kSignUp:
+      title_ = "Sign up";
+      break;
+    case blink::mojom::RpContext::kUse:
+      title_ = "Use";
+      break;
+    case blink::mojom::RpContext::kContinue:
+      title_ = "Continue";
+      break;
+  };
+
   if (is_interception_enabled_) {
     // Browser automation will handle selecting an account/canceling.
     return;
@@ -36,6 +57,10 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
       .Run(identity_provider_data[0].idp_metadata.config_url,
            selected_account_ ? *selected_account_ : accounts[0].id,
            /* is_sign_in= */ true);
+}
+
+std::string FakeIdentityRequestDialogController::GetTitle() const {
+  return title_;
 }
 
 }  // namespace content

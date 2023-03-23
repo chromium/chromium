@@ -53,4 +53,13 @@ public interface AccountSelectionComponent {
      * Closes the outstanding bottom sheet.
      */
     void close();
+
+    /**
+     * Gets the sheet's title.
+     */
+    String getTitle();
+    /**
+     * Gets the sheet's subtitle, if any, or null..
+     */
+    String getSubtitle();
 }

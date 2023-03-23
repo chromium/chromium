@@ -74,6 +74,9 @@ class AccountSelectionView {
       const std::string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
 
+  virtual std::string GetTitle() const = 0;
+  virtual absl::optional<std::string> GetSubtitle() const = 0;
+
  protected:
   raw_ptr<Delegate> delegate_ = nullptr;
 };

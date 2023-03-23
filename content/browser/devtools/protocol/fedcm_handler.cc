@@ -111,7 +111,15 @@ void FedCmHandler::OnDialogShown() {
       accounts->push_back(std::move(entry));
     }
   }
-  frontend_->DialogShown(dialog_id_, std::move(accounts));
+  IdentityRequestDialogController* dialog = auth_request->GetDialogController();
+  CHECK(dialog);
+  Maybe<String> maybe_subtitle;
+  absl::optional<std::string> subtitle = dialog->GetSubtitle();
+  if (subtitle) {
+    maybe_subtitle = *subtitle;
+  }
+  frontend_->DialogShown(dialog_id_, std::move(accounts), dialog->GetTitle(),
+                         std::move(maybe_subtitle));
 }
 
 DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,

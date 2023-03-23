@@ -57,6 +57,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::string& top_frame_etld_plus_one,
       const std::string& idp_etld_plus_one,
       const content::IdentityProviderMetadata& idp_metadata) override;
+  std::string GetTitle() const override;
+  absl::optional<std::string> GetSubtitle() const override;
 
   // content::WebContentsObserver
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -85,6 +87,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Returns AccountSelectionBubbleViewInterface for bubble views::Widget.
   virtual AccountSelectionBubbleViewInterface* GetBubbleView();
+  virtual const AccountSelectionBubbleViewInterface* GetBubbleView() const;
 
  private:
   enum class State {

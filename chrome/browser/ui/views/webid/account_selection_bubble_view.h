@@ -96,6 +96,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Populates `idp_images` when an IDP image has been fetched.
   void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
 
+  std::string GetDialogTitle() const override;
+  absl::optional<std::string> GetDialogSubtitle() const override;
+
  private:
   gfx::Rect GetBubbleBounds() override;
 

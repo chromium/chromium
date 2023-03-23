@@ -65,6 +65,14 @@ void IdentityDialogController::ShowIdpSigninFailureDialog(
   NOTIMPLEMENTED();
 }
 
+std::string IdentityDialogController::GetTitle() const {
+  return account_view_->GetTitle();
+}
+
+absl::optional<std::string> IdentityDialogController::GetSubtitle() const {
+  return account_view_->GetSubtitle();
+}
+
 void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
                                                  const Account& account) {
   on_dismiss_.Reset();

@@ -81,6 +81,11 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
     account_ids_ = {};
   }
 
+  std::string GetDialogTitle() const override { return std::string(); }
+  absl::optional<std::string> GetDialogSubtitle() const override {
+    return absl::nullopt;
+  }
+
   bool show_back_button_{false};
   absl::optional<SheetType> sheet_type_;
   std::vector<std::string> account_ids_;

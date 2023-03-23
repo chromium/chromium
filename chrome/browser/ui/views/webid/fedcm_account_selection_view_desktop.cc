@@ -166,6 +166,14 @@ void FedCmAccountSelectionView::ShowFailureDialog(
   // associated web contents are hidden.
 }
 
+std::string FedCmAccountSelectionView::GetTitle() const {
+  return GetBubbleView()->GetDialogTitle();
+}
+
+absl::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
+  return GetBubbleView()->GetDialogSubtitle();
+}
+
 void FedCmAccountSelectionView::OnVisibilityChanged(
     content::Visibility visibility) {
   if (!bubble_widget_)
@@ -245,6 +253,11 @@ FedCmAccountSelectionView::GetBubbleView() {
       bubble_widget_->widget_delegate());
 }
 
+const AccountSelectionBubbleViewInterface*
+FedCmAccountSelectionView::GetBubbleView() const {
+  return static_cast<const AccountSelectionBubbleView*>(
+      bubble_widget_->widget_delegate());
+}
 void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
   DismissReason dismiss_reason =
       (bubble_widget_->closed_reason() ==

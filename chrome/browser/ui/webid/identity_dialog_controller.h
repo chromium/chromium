@@ -54,6 +54,9 @@ class IdentityDialogController
                          DismissCallback dismiss_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 
+  std::string GetTitle() const override;
+  absl::optional<std::string> GetSubtitle() const override;
+
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const GURL& idp_config_url,
                          const Account& account) override;

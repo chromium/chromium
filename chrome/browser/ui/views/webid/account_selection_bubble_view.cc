@@ -581,6 +581,21 @@ void AccountSelectionBubbleView::AddIdpImage(const GURL& image_url,
   idp_images_[image_url] = image;
 }
 
+std::string AccountSelectionBubbleView::GetDialogTitle() const {
+  // We cannot just return title_ because it is not always set
+  // (e.g. by ShowFailureDialog).
+  return base::UTF16ToUTF8(title_label_->GetText());
+}
+
+absl::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
+    const {
+  if (!subtitle_label_) {
+    return absl::nullopt;
+  }
+
+  return base::UTF16ToUTF8(subtitle_label_->GetText());
+}
+
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   // The bubble initially looks like this relative to the contents_web_view:
   //                        |--------|

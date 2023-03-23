@@ -32,8 +32,11 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       AccountSelectionCallback on_selected,
       DismissCallback dismmiss_callback) override;
 
+  std::string GetTitle() const override;
+
  private:
   absl::optional<std::string> selected_account_;
+  std::string title_;
 };
 
 }  // namespace content

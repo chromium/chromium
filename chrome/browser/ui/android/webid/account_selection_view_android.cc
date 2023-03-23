@@ -155,6 +155,24 @@ void AccountSelectionViewAndroid::ShowFailureDialog(
   // TODO(crbug.com/1357790): add support on Android.
 }
 
+std::string AccountSelectionViewAndroid::GetTitle() const {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> title =
+      Java_AccountSelectionBridge_getTitle(env, java_object_internal_);
+  CHECK(title);
+  return ConvertJavaStringToUTF8(title);
+}
+
+absl::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jstring> subtitle =
+      Java_AccountSelectionBridge_getSubtitle(env, java_object_internal_);
+  if (!subtitle) {
+    return absl::nullopt;
+  }
+  return ConvertJavaStringToUTF8(subtitle);
+}
+
 void AccountSelectionViewAndroid::OnAccountSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& idp_config_url,

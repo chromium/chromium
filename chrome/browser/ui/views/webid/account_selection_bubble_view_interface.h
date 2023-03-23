@@ -43,6 +43,9 @@ class AccountSelectionBubbleViewInterface {
       const std::u16string& top_frame_for_display,
       const std::u16string& idp_for_display,
       const content::IdentityProviderMetadata& idp_metadata) = 0;
+
+  virtual std::string GetDialogTitle() const = 0;
+  virtual absl::optional<std::string> GetDialogSubtitle() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_

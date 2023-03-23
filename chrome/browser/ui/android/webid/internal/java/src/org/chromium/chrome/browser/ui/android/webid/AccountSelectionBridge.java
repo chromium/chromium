@@ -92,6 +92,16 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoReauthn);
     }
 
+    @CalledByNative
+    private String getTitle() {
+        return mAccountSelectionComponent.getTitle();
+    }
+
+    @CalledByNative
+    private String getSubtitle() {
+        return mAccountSelectionComponent.getSubtitle();
+    }
+
     @Override
     public void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
         if (mNativeView != 0) {

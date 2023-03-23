@@ -10951,6 +10951,10 @@ experimental domain FedCm
     parameters
       string dialogId
       array of Account accounts
+      # These exist primarily so that the caller can verify the
+      # RP context was used appropriately.
+      string title
+      optional string subtitle
 
   command enable
     parameters
