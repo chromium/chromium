@@ -11,9 +11,15 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/global_routing_id.h"
+#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/print_backend_service_manager.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -80,6 +86,14 @@ class PrinterQuery {
   // Caller has to ensure that `this` is alive until `callback` is run.
   void SetSettingsFromPOD(std::unique_ptr<PrintSettings> new_settings,
                           base::OnceClosure callback);
+#endif
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Provide the client ID when the caller has registered with the
+  // `PrintBackendServiceManager` for getting settings for system print.
+  // Only intended to be used when out-of-process printing is in use, will
+  // DCHECK if used for in-browser printing.
+  virtual void SetClientId(PrintBackendServiceManager::ClientId client_id);
 #endif
 
   int cookie() const;

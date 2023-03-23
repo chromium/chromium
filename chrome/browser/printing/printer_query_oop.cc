@@ -47,6 +47,11 @@ std::unique_ptr<PrintJobWorker> PrinterQueryOop::TransferContextToNewWorker(
   return CreatePrintJobWorker(print_job);
 }
 
+void PrinterQueryOop::SetClientId(
+    PrintBackendServiceManager::ClientId client_id) {
+  query_with_ui_client_id_ = client_id;
+}
+
 void PrinterQueryOop::OnDidUseDefaultSettings(
     SettingsCallback callback,
     mojom::PrintSettingsResultPtr print_settings) {
@@ -145,7 +150,7 @@ void PrinterQueryOop::UpdatePrintSettings(base::Value::Dict new_settings,
       PrintBackendServiceManager::GetInstance();
 
   service_mgr.UpdatePrintSettings(
-      device_name, std::move(new_settings),
+      query_with_ui_client_id_, device_name, std::move(new_settings),
       base::BindOnce(&PrinterQueryOop::OnDidUpdatePrintSettings,
                      weak_factory_.GetWeakPtr(), device_name,
                      std::move(callback)));
@@ -176,12 +181,13 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
 void PrinterQueryOop::SendUseDefaultSettings(SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
+  CHECK(query_with_ui_client_id_.has_value());
 
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
 
   service_mgr.UseDefaultSettings(
-      /*printer_name=*/std::string(),
+      *query_with_ui_client_id_,
       base::BindOnce(&PrinterQueryOop::OnDidUseDefaultSettings,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -217,7 +223,7 @@ void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
   service_mgr.AskUserForSettings(
-      /*printer_name=*/std::string(), parent_view, document_page_count,
+      *query_with_ui_client_id_, parent_view, document_page_count,
       has_selection, is_scripted,
       base::BindOnce(&PrinterQueryOop::OnDidAskUserForSettings,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

@@ -571,6 +571,11 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
   if (!printer_query) {
     printer_query =
         queue_->CreatePrinterQuery(render_frame_host->GetGlobalId());
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    if (query_with_ui_client_id_.has_value()) {
+      printer_query->SetClientId(*query_with_ui_client_id_);
+    }
+#endif
   }
 
   // Sometimes it is desired to get the PDF settings as opposed to the settings

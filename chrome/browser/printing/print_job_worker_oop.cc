@@ -393,8 +393,8 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
   }
 
   service_mgr.StartPrinting(
-      device_name_, document_cookie, document_name_, print_target_type_,
-      document_oop_->settings(),
+      *service_manager_client_id_, device_name_, document_cookie,
+      document_name_, print_target_type_, document_oop_->settings(),
       base::BindOnce(&PrintJobWorkerOop::OnDidStartPrinting,
                      ui_weak_factory_.GetWeakPtr()));
 }
@@ -414,8 +414,8 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
   service_mgr.RenderPrintedPage(
-      device_name_, document_cookie, *page, page_data_type,
-      std::move(serialized_page_data),
+      *service_manager_client_id_, device_name_, document_cookie, *page,
+      page_data_type, std::move(serialized_page_data),
       base::BindOnce(&PrintJobWorkerOop::OnDidRenderPrintedPage,
                      ui_weak_factory_.GetWeakPtr(), page_index));
 }
@@ -432,8 +432,8 @@ void PrintJobWorkerOop::SendRenderPrintedDocument(
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
   service_mgr.RenderPrintedDocument(
-      device_name_, document_cookie, document_oop_->page_count(), data_type,
-      std::move(serialized_data),
+      *service_manager_client_id_, device_name_, document_cookie,
+      document_oop_->page_count(), data_type, std::move(serialized_data),
       base::BindOnce(&PrintJobWorkerOop::OnDidRenderPrintedDocument,
                      ui_weak_factory_.GetWeakPtr()));
 }
@@ -447,7 +447,8 @@ void PrintJobWorkerOop::SendDocumentDone() {
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
 
-  service_mgr.DocumentDone(device_name_, document_cookie,
+  service_mgr.DocumentDone(*service_manager_client_id_, device_name_,
+                           document_cookie,
                            base::BindOnce(&PrintJobWorkerOop::OnDidDocumentDone,
                                           ui_weak_factory_.GetWeakPtr(),
                                           printing_context()->job_id()));
@@ -473,7 +474,7 @@ void PrintJobWorkerOop::SendCancel(scoped_refptr<PrintJob> job) {
   // Retain a reference to the PrintJob to ensure it doesn't get deleted before
   // the `OnDidCancel()` callback occurs.
   service_mgr.Cancel(
-      device_name_, document_oop_->cookie(),
+      *service_manager_client_id_, device_name_, document_oop_->cookie(),
       base::BindOnce(&PrintJobWorkerOop::OnDidCancel,
                      ui_weak_factory_.GetWeakPtr(), std::move(job)));
 }

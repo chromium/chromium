@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -15,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -185,8 +187,8 @@ void PrintBackendServiceManager::UnregisterClient(ClientId id) {
 void PrintBackendServiceManager::EnumeratePrinters(
     mojom::PrintBackendService::EnumeratePrintersCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(kEmptyPrinterName,
-                                               ClientType::kQuery, context);
+  auto& service =
+      GetServiceAndCallbackContextForQuery(kEmptyPrinterName, context);
 
   SaveCallback(GetRemoteSavedEnumeratePrintersCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -202,8 +204,7 @@ void PrintBackendServiceManager::FetchCapabilities(
     const std::string& printer_name,
     mojom::PrintBackendService::FetchCapabilitiesCallback callback) {
   CallbackContext context;
-  auto& service =
-      GetServiceAndCallbackContext(printer_name, ClientType::kQuery, context);
+  auto& service = GetServiceAndCallbackContextForQuery(printer_name, context);
 
   SaveCallback(GetRemoteSavedFetchCapabilitiesCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -221,8 +222,8 @@ void PrintBackendServiceManager::FetchCapabilities(
 void PrintBackendServiceManager::GetDefaultPrinterName(
     mojom::PrintBackendService::GetDefaultPrinterNameCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(kEmptyPrinterName,
-                                               ClientType::kQuery, context);
+  auto& service =
+      GetServiceAndCallbackContextForQuery(kEmptyPrinterName, context);
 
   SaveCallback(
       GetRemoteSavedGetDefaultPrinterNameCallbacks(context.is_sandboxed),
@@ -239,8 +240,7 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
     mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
         callback) {
   CallbackContext context;
-  auto& service =
-      GetServiceAndCallbackContext(printer_name, ClientType::kQuery, context);
+  auto& service = GetServiceAndCallbackContextForQuery(printer_name, context);
 
   SaveCallback(GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(
                    context.is_sandboxed),
@@ -259,6 +259,7 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
 
 PrintBackendServiceManager::ContextId
 PrintBackendServiceManager::EstablishPrintingContext(
+    ClientId client_id,
     const std::string& printer_name
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
     ,
@@ -272,8 +273,8 @@ PrintBackendServiceManager::EstablishPrintingContext(
   // could be needed.  Associate this with the printing document client type,
   // given that most cases would fall into this usage.
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kPrintDocument, context);
+  auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
+      client_id, printer_name, context);
 
   LogCallToRemote("EstablishPrintingContext", context);
   ContextId context_id = ContextId(++last_context_id_);
@@ -287,7 +288,7 @@ PrintBackendServiceManager::EstablishPrintingContext(
 }
 
 void PrintBackendServiceManager::UseDefaultSettings(
-    const std::string& printer_name,
+    ClientId client_id,
     mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
   // Even though this call does not require a UI, it is used exclusively as
   // part of preparation for system print.  It is called immediately before a
@@ -295,14 +296,12 @@ void PrintBackendServiceManager::UseDefaultSettings(
   // it will behave better to ensure this uses the same type to reuse the same
   // process.
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kQueryWithUi, context);
+  auto& service = GetServiceAndCallbackContextForQueryWithUiClient(
+      client_id, kEmptyPrinterName, context);
 
   SaveCallback(GetRemoteSavedUseDefaultSettingsCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
                std::move(callback));
-
-  SetCrashKeys(printer_name);
 
   LogCallToRemote("UseDefaultSettings", context);
   service->UseDefaultSettings(
@@ -312,21 +311,19 @@ void PrintBackendServiceManager::UseDefaultSettings(
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 void PrintBackendServiceManager::AskUserForSettings(
-    const std::string& printer_name,
+    ClientId client_id,
     gfx::NativeView parent_view,
     int max_pages,
     bool has_selection,
     bool is_scripted,
     mojom::PrintBackendService::AskUserForSettingsCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kQueryWithUi, context);
+  auto& service = GetServiceAndCallbackContextForQueryWithUiClient(
+      client_id, kEmptyPrinterName, context);
 
   SaveCallback(GetRemoteSavedAskUserForSettingsCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
                std::move(callback));
-
-  SetCrashKeys(printer_name);
 
   LogCallToRemote("AskUserForSettings", context);
   service->AskUserForSettings(
@@ -337,12 +334,16 @@ void PrintBackendServiceManager::AskUserForSettings(
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 void PrintBackendServiceManager::UpdatePrintSettings(
+    absl::optional<ClientId> client_id,
     const std::string& printer_name,
     base::Value::Dict job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   CallbackContext context;
   auto& service =
-      GetServiceAndCallbackContext(printer_name, ClientType::kQuery, context);
+      client_id.has_value()
+          ? GetServiceAndCallbackContextForQueryWithUiClient(
+                *client_id, printer_name, context)
+          : GetServiceAndCallbackContextForQuery(printer_name, context);
 
   SaveCallback(GetRemoteSavedUpdatePrintSettingsCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -358,6 +359,7 @@ void PrintBackendServiceManager::UpdatePrintSettings(
 }
 
 void PrintBackendServiceManager::StartPrinting(
+    ClientId client_id,
     const std::string& printer_name,
     int document_cookie,
     const std::u16string& document_name,
@@ -365,8 +367,8 @@ void PrintBackendServiceManager::StartPrinting(
     const PrintSettings& settings,
     mojom::PrintBackendService::StartPrintingCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kPrintDocument, context);
+  auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
+      client_id, printer_name, context);
 
   SaveCallback(GetRemoteSavedStartPrintingCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -383,6 +385,7 @@ void PrintBackendServiceManager::StartPrinting(
 
 #if BUILDFLAG(IS_WIN)
 void PrintBackendServiceManager::RenderPrintedPage(
+    ClientId client_id,
     const std::string& printer_name,
     int document_cookie,
     const PrintedPage& page,
@@ -390,8 +393,8 @@ void PrintBackendServiceManager::RenderPrintedPage(
     base::ReadOnlySharedMemoryRegion serialized_page_data,
     mojom::PrintBackendService::RenderPrintedPageCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kPrintDocument, context);
+  auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
+      client_id, printer_name, context);
 
   SaveCallback(GetRemoteSavedRenderPrintedPageCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -413,6 +416,7 @@ void PrintBackendServiceManager::RenderPrintedPage(
 #endif  // BUILDFLAG(IS_WIN)
 
 void PrintBackendServiceManager::RenderPrintedDocument(
+    ClientId client_id,
     const std::string& printer_name,
     int document_cookie,
     uint32_t page_count,
@@ -420,8 +424,8 @@ void PrintBackendServiceManager::RenderPrintedDocument(
     base::ReadOnlySharedMemoryRegion serialized_data,
     mojom::PrintBackendService::RenderPrintedDocumentCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kPrintDocument, context);
+  auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
+      client_id, printer_name, context);
 
   SaveCallback(
       GetRemoteSavedRenderPrintedDocumentCallbacks(context.is_sandboxed),
@@ -437,12 +441,13 @@ void PrintBackendServiceManager::RenderPrintedDocument(
 }
 
 void PrintBackendServiceManager::DocumentDone(
+    ClientId client_id,
     const std::string& printer_name,
     int document_cookie,
     mojom::PrintBackendService::DocumentDoneCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kPrintDocument, context);
+  auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
+      client_id, printer_name, context);
 
   SaveCallback(GetRemoteSavedDocumentDoneCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -458,12 +463,13 @@ void PrintBackendServiceManager::DocumentDone(
 }
 
 void PrintBackendServiceManager::Cancel(
+    ClientId client_id,
     const std::string& printer_name,
     int document_cookie,
     mojom::PrintBackendService::CancelCallback callback) {
   CallbackContext context;
-  auto& service = GetServiceAndCallbackContext(
-      printer_name, ClientType::kPrintDocument, context);
+  auto& service = GetServiceAndCallbackContextForPrintDocumentClient(
+      client_id, printer_name, context);
 
   SaveCallback(GetRemoteSavedCancelCallbacks(context.is_sandboxed),
                context.remote_id, context.saved_callback_id,
@@ -556,6 +562,26 @@ PrintBackendServiceManager::GetRemoteIdForPrinterName(
   // Non-Windows platforms and the testing environment always just use one
   // instance for all printers.
   return RemoteId(1);
+}
+
+PrintBackendServiceManager::RemoteId
+PrintBackendServiceManager::GetRemoteIdForQueryWithUiClientId(
+    ClientId client_id) const {
+  const auto& iter = query_with_ui_clients_.find(client_id);
+  CHECK(iter != query_with_ui_clients_.cend());
+  return iter->second;
+}
+
+PrintBackendServiceManager::RemoteId
+PrintBackendServiceManager::GetRemoteIdForPrintDocumentClientId(
+    ClientId client_id) const {
+  for (const auto& item : print_document_clients_) {
+    const ClientsSet& clients = item.second;
+    if (clients.contains(client_id)) {
+      return item.first;
+    }
+  }
+  NOTREACHED_NORETURN();
 }
 
 absl::optional<PrintBackendServiceManager::ClientId>
@@ -1126,13 +1152,34 @@ PrintBackendServiceManager::GetRemoteSavedCancelCallbacks(bool sandboxed) {
 }
 
 const mojo::Remote<mojom::PrintBackendService>&
-PrintBackendServiceManager::GetServiceAndCallbackContext(
+PrintBackendServiceManager::GetServiceAndCallbackContextForQuery(
     const std::string& printer_name,
-    ClientType client_type,
     CallbackContext& context) {
   context.remote_id = GetRemoteIdForPrinterName(printer_name);
   context.saved_callback_id = base::UnguessableToken::Create();
-  return GetService(printer_name, client_type, &context.is_sandboxed);
+  return GetService(printer_name, ClientType::kQuery, &context.is_sandboxed);
+}
+
+const mojo::Remote<mojom::PrintBackendService>&
+PrintBackendServiceManager::GetServiceAndCallbackContextForQueryWithUiClient(
+    ClientId client_id,
+    const std::string& printer_name,
+    CallbackContext& context) {
+  context.remote_id = GetRemoteIdForQueryWithUiClientId(client_id);
+  context.saved_callback_id = base::UnguessableToken::Create();
+  return GetService(printer_name, ClientType::kQueryWithUi,
+                    &context.is_sandboxed);
+}
+
+const mojo::Remote<mojom::PrintBackendService>&
+PrintBackendServiceManager::GetServiceAndCallbackContextForPrintDocumentClient(
+    ClientId client_id,
+    const std::string& printer_name,
+    CallbackContext& context) {
+  context.remote_id = GetRemoteIdForPrintDocumentClientId(client_id);
+  context.saved_callback_id = base::UnguessableToken::Create();
+  return GetService(printer_name, ClientType::kPrintDocument,
+                    &context.is_sandboxed);
 }
 
 template <class... T, class... X>

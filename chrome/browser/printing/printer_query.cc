@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -244,6 +245,13 @@ void PrinterQuery::SetSettingsFromPOD(
       base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
                      std::move(callback),
                      /*maybe_is_modifiable=*/absl::nullopt));
+}
+#endif
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+void PrinterQuery::SetClientId(PrintBackendServiceManager::ClientId client_id) {
+  // Only supposed to be called for `PrinterQueryOop` objects.
+  NOTREACHED_NORETURN();
 }
 #endif
 

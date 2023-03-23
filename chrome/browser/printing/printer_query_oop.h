@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job_worker_oop.h"
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
@@ -17,6 +18,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -27,6 +29,9 @@ class PrinterQueryOop : public PrinterQuery {
 
   std::unique_ptr<PrintJobWorker> TransferContextToNewWorker(
       PrintJob* print_job) override;
+
+  // PrinterQuery overrides:
+  void SetClientId(PrintBackendServiceManager::ClientId client_id) override;
 
  protected:
   // Local callback wrappers for Print Backend Service mojom call.  Virtual to
@@ -71,6 +76,7 @@ class PrinterQueryOop : public PrinterQuery {
  private:
   mojom::PrintTargetType print_target_type_ =
       mojom::PrintTargetType::kDirectToDevice;
+  absl::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
 
   base::WeakPtrFactory<PrinterQueryOop> weak_factory_{this};
 };
