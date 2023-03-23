@@ -605,23 +605,11 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.primaryButton.layer.cornerRadius =
           kStandardPromoStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
-
-      // TODO(crbug.com/1418068): Remove after minimum version required is >=
-      // iOS 15.
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
-      self.primaryButton.configuration.contentInsets =
-          NSDirectionalEdgeInsetsMake(
-              kStandardPromoStyle.kButtonTitleVerticalContentInset,
-              kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-              kStandardPromoStyle.kButtonTitleVerticalContentInset,
-              kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-#else
       self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
           kStandardPromoStyle.kButtonTitleVerticalContentInset,
           kStandardPromoStyle.kButtonTitleHorizontalContentInset,
           kStandardPromoStyle.kButtonTitleVerticalContentInset,
           kStandardPromoStyle.kButtonTitleHorizontalContentInset);
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
 
       constraintsToActivate = self.standardLayoutConstraints;
       break;
@@ -658,26 +646,11 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.primaryButton.layer.cornerRadius =
           kTitledCompactPromoStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = NO;
-
-      // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-      // iOS 15.
-      if (@available(iOS 15, *)) {
-        self.primaryButton.configuration.contentInsets =
-            NSDirectionalEdgeInsetsMake(
-                kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-                kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
-                kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-                kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
-      }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
-            kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-            kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
-            kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
-            kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
-      }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+          kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+          kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
+          kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+          kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
 
       constraintsToActivate = self.compactTitledLayoutConstraints;
       break;
@@ -713,26 +686,11 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.primaryButton.layer.cornerRadius =
           kCompactHorizontalStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = NO;
-
-      // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-      // iOS 15.
-        if (@available(iOS 15, *)) {
-          self.primaryButton.configuration.contentInsets =
-              NSDirectionalEdgeInsetsMake(
-                  kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-                  kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
-                  kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-                  kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
-        }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
-            kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
-      }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+          kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+          kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
+          kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+          kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
 
       constraintsToActivate = self.compactHorizontalLayoutConstraints;
       break;
@@ -767,24 +725,11 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.primaryButton.layer.cornerRadius =
           kCompactVerticalStyle.kButtonCornerRadius;
       self.primaryButton.clipsToBounds = YES;
-
-        if (@available(iOS 15, *)) {
-          self.primaryButton.configuration.contentInsets =
-              NSDirectionalEdgeInsetsMake(
-                  kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-                  kCompactVerticalStyle.kButtonTitleHorizontalContentInset,
-                  kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-                  kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
-        }
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
-      else {
-        self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
-            kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-            kCompactVerticalStyle.kButtonTitleHorizontalContentInset,
-            kCompactVerticalStyle.kButtonTitleVerticalContentInset,
-            kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
-      }
-#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0
+      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+          kCompactVerticalStyle.kButtonTitleVerticalContentInset,
+          kCompactVerticalStyle.kButtonTitleHorizontalContentInset,
+          kCompactVerticalStyle.kButtonTitleVerticalContentInset,
+          kCompactVerticalStyle.kButtonTitleHorizontalContentInset);
 
       constraintsToActivate = self.compactVerticalLayoutConstraints;
       break;
