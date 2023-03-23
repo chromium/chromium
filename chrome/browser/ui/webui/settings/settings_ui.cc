@@ -398,6 +398,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "importPasswordsSuccessSummaryDevice",
       IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_DEVICE);
   plural_string_handler->AddLocalizedString(
+      "importPasswordsConflictsTitle",
+      IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICTS_TITLE);
+  plural_string_handler->AddLocalizedString(
       "importPasswordsSuccessSummaryAccount",
       IDS_SETTINGS_PASSWORDS_IMPORT_SUCCESS_SUMMARY_ACCOUNT);
   plural_string_handler->AddLocalizedString(

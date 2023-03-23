@@ -34,12 +34,15 @@ export interface PasswordsImportDialogElement {
   $: {
     dialog: CrDialogElement,
     dialogTitle: HTMLElement,
+    conflictsList: HTMLElement,
     descriptionText: HTMLElement,
     successTip: HTMLElement,
     failuresSummary: HTMLElement,
     storePicker: HTMLSelectElement,
     chooseFile: CrButtonElement,
     close: CrButtonElement,
+    replace: CrButtonElement,
+    skip: CrButtonElement,
     deleteFileOption: CrCheckboxElement,
   };
 }
@@ -51,6 +54,7 @@ export const IMPORT_HELP_LANDING_PAGE: string =
 
 export enum ImportDialogState {
   START,
+  CONFLICTS,
   ERROR,
   SUCCESS,
   ALREADY_ACTIVE,
@@ -131,6 +135,10 @@ export class PasswordsImportDialogElement extends
         type: Boolean,
         value: false,
       },
+      shouldDisableReplaceButton_: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -141,7 +149,9 @@ export class PasswordsImportDialogElement extends
   private results_: chrome.passwordsPrivate.ImportResults|null;
   private descriptionText_: TrustedHTML;
   private failedImportsWithKnownErrors_: chrome.passwordsPrivate.ImportEntry[];
+  private shouldDisableReplaceButton_: boolean;
   private failedImportsSummary_: string;
+  private conflictsTitle_: string;
   private enablePasswordsImportM2_: boolean;
   private rowsWithUnknownErrorsSummary_: string;
   private showRowsWithUnknownErrorsSummary_: boolean;
@@ -242,10 +252,43 @@ export class PasswordsImportDialogElement extends
     }
     this.results_ =
         await this.passwordManager_.importPasswords(destinationStore);
+    this.processResults_();
+  }
+
+  private async onSkipClick_() {
+    assert(this.isState_(ImportDialogState.CONFLICTS));
+    this.inProgress_ = true;
+    this.results_ =
+        await this.passwordManager_.continueImport(/*selectedIds=*/[]);
+    this.processResults_();
+  }
+
+  private async onReplaceClick_() {
+    assert(this.isState_(ImportDialogState.CONFLICTS));
+    this.inProgress_ = true;
+    // TODO(crbug/1417650): Compute selectedIds based on the ticked checkboxes.
+    const selectedIds: number[] = [];
+    this.results_ = await this.passwordManager_.continueImport(selectedIds);
+    this.processResults_();
+  }
+
+  private async processResults_() {
+    assert(this.results_);
     this.inProgress_ = false;
     switch (this.results_.status) {
       case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
         this.handleSuccess_();
+        return;
+      case chrome.passwordsPrivate.ImportResultsStatus.CONFLICTS:
+        this.descriptionText_ =
+            this.i18nAdvanced('importPasswordsConflictsDescription', {
+              substitutions: [this.i18n('localPasswordManager')],
+            });
+        this.conflictsTitle_ =
+            await PluralStringProxyImpl.getInstance().getPluralString(
+                'importPasswordsConflictsTitle',
+                this.results_.displayedEntries.length);
+        this.dialogState = ImportDialogState.CONFLICTS;
         return;
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
         this.descriptionText_ =
@@ -384,6 +427,8 @@ export class PasswordsImportDialogElement extends
       case ImportDialogState.START:
       case ImportDialogState.ALREADY_ACTIVE:
         return this.i18n('importPasswordsTitle');
+      case ImportDialogState.CONFLICTS:
+        return this.conflictsTitle_;
       case ImportDialogState.ERROR:
         return this.i18n('importPasswordsErrorTitle');
       case ImportDialogState.SUCCESS:
@@ -404,6 +449,8 @@ export class PasswordsImportDialogElement extends
       case ImportDialogState.ERROR:
       case ImportDialogState.ALREADY_ACTIVE:
         return this.i18n('close');
+      case ImportDialogState.CONFLICTS:
+        return this.i18n('importPasswordsCancel');
       case ImportDialogState.SUCCESS:
         return this.i18n('done');
       default:
@@ -416,6 +463,8 @@ export class PasswordsImportDialogElement extends
       case ImportDialogState.START:
       case ImportDialogState.ERROR:
         return 'cancel';
+      case ImportDialogState.CONFLICTS:
+        return 'flex-float-left cancel';
       case ImportDialogState.ALREADY_ACTIVE:
       case ImportDialogState.SUCCESS:
         return 'action';
@@ -424,12 +473,17 @@ export class PasswordsImportDialogElement extends
     }
   }
 
-  private onCloseClick_() {
-    // TODO(crbug/1417650): Trigger the file deletion with Passwords Private API
-    // if checkbox is ticked in SUCCESS (with no errors) state.
+  private async onCloseClick_() {
     if (this.isState_(ImportDialogState.START)) {
       recordPasswordsImportInteraction(
           PasswordsImportDesktopInteractions.CANCELED_BEFORE_FILE_SELECT);
+    }
+    if (this.enablePasswordsImportM2_) {
+      // Trigger the file deletion if checkbox is ticked in SUCCESS (with no
+      // errors) state.
+      const deleteFile = !this.shouldHideDeleteFileOption_() &&
+          this.$.deleteFileOption.checked;
+      await this.passwordManager_.resetImporter(deleteFile);
     }
     this.$.dialog.close();
   }

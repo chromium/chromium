@@ -963,6 +963,23 @@
      =1 {1 password not imported}
      other {{NUM_PASSWORDS} passwords not imported}}
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICTS_TITLE" desc="The title of a dialog, which offers the ability for the user to import passwords into Password Manager. Shown when conflicts were found in the imported file and the user needs to resolve them.">
+    {NUM_PASSWORDS, plural,
+     =1 {1 existing password found}
+     other {{NUM_PASSWORDS} existing passwords found}}
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CONFLICTS_DESCRIPTION" desc="Text shown to the user on the dialog for import passwords, in case some conflicts were found during the import process.">
+    You already have passwords for these accounts in your <ph name="BRAND">$1<ex>Google Password Manager</ex></ph>. If you choose to import one of the passwords below, it will replace the existing one.
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_CANCEL" desc="A button in the dialog for importing passwords into Password Manager. By clicking the button, the import will be canceled and the dialog will be closed.">
+    Cancel import
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_SKIP" desc="A button in the dialog for importing passwords into Password Manager. By clicking the button, the import will be resumed and no passwords will be replaced.">
+    Skip
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_IMPORT_REPLACE" desc="A button in the dialog for importing passwords into Password Manager. By clicking the button, the import will be resumed and selected passwords will be replaced.">
+    Replace
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ALREADY_ACTIVE" desc="Message is shown on the dialog for importing passwords if there is the import process is already running in another tab.">
     You're already importing passwords in another tab
   </message>

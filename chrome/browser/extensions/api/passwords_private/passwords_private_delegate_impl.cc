@@ -174,6 +174,8 @@ extensions::api::passwords_private::ImportEntry ConvertImportEntry(
           entry.status);
   result.url = entry.url;
   result.username = entry.username;
+  result.password = entry.password;
+  result.id = entry.id;
   return result;
 }
 
