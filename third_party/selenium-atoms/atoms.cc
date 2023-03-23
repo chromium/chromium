@@ -806,11 +806,11 @@ const char* const CLEAR[] = {
     ");else throw new N(13,\"Cannot unfocus element after clearing.\");}els",
     "e if(P(a,\"INPUT\")&&a.getAttribute(\"type\")&&\"number\"==a.getAttrib",
     "ute(\"type\").toLowerCase())Vc(a),\na.value=\"\";else if(rc(a))if(Vc(a",
-    "),a.innerHTML=\"\",a=Yb.document.body)Vc(a);else throw new N(13,\"Cann",
-    "ot unfocus element after clearing.\");});; return this._.apply(null,ar",
-    "guments);}).apply({navigator:typeof window!='undefined'?window.navigat",
-    "or:null,document:typeof window!='undefined'?window.document:null}, arg",
-    "uments);}\n",
+    "),a.textContent=\"\",a=Yb.document.body)Vc(a);else throw new N(13,\"Ca",
+    "nnot unfocus element after clearing.\");});; return this._.apply(null,",
+    "arguments);}).apply({navigator:typeof window!='undefined'?window.navig",
+    "ator:null,document:typeof window!='undefined'?window.document:null}, a",
+    "rguments);}\n",
     NULL};
 
 const char* const CLEAR_LOCAL_STORAGE[] = {
