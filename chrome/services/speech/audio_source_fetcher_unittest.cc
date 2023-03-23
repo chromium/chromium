@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "chrome/services/speech/speech_recognition_service_impl.h"
@@ -33,6 +34,11 @@ constexpr int kServerBasedRecognitionAudioFramesPerBuffer = 1600;
 // The original audio buffer duration is 200ms:
 constexpr int kOriginalSampleRate = 48000;
 constexpr int kOriginalFramesPerBuffer = 9600;
+
+constexpr char kServerBasedRecognitionSessionLength[] =
+    "Ash.SpeechRecognitionSessionLength.ServerBased";
+constexpr char kOnDeviceRecognitionSessionLength[] =
+    "Ash.SpeechRecognitionSessionLength.OnDevice";
 
 }  // namespace
 
@@ -148,9 +154,11 @@ class AudioSourceFetcherImplTest
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override {}
 
+  std::unique_ptr<AudioSourceFetcherImpl> audio_source_fetcher_;
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::TaskEnvironment task_environment;
-  std::unique_ptr<AudioSourceFetcherImpl> audio_source_fetcher_;
   MockAudioSourceConsumer* speech_recognition_recognizer_;
   bool is_server_based_;
 };
@@ -190,6 +198,18 @@ TEST_P(AudioSourceFetcherImplTest, ResampleForServerBasedRecognizer) {
     VerifyAudioBuffer(kServerBasedRecognitionAudioSampleRate,
                       kServerBasedRecognitionAudioFramesPerBuffer);
   }
+
+  // Let's destroy the audio source fetcher and ensure that the metric
+  // has been recorded.
+  audio_source_fetcher_.reset();
+  base::TimeDelta length = media::AudioTimestampHelper::FramesToTime(
+      audio_bus->frames(), kOriginalSampleRate);
+
+  const auto* histogram_name = is_server_based()
+                                   ? kServerBasedRecognitionSessionLength
+                                   : kOnDeviceRecognitionSessionLength;
+  histogram_tester_.ExpectTimeBucketCount(histogram_name, length,
+                                          /*count=*/1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AudioSourceFetcherImplTest, ::testing::Bool());

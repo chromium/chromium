@@ -79,6 +79,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabletMode" summary="Animates in Tablet mode w/o split view"/>
 </variants>
 
+<variants name="RecognizerLocation">
+  <variant name="OnDevice" summary="Speech recognition happened on device"/>
+  <variant name="ServerBased"
+      summary="Speech recognition happened on remote servers"/>
+</variants>
+
 <variants name="SplitViewResizeModes">
   <variant name=".ClamshellMode.SingleWindow" summary=""/>
   <variant name=".ClamshellMode.WithOverview" summary=""/>
@@ -4630,19 +4636,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Projector.SpeechRecognitionEndState.{RecognizerLocation}"
+<histogram name="Ash.Projector.SpeechRecognitionEndState.{Location}"
     enum="SpeechRecognitionEndState" expires_after="2023-11-01">
   <owner>yilkal@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
-    For a recognition session happening at {RecognizerLocation}, this histogram
-    records the recognition status at the end of the session.
+    For a recognition session happening at {Location}, this histogram records
+    the recognition status at the end of the session.
   </summary>
-  <token key="RecognizerLocation">
-    <variant name="OnDevice" summary="Speech recognition happened on device"/>
-    <variant name="ServerBased"
-        summary="Speech recognition happened on remote servers"/>
-  </token>
+  <token key="Location" variants="RecognizerLocation"/>
 </histogram>
 
 <histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
@@ -5255,6 +5257,17 @@ chromium-metrics-reviews@google.com.
     <variant name=".InSession2"
         summary="after observing good ADF for 5 seconds"/>
   </token>
+</histogram>
+
+<histogram name="Ash.SpeechRecognitionSessionLength.{Location}" units="ms"
+    expires_after="2023-11-01">
+  <owner>yilkal@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    The length of the speech recognition session happening on {Location}. This
+    histogram records the length at the end of the session.
+  </summary>
+  <token key="Location" variants="RecognizerLocation"/>
 </histogram>
 
 <histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"

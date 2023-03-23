@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/services/speech/audio_source_consumer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
@@ -129,6 +130,8 @@ class AudioSourceFetcherImpl
       absl::nullopt;
   bool is_multi_channel_supported_;
   bool is_server_based_;
+
+  base::TimeDelta audio_length_ = base::Seconds(0);
 
   // A callback to push audio data into `converter_`.
   SendAudioToResampleCallback resample_callback_;
