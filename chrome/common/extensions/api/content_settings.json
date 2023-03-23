@@ -170,6 +170,11 @@
         ]
       },
       {
+        "id": "AutoVerifyContentSetting",
+        "type": "string",
+        "enum": ["allow", "block"]
+      },
+      {
         "id": "CookiesContentSetting",
         "type": "string",
         "enum": ["allow", "block", "session_only"]
@@ -236,6 +241,14 @@
       }
     ],
     "properties": {
+      "autoVerify": {
+        "$ref": "ContentSetting",
+        "description": "Whether to allow sites to use the <a href='https://developer.chrome.com/docs/privacy-sandbox/trust-tokens/'>Private State Tokens API</a>. One of <br><var>allow</var>: Allow sites to use the Private State Tokens API, <br><var>block</var>: Block sites from using the Private State Tokens API. <br>Default is <var>allow</var>.<br> The primary URL is the URL of the top-level frame. The secondary URL is not used. NOTE: When calling <code>set()</code>, the primary pattern must be <code><all_urls></code>.",
+        "value": [
+          "anti-abuse",
+          {"$ref":"AutoVerifyContentSetting"}
+        ]
+      },
       "cookies": {
         "$ref": "ContentSetting",
         "description": "Whether to allow cookies and other local data to be set by websites. One of<br><var>allow</var>: Accept cookies,<br><var>block</var>: Block cookies,<br><var>session_only</var>: Accept cookies only for the current session. <br>Default is <var>allow</var>.<br>The primary URL is the URL representing the cookie origin. The secondary URL is the URL of the top-level frame.",

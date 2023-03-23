@@ -25,6 +25,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/webplugininfo.h"
@@ -228,6 +229,15 @@ ContentSettingsContentSettingSetFunction::Run() {
   const content_settings::ContentSettingsInfo* info =
       content_settings::ContentSettingsRegistry::GetInstance()->Get(
           content_type);
+
+  // The ANTI_ABUSE content setting does not support site-specific settings.
+  if (content_type == ContentSettingsType::ANTI_ABUSE &&
+      (primary_pattern != ContentSettingsPattern::Wildcard() ||
+       secondary_pattern != ContentSettingsPattern::Wildcard())) {
+    return RespondNow(
+        Error("Site-specific settings are not allowed for this type. The URL "
+              "pattern must be '<all_urls>'."));
+  }
 
   // Some content setting types support the full set of values listed in
   // content_settings.json only for exceptions. For the default setting,

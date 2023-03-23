@@ -27,7 +27,10 @@ var settings = [
   'automaticDownloads'
 ];
 
- function expect(expected, message) {
+// Settings that do not support site-specific exceptions.
+var globalOnlySettings = ['autoVerify'];
+
+function expect(expected, message) {
   return chrome.test.callbackPass(function(value) {
     chrome.test.assertEq(expected, value, message);
   });
@@ -50,8 +53,20 @@ chrome.test.runTests([
       }, chrome.test.callbackPass());
     });
   },
+  function setGlobalContentSettings() {
+    globalOnlySettings.forEach(function(type) {
+      cs[type].set(
+          {
+            'primaryPattern': '<all_urls>',
+            'secondaryPattern': '<all_urls>',
+            'setting': givenPermission,
+            'scope': 'incognito_session_only'
+          },
+          chrome.test.callbackPass());
+    });
+  },
   function getContentSettings() {
-    settings.forEach(function(type) {
+    [...settings, ...globalOnlySettings].forEach(function(type) {
       var message = 'Setting for ' + type + ' should be ' + givenPermission;
       cs[type].get({
         'primaryUrl': 'http://www.example.com',
