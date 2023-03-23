@@ -643,6 +643,15 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   BOOL isPoweringOff = _isPoweringOff;
   _isPoweringOff = NO;
 
+  // Stop the browser from re-opening when we close Chrome while
+  // in the first run experience.
+  if (auto* profile = [self lastProfileIfLoaded]) {
+    if (auto* fre_service =
+            FirstRunServiceFactory::GetForBrowserContext(profile)) {
+      fre_service->FinishFirstRunWithoutResumeTask();
+    }
+  }
+
   // Check for in-process downloads, and prompt the user if they really want
   // to quit (and thus cancel downloads). Only check if we're not already
   // shutting down, else the user might be prompted multiple times if the
