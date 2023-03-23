@@ -172,6 +172,7 @@ chromium-metrics-reviews@google.com.
     <variant name="MostVisitedEntry" summary="Most Visited entry"/>
     <variant name="OmniboxMostVisitedEntry"
         summary="Omnibox Most Visited entry"/>
+    <variant name="PinnedTabsEntry" summary="Pinned Tabs entry"/>
     <variant name="ReadingListEntry" summary="Reading List entry"/>
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
     <variant name="RecentTabsHeader" summary="Recent Tabs header/device"/>
@@ -179,6 +180,7 @@ chromium-metrics-reviews@google.com.
     <variant name="TabGridAddTo" summary="Tab Grid Add To"/>
     <variant name="TabGridEdit" summary="Tab Grid Edit"/>
     <variant name="TabGridSearchResult" summary="Tab Grid Search Result"/>
+    <variant name="TabStrip" summary="Tab Strip tab"/>
     <variant name="Toolbar" summary="Menu from a toolbar button"/>
     <variant name="WebImage" summary="Image on a Web page"/>
     <variant name="WebImageLink" summary="Image-Link on a Web page"/>
