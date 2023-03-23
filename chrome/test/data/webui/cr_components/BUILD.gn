@@ -36,6 +36,7 @@ build_webui_tests("build") {
   }
 
   ts_deps = [
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",

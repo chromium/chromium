@@ -114,6 +114,9 @@ build_webui("build") {
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_elements"
   ts_composite = true
   ts_deps = [ "../js:build_ts" ]
+  if (include_polymer) {
+    ts_deps += [ "//third_party/polymer/v3_0:library" ]
+  }
   ts_definitions = [
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",

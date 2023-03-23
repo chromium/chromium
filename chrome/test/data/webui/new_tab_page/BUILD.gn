@@ -41,6 +41,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/new_tab_page:build_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",

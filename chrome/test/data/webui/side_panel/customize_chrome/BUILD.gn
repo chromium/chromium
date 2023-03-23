@@ -31,6 +31,7 @@ build_webui_tests("build") {
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [
     "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
