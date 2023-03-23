@@ -2204,7 +2204,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             QuickDeleteMetricsDelegate.recordHistogram(
                     QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED);
 
-            new QuickDeleteController(this, getModalDialogManager(), getSnackbarManager())
+            new QuickDeleteController(
+                    this, getModalDialogManager(), getSnackbarManager(), getLayoutManager())
                     .triggerQuickDeleteFlow();
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);

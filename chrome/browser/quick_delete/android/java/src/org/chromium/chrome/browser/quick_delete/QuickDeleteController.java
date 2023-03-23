@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -25,6 +27,7 @@ public class QuickDeleteController {
     private final @NonNull QuickDeleteDialogDelegate mQuickDeleteDialogDelegate;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull Context mContext;
+    private final @NonNull LayoutManager mLayoutManager;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -32,12 +35,14 @@ public class QuickDeleteController {
      * @param context The associated {@link Context}.
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
      * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
+     * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
      */
     public QuickDeleteController(@NonNull Context context,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull SnackbarManager snackbarManager) {
+            @NonNull SnackbarManager snackbarManager, @NonNull LayoutManager layoutManager) {
         mContext = context;
         mSnackbarManager = snackbarManager;
+        mLayoutManager = layoutManager;
         mQuickDeleteDialogDelegate =
                 new QuickDeleteDialogDelegate(context, modalDialogManager, this::onDialogDismissed);
     }
@@ -66,6 +71,7 @@ public class QuickDeleteController {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED);
+                navigateToTabSwitcher();
                 showSnackbar();
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
@@ -75,6 +81,14 @@ public class QuickDeleteController {
             default:
                 break;
         }
+    }
+
+    /**
+     * A method to navigate to tab switcher.
+     */
+    private void navigateToTabSwitcher() {
+        if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) return;
+        mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /*animate=*/true);
     }
 
     /**

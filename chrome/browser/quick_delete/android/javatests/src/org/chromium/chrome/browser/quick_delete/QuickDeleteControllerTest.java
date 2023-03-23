@@ -29,6 +29,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -58,6 +60,16 @@ public class QuickDeleteControllerTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+    }
+
+    @Test
+    @MediumTest
+    public void testNavigateToTabSwitcher_WhenClickingDelete() throws IOException {
+        openQuickDeleteDialog();
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
     }
 
     @Test
