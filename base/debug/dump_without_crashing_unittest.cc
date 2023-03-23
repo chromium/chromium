@@ -27,7 +27,10 @@ class DumpWithoutCrashingTest : public testing::Test {
     number_of_dump_calls_ = 0;
   }
 
-  void TearDown() override { SetDumpWithoutCrashingFunction(nullptr); }
+  void TearDown() override {
+    SetDumpWithoutCrashingFunction(nullptr);
+    ClearMapsForTesting();
+  }
 
   // Set override.
   ScopedMockClockOverride clock_;
@@ -46,14 +49,7 @@ class DumpWithoutCrashingTest : public testing::Test {
 
 int DumpWithoutCrashingTest::number_of_dump_calls_ = 0;
 
-// TODO(crbug.com/1295506) This test is flaky on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_DumpWithoutCrashingWithLocation \
-  DISABLED_DumpWithoutCrashingWithLocation
-#else
-#define MAYBE_DumpWithoutCrashingWithLocation DumpWithoutCrashingWithLocation
-#endif
-TEST_F(DumpWithoutCrashingTest, MAYBE_DumpWithoutCrashingWithLocation) {
+TEST_F(DumpWithoutCrashingTest, DumpWithoutCrashingWithLocation) {
   EXPECT_EQ(0, DumpWithoutCrashingTest::number_of_dump_calls());
 
   histogram_tester_.ExpectBucketCount("Stability.DumpWithoutCrashingStatus",
@@ -98,16 +94,7 @@ TEST_F(DumpWithoutCrashingTest, MAYBE_DumpWithoutCrashingWithLocation) {
                                       DumpWithoutCrashingStatus::kUploaded, 3);
 }
 
-// TODO(crbug.com/1295506) This test is flaky on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_DumpWithoutCrashingWithLocationAndUniqueId \
-  DISABLED_DumpWithoutCrashingWithLocationAndUniqueId
-#else
-#define MAYBE_DumpWithoutCrashingWithLocationAndUniqueId \
-  DumpWithoutCrashingWithLocationAndUniqueId
-#endif
-TEST_F(DumpWithoutCrashingTest,
-       MAYBE_DumpWithoutCrashingWithLocationAndUniqueId) {
+TEST_F(DumpWithoutCrashingTest, DumpWithoutCrashingWithLocationAndUniqueId) {
   EXPECT_EQ(0, DumpWithoutCrashingTest::number_of_dump_calls());
 
   histogram_tester_.ExpectBucketCount("Stability.DumpWithoutCrashingStatus",

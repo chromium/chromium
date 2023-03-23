@@ -77,6 +77,9 @@ NOT_TAIL_CALLED BASE_EXPORT bool DumpWithoutCrashingWithUniqueId(
 // previously set function.
 BASE_EXPORT void SetDumpWithoutCrashingFunction(void (CDECL *function)());
 
+// Clear both maps used to throttle calls to DumpWithoutCrashing for testing.
+BASE_EXPORT void ClearMapsForTesting();
+
 }  // namespace debug
 }  // namespace base
 
