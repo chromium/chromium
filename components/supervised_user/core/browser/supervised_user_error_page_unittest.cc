@@ -158,7 +158,7 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
                             IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON)));
     if (param.is_web_filter_interstitial_refresh_enabled) {
       EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                              IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON)));
+                              IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON)));
       EXPECT_THAT(result, testing::HasSubstr(
                               l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK)));
     } else {

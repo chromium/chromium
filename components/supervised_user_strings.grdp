@@ -31,8 +31,8 @@
       <message name="IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_INSTEAD_BUTTON" desc="A button to show a dialog to request access to blocked sites for users who have already asked for permission remotely.">
         Ask in person instead
       </message>
-      <message name="IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON" desc="A button to send a message to request access to blocked sites.">
-        Send a message
+      <message name="IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON" desc="A button to send a message to request access to blocked sites.">
+        Ask in a message
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON" desc="A button for requesting access to blocked sites.">
         Ask permission

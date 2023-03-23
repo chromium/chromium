@@ -135,9 +135,9 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   strings.Set("feedbackLink",
               l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
   if (web_filter_interstitial_refresh_enabled) {
-    strings.Set(
-        "remoteApprovalsButton",
-        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON));
+    strings.Set("remoteApprovalsButton",
+                l10n_util::GetStringUTF8(
+                    IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON));
     strings.Set("backButton", l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK));
   } else {
     strings.Set(
