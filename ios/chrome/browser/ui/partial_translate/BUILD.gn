@@ -60,7 +60,7 @@ source_set("eg_test_support+eg2") {
     "partial_translate_app_interface.h",
     "partial_translate_app_interface_stub.mm",
   ]
-  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
 
 source_set("eg_app_support+eg2") {

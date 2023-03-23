@@ -7,7 +7,7 @@
 
 // Import all EarlGrey2 headers that are required for the Test Process.
 
-#import "ios/third_party/earl_grey2/src/TestLib/EarlGreyImpl/EarlGrey.h"
 #import "ios/third_party/earl_grey2/src/TestLib/EarlGreyImpl/EarlGreyImpl+XCUIApplication.h"
+#import "ios/third_party/earl_grey2/src/TestLib/EarlGreyImpl/EarlGreyImpl.h"
 
 #endif  // IOS_TESTING_EARL_GREY_EARL_GREY_TEST_H_
