@@ -10,12 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.BlockJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataAction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,38 +29,56 @@ import java.util.List;
 @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 public class QuickDeleteMetricsDelegateTest {
-    @ClassParameter
-    private static List<ParameterSet> sClassParams = Arrays.asList(
-            new ParameterSet()
-                    .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED)
-                    .name("MenuItem"),
-            new ParameterSet()
-                    .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED)
-                    .name("Delete"),
-            new ParameterSet()
-                    .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED)
-                    .name("Cancel"),
-            new ParameterSet()
-                    .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete
-                                    .DIALOG_DISMISSED_IMPLICITLY)
-                    .name("Dismissed"));
-
-    private @QuickDeleteMetricsDelegate.PrivacyQuickDelete int mPrivacyQuickDeleteMetric;
-
-    public QuickDeleteMetricsDelegateTest(
-            @QuickDeleteMetricsDelegate.PrivacyQuickDelete int privacyQuickDeleteMetric) {
-        mPrivacyQuickDeleteMetric = privacyQuickDeleteMetric;
+    /**
+     * Class to parameterize the params for {@link
+     * QuickDeleteMetricsDelegateTest.testRecordHistogram}.
+     */
+    public static class MethodParams implements ParameterProvider {
+        @Override
+        public List<ParameterSet> getParameters() {
+            return Arrays.asList(
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.MENU_ITEM_CLICKED)
+                            .name("MenuItem"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED)
+                            .name("Delete"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED)
+                            .name("Cancel"),
+                    new ParameterSet()
+                            .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete
+                                            .DIALOG_DISMISSED_IMPLICITLY)
+                            .name("Dismissed"));
+        }
     }
 
     @Test
     @SmallTest
-    public void testRecordHistogram() {
+    @UseMethodParameter(MethodParams.class)
+    public void testRecordHistogram(
+            @QuickDeleteMetricsDelegate.PrivacyQuickDelete int mPrivacyQuickDeleteMetric) {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Privacy.QuickDelete", mPrivacyQuickDeleteMetric, 1)
                         .build();
 
         QuickDeleteMetricsDelegate.recordHistogram(mPrivacyQuickDeleteMetric);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordClearBrowsingDataActionHistogram() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Privacy.ClearBrowsingData.Action",
+                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES, 1)
+                        .build();
+
+        QuickDeleteMetricsDelegate.recordHistogram(
+                QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED);
 
         histogramWatcher.assertExpected();
     }

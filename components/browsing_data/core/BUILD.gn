@@ -48,11 +48,23 @@ static_library("core") {
 }
 
 if (is_android) {
-  java_cpp_enum("browsing_data_utils_java") {
+  java_cpp_enum("browsing_data_utils_javagen") {
+    # External code should depend on ":java" instead.
+    visibility = [ ":*" ]
     sources = [ "browsing_data_utils.h" ]
   }
-  java_cpp_enum("clear_browsing_data_tab_java") {
+  java_cpp_enum("clear_browsing_data_tab_javagen") {
+    # External code should depend on ":java" instead.
+    visibility = [ ":*" ]
     sources = [ "clear_browsing_data_tab.h" ]
+  }
+
+  android_library("java") {
+    srcjar_deps = [
+      ":browsing_data_utils_javagen",
+      ":clear_browsing_data_tab_javagen",
+    ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }
 

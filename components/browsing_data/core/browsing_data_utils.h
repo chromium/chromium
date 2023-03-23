@@ -52,6 +52,11 @@ enum class TimePeriod {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// Must be kept in sync with the ClearBrowsingDataAction in enums.xml.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.browsing_data
 enum class ClearBrowsingDataAction {
   kClearBrowsingDataDialog = 0,
   kClearBrowsingDataOnExit = 1,

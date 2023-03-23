@@ -51,6 +51,7 @@ if (is_android) {
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/tab:java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//components/browsing_data/core:java",
       "//components/metrics:metrics_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/android_support_test_runner:rules_java",

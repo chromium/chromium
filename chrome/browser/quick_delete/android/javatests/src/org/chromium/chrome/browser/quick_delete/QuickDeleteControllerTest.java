@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -96,6 +97,22 @@ public class QuickDeleteControllerTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Privacy.QuickDelete",
                                 QuickDeleteMetricsDelegate.PrivacyQuickDelete.DELETE_CLICKED, 1)
+                        .build();
+
+        onViewWaiting(withId(R.id.positive_button)).perform(click());
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testQuickDeleteLast15MinutesHistogram_WhenClickingDelete() throws IOException {
+        openQuickDeleteDialog();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Privacy.ClearBrowsingData.Action",
+                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES, 1)
                         .build();
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
