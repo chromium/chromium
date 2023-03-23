@@ -193,6 +193,11 @@ BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
              "SafeBrowsingLookupMechanismExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
+    &kSafeBrowsingLookupMechanismExperiment,
+    "UrlLevelValidationForHprtExperimentEnabled",
+    /*default_value=*/true};
+
 BASE_FEATURE(kSafeBrowsingOnUIThread,
              "SafeBrowsingOnUIThread",
              base::FEATURE_DISABLED_BY_DEFAULT);

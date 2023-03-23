@@ -8,11 +8,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -279,6 +281,15 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
     std::vector<UnknownNoYesResult> urt_hpd_hprt_delayed_responses;
     absl::optional<AllInOneResult> delayed_response_result;
   };
+
+  void SetUp() override {
+    std::map<std::string, std::string> params = {
+        {"UrlLevelValidationForHprtExperimentEnabled", "true"}};
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kSafeBrowsingLookupMechanismExperiment, params);
+  }
+
+  void TearDown() override { feature_list_.Reset(); }
 
   void ResetMetrics() {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -1090,6 +1101,16 @@ class SafeBrowsingLookupMechanismExperimenterTest : public PlatformTest {
       std::make_unique<PretendUrlCheckerDelegate>();
   std::unique_ptr<safe_browsing::MockPingManager> ping_manager_ =
       std::make_unique<safe_browsing::MockPingManager>();
+  base::test::ScopedFeatureList feature_list_;
+};
+class SafeBrowsingLookupMechanismExperimenterUrlLevelValidationDisabledTest
+    : public SafeBrowsingLookupMechanismExperimenterTest {
+  void SetUp() override {
+    std::map<std::string, std::string> params = {
+        {"UrlLevelValidationForHprtExperimentEnabled", "false"}};
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kSafeBrowsingLookupMechanismExperiment, params);
+  }
 };
 
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestLifetimes) {
@@ -1354,6 +1375,34 @@ TEST_F(SafeBrowsingLookupMechanismExperimenterTest, TestUrlLevelValidation) {
                               /*urt_hpd_hprt_time_out=*/no_time_outs,
                               /*expect_report_sent=*/false);
   }
+}
+
+TEST_F(SafeBrowsingLookupMechanismExperimenterUrlLevelValidationDisabledTest,
+       TestUrlLevelValidation) {
+  std::vector<bool> no_time_outs = {false, false, false};
+  std::vector<absl::optional<UrlLevelValidationDetails>>
+      urt_hpd_hprt_url_level_validation_details = {
+          UrlLevelValidationDetails(
+              /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
+              /*real_time_request_failed=*/false,
+              /*matched_high_confidence_allowlist=*/true),
+          UrlLevelValidationDetails(
+              /*locally_cached_results_threat_type=*/absl::nullopt,
+              /*real_time_request_failed=*/false,
+              /*matched_high_confidence_allowlist=*/absl::nullopt),
+          UrlLevelValidationDetails(
+              /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_BILLING,
+              /*real_time_request_failed=*/false,
+              /*matched_high_confidence_allowlist=*/true)};
+  std::vector<SBThreatType> urt_hpd_hprt_threat_types = {
+      SB_THREAT_TYPE_SAFE, SB_THREAT_TYPE_URL_MALWARE,
+      SB_THREAT_TYPE_URL_PHISHING};
+
+  // The report is not sent if the feature is disabled.
+  RunUrlLevelValidationTest(urt_hpd_hprt_threat_types,
+                            urt_hpd_hprt_url_level_validation_details,
+                            /*urt_hpd_hprt_time_out=*/no_time_outs,
+                            /*expect_report_sent=*/false);
 }
 
 TEST_F(SafeBrowsingLookupMechanismExperimenterTest,

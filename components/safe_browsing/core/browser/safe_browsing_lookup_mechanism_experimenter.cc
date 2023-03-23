@@ -12,6 +12,7 @@
 #include "components/safe_browsing/core/browser/hash_realtime_mechanism.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace safe_browsing {
 SafeBrowsingLookupMechanismExperimenter::
@@ -481,6 +482,9 @@ void SafeBrowsingLookupMechanismExperimenter::LogIndividualMechanismResult(
   }
 }
 void SafeBrowsingLookupMechanismExperimenter::MaybeLogUrlLevelResults() const {
+  if (!safe_browsing::kUrlLevelValidationForHprtExperimentEnabled.Get()) {
+    return;
+  }
   if (checks_to_run_.size() != 1 ||
       !checks_to_run_.back()->would_check_show_warning_if_unsafe.has_value()) {
     DCHECK(false);

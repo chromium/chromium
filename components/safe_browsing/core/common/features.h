@@ -198,6 +198,12 @@ BASE_DECLARE_FEATURE(kSafeBrowsingCsbrrNewDownloadTrigger);
 // known as the hash-prefix real-time lookup experiment, since that mechanism is
 // the main comparison anchor.
 BASE_DECLARE_FEATURE(kSafeBrowsingLookupMechanismExperiment);
+// Controls whether the SafeBrowsingLookupMechanismExperiment (AKA HPRT
+// experiment) conditionally logs a Client Safe Browsing Report when the
+// experiment ends for URL-level validation purposes. This is only relevant
+// while the HPRT experiment is running, which is only enabled for ESB users.
+extern const base::FeatureParam<bool>
+    kUrlLevelValidationForHprtExperimentEnabled;
 
 // Run Safe Browsing code on UI thread.
 BASE_DECLARE_FEATURE(kSafeBrowsingOnUIThread);
