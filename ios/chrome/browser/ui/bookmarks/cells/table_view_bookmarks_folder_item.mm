@@ -9,8 +9,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -131,7 +131,11 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
                           forAxis:UILayoutConstraintAxisHorizontal];
 
     // Slashed cloud view.
-    self.cloudSlashedView = bookmark_utils_ios::CloudSlashImageView();
+    UIImage* cloudSlashedImage = CustomSymbolWithPointSize(
+        kCloudSlashSymbol, kCloudSlashSymbolPointSize);
+    self.cloudSlashedView =
+        [[UIImageView alloc] initWithImage:cloudSlashedImage];
+    self.cloudSlashedView.tintColor = CloudSlashTintColor();
     self.cloudSlashedView.hidden = YES;
 
     // Container StackView.

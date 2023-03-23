@@ -30,10 +30,16 @@ extern const CGFloat kSymbolAccessoryPointSize;
 // Size of the icons in the root screen of the settings.
 extern const CGFloat kSettingsRootSymbolImagePointSize;
 
+// The size of the cloud slash icon.
+extern const CGFloat kCloudSlashSymbolPointSize;
+
 // Returns the palette to be used on incognito symbol when it is small.
 NSArray<UIColor*>* SmallIncognitoPalette();
 
 // Returns the palette to be used on incognito symbol when it is large.
 NSArray<UIColor*>* LargeIncognitoPalette();
+
+// Returns the cloud slash tint color.
+UIColor* CloudSlashTintColor();
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_SYMBOL_CONFIGURATIONS_H_

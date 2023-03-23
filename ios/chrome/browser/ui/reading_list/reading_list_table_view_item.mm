@@ -34,9 +34,6 @@ namespace {
 // The size of the symbol badge image.
 constexpr CGFloat kSymbolBadgeImagePointSize = 13;
 
-// The size of the symbol for the metadata image.
-constexpr CGFloat kSymbolMetadataImagePointSize = 18;
-
 // The string format used to append the distillation date to the URL host.
 NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 
@@ -108,10 +105,10 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
   URLCell.accessibilityTraits |= UIAccessibilityTraitButton;
   URLCell.metadataImage.image =
       self.showCloudSlashIcon
-          ? CustomSymbolTemplateWithPointSize(kCloudSlashSymbol,
-                                              kSymbolMetadataImagePointSize)
+          ? CustomSymbolWithPointSize(kCloudSlashSymbol,
+                                      kCloudSlashSymbolPointSize)
           : nil;
-  URLCell.metadataImage.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  URLCell.metadataImage.tintColor = CloudSlashTintColor();
   if (styler.cellTitleColor)
     URLCell.titleLabel.textColor = styler.cellTitleColor;
   [URLCell.faviconView configureWithAttributes:self.attributes];

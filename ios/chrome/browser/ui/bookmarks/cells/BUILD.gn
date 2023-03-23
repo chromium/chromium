@@ -29,6 +29,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
