@@ -195,9 +195,10 @@ def PatchRustRevision(new_version: RustVersion) -> RustVersion:
 
 
 def PatchRustStage0():
-  verify_stage0 = subprocess.run([BUILD_RUST_PY_PATH, '--verify-stage0-hash'],
-                                 capture_output=True,
-                                 text=True)
+  verify_stage0 = subprocess.run(
+      [BUILD_RUST_PY_PATH, '--verify-stage0-hash', '--skip-checkout'],
+      capture_output=True,
+      text=True)
   if verify_stage0.returncode == 0:
     return
 

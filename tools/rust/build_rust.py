@@ -633,17 +633,17 @@ def main():
     if not args.skip_checkout:
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
 
-    (x86_64_llvm_config, aarch64_llvm_config,
-     target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,
-                                           args.build_mac_arm,
-                                           args.gcc_toolchain)
-
     VerifyStage0JsonHash()
     if args.verify_stage0_hash:
         # The above function exits and prints the actual hash if verification
         # failed so we just quit here; if we reach this point, the hash is
         # valid.
         return 0
+
+    (x86_64_llvm_config, aarch64_llvm_config,
+     target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,
+                                           args.build_mac_arm,
+                                           args.gcc_toolchain)
 
     AddCMakeToPath()
 
