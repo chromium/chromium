@@ -2946,6 +2946,9 @@ extern const char kCellularUseSecondEuiccDescription[];
 extern const char kClipboardHistoryReorderName[];
 extern const char kClipboardHistoryReorderDescription[];
 
+extern const char kClipboardHistoryLongpressName[];
+extern const char kClipboardHistoryLongpressDescription[];
+
 extern const char kComponentUpdaterTestRequestName[];
 extern const char kComponentUpdaterTestRequestDescription[];
 

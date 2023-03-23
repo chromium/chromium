@@ -2902,6 +2902,8 @@ constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 constexpr char kBorealisStorageBallooningInternalName[] =
     "borealis-storage-ballooning";
 constexpr char kVmPerBootShaderCacheName[] = "vm-per-boot-shader-cache";
+constexpr char kClipboardHistoryLongpressInternalName[] =
+    "clipboard-history-longpress";
 constexpr char kClipboardHistoryReorderInternalName[] =
     "clipboard-history-reorder";
 constexpr char kWelcomeScreenInternalName[] = "welcome-screen";
@@ -7522,6 +7524,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kClipboardHistoryLongpressInternalName,
+     flag_descriptions::kClipboardHistoryLongpressName,
+     flag_descriptions::kClipboardHistoryLongpressDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kClipboardHistoryLongpress)},
     {kClipboardHistoryReorderInternalName,
      flag_descriptions::kClipboardHistoryReorderName,
      flag_descriptions::kClipboardHistoryReorderDescription, kOsCrOS,
@@ -10017,6 +10023,15 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return (channel != version_info::Channel::DEV &&
             channel != version_info::Channel::CANARY &&
             channel != version_info::Channel::UNKNOWN);
+  }
+
+  // Only show clipboard history longpress flag if channel is one of
+  // Beta/Dev/Canary/Unknown.
+  if (!strcmp(kClipboardHistoryLongpressInternalName, entry.internal_name)) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
   }
 
   // Only show clipboard history reorder flag if channel is one of

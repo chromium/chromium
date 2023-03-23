@@ -5136,6 +5136,13 @@ const char kClipboardHistoryReorderDescription[] =
     "Enables an experimental behavior change where each time a clipboard "
     "history item is pasted, that item shifts to the top of the list.";
 
+const char kClipboardHistoryLongpressName[] =
+    "Hold Ctrl+V to paste an item from clipboard history";
+const char kClipboardHistoryLongpressDescription[] =
+    "Enables an experimental behavior change where long-pressing Ctrl+V shows "
+    "the clipboard history menu. If an item is selected to paste, it replaces "
+    "the content initially pasted by Ctrl+V.";
+
 const char kComponentUpdaterTestRequestName[] =
     "Enable the component updater check 'test-request' parameter";
 const char kComponentUpdaterTestRequestDescription[] =

@@ -1102,6 +1102,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "clipboard-history-longpress",
+    "owners": ["ckincaid@google.com", "multipaste@google.com"],
+    "expiry_milestone": 117
+  },
+  {
     "name": "clipboard-history-reorder",
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
     "expiry_milestone": 110
