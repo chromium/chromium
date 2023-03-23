@@ -443,15 +443,36 @@ TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsNestedEntriesNotObject) {
-  scoped_refptr<TrustedSignals::Result> signals =
-      FetchBiddingSignalsWithResponse(
-          GURL("https://url.test/"
-               "?hostname=publisher&keys=key1&interestGroupNames=name1"),
-          R"({"keys":4.1,"perInterestGroupData":"42"})", {"name1"}, {"key1"},
-          kHostname);
-  ASSERT_TRUE(signals);
-  EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+  const char* kTestCases[] = {
+      "4", "[3]",
+      // List with a valid priority vector as the first element, which should
+      // not be treated as the priority vector of an interest group named "0".
+      R"([{"priorityVector" : {"a":1}}])", "null", R"("string")"};
+
+  for (const char* test_case : kTestCases) {
+    SCOPED_TRACE(test_case);
+
+    scoped_refptr<TrustedSignals::Result> signals =
+        FetchBiddingSignalsWithResponse(
+            GURL("https://url.test/?hostname=publisher"
+                 "&keys=0,key1,length"
+                 "&interestGroupNames=0,length,name1"),
+            base::StringPrintf(R"({"keys":%s,"perInterestGroupData":%s})",
+                               test_case, test_case),
+            {"name1", "0", "length"}, {"key1", "0", "length"}, kHostname);
+    ASSERT_TRUE(signals);
+    EXPECT_EQ(R"({"key1":null})",
+              ExtractBiddingSignals(signals.get(), {"key1"}));
+    // These are important to check for the list case.
+    EXPECT_EQ(R"({"0":null})", ExtractBiddingSignals(signals.get(), {"0"}));
+    EXPECT_EQ(R"({"length":null})",
+              ExtractBiddingSignals(signals.get(), {"length"}));
+
+    EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+    // These are important to check for the list case.
+    EXPECT_EQ(nullptr, signals->GetPriorityVector("0"));
+    EXPECT_EQ(nullptr, signals->GetPriorityVector("length"));
+  }
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsInvalidPriorityVectors) {

@@ -111,12 +111,16 @@ std::map<std::string, AuctionV8Helper::SerializedValue> ParseChildKeyValueMap(
     return out;
 
   v8::Local<v8::Value> named_object_value;
-  // Don't consider the entire object missing a fatal error.
+  // Don't consider the entire object missing (or values other than objects) a
+  // fatal error.
   if (!v8_object
            ->Get(v8_helper->scratch_context(),
                  v8_helper->CreateStringFromLiteral(name))
            .ToLocal(&named_object_value) ||
-      !named_object_value->IsObject()) {
+      !named_object_value->IsObject() ||
+      // Arrays are considered objects by Javascript, but they're not the object
+      // type we're looking for.
+      named_object_value->IsArray()) {
     return out;
   }
 
@@ -190,7 +194,10 @@ ParsePriorityVectorsInPerInterestGroupMap(
            ->Get(v8_helper->scratch_context(),
                  v8_helper->CreateStringFromLiteral("perInterestGroupData"))
            .ToLocal(&per_group_data_value) ||
-      !per_group_data_value->IsObject()) {
+      !per_group_data_value->IsObject() ||
+      // Arrays are considered objects by Javascript, but they're not the object
+      // type we're looking for.
+      per_group_data_value->IsArray()) {
     return {};
   }
   v8::Local<v8::Object> per_group_data_object =
@@ -205,7 +212,10 @@ ParsePriorityVectorsInPerInterestGroupMap(
     v8::Local<v8::Value> per_interest_group_data_value;
     if (!per_group_data_object->Get(v8_helper->scratch_context(), v8_name)
              .ToLocal(&per_interest_group_data_value) ||
-        !per_interest_group_data_value->IsObject()) {
+        !per_interest_group_data_value->IsObject() ||
+        // Arrays are considered objects by Javascript, but they're not the
+        // object type we're looking for.
+        per_group_data_value->IsArray()) {
       continue;
     }
 
