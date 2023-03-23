@@ -24,11 +24,12 @@ enum class ClusterFilterReason {
   kSingleVisit = 6,
   kNotContentVisible = 7,
   kHasBlockedCategory = 8,
+  kNotEnoughVisits = 9,
 
   // Add above here and make sure to keep `ClusterFilterReason` up to date in
   // enums.xml.
 
-  kMaxValue = kHasBlockedCategory
+  kMaxValue = kNotEnoughVisits
 };
 
 // A cluster processor that removes clusters that do not match the filter.

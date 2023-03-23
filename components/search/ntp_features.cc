@@ -248,6 +248,11 @@ BASE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration,
              "NtpHistoryClustersModuleBeginTimeDuration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Dummy feature to set kNtpHistoryClustersModuleMinimumVisitsRequiredParam.
+BASE_FEATURE(kNtpHistoryClustersModuleMinimumVisitsRequired,
+             "NtpHistoryClustersModuleMinimumVisitsRequired",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Dummy feature to set kNtpHistoryClustersModuleMinimumImagesRequiredParam.
 BASE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired,
              "NtpHistoryClustersModuleMinimumImagesRequired",
@@ -332,6 +337,8 @@ const char kNtpRecipeTasksModuleExperimentGroupParam[] =
     "NtpRecipeTasksModuleExperimentGroupParam";
 const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[] =
     "NtpHistoryClustersModuleBeginTimeDurationHoursParam";
+const char kNtpHistoryClustersModuleMinimumVisitsRequiredParam[] =
+    "NtpHistoryClustersModuleMinimumVisitsRequiredParam";
 const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[] =
     "NtpHistoryClustersModuleMinimumImagesRequiredParam";
 const char kNtpHistoryClustersModuleCategoriesAllowlistParam[] =

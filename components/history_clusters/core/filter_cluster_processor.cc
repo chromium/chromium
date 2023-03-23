@@ -28,7 +28,8 @@ void RecordClusterFilterReasonHistogram(
 // Returns whether `filter_params` is a filter that would actually filter
 // clusters out.
 bool IsFunctionalFilter(QueryClustersFilterParams filter_params) {
-  return filter_params.min_visits_with_images > 0 ||
+  return filter_params.min_visits > 0 ||
+         filter_params.min_visits_with_images > 0 ||
          !filter_params.categories_allowlist.empty() ||
          !filter_params.categories_blocklist.empty() ||
          filter_params.is_search_initiated ||
@@ -117,7 +118,7 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
   bool is_search_initiated = false;
   bool has_related_searches = false;
   size_t num_interesting_visits = 0;
-  size_t num_visits = 0;
+  int num_visits = 0;
   bool is_content_visible = true;
 
   for (const auto& visit : cluster.visits) {
@@ -161,6 +162,11 @@ bool FilterClusterProcessor::DoesClusterMatchFilter(
   }
 
   bool matches_filter = true;
+  if (num_visits < filter_params_->min_visits) {
+    RecordClusterFilterReasonHistogram(clustering_request_source_,
+                                       ClusterFilterReason::kNotEnoughVisits);
+    matches_filter = false;
+  }
   if (num_visits_with_images < filter_params_->min_visits_with_images) {
     RecordClusterFilterReasonHistogram(clustering_request_source_,
                                        ClusterFilterReason::kNotEnoughImages);

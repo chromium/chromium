@@ -17732,6 +17732,7 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="6" label="Only contained a single visit"/>
   <int value="7" label="Contains content that should not be visible"/>
   <int value="8" label="Contains blocked category"/>
+  <int value="9" label="Not enough non-hidden visits"/>
 </enum>
 
 <enum name="CoalescePotentialPackets">

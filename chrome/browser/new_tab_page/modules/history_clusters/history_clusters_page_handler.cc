@@ -78,6 +78,17 @@ base::flat_set<std::string> GetCategories(const char* feature_param) {
                                                           categories.end());
 }
 
+int GetMinVisitsToShow() {
+  static int min_visits = base::GetFieldTrialParamByFeatureAsInt(
+      ntp_features::kNtpHistoryClustersModuleMinimumVisitsRequired,
+      ntp_features::kNtpHistoryClustersModuleMinimumVisitsRequiredParam,
+      kMinRequiredVisits);
+  if (min_visits < 0) {
+    return kMinRequiredVisits;
+  }
+  return min_visits;
+}
+
 int GetMinImagesToShow() {
   static int min_images_to_show = base::GetFieldTrialParamByFeatureAsInt(
       ntp_features::kNtpHistoryClustersModuleMinimumImagesRequired,
@@ -100,6 +111,7 @@ size_t GetMaxClusters() {
 
 history_clusters::QueryClustersFilterParams GetFilterParamsFromFeatureFlags() {
   history_clusters::QueryClustersFilterParams filter_params;
+  filter_params.min_visits = GetMinVisitsToShow();
   filter_params.min_visits_with_images = GetMinImagesToShow();
   filter_params.categories_allowlist = GetCategories(
       ntp_features::kNtpHistoryClustersModuleCategoriesAllowlistParam);

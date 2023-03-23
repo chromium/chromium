@@ -34,6 +34,11 @@ struct QueryClustersFilterParams {
 
   // Parameters related to the minimum requirements for returned clusters.
 
+  // The minimum number of non-hidden visits that are required for returned
+  // clusters. Note that this also implicitly works as a visit filter such that
+  // if fewer than `min_total_visits` are in a cluster, it will be filtered out.
+  int min_visits = 0;
+
   // The minimum number of visits within a cluster that have associated images.
   // Note that this also implicitly works as a visit filter such that if fewer
   // than `min_visits_with_images` are in a cluster, it will be filtered out.

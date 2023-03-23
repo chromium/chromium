@@ -67,6 +67,7 @@ BASE_DECLARE_FEATURE(kNtpSingleRowShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModule);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumVisitsRequired);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleMinimumImagesRequired);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleCategories);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleLoad);
@@ -144,6 +145,9 @@ extern const char kNtpRecipeTasksModuleExperimentGroupParam[];
 // Parameter for determining the maximum number of hours to look back to show a
 // history cluster.
 extern const char kNtpHistoryClustersModuleBeginTimeDurationHoursParam[];
+// Parameter for determining the minimum number of visits that are required in
+// order to show a history cluster.
+extern const char kNtpHistoryClustersModuleMinimumVisitsRequiredParam[];
 // Parameter for determining the minimum number of visits with an image that are
 // required in order to show a history cluster.
 extern const char kNtpHistoryClustersModuleMinimumImagesRequiredParam[];

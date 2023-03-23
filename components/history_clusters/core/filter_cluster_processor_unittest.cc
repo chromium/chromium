@@ -188,6 +188,33 @@ TEST_F(FilterClusterProcessorTest, NoFunctionalFilter) {
       0);
 }
 
+TEST_F(FilterClusterProcessorTest, OnlyVisitsConstraint) {
+  base::HistogramTester histogram_tester;
+
+  QueryClustersFilterParams params;
+  params.min_visits = 2;
+
+  EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
+              ElementsAre(2, 3, 4, 5, 6, 7, 9, 10, 11));
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
+      "NewTabPage",
+      12, 1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter."
+      "NewTabPage",
+      9, 1);
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
+      "NewTabPage",
+      ClusterFilterReason::kNotFiltered, 9);
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
+      "NewTabPage",
+      ClusterFilterReason::kNotEnoughVisits, 3);
+}
+
 TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
   base::HistogramTester histogram_tester;
 
@@ -400,6 +427,7 @@ TEST_F(FilterClusterProcessorTest, FullFilter) {
   base::HistogramTester histogram_tester;
 
   QueryClustersFilterParams params;
+  params.min_visits = 2;
   params.min_visits_with_images = 2;
   params.categories_allowlist = {"category1", "category2"};
   params.categories_blocklist = {"blocked"};
@@ -421,6 +449,10 @@ TEST_F(FilterClusterProcessorTest, FullFilter) {
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
       ClusterFilterReason::kNotFiltered, 1);
+  histogram_tester.ExpectBucketCount(
+      "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
+      "NewTabPage",
+      ClusterFilterReason::kNotEnoughVisits, 3);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason."
       "NewTabPage",
