@@ -45,6 +45,11 @@
 
 #define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
 
+// Don't add ABI tags to libc++ symbols. ABI tags increase mangled name sizes.
+// This only exists to allow multiple // libc++ versions to be linked into a
+// binary, which Chrome doesn't do.
+#define _LIBCPP_NO_ABI_TAG
+
 // Explicitly define  _LIBCPP_VERBOSE_ABORT(...) to call the termination
 // function because by default, this macro will does not call the verbose
 // termination function on Apple platforms.
