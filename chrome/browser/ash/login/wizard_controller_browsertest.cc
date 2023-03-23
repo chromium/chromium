@@ -37,7 +37,6 @@
 #include "chrome/browser/ash/login/screens/device_disabled_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
-#include "chrome/browser/ash/login/screens/mock_arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/mock_consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/mock_demo_preferences_screen.h"
 #include "chrome/browser/ash/login/screens/mock_demo_setup_screen.h"
@@ -635,15 +634,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
             base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                                 base::Unretained(wizard_controller))));
 
-    mock_arc_terms_of_service_screen_view_ =
-        std::make_unique<MockArcTermsOfServiceScreenView>();
-    mock_arc_terms_of_service_screen_ =
-        MockScreenExpectLifecycle(std::make_unique<MockArcTermsOfServiceScreen>(
-            mock_arc_terms_of_service_screen_view_->AsWeakPtr(),
-            base::BindRepeating(
-                &WizardController::OnArcTermsOfServiceScreenExit,
-                base::Unretained(wizard_controller))));
-
     device_disabled_screen_view_ =
         std::make_unique<MockDeviceDisabledScreenView>();
     MockScreen(std::make_unique<DeviceDisabledScreen>(
@@ -720,15 +710,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
             mock_demo_preferences_screen_view_->AsWeakPtr(),
             base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                                 base::Unretained(wizard_controller))));
-
-    mock_arc_terms_of_service_screen_view_ =
-        std::make_unique<MockArcTermsOfServiceScreenView>();
-    mock_arc_terms_of_service_screen_ =
-        MockScreenExpectLifecycle(std::make_unique<MockArcTermsOfServiceScreen>(
-            mock_arc_terms_of_service_screen_view_->AsWeakPtr(),
-            base::BindRepeating(
-                &WizardController::OnArcTermsOfServiceScreenExit,
-                base::Unretained(wizard_controller))));
 
     mock_consolidated_consent_screen_view_ =
         std::make_unique<MockConsolidatedConsentScreenView>();
@@ -895,10 +876,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
   MockDemoPreferencesScreen* mock_demo_preferences_screen_ = nullptr;
   std::unique_ptr<MockDemoPreferencesScreenView>
       mock_demo_preferences_screen_view_;
-
-  MockArcTermsOfServiceScreen* mock_arc_terms_of_service_screen_ = nullptr;
-  std::unique_ptr<MockArcTermsOfServiceScreenView>
-      mock_arc_terms_of_service_screen_view_;
 
   MockConsolidatedConsentScreen* mock_consolidated_consent_screen_ = nullptr;
   std::unique_ptr<MockConsolidatedConsentScreenView>

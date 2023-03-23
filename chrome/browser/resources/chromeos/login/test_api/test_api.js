@@ -690,19 +690,6 @@ class DemoPreferencesScreenTester extends ScreenElementApi {
   }
 }
 
-class ArcTosScreenTester extends ScreenElementApi {
-  constructor() {
-    super('arc-tos');
-  }
-
-  // Note that the Accept Button text key is different depending on whether
-  // the device in Demo Mode setup. Key for non-demo setup is
-  // "arcTermsOfServiceAcceptButton"
-  getArcTosDemoModeAcceptButtonName() {
-    return loadTimeData.getString('arcTermsOfServiceAcceptAndContinueButton');
-  }
-}
-
 class GuestTosScreenTester extends ScreenElementApi {
   constructor() {
     super('guest-tos');
@@ -924,7 +911,6 @@ export class OobeApiProvider {
       ErrorScreen: new ErrorScreenTester(),
       OfflineLoginScreen: new OfflineLoginScreenTester(),
       DemoPreferencesScreen: new DemoPreferencesScreenTester(),
-      ArcTosScreen: new ArcTosScreenTester(),
       ThemeSelectionScreen: new ThemeSelectionScreenTester(),
       GestureNavigation: new GestureNavigationScreenTester(),
       ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),

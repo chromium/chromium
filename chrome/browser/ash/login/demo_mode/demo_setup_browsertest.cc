@@ -74,7 +74,6 @@ namespace {
 using test::DemoModeSetupResult;
 using test::SetupDummyOfflinePolicyDir;
 
-constexpr char kArcTosId[] = "arc-tos";
 constexpr char kConsolidatedConsentId[] = "consolidated-consent";
 constexpr char kDemoSetupId[] = "demo-setup";
 constexpr char kDemoPrefsId[] = "demo-preferences";
@@ -112,11 +111,6 @@ const test::UIPath kDemoSetupErrorDialogPowerwash = {kDemoSetupId,
 const test::UIPath kDemoSetupErrorDialogBack = {kDemoSetupId, "back"};
 const test::UIPath kDemoSetupErrorDialogMessage = {kDemoSetupId,
                                                    "errorMessage"};
-
-const test::UIPath kArcTosDialog = {kArcTosId, "arcTosDialog"};
-const test::UIPath kArcTosAcceptButton = {kArcTosId, "arcTosAcceptButton"};
-const test::UIPath kArcTosBackButton = {kArcTosId, "arcTosBackButton"};
-const test::UIPath kArcTosNextButton = {kArcTosId, "arcTosNextButton"};
 
 const test::UIPath kCCAcceptButton = {kConsolidatedConsentId, "acceptButton"};
 const test::UIPath kCCArcTosLink = {kConsolidatedConsentId, "arcTosLink"};
@@ -327,18 +321,6 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     ASSERT_TRUE(arc::IsArcAvailable());
   }
 
-  void SetPlayStoreTermsForTesting() {
-    test::ExecuteOobeJS(
-        R"(login.ArcTermsOfServiceScreen.setTosForTesting(
-              'Test Play Store Terms of Service');)");
-  }
-
-  void WaitForArcTosScreen() {
-    OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-    SetPlayStoreTermsForTesting();
-    test::OobeJS().CreateVisibilityWaiter(true, kArcTosDialog)->Wait();
-  }
-
   void WaitForConsolidatedConsentScreen() {
     test::WaitForConsolidatedConsentScreen();
 
@@ -357,13 +339,6 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     test::OobeJS().TypeIntoPath(expected_store_number,
                                 kDemoPreferencesStoreNumber);
     test::OobeJS().ExpectDisabledPath(kDemoPreferencesNext);
-  }
-
-  void AcceptArcTos() {
-    test::OobeJS().CreateVisibilityWaiter(true, kArcTosNextButton)->Wait();
-    test::OobeJS().ClickOnPath(kArcTosNextButton);
-    test::OobeJS().CreateVisibilityWaiter(true, kArcTosAcceptButton)->Wait();
-    test::OobeJS().ClickOnPath(kArcTosAcceptButton);
   }
 
   void AcceptTermsAndExpectDemoSetupProgress() {
@@ -519,16 +494,14 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   AcceptTermsAndExpectDemoSetupProgress();
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTime.Consolidated-consent", 1);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepShownStatus.Consolidated-consent", 1);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
-        "AcceptedDemo",
-        1);
-  }
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTime.Consolidated-consent", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepShownStatus.Consolidated-consent", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
+      "AcceptedDemo",
+      1);
 
   // Verify the email corresponds to US.
   EXPECT_EQ("admin-us@cros-demo-mode.com",
@@ -787,29 +760,20 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnTermsScreen) {
 
   TriggerDemoModeOnWelcomeScreen();
 
-  if (features::IsOobeConsolidatedConsentEnabled()) {
-    UseOnlineModeOnNetworkScreen();
-    OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-    ProceedThroughDemoPreferencesScreen();
-    test::WaitForConsolidatedConsentScreen();
-    test::OobeJS().ClickOnPath(kCCBackButton);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTime.Consolidated-consent", 1);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepShownStatus.Consolidated-consent", 1);
-    histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
-        "BackDemo",
-        1);
-  } else {
-    // User cannot go to ARC ToS screen without accepting eula - simulate that.
-    StartupUtils::MarkEulaAccepted();
-    UseOnlineModeOnNetworkScreen();
-    OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
-    ProceedThroughDemoPreferencesScreen();
-    OobeScreenWaiter(ArcTermsOfServiceScreenView::kScreenId).Wait();
-    test::OobeJS().ClickOnPath(kArcTosBackButton);
-  }
+  UseOnlineModeOnNetworkScreen();
+  OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
+  ProceedThroughDemoPreferencesScreen();
+  test::WaitForConsolidatedConsentScreen();
+  test::OobeJS().ClickOnPath(kCCBackButton);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTime.Consolidated-consent", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepShownStatus.Consolidated-consent", 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Consolidated-consent."
+      "BackDemo",
+      1);
+
   OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
 }
 
