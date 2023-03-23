@@ -120,6 +120,7 @@ class ExtensionTelemetryService : public KeyedService {
   // signal processors.
   std::unique_ptr<ExtensionTelemetryReportRequest> CreateReport();
 
+  // Dumps a telemetry report in logs for testing.
   void DumpReportForTest(const ExtensionTelemetryReportRequest& report);
 
   // Collects extension information for reporting.
