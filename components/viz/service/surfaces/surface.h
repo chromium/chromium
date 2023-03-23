@@ -202,7 +202,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   const CompositorFrame& GetActiveFrame() const;
   const CompositorFrameMetadata& GetActiveFrameMetadata() const;
 
-  void ResetInterpolatedFrame();
   void SetInterpolatedFrame(CompositorFrame frame);
   const CompositorFrame& GetActiveOrInterpolatedFrame() const;
   bool HasInterpolatedFrame() const;
@@ -310,8 +309,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   bool RequestCopyOfOutputOnActiveFrameRenderPassId(
       std::unique_ptr<CopyOutputRequest> copy_request,
       CompositorRenderPassId render_pass_id);
-
-  void DidAggregate();
 
   // Returns frame id of the oldest uncommitted frame if any,
   absl::optional<BeginFrameId> GetFirstUncommitedFrameId();
@@ -439,8 +436,6 @@ class VIZ_SERVICE_EXPORT Surface final {
   bool is_latency_info_taken_ = false;
 
   const raw_ptr<SurfaceAllocationGroup> allocation_group_;
-
-  bool has_damage_from_interpolated_frame_ = false;
 
   const size_t max_uncommitted_frames_;
 

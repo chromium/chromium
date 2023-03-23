@@ -732,21 +732,8 @@ const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
   return active_frame_data_->frame.metadata;
 }
 
-void Surface::ResetInterpolatedFrame() {
-  interpolated_frame_.reset();
-  has_damage_from_interpolated_frame_ = true;
-}
-
 void Surface::SetInterpolatedFrame(CompositorFrame frame) {
   interpolated_frame_.emplace(std::move(frame));
-}
-
-bool Surface::HasSurfaceAnimationDamage() const {
-  return interpolated_frame_.has_value() || has_damage_from_interpolated_frame_;
-}
-
-void Surface::DidAggregate() {
-  has_damage_from_interpolated_frame_ = false;
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {
