@@ -108,7 +108,7 @@ void KeepAliveURLLoader::OnReceiveEarlyHints(
   TRACE_EVENT1("loading", "KeepAliveURLLoader::OnReceiveEarlyHints",
                "request_id", request_id_);
 
-  if (forwarding_client_.is_bound() && forwarding_client_.is_connected()) {
+  if (forwarding_client_) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnReceiveEarlyHints(std::move(early_hints));
     return;
@@ -131,7 +131,7 @@ void KeepAliveURLLoader::OnReceiveResponse(
   // `forwarding_client_` can't finish response handling. Figure out a way to
   // negotiate shutdown timing via RenderFrameHostImpl::OnUnloadAck() and
   // invalidate `forwarding_client_`.
-  if (forwarding_client_.is_bound() && forwarding_client_.is_connected()) {
+  if (forwarding_client_) {
     // The renderer is alive, forwards the action.
     // The receiver may fail to finish reading `response`, so response caching
     // is not guaranteed.
@@ -160,7 +160,7 @@ void KeepAliveURLLoader::OnReceiveRedirect(
   // `forwarding_client_` can't finish response handling. Figure out a way to
   // negotiate shutdown timing via RenderFrameHostImpl::OnUnloadAck() and
   // invalidate `forwarding_client_`.
-  if (forwarding_client_.is_bound() && forwarding_client_.is_connected()) {
+  if (forwarding_client_) {
     // The renderer is alive, forwards the action.
     // Redirects must be handled by the renderer so that it know what URL the
     // response come from when parsing responses.
@@ -182,7 +182,7 @@ void KeepAliveURLLoader::OnUploadProgress(int64_t current_position,
   TRACE_EVENT1("loading", "KeepAliveURLLoader::OnUploadProgress", "request_id",
                request_id_);
 
-  if (forwarding_client_.is_bound() && forwarding_client_.is_connected()) {
+  if (forwarding_client_) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnUploadProgress(current_position, total_size,
                                          std::move(callback));
@@ -197,7 +197,7 @@ void KeepAliveURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   TRACE_EVENT1("loading", "KeepAliveURLLoader::OnTransferSizeUpdated",
                "request_id", request_id_);
 
-  if (forwarding_client_.is_bound() && forwarding_client_.is_connected()) {
+  if (forwarding_client_) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
     return;
@@ -212,7 +212,7 @@ void KeepAliveURLLoader::OnComplete(
   TRACE_EVENT1("loading", "KeepAliveURLLoader::OnComplete", "request_id",
                request_id_);
 
-  if (forwarding_client_.is_bound() && forwarding_client_.is_connected()) {
+  if (forwarding_client_) {
     // The renderer is alive, forwards the action.
     forwarding_client_->OnComplete(completion_status);
     return;
