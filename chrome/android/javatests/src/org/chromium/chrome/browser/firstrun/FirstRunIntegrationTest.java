@@ -382,14 +382,12 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1419886")
     public void testFirstRunPages_NoCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase());
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1419886")
     public void testFirstRunPages_NoCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo());
     }
@@ -710,7 +708,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1419886")
     public void testMultipleFresBothView() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -747,7 +744,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1419886")
     public void testNativeInitBeforeFragment() throws Exception {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase();
         initializePreferences(testCase);
@@ -813,7 +809,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1419886")
     public void testNativeInitBeforeFragmentSkip() throws Exception {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase();
         initializePreferences(testCase);
@@ -893,7 +888,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1419886")
     public void testPrefsUpdated_noPagesShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
