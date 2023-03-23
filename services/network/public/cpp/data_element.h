@@ -22,7 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-forward.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom-forward.h"
-#include "services/network/public/mojom/url_loader.mojom-shared.h"
+#include "services/network/public/mojom/url_request.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace network {
