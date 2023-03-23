@@ -38,20 +38,16 @@
 
 #pragma mark - TabContextMenuProvider
 
-- (instancetype)initWithBrowser:(Browser*)browser
-         tabContextMenuDelegate:
-             (id<TabContextMenuDelegate>)tabContextMenuDelegate {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+              tabContextMenuDelegate:
+                  (id<TabContextMenuDelegate>)tabContextMenuDelegate {
   self = [super init];
   if (self) {
-    _browser = browser;
+    _browserState = browserState;
     _contextMenuDelegate = tabContextMenuDelegate;
-    _incognito = _browser->GetBrowserState()->IsOffTheRecord();
+    _incognito = _browserState->IsOffTheRecord();
   }
   return self;
-}
-
-- (void)dealloc {
-  self.browser = nullptr;
 }
 
 - (UIContextMenuConfiguration*)
@@ -141,10 +137,9 @@
     }
     // Bookmarking can be disabled from prefs (from an enterprise policy),
     // if that's the case grey out the option in the menu.
-    if (self.browser) {
-      BOOL isEditBookmarksEnabled =
-          self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-              bookmarks::prefs::kEditBookmarksEnabled);
+    if (_browserState) {
+      BOOL isEditBookmarksEnabled = _browserState->GetPrefs()->GetBoolean(
+          bookmarks::prefs::kEditBookmarksEnabled);
       if (!isEditBookmarksEnabled && bookmarkAction) {
         bookmarkAction.attributes = UIMenuElementAttributesDisabled;
       }
@@ -181,7 +176,7 @@
 - (BOOL)isTabItemBookmarked:(TabItem*)item {
   bookmarks::BookmarkModel* bookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          _browser->GetBrowserState());
+          _browserState);
   return item && bookmarkModel &&
          bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);
 }
@@ -191,7 +186,7 @@
 // the tab we are looking for.
 - (TabItem*)tabItemForIdentifier:(NSString*)identifier pinned:(BOOL)pinned {
   BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browser->GetBrowserState());
+      BrowserListFactory::GetForBrowserState(_browserState);
   std::set<Browser*> browsers = _incognito ? browserList->AllIncognitoBrowsers()
                                            : browserList->AllRegularBrowsers();
   for (Browser* browser : browsers) {

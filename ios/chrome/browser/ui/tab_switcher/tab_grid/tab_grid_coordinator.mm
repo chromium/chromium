@@ -236,7 +236,12 @@
   DCHECK(self.incognitoTabsMediator);
   self.incognitoTabsMediator.browser = incognitoBrowser;
   self.thumbStripCoordinator.incognitoBrowser = incognitoBrowser;
-  self.incognitoTabContextMenuHelper.browser = incognitoBrowser;
+  if (incognitoBrowser) {
+    self.incognitoTabContextMenuHelper.browserState =
+        incognitoBrowser->GetBrowserState();
+  } else {
+    self.incognitoTabContextMenuHelper.browserState = nullptr;
+  }
 
   if (self.incognitoSnackbarCoordinator) {
     [self.incognitoSnackbarCoordinator stop];
@@ -719,14 +724,14 @@
   self.baseViewController.remoteTabsViewController.menuProvider =
       self.recentTabsContextMenuHelper;
 
-  self.regularTabContextMenuHelper =
-      [[TabContextMenuHelper alloc] initWithBrowser:self.regularBrowser
-                             tabContextMenuDelegate:self];
+  self.regularTabContextMenuHelper = [[TabContextMenuHelper alloc]
+        initWithBrowserState:self.regularBrowser->GetBrowserState()
+      tabContextMenuDelegate:self];
   self.baseViewController.regularTabsContextMenuProvider =
       self.regularTabContextMenuHelper;
-  self.incognitoTabContextMenuHelper =
-      [[TabContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
-                             tabContextMenuDelegate:self];
+  self.incognitoTabContextMenuHelper = [[TabContextMenuHelper alloc]
+        initWithBrowserState:self.incognitoBrowser->GetBrowserState()
+      tabContextMenuDelegate:self];
   self.baseViewController.incognitoTabsContextMenuProvider =
       self.incognitoTabContextMenuHelper;
 
