@@ -9,6 +9,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/grit/generated_resources.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BookmarkSubMenuModel,
+                                      kShowBookmarkBarMenuItem);
+
 // For views and cocoa, we have complex delegate systems to handle
 // injecting the bookmarks to the bookmark submenu. This is done to support
 // advanced interactions with the menu contents, like right click context menus.
@@ -40,6 +43,8 @@ void BookmarkSubMenuModel::Build(Browser* browser) {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
   AddCheckItemWithStringId(IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_BOOKMARK_BAR).value(),
+                         kShowBookmarkBarMenuItem);
   AddItemWithStringId(IDC_SHOW_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   AddItemWithStringId(IDC_IMPORT_SETTINGS, IDS_IMPORT_SETTINGS_MENU_LABEL);

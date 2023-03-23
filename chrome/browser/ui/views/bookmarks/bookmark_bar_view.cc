@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -133,6 +134,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/metrics.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_constants.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/tooltip_manager.h"
@@ -485,6 +487,7 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
       browser_(browser),
       browser_view_(browser_view) {
   SetID(VIEW_ID_BOOKMARK_BAR);
+  SetProperty(views::kElementIdentifierKey, kBookmarkBarElementId);
 
   // TODO(lgrey): This layer was introduced to support clipping the bookmark
   // bar to bounds to prevent it from drawing over the toolbar while animating.

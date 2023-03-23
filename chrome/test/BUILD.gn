@@ -9858,6 +9858,7 @@ if (!is_android) {
         "../browser/ui/views/autofill/payments/virtual_card_manual_fallback_bubble_views_interactive_uitest.cc",
         "../browser/ui/views/bookmarks/bookmark_bar_view_test.cc",
         "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
+        "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_interactive_uitest.cc",
         "../browser/ui/views/browser_accelerator_interactive_uitest.cc",
         "../browser/ui/views/certificate_selector_browsertest.cc",
         "../browser/ui/views/commander_frontend_views_browsertest.cc",

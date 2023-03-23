@@ -148,6 +148,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
                      public TabStripModelObserver,
                      public content::WebContentsObserver {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBookmarksMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDownloadsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHistoryMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuItem);

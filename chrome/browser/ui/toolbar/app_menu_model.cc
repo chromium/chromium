@@ -108,6 +108,7 @@
 using base::UserMetricsAction;
 using content::WebContents;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kBookmarksMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kDownloadsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kHistoryMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kExtensionsMenuItem);
@@ -951,6 +952,8 @@ void AppMenuModel::Build() {
         std::make_unique<BookmarkSubMenuModel>(this, browser_);
     AddSubMenuWithStringId(IDC_BOOKMARKS_MENU, IDS_BOOKMARKS_MENU,
                            bookmark_sub_menu_model_.get());
+    SetElementIdentifierAt(GetIndexOfCommandId(IDC_BOOKMARKS_MENU).value(),
+                           kBookmarksMenuItem);
   }
 
   if (base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu)) {

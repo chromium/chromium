@@ -16,6 +16,7 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -48,6 +49,7 @@
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
@@ -86,6 +88,7 @@ SavedTabGroupButton::SavedTabGroupButton(
   SetAccessibleName(group.title());
   SetTooltipText(group.title());
   SetID(VIEW_ID_BOOKMARK_BAR_ELEMENT);
+  SetProperty(views::kElementIdentifierKey, kSavedTabGroupButtonElementId);
 
   // Since the theme provider is not currently available when instantiated the
   // text color will be set to a placeholder color now. the text color will then

@@ -511,6 +511,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                                 base::Unretained(this))));
     save_group_toggle_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP));
+    save_group_toggle_->SetProperty(views::kElementIdentifierKey,
+                                    kTabGroupEditorBubbleSaveToggleId);
 
     const SavedTabGroupKeyedService* const saved_tab_group_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
