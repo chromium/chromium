@@ -37,16 +37,34 @@ DynamicComponentHost::DynamicComponentHost(
     base::StringPiece component_url,
     base::OnceClosure on_teardown,
     fidl::InterfaceHandle<fuchsia::io::Directory> services)
+    : DynamicComponentHost(base::ComponentContextForProcess()
+                               ->svc()
+                               ->Connect<fuchsia::component::Realm>(),
+                           collection,
+                           child_id,
+                           component_url,
+                           std::move(on_teardown),
+                           std::move(services)) {}
+
+DynamicComponentHost::DynamicComponentHost(
+    fuchsia::component::RealmHandle realm,
+    base::StringPiece collection,
+    base::StringPiece child_id,
+    base::StringPiece component_url,
+    base::OnceClosure on_teardown,
+    fidl::InterfaceHandle<fuchsia::io::Directory> services)
     : collection_(collection),
       child_id_(child_id),
       on_teardown_(std::move(on_teardown)) {
+  DCHECK(realm);
+
+  realm_.Bind(std::move(realm));
   realm_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "Realm disconnected";
     if (on_teardown_) {
       std::move(on_teardown_).Run();
     }
   });
-  base::ComponentContextForProcess()->svc()->Connect(realm_.NewRequest());
 
   // If there is a service directory then offer it to the Component as "/svc".
   fuchsia::component::CreateChildArgs create_args;

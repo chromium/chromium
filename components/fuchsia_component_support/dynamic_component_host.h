@@ -24,17 +24,31 @@ namespace fuchsia_component_support {
 // collection, via the Component Framework.
 class DynamicComponentHost {
  public:
-  // Creates an instance `child_id` in the `collection`, running the Component
-  // specified by `component_url`.
+  // Creates a component instance named `child_id` in `collection`, which must
+  // be a defined in the calling component's manifest.
+  // The new instance will run the component defined by `component_url`.
   //
   // `on_teardown` will be run if the Component fails to start, or is observed
   // to have stopped. The callback may delete the `DynamicComponentHost` before
   // returning.
   //
-  // If `services` is valid then it will be bound into a sub-directory of the
-  // calling component's outgoing directory "for_dynamic_component_host",
-  // and offered to the component as "/svc".
+  // If `services` is set then it will be offered to the new instance as the
+  // directory capability "svc". This requires that the calling component's
+  // manifest defines a writable directory capability
+  // "for_dynamic_component_host", in which `services` may be bound to be
+  // dynamically offered to the child.
   DynamicComponentHost(base::StringPiece collection,
+                       base::StringPiece child_id,
+                       base::StringPiece component_url,
+                       base::OnceClosure on_teardown,
+                       fidl::InterfaceHandle<fuchsia::io::Directory> services);
+
+  // Used by tests to create a child component via a `realm` other than the
+  // calling component.
+  // TODO(crbug.com/1427093): Remove this once tests have an easy way to
+  // "bridge" sub-Realms to the TestComponentContextForProcess.
+  DynamicComponentHost(fuchsia::component::RealmHandle realm,
+                       base::StringPiece collection,
                        base::StringPiece child_id,
                        base::StringPiece component_url,
                        base::OnceClosure on_teardown,
