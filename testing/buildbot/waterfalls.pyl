@@ -5366,6 +5366,14 @@
           'all'
         ],
       },
+      'Comparison Linux (reclient vs reclient remote links)(compression)': {
+        'mixins': [
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all'
+        ],
+      },
       'Comparison Linux (reclient vs reclient remote links)(small)': {
         'mixins': [
           'isolate_profile_data',

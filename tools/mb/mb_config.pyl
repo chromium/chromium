@@ -717,6 +717,10 @@
         'build1': 'gpu_tests_release_bot_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_reclient',
       },
+      'Comparison Linux (reclient vs reclient remote links)(compression)': {
+        'build1': 'gpu_tests_release_bot_no_nacl_reclient',
+        'build2': 'gpu_tests_release_bot_remote_links_small_reclient',
+      },
       'Comparison Linux (reclient vs reclient remote links)(small)': {
         'build1': 'gpu_tests_release_bot_no_nacl_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_small_reclient',

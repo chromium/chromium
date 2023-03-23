@@ -6,6 +6,11 @@
       "all"
     ]
   },
+  "Comparison Linux (reclient vs reclient remote links)(compression)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Comparison Linux (reclient vs reclient remote links)(small)": {
     "additional_compile_targets": [
       "all"
