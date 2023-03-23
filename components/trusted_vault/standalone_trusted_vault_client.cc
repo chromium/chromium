@@ -85,6 +85,7 @@ IdentityManagerObserver::IdentityManagerObserver(
   DCHECK(identity_manager_);
 
   identity_manager_->AddObserver(this);
+  UpdatePrimaryAccountIfNeeded();
   if (identity_manager_->AreRefreshTokensLoaded()) {
     OnRefreshTokensLoaded();
   }
@@ -132,7 +133,15 @@ void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
 }
 
 void IdentityManagerObserver::OnRefreshTokensLoaded() {
-  UpdatePrimaryAccountIfNeeded();
+  if (!primary_account_.IsEmpty()) {
+    // OnErrorStateOfRefreshTokenUpdatedForAccount() can be called before
+    // refresh tokens are marked as loaded, in this case error state can not be
+    // identified reliably. To mitigate this, call it again here.
+    OnErrorStateOfRefreshTokenUpdatedForAccount(
+        primary_account_,
+        identity_manager_->GetErrorStateOfRefreshTokenForAccount(
+            primary_account_.account_id));
+  }
   UpdateAccountsInCookieJarInfoIfNeeded(
       identity_manager_->GetAccountsInCookieJar());
 }
