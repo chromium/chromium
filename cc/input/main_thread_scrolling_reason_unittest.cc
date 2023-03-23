@@ -21,8 +21,6 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
       "Non fast scrollable region, "
       "Failed hit test, "
       "No scrolling layer, "
-      "Not scrollable, "
-      "Non-invertible transform, "
       "Wheel event handler region, "
       "Touch event handler region",
       MainThreadScrollingReason::AsText(0xffffffffu));

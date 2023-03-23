@@ -335,7 +335,7 @@ const cc::InputHandler::ScrollStatus kMainThreadScrollState(
 
 const cc::InputHandler::ScrollStatus kScrollIgnoredScrollState(
     cc::InputHandler::ScrollThread::SCROLL_IGNORED,
-    cc::MainThreadScrollingReason::kNotScrollable);
+    cc::MainThreadScrollingReason::kNotScrollingOnMain);
 
 }  // namespace
 
@@ -344,9 +344,8 @@ class TestInputHandlerProxy : public InputHandlerProxy {
   TestInputHandlerProxy(cc::InputHandler& input_handler,
                         InputHandlerProxyClient* client)
       : InputHandlerProxy(input_handler, client) {}
-  void RecordMainThreadScrollingReasonsForTest(WebGestureDevice device,
-                                               uint32_t reasons) {
-    RecordMainThreadScrollingReasons(device, reasons, false, false);
+  void RecordScrollBeginForTest(WebGestureDevice device, uint32_t reasons) {
+    RecordScrollBegin(device, reasons, false, 0);
   }
 
   MOCK_METHOD0(SetNeedsAnimateInput, void());
@@ -1043,10 +1042,7 @@ TEST_P(InputHandlerProxyTest, GestureScrollIgnored) {
 
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
       .WillOnce(testing::Return(kScrollIgnoredScrollState));
-  EXPECT_CALL(
-      mock_input_handler_,
-      RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnMain))
-      .Times(1);
+  EXPECT_CALL(mock_input_handler_, RecordScrollBegin(_, _)).Times(0);
 
   gesture_.SetType(WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_EQ(expected_disposition_,
@@ -1058,7 +1054,7 @@ TEST_P(InputHandlerProxyTest, GestureScrollIgnored) {
   // the main thread, either.
   expected_disposition_ = InputHandlerProxy::DROP_EVENT;
   gesture_.SetType(WebInputEvent::Type::kGestureScrollEnd);
-  EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(1);
+  EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(0);
   EXPECT_EQ(expected_disposition_,
             HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
 
@@ -2324,18 +2320,14 @@ TEST_F(UnifiedScrollingInputHandlerProxyTest, MainThreadHitTestMetrics) {
   }
 
   // Ensure we don't record either a begin or an end if the hit test fails.
-  // TODO(bokan): Though it looks odd, it appears that today we do record the
-  // scrolling thread if the scroll is dropped. We should fix that but in the
-  // mean-time we add a test for the unified path in this case.
-  // https://crbug.com/1082601.
   {
     EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
         .WillOnce(Return(kRequiresMainThreadHitTestState));
     EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(0);
     EXPECT_CALL(mock_input_handler_, ScrollEnd(_)).Times(0);
 
-    EXPECT_CALL(mock_input_handler_, RecordScrollBegin(_, _)).Times(1);
-    EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(1);
+    EXPECT_CALL(mock_input_handler_, RecordScrollBegin(_, _)).Times(0);
+    EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(0);
 
     DispatchEvent(ScrollBegin());
     EXPECT_TRUE(MainThreadHitTestInProgress());
@@ -3812,7 +3804,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest, WheelScrollHistogram) {
       mock_input_handler_,
       RecordScrollBegin(_, cc::ScrollBeginThreadState::kScrollingOnMain))
       .Times(1);
-  input_handler_->RecordMainThreadScrollingReasonsForTest(
+  input_handler_->RecordScrollBeginForTest(
       WebGestureDevice::kTouchpad,
       kSampleMainThreadScrollingReason |
           cc::MainThreadScrollingReason::kThreadedScrollingDisabled);

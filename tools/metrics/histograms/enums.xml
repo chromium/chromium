@@ -66986,8 +66986,8 @@ from previous Chrome versions.
   <int value="8" label="Non-fast scrollable region"/>
   <int value="9" label="Failed hit test"/>
   <int value="10" label="No scrolling layer"/>
-  <int value="11" label="Not scrollable"/>
-  <int value="12" label="Non-invertible transform"/>
+  <int value="11" label="Not scrollable (obsolete)"/>
+  <int value="12" label="Non-invertible transform (obsolete)"/>
   <int value="13" label="Blocking wheel event handler region"/>
   <int value="14" label="Blocking touch event handler region"/>
 </enum>
