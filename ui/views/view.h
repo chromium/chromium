@@ -1586,22 +1586,19 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Accessibility -------------------------------------------------------------
 
-  // Convenience functions to set common accessibility properties during view
-  // construction/initialization. They are intended to define property values as
-  // part of the creation of this view and should not be used to provide
-  // property-change updates.
-  void SetAccessibilityProperties(ax::mojom::Role role,
-                                  const std::u16string& name,
-                                  const std::u16string& description);
-  void SetAccessibilityProperties(ax::mojom::Role role,
-                                  const std::u16string& role_description,
-                                  const std::u16string& name,
-                                  const std::u16string& description);
-  void SetAccessibilityProperties(ax::mojom::Role role,
-                                  const std::u16string& name,
-                                  ax::mojom::NameFrom name_from,
-                                  const std::u16string& description,
-                                  ax::mojom::DescriptionFrom description_from);
+  // Convenience function to set common accessibility properties during view
+  // construction/initialization. It should only be used to define property
+  // values as part of the creation of this view; not to provide property-
+  // change updates. This function will only modify properties for which a value
+  // has been explicitly set.
+  void SetAccessibilityProperties(
+      absl::optional<ax::mojom::Role> role = absl::nullopt,
+      absl::optional<std::u16string> name = absl::nullopt,
+      absl::optional<std::u16string> description = absl::nullopt,
+      absl::optional<std::u16string> role_description = absl::nullopt,
+      absl::optional<ax::mojom::NameFrom> name_from = absl::nullopt,
+      absl::optional<ax::mojom::DescriptionFrom> description_from =
+          absl::nullopt);
 
   // Called when the accessible name of the View changed.
   virtual void OnAccessibleNameChanged(const std::u16string& new_name) {}

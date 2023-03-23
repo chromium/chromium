@@ -1934,35 +1934,44 @@ void View::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   *node_data = *ax_node_data_;
 }
 
-void View::SetAccessibilityProperties(ax::mojom::Role role,
-                                      const std::u16string& name,
-                                      const std::u16string& description) {
-  base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
-  SetAccessibleRole(role);
-  SetAccessibleName(name);
-  SetAccessibleDescription(description);
-}
-
-void View::SetAccessibilityProperties(ax::mojom::Role role,
-                                      const std::u16string& role_description,
-                                      const std::u16string& name,
-                                      const std::u16string& description) {
-  base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
-  SetAccessibleRole(role, role_description);
-  SetAccessibleName(name);
-  SetAccessibleDescription(description);
-}
-
 void View::SetAccessibilityProperties(
-    ax::mojom::Role role,
-    const std::u16string& name,
-    ax::mojom::NameFrom name_from,
-    const std::u16string& description,
-    ax::mojom::DescriptionFrom description_from) {
+    absl::optional<ax::mojom::Role> role,
+    absl::optional<std::u16string> name,
+    absl::optional<std::u16string> description,
+    absl::optional<std::u16string> role_description,
+    absl::optional<ax::mojom::NameFrom> name_from,
+    absl::optional<ax::mojom::DescriptionFrom> description_from) {
   base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
-  SetAccessibleRole(role);
-  SetAccessibleName(name, name_from);
-  SetAccessibleDescription(description, description_from);
+  if (role.has_value()) {
+    if (role_description.has_value()) {
+      SetAccessibleRole(role.value(), role_description.value());
+    } else {
+      SetAccessibleRole(role.value());
+    }
+  }
+
+  // Defining the NameFrom value without specifying the name doesn't make much
+  // sense. The only exception might be if the NameFrom is setting the name to
+  // explicitly empty. In order to prevent surprising/confusing behavior, we
+  // only use the NameFrom value if we have an explicit name. As a result, any
+  // caller setting the name to explicitly empty must set the name to an empty
+  // string.
+  if (name.has_value()) {
+    if (name_from.has_value()) {
+      SetAccessibleName(name.value(), name_from.value());
+    } else {
+      SetAccessibleName(name.value());
+    }
+  }
+
+  // See the comment above regarding the NameFrom value.
+  if (description.has_value()) {
+    if (description_from.has_value()) {
+      SetAccessibleDescription(description.value(), description_from.value());
+    } else {
+      SetAccessibleDescription(description.value());
+    }
+  }
 }
 
 void View::SetAccessibleName(const std::u16string& name) {

@@ -283,31 +283,23 @@ class TestView : public View {
 
 class A11yTestView : public TestView {
  public:
-  // Convenience constructors to test `View::SetAccessibilityProperties`
-  A11yTestView(ax::mojom::Role role,
-               const std::u16string& name,
-               const std::u16string& description) {
-    SetAccessibilityProperties(role, name, description);
-  }
-  A11yTestView(ax::mojom::Role role,
-               const std::u16string& role_description,
-               const std::u16string& name,
-               const std::u16string& description) {
-    SetAccessibilityProperties(role, role_description, name, description);
-  }
-  A11yTestView(ax::mojom::Role role,
-               const std::u16string& name,
-               ax::mojom::NameFrom name_from,
-               const std::u16string& description,
-               ax::mojom::DescriptionFrom description_from) {
-    SetAccessibilityProperties(role, name, name_from, description,
-                               description_from);
+  // Convenience constructor to test `View::SetAccessibilityProperties`
+  explicit A11yTestView(
+      absl::optional<ax::mojom::Role> role = absl::nullopt,
+      absl::optional<std::u16string> name = absl::nullopt,
+      absl::optional<std::u16string> description = absl::nullopt,
+      absl::optional<std::u16string> role_description = absl::nullopt,
+      absl::optional<ax::mojom::NameFrom> name_from = absl::nullopt,
+      absl::optional<ax::mojom::DescriptionFrom> description_from =
+          absl::nullopt) {
+    SetAccessibilityProperties(
+        std::move(role), std::move(name), std::move(description),
+        std::move(role_description), std::move(name_from),
+        std::move(description_from));
   }
 
-  A11yTestView() = default;
   ~A11yTestView() override = default;
 };
-
 ////////////////////////////////////////////////////////////////////////////////
 // Metadata
 ////////////////////////////////////////////////////////////////////////////////
@@ -431,8 +423,8 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescription) {
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
-  A11yTestView v(ax::mojom::Role::kButton, u"Name",
-                 ax::mojom::NameFrom::kContents, u"Description",
+  A11yTestView v(ax::mojom::Role::kButton, u"Name", u"Description",
+                 /*role_description*/ u"", ax::mojom::NameFrom::kContents,
                  ax::mojom::DescriptionFrom::kTitle);
   ui::AXNodeData data = ui::AXNodeData();
   v.GetAccessibleNodeData(&data);
@@ -464,8 +456,8 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
-  A11yTestView v(ax::mojom::Role::kButton, u"Super Button", u"Name",
-                 u"Description");
+  A11yTestView v(ax::mojom::Role::kButton, u"Name", u"Description",
+                 u"Super Button");
   ui::AXNodeData data = ui::AXNodeData();
   v.GetAccessibleNodeData(&data);
   EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
@@ -489,6 +481,36 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
   // being fired.
   v.SetAccessibleName(u"New Name");
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 1);
+}
+
+TEST_F(ViewTest, SetAccessibilityPropertiesRoleAndRoleDescription) {
+  A11yTestView v(ax::mojom::Role::kButton,
+                 /*name*/ absl::nullopt,
+                 /*description*/ absl::nullopt, u"Super Button");
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription),
+      u"Super Button");
+}
+
+TEST_F(ViewTest, SetAccessibilityPropertiesNameExplicitlyEmpty) {
+  A11yTestView v(ax::mojom::Role::kNone,
+                 /*name*/ u"",
+                 /*description*/ u"",
+                 /*role_description*/ u"",
+                 ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  ui::AXNodeData data = ui::AXNodeData();
+  v.GetAccessibleNodeData(&data);
+  EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kNone);
+  EXPECT_EQ(data.role, ax::mojom::Role::kNone);
+  EXPECT_EQ(v.GetAccessibleName(), u"");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(static_cast<ax::mojom::NameFrom>(
+                data.GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)),
+            ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 TEST_F(ViewTest, SetAccessibleRole) {
