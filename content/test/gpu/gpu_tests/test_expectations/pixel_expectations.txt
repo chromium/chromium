@@ -220,6 +220,9 @@ crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
 [ mac ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
 [ win8 ] Pixel_MediaFoundationClearDirectComposition [ Skip ]
 
+# WebGPU is not shipped on MacOS < 13.
+crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
