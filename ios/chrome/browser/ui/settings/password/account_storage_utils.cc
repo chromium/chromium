@@ -18,39 +18,33 @@
 namespace password_manager {
 
 bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
-                             SyncState sync_state) {
+                             const syncer::SyncService* sync_service) {
   if (credential.blocked_by_user) {
     // The account/local concept is harder to grasp for "Never saved" pages, do
     // not distinguish. It's also less important to back those up anyway.
     return false;
   }
 
-  switch (sync_state) {
-    case SyncState::kNotSyncing:
-      return base::FeatureList::IsEnabled(
-          features::kEnablePasswordsAccountStorage);
-    case SyncState::kSyncingNormalEncryption:
-    case SyncState::kSyncingWithCustomPassphrase:
-      return false;
-    case SyncState::kAccountPasswordsActiveNormalEncryption:
-    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
-      // If the data is stored both in kProfileStore and kAccountStore, it's
-      // backed up, no need to bother the user.
-      return !credential.stored_in.contains(
-                 PasswordForm::Store::kAccountStore) &&
-             base::FeatureList::IsEnabled(
-                 features::kEnablePasswordsAccountStorage);
-    default:
-      NOTREACHED();
-      return false;
+  if (credential.stored_in.contains(PasswordForm::Store::kAccountStore)) {
+    // If the data is stored both in kProfileStore and kAccountStore, it's
+    // backed up, no need to bother the user.
+    return false;
   }
+
+  // `credential` is only stored in the profile store. Unfortunately this has
+  // different meanings depending whether sync-the-feature is enabled or not.
+  if (sync_service->IsSyncFeatureEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kEnablePasswordsAccountStorage);
 }
 
 bool ShouldShowLocalOnlyIconForGroup(const AffiliatedGroup& affiliated_group,
-                                     SyncState sync_state) {
+                                     const syncer::SyncService* sync_service) {
   return base::ranges::any_of(affiliated_group.GetCredentials(),
                               [&](const CredentialUIEntry& c) {
-                                return ShouldShowLocalOnlyIcon(c, sync_state);
+                                return ShouldShowLocalOnlyIcon(c, sync_service);
                               });
 }
 

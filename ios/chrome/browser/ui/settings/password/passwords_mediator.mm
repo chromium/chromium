@@ -257,14 +257,12 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 - (BOOL)shouldShowLocalOnlyIconForCredential:
     (const password_manager::CredentialUIEntry&)credential {
-  return password_manager::ShouldShowLocalOnlyIcon(
-      credential, password_manager_util::GetPasswordSyncState(_syncService));
+  return password_manager::ShouldShowLocalOnlyIcon(credential, _syncService);
 }
 
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group {
-  return password_manager::ShouldShowLocalOnlyIconForGroup(
-      group, password_manager_util::GetPasswordSyncState(_syncService));
+  return password_manager::ShouldShowLocalOnlyIconForGroup(group, _syncService);
 }
 
 #pragma mark - PasswordCheckObserver

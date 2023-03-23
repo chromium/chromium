@@ -72,11 +72,11 @@ using base::SysNSStringToUTF16;
   // Password manager client.
   raw_ptr<password_manager::PasswordManagerClient> _passwordManagerClient;
 
-  // The signed in user account, or the empty string if there's none.
-  __strong NSString* _signedInAccount;
+  // The BrowserState pref service.
+  raw_ptr<PrefService> _prefService;
 
-  // YES when user is opted in for account storage, NO otherwise.
-  BOOL _isOptedInForAccountStorage;
+  // The sync service.
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 // Dictionary of usernames of a same domain. Key: domain and value: NSSet of
@@ -118,11 +118,8 @@ using base::SysNSStringToUTF16;
       std::make_unique<PasswordCheckObserverBridge>(self, manager);
   _supportMoveToAccount = supportMoveToAccount;
   _passwordManagerClient = passwordManagerClient;
-  _signedInAccount =
-      base::SysUTF8ToNSString(syncService->GetAccountInfo().email);
-  _isOptedInForAccountStorage =
-      password_manager::features_util::IsOptedInForAccountStorage(prefService,
-                                                                  syncService);
+  _prefService = prefService;
+  _syncService = syncService;
 
   // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
   // available in SavedPasswordsPresenter.
@@ -163,7 +160,9 @@ using base::SysNSStringToUTF16;
     return;
   _consumer = consumer;
 
-  [_consumer setUserEmail:_signedInAccount];
+  // The email might be empty and the callee handles that.
+  [_consumer setUserEmail:base::SysUTF8ToNSString(
+                              _syncService->GetAccountInfo().email)];
 
   [self providePasswordsToConsumer];
 
@@ -384,9 +383,10 @@ using base::SysNSStringToUTF16;
     // - The user is interested in saving passwords to the account, i.e. they
     // are opted in to account storage.
     password.shouldOfferToMoveToAccount =
-        _supportMoveToAccount && _isOptedInForAccountStorage &&
-        ShouldShowLocalOnlyIcon(credential,
-                                _passwordManagerClient->GetPasswordSyncState());
+        _supportMoveToAccount &&
+        password_manager::features_util::IsOptedInForAccountStorage(
+            _prefService, _syncService) &&
+        ShouldShowLocalOnlyIcon(credential, _syncService);
     [passwords addObject:password];
   }
   [self.consumer setPasswords:passwords andTitle:_displayName];
