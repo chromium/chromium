@@ -1425,6 +1425,13 @@ void AutocompleteController::SetStartStopTimerDurationForTesting(
   stop_timer_duration_ = duration;
 }
 
+size_t AutocompleteController::InjectAdHocMatch(AutocompleteMatch match) {
+  size_t index = result_.size();
+  result_.AppendMatches({std::move(match)}, true);
+  NotifyChanged();
+  return index;
+}
+
 bool AutocompleteController::ShouldRunProvider(
     AutocompleteProvider* provider) const {
   if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&

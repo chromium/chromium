@@ -165,19 +165,6 @@ std::u16string OmniboxView::SanitizeTextForPaste(const std::u16string& text) {
 
 OmniboxView::~OmniboxView() = default;
 
-void OmniboxView::OpenMatch(const AutocompleteMatch& match,
-                            WindowOpenDisposition disposition,
-                            const GURL& alternate_nav_url,
-                            const std::u16string& pasted_text,
-                            size_t selected_line,
-                            base::TimeTicks match_selection_timestamp) {
-  // Invalid URLs such as chrome://history can end up here.
-  if (!match.destination_url.is_valid() || !model_)
-    return;
-  model_->OpenMatch(match, disposition, alternate_nav_url, pasted_text,
-                    selected_line, match_selection_timestamp);
-}
-
 bool OmniboxView::IsEditingOrEmpty() const {
   return (model_.get() && model_->user_input_in_progress()) ||
          (GetOmniboxTextLength() == 0);

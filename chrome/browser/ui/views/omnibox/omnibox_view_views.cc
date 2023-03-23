@@ -1599,8 +1599,19 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       } else if (shift) {
         disposition = WindowOpenDisposition::NEW_WINDOW;
       }
-      model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
-                             disposition);
+      // According to unit tests and comments, holding control when pressing
+      // enter has special behavior handled by `AcceptInput` so in this case
+      // the user is selecting their input (possibly with modification like
+      // appending ".com") and not the row match. This is indicated with an
+      // explicit `kNoMatch` line selection.
+      if (model()->PopupIsOpen() && !control) {
+        model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
+                               disposition);
+      } else {
+        model()->OpenSelection(
+            OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+            event.time_stamp(), disposition);
+      }
       return true;
     }
     case ui::VKEY_ESCAPE:

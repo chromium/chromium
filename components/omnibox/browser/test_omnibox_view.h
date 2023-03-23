@@ -38,12 +38,6 @@ class TestOmniboxView : public OmniboxView {
 
   // OmniboxView:
   void Update() override {}
-  void OpenMatch(const AutocompleteMatch& match,
-                 WindowOpenDisposition disposition,
-                 const GURL& alternate_nav_url,
-                 const std::u16string& pasted_text,
-                 size_t selected_line,
-                 base::TimeTicks match_selection_timestamp) override {}
   std::u16string GetText() const override;
   void SetWindowTextAndCaretPos(const std::u16string& text,
                                 size_t caret_pos,

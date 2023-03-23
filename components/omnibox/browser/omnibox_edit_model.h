@@ -217,39 +217,6 @@ class OmniboxEditModel {
                       AutocompleteMatch* match,
                       GURL* alternate_nav_url) const;
 
-  // Asks the browser to load the popup's currently selected item, using the
-  // supplied disposition.  This may close the popup.
-  void AcceptInput(
-      WindowOpenDisposition disposition,
-      base::TimeTicks match_selection_timestamp = base::TimeTicks());
-
-  // Asks the browser to load |match|. |index| is only used for logging, and
-  // can be kNoMatch if the popup was closed, or if none of the suggestions
-  // in the popup were used (in the unusual no-default-match case). In that
-  // case, an artificial result set with only |match| will be logged.
-  //
-  // OpenMatch() needs to know the original text that drove this action.  If
-  // |pasted_text| is non-empty, this is a Paste-And-Go/Search action, and
-  // that's the relevant input text.  Otherwise, the relevant input text is
-  // either the user text or the display URL, depending on if user input is
-  // in progress.
-  //
-  // |match| is passed by value for two reasons:
-  // (1) This function needs to modify |match|, so a const ref isn't
-  //     appropriate.  Callers don't actually care about the modifications, so a
-  //     pointer isn't required.
-  // (2) The passed-in match is, on the caller side, typically coming from data
-  //     associated with the popup.  Since this call can close the popup, that
-  //     could clear that data, leaving us with a pointer-to-garbage.  So at
-  //     some point someone needs to make a copy of the match anyway, to
-  //     preserve it past the popup closure.
-  void OpenMatch(AutocompleteMatch match,
-                 WindowOpenDisposition disposition,
-                 const GURL& alternate_nav_url,
-                 const std::u16string& pasted_text,
-                 size_t index,
-                 base::TimeTicks match_selection_timestamp = base::TimeTicks());
-
   // Opens given selection. Most kinds of selection invoke an action or
   // otherwise call `OpenMatch`, but some may `AcceptInput` which is not
   // guaranteed to open a match or commit the omnibox.
@@ -512,6 +479,17 @@ class OmniboxEditModel {
       size_t line,
       omnibox::mojom::NavigationPredictor navigation_predictor);
 
+  // This calls `OpenMatch` directly for the few remaining `OmniboxEditModel`
+  // test cases that require explicit control over match content. For new
+  // tests, and for non-test code, use `OpenSelection`.
+  void OpenMatchForTesting(
+      AutocompleteMatch match,
+      WindowOpenDisposition disposition,
+      const GURL& alternate_nav_url,
+      const std::u16string& pasted_text,
+      size_t index,
+      base::TimeTicks match_selection_timestamp = base::TimeTicks());
+
  protected:
   // Utility method to get current PrefService; protected instead of private
   // because it may be overridden by derived test classes.
@@ -546,6 +524,12 @@ class OmniboxEditModel {
                        // with ctrl-l or copying the selected text with ctrl-c.
   };
 
+  // Asks the browser to load the popup's currently selected item, using the
+  // supplied disposition.  This may close the popup.
+  void AcceptInput(
+      WindowOpenDisposition disposition,
+      base::TimeTicks match_selection_timestamp = base::TimeTicks());
+
   // If the match in result() specified by `match_index` has an
   // action that takes over the match, this executes that action
   // with given `disposition` and returns true. Returns false otherwise.
@@ -559,6 +543,33 @@ class OmniboxEditModel {
   void ExecuteAction(OmniboxPopupSelection selection,
                      WindowOpenDisposition disposition,
                      base::TimeTicks match_selection_timestamp);
+
+  // Asks the browser to load |match|. |index| is only used for logging, and
+  // can be kNoMatch if the popup was closed, or if none of the suggestions
+  // in the popup were used (in the unusual no-default-match case). In that
+  // case, an artificial result set with only |match| will be logged.
+  //
+  // OpenMatch() needs to know the original text that drove this action.  If
+  // |pasted_text| is non-empty, this is a Paste-And-Go/Search action, and
+  // that's the relevant input text.  Otherwise, the relevant input text is
+  // either the user text or the display URL, depending on if user input is
+  // in progress.
+  //
+  // |match| is passed by value for two reasons:
+  // (1) This function needs to modify |match|, so a const ref isn't
+  //     appropriate.  Callers don't actually care about the modifications, so a
+  //     pointer isn't required.
+  // (2) The passed-in match is, on the caller side, typically coming from data
+  //     associated with the popup.  Since this call can close the popup, that
+  //     could clear that data, leaving us with a pointer-to-garbage.  So at
+  //     some point someone needs to make a copy of the match anyway, to
+  //     preserve it past the popup closure.
+  void OpenMatch(AutocompleteMatch match,
+                 WindowOpenDisposition disposition,
+                 const GURL& alternate_nav_url,
+                 const std::u16string& pasted_text,
+                 size_t index,
+                 base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
   // Returns true if a query to an autocomplete provider is currently
   // in progress.  This logic should in the future live in

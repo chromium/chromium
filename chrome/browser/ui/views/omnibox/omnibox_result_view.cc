@@ -466,8 +466,8 @@ void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
         event.IsOnlyLeftMouseButton()
             ? WindowOpenDisposition::CURRENT_TAB
             : WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    model_->OpenMatch(match_, disposition, GURL(), u"", model_index_,
-                      event.time_stamp());
+    model_->OpenSelection(OmniboxPopupSelection(model_index_),
+                          event.time_stamp(), disposition);
   }
 }
 

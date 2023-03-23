@@ -251,7 +251,8 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   }
 }
 
-void AutocompleteResult::AppendMatches(const ACMatches& matches) {
+void AutocompleteResult::AppendMatches(const ACMatches& matches,
+                                       bool preserve) {
   for (const auto& match : matches) {
     DCHECK_EQ(AutocompleteMatch::SanitizeString(match.contents), match.contents)
         << "description: " << match.description
@@ -260,7 +261,7 @@ void AutocompleteResult::AppendMatches(const ACMatches& matches) {
               match.description)
         << "contents: " << match.contents << ", match type: " << match.type;
     matches_.push_back(match);
-    if (!match.description.empty() &&
+    if (!preserve && !match.description.empty() &&
         !AutocompleteMatch::IsSearchType(match.type) &&
         match.type != ACMatchType::DOCUMENT_SUGGESTION) {
       matches_.back().swap_contents_and_description = true;

@@ -66,8 +66,8 @@ void OpenUrlFromEditBox(TestOmniboxEditModel* model,
     model->SetUserText(url_text);
   }
   model->OnSetFocus(false);
-  model->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
-                   std::u16string(), 0);
+  model->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
+                             std::u16string(), 0);
 }
 
 }  // namespace
@@ -368,14 +368,14 @@ TEST_F(OmniboxEditModelTest, AlternateNavHasHTTP) {
 
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
   model()->SetUserText(u"http://abcd");
-  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
-                     alternate_nav_url, std::u16string(), 0);
+  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
+                               alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
       edit_model_delegate_->alternate_nav_match().fill_into_edit));
 
   model()->SetUserText(u"abcd");
-  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB,
-                     alternate_nav_url, std::u16string(), 0);
+  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
+                               alternate_nav_url, std::u16string(), 0);
   EXPECT_TRUE(AutocompleteInput::HasHTTPScheme(
       edit_model_delegate_->alternate_nav_match().fill_into_edit));
 }
@@ -585,7 +585,7 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLD) {
                                                u"bar");
 
   model()->OnControlKeyChanged(true);
-  model()->AcceptInput(WindowOpenDisposition::UNKNOWN);
+  model()->OpenSelection();
   OmniboxEditModel::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("http://www.foo.com/"),
             state.autocomplete_input.canonicalized_url());
@@ -601,7 +601,7 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
                               std::u16string(), {});
 
   model()->OnControlKeyChanged(true);
-  model()->AcceptInput(WindowOpenDisposition::UNKNOWN);
+  model()->OpenSelection();
   OmniboxEditModel::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("http://www.foobar.com/"),
             state.autocomplete_input.canonicalized_url());
@@ -616,7 +616,7 @@ TEST_F(OmniboxEditModelTest,
   model()->Revert();
 
   model()->OnControlKeyChanged(true);
-  model()->AcceptInput(WindowOpenDisposition::UNKNOWN);
+  model()->OpenSelection();
   OmniboxEditModel::State state = model()->GetStateForTabSwitch();
   EXPECT_EQ(GURL("https://www.example.com/"),
             state.autocomplete_input.canonicalized_url());
@@ -1327,23 +1327,23 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
 
   model()->OnSetFocus(false);  // Avoids DCHECK in OpenMatch().
   model()->SetUserText(u"http://abcd");
-  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
-                     std::u16string(), 0);
+  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
+                               GURL(), std::u16string(), 0);
   EXPECT_EQ(edit_model_delegate_->disposition(),
             WindowOpenDisposition::SWITCH_TO_TAB);
 
   // Suggestions not from the Open Tab Provider or not from keyword mode should
   // not change the disposition.
   match.from_keyword = false;
-  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
-                     std::u16string(), 0);
+  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
+                               GURL(), std::u16string(), 0);
   EXPECT_EQ(edit_model_delegate_->disposition(),
             WindowOpenDisposition::CURRENT_TAB);
 
   match.provider = model()->autocomplete_controller()->search_provider();
   match.from_keyword = true;
-  model()->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
-                     std::u16string(), 0);
+  model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
+                               GURL(), std::u16string(), 0);
   EXPECT_EQ(edit_model_delegate_->disposition(),
             WindowOpenDisposition::CURRENT_TAB);
 }

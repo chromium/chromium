@@ -1422,7 +1422,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   // 4. Click and activate.
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
-  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
+  omnibox->model()->OpenSelection();
   prerender_observer.WaitForActivation();
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
@@ -1500,7 +1500,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // 5. Click the result.
   content::TestNavigationObserver navigation_observer(GetActiveWebContents(),
                                                       1);
-  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
+  omnibox->model()->OpenSelection();
   navigation_observer.Wait();
 
   // 6. Fire the timer to make all prefetch requests expire

@@ -504,9 +504,8 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_TAP:
     case ui::ET_GESTURE_SCROLL_END: {
       DCHECK(HasMatchAt(index));
-      const AutocompleteMatch& match = edit_model_->result().match_at(index);
-      edit_model_->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
-                             u"", index, event->time_stamp());
+      edit_model_->OpenSelection(OmniboxPopupSelection(index),
+                                 event->time_stamp());
       break;
     }
     default:

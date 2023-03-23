@@ -226,6 +226,10 @@ class AutocompleteController : public AutocompleteProviderListener,
     return provider_client_.get();
   }
 
+  // This is a deprecated method of injecting an externally sourced
+  // match into the result set, currently still needed only by iOS.
+  size_t InjectAdHocMatch(AutocompleteMatch match);
+
  private:
   friend class FakeAutocompleteController;
   friend class AutocompleteProviderTest;

@@ -69,45 +69,6 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
 
 OmniboxViewIOS::~OmniboxViewIOS() = default;
 
-void OmniboxViewIOS::OpenMatch(const AutocompleteMatch& match,
-                               WindowOpenDisposition disposition,
-                               const GURL& alternate_nav_url,
-                               const std::u16string& pasted_text,
-                               size_t selected_line,
-                               base::TimeTicks match_selection_timestamp) {
-  // Fill in clipboard matches if they don't have a destination URL.
-  if (match.destination_url.is_empty()) {
-    if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
-      ClipboardRecentContent* clipboard_recent_content =
-          ClipboardRecentContent::GetInstance();
-      clipboard_recent_content->GetRecentURLFromClipboard(base::BindOnce(
-          &OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch,
-          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
-          pasted_text, selected_line, match_selection_timestamp));
-      return;
-    } else if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
-      ClipboardRecentContent* clipboard_recent_content =
-          ClipboardRecentContent::GetInstance();
-      clipboard_recent_content->GetRecentTextFromClipboard(base::BindOnce(
-          &OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch,
-          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
-          pasted_text, selected_line, match_selection_timestamp));
-      return;
-    } else if (match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
-      ClipboardRecentContent* clipboard_recent_content =
-          ClipboardRecentContent::GetInstance();
-      clipboard_recent_content->GetRecentImageFromClipboard(base::BindOnce(
-          &OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch,
-          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
-          pasted_text, selected_line, match_selection_timestamp));
-      return;
-    }
-  }
-
-  OmniboxView::OpenMatch(match, disposition, alternate_nav_url, pasted_text,
-                         selected_line, match_selection_timestamp);
-}
-
 void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
     const AutocompleteMatch& match,
     WindowOpenDisposition disposition,
@@ -122,12 +83,11 @@ void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
 
   GURL url = std::move(optional_gurl).value();
 
-  ClipboardProvider* clipboard_provider =
-      model()->autocomplete_controller()->clipboard_provider();
-  AutocompleteMatch new_match = clipboard_provider->NewClipboardURLMatch(url);
+  AutocompleteController* controller = model()->autocomplete_controller();
 
-  OmniboxView::OpenMatch(new_match, disposition, alternate_nav_url, pasted_text,
-                         selected_line, match_selection_timestamp);
+  OmniboxPopupSelection selection(controller->InjectAdHocMatch(
+      controller->clipboard_provider()->NewClipboardURLMatch(url)));
+  model()->OpenSelection(selection, match_selection_timestamp, disposition);
 }
 
 void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
@@ -153,8 +113,9 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
     return;
   }
 
-  OmniboxView::OpenMatch(new_match.value(), disposition, alternate_nav_url,
-                         pasted_text, selected_line, match_selection_timestamp);
+  OmniboxPopupSelection selection(
+      model()->autocomplete_controller()->InjectAdHocMatch(new_match.value()));
+  model()->OpenSelection(selection, match_selection_timestamp, disposition);
 }
 
 void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
@@ -185,8 +146,10 @@ void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(
   if (!optional_match) {
     return;
   }
-  OmniboxView::OpenMatch(optional_match.value(), disposition, alternate_nav_url,
-                         pasted_text, selected_line, match_selection_timestamp);
+  OmniboxPopupSelection selection(
+      model()->autocomplete_controller()->InjectAdHocMatch(
+          optional_match.value()));
+  model()->OpenSelection(selection, match_selection_timestamp, disposition);
 }
 
 std::u16string OmniboxViewIOS::GetText() const {
@@ -549,9 +512,8 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
 void OmniboxViewIOS::OnAccept() {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
 
-  WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
   if (model()) {
-    model()->AcceptInput(disposition);
+    model()->OpenSelection();
   }
   RevertAll();
 }
@@ -742,6 +704,48 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
     const GURL& alternate_nav_url,
     const std::u16string& pasted_text,
     size_t index) {
-  this->OpenMatch(match, disposition, alternate_nav_url, pasted_text, index,
-                  base::TimeTicks());
+  const auto match_selection_timestamp = base::TimeTicks();
+  AutocompleteController* controller = model()->autocomplete_controller();
+
+  // Sometimes the match provided does not correspond to the autocomplete
+  // result match specified by `index`. Most Visited Tiles, for example,
+  // provide ad hoc matches that are not in the result at all.
+  if (index >= controller->result().size() ||
+      controller->result().match_at(index).destination_url !=
+          match.destination_url) {
+    OmniboxPopupSelection selection(controller->InjectAdHocMatch(match));
+    model()->OpenSelection(selection, match_selection_timestamp, disposition);
+    return;
+  }
+
+  // Fill in clipboard matches if they don't have a destination URL.
+  if (match.destination_url.is_empty()) {
+    if (match.type == AutocompleteMatchType::CLIPBOARD_URL) {
+      ClipboardRecentContent* clipboard_recent_content =
+          ClipboardRecentContent::GetInstance();
+      clipboard_recent_content->GetRecentURLFromClipboard(base::BindOnce(
+          &OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch,
+          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
+          pasted_text, index, match_selection_timestamp));
+      return;
+    } else if (match.type == AutocompleteMatchType::CLIPBOARD_TEXT) {
+      ClipboardRecentContent* clipboard_recent_content =
+          ClipboardRecentContent::GetInstance();
+      clipboard_recent_content->GetRecentTextFromClipboard(base::BindOnce(
+          &OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch,
+          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
+          pasted_text, index, match_selection_timestamp));
+      return;
+    } else if (match.type == AutocompleteMatchType::CLIPBOARD_IMAGE) {
+      ClipboardRecentContent* clipboard_recent_content =
+          ClipboardRecentContent::GetInstance();
+      clipboard_recent_content->GetRecentImageFromClipboard(base::BindOnce(
+          &OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch,
+          weak_ptr_factory_.GetWeakPtr(), match, disposition, alternate_nav_url,
+          pasted_text, index, match_selection_timestamp));
+      return;
+    }
+  }
+  model()->OpenSelection(OmniboxPopupSelection(index),
+                         match_selection_timestamp, disposition);
 }

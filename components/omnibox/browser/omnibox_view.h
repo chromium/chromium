@@ -29,7 +29,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 
-class GURL;
 class OmniboxEditModelDelegate;
 class OmniboxViewMacTest;
 class OmniboxEditModel;
@@ -63,24 +62,6 @@ class OmniboxView {
 
   // Called when any relevant state changes other than changing tabs.
   virtual void Update() = 0;
-
-  // Asks the browser to load the specified match, using the supplied
-  // disposition. |alternate_nav_url|, if non-empty, contains the
-  // alternate navigation URL for for this match. See comments on
-  // AutocompleteResult::GetAlternateNavURL().
-  //
-  // |pasted_text| should only be set if this call is due to a
-  // Paste-And-Go/Search action.
-  //
-  // |selected_line| is passed to SendOpenNotification(); see comments there.
-  //
-  // This may close the popup.
-  virtual void OpenMatch(const AutocompleteMatch& match,
-                         WindowOpenDisposition disposition,
-                         const GURL& alternate_nav_url,
-                         const std::u16string& pasted_text,
-                         size_t selected_line,
-                         base::TimeTicks match_selection_timestamp);
 
   // Returns the current text of the edit control, which could be the
   // "temporary" text set by the popup, the "permanent" text set by the
