@@ -33721,6 +33721,10 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Collapse Group"/>
 </enum>
 
+<enum name="ExpandedApRoVerificationStatus">
+  <int value="536870912" label="Success"/>
+</enum>
+
 <enum name="ExpectCTHeaderResult">
   <int value="0" label="EXPECT_CT_HEADER_BAD_VALUE"/>
   <int value="1" label="EXPECT_CT_HEADER_BUILD_NOT_TIMELY"/>

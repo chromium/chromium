@@ -1817,6 +1817,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.TPM.ExpandedApRoVerificationStatus"
+    enum="ExpandedApRoVerificationStatus" expires_after="2023-08-01">
+  <owner>granaghan@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    AP RO Verification status and detailed result. Captured every cold boot.
+  </summary>
+</histogram>
+
 <histogram name="Platform.TPM.FilesystemInitTime" units="ms"
     expires_after="2023-08-01">
   <owner>granaghan@google.com</owner>
