@@ -10,9 +10,9 @@ FAIL Property color value 'rgb(from lab(100 104.3 -50.9) r g b)' assert_true: 'r
 FAIL Property color value 'rgb(from lab(0 104.3 -50.9) r g b)' assert_true: 'rgb(from lab(0 104.3 -50.9) r g b)' is a supported value for color. expected true got false
 FAIL Property color value 'rgb(from lch(100 116 334) r g b)' assert_true: 'rgb(from lch(100 116 334) r g b)' is a supported value for color. expected true got false
 FAIL Property color value 'rgb(from lch(0 116 334) r g b)' assert_true: 'rgb(from lch(0 116 334) r g b)' is a supported value for color. expected true got false
-FAIL Property color value 'rgb(from oklab(100 0.365 -0.16) r g b)' assert_true: 'rgb(from oklab(100 0.365 -0.16) r g b)' is a supported value for color. expected true got false
+FAIL Property color value 'rgb(from oklab(1 0.365 -0.16) r g b)' assert_true: 'rgb(from oklab(1 0.365 -0.16) r g b)' is a supported value for color. expected true got false
 FAIL Property color value 'rgb(from oklab(0 0.365 -0.16) r g b)' assert_true: 'rgb(from oklab(0 0.365 -0.16) r g b)' is a supported value for color. expected true got false
-FAIL Property color value 'rgb(from oklch(100 0.399 336.3) r g b)' assert_true: 'rgb(from oklch(100 0.399 336.3) r g b)' is a supported value for color. expected true got false
+FAIL Property color value 'rgb(from oklch(1 0.399 336.3) r g b)' assert_true: 'rgb(from oklch(1 0.399 336.3) r g b)' is a supported value for color. expected true got false
 FAIL Property color value 'rgb(from oklch(0 0.399 336.3) r g b)' assert_true: 'rgb(from oklch(0 0.399 336.3) r g b)' is a supported value for color. expected true got false
 FAIL Property color value 'rgb(from rebeccapurple 0 0 0)' assert_true: 'rgb(from rebeccapurple 0 0 0)' is a supported value for color. expected true got false
 FAIL Property color value 'rgb(from rebeccapurple 0 0 0 / 0)' assert_true: 'rgb(from rebeccapurple 0 0 0 / 0)' is a supported value for color. expected true got false
@@ -87,9 +87,9 @@ FAIL Property color value 'hsl(from lab(100 104.3 -50.9) h s l)' assert_true: 'h
 FAIL Property color value 'hsl(from lab(0 104.3 -50.9) h s l)' assert_true: 'hsl(from lab(0 104.3 -50.9) h s l)' is a supported value for color. expected true got false
 FAIL Property color value 'hsl(from lch(100 116 334) h s l)' assert_true: 'hsl(from lch(100 116 334) h s l)' is a supported value for color. expected true got false
 FAIL Property color value 'hsl(from lch(0 116 334) h s l)' assert_true: 'hsl(from lch(0 116 334) h s l)' is a supported value for color. expected true got false
-FAIL Property color value 'hsl(from oklab(100 0.365 -0.16) h s l)' assert_true: 'hsl(from oklab(100 0.365 -0.16) h s l)' is a supported value for color. expected true got false
+FAIL Property color value 'hsl(from oklab(1 0.365 -0.16) h s l)' assert_true: 'hsl(from oklab(1 0.365 -0.16) h s l)' is a supported value for color. expected true got false
 FAIL Property color value 'hsl(from oklab(0 0.365 -0.16) h s l)' assert_true: 'hsl(from oklab(0 0.365 -0.16) h s l)' is a supported value for color. expected true got false
-FAIL Property color value 'hsl(from oklch(100 0.399 336.3) h s l)' assert_true: 'hsl(from oklch(100 0.399 336.3) h s l)' is a supported value for color. expected true got false
+FAIL Property color value 'hsl(from oklch(1 0.399 336.3) h s l)' assert_true: 'hsl(from oklch(1 0.399 336.3) h s l)' is a supported value for color. expected true got false
 FAIL Property color value 'hsl(from oklch(0 0.399 336.3) h s l)' assert_true: 'hsl(from oklch(0 0.399 336.3) h s l)' is a supported value for color. expected true got false
 FAIL Property color value 'hsl(from rebeccapurple 0 0% 0%)' assert_true: 'hsl(from rebeccapurple 0 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'hsl(from rebeccapurple 0deg 0% 0%)' assert_true: 'hsl(from rebeccapurple 0deg 0% 0%)' is a supported value for color. expected true got false
@@ -149,9 +149,9 @@ FAIL Property color value 'hwb(from lab(100 104.3 -50.9) h w b)' assert_true: 'h
 FAIL Property color value 'hwb(from lab(0 104.3 -50.9) h w b)' assert_true: 'hwb(from lab(0 104.3 -50.9) h w b)' is a supported value for color. expected true got false
 FAIL Property color value 'hwb(from lch(100 116 334) h w b)' assert_true: 'hwb(from lch(100 116 334) h w b)' is a supported value for color. expected true got false
 FAIL Property color value 'hwb(from lch(0 116 334) h w b)' assert_true: 'hwb(from lch(0 116 334) h w b)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(from oklab(100 0.365 -0.16) h w b)' assert_true: 'hwb(from oklab(100 0.365 -0.16) h w b)' is a supported value for color. expected true got false
+FAIL Property color value 'hwb(from oklab(1 0.365 -0.16) h w b)' assert_true: 'hwb(from oklab(1 0.365 -0.16) h w b)' is a supported value for color. expected true got false
 FAIL Property color value 'hwb(from oklab(0 0.365 -0.16) h w b)' assert_true: 'hwb(from oklab(0 0.365 -0.16) h w b)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(from oklch(100 0.399 336.3) h w b)' assert_true: 'hwb(from oklch(100 0.399 336.3) h w b)' is a supported value for color. expected true got false
+FAIL Property color value 'hwb(from oklch(1 0.399 336.3) h w b)' assert_true: 'hwb(from oklch(1 0.399 336.3) h w b)' is a supported value for color. expected true got false
 FAIL Property color value 'hwb(from oklch(0 0.399 336.3) h w b)' assert_true: 'hwb(from oklch(0 0.399 336.3) h w b)' is a supported value for color. expected true got false
 FAIL Property color value 'hwb(from rebeccapurple 0 0% 0%)' assert_true: 'hwb(from rebeccapurple 0 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'hwb(from rebeccapurple 0deg 0% 0%)' assert_true: 'hwb(from rebeccapurple 0deg 0% 0%)' is a supported value for color. expected true got false
@@ -245,62 +245,62 @@ FAIL Property color value 'lab(from lab(none none none) l a b)' assert_true: 'la
 FAIL Property color value 'lab(from lab(none none none / none) l a b / alpha)' assert_true: 'lab(from lab(none none none / none) l a b / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(25 none 50) l a b)' assert_true: 'lab(from lab(25 none 50) l a b)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(25 20 50 / none) l a b / alpha)' assert_true: 'lab(from lab(25 20 50 / none) l a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a b)' assert_true: 'oklab(from oklab(25 20 50) l a b)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a b / alpha)' assert_true: 'oklab(from oklab(25 20 50) l a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a b / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(200 300 400 / 500%) l a b / alpha)' assert_true: 'oklab(from oklab(200 300 400 / 500%) l a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(-200 -300 -400 / -500%) l a b / alpha)' assert_true: 'oklab(from oklab(-200 -300 -400 / -500%) l a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(from oklab(25 20 50) l a b) l a b)' assert_true: 'oklab(from oklab(from oklab(25 20 50) l a b) l a b)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a b)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a b)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(2 3 4 / 500%) l a b / alpha)' assert_true: 'oklab(from oklab(2 3 4 / 500%) l a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(-2 -3 -4 / -500%) l a b / alpha)' assert_true: 'oklab(from oklab(-2 -3 -4 / -500%) l a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(from oklab(0.25 0.2 0.5) l a b) l a b)' assert_true: 'oklab(from oklab(from oklab(0.25 0.2 0.5) l a b) l a b)' is a supported value for color. expected true got false
 FAIL Property color value 'oklab(from color(display-p3 0 0 0) l a b / alpha)' assert_true: 'oklab(from color(display-p3 0 0 0) l a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) 0 0 0)' assert_true: 'oklab(from oklab(25 20 50) 0 0 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) 0 0 0 / 0)' assert_true: 'oklab(from oklab(25 20 50) 0 0 0 / 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) 0 a b / alpha)' assert_true: 'oklab(from oklab(25 20 50) 0 a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l 0 b / alpha)' assert_true: 'oklab(from oklab(25 20 50) l 0 b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a 0 / alpha)' assert_true: 'oklab(from oklab(25 20 50) l a 0 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a b / 0)' assert_true: 'oklab(from oklab(25 20 50) l a b / 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) 0 a b / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) 0 a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l 0 b / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l 0 b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a 0 / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a 0 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a b / 0)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a b / 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) 35 a b / alpha)' assert_true: 'oklab(from oklab(25 20 50) 35 a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l 35 b / alpha)' assert_true: 'oklab(from oklab(25 20 50) l 35 b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a 35 / alpha)' assert_true: 'oklab(from oklab(25 20 50) l a 35 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a b / .35)' assert_true: 'oklab(from oklab(25 20 50) l a b / .35)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) 35 a b / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) 35 a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l 35 b / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l 35 b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a 35 / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a 35 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a b / .35)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a b / .35)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(0.7 45 30 / 40%) 200 300 400 / 500)' assert_true: 'oklab(from oklab(0.7 45 30 / 40%) 200 300 400 / 500)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(0.7 45 30 / 40%) -200 -300 -400 / -500)' assert_true: 'oklab(from oklab(0.7 45 30 / 40%) -200 -300 -400 / -500)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l b a)' assert_true: 'oklab(from oklab(25 20 50) l b a)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a a / a)' assert_true: 'oklab(from oklab(25 20 50) l a a / a)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l b a)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l b a)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a a / a)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a a / a)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) calc(l) calc(a) calc(b))' assert_true: 'oklab(from oklab(25 20 50) calc(l) calc(a) calc(b))' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) calc(l) calc(a) calc(b) / calc(alpha))' assert_true: 'oklab(from oklab(25 20 50 / 40%) calc(l) calc(a) calc(b) / calc(alpha))' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) none none none)' assert_true: 'oklab(from oklab(25 20 50) none none none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) none none none / none)' assert_true: 'oklab(from oklab(25 20 50) none none none / none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a none)' assert_true: 'oklab(from oklab(25 20 50) l a none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a none / alpha)' assert_true: 'oklab(from oklab(25 20 50) l a none / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50) l a b / none)' assert_true: 'oklab(from oklab(25 20 50) l a b / none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a none / alpha)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a none / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / 40%) l a b / none)' assert_true: 'oklab(from oklab(25 20 50 / 40%) l a b / none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) 0 0 0)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) 0 0 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) 0 0 0 / 0)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) 0 0 0 / 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) 0 a b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) 0 a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l 0 b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l 0 b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a 0 / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a 0 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a b / 0)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a b / 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) 0 a b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) 0 a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l 0 b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l 0 b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a 0 / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a 0 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / 0)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) 0.35 a b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) 0.35 a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l 0.35 b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l 0.35 b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a 0.35 / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a 0.35 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a b / .35)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a b / .35)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) 0.35 a b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) 0.35 a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l 0.35 b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l 0.35 b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a 0.35 / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a 0.35 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / .35)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / .35)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.7 0.45 0.3 / 40%) 2 3 4 / 500)' assert_true: 'oklab(from oklab(0.7 0.45 0.3 / 40%) 2 3 4 / 500)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.7 0.45 0.3 / 40%) -2 -3 -4 / -500)' assert_true: 'oklab(from oklab(0.7 0.45 0.3 / 40%) -2 -3 -4 / -500)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l b a)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l b a)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a a / a)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a a / a)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l b a)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l b a)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a a / a)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a a / a)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) calc(l) calc(a) calc(b))' assert_true: 'oklab(from oklab(0.25 0.2 0.5) calc(l) calc(a) calc(b))' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) calc(l) calc(a) calc(b) / calc(alpha))' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) calc(l) calc(a) calc(b) / calc(alpha))' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) none none none)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) none none none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) none none none / none)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) none none none / none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a none)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a none / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a none / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5) l a b / none)' assert_true: 'oklab(from oklab(0.25 0.2 0.5) l a b / none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a none / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a none / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / none)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / 40%) l a b / none)' is a supported value for color. expected true got false
 FAIL Property color value 'oklab(from oklab(none none none) l a b)' assert_true: 'oklab(from oklab(none none none) l a b)' is a supported value for color. expected true got false
 FAIL Property color value 'oklab(from oklab(none none none / none) l a b / alpha)' assert_true: 'oklab(from oklab(none none none / none) l a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 none 50) l a b)' assert_true: 'oklab(from oklab(25 none 50) l a b)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(25 20 50 / none) l a b / alpha)' assert_true: 'oklab(from oklab(25 20 50 / none) l a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 none 0.5) l a b)' assert_true: 'oklab(from oklab(0.25 none 0.5) l a b)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)' assert_true: 'oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(.7 45 30) alpha b a / l)' assert_true: 'lab(from lab(.7 45 30) alpha b a / l)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(.7 45 30) alpha a b / alpha)' assert_true: 'lab(from lab(.7 45 30) alpha a b / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(.7 45 30) alpha a a / alpha)' assert_true: 'lab(from lab(.7 45 30) alpha a a / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(.7 45 30 / 40%) alpha b a / l)' assert_true: 'lab(from lab(.7 45 30 / 40%) alpha b a / l)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(.7 45 30 / 40%) alpha a b / alpha)' assert_true: 'lab(from lab(.7 45 30 / 40%) alpha a b / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lab(from lab(.7 45 30 / 40%) alpha a a / alpha)' assert_true: 'lab(from lab(.7 45 30 / 40%) alpha a a / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(.7 45 30) alpha b a / l)' assert_true: 'oklab(from oklab(.7 45 30) alpha b a / l)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(.7 45 30) alpha a b / alpha)' assert_true: 'oklab(from oklab(.7 45 30) alpha a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(.7 45 30) alpha a a / alpha)' assert_true: 'oklab(from oklab(.7 45 30) alpha a a / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(.7 45 30 / 40%) alpha b a / l)' assert_true: 'oklab(from oklab(.7 45 30 / 40%) alpha b a / l)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(.7 45 30 / 40%) alpha a b / alpha)' assert_true: 'oklab(from oklab(.7 45 30 / 40%) alpha a b / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklab(from oklab(.7 45 30 / 40%) alpha a a / alpha)' assert_true: 'oklab(from oklab(.7 45 30 / 40%) alpha a a / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(.7 0.45 0.3) alpha b a / l)' assert_true: 'oklab(from oklab(.7 0.45 0.3) alpha b a / l)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(.7 0.45 0.3) alpha a b / alpha)' assert_true: 'oklab(from oklab(.7 0.45 0.3) alpha a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(.7 0.45 0.3) alpha a a / alpha)' assert_true: 'oklab(from oklab(.7 0.45 0.3) alpha a a / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha b a / l)' assert_true: 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha b a / l)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha a b / alpha)' assert_true: 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha a b / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha a a / alpha)' assert_true: 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha a a / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(0.7 45 30) l c h)' assert_true: 'lch(from lch(0.7 45 30) l c h)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(0.7 45 30) l c h / alpha)' assert_true: 'lch(from lch(0.7 45 30) l c h / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(0.7 45 30 / 40%) l c h / alpha)' assert_true: 'lch(from lch(0.7 45 30 / 40%) l c h / alpha)' is a supported value for color. expected true got false
@@ -352,69 +352,69 @@ FAIL Property color value 'lch(from lch(none none none) l c h)' assert_true: 'lc
 FAIL Property color value 'lch(from lch(none none none / none) l c h / alpha)' assert_true: 'lch(from lch(none none none / none) l c h / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(0.7 none 30) l c h)' assert_true: 'lch(from lch(0.7 none 30) l c h)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(0.7 45 30 / none) l c h / alpha)' assert_true: 'lch(from lch(0.7 45 30 / none) l c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c h)' assert_true: 'oklch(from oklch(0.7 45 30) l c h)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(200 300 400 / 500%) l c h / alpha)' assert_true: 'oklch(from oklch(200 300 400 / 500%) l c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(-200 -300 -400 / -500%) l c h / alpha)' assert_true: 'oklch(from oklch(-200 -300 -400 / -500%) l c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(from oklch(0.7 45 30) l c h) l c h)' assert_true: 'oklch(from oklch(from oklch(0.7 45 30) l c h) l c h)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c h)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c h)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(2 3 400 / 500%) l c h / alpha)' assert_true: 'oklch(from oklch(2 3 400 / 500%) l c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(-2 -3 -400 / -500%) l c h / alpha)' assert_true: 'oklch(from oklch(-2 -3 -400 / -500%) l c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(from oklch(0.7 0.45 30) l c h) l c h)' assert_true: 'oklch(from oklch(from oklch(0.7 0.45 30) l c h) l c h)' is a supported value for color. expected true got false
 FAIL Property color value 'oklch(from color(display-p3 0 0 0) l c h / alpha)' assert_true: 'oklch(from color(display-p3 0 0 0) l c h / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'oklch(from oklab(0.7 45 30) l c h / alpha)' assert_true: 'oklch(from oklab(0.7 45 30) l c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) 0 0 0)' assert_true: 'oklch(from oklch(0.7 45 30) 0 0 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) 0 0 0deg)' assert_true: 'oklch(from oklch(0.7 45 30) 0 0 0deg)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) 0 0 0 / 0)' assert_true: 'oklch(from oklch(0.7 45 30) 0 0 0 / 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) 0 0 0deg / 0)' assert_true: 'oklch(from oklch(0.7 45 30) 0 0 0deg / 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) 0 c h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) 0 c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l 0 h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l 0 h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c 0 / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l c 0 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c 0deg / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l c 0deg / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c h / 0)' assert_true: 'oklch(from oklch(0.7 45 30) l c h / 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) 0 c h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) 0 c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l 0 h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l 0 h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c 0 / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c 0 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c 0deg / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c 0deg / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c h / 0)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c h / 0)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) 25 c h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) 25 c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l 25 h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l 25 h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c 25 / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l c 25 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c 25deg / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l c 25deg / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c h / .25)' assert_true: 'oklch(from oklch(0.7 45 30) l c h / .25)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) 25 c h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) 25 c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l 25 h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l 25 h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c 25 / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c 25 / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c 25deg / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c 25deg / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c h / .25)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c h / .25)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) 200 300 400 / 500)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) 200 300 400 / 500)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) -200 -300 -400 / -500)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) -200 -300 -400 / -500)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) 50 120 400deg / 500)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) 50 120 400deg / 500)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) 50 120 -400deg / -500)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) 50 120 -400deg / -500)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30) l c c / alpha)' assert_true: 'oklch(from oklch(.7 45 30) l c c / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30 / 40%) l c c / alpha)' assert_true: 'oklch(from oklch(.7 45 30 / 40%) l c c / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) calc(l) calc(c) calc(h))' assert_true: 'oklch(from oklch(0.7 45 30) calc(l) calc(c) calc(h))' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) calc(l) calc(c) calc(h) / calc(alpha))' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) calc(l) calc(c) calc(h) / calc(alpha))' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) none none none)' assert_true: 'oklch(from oklch(0.7 45 30) none none none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) none none none / none)' assert_true: 'oklch(from oklch(0.7 45 30) none none none / none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c none)' assert_true: 'oklch(from oklch(0.7 45 30) l c none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c none / alpha)' assert_true: 'oklch(from oklch(0.7 45 30) l c none / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30) l c h / none)' assert_true: 'oklch(from oklch(0.7 45 30) l c h / none)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c none / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c none / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / 40%) l c h / none)' assert_true: 'oklch(from oklch(0.7 45 30 / 40%) l c h / none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) 0 0 0)' assert_true: 'oklch(from oklch(0.7 0.45 30) 0 0 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) 0 0 0deg)' assert_true: 'oklch(from oklch(0.7 0.45 30) 0 0 0deg)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) 0 0 0 / 0)' assert_true: 'oklch(from oklch(0.7 0.45 30) 0 0 0 / 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) 0 0 0deg / 0)' assert_true: 'oklch(from oklch(0.7 0.45 30) 0 0 0deg / 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) 0 c h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) 0 c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l 0 h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l 0 h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c 0 / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c 0 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c 0deg / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c 0deg / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c h / 0)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c h / 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) 0 c h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) 0 c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l 0 h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l 0 h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c 0 / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c 0 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c 0deg / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c 0deg / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / 0)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / 0)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) 0.25 c h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) 0.25 c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l 0.25 h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l 0.25 h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c 25 / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c 25 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c 25deg / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c 25deg / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c h / .25)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c h / .25)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) 0.25 c h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) 0.25 c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l 0.25 h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l 0.25 h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c 25 / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c 25 / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c 25deg / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c 25deg / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / .25)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / .25)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) 2 3 400 / 500)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) 2 3 400 / 500)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) -2 -3 -400 / -500)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) -2 -3 -400 / -500)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) 0.5 1.2 400deg / 500)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) 0.5 1.2 400deg / 500)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) 0.5 1.2 -400deg / -500)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) 0.5 1.2 -400deg / -500)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30) l c c / alpha)' assert_true: 'oklch(from oklch(.7 0.45 30) l c c / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30 / 40%) l c c / alpha)' assert_true: 'oklch(from oklch(.7 0.45 30 / 40%) l c c / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) calc(l) calc(c) calc(h))' assert_true: 'oklch(from oklch(0.7 0.45 30) calc(l) calc(c) calc(h))' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) calc(l) calc(c) calc(h) / calc(alpha))' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) calc(l) calc(c) calc(h) / calc(alpha))' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) none none none)' assert_true: 'oklch(from oklch(0.7 0.45 30) none none none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) none none none / none)' assert_true: 'oklch(from oklch(0.7 0.45 30) none none none / none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c none)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c none / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c none / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30) l c h / none)' assert_true: 'oklch(from oklch(0.7 0.45 30) l c h / none)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c none / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c none / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / none)' assert_true: 'oklch(from oklch(0.7 0.45 30 / 40%) l c h / none)' is a supported value for color. expected true got false
 FAIL Property color value 'oklch(from oklch(none none none) l c h)' assert_true: 'oklch(from oklch(none none none) l c h)' is a supported value for color. expected true got false
 FAIL Property color value 'oklch(from oklch(none none none / none) l c h / alpha)' assert_true: 'oklch(from oklch(none none none / none) l c h / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'oklch(from oklch(0.7 none 30) l c h)' assert_true: 'oklch(from oklch(0.7 none 30) l c h)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(0.7 45 30 / none) l c h / alpha)' assert_true: 'oklch(from oklch(0.7 45 30 / none) l c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)' assert_true: 'oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(.7 45 30) alpha c h / l)' assert_true: 'lch(from lch(.7 45 30) alpha c h / l)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(.7 45 30) alpha c h / alpha)' assert_true: 'lch(from lch(.7 45 30) alpha c h / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(.7 45 30) alpha c c / alpha)' assert_true: 'lch(from lch(.7 45 30) alpha c c / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(.7 45 30 / 40%) alpha c h / l)' assert_true: 'lch(from lch(.7 45 30 / 40%) alpha c h / l)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(.7 45 30 / 40%) alpha c h / alpha)' assert_true: 'lch(from lch(.7 45 30 / 40%) alpha c h / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'lch(from lch(.7 45 30 / 40%) alpha c c / alpha)' assert_true: 'lch(from lch(.7 45 30 / 40%) alpha c c / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30) alpha c h / l)' assert_true: 'oklch(from oklch(.7 45 30) alpha c h / l)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30) alpha c h / alpha)' assert_true: 'oklch(from oklch(.7 45 30) alpha c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30) alpha c c / alpha)' assert_true: 'oklch(from oklch(.7 45 30) alpha c c / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30 / 40%) alpha c h / l)' assert_true: 'oklch(from oklch(.7 45 30 / 40%) alpha c h / l)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30 / 40%) alpha c h / alpha)' assert_true: 'oklch(from oklch(.7 45 30 / 40%) alpha c h / alpha)' is a supported value for color. expected true got false
-FAIL Property color value 'oklch(from oklch(.7 45 30 / 40%) alpha c c / alpha)' assert_true: 'oklch(from oklch(.7 45 30 / 40%) alpha c c / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30) alpha c h / l)' assert_true: 'oklch(from oklch(.7 0.45 30) alpha c h / l)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30) alpha c h / alpha)' assert_true: 'oklch(from oklch(.7 0.45 30) alpha c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30) alpha c c / alpha)' assert_true: 'oklch(from oklch(.7 0.45 30) alpha c c / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30 / 40%) alpha c h / l)' assert_true: 'oklch(from oklch(.7 0.45 30 / 40%) alpha c h / l)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30 / 40%) alpha c h / alpha)' assert_true: 'oklch(from oklch(.7 0.45 30 / 40%) alpha c h / alpha)' is a supported value for color. expected true got false
+FAIL Property color value 'oklch(from oklch(.7 0.45 30 / 40%) alpha c c / alpha)' assert_true: 'oklch(from oklch(.7 0.45 30 / 40%) alpha c c / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'color(from color(srgb 0.7 0.5 0.3) srgb r g b)' assert_true: 'color(from color(srgb 0.7 0.5 0.3) srgb r g b)' is a supported value for color. expected true got false
 FAIL Property color value 'color(from color(srgb 0.7 0.5 0.3) srgb r g b / alpha)' assert_true: 'color(from color(srgb 0.7 0.5 0.3) srgb r g b / alpha)' is a supported value for color. expected true got false
 FAIL Property color value 'color(from color(srgb 0.7 0.5 0.3 / 40%) srgb r g b)' assert_true: 'color(from color(srgb 0.7 0.5 0.3 / 40%) srgb r g b)' is a supported value for color. expected true got false

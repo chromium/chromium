@@ -200,7 +200,8 @@ def set_up_config(path_finder, chromedriver_server):
   config = {
     "host": wd_host,
     "port": wd_port,
-    "capabilities": wd_capabilities
+    "capabilities": wd_capabilities,
+    "timeout_multiplier": 1
   }
 
   # Port numbers are defined at

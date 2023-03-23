@@ -399,7 +399,7 @@ wheel <
 
 wheel <
   name: "infra/python/wheels/pytest-asyncio-py3"
-  version: "version:0.14.0"
+  version: "version:0.19.0"
 >
 
 wheel <
