@@ -363,6 +363,12 @@ CommandLine PrepareCommandLineForGTest(const CommandLine& command_line,
   // Don't try to write the final XML report in child processes.
   switches.erase(kGTestOutputFlag);
 
+#if BUILDFLAG(IS_IOS)
+  // We only need the xctest flag for the parent process. Passing it to
+  // child processes will cause the tests not to run, so remove it.
+  switches.erase(switches::kEnableRunIOSUnittestsWithXCTest);
+#endif
+
   if (switches.find(switches::kTestLauncherRetriesLeft) == switches.end()) {
     switches[switches::kTestLauncherRetriesLeft] =
 #if BUILDFLAG(IS_WIN)
