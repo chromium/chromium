@@ -72,6 +72,13 @@ BASE_FEATURE(kEvDetailsInPageInfo,
              "EvDetailsInPageInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables showing the "Get the most out of Chrome" section in settings.
+#if !defined(ANDROID)
+BASE_FEATURE(kGetTheMostOutOfProgram,
+             "GetTheMostOutOfProgram",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Controls whether we use a different UX for simple extensions overriding
 // settings.

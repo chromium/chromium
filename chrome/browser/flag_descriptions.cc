@@ -4535,6 +4535,12 @@ const char kSCTAuditingDescription[] =
     "Enables SCT auditing for users who have opted in to Safe Browsing "
     "Extended Reporting.";
 
+const char kSettingsEnableGetTheMostOutOfProgramName[] =
+    "'Get the most out of Chrome' documentation";
+const char kSettingsEnableGetTheMostOutOfProgramDescription[] =
+    "When enabled, the 'Get the most out of Chrome' documentation section "
+    "will be available.";
+
 const char kSharingDesktopSharePreviewName[] = "Desktop share hub preview";
 const char kSharingDesktopSharePreviewDescription[] =
     "Adds a preview section to the desktop sharing hub to make it clearer what "

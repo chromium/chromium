@@ -34,10 +34,11 @@ import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {getTemplate} from './about_page.html.js';
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
+// clang-format off
 // <if expr="_google_chrome and is_macosx">
 import {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
-
 // </if>
+// clang-format on
 
 const SettingsAboutPageElementBase =
     RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
@@ -71,6 +72,16 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isManaged');
+        },
+      },
+
+      /**
+       * Whether to show the "Get the most out of Chrome" section.
+       */
+      showGetTheMostOutOfProgramSection_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showGetTheMostOutOfProgramSection');
         },
       },
 
@@ -117,6 +128,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
   private isManaged_: boolean;
+  private showGetTheMostOutOfProgramSection_: boolean;
 
   // <if expr="_google_chrome and is_macosx">
   private promoteUpdaterStatus_: PromoteUpdaterStatus;
@@ -199,6 +211,10 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
 
   private onRelaunchTap_() {
     this.performRestart(RestartType.RELAUNCH);
+  }
+
+  private onGetTheMostOutOfProgramTap_() {
+    // TODO(crbug.com/1423278): implement.
   }
 
   // <if expr="not chromeos_ash">

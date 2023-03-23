@@ -11,6 +11,12 @@
   <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chrome page.">
     About Chrome
   </message>
+  <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_PROGRAM" desc="Section title for the 'Get the most out of Chrome' page.">
+    Get the most ouf of Chrome
+  </message>
+  <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_PROGRAM_DESCRIPTION" desc="Explanatory text for the link to the 'Get the most out of Chrome' page.">
+    This guide helps you understand your choices, so that Chrome works the way you want to
+  </message>
   <message name="IDS_SETTINGS_GET_HELP_USING_CHROME" desc="Text of the button which takes the user to the Chrome help page.">
     Get help with Chrome
   </message>

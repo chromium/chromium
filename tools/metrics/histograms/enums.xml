@@ -58876,6 +58876,7 @@ from previous Chrome versions.
   <int value="-1919683750" label="EnableOopPrintDrivers:disabled"/>
   <int value="-1919199528"
       label="AlwaysShowServerCardsInSyncTransport:disabled"/>
+  <int value="-1917538656" label="GetTheMostOutOfProgram:disabled"/>
   <int value="-1917031398" label="OmniboxNativeVoiceSuggestProvider:disabled"/>
   <int value="-1916060206" label="enable-display-zoom-setting"/>
   <int value="-1915854488" label="enable-offline-pages"/>
@@ -65605,6 +65606,7 @@ from previous Chrome versions.
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:enabled"/>
   <int value="1806220475" label="IgnoreSyncEncryptionKeysLongMissing:disabled"/>
   <int value="1806450300" label="WebUsbDeviceDetection:enabled"/>
+  <int value="1806868888" label="GetTheMostOutOfProgram:enabled"/>
   <int value="1807088829"
       label="JourneysOnDeviceClusteringContentClustering:disabled"/>
   <int value="1807178878" label="FedCmAutoReauthn:enabled"/>

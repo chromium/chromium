@@ -2607,6 +2607,9 @@ extern const char kPasswordManagerRedesignDescription[];
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 
+extern const char kSettingsEnableGetTheMostOutOfProgramName[];
+extern const char kSettingsEnableGetTheMostOutOfProgramDescription[];
+
 extern const char kSharingDesktopSharePreviewName[];
 extern const char kSharingDesktopSharePreviewDescription[];
 

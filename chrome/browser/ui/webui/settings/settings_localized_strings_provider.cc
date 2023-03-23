@@ -309,6 +309,9 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #if BUILDFLAG(IS_MAC)
     {"aboutLearnMoreUpdating", IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_UPDATING},
 #endif
+    {"getTheMostOutOfProgram", IDS_SETTINGS_GET_THE_MOST_OUT_OF_PROGRAM},
+    {"getTheMostOutOfProgramDescription",
+     IDS_SETTINGS_GET_THE_MOST_OUT_OF_PROGRAM_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -351,6 +354,10 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddLocalizedString("aboutProductTos",
                                   IDS_ABOUT_TERMS_OF_SERVICE);
 #endif
+
+  html_source->AddBoolean(
+      "showGetTheMostOutOfProgramSection",
+      base::FeatureList::IsEnabled(features::kGetTheMostOutOfProgram));
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,

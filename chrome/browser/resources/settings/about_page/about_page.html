@@ -130,6 +130,12 @@
           button-aria-description="$i18n{opensInNewTab}"
           label="$i18n{aboutReportAnIssue}" external></cr-link-row>
 </if>
+      <cr-link-row class="hr" id="getTheMostOutOfProgram"
+          on-click="onGetTheMostOutOfProgramTap_"
+          label="$i18n{getTheMostOutOfProgram}"
+          sub-label="$i18n{getTheMostOutOfProgramDescription}"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          hidden$="[[!showGetTheMostOutOfProgramSection_]]"></cr-link-row>
       <cr-link-row class="hr" on-click="onManagementPageTap_"
           start-icon="cr:domain" label="$i18n{managementPage}"
           role-description="$i18n{subpageArrowRoleDescription}"
