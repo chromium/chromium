@@ -1,0 +1,53 @@
+<style>
+.emoji-image {
+  background-color: var(--cros-button-stroke-color-secondary-disabled);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+  height: var(--visual-content-height);
+  margin-bottom: var(--visual-content-padding);
+  width: var(--visual-content-width);
+}
+
+.emoji-image:focus,
+.emoji-image:active {
+  outline-color: var(--cros-focus-ring-color);
+  outline-style: solid;
+  outline-width: 2px;
+}
+
+.emoji-image:hover {
+  background-color: var(--emoji-hover-background);
+}
+
+.emoji-image.loading {
+  animation: loading-rect-loop 1500ms;
+  animation-iteration-count: infinite;
+}
+
+@keyframes loading-rect-loop {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+</style>
+
+<img data-index$="[[index]]"
+  class$="[[getImageClassName(loading)]]"
+  is="cr-auto-img"
+  auto-src="[[getUrl()]]"
+  alt$="[[item.base.name]]"
+  load="lazy"
+  on-mouseenter="handleMouseEnter"
+  on-focus="handleFocus"
+  on-click="handleClick"
+  on-load="handleLoad">

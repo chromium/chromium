@@ -208,3 +208,10 @@ export function initialiseEmojiPickerForTest(
     scrollToBottom,
   };
 }
+
+/**
+ * Asserts the alt attribute of EmojiImage.
+ */
+export function assertEmojiImageAlt(element: HTMLElement|undefined, alt: string): void {
+  assert(element!.shadowRoot?.querySelector('img')?.alt, alt);
+}

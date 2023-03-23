@@ -11,6 +11,7 @@ import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {VISUAL_CONTENT_WIDTH} from './constants.js';
+import {EmojiImageComponent} from './emoji_image.js';
 import {getTemplate} from './emoji_group.html.js';
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_IMG_BUTTON_CLICK, EMOJI_TEXT_BUTTON_CLICK, EMOJI_VARIANTS_SHOWN, EmojiClearRecentClickEvent, EmojiTextButtonClickEvent} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
@@ -87,6 +88,11 @@ export class EmojiGroupComponent extends PolymerElement {
     // TODO(crbug/1227852): Remove after setting arial label to emoji.
     this.isLangEnglish =
         navigator.languages.some(lang => lang.startsWith('en'));
+
+    // Some methods will be passed down to child elements and thus we need
+    // `bind(this)`.
+    this.onEmojiClick = this.onEmojiClick.bind(this);
+    this.showTooltip = this.showTooltip.bind(this);
   }
 
   /**
@@ -310,7 +316,11 @@ export class EmojiGroupComponent extends PolymerElement {
    */
   firstEmojiButton(): HTMLElement|null {
     // !. is safe for shadowRoot as it always exists
-    return this.shadowRoot!.querySelector<HTMLElement>('.emoji-button');
+    const elem: HTMLElement|null = this.shadowRoot!.querySelector<HTMLElement>('.emoji-button, emoji-image');
+    if (elem instanceof EmojiImageComponent) {
+      return elem.shadowRoot!.querySelector('img');
+    }
+    return elem;
   }
 
   /**
@@ -350,13 +360,6 @@ export class EmojiGroupComponent extends PolymerElement {
     });
 
     return colData;
-  }
-
-  /**
-   * Returns visual content preview url.
-   */
-  getUrl(item: EmojiVariants): string|undefined {
-    return item.base.visualContent?.url.preview.url;
   }
 
   /**

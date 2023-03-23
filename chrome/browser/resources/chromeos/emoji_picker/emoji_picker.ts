@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import './emoji_image.js';
 import './emoji_group.js';
 import './emoji_group_button.js';
 import './emoji_search.js';

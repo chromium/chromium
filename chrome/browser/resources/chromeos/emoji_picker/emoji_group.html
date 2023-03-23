@@ -76,14 +76,6 @@
     flex-direction: column;
   }
 
-  .two-column-layout .emoji-button {
-    border-radius: 8px;
-    display: block;
-    height: auto;
-    margin-bottom: var(--visual-content-padding);
-    width: var(--visual-content-width);
-  }
-
   /* Heading styles */
   #heading {
     color: var(--cros-text-color-secondary);
@@ -253,22 +245,20 @@
   <template is="dom-if" if="[[isVisual(category)]]">
     <div class="left-column">
       <template is="dom-repeat" items="[[filterColumn(data, 'left', data.length)]]">
-        <img data-index$="[[getIndex(item)]]"
-          class="emoji-button"
-          is="cr-auto-img"
-          auto-src$="[[getUrl(item)]]"
-          on-mouseenter="showTooltip" on-focus="showTooltip"
-          alt$="[[item.base.name]]">
+        <emoji-image index="[[getIndex(item)]]"
+          item="[[item]]"
+          show-tooltip="[[showTooltip]]"
+          emoji-click="[[onEmojiClick]]">
+        </emoji-image>
       </template>
     </div>
     <div class="right-column">
       <template is="dom-repeat" items="[[filterColumn(data, 'right', data.length)]]">
-        <img data-index$="[[getIndex(item)]]"
-          class="emoji-button"
-          is="cr-auto-img"
-          auto-src$="[[getUrl(item)]]"
-          on-mouseenter="showTooltip" on-focus="showTooltip"
-          alt$="[[item.base.name]]">
+        <emoji-image index="[[getIndex(item)]]"
+          item="[[item]]"
+          show-tooltip="[[showTooltip]]"
+          emoji-click="[[onEmojiClick]]">
+        </emoji-image>
       </template>
     </div>
   </template>

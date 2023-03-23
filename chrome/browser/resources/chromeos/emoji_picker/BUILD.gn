@@ -14,6 +14,7 @@ web_component_files = [
   "emoji_error.ts",
   "emoji_group.ts",
   "emoji_group_button.ts",
+  "emoji_image.ts",
   "emoji_picker.ts",
   "emoji_search.ts",
   "emoji_variants.ts",

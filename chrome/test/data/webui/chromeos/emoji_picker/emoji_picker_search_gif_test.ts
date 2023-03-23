@@ -7,7 +7,7 @@ import {EmojiSearch} from 'chrome://emoji-picker/emoji_search.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertGT} from 'chrome://webui-test/chai_assert.js';
 
-import {initialiseEmojiPickerForTest, timeout, waitForCondition} from './emoji_picker_test_util.js';
+import {initialiseEmojiPickerForTest, timeout, waitForCondition, assertEmojiImageAlt} from './emoji_picker_test_util.js';
 import {TestEmojiPickerApiProxyImpl} from './test_emoji_picker_api_proxy.js';
 
 
@@ -63,7 +63,7 @@ suite('emoji-search-gif', () => {
         assertGT(emoticonResults.length, 0);
         const gifResults =
             findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-                .shadowRoot!.querySelectorAll('.emoji-button');
+                .shadowRoot!.querySelectorAll('emoji-image');
         assertGT(gifResults.length, 0);
       });
 
@@ -75,7 +75,7 @@ suite('emoji-search-gif', () => {
 
     const gifResults =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-            .shadowRoot!.querySelectorAll('.emoji-button');
+            .shadowRoot!.querySelectorAll('emoji-image');
     assertGT(gifResults.length, 0);
 
     assertEquals(gifResults.length, 6);
@@ -84,20 +84,20 @@ suite('emoji-search-gif', () => {
     const leftColResults =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
             .shadowRoot!.querySelectorAll<HTMLImageElement>(
-                'div.left-column > .emoji-button');
+                'div.left-column > emoji-image');
     assertEquals(leftColResults.length, 3);
-    assert(leftColResults[0]!.alt === 'Left 1');
-    assert(leftColResults[1]!.alt === 'Left 2');
-    assert(leftColResults[2]!.alt === 'Left 3');
+    assertEmojiImageAlt(leftColResults[0], 'Left 1');
+    assertEmojiImageAlt(leftColResults[1], 'Left 2');
+    assertEmojiImageAlt(leftColResults[2], 'Left 3');
 
     const rightColResults =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
             .shadowRoot!.querySelectorAll<HTMLImageElement>(
-                'div.right-column > .emoji-button');
+                'div.right-column > emoji-image');
     assertEquals(rightColResults.length, 3);
-    assert(rightColResults[0]!.alt === 'Right 1');
-    assert(rightColResults[1]!.alt === 'Right 2');
-    assert(rightColResults[2]!.alt === 'Right 3');
+    assertEmojiImageAlt(rightColResults[0], 'Right 1');
+    assertEmojiImageAlt(rightColResults[1], 'Right 2');
+    assertEmojiImageAlt(rightColResults[2], 'Right 3');
   });
 
   test(
@@ -111,7 +111,7 @@ suite('emoji-search-gif', () => {
 
         const gifResults1 =
             findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-                .shadowRoot!.querySelectorAll('.emoji-button');
+                .shadowRoot!.querySelectorAll('emoji-image');
         assertGT(gifResults1.length, 0);
         assertEquals(gifResults1.length, 6);
 
@@ -125,7 +125,7 @@ suite('emoji-search-gif', () => {
 
         const gifResults2 =
             findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-                .shadowRoot!.querySelectorAll('.emoji-button');
+                .shadowRoot!.querySelectorAll('emoji-image');
         assertEquals(gifResults2.length, 6);
       });
 
@@ -137,7 +137,7 @@ suite('emoji-search-gif', () => {
 
     const gifResults1 =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-            .shadowRoot!.querySelectorAll('.emoji-button');
+            .shadowRoot!.querySelectorAll('emoji-image');
     assertGT(gifResults1.length, 0);
     assertEquals(gifResults1.length, 6);
 
@@ -146,13 +146,13 @@ suite('emoji-search-gif', () => {
     await waitForCondition(
         () => findInEmojiPicker(
                   'emoji-search', 'emoji-group[category="gif"]')!.shadowRoot!
-                  .querySelectorAll('.emoji-button')
+                  .querySelectorAll('emoji-image')
                   .length === 12,
         'wait for scroll and new gifs to render');
 
     const gifResults2 =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-            .shadowRoot!.querySelectorAll('.emoji-button');
+            .shadowRoot!.querySelectorAll('emoji-image');
     assertEquals(gifResults2.length, 12);
   });
 
@@ -164,7 +164,7 @@ suite('emoji-search-gif', () => {
 
     const gifResults1 =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-            .shadowRoot!.querySelectorAll('.emoji-button');
+            .shadowRoot!.querySelectorAll('emoji-image');
     assertGT(gifResults1.length, 0);
     assertEquals(gifResults1.length, 6);
 
@@ -173,38 +173,38 @@ suite('emoji-search-gif', () => {
     await waitForCondition(
         () => findInEmojiPicker(
                   'emoji-search', 'emoji-group[category="gif"]')!.shadowRoot!
-                  .querySelectorAll('.emoji-button')
+                  .querySelectorAll('emoji-image')
                   .length === 12,
         'wait for scroll and new emoji to render');
 
     const gifResults2 =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
-            .shadowRoot!.querySelectorAll('.emoji-button');
+            .shadowRoot!.querySelectorAll('emoji-image');
     assertEquals(gifResults2.length, 12);
 
     // Check display is correct.
     const leftColResults =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
             .shadowRoot!.querySelectorAll<HTMLImageElement>(
-                'div.left-column > .emoji-button');
+                'div.left-column > emoji-image');
     assertEquals(leftColResults.length, 6);
-    assert(leftColResults[0]!.alt === 'Left 1');
-    assert(leftColResults[1]!.alt === 'Left 2');
-    assert(leftColResults[2]!.alt === 'Left 3');
-    assert(leftColResults[3]!.alt === 'Left 4');
-    assert(leftColResults[4]!.alt === 'Left 5');
-    assert(leftColResults[5]!.alt === 'Left 6');
+    assertEmojiImageAlt(leftColResults[0], 'Left 1');
+    assertEmojiImageAlt(leftColResults[1], 'Left 2');
+    assertEmojiImageAlt(leftColResults[2], 'Left 3');
+    assertEmojiImageAlt(leftColResults[3], 'Left 4');
+    assertEmojiImageAlt(leftColResults[4], 'Left 5');
+    assertEmojiImageAlt(leftColResults[5], 'Left 6');
 
     const rightColResults =
         findInEmojiPicker('emoji-search', 'emoji-group[category="gif"]')!
             .shadowRoot!.querySelectorAll<HTMLImageElement>(
-                'div.right-column > .emoji-button');
+                'div.right-column > emoji-image');
     assertEquals(rightColResults.length, 6);
-    assert(rightColResults[0]!.alt === 'Right 1');
-    assert(rightColResults[1]!.alt === 'Right 2');
-    assert(rightColResults[2]!.alt === 'Right 3');
-    assert(rightColResults[3]!.alt === 'Right 4');
-    assert(rightColResults[4]!.alt === 'Right 5');
-    assert(rightColResults[5]!.alt === 'Right 6');
+    assertEmojiImageAlt(rightColResults[0], 'Right 1');
+    assertEmojiImageAlt(rightColResults[1], 'Right 2');
+    assertEmojiImageAlt(rightColResults[2], 'Right 3');
+    assertEmojiImageAlt(rightColResults[3], 'Right 4');
+    assertEmojiImageAlt(rightColResults[4], 'Right 5');
+    assertEmojiImageAlt(rightColResults[5], 'Right 6');
   });
 });
