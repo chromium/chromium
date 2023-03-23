@@ -2539,6 +2539,9 @@ extern const char kNtpModulesDragAndDropDescription[];
 extern const char kNtpModulesFirstRunExperienceName[];
 extern const char kNtpModulesFirstRunExperienceDescription[];
 
+extern const char kNtpModulesHeaderIconName[];
+extern const char kNtpModulesHeaderIconDescription[];
+
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
 
@@ -2583,6 +2586,9 @@ extern const char kNtpSafeBrowsingModuleDescription[];
 
 extern const char kNtpSingleRowShortcutsName[];
 extern const char kNtpSingleRowShortcutsDescription[];
+
+extern const char kNtpWideModulesName[];
+extern const char kNtpWideModulesDescription[];
 
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
@@ -3904,6 +3910,9 @@ extern const char kUIDebugToolsDescription[];
 
 extern const char kDesktopDetailedLanguageSettingsName[];
 extern const char kDesktopDetailedLanguageSettingsDescription[];
+
+extern const char kSyncPollImmediatelyOnEveryStartupName[];
+extern const char kSyncPollImmediatelyOnEveryStartupDescription[];
 
 extern const char kSyncPromoAfterSigninInterceptName[];
 extern const char kSyncPromoAfterSigninInterceptDescription[];

@@ -491,11 +491,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  absl::optional<int> modules_max_width_px =
-      ntp_features::GetModulesMaxWidthPixels();
-  if (modules_max_width_px.has_value()) {
-    source->AddInteger("modulesMaxWidthPx", modules_max_width_px.value());
-  }
+  source->AddBoolean("wideModulesEnabled", base::FeatureList::IsEnabled(
+                                               ntp_features::kNtpWideModules));
 
   source->AddBoolean(
       "modulesHeaderIconEnabled",

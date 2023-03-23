@@ -27,11 +27,9 @@
   }
 
   @media (min-width: 768px) {
-    :host {
-      --ntp-module-layout-width:
-          var(--ntp-module-max-width, var(--ntp-search-box-width));
-      --ntp-module-width:
-          var(--ntp-module-max-width, var(--ntp-search-box-width));
+    :host([wide-modules-enabled_]) {
+      --ntp-module-layout-width: 768px;
+      --ntp-module-width: 768px;
     }
   }
 

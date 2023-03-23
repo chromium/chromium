@@ -261,6 +261,12 @@ export class AppElement extends AppElementBase {
         reflectToAttribute: true,
       },
 
+      wideModulesEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('wideModulesEnabled'),
+        reflectToAttribute: true,
+      },
+
       middleSlotPromoLoaded_: {
         type: Boolean,
         value: false,
@@ -443,13 +449,6 @@ export class AppElement extends AppElementBase {
           });
     }
     FocusOutlineManager.forDocument(document);
-
-    if (loadTimeData.valueExists('modulesMaxWidthPx')) {
-      this.updateStyles({
-        '--ntp-module-max-width':
-            `${loadTimeData.getInteger('modulesMaxWidthPx')}px`,
-      });
-    }
   }
 
   override disconnectedCallback() {

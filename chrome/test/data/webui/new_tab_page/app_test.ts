@@ -630,7 +630,7 @@ suite('NewTabPageAppTest', () => {
 
     test('modules max width media rule applied', async () => {
       const sampleMaxWidthPx = 768;
-      loadTimeData.overrideValues({modulesMaxWidthPx: sampleMaxWidthPx});
+      loadTimeData.overrideValues({wideModulesEnabled: true});
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       document.body.setAttribute('style', `width:${sampleMaxWidthPx}px`);
       app = document.createElement('ntp-app');

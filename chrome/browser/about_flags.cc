@@ -6075,6 +6075,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpHistoryClustersModuleVariations,
                                     "DesktopNtpModules")},
 
+    {"ntp-modules-header-icon", flag_descriptions::kNtpModulesHeaderIconName,
+     flag_descriptions::kNtpModulesHeaderIconDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpModulesHeaderIcon)},
+
+    {"ntp-wide-modules", flag_descriptions::kNtpWideModulesName,
+     flag_descriptions::kNtpWideModulesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpWideModules)},
+
     {"ntp-reduced-logo-space", flag_descriptions::kNtpReducedLogoSpaceName,
      flag_descriptions::kNtpReducedLogoSpaceDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpReducedLogoSpace)},
@@ -8142,6 +8150,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopDetailedLanguageSettingsDescription,
      kOsWin | kOsLinux | kOsLacros | kOsMac | kOsFuchsia,
      FEATURE_VALUE_TYPE(language::kDesktopDetailedLanguageSettings)},
+
+    {"sync-poll-immediately-on-every-startup",
+     flag_descriptions::kSyncPollImmediatelyOnEveryStartupName,
+     flag_descriptions::kSyncPollImmediatelyOnEveryStartupDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(syncer::kSyncPollImmediatelyOnEveryStartup)},
 
     {"sync-promo-after-signin-intercept",
      flag_descriptions::kSyncPromoAfterSigninInterceptName,

@@ -5119,6 +5119,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "ntp-modules-header-icon",
+    "owners": [ "romanarora", "mfacey", "tiborg" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "ntp-modules-redesigned",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 108
@@ -5197,6 +5202,11 @@
     "name": "ntp-view-hierarchy-repair",
     "owners": [ "adamta", "sczs" ],
     "expiry_milestone": 115
+  },
+  {
+    "name": "ntp-wide-modules",
+    "owners": [ "//components/search/OWNERS" ],
+    "expiry_milestone": 118
   },
   {
     "name": "offline-pages-live-page-sharing",
@@ -6826,6 +6836,11 @@
     "name": "sync-chromeos-explicit-passphrase-sharing",
     "owners": ["mmoskvitin@google.com", "chrome-sync-dev@google.com"],
     "expiry_milestone": 120
+  },
+  {
+    "name": "sync-poll-immediately-on-every-startup",
+    "owners": [ "treib", "//components/search/OWNERS" ],
+    "expiry_milestone": 118
   },
   {
     "name": "sync-promo-after-signin-intercept",

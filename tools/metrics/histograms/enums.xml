@@ -61782,6 +61782,7 @@ from previous Chrome versions.
       label="QuickIntensiveWakeUpThrottlingAfterLoading:enabled"/>
   <int value="-307260007" label="ExtensionsCheckup:disabled"/>
   <int value="-306935714" label="lite-video-force-override-decision"/>
+  <int value="-306885206" label="NtpModulesHeaderIcon:disabled"/>
   <int value="-304951461" label="TextSuggestionsTouchBar:enabled"/>
   <int value="-304886342" label="QuickAnswersTranslation:disabled"/>
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
@@ -62247,6 +62248,7 @@ from previous Chrome versions.
   <int value="-48920737" label="enable-smooth-scrolling"/>
   <int value="-47034052" label="StoreHoursAndroid:enabled"/>
   <int value="-46847847" label="EstablishGpuChannelAsync:disabled"/>
+  <int value="-46622176" label="NtpModulesHeaderIcon:enabled"/>
   <int value="-45849989" label="ModeSpecificPowerButton:disabled"/>
   <int value="-45532639" label="enable-default-media-session"/>
   <int value="-45487487" label="NewTabPageCustomLinks:disabled"/>
@@ -62916,6 +62918,7 @@ from previous Chrome versions.
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>
+  <int value="322118950" label="SyncPollImmediatelyOnEveryStartup:disabled"/>
   <int value="322249981" label="CrostiniMultiContainer:enabled"/>
   <int value="323605372" label="ui-disable-compositor-animation-timelines"/>
   <int value="324060906"
@@ -63169,6 +63172,7 @@ from previous Chrome versions.
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>
+  <int value="457265823" label="NtpWideModules:enabled"/>
   <int value="457301531" label="SiteIsolationForGuests:disabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>
   <int value="458410433" label="disable-views-rect-based-targeting"/>
@@ -65186,6 +65190,7 @@ from previous Chrome versions.
   <int value="1596615083"
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>
   <int value="1596689942" label="OmniboxRevertModelBeforeClosingPopup:enabled"/>
+  <int value="1596717222" label="SyncPollImmediatelyOnEveryStartup:enabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
   <int value="1599431665" label="WebRtcApmDownmixCaptureAudioMethod:enabled"/>
   <int value="1600850069" label="MobileIdentityConsistency:disabled"/>
@@ -65305,6 +65310,7 @@ from previous Chrome versions.
   <int value="1661354480" label="BlockInsecurePrivateNetworkRequests:disabled"/>
   <int value="1661870048" label="SkipUndecryptablePasswords:disabled"/>
   <int value="1661925474" label="silent-debugger-extension-api"/>
+  <int value="1661965147" label="NtpWideModules:disabled"/>
   <int value="1662277267" label="DecodeScriptSourceOffThread:disabled"/>
   <int value="1662466302" label="NtpRealboxUseGoogleGIcon:enabled"/>
   <int value="1663574600" label="WebViewDisplayCutout:enabled"/>

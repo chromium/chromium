@@ -4435,6 +4435,10 @@ const char kNtpModulesFirstRunExperienceName[] =
 const char kNtpModulesFirstRunExperienceDescription[] =
     "Shows first run experience for Modular NTP Desktop v1.";
 
+const char kNtpModulesHeaderIconName[] = "NTP Modules Header Icon";
+const char kNtpModulesHeaderIconDescription[] =
+    "Shows icons in NTP module headers.";
+
 const char kNtpModulesRedesignedLayoutName[] = "Ntp Modules Redesigned Layout";
 const char kNtpModulesRedesignedLayoutDescription[] =
     "Changes the layout of modules on New Tab Page";
@@ -4498,6 +4502,10 @@ const char kNtpSafeBrowsingModuleDescription[] =
 const char kNtpSingleRowShortcutsName[] = "NTP Single Row Shortcuts";
 const char kNtpSingleRowShortcutsDescription[] =
     "Shows shortcuts in a single wide row on the New Tab Page.";
+
+const char kNtpWideModulesName[] = "NTP Wide Modules";
+const char kNtpWideModulesDescription[] =
+    "Shows wide NTP modules if NTP provides enough space.";
 
 const char kEnableReaderModeName[] = "Enable Reader Mode";
 const char kEnableReaderModeDescription[] =
@@ -6713,6 +6721,11 @@ const char kDesktopDetailedLanguageSettingsName[] =
     "Detailed Language Settings (Desktop)";
 const char kDesktopDetailedLanguageSettingsDescription[] =
     "Enable the new detailed language settings page";
+
+const char kSyncPollImmediatelyOnEveryStartupName[] =
+    "Sync Poll Immediately On Every Startup";
+const char kSyncPollImmediatelyOnEveryStartupDescription[] =
+    "Sends a poll GetUpdates request on every browser startup.";
 
 const char kSyncPromoAfterSigninInterceptName[] =
     "Sync Promo After Sign-in Intercept";

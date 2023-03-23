@@ -36,22 +36,6 @@ TEST(NTPFeaturesTest, ModulesLoadTimeout) {
   EXPECT_EQ(3, timeout.InSeconds());
 }
 
-TEST(NTPFeaturesTest, ModulesMaxWidthPixels) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  // If no value, return empty optional.
-  EXPECT_EQ(GetModulesMaxWidthPixels(), absl::nullopt);
-
-  // The value can be overridden.
-  scoped_feature_list_.Reset();
-  constexpr int kSampleWidth = 768;
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kNtpModulesParams,
-        {{kNtpModulesMaxWidthParam, base::NumberToString(kSampleWidth)}}}},
-      {});
-  EXPECT_EQ(GetModulesMaxWidthPixels(), absl::optional<int>{kSampleWidth});
-}
-
 TEST(NTPFeaturesTest, ModulesOrder) {
   base::test::ScopedFeatureList scoped_feature_list_;
 

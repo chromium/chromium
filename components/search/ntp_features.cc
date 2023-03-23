@@ -136,9 +136,9 @@ BASE_FEATURE(kNtpModulesLoadTimeoutMilliseconds,
              "NtpModulesLoadTimeoutMilliseconds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Dummy feature to set param "NtpModulesMaxWidthParam".
-BASE_FEATURE(kNtpModulesParams,
-             "NtpModulesParams",
+// If true, extends width of modules if space allows.
+BASE_FEATURE(kNtpWideModules,
+             "NtpWideModules",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesOrderParam".
@@ -295,7 +295,6 @@ const char kNtpModulesEligibleForHappinessTrackingSurveyParam[] =
     "NtpModulesEligibleForHappinessTrackingSurveyParam";
 const char kNtpModulesLoadTimeoutMillisecondsParam[] =
     "NtpModulesLoadTimeoutMillisecondsParam";
-const char kNtpModulesMaxWidthParam[] = "NtpModulesMaxWidthParam";
 const char kNtpModulesOrderParam[] = "NtpModulesOrderParam";
 const char kNtpChromeCartModuleDataParam[] = "NtpChromeCartModuleDataParam";
 const char kNtpChromeCartModuleAbandonedCartDiscountParam[] =
@@ -355,12 +354,6 @@ base::TimeDelta GetModulesLoadTimeout() {
     return base::Seconds(3);
   }
   return base::Milliseconds(param_value_as_int);
-}
-
-absl::optional<int> GetModulesMaxWidthPixels() {
-  int max_width_px = base::GetFieldTrialParamByFeatureAsInt(
-      kNtpModulesParams, kNtpModulesMaxWidthParam, -1);
-  return (max_width_px > 0) ? absl::optional<int>{max_width_px} : absl::nullopt;
 }
 
 std::vector<std::string> GetModulesOrder() {
