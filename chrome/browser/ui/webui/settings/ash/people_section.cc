@@ -24,7 +24,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ash/sync/os_sync_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/account_manager_ui_handler.h"
@@ -441,8 +440,7 @@ void AddUsersStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddParentalControlStrings(content::WebUIDataSource* html_source,
-                               bool are_parental_control_settings_allowed,
-                               SupervisedUserService* supervised_user_service) {
+                               bool are_parental_control_settings_allowed) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"parentalControlsPageTitle", IDS_SETTINGS_PARENTAL_CONTROLS_PAGE_TITLE},
       {"parentalControlsPageSetUpLabel",
@@ -483,11 +481,9 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
 PeopleSection::PeopleSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry,
                              syncer::SyncService* sync_service,
-                             SupervisedUserService* supervised_user_service,
                              signin::IdentityManager* identity_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
-      supervised_user_service_(supervised_user_service),
       identity_manager_(identity_manager),
       pref_service_(pref_service) {
   // No search tags are registered if in guest mode.
@@ -597,8 +593,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddSyncControlsStrings(html_source);
   AddUsersStrings(html_source);
   AddParentalControlStrings(html_source,
-                            ShouldShowParentalControlSettings(profile()),
-                            supervised_user_service_);
+                            ShouldShowParentalControlSettings(profile()));
 
   ::settings::AddPasswordPromptDialogStrings(html_source);
   ::settings::AddSharedSyncPageStrings(html_source);

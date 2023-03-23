@@ -15,7 +15,6 @@
 
 class ArcAppListPrefs;
 class Profile;
-class SupervisedUserService;
 
 namespace content {
 class WebUI;
@@ -94,7 +93,6 @@ class OsSettingsManager : public KeyedService {
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       phonehub::PhoneHubManager* phone_hub_manager,
       syncer::SyncService* sync_service,
-      SupervisedUserService* supervised_user_service,
       KerberosCredentialsManager* kerberos_credentials_manager,
       ArcAppListPrefs* arc_app_list_prefs,
       signin::IdentityManager* identity_manager,

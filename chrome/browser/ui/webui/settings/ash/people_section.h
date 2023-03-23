@@ -17,7 +17,6 @@
 
 class PrefService;
 class Profile;
-class SupervisedUserService;
 
 namespace content {
 class WebUIDataSource;
@@ -51,7 +50,6 @@ class PeopleSection : public OsSettingsSection,
   PeopleSection(Profile* profile,
                 SearchTagRegistry* search_tag_registry,
                 syncer::SyncService* sync_service,
-                SupervisedUserService* supervised_user_service,
                 signin::IdentityManager* identity_manager,
                 PrefService* pref_service);
   ~PeopleSection() override;
@@ -82,7 +80,6 @@ class PeopleSection : public OsSettingsSection,
   account_manager::AccountManager* account_manager_ = nullptr;
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
   AccountAppsAvailability* account_apps_availability_ = nullptr;
-  SupervisedUserService* supervised_user_service_;
   signin::IdentityManager* identity_manager_;
   PrefService* pref_service_;
 
