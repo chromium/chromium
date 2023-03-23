@@ -140,42 +140,47 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             updateShadowOffset();
         }
 
-        int start;
-        int end;
-        int restWidth = mVersionCompat.getDisplayWidth() - mUnclampedInitialWidth;
+        AnimatorUpdateListener updateListener;
         Window window = mActivity.getWindow();
-        configureLayoutBeyondScreen(true);
-        // For smooth animation, make the window full-width first and then translate it
-        // rather than resizing the window itself during the animation.
+        int displayWidth = mVersionCompat.getDisplayWidth();
+        int xOffset = mVersionCompat.getXOffset();
+        int start = window.getAttributes().width;
+        int end = calculateWidth(mIsMaximized ? displayWidth : mUnclampedInitialWidth);
         if (mSheetOnRight) {
-            setWindowWidth(mVersionCompat.getDisplayWidth());
-            start = window.getAttributes().x;
-            end = (mIsMaximized ? 0 : restWidth) + mVersionCompat.getXOffset();
+            updateListener = (anim) -> {
+                WindowManager.LayoutParams attrs = window.getAttributes();
+                attrs.width = (int) anim.getAnimatedValue();
+                attrs.x = (displayWidth - attrs.width) + xOffset;
+                window.setAttributes(attrs);
+            };
         } else {
-            if (mIsMaximized) {
-                // For the left-side sheet, adjust the start x (to be negative) before
-                // animating the full-width tab back into screen.
-                var attrs = mActivity.getWindow().getAttributes();
-                attrs.x = -restWidth + mVersionCompat.getXOffset();
-                attrs.width = mVersionCompat.getDisplayWidth();
-                mActivity.getWindow().setAttributes(attrs);
-            }
-            start = window.getAttributes().x;
-            end = (mIsMaximized ? 0 : -restWidth) + mVersionCompat.getXOffset();
+            updateListener = (anim) -> setWindowWidth((int) anim.getAnimatedValue());
         }
-        AnimatorUpdateListener updateListener = (anim) -> setWindowX((int) anim.getAnimatedValue());
+        // Keep the WebContents invisible during the animation to hide the jerky visual artifacts
+        // of the contents due to resizing.
+        setContentVisible(false);
         startAnimation(start, end, updateListener, () -> onMaximizeEnd(animate), animate);
         return mIsMaximized;
     }
 
+    private void setContentVisible(boolean visible) {
+        View content = (ViewGroup) mActivity.findViewById(R.id.compositor_view_holder);
+        if (visible) {
+            // Set a slight delay in restoring the view to hide the visual glitch caused by
+            // the resized web contents.
+            new Handler().postDelayed(() -> content.setVisibility(View.VISIBLE), 20);
+        } else {
+            content.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private void onMaximizeEnd(boolean animate) {
         if (isMaximized()) {
-            configureLayoutBeyondScreen(false);
             maybeInvokeResizeCallback();
+            setContentVisible(true);
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
-                configureLayoutBeyondScreen(false);
                 initializeSize();
                 maybeInvokeResizeCallback();
             });
@@ -306,6 +311,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             mIsMaximized = false;
             toggleMaximize(/*animate=*/false);
         }
+        setContentVisible(true);
     }
 
     private void positionOnWindow() {

@@ -130,6 +130,8 @@ public class PartialCustomTabTestRule implements TestRule {
     PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
     @Mock
     DisplayMetrics mMetrics;
+    @Mock
+    ViewGroup mCompositorViewHolder;
 
     Context mContext;
     List<WindowManager.LayoutParams> mAttributeResults;
@@ -148,6 +150,7 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mActivity.getResources()).thenReturn(mResources);
         when(mActivity.getWindowManager()).thenReturn(mWindowManager);
         when(mActivity.findViewById(R.id.coordinator)).thenReturn(mCoordinatorLayout);
+        when(mActivity.findViewById(R.id.compositor_view_holder)).thenReturn(mCompositorViewHolder);
         when(mActivity.findViewById(android.R.id.content)).thenReturn(mContentFrame);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view_stub)).thenReturn(mHandleViewStub);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view)).thenReturn(mHandleView);
