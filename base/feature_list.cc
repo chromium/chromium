@@ -93,10 +93,7 @@ class EarlyFeatureAccessTracker {
     // TODO(crbug.com/1383852): When we believe that all early accesses have
     // been fixed, remove this base::debug::DumpWithoutCrashing() and change the
     // above DCHECK to a CHECK.
-
-    // The following line is commented to reduce the crash volume while a fix
-    // for crbug.com/1392145 is prepared.
-    // base::debug::DumpWithoutCrashing();
+    base::debug::DumpWithoutCrashing();
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMEOS)
   }
