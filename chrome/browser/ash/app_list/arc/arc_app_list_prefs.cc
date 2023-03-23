@@ -35,6 +35,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_metrics_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_scoped_pref_update.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_default_app_list.h"
@@ -502,6 +503,7 @@ ArcAppListPrefs::ArcAppListPrefs(
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   const base::FilePath& base_path = profile->GetPath();
   base_path_ = base_path.AppendASCII(arc::prefs::kArcApps);
+  arc_app_metrics_util_ = std::make_unique<arc::ArcAppMetricsUtil>();
 
   // Once default apps are ready OnDefaultAppsReady is called.
   default_apps_ = std::make_unique<ArcDefaultAppList>(
@@ -1183,6 +1185,10 @@ void ArcAppListPrefs::OnArcPlayStoreEnabledChanged(bool enabled) {
         FROM_HERE, base::BindOnce(&ArcAppListPrefs::RemoveAllAppsAndPackages,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void ArcAppListPrefs::OnArcSessionStopped(arc::ArcStopReason stop_reason) {
+  arc_app_metrics_util_->reportIncompleteInstalls();
 }
 
 void ArcAppListPrefs::SetDefaultAppsFilterLevel() {
@@ -2377,7 +2383,10 @@ void ArcAppListPrefs::OnInstallationStarted(
     return;
 
   apps_installations_.insert(*package_name);
-
+  if (!(sync_service_ && sync_service_->IsPackageSyncing(*package_name)) &&
+      !IsDefaultPackage(*package_name)) {
+    arc_app_metrics_util_->recordAppInstallStartTime(*package_name);
+  }
   for (auto& observer : observer_list_)
     observer.OnInstallationStarted(*package_name);
 }
@@ -2404,7 +2413,7 @@ void ArcAppListPrefs::OnInstallationFinished(
         reason = InstallationCounterReasonEnum::POLICY;
       }
       UMA_HISTOGRAM_ENUMERATION("Arc.AppInstalledReason", reason);
-
+      arc_app_metrics_util_->maybeReportInstallTimeDelta(result->package_name);
       packages_to_be_added_.insert(result->package_name);
     }
   }

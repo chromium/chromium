@@ -2020,6 +2020,8 @@ static_library("ui") {
       "../ash/app_list/arc/arc_app_list_prefs.h",
       "../ash/app_list/arc/arc_app_list_prefs_factory.cc",
       "../ash/app_list/arc/arc_app_list_prefs_factory.h",
+      "../ash/app_list/arc/arc_app_metrics_util.cc",
+      "../ash/app_list/arc/arc_app_metrics_util.h",
       "../ash/app_list/arc/arc_app_scoped_pref_update.cc",
       "../ash/app_list/arc/arc_app_scoped_pref_update.h",
       "../ash/app_list/arc/arc_app_sync_metrics_helper.cc",
