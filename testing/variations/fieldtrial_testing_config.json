@@ -1515,17 +1515,13 @@
     "BFCachePerformanceManagerPolicy": [
         {
             "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "EnabledPolicy_CacheSize6_20220921",
+                    "name": "EnabledPolicy_CacheSize3_20230324",
                     "params": {
-                        "cache_size": "6",
+                        "cache_size": "3",
                         "foreground_cache_size": "0"
                     },
                     "enable_features": [
@@ -1749,25 +1745,6 @@
                     },
                     "enable_features": [
                         "BackForwardCacheMemoryControls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BackForwardCacheSizeOnAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ForegroundCacheSize1_CacheSize4_20221202",
-                    "params": {
-                        "cache_size": "4",
-                        "foreground_cache_size": "1"
-                    },
-                    "enable_features": [
-                        "BackForwardCacheSize"
                     ]
                 }
             ]
