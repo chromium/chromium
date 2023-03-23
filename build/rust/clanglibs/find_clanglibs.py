@@ -49,8 +49,12 @@ def main():
           output.write("#[link(name=\"{}\")]\n".format(basename))
           full_path = os.path.join(args.clang_libs_dir, f)
           depfile.write(" {} \\\n".format(full_path))
-      output.write("#[link(name=\"stdc++\")]\n")
-      output.write("#[link(name=\"z\")]\n")
+      if sys.platform.startswith('linux'):
+        output.write("#[link(name=\"stdc++\")]\n")
+      else:
+        output.write("#[link(name=\"c++\")]\n")
+      if sys.platform.startswith('linux') or sys.platform == 'darwin':
+        output.write("#[link(name=\"z\")]\n")
       output.write("extern {}\n")
 
 

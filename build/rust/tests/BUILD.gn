@@ -66,6 +66,7 @@ group("deps") {
         "test_rust_exe:test_rust_exe_unittests",
         "test_rust_multiple_dep_versions_exe/v1:test_lib_v1_unittests",
         "test_rust_multiple_dep_versions_exe/v2:test_lib_v2_unittests",
+        "test_rust_shared_library:test_rust_shared_library_unittests",
         "test_rust_static_library:test_rust_static_library_unittests",
         "test_rust_static_library_non_standard_arrangement:foo_tests",
         "test_rust_unittests",
@@ -83,16 +84,6 @@ group("deps") {
       }
       if (enable_rust_bindgen) {
         deps += [ "bindgen_test:bindgen_test_lib_unittests" ]
-      }
-
-      # TODO(crbug.com/1297592): The bot isolate does not end up including any
-      # .so files so the tests fail:
-      #
-      #   error while loading shared libraries: libtest_rust_shared_library.so:
-      #   cannot open shared object file: No such file or directory
-      if (false) {
-        deps +=
-            [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
       }
     }
 

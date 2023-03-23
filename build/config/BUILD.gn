@@ -231,6 +231,9 @@ group("common_deps") {
   visibility = [
     ":executable_deps",
     ":loadable_module_deps",
+    ":rust_bin_deps",
+    ":rust_cdylib_deps",
+    ":rust_dylib_deps",
     ":shared_library_deps",
   ]
 
@@ -272,6 +275,15 @@ group("executable_deps") {
   public_configs = [ "//build/config/sanitizers:link_executable" ]
 }
 
+# Only the rust_bin template in BUILDCONFIG.gn should reference this.
+group("rust_bin_deps") {
+  public_deps = [ ":common_deps" ]
+  if (export_libcxxabi_from_executables) {
+    public_deps += [ "//buildtools/third_party/libc++abi" ]
+  }
+  public_configs = [ "//build/config/sanitizers:link_executable" ]
+}
+
 # Only the loadable_module template in BUILDCONFIG.gn should reference this.
 group("loadable_module_deps") {
   public_deps = [ ":common_deps" ]
@@ -281,6 +293,20 @@ group("loadable_module_deps") {
 
 # Only the shared_library template in BUILDCONFIG.gn should reference this.
 group("shared_library_deps") {
+  public_deps = [ ":common_deps" ]
+
+  public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+}
+
+# Only the rust_dylib template in BUILDCONFIG.gn should reference this.
+group("rust_dylib_deps") {
+  public_deps = [ ":common_deps" ]
+
+  public_configs = [ "//build/config/sanitizers:link_shared_library" ]
+}
+
+# Only the rust_cdylib template in BUILDCONFIG.gn should reference this.
+group("rust_cdylib_deps") {
   public_deps = [ ":common_deps" ]
 
   public_configs = [ "//build/config/sanitizers:link_shared_library" ]

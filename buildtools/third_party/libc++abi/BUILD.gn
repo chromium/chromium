@@ -6,7 +6,10 @@ import("//build/config/c++/c++.gni")
 
 source_set("libc++abi") {
   if (export_libcxxabi_from_executables) {
-    visibility = [ "//build/config:executable_deps" ]
+    visibility = [
+      "//build/config:executable_deps",
+      "//build/config:rust_bin_deps",
+    ]
   } else {
     visibility = [ "//buildtools/third_party/libc++" ]
   }
