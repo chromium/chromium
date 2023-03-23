@@ -2598,6 +2598,24 @@
       },
     },
 
+    # This is a set of selected tests to test the test facility only. The
+    # principle of the selection includes time cost, scenario coverage,
+    # stability, etc; and it's subject to change. In theory, it should only be
+    # used by the EngProd team to verify a new test facility setup.
+    'fuchsia_facility_gtests': {
+      'aura_unittests': {},
+      'blink_common_unittests': {},
+      'courgette_unittests': {},
+      'crypto_unittests': {},
+      'filesystem_service_unittests': {},
+      'web_engine_integration_tests': {
+        'args': [
+          '--test-arg=--vmodule=test_navigation_listener=1',
+        ],
+      },
+      'web_engine_unittests': {},
+    },
+
     'fuchsia_sizes_tests': {
       'fuchsia_sizes': {
         'merge': {

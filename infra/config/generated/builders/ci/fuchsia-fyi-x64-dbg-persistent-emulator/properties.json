@@ -68,21 +68,8 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-fyi-x64-dbg",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
           "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "fuchsia-fyi-x64-dbg",
-          "group": "tryserver.chromium.fuchsia"
         }
       ]
     }

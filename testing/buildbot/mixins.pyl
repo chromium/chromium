@@ -546,6 +546,13 @@
       ],
     },
   },
+  'fuchsia-persistent-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--everlasting'
+      ],
+    },
+  },
   'fuchsia_logs': {
     '$mixin_append': {
       'args': [

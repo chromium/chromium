@@ -2806,6 +2806,29 @@
           'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
       },
+      'fuchsia-fyi-x64-dbg-persistent-emulator' : {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
+        'mixins': [
+          'fuchsia-persistent-emulator',
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+              'machine_type': 'e2-standard-2',
+              'pool': 'chromium.tests.fuchsia',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'fuchsia_facility_gtests',
+        },
+      },
       'fuchsia-x64-chrome-rel': {
         'browser_config': 'fuchsia-chrome',
         'os_type': 'fuchsia',

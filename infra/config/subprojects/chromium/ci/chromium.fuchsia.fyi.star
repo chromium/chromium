@@ -217,3 +217,34 @@ ci.builder(
         ),
     ],
 )
+
+ci.builder(
+    name = "fuchsia-fyi-x64-dbg-persistent-emulator",
+    triggered_by = ["ci/fuchsia-fyi-x64-dbg"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_x64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "debug",
+            short_name = "x64-llemu",
+        ),
+    ],
+)
