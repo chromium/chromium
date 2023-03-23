@@ -496,12 +496,14 @@ scheduling decisions.
 
 Methods that take `base::TaskTraits` can be be passed `{}` when default traits
 are sufficient. Default traits are appropriate for tasks that:
+
 - Don’t block (ref. MayBlock and WithBaseSyncPrimitives);
 - Pertain to user-blocking activity;
   (explicitly or implicitly by having an ordering dependency with a component
    that does)
 - Can either block shutdown or be skipped on shutdown (thread pool is free to
   choose a fitting default).
+
 Tasks that don’t match this description must be posted with explicit TaskTraits.
 
 [`base/task/task_traits.h`](https://cs.chromium.org/chromium/src/base/task/task_traits.h)
