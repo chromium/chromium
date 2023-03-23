@@ -261,7 +261,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
- ['DevicePagePerDeviceMouse', 'device_page/per_device_mouse_test.js'],
+ [
+   'DevicePagePerDeviceMouse', 'device_page/per_device_mouse_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
  [
    'DevicePagePerDevicePointingStick',
    'device_page/per_device_pointing_stick_test.js',

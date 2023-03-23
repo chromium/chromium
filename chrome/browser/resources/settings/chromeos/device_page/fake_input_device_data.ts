@@ -210,6 +210,23 @@ export const fakeMice: Mouse[] = [
   },
 ];
 
+export const fakeMice2: Mouse[] = [
+  {
+    id: 13,
+    deviceKey: 'test:key',
+    name: 'Fake Razer Basilisk V3',
+    isExternal: true,
+    settings: {
+      swapRight: true,
+      sensitivity: 5,
+      reverseScrolling: true,
+      accelerationEnabled: true,
+      scrollSensitivity: 5,
+      scrollAcceleration: true,
+    },
+  },
+];
+
 export const fakePointingSticks: PointingStick[] = [
   {
     id: 6,

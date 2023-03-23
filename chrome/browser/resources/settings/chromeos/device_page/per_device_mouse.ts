@@ -22,14 +22,11 @@ import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MouseSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
-import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Mouse} from './input_device_settings_types.js';
+import {Mouse} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_mouse.html.js';
 
 const SettingsPerDeviceMouseElementBase = RouteObserverMixin(PolymerElement);
@@ -53,38 +50,12 @@ export class SettingsPerDeviceMouseElement extends
   }
 
   protected mice: Mouse[];
-  private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
-  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
-      getInputDeviceSettingsProvider();
-
-  constructor() {
-    super();
-    this.observeMouseSettings();
-  }
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.PER_DEVICE_MOUSE) {
       return;
     }
-  }
-
-  private observeMouseSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
-        FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observeMouseSettings(this);
-      return;
-    }
-
-    this.mouseSettingsObserverReceiver =
-        new MouseSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observeMouseSettings(
-        this.mouseSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
-  }
-
-  onMouseListUpdated(mice: Mouse[]): void {
-    this.mice = mice;
   }
 }
 

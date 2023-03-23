@@ -31,7 +31,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyboardSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Router} from '../router.js';
@@ -40,7 +40,7 @@ import {getTemplate} from './device_page.html.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, PointingStick, Touchpad} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
 
 interface SettingsDevicePageElement {
   $: {
@@ -202,6 +202,10 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       touchpads: {
         type: Array,
       },
+
+      mice: {
+        type: Array,
+      },
     };
   }
 
@@ -217,6 +221,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   protected pointingSticks: PointingStick[];
   protected keyboards: Keyboard[];
   protected touchpads: Touchpad[];
+  protected mice: Mouse[];
   private browserProxy_: DevicePageBrowserProxy;
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
@@ -227,6 +232,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
   private touchpadSettingsObserverReceiver: TouchpadSettingsObserverReceiver;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface;
+  private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
 
   constructor() {
     super();
@@ -237,6 +243,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       this.observePointingStickSettings();
       this.observeKeyboardSettings();
       this.observeTouchpadSettings();
+      this.observeMouseSettings();
     }
   }
 
@@ -317,6 +324,24 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   onTouchpadListUpdated(touchpads: Touchpad[]): void {
     this.touchpads = touchpads;
+  }
+
+  private observeMouseSettings(): void {
+    if (this.inputDeviceSettingsProvider instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider.observeMouseSettings(this);
+      return;
+    }
+
+    this.mouseSettingsObserverReceiver =
+        new MouseSettingsObserverReceiver(this);
+
+    this.inputDeviceSettingsProvider.observeMouseSettings(
+        this.mouseSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
+  }
+
+  onMouseListUpdated(mice: Mouse[]): void {
+    this.mice = mice;
   }
 
   private getPointersTitle_(): string {
