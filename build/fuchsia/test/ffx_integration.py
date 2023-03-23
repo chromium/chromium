@@ -15,7 +15,6 @@ from typing import IO, Iterable, List, Optional
 
 from common import run_continuous_ffx_command, run_ffx_command, SDK_ROOT
 
-_EMU_COMMAND_RETRIES = 3
 RUN_SUMMARY_SCHEMA = \
     'https://fuchsia.dev/schema/ffx_test/run_summary-8d1dd964.json'
 

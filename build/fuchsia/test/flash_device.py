@@ -5,7 +5,6 @@
 """Implements commands for flashing a Fuchsia device."""
 
 import argparse
-import json
 import logging
 import os
 import subprocess
@@ -14,8 +13,9 @@ import time
 
 from typing import Optional, Tuple
 
-from common import check_ssh_config_file, find_image_in_sdk, \
-    register_device_args, run_ffx_command
+import common
+from common import check_ssh_config_file, get_system_info, find_image_in_sdk, \
+                   register_device_args
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
     running_unattended, add_exec_to_file, get_host_arch
 from ffx_integration import ScopedFfxConfig
@@ -39,26 +39,14 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
     # into zedboot.
     if running_unattended():
         with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-            run_ffx_command(('target', 'reboot'), target_id=target)
-        wait_cmd = run_ffx_command(('target', 'wait', '-t', '180'),
-                                   target,
-                                   check=False)
+            common.run_ffx_command(('target', 'reboot'), target_id=target)
+        wait_cmd = common.run_ffx_command(('target', 'wait', '-t', '180'),
+                                          target,
+                                          check=False)
         if wait_cmd.returncode != 0:
             return ('', '')
 
-    info_cmd = run_ffx_command(('target', 'show', '--json'),
-                               target_id=target,
-                               capture_output=True,
-                               check=False)
-    if info_cmd.returncode == 0:
-        info_json = json.loads(info_cmd.stdout.strip())
-        for info in info_json:
-            if info['title'] == 'Build':
-                return (info['child'][1]['value'], info['child'][0]['value'])
-
-    # If the information was not retrieved, return empty strings to indicate
-    # unknown system info.
-    return ('', '')
+    return get_system_info(target)
 
 
 def update_required(os_check, system_image_dir: Optional[str],
@@ -122,12 +110,12 @@ def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
         return
 
     manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
-    run_ffx_command(('target', 'flash', manifest, '--no-bootloader-reboot'),
-                    target_id=target_id,
-                    configs=[
-                        'fastboot.usb.disabled=true',
-                        'ffx.fastboot.inline_target=true'
-                    ])
+    common.run_ffx_command(
+        ('target', 'flash', manifest, '--no-bootloader-reboot'),
+        target_id=target_id,
+        configs=[
+            'fastboot.usb.disabled=true', 'ffx.fastboot.inline_target=true'
+        ])
 
 
 def _remove_stale_flash_file_lock() -> None:
@@ -152,18 +140,18 @@ def flash(system_image_dir: str,
         lock(_FF_LOCK, timeout=_FF_LOCK_ACQ_TIMEOUT):
         if serial_num:
             with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
-                run_ffx_command(('target', 'reboot', '-b'),
-                                target,
-                                check=False)
+                common.run_ffx_command(('target', 'reboot', '-b'),
+                                       target,
+                                       check=False)
             for _ in range(10):
                 time.sleep(10)
-                if run_ffx_command(('target', 'list', serial_num),
-                                   check=False).returncode == 0:
+                if common.run_ffx_command(('target', 'list', serial_num),
+                                          check=False).returncode == 0:
                     break
             _run_flash_command(system_image_dir, serial_num)
         else:
             _run_flash_command(system_image_dir, target)
-    run_ffx_command(('target', 'wait'), target)
+    common.run_ffx_command(('target', 'wait'), target)
 
 
 def update(system_image_dir: str,
@@ -193,9 +181,9 @@ def update(system_image_dir: str,
                 # TODO(crbug.com/1405525): We should check the device state
                 # before and after rebooting it to avoid unnecessary reboot or
                 # undesired state.
-                run_ffx_command(('target', 'reboot', '-r'),
-                                target,
-                                check=False)
+                common.run_ffx_command(('target', 'reboot', '-r'),
+                                       target,
+                                       check=False)
             try:
                 pave(system_image_dir, target)
                 time.sleep(180)

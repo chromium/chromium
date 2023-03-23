@@ -14,7 +14,7 @@ import sys
 import time
 
 from argparse import ArgumentParser
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Tuple
 
 from compatible_utils import get_ssh_prefix, get_host_arch
 
@@ -350,3 +350,25 @@ def catch_sigterm() -> None:
         sys.exit(0)
 
     signal.signal(signal.SIGTERM, _sigterm_handler)
+
+
+def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
+    """Retrieves installed OS version frm device.
+
+    Returns:
+        Tuple of strings, containing {product, version number), or a pair of
+        empty strings to indicate an error.
+    """
+    info_cmd = run_ffx_command(('target', 'show', '--json'),
+                               target_id=target,
+                               capture_output=True,
+                               check=False)
+    if info_cmd.returncode == 0:
+        info_json = json.loads(info_cmd.stdout.strip())
+        for info in info_json:
+            if info['title'] == 'Build':
+                return (info['child'][1]['value'], info['child'][0]['value'])
+
+    # If the information was not retrieved, return empty strings to indicate
+    # unknown system info.
+    return ('', '')

@@ -24,23 +24,23 @@ class FlashDeviceTest(unittest.TestCase):
         context_mock = mock.Mock()
         context_mock.__enter__ = mock.Mock(return_value=None)
         context_mock.__exit__ = mock.Mock(return_value=None)
-        self._config_patcher = mock.patch('flash_device.ScopedFfxConfig',
-                                          return_value=context_mock)
+        config_patcher = mock.patch('flash_device.ScopedFfxConfig',
+                                    return_value=context_mock)
         ffx_mock = mock.Mock()
         ffx_mock.returncode = 0
-        self._ffx_patcher = mock.patch('flash_device.run_ffx_command',
-                                       return_value=ffx_mock)
-        self._sdk_hash_patcher = mock.patch('flash_device.get_sdk_hash',
-                                            return_value=(_TEST_PRODUCT,
-                                                          _TEST_VERSION))
-        self._swarming_patcher = mock.patch('flash_device.running_unattended',
-                                            return_value=False)
-        self._check_patcher = mock.patch('flash_device.check_ssh_config_file')
-        self._config_mock = self._config_patcher.start()
-        self._ffx_mock = self._ffx_patcher.start()
-        self._sdk_hash_mock = self._sdk_hash_patcher.start()
-        self._check_patcher_mock = self._check_patcher.start()
-        self._swarming_mock = self._swarming_patcher.start()
+        ffx_patcher = mock.patch('common.run_ffx_command',
+                                 return_value=ffx_mock)
+        sdk_hash_patcher = mock.patch('flash_device.get_sdk_hash',
+                                      return_value=(_TEST_PRODUCT,
+                                                    _TEST_VERSION))
+        swarming_patcher = mock.patch('flash_device.running_unattended',
+                                      return_value=False)
+        check_patcher = mock.patch('flash_device.check_ssh_config_file')
+        self._config_mock = config_patcher.start()
+        self._ffx_mock = ffx_patcher.start()
+        self._sdk_hash_mock = sdk_hash_patcher.start()
+        self._check_patcher_mock = check_patcher.start()
+        self._swarming_mock = swarming_patcher.start()
         self.addCleanup(self._config_mock.stop)
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)

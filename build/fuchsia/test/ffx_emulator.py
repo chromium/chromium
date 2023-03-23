@@ -13,9 +13,9 @@ import subprocess
 
 from contextlib import AbstractContextManager
 
-from common import check_ssh_config_file, run_ffx_command, \
-                   SDK_ROOT
-from compatible_utils import get_host_arch
+from common import check_ssh_config_file, find_image_in_sdk, get_system_info, \
+                   run_ffx_command, SDK_ROOT
+from compatible_utils import get_host_arch, get_sdk_hash
 from ffx_integration import ScopedFfxConfig
 
 _EMU_COMMAND_RETRIES = 3
@@ -27,14 +27,23 @@ class FfxEmulator(AbstractContextManager):
         if args.product_bundle:
             self._product_bundle = args.product_bundle
         else:
-            target_cpu = get_host_arch()
-            self._product_bundle = f'terminal.qemu-{target_cpu}'
+            self._product_bundle = 'terminal.qemu-' + get_host_arch()
 
         self._enable_graphics = args.enable_graphics
         self._hardware_gpu = args.hardware_gpu
         self._logs_dir = args.logs_dir
         self._with_network = args.with_network
-        self._node_name = 'fuchsia-emulator-' + str(random.randint(1, 9999))
+        if args.everlasting:
+            # Do not change the name, it will break the logic.
+            # ffx has a prefix-matching logic, so 'fuchsia-emulator' is not
+            # usable to avoid breaking local development workflow. I.e.
+            # developers can create an everlasting emulator and an ephemeral one
+            # without interfering each other.
+            self._node_name = 'fuchsia-everlasting-emulator'
+            assert self._everlasting()
+        else:
+            self._node_name = 'fuchsia-emulator-' + str(random.randint(
+                1, 9999))
 
         # Set the download path parallel to Fuchsia SDK directory
         # permanently so that scripts can always find the product bundles.
@@ -45,19 +54,20 @@ class FfxEmulator(AbstractContextManager):
                                      'sdk_override.txt')
         self._scoped_pb_metadata = None
         if os.path.exists(override_file):
+            assert not args.everlasting, \
+                ('Do not use an everlasting emulator with the '
+                 'sdk_override.txt, it will mass up the local configuration.')
             with open(override_file) as f:
                 pb_metadata = f.read().split('\n')
                 pb_metadata.append('{sdk.root}/*.json')
                 self._scoped_pb_metadata = ScopedFfxConfig(
                     'pbms.metadata', json.dumps((pb_metadata)))
 
-    def __enter__(self) -> str:
-        """Start the emulator.
+    def _everlasting(self) -> bool:
+        return self._node_name == 'fuchsia-everlasting-emulator'
 
-        Returns:
-            The node name of the emulator.
-        """
-
+    def _start_emulator(self) -> None:
+        """Start the emulator."""
         logging.info('Starting emulator %s', self._node_name)
         if self._scoped_pb_metadata:
             self._scoped_pb_metadata.__enter__()
@@ -127,11 +137,9 @@ class FfxEmulator(AbstractContextManager):
                 except (subprocess.TimeoutExpired,
                         subprocess.CalledProcessError):
                     run_ffx_command(('emu', 'stop'))
-        return self._node_name
 
-    def __exit__(self, exc_type, exc_value, traceback) -> bool:
+    def _shutdown_emulator(self, exc_type, exc_value, traceback) -> None:
         """Shutdown the emulator."""
-
         logging.info('Stopping the emulator %s', self._node_name)
         # The emulator might have shut down unexpectedly, so this command
         # might fail.
@@ -140,5 +148,29 @@ class FfxEmulator(AbstractContextManager):
         if self._scoped_pb_metadata:
             self._scoped_pb_metadata.__exit__(exc_type, exc_value, traceback)
 
+    def __enter__(self) -> str:
+        """Start the emulator if necessary.
+
+        Returns:
+            The node name of the emulator.
+        """
+
+        if self._everlasting():
+            sdk_hash = get_sdk_hash(find_image_in_sdk(self._product_bundle))
+            sys_info = get_system_info(self._node_name)
+            if sdk_hash == sys_info:
+                return self._node_name
+            logging.info(
+                ('The emulator version [%s] does not match the SDK [%s], '
+                 'updating...'), sys_info, sdk_hash)
+
+        self._start_emulator()
+        return self._node_name
+
+    def __exit__(self, exc_type, exc_value, traceback) -> bool:
+        """Shutdown the emulator if necessary."""
+
+        if not self._everlasting():
+            self._shutdown_emulator(exc_type, exc_value, traceback)
         # Do not suppress exceptions.
         return False
