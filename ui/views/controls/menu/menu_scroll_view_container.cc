@@ -392,7 +392,8 @@ void MenuScrollViewContainer::CreateBorder() {
 
 void MenuScrollViewContainer::CreateDefaultBorder() {
   DCHECK_EQ(arrow_, BubbleBorder::NONE);
-
+  MenuController* menu_controller =
+      content_view_->GetMenuItem()->GetMenuController();
   const MenuConfig& menu_config = MenuConfig::instance();
   corner_radius_ = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
@@ -410,9 +411,8 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
   int bottom_inset = GetFootnote() ? 0 : vertical_inset;
 
   if (menu_config.use_outer_border) {
-    if (menu_config.use_bubble_border &&
-        menu_config.CornerRadiusForMenu(
-            content_view_->GetMenuItem()->GetMenuController())) {
+    if (menu_config.use_bubble_border && (corner_radius_ > 0) &&
+        !menu_controller->IsCombobox()) {
       CreateBubbleBorder();
     } else {
       gfx::Insets insets = gfx::Insets::TLBR(vertical_inset, horizontal_inset,
@@ -424,6 +424,9 @@ void MenuScrollViewContainer::CreateDefaultBorder() {
             insets, border_color_id_.value()));
         return;
       }
+
+      SetBackground(CreateThemedRoundedRectBackground(ui::kColorMenuBackground,
+                                                      corner_radius_));
 
       SkColor color = GetWidget()
                           ? GetColorProvider()->GetColor(ui::kColorMenuBorder)

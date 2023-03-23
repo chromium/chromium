@@ -2172,7 +2172,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
   // taken into account within CalculateBubbleMenuBounds() and elsewhere.
   gfx::Rect bounds =
       MenuItemView::IsBubble(state_.anchor) ||
-              (menu_config.use_bubble_border &&
+              (!IsCombobox() && menu_config.use_bubble_border &&
                menu_config.CornerRadiusForMenu(this))
           ? CalculateBubbleMenuBounds(item, prefer_leading,
                                       &resulting_direction, &anchor)
