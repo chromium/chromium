@@ -356,6 +356,56 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Camera.Effects.Error" enum="CameraEffectError"
+    expires_after="2024-03-21">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the first error encountered in a camera which uses effects.
+
+    This metric is emitting once every hour if the camera session exceeds an
+    hour, and once at the end of every session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.Effects.NumConcurrentProcessedStreams"
+    units="count" expires_after="2024-03-21">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number streams that required rendering effects in a camera
+    session which uses effects.
+
+    This metric is emitting once every hour if the camera session exceeds an
+    hour, and once at the end of every session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.Effects.NumConcurrentStreams" units="count"
+    expires_after="2024-03-21">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number streams in a camera session which uses effects.
+
+    This metric is emitting once every hour if the camera session exceeds an
+    hour, and once at the end of every session.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Camera.Effects.NumStillShotsTaken" units="captures"
+    expires_after="2024-03-21">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of still capture shots taken in a camera session which
+    uses effects.
+
+    This metric is emitting once every hour if the camera session exceeds an
+    hour, and once at the end of every session.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Camera.Effects.SelectedEffect"
     enum="CameraEffectType" expires_after="2024-01-01">
   <owner>jmpollock@chromium.org</owner>
@@ -425,6 +475,40 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="StreamType">
     <variant name="BLOB" summary="Processing time for BLOB (JPEG) streams"/>
     <variant name="YUV" summary="Processing time for YUV streams"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Camera.Effects.{StreamType}.MaxStreamSize"
+    units="pixels" expires_after="2024-03-21">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of pixels in one frame of the largest stream in a camera
+    session which uses effects.
+
+    This metric is emitting once every hour if the camera session exceeds an
+    hour, and once at the end of every session.
+  </summary>
+  <token key="StreamType">
+    <variant name="BLOB" summary="Maximum stream size for BLOB (JPEG) streams"/>
+    <variant name="YUV" summary="Maximum stream size for YUV streams"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Camera.Effects.{StreamType}.MinStreamSize"
+    units="pixels" expires_after="2024-03-21">
+  <owner>skyostil@chromium.org</owner>
+  <owner>chromeos-camera-eng@google.com</owner>
+  <summary>
+    Records the number of pixels in one frame of the smallest stream in a camera
+    session which uses effects.
+
+    This metric is emitting once every hour if the camera session exceeds an
+    hour, and once at the end of every session.
+  </summary>
+  <token key="StreamType">
+    <variant name="BLOB" summary="Minimum stream size for BLOB (JPEG) streams"/>
+    <variant name="YUV" summary="Minimum stream size for YUV streams"/>
   </token>
 </histogram>
 

@@ -14142,6 +14142,19 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Destructed Before Timeout"/>
 </enum>
 
+<enum name="CameraEffectError">
+  <int value="0" label="kNoError"/>
+  <int value="1" label="kGPUInitializationError"/>
+  <int value="2" label="kBufferAllocationError"/>
+  <int value="3" label="kReceivedFailedBuffer"/>
+  <int value="4" label="kSyncWaitTimeout"/>
+  <int value="5" label="kBufferRegistrationFailed"/>
+  <int value="6" label="kBufferUnregistrationFailed"/>
+  <int value="7" label="kGPUImageInitializationFailed"/>
+  <int value="8" label="kYUVConversionFailed"/>
+  <int value="9" label="kPipelineFailed"/>
+</enum>
+
 <enum name="CameraEffectType">
   <int value="0" label="kNone"/>
   <int value="1" label="kBlur"/>
