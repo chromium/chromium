@@ -15,6 +15,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_power_instance.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_on_battery_observer.h"
@@ -59,6 +60,9 @@ class ArcIdleManagerTest : public testing::Test {
     display_power_observer_ =
         arc_idle_manager_->GetObserverByName(kArcDisplayPowerObserverName);
     DCHECK(display_power_observer_);
+
+    background_service_observer_ =
+        arc_idle_manager_->GetObserverByName(kArcBackgroundServiceObserverName);
 
     // Make sure the next SetActive() call calls into TestDelegateImpl. This
     // is necessary because ArcIdleManager's constructor may initialize the
@@ -122,6 +126,9 @@ class ArcIdleManagerTest : public testing::Test {
   ash::ThrottleObserver* display_power_observer() {
     return display_power_observer_;
   }
+  ash::ThrottleObserver* background_service_observer() {
+    return background_service_observer_;
+  }
 
  private:
   class TestDelegateImpl : public ArcIdleManager::Delegate {
@@ -158,6 +165,7 @@ class ArcIdleManagerTest : public testing::Test {
   ash::ThrottleObserver* cpu_throttle_observer_;
   ash::ThrottleObserver* on_battery_observer_;
   ash::ThrottleObserver* display_power_observer_;
+  ash::ThrottleObserver* background_service_observer_;
 };
 
 // Tests that ArcIdleManager can be constructed and destructed.
@@ -203,6 +211,16 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
   cpu_throttle_observer()->SetActive(false);
   EXPECT_EQ(3U, interactive_enabled_counter());
   EXPECT_EQ(5U, interactive_disabled_counter());
+
+  // ARC background service active caused idle disabled.
+  background_service_observer()->SetActive(true);
+  EXPECT_EQ(4U, interactive_enabled_counter());
+  EXPECT_EQ(5U, interactive_disabled_counter());
+
+  // Reset.
+  background_service_observer()->SetActive(false);
+  EXPECT_EQ(4U, interactive_enabled_counter());
+  EXPECT_EQ(6U, interactive_disabled_counter());
 }
 
 }  // namespace arc
