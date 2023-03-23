@@ -156,6 +156,7 @@ BridgeConstants.PanelBackground = {
     GET_TAB_MENU_DATA: 'getTabMenuData',
     INCREMENTAL_SEARCH: 'incrementalSearch',
     NODE_MENU_CALLBACK: 'nodeMenuCallback',
+    ON_TUTORIAL_READY: 'onTutorialReady',
     PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
     PERFORM_STANDARD_ACTION_ON_CURRENT_NODE:
         'performStandardActionOnCurrentNode',

@@ -40,6 +40,10 @@ export class PanelBackground {
     this.savedNode_;
     /** @private {Promise} */
     this.resolvePanelCollapsed_;
+    /** @private {function()|undefined} */
+    this.tutorialReadyCallback_;
+    /** @private {boolean} */
+    this.tutorialReadyForTesting_ = false;
   }
 
   static init() {
@@ -78,6 +82,9 @@ export class PanelBackground {
         (searchStr, dir, opt_nextObject) =>
             PanelBackground.instance.incrementalSearch_(
                 searchStr, dir, opt_nextObject));
+    BridgeHelper.registerHandler(
+        TARGET, Action.ON_TUTORIAL_READY,
+        () => PanelBackground.instance.onTutorialReady_());
     BridgeHelper.registerHandler(
         TARGET, Action.PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE,
         actionId => PanelBackground.instance.performCustomActionOnCurrentNode_(
@@ -181,12 +188,19 @@ export class PanelBackground {
    */
   incrementalSearch_(searchStr, dir, opt_nextObject) {
     if (!this.iSearch_) {
-      console.error(
-          'Trying to incrementally search when no ISearch has been created');
+      console.error('Trying to search when no ISearch has been created');
       return;
     }
 
     this.iSearch_.search(searchStr, dir, opt_nextObject);
+  }
+
+  /** @private */
+  onTutorialReady_() {
+    this.tutorialReadyForTesting_ = true;
+    if (this.tutorialReadyCallback_) {
+      this.tutorialReadyCallback_();
+    }
   }
 
   /**

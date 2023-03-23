@@ -299,6 +299,13 @@ BackgroundBridge.PanelBackground = {
         dir, opt_nextObject);
   },
 
+  /** @return {!Promise} */
+  async onTutorialReady() {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.PanelBackground.TARGET,
+        BridgeConstants.PanelBackground.Action.ON_TUTORIAL_READY);
+  },
+
   /**
    * @param {number} actionId
    * @return {!Promise}
