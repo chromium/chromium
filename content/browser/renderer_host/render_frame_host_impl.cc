@@ -223,6 +223,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -251,6 +252,7 @@
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
@@ -6287,6 +6289,17 @@ void RenderFrameHostImpl::MainDocumentElementAvailable(
 
   delegate_->PrimaryMainDocumentElementAvailable();
 
+  if (base::FeatureList::IsEnabled(blink::features::kFullscreenPopupWindows) &&
+      fullscreen_document_on_document_element_ready_ &&
+      (*fullscreen_document_on_document_element_ready_) == GetDocumentToken()) {
+    fullscreen_document_on_document_element_ready_ = absl::nullopt;
+    // Create a fullscreen request token to waive the user activation
+    // requirement when the request is received back to the browser in
+    // `EnterFullscreen`.
+    fullscreen_request_token_.Activate();
+    GetAssociatedLocalFrame()->RequestFullscreenDocumentElement();
+  }
+
   if (!uses_temporary_zoom_level)
     return;
 
@@ -8403,6 +8416,34 @@ void RenderFrameHostImpl::BeginNavigation(
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::WEB_BUNDLE_INVALID_NAVIGATION_URL);
     return;
+  }
+
+  if (begin_params->is_fullscreen_requested) {
+    // Fullscreen requests on navigation are only allowed from initial empty
+    // documents that are the outermost main frame. The initiator must also have
+    // window management granted, otherwise the fullscreen bit is dropped.
+    if (!is_initial_empty_document()) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT);
+      return;
+    }
+    if (!IsOutermostMainFrame()) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME);
+      return;
+    }
+    RenderFrameHostImpl* initiator_render_frame_host =
+        begin_params->initiator_frame_token
+            ? RenderFrameHostImpl::FromFrameToken(
+                  initiator_process_id,
+                  begin_params->initiator_frame_token.value())
+            : nullptr;
+    if (!initiator_render_frame_host ||
+        !IsWindowManagementGranted(initiator_render_frame_host)) {
+      begin_params->is_fullscreen_requested = false;
+    }
   }
 
   GetProcess()->FilterURL(true, &begin_params->searchable_form_url);
@@ -12626,6 +12667,19 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
 
   early_hints_manager_ = navigation_request->TakeEarlyHintsManager();
+
+  // If fullscreen was requested on the navigation, then set a signal to trigger
+  // a fullscreen request when the document element is ready. If a previous
+  // navigation was committed without a call to `MainDocumentElementAvailable`
+  // before the current navigation then this value is overwritten by the current
+  // navigation.
+  fullscreen_document_on_document_element_ready_.reset();
+  if (navigation_request->begin_params().is_fullscreen_requested) {
+    fullscreen_document_on_document_element_ready_ =
+        navigation_request->GetDocumentToken();
+  }
+  CHECK(!fullscreen_document_on_document_element_ready_ ||
+        IsOutermostMainFrame());
 
   // Only take some properties if this is not the synchronous initial
   // `about:blank` navigation, because the values set at construction time

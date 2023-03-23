@@ -195,6 +195,11 @@ struct BLINK_EXPORT WebNavigationInfo {
   // src. Only container-initiated navigation report resource timing to the
   // parent.
   bool is_container_initiated = false;
+
+  // True if the initiator requested that the tab become fullscreen
+  // after navigation (e.g. the initial navigation of a fullscreen popup).
+  // See: https://chromestatus.com/feature/6002307972464640
+  bool is_fullscreen_requested = false;
 };
 
 // This structure holds all information provided by the embedder that is

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/core/frame/savable_resources.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
@@ -1388,6 +1390,16 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
   info->is_secure_transport = is_secure_transport;
   info->timing = std::move(load_timing_info);
   subframe->Owner()->AddResourceTiming(std::move(info));
+}
+
+void LocalFrameMojoHandler::RequestFullscreenDocumentElement() {
+  if (auto* document_element = frame_->GetDocument()->documentElement()) {
+    // `kWindowOpen` assumes this function is only invoked for newly created
+    // windows (e.g. fullscreen popups). Update this if additional callers are
+    // added. See: https://chromestatus.com/feature/6002307972464640
+    ScopedAllowFullscreen allow_fullscreen(ScopedAllowFullscreen::kWindowOpen);
+    Fullscreen::RequestFullscreen(*document_element);
+  }
 }
 
 void LocalFrameMojoHandler::RequestFullscreenVideoElement() {

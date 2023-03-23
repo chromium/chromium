@@ -349,6 +349,16 @@ bool AllowedToRequestFullscreen(Document& document) {
     return true;
   }
 
+  // The algorithm is triggered by a browser initiated fullscreen of the
+  // frame's document element. Used in cases like fullscreen popups where the
+  // browser triggers fullscreen after a navigation. See:
+  // https://chromestatus.com/feature/6002307972464640
+  if (ScopedAllowFullscreen::FullscreenAllowedReason() ==
+      ScopedAllowFullscreen::kWindowOpen) {
+    UseCounter::Count(document, WebFeature::kFullscreenAllowedByWindowOpen);
+    return true;
+  }
+
   // The algorithm is triggered by another event with transient affordances,
   // e.g. permission-gated events for user-generated screens changes.
   if (RuntimeEnabledFeatures::WindowPlacementFullscreenOnScreensChangeEnabled(

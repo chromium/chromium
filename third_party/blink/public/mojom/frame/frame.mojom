@@ -995,6 +995,10 @@ interface LocalFrame {
     string normalized_server_timing,
     network.mojom.URLLoaderCompletionStatus completion_status
   );
+
+  // The browser requests the renderer to fullscreen the document element.
+  // See: https://chromestatus.com/feature/6002307972464640
+  RequestFullscreenDocumentElement();
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

@@ -10957,6 +10957,8 @@ Called by update_bad_message_reasons.py.-->
       label="BIBI_BIND_PRESSURE_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="298" label="RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN"/>
   <int value="299" label="RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE"/>
+  <int value="300" label="RFHI_FULLSCREEN_NAV_INVALID_INITIAL_DOCUMENT"/>
+  <int value="301" label="RFHI_FULLSCREEN_NAV_NOT_OUTERMOST_MAIN_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -42601,6 +42603,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4522" label="HtmlClipboardApiUnsanitizedRead"/>
   <int value="4523" label="HtmlClipboardApiUnsanitizedWrite"/>
   <int value="4524" label="AsyncClipboardAPIUnsanitizedRead"/>
+  <int value="4525" label="WindowOpenFullscreenRequested"/>
+  <int value="4526" label="FullscreenAllowedByWindowOpen"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

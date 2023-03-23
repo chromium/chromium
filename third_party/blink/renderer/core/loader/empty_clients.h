@@ -339,7 +339,8 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation>,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>,
-      bool is_container_initiated) override;
+      bool is_container_initiated,
+      bool is_fullscreen_requested) override;
 
   void DispatchWillSendSubmitEvent(HTMLFormElement*) override;
 

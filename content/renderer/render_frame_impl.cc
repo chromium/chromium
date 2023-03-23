@@ -5779,7 +5779,8 @@ void RenderFrameImpl::BeginNavigationInternal(
               : nullptr,
           info->impression, renderer_before_unload_start,
           renderer_before_unload_end, web_bundle_token_params,
-          initiator_activation_and_ad_status, info->is_container_initiated);
+          initiator_activation_and_ad_status, info->is_container_initiated,
+          info->is_fullscreen_requested);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;

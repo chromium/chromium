@@ -209,6 +209,13 @@ struct CORE_EXPORT FrameLoadRequest {
     return force_history_push_;
   }
 
+  bool IsFullscreenRequested() const {
+    // If the window was requested as fullscreen and a popup, then the loaded
+    // frame should enter fullscreen.
+    // See: https://chromestatus.com/feature/6002307972464640
+    return GetWindowFeatures().is_fullscreen && GetWindowFeatures().is_popup;
+  }
+
  private:
   LocalDOMWindow* origin_window_;
   ResourceRequest resource_request_;

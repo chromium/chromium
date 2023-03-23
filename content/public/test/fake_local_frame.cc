@@ -211,6 +211,8 @@ void FakeLocalFrame::AddResourceTimingEntryForFailedSubframeNavigation(
     const std::string& normalized_server_timing,
     const ::network::URLLoaderCompletionStatus& completion_status) {}
 
+void FakeLocalFrame::RequestFullscreenDocumentElement() {}
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(

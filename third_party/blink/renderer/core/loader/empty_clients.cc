@@ -127,7 +127,8 @@ void EmptyLocalFrameClient::BeginNavigation(
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation>,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>,
-    bool is_container_initiated) {}
+    bool is_container_initiated,
+    bool is_fullscreen_requested) {}
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 

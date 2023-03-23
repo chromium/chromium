@@ -3863,6 +3863,8 @@ enum WebFeature {
   kHtmlClipboardApiUnsanitizedRead = 4522,
   kHtmlClipboardApiUnsanitizedWrite = 4523,
   kAsyncClipboardAPIUnsanitizedRead = 4524,
+  kWindowOpenFullscreenRequested = 4525,
+  kFullscreenAllowedByWindowOpen = 4526,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

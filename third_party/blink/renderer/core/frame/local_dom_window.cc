@@ -2248,6 +2248,14 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   if (!result.frame)
     return nullptr;
 
+  // If the resulting frame didn't create a new window and fullscreen was
+  // requested, reset the flag to prevent making a pre-existing frame
+  // fullscreen.
+  if (!result.new_window && window_features.is_fullscreen) {
+    window_features.is_fullscreen = false;
+    frame_request.SetFeaturesForWindowOpen(window_features);
+  }
+
   if (window_features.x_set || window_features.y_set) {
     // This runs after FindOrCreateFrameForNavigation() so blocked popups are
     // not counted.

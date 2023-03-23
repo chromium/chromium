@@ -875,7 +875,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.Impression(), request.GetInitiatorFrameToken(),
       request.TakeSourceLocation(),
       request.TakeInitiatorPolicyContainerKeepAliveHandle(),
-      request.IsContainerInitiated());
+      request.IsContainerInitiated(), request.IsFullscreenRequested());
 }
 
 static void FillStaticResponseIfNeeded(WebNavigationParams* params,

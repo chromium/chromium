@@ -4982,6 +4982,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // `cookie_change_listener_` in `NavigationRequest`.
   std::unique_ptr<CookieChangeListener> cookie_change_listener_;
 
+  // Contains a document token to fullscreen when the document element is ready.
+  // Set when a committed navigation requested fullscreen (e.g. Fullscreen popup
+  // window) and triggers a fullscreen on the document element once it is ready
+  // (`MainDocumentElementAvailable` dispatched).
+  // See: https://chromestatus.com/feature/6002307972464640
+  absl::optional<blink::DocumentToken>
+      fullscreen_document_on_document_element_ready_ = absl::nullopt;
+
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

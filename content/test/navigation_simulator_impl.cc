@@ -1335,7 +1335,8 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
                     kStartedWithTransientActivationFromNonAd
               : blink::mojom::NavigationInitiatorActivationAndAdStatus::
                     kDidNotStartWithTransientActivation,
-          false /* is_container_initiated */);
+          false /* is_container_initiated */,
+          false /* is_fullscreen_requested */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->input_start = navigation_input_start_;

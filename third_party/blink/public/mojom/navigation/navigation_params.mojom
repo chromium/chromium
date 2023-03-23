@@ -167,6 +167,10 @@ struct BeginNavigationParams {
   // navigations should create a resource timing entry.
   // TODO(https://github.com/whatwg/html/issues/8846): clarify this further.
   bool is_container_initiated = false;
+
+  // True if the initiator requested the tab become fullscreen after navigation.
+  // See: https://chromestatus.com/feature/6002307972464640
+  bool is_fullscreen_requested = false;
 };
 
 // Provided by the browser or the renderer -------------------------------------

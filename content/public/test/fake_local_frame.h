@@ -162,6 +162,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       bool is_validated,
       const std::string& normalized_server_timing,
       const ::network::URLLoaderCompletionStatus& completion_status) override;
+  void RequestFullscreenDocumentElement() override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

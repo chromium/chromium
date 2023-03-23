@@ -49,6 +49,11 @@ struct WebWindowFeatures {
 
   bool is_popup = false;
 
+  // True if the new window was requested to be shown fullscreen.
+  // Window management permission must be granted on the opener.
+  // See: https://chromestatus.com/feature/6002307972464640
+  bool is_fullscreen = false;
+
   // The members above this line are transferred through mojo
   // in the form of |struct WindowFeatures| defined in window_features.mojom,
   // to be used across process boundaries.

@@ -1733,6 +1733,12 @@
       base_feature: "none",
     },
     {
+      // Enables `fullscreen` windowFeatures parameter in window.open().
+      name: "FullscreenPopupWindows",
+      status: "experimental",
+      base_feature: "FullscreenPopupWindows"
+    },
+    {
       // If enabled, `window.screen` always provides display dimensions.
       // Otherwise, `window.screen` provides viewport dimensions in fullscreen
       // as a speculative site compatibility measure, because web authors may
