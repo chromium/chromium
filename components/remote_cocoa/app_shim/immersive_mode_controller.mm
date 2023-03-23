@@ -625,4 +625,8 @@ void ImmersiveModeController::OnTitlebarFrameDidChange(NSRect frame) {
   [overlay_window_ setFrameOrigin:point_on_screen];
 }
 
+bool ImmersiveModeController::IsTabbed() {
+  return false;
+}
+
 }  // namespace remote_cocoa

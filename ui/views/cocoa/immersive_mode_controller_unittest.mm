@@ -365,7 +365,18 @@ TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
               &view_will_appear_ran));
   immersive_mode_controller->Enable();
   EXPECT_TRUE(view_will_appear_ran);
+
+  // TODO(https://crbug.com/1426944): Enable() does not add the controller. It
+  // will be added / removed from the view controller tree during
+  // UpdateToolbarVisibility(). Remove this comment and update the test once the
+  // bug has been resolved.
+  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAlways);
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kNone);
+  EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
 }
 
 // Test ImmersiveModeTabbedController construction and destruction.

@@ -310,9 +310,6 @@ void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
     tab_widget_height_ += static_cast<BrowserNonClientFrameViewMac*>(
                               browser_view->frame()->GetFrameView())
                               ->GetTopInset(false);
-    // Without this -1 the tabs sit 1px too high. I assume this is because in
-    // fullscreen there is no resize handle.
-    tab_widget_height_ -= 1;
 
     // TODO(https://crbug.com/1414521): The |tab_overlay_widget()| draws
     // underneath the traffic lights via an NSTitlebarViewController with
@@ -331,11 +328,16 @@ void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
                   tab_widget_height_));
     browser_view->tab_overlay_widget()->Show();
 
-    // Inset the start of |tab_strip_region_view()| by |kTrafficLightsWidth|.
-    // This will leave a hole for the traffic light to appear.
+    // Move the tab strip to the `tab_overlay_widget`, the host of the
+    // `tab_overlay_view`.
     browser_view->tab_overlay_view()->AddChildView(
         browser_view->tab_strip_region_view());
-    gfx::Insets insets = gfx::Insets::TLBR(0, kTrafficLightsWidth, 0, 0);
+
+    // Inset the start of |tab_strip_region_view()| by |kTrafficLightsWidth|.
+    // This will leave a hole for the traffic light to appear.
+    // Without this +1 top inset the tabs sit 1px too high. I assume this is
+    // because in fullscreen there is no resize handle.
+    gfx::Insets insets = gfx::Insets::TLBR(1, kTrafficLightsWidth, 0, 0);
     browser_view->tab_strip_region_view()->SetBorder(
         views::CreateEmptyBorder(insets));
 

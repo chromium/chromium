@@ -27,6 +27,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   ~ImmersiveModeTabbedController() override;
 
   // ImmersiveModeController overrides
+  // TODO(https://crbug.com/1426944): Enable() does not add the controller. It
+  // will be added / removed from the view controller tree during
+  // UpdateToolbarVisibility(). Remove this comment once the bug has been
+  // resolved.
   void Enable() override;
   void FullscreenTransitionCompleted() override;
   void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style) override;
@@ -37,14 +41,17 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   void TitlebarUnlock() override;
   void OnTitlebarFrameDidChange(NSRect frame) override;
   void OnChildWindowAdded(NSWindow* child) override;
+  bool IsTabbed() override;
 
  private:
   void TitlebarReveal();
   void TitlebarHide();
+  void AddController();
+  void RemoveController();
 
   NSWindow* const tab_window_;
   BridgedContentView* tab_content_view_;
-  base::scoped_nsobject<TabTitlebarViewController>
+  base::scoped_nsobject<NSTitlebarAccessoryViewController>
       tab_titlebar_view_controller_;
 };
 

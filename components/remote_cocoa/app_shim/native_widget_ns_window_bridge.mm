@@ -981,6 +981,28 @@ void NativeWidgetNSWindowBridge::ImmersiveFullscreenRevealUnlock() {
   }
 }
 
+bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsEnabled() {
+  if (!immersive_mode_controller_) {
+    return false;
+  }
+  return immersive_mode_controller_->is_enabled();
+}
+
+bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsTabbed() {
+  if (!immersive_mode_controller_) {
+    return false;
+  }
+  return immersive_mode_controller_->IsTabbed();
+}
+
+mojom::ToolbarVisibilityStyle
+NativeWidgetNSWindowBridge::ImmersiveFullscreenLastUsedStyle() {
+  if (!immersive_mode_controller_) {
+    return mojom::ToolbarVisibilityStyle::kAlways;
+  }
+  return immersive_mode_controller_->last_used_style();
+}
+
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
 }

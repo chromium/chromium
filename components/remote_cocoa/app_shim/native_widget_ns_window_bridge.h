@@ -308,6 +308,17 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void MoveChildrenTo(NativeWidgetNSWindowBridge* target,
                       bool anchored_only = false);
 
+  // Is immersive fullscreen enabled. True will be returned at the start of the
+  // fullscreen transition.
+  bool ImmersiveFullscreenIsEnabled();
+
+  // Returns true if kImmersiveFullscreenTabs is being used.
+  bool ImmersiveFullscreenIsTabbed();
+
+  // Returns the last style set with `UpdateToolbarVisibility()`. Defaults to
+  // kAlways.
+  mojom::ToolbarVisibilityStyle ImmersiveFullscreenLastUsedStyle();
+
  private:
   friend class views::test::BridgedNativeWidgetTestApi;
 

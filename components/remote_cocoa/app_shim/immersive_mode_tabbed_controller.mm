@@ -9,28 +9,6 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
 
-@interface NSWindow (ChromeTitleBarHeight)
-// TODO(https://crbug.com/1414521): Support macOS versions older than
-// macOS 10.15.
-@property double titlebarHeight API_AVAILABLE(macos(10.15));
-@end
-
-@interface TabTitlebarViewController : NSTitlebarAccessoryViewController
-@end
-
-@implementation TabTitlebarViewController
-
-- (void)viewWillAppear {
-  [super viewWillAppear];
-  for (NSView* sub_view in self.view.subviews) {
-    if ([sub_view isKindOfClass:[BridgedContentView class]]) {
-      [sub_view setFrameSize:self.view.frame.size];
-    }
-  }
-}
-
-@end
-
 namespace remote_cocoa {
 
 ImmersiveModeTabbedController::ImmersiveModeTabbedController(
@@ -44,7 +22,8 @@ ImmersiveModeTabbedController::ImmersiveModeTabbedController(
       tab_window_(tab_window) {
   browser_window.titleVisibility = NSWindowTitleHidden;
 
-  tab_titlebar_view_controller_.reset([[TabTitlebarViewController alloc] init]);
+  tab_titlebar_view_controller_.reset(
+      [[NSTitlebarAccessoryViewController alloc] init]);
   tab_titlebar_view_controller_.get().view =
       [[[NSView alloc] init] autorelease];
 
@@ -79,6 +58,15 @@ void ImmersiveModeTabbedController::Enable() {
   tab_titlebar_view_controller_.get().fullScreenMinHeight =
       tab_window_.frame.size.height;
 
+  // Keep the tab content view's size in sync with its parent view.
+  tab_content_view_.translatesAutoresizingMaskIntoConstraints = NO;
+  [tab_content_view_.heightAnchor
+      constraintEqualToAnchor:tab_content_view_.superview.heightAnchor]
+      .active = YES;
+  [tab_content_view_.widthAnchor
+      constraintEqualToAnchor:tab_content_view_.superview.widthAnchor]
+      .active = YES;
+
   tab_window_.contentView =
       [[[BridgedContentView alloc] initWithBridge:tab_content_view_.bridge
                                            bounds:gfx::Rect()] autorelease];
@@ -88,17 +76,12 @@ void ImmersiveModeTabbedController::Enable() {
   // The `overlay_window_` is handled the same way in ImmersiveModeController.
   // See the comment there for more details.
   tab_window_.ignoresMouseEvents = YES;
-
-  tab_titlebar_view_controller_.get().hidden = YES;
-  [browser_window()
-      addTitlebarAccessoryViewController:tab_titlebar_view_controller_];
 }
 
 void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
   // Keep the titlebar hidden until the fullscreen transition is complete.
   ImmersiveModeController::FullscreenTransitionCompleted();
-  tab_titlebar_view_controller_.get().hidden = NO;
   NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
   toolbar.visible = NO;
   ImmersiveModeController::browser_window().toolbar = toolbar;
@@ -109,18 +92,39 @@ void ImmersiveModeTabbedController::FullscreenTransitionCompleted() {
 
 void ImmersiveModeTabbedController::UpdateToolbarVisibility(
     mojom::ToolbarVisibilityStyle style) {
-  ImmersiveModeController::UpdateToolbarVisibility(style);
+  // TODO(https://crbug.com/1426944): A NSTitlebarAccessoryViewController hosted
+  // in the titlebar, as opposed to above or below it, does not hide/show when
+  // using the `hidden` property. Instead we must entirely remove the view
+  // controller to make the view hide. Switch to using the `hidden` property
+  // once Apple resolves this bug.
   switch (style) {
     case mojom::ToolbarVisibilityStyle::kAlways:
+      AddController();
       TitlebarReveal();
       break;
     case mojom::ToolbarVisibilityStyle::kAutohide:
+      AddController();
       TitlebarHide();
       break;
     case mojom::ToolbarVisibilityStyle::kNone:
+      RemoveController();
       TitlebarHide();
       break;
   }
+  ImmersiveModeController::UpdateToolbarVisibility(style);
+}
+
+void ImmersiveModeTabbedController::AddController() {
+  NSWindow* browser_window = ImmersiveModeController::browser_window();
+  if (![browser_window.titlebarAccessoryViewControllers
+          containsObject:tab_titlebar_view_controller_]) {
+    [browser_window
+        addTitlebarAccessoryViewController:tab_titlebar_view_controller_];
+  }
+}
+
+void ImmersiveModeTabbedController::RemoveController() {
+  [tab_titlebar_view_controller_ removeFromParentViewController];
 }
 
 void ImmersiveModeTabbedController::OnTopViewBoundsChanged(
@@ -134,43 +138,33 @@ void ImmersiveModeTabbedController::OnTopViewBoundsChanged(
 }
 
 void ImmersiveModeTabbedController::RevealLock() {
-  ImmersiveModeController::RevealLock();
   TitlebarReveal();
+
+  // Call after TitlebarReveal() for a proper layout.
+  ImmersiveModeController::RevealLock();
 }
 
 void ImmersiveModeTabbedController::RevealUnlock() {
-  ImmersiveModeController::RevealUnlock();
-  if (ImmersiveModeController::reveal_lock_count() < 1 &&
+  // The reveal lock count will be updated in
+  // ImmersiveModeController::RevealUnlock(), count 1 or less here as unlocked.
+  if (ImmersiveModeController::reveal_lock_count() < 2 &&
       ImmersiveModeController::last_used_style() ==
           mojom::ToolbarVisibilityStyle::kAutohide) {
     TitlebarHide();
   }
+
+  // Call after TitlebarHide() for a proper layout.
+  ImmersiveModeController::RevealUnlock();
 }
 
 void ImmersiveModeTabbedController::TitlebarReveal() {
-  // This -1 hack is needed to make the titlebar visible if it is hidden.
-  // TODO(https://crbug.com/1414521): Get rid of this shrink hack.
   NSWindow* browser_window = ImmersiveModeController::browser_window();
-  if (@available(macOS 10.15, *)) {
-    browser_window.titlebarHeight = tab_window_.frame.size.height - 1;
-  }
   browser_window.toolbar.visible = YES;
-  if (@available(macOS 10.15, *)) {
-    browser_window.titlebarHeight = tab_window_.frame.size.height;
-  }
 }
 
 void ImmersiveModeTabbedController::TitlebarHide() {
-  // Similarly this -1 hack will cause the titlebar to hide.
-  // TODO(https://crbug.com/1414521): Get rid of this shrink hack.
   NSWindow* browser_window = ImmersiveModeController::browser_window();
-  if (@available(macOS 10.15, *)) {
-    browser_window.titlebarHeight = tab_window_.frame.size.height - 1;
-  }
   browser_window.toolbar.visible = NO;
-  if (@available(macOS 10.15, *)) {
-    browser_window.titlebarHeight = tab_window_.frame.size.height;
-  }
 }
 
 // TODO(https://crbug.com/1414521) TitlebarLock and TitlebarUnlock mean
@@ -199,6 +193,10 @@ void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
     return;
   }
   ImmersiveModeController::OnChildWindowAdded(child);
+}
+
+bool ImmersiveModeTabbedController::IsTabbed() {
+  return true;
 }
 
 }  // namespace remote_cocoa

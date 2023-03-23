@@ -39,6 +39,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   virtual ~ImmersiveModeController();
 
   virtual void Enable();
+  bool is_enabled() { return enabled_; }
+
   virtual void FullscreenTransitionCompleted();
   virtual void OnTopViewBoundsChanged(const gfx::Rect& bounds);
   virtual void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style);
@@ -81,6 +83,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   void SetTitlebarFullyVisibleForTesting(bool fully_visible) {
     titlebar_fully_visible_ = fully_visible;
   }
+
+  // Returns true if kImmersiveFullscreenTabs is being used.
+  virtual bool IsTabbed();
 
  private:
   // Pin or unpin the titlebar.
