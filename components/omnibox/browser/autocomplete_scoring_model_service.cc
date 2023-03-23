@@ -59,7 +59,8 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
 }
 
 bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
-  return url_scoring_model_handler_ != nullptr;
+  return url_scoring_model_handler_ &&
+         url_scoring_model_handler_->ModelAvailable();
 }
 
 void AutocompleteScoringModelService::ProcessModelOutput(
