@@ -333,6 +333,9 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
     provider_->ignore_layouts_for_testing_ = true;
     base::RunLoop().RunUntilIdle();
+    // After adding a fake keyboard, clear the observer call count.
+    observer_.clear_num_times_notified();
+    EXPECT_EQ(0, observer_.num_times_notified());
   }
 
   void TearDown() override {
@@ -434,13 +437,7 @@ TEST_F(AcceleratorConfigurationProviderTest, AshIsMutable) {
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/1426992): Fix flakiness and re-enable.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_InitialAccelInitCalls DISABLED_InitialAccelInitCalls
-#else
-#define MAYBE_InitialAccelInitCalls InitialAccelInitCalls
-#endif
-TEST_F(AcceleratorConfigurationProviderTest, MAYBE_InitialAccelInitCalls) {
+TEST_F(AcceleratorConfigurationProviderTest, InitialAccelInitCalls) {
   FakeAcceleratorsUpdatedMojoObserver mojo_observer;
   SetUpObserver(&mojo_observer);
   EXPECT_EQ(0, mojo_observer.num_times_notified());
