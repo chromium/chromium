@@ -23,6 +23,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -44,6 +45,11 @@ class OpenPageAndShowHelpBubbleImpl : public OpenPageAndShowHelpBubble {
 
     bubble_params_.body_text = params.bubble_text;
     bubble_params_.arrow = params.bubble_arrow;
+
+    if (params.close_button_alt_text_id) {
+      bubble_params_.close_button_alt_text =
+          l10n_util::GetStringUTF16(params.close_button_alt_text_id.value());
+    }
 
     anchor_subscription_ =
         ui::ElementTracker::GetElementTracker()

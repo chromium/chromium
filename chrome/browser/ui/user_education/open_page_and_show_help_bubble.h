@@ -90,6 +90,11 @@ class OpenPageAndShowHelpBubble {
     // The text of the help bubble.
     std::u16string bubble_text;
 
+    // The id of the text that should be used for the accessibility label of the
+    // help bubble's close button. The localized string will be looked up using
+    // this identifier.
+    absl::optional<int> close_button_alt_text_id;
+
     // Callback that notifies whether the page loaded and the bubble was
     // displayed successfully. Typically used for testing or metrics collection.
     // If the page load is aborted or the anchor not found within a reasonable

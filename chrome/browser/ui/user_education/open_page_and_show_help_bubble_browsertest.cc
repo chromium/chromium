@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/user_education/open_page_and_show_help_bubble.h"
 
+#include <string>
+
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -12,11 +14,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace {
@@ -44,7 +50,7 @@ OpenPageAndShowHelpBubble::Params GetDefaultParams() {
 
 }  // namespace
 
-using OpenPageAndShowHelpBubbleBrowserTest = InProcessBrowserTest;
+using OpenPageAndShowHelpBubbleBrowserTest = InteractiveBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
                        OpenPageAndDisplayHelpBubbleInNewPage) {
@@ -183,4 +189,34 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
 
   // On failure the object is destroyed immediately.
   ASSERT_FALSE(handle);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
+                       HelpBubbleParamsCanConfigureCloseButtonAltText) {
+  auto params = GetDefaultParams();
+  params.target_url = GURL(kPageWithAnchorURL);
+  params.overwrite_active_tab = true;
+  // Set the alt text here and then check that aria-label matches.
+  params.close_button_alt_text_id = IDS_CLOSE_PROMO;
+
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kBubbleIsVisible);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  auto help_bubble_start_callback =
+      base::BindOnce(base::IgnoreResult(&OpenPageAndShowHelpBubble::Start),
+                     browser(), std::move(params));
+  static const DeepQuery kPathToHelpBubbleCloseButton = {
+      "user-education-internals", "#IPH_WebUiHelpBubbleTest", "help-bubble",
+      "#close"};
+  StateChange bubble_is_visible;
+  bubble_is_visible.event = kBubbleIsVisible;
+  bubble_is_visible.where = kPathToHelpBubbleCloseButton;
+  bubble_is_visible.type = StateChange::Type::kExists;
+  RunTestSequence(
+      InstrumentTab(kTabId), Do(std::move(help_bubble_start_callback)),
+      WaitForWebContentsNavigation(kTabId, GURL(kPageWithAnchorURL)),
+      WaitForStateChange(kTabId, std::move(bubble_is_visible)),
+      CheckJsResultAt(kTabId, kPathToHelpBubbleCloseButton,
+                      "(el) => el.getAttribute('aria-label')",
+                      l10n_util::GetStringUTF8(IDS_CLOSE_PROMO)));
 }
