@@ -1,0 +1,100 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_WEB_CONTENT_JS_MESSAGING_CONTENT_WEB_FRAME_H_
+#define IOS_WEB_CONTENT_JS_MESSAGING_CONTENT_WEB_FRAME_H_
+
+#import <map>
+#import <string>
+
+#import "base/cancelable_callback.h"
+#import "base/values.h"
+#import "content/public/browser/global_routing_id.h"
+#import "ios/web/js_messaging/web_frame_internal.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/web_state_observer.h"
+#import "url/gurl.h"
+
+namespace content {
+class RenderFrameHost;
+}
+
+namespace web {
+
+class ContentWebState;
+
+// ContentWebFrame is a WebFrame that wraps a content::RenderFrameHost.
+class ContentWebFrame : public WebFrame,
+                        public WebFrameInternal,
+                        public WebStateObserver {
+ public:
+  ContentWebFrame(const std::string& web_frame_id,
+                  const content::GlobalRenderFrameHostId& content_id,
+                  ContentWebState* content_web_state);
+
+  ContentWebFrame(const ContentWebFrame&) = delete;
+  ContentWebFrame& operator=(const ContentWebFrame&) = delete;
+
+  ~ContentWebFrame() override;
+
+  // WebFrame:
+  WebFrameInternal* GetWebFrameInternal() override;
+  std::string GetFrameId() const override;
+  bool IsMainFrame() const override;
+  GURL GetSecurityOrigin() const override;
+  BrowserState* GetBrowserState() override;
+
+  bool CallJavaScriptFunction(
+      const std::string& name,
+      const std::vector<base::Value>& parameters) override;
+  bool CallJavaScriptFunction(
+      const std::string& name,
+      const std::vector<base::Value>& parameters,
+      base::OnceCallback<void(const base::Value*)> callback,
+      base::TimeDelta timeout) override;
+
+  bool ExecuteJavaScript(const std::u16string& script) override;
+  bool ExecuteJavaScript(
+      const std::u16string& script,
+      base::OnceCallback<void(const base::Value*)> callback) override;
+  bool ExecuteJavaScript(const std::u16string& script,
+                         ExecuteJavaScriptCallbackWithError callback) override;
+
+  // WebFrameInternal:
+  bool CallJavaScriptFunctionInContentWorld(
+      const std::string& name,
+      const std::vector<base::Value>& parameters,
+      JavaScriptContentWorld* content_world) override;
+  bool CallJavaScriptFunctionInContentWorld(
+      const std::string& name,
+      const std::vector<base::Value>& parameters,
+      JavaScriptContentWorld* content_world,
+      base::OnceCallback<void(const base::Value*)> callback,
+      base::TimeDelta timeout) override;
+
+  // WebStateObserver:
+  void WebStateDestroyed(WebState* web_state) override;
+
+ private:
+  // Detaches the receiver from the associated  WebState.
+  void DetachFromWebState();
+
+  // Returns the RenderFrameHost corresponding to this WebFrame.
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
+  // The web frame identifier which uniquely identifies this frame across the
+  // application's lifetime.
+  std::string web_frame_id_;
+
+  // The content frame identifier which uniquely identifies this frame across
+  // the application's lifetime.
+  content::GlobalRenderFrameHostId content_id_;
+
+  // The web state corresponding to the WebContents for this frame.
+  raw_ptr<ContentWebState> content_web_state_;
+};
+
+}  // namespace web
+
+#endif  // IOS_WEB_CONTENT_JS_MESSAGING_CONTENT_WEB_FRAME_H_

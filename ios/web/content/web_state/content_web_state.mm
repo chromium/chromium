@@ -76,7 +76,7 @@ ContentWebState::ContentWebState(const CreateParams& params) {
           params.browser_state);
   navigation_manager_ = std::make_unique<ContentNavigationManager>(
       this, params.browser_state, controller);
-  web_frames_manager_ = std::make_unique<ContentWebFramesManager>();
+  web_frames_manager_ = std::make_unique<ContentWebFramesManager>(this);
 
   web_view_ = [[UIScrollView alloc] init];
   web_view_.translatesAutoresizingMaskIntoConstraints = NO;
