@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -286,7 +287,7 @@ bool ParseApp(const base::Value& app_node_val,
     }
   }
 
-  DCHECK(result->status.empty() || result->status == "ok");
+  CHECK(result->status.empty() || result->status == "ok");
 
   if (const base::Value::List* data_node = app_node.FindList("data")) {
     base::ranges::for_each(*data_node, [&result](const base::Value& data) {
@@ -307,7 +308,7 @@ bool ParseApp(const base::Value& app_node_val,
 
 bool ProtocolParserJSON::DoParse(const std::string& response_json,
                                  Results* results) {
-  DCHECK(results);
+  CHECK(results);
 
   if (response_json.empty()) {
     ParseError("Empty JSON.");

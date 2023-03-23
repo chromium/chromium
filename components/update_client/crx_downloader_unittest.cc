@@ -139,7 +139,7 @@ void CrxDownloaderTest::DownloadComplete(const CrxDownloader::Result& result) {
 void CrxDownloaderTest::DownloadProgress(int64_t downloaded_bytes,
                                          int64_t total_bytes) {
   if (downloaded_bytes != -1 && total_bytes != -1)
-    DCHECK_LE(downloaded_bytes, total_bytes);
+    EXPECT_LE(downloaded_bytes, total_bytes);
   downloaded_bytes_ = downloaded_bytes;
   total_bytes_ = total_bytes;
   ++num_progress_calls_;

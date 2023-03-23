@@ -78,8 +78,8 @@ UpdateClientImpl::UpdateClientImpl(
 UpdateClientImpl::~UpdateClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(task_queue_.empty());
-  DCHECK(tasks_.empty());
+  CHECK(task_queue_.empty());
+  CHECK(tasks_.empty());
 
   config_ = nullptr;
 }
@@ -156,7 +156,7 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
                                       scoped_refptr<Task> task,
                                       Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(task);
+  CHECK(task);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error));

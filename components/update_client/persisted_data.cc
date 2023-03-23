@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
@@ -214,7 +215,7 @@ base::Version PersistedData::GetProductVersion(const std::string& id) const {
 
 void PersistedData::SetProductVersion(const std::string& id,
                                       const base::Version& pv) {
-  DCHECK(pv.IsValid());
+  CHECK(pv.IsValid());
   SetString(id, "pv", pv.GetString());
 }
 

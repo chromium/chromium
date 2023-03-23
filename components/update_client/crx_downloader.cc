@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -106,8 +107,8 @@ void CrxDownloader::OnDownloadComplete(
     return;
   }
 
-  DCHECK_EQ(0, download_metrics.error);
-  DCHECK(is_handled);
+  CHECK_EQ(0, download_metrics.error);
+  CHECK(is_handled);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
@@ -161,9 +162,9 @@ void CrxDownloader::HandleDownloadError(
     const Result& result,
     const DownloadMetrics& download_metrics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(0, result.error);
-  DCHECK(result.response.empty());
-  DCHECK_NE(0, download_metrics.error);
+  CHECK_NE(0, result.error);
+  CHECK(result.response.empty());
+  CHECK_NE(0, download_metrics.error);
 
   download_metrics_.push_back(download_metrics);
 

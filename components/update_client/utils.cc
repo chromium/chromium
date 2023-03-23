@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
@@ -77,7 +78,7 @@ std::string GetCrxComponentID(const CrxComponent& component) {
 std::string GetCrxIdFromPublicKeyHash(const std::vector<uint8_t>& pk_hash) {
   const std::string result =
       crx_file::id_util::GenerateIdFromHash(&pk_hash[0], pk_hash.size());
-  DCHECK(crx_file::id_util::IdIsValid(result));
+  CHECK(crx_file::id_util::IdIsValid(result));
   return result;
 }
 
@@ -145,7 +146,7 @@ bool IsValidInstallerAttribute(const InstallerAttribute& attr) {
 }
 
 void RemoveUnsecureUrls(std::vector<GURL>* urls) {
-  DCHECK(urls);
+  CHECK(urls);
   base::EraseIf(*urls,
                 [](const GURL& url) { return !url.SchemeIsCryptographic(); });
 }

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -838,7 +839,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
     return;
   }
 
-  DCHECK(!is_foreground_);
+  CHECK(!is_foreground_);
   {
     auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
         config_->test_url_loader_factory());

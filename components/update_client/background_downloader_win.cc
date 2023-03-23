@@ -16,6 +16,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -440,7 +442,7 @@ void BackgroundDownloader::DoStartDownload(const GURL& url) {
 
 // Called one time when this class is asked to do a download.
 void BackgroundDownloader::BeginDownload(const GURL& url) {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
 
   download_start_time_ = base::TimeTicks::Now();
   job_stuck_begin_time_ = download_start_time_;
@@ -487,7 +489,7 @@ HRESULT BackgroundDownloader::BeginDownloadHelper(const GURL& url) {
 
 // Called any time the timer fires.
 void BackgroundDownloader::OnDownloading() {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
 
   HRESULT hr = UpdateInterfacePointers();
   if (FAILED(hr)) {
@@ -551,7 +553,7 @@ void BackgroundDownloader::OnDownloading() {
 // Completes the BITS download, picks up the file path of the response, and
 // notifies the CrxDownloader. The function should be called only once.
 void BackgroundDownloader::EndDownload(HRESULT error) {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
 
   const base::TimeTicks download_end_time(base::TimeTicks::Now());
   const base::TimeDelta download_time =
@@ -575,7 +577,7 @@ void BackgroundDownloader::EndDownload(HRESULT error) {
 
   const int error_to_report = SUCCEEDED(error) ? 0 : error;
 
-  DCHECK(static_cast<bool>(error_to_report) == !base::PathExists(response_));
+  CHECK(static_cast<bool>(error_to_report) == !base::PathExists(response_));
 
   DownloadMetrics download_metrics;
   download_metrics.url = url();
@@ -610,7 +612,7 @@ bool BackgroundDownloader::OnStateError() {
   if (FAILED(hr))
     error_code = hr;
 
-  DCHECK(FAILED(error_code));
+  CHECK(FAILED(error_code));
   EndDownload(error_code);
   return true;
 }
@@ -676,7 +678,7 @@ bool BackgroundDownloader::OnStateTransferring() {
 
 HRESULT BackgroundDownloader::QueueBitsJob(const GURL& url,
                                            ComPtr<IBackgroundCopyJob>* job) {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
 
   size_t num_jobs = std::numeric_limits<size_t>::max();
   HRESULT hr = GetBackgroundDownloaderJobCount(&num_jobs);
@@ -799,8 +801,8 @@ HRESULT BackgroundDownloader::CompleteJob() {
   // Check the post-conditions of a successful download, including the file and
   // job invariants. The byte counts for a job and its file must match as a job
   // only contains one file.
-  DCHECK(progress.Completed);
-  DCHECK_EQ(progress.BytesTotal, progress.BytesTransferred);
+  CHECK(progress.Completed);
+  CHECK_EQ(progress.BytesTotal, progress.BytesTransferred);
 
   response_ = base::FilePath(local_name);
 
@@ -808,7 +810,7 @@ HRESULT BackgroundDownloader::CompleteJob() {
 }
 
 HRESULT BackgroundDownloader::UpdateInterfacePointers() {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
 
   bits_manager_ = nullptr;
   job_ = nullptr;
@@ -836,7 +838,7 @@ void BackgroundDownloader::ResetInterfacePointers() {
 }
 
 HRESULT BackgroundDownloader::ClearGit() {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
 
   ResetInterfacePointers();
 
@@ -859,8 +861,8 @@ HRESULT BackgroundDownloader::ClearGit() {
 
 HRESULT BackgroundDownloader::GetBackgroundDownloaderJobCount(
     size_t* num_jobs) {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(bits_manager_);
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(bits_manager_);
 
   std::vector<ComPtr<IBackgroundCopyJob>> jobs;
   const HRESULT hr =
@@ -874,8 +876,8 @@ HRESULT BackgroundDownloader::GetBackgroundDownloaderJobCount(
 }
 
 void BackgroundDownloader::CleanupStaleJobs() {
-  DCHECK(com_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(bits_manager_);
+  CHECK(com_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(bits_manager_);
 
   static base::Time last_sweep;
 

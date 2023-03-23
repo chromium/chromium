@@ -154,7 +154,7 @@ std::string UpdateQueryParams::GetProdVersion() {
 
 // static
 void UpdateQueryParams::SetDelegate(UpdateQueryParamsDelegate* delegate) {
-  DCHECK(!g_delegate || !delegate || (delegate == g_delegate));
+  CHECK(!g_delegate || !delegate || (delegate == g_delegate));
   g_delegate = delegate;
 }
 

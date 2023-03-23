@@ -160,7 +160,7 @@ void DeltaUpdateOpCreate::DoRun(ComponentPatcher::Callback callback) {
 DeltaUpdateOpPatch::DeltaUpdateOpPatch(const std::string& operation,
                                        scoped_refptr<Patcher> patcher)
     : operation_(operation), patcher_(patcher) {
-  DCHECK(operation == kBsdiff || operation == kCourgette);
+  CHECK(operation == kBsdiff || operation == kCourgette);
 }
 
 DeltaUpdateOpPatch::~DeltaUpdateOpPatch() = default;

@@ -4,6 +4,8 @@
 
 #include "components/update_client/net/url_loader_post_interceptor.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -35,7 +37,7 @@ URLLoaderPostInterceptor::URLLoaderPostInterceptor(
     std::vector<GURL> supported_urls,
     network::TestURLLoaderFactory* url_loader_factory)
     : url_loader_factory_(url_loader_factory) {
-  DCHECK_LT(0u, supported_urls.size());
+  CHECK_LT(0u, supported_urls.size());
   filtered_urls_.swap(supported_urls);
   InitializeWithInterceptor();
 }
@@ -44,7 +46,7 @@ URLLoaderPostInterceptor::URLLoaderPostInterceptor(
     std::vector<GURL> supported_urls,
     net::test_server::EmbeddedTestServer* embedded_test_server)
     : embedded_test_server_(embedded_test_server) {
-  DCHECK_LT(0u, supported_urls.size());
+  CHECK_LT(0u, supported_urls.size());
   filtered_urls_.swap(supported_urls);
   InitializeWithRequestHandler();
 }
@@ -157,7 +159,7 @@ int URLLoaderPostInterceptor::GetHitCountForURL(const GURL& url) {
 }
 
 void URLLoaderPostInterceptor::InitializeWithInterceptor() {
-  DCHECK(url_loader_factory_);
+  CHECK(url_loader_factory_);
   url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         GURL url = request.url;
@@ -197,8 +199,8 @@ void URLLoaderPostInterceptor::InitializeWithInterceptor() {
 }
 
 void URLLoaderPostInterceptor::InitializeWithRequestHandler() {
-  DCHECK(embedded_test_server_);
-  DCHECK(!url_loader_factory_);
+  CHECK(embedded_test_server_);
+  CHECK(!url_loader_factory_);
   embedded_test_server_->RegisterRequestHandler(base::BindRepeating(
       &URLLoaderPostInterceptor::RequestHandler, base::Unretained(this)));
 }

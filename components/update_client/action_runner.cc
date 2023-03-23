@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -54,7 +55,7 @@ void ActionRunner::Handle(const base::FilePath& crx_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto action_handler = component_->crx_component()->action_handler;
-  DCHECK(action_handler);
+  CHECK(action_handler);
 
   action_handler->Handle(crx_path, component_->session_id(),
                          std::move(callback_));

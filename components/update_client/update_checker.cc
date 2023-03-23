@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -154,10 +156,10 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
   // Components in this update check are either all foreground, or all
   // background since this member is inherited from the component's update
   // context. Pick the state of the first component to use in the update check.
-  DCHECK(!context->components.empty());
+  CHECK(!context->components.empty());
   const bool is_foreground =
       context->components.cbegin()->second->is_foreground();
-  DCHECK(base::ranges::all_of(
+  CHECK(base::ranges::all_of(
       context->components,
       [is_foreground](IdToComponentPtrMap::const_reference& elem) {
         return is_foreground == elem.second->is_foreground();
@@ -167,11 +169,11 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
 
   std::vector<protocol_request::App> apps;
   for (const auto& app_id : context->components_to_check_for_updates) {
-    DCHECK_EQ(1u, context->components.count(app_id));
+    CHECK_EQ(1u, context->components.count(app_id));
     const auto& component = context->components.at(app_id);
-    DCHECK_EQ(component->id(), app_id);
+    CHECK_EQ(component->id(), app_id);
     const auto& crx_component = component->crx_component();
-    DCHECK(crx_component);
+    CHECK(crx_component);
 
     if (crx_component->requires_network_encryption &&
         !url.SchemeIsCryptographic()) {
@@ -271,7 +273,7 @@ void UpdateCheckerImpl::OnRequestSenderComplete(
     return;
   }
 
-  DCHECK_EQ(0, error);
+  CHECK_EQ(0, error);
   UpdateCheckSucceeded(context, parser->results(), retry_after_sec);
 }
 
@@ -313,7 +315,7 @@ void UpdateCheckerImpl::UpdateCheckFailed(ErrorCategory error_category,
                                           int error,
                                           int retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(0, error);
+  CHECK_NE(0, error);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
