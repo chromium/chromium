@@ -67,10 +67,11 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
 
   suggestion_shown_timestamp_ = AutofillTickClock::NowTicks();
 
-  // Log if metadata is shown for any of the suggestions.
-  if (metadata_logging_context_.IsCardMetadataShown()) {
-    Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN, form);
-  }
+  // Log if any of the suggestions had metadata.
+  Log(metadata_logging_context_.card_metadata_available
+          ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SHOWN
+          : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN,
+      form);
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
@@ -114,12 +115,13 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       AutofillTickClock::NowTicks() - suggestion_shown_timestamp_,
       metadata_logging_context_, credit_card);
 
-  // Log if the selected suggestion had metadata shown.
+  // Log if the selected suggestion had metadata.
   metadata_logging_context_ =
       autofill_metrics::GetMetadataLoggingContext({credit_card});
-  if (metadata_logging_context_.IsCardMetadataShown()) {
-    Log(FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED, form);
-  }
+  Log(metadata_logging_context_.card_metadata_available
+          ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SELECTED
+          : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED,
+      form);
 }
 
 void CreditCardFormEventLogger::OnDidFillSuggestion(

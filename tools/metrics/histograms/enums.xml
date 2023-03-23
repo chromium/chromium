@@ -7357,9 +7357,10 @@ others/histograms.xml -->
   <int value="57"
       label="Autofilled field was cleared by JavaScript within
              kLimitBeforeRefill (1s) after being filled (once)"/>
-  <int value="58"
-      label="Suggestions shown and included a card that had metadata shown"/>
-  <int value="59" label="Selected card suggestion had metadata shown"/>
+  <int value="58" label="Suggestions shown and included a card with metadata"/>
+  <int value="59" label="Suggestions shown and none had metadata"/>
+  <int value="60" label="Selected card suggestion had metadata"/>
+  <int value="61" label="Selected card suggestion did not have metadata"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">
