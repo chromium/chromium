@@ -172,7 +172,6 @@ android_library("java") {
     "org/chromium/weblayer_private/WebLayerOriginVerifier.java",
     "org/chromium/weblayer_private/WebLayerTabModalPresenter.java",
     "org/chromium/weblayer_private/WebLayerVerificationResultStore.java",
-    "org/chromium/weblayer_private/WebMessageReplyProxyImpl.java",
     "org/chromium/weblayer_private/WebShareServiceFactory.java",
     "org/chromium/weblayer_private/WebappsHelper.java",
     "org/chromium/weblayer_private/bluetooth/WebLayerBluetoothChooserAndroidDelegate.java",
@@ -498,7 +497,6 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/WebLayerExceptionFilter.java",
     "org/chromium/weblayer_private/WebLayerFactoryImpl.java",
     "org/chromium/weblayer_private/WebLayerImpl.java",
-    "org/chromium/weblayer_private/WebMessageReplyProxyImpl.java",
     "org/chromium/weblayer_private/WebViewCompatibilityHelperImpl.java",
     "org/chromium/weblayer_private/WebappsHelper.java",
     "org/chromium/weblayer_private/bluetooth/WebLayerBluetoothChooserAndroidDelegate.java",
@@ -643,8 +641,6 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IWebLayer.aidl",
     "org/chromium/weblayer_private/interfaces/IWebLayerClient.aidl",
     "org/chromium/weblayer_private/interfaces/IWebLayerFactory.aidl",
-    "org/chromium/weblayer_private/interfaces/IWebMessageCallbackClient.aidl",
-    "org/chromium/weblayer_private/interfaces/IWebMessageReplyProxy.aidl",
   ]
 }
 

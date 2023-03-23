@@ -14,7 +14,6 @@ import org.chromium.webengine.interfaces.IPostMessageCallback;
 import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabObserverDelegate;
 import org.chromium.webengine.interfaces.ITabProxy;
-import org.chromium.webengine.interfaces.IWebMessageCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,48 +114,6 @@ class TabProxy extends ITabProxy.Stub {
                 }
             }
         });
-    }
-
-    @Override
-    public void registerWebMessageCallback(
-            IWebMessageCallback callback, String jsObjectName, List<String> allowedOrigins) {
-        mHandler.post(() -> {
-            getTab().registerWebMessageCallback(new WebMessageCallback() {
-                @Override
-                public void onWebMessageReceived(
-                        WebMessageReplyProxy replyProxy, WebMessage message) {
-                    try {
-                        callback.onWebMessageReceived(
-                                new WebMessageReplyProxyProxy(replyProxy), message.getContents());
-                    } catch (RemoteException e) {
-                    }
-                }
-
-                @Override
-                public void onWebMessageReplyProxyClosed(WebMessageReplyProxy replyProxy) {
-                    try {
-                        callback.onWebMessageReplyProxyClosed(
-                                new WebMessageReplyProxyProxy(replyProxy));
-                    } catch (RemoteException e) {
-                    }
-                }
-
-                @Override
-                public void onWebMessageReplyProxyActiveStateChanged(
-                        WebMessageReplyProxy replyProxy) {
-                    try {
-                        callback.onWebMessageReplyProxyActiveStateChanged(
-                                new WebMessageReplyProxyProxy(replyProxy));
-                    } catch (RemoteException e) {
-                    }
-                }
-            }, jsObjectName, allowedOrigins);
-        });
-    }
-
-    @Override
-    public void unregisterWebMessageCallback(String jsObjectName) {
-        mHandler.post(() -> { getTab().unregisterWebMessageCallback(jsObjectName); });
     }
 
     @Override

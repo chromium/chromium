@@ -30,9 +30,6 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/js_injection/browser/js_communication_host.h"
-#include "components/js_injection/browser/web_message_host.h"
-#include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
@@ -76,7 +73,6 @@
 #include "weblayer/browser/file_select_helper.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 #include "weblayer/browser/i18n_util.h"
-#include "weblayer/browser/js_communication/web_message_host_factory_wrapper.h"
 #include "weblayer/browser/navigation_controller_impl.h"
 #include "weblayer/browser/navigation_entry_data.h"
 #include "weblayer/browser/no_state_prefetch/prerender_tab_helper.h"
@@ -92,8 +88,6 @@
 #include "weblayer/browser/weblayer_features.h"
 #include "weblayer/common/isolated_world_ids.h"
 #include "weblayer/public/fullscreen_delegate.h"
-#include "weblayer/public/js_communication/web_message.h"
-#include "weblayer/public/js_communication/web_message_host_factory.h"
 #include "weblayer/public/new_tab_delegate.h"
 #include "weblayer/public/tab_observer.h"
 
@@ -125,7 +119,6 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "weblayer/browser/java/jni/TabImpl_jni.h"
 #include "weblayer/browser/javascript_tab_modal_dialog_manager_delegate_android.h"
-#include "weblayer/browser/js_communication/web_message_host_factory_proxy.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "weblayer/browser/safe_browsing/weblayer_safe_browsing_tab_observer_delegate.h"
 #include "weblayer/browser/translate_client_impl.h"
@@ -551,26 +544,6 @@ const std::map<std::string, std::string>& TabImpl::GetData() {
   return data_;
 }
 
-std::u16string TabImpl::AddWebMessageHostFactory(
-    std::unique_ptr<WebMessageHostFactory> factory,
-    const std::u16string& js_object_name,
-    const std::vector<std::string>& allowed_origin_rules) {
-  if (!js_communication_host_) {
-    js_communication_host_ =
-        std::make_unique<js_injection::JsCommunicationHost>(
-            web_contents_.get());
-  }
-  return js_communication_host_->AddWebMessageHostFactory(
-      std::make_unique<WebMessageHostFactoryWrapper>(std::move(factory)),
-      js_object_name, allowed_origin_rules);
-}
-
-void TabImpl::RemoveWebMessageHostFactory(
-    const std::u16string& js_object_name) {
-  if (js_communication_host_)
-    js_communication_host_->RemoveWebMessageHostFactory(js_object_name);
-}
-
 void TabImpl::ExecuteScriptWithUserGestureForTests(
     const std::u16string& script) {
   web_contents_->GetPrimaryMainFrame()
@@ -771,28 +744,6 @@ base::android::ScopedJavaLocalRef<jobjectArray> TabImpl::GetData(JNIEnv* env) {
     flattened_map.push_back(kv.second);
   }
   return base::android::ToJavaArrayOfStrings(env, flattened_map);
-}
-
-base::android::ScopedJavaLocalRef<jstring> TabImpl::RegisterWebMessageCallback(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& js_object_name,
-    const base::android::JavaParamRef<jobjectArray>& js_origins,
-    const base::android::JavaParamRef<jobject>& client) {
-  auto proxy = std::make_unique<WebMessageHostFactoryProxy>(client);
-  std::vector<std::string> origins;
-  base::android::AppendJavaStringArrayToStringVector(env, js_origins, &origins);
-  std::u16string result = AddWebMessageHostFactory(
-      std::move(proxy),
-      base::android::ConvertJavaStringToUTF16(env, js_object_name), origins);
-  return base::android::ConvertUTF16ToJavaString(env, result);
-}
-
-void TabImpl::UnregisterWebMessageCallback(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& js_object_name) {
-  std::u16string name;
-  base::android::ConvertJavaStringToUTF16(env, js_object_name, &name);
-  RemoveWebMessageHostFactory(name);
 }
 
 jboolean TabImpl::CanTranslate(JNIEnv* env) {

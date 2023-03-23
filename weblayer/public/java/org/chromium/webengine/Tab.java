@@ -19,8 +19,6 @@ import org.chromium.webengine.interfaces.IPostMessageCallback;
 import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabParams;
 import org.chromium.webengine.interfaces.ITabProxy;
-import org.chromium.webengine.interfaces.IWebMessageCallback;
-import org.chromium.webengine.interfaces.IWebMessageReplyProxy;
 
 import java.util.List;
 
@@ -139,59 +137,6 @@ public class Tab {
         return mTabNavigationController;
     }
 
-    /**
-     * Adds a WebMessageCallback and injects a JavaScript object into each frame that the
-     * WebMessageCallback will listen on.
-     *
-     * The injected JavaScript object will be named {@code jsObjectName} in the global scope. This
-     * will inject the JavaScript object in any frame whose origin matches {@code
-     * allowedOriginRules} for every navigation after this call, and the JavaScript object will be
-     * available immediately when the page begins to load.
-     */
-    public void registerWebMessageCallback(
-            WebMessageCallback callback, String jsObjectName, List<String> allowedOrigins) {
-        if (mTabProxy == null) {
-            throw new IllegalStateException("WebSandbox has been destroyed");
-        }
-        try {
-            mTabProxy.registerWebMessageCallback(new IWebMessageCallback.Stub() {
-                @Override
-                public void onWebMessageReceived(
-                        IWebMessageReplyProxy iReplyProxy, String message) {
-                    callback.onWebMessageReceived(new WebMessageReplyProxy(iReplyProxy), message);
-                }
-
-                @Override
-                public void onWebMessageReplyProxyClosed(IWebMessageReplyProxy iReplyProxy) {
-                    callback.onWebMessageReplyProxyClosed(new WebMessageReplyProxy(iReplyProxy));
-                }
-
-                @Override
-                public void onWebMessageReplyProxyActiveStateChanged(
-                        IWebMessageReplyProxy iReplyProxy) {
-                    callback.onWebMessageReplyProxyActiveStateChanged(
-                            new WebMessageReplyProxy(iReplyProxy));
-                }
-            }, jsObjectName, allowedOrigins);
-        } catch (RemoteException e) {
-        }
-    }
-
-    /**
-     * Removes the JavaScript object previously registered by way of registerWebMessageCallback.
-     * This impacts future navigations (not any already loaded navigations).
-     *
-     * @param jsObjectName Name of the JavaScript object.
-     */
-    public void unregisterWebMessageCallback(String jsObjectName) {
-        if (mTabProxy == null) {
-            throw new IllegalStateException("WebSandbox has been destroyed");
-        }
-        try {
-            mTabProxy.unregisterWebMessageCallback(jsObjectName);
-        } catch (RemoteException e) {
-        }
-    }
     /**
      * Registers a {@link TabObserver} and returns if successful.
      *

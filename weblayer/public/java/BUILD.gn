@@ -119,10 +119,6 @@ android_library("java") {
     "org/chromium/weblayer/WebFragmentTabListDelegate.java",
     "org/chromium/weblayer/WebLayer.java",
     "org/chromium/weblayer/WebLayerFileProvider.java",
-    "org/chromium/weblayer/WebMessage.java",
-    "org/chromium/weblayer/WebMessageCallback.java",
-    "org/chromium/weblayer/WebMessageReplyProxy.java",
-    "org/chromium/weblayer/WebMessageReplyProxyProxy.java",
     "org/chromium/weblayer/WebViewCompatibilityHelper.java",
     _version_constants_java_file,
   ]
@@ -208,8 +204,6 @@ android_aidl("webengine_aidl") {
     "org/chromium/webengine/interfaces/IWebEngineParams.aidl",
     "org/chromium/webengine/interfaces/IWebFragmentEventsDelegate.aidl",
     "org/chromium/webengine/interfaces/IWebFragmentEventsDelegateClient.aidl",
-    "org/chromium/webengine/interfaces/IWebMessageCallback.aidl",
-    "org/chromium/webengine/interfaces/IWebMessageReplyProxy.aidl",
     "org/chromium/webengine/interfaces/IWebSandboxCallback.aidl",
     "org/chromium/webengine/interfaces/IWebSandboxService.aidl",
   ]
@@ -248,8 +242,6 @@ android_library("webengine_java") {
     "org/chromium/webengine/WebEngine.java",
     "org/chromium/webengine/WebEngineParams.java",
     "org/chromium/webengine/WebFragment.java",
-    "org/chromium/webengine/WebMessageCallback.java",
-    "org/chromium/webengine/WebMessageReplyProxy.java",
     "org/chromium/webengine/WebSandbox.java",
   ]
 

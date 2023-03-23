@@ -172,7 +172,6 @@ test("weblayer_browsertests") {
     "../browser/favicon/test_favicon_fetcher_delegate.h",
     "../browser/fullscreen_browsertest.cc",
     "../browser/google_accounts_browsertest.cc",
-    "../browser/js_communication/web_message_browsertest.cc",
     "../browser/large_sticky_ad_intervention_browsertest.cc",
     "../browser/navigation_browsertest.cc",
     "../browser/navigation_error_navigation_throttle_browsertest.cc",

@@ -13,7 +13,6 @@
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
 #include "components/error_page/common/error.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/js_injection/renderer/js_communication.h"
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
@@ -147,7 +146,6 @@ void ContentRendererClientImpl::RenderFrameCreated(
   new SpellCheckProvider(render_frame, spellcheck_.get(),
                          local_interface_provider_.get());
 #endif
-  new js_injection::JsCommunication(render_frame);
 
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);

@@ -26,10 +26,6 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-namespace js_injection {
-class JsCommunicationHost;
-}
-
 namespace blink {
 namespace web_pref {
 struct WebPreferences;
@@ -161,14 +157,6 @@ class TabImpl : public Tab,
   jboolean SetData(JNIEnv* env,
                    const base::android::JavaParamRef<jobjectArray>& data);
   base::android::ScopedJavaLocalRef<jobjectArray> GetData(JNIEnv* env);
-  base::android::ScopedJavaLocalRef<jstring> RegisterWebMessageCallback(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& js_object_name,
-      const base::android::JavaParamRef<jobjectArray>& origins,
-      const base::android::JavaParamRef<jobject>& client);
-  void UnregisterWebMessageCallback(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& js_object_name);
   jboolean CanTranslate(JNIEnv* env);
   void ShowTranslateUi(JNIEnv* env);
   void RemoveTabFromBrowserBeforeDestroying(JNIEnv* env);
@@ -204,12 +192,6 @@ class TabImpl : public Tab,
   const std::string& GetGuid() override;
   void SetData(const std::map<std::string, std::string>& data) override;
   const std::map<std::string, std::string>& GetData() override;
-  std::u16string AddWebMessageHostFactory(
-      std::unique_ptr<WebMessageHostFactory> factory,
-      const std::u16string& js_object_name,
-      const std::vector<std::string>& js_origins) override;
-  void RemoveWebMessageHostFactory(
-      const std::u16string& js_object_name) override;
   std::unique_ptr<FaviconFetcher> CreateFaviconFetcher(
       FaviconFetcherDelegate* delegate) override;
   void SetTranslateTargetLanguage(
@@ -359,8 +341,6 @@ class TabImpl : public Tab,
   base::ObserverList<DataObserver>::Unchecked data_observers_;
 
   std::u16string title_;
-
-  std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 
   base::WeakPtrFactory<TabImpl> weak_ptr_factory_for_fullscreen_exit_{this};
 };

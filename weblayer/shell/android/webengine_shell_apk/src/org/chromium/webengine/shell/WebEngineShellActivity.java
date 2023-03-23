@@ -38,8 +38,6 @@ import org.chromium.webengine.TabListObserver;
 import org.chromium.webengine.TabManager;
 import org.chromium.webengine.WebEngine;
 import org.chromium.webengine.WebFragment;
-import org.chromium.webengine.WebMessageCallback;
-import org.chromium.webengine.WebMessageReplyProxy;
 import org.chromium.webengine.WebSandbox;
 import org.chromium.webengine.shell.topbar.TopBarImpl;
 import org.chromium.webengine.shell.topbar.TopBarObservers;
@@ -187,14 +185,6 @@ public class WebEngineShellActivity extends AppCompatActivity implements Fullscr
             }
         });
         activeTab.getNavigationController().navigate("https://google.com");
-
-        activeTab.registerWebMessageCallback(new WebMessageCallback() {
-            @Override
-            public void onWebMessageReceived(WebMessageReplyProxy replyProxy, String message) {
-                Log.i(TAG, "received WebMessage: " + message);
-                replyProxy.postMessage("Bouncing answer from tab: " + message);
-            }
-        }, "x", Arrays.asList("*"));
 
         activeTab.addMessageEventListener((Tab source, String message) -> {
             Log.w(TAG, "Received post message from web content: " + message);

@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
-import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
 import org.chromium.weblayer_private.interfaces.IExternalIntentInIncognitoCallbackClient;
@@ -25,14 +24,11 @@ import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IStringCallback;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ITabClient;
-import org.chromium.weblayer_private.interfaces.IWebMessageCallbackClient;
-import org.chromium.weblayer_private.interfaces.IWebMessageReplyProxy;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -533,172 +529,6 @@ class Tab {
     }
 
     /**
-     * Adds a WebMessageCallback and injects a JavaScript object into each frame that the
-     * WebMessageCallback will listen on.
-     *
-     * <p>
-     * The injected JavaScript object will be named {@code jsObjectName} in the global scope. This
-     * will inject the JavaScript object in any frame whose origin matches {@code
-     * allowedOriginRules} for every navigation after this call, and the JavaScript object will be
-     * available immediately when the page begins to load.
-     *
-     * <p>
-     * Each {@code allowedOriginRules} entry must follow the format {@code SCHEME "://" [
-     * HOSTNAME_PATTERN [ ":" PORT ] ]}, each part is explained in the below table:
-     *
-     * <table>
-     * <col width="25%">
-     * <tr><th>Rule</th><th>Description</th><th>Example</th></tr>
-     *
-     * <tr>
-     * <td>http/https with hostname</td>
-     * <td>{@code SCHEME} is http or https; {@code HOSTNAME_PATTERN} is a regular hostname; {@code
-     * PORT} is optional, when not present, the rule will match port {@code 80} for http and port
-     * {@code 443} for https.</td>
-     * <td><ul>
-     * <li>{@code https://foobar.com:8080} - Matches https:// URL on port 8080, whose normalized
-     * host is foobar.com.</li>
-     * <li>{@code https://www.example.com} - Matches https:// URL on port 443, whose normalized host
-     * is www.example.com.</li>
-     * </ul></td>
-     * </tr>
-     *
-     * <tr>
-     * <td>http/https with pattern matching</td>
-     * <td>{@code SCHEME} is http or https; {@code HOSTNAME_PATTERN} is a sub-domain matching
-     * pattern with a leading {@code *.}; {@code PORT} is optional, when not present, the rule will
-     * match port {@code 80} for http and port {@code 443} for https.</td>
-     *
-     * <td><ul>
-     * <li>{@code https://*.example.com} - Matches https://calendar.example.com and
-     * https://foo.bar.example.com but not https://example.com.</li>
-     * <li>{@code https://*.example.com:8080} - Matches https://calendar.example.com:8080</li>
-     * </ul></td>
-     * </tr>
-     *
-     * <tr>
-     * <td>http/https with IP literal</td>
-     * <td>{@code SCHEME} is https or https; {@code HOSTNAME_PATTERN} is IP literal; {@code PORT} is
-     * optional, when not present, the rule will match port {@code 80} for http and port {@code 443}
-     * for https.</td>
-     *
-     * <td><ul>
-     * <li>{@code https://127.0.0.1} - Matches https:// URL on port 443, whose IPv4 address is
-     * 127.0.0.1</li>
-     * <li>{@code https://[::1]} or {@code https://[0:0::1]}- Matches any URL to the IPv6 loopback
-     * address with port 443.</li>
-     * <li>{@code https://[::1]:99} - Matches any https:// URL to the IPv6 loopback on port 99.</li>
-     * </ul></td>
-     * </tr>
-     *
-     * <tr>
-     * <td>Custom scheme</td>
-     * <td>{@code SCHEME} is a custom scheme; {@code HOSTNAME_PATTERN} and {@code PORT} must not be
-     * present.</td>
-     * <td><ul>
-     * <li>{@code my-app-scheme://} - Matches any my-app-scheme:// URL.</li>
-     * </ul></td>
-     * </tr>
-     *
-     * <tr><td>{@code *}</td>
-     * <td>Wildcard rule, matches any origin.</td>
-     * <td><ul><li>{@code *}</li></ul></td>
-     * </table>
-     *
-     * <p>
-     * Note that this is a powerful API, as the JavaScript object will be injected when the frame's
-     * origin matches any one of the allowed origins. The HTTPS scheme is strongly recommended for
-     * security; allowing HTTP origins exposes the injected object to any potential network-based
-     * attackers. If a wildcard {@code "*"} is provided, it will inject the JavaScript object to all
-     * frames. A wildcard should only be used if the app wants <b>any</b> third party web page to be
-     * able to use the injected object. When using a wildcard, the app must treat received messages
-     * as untrustworthy and validate any data carefully.
-     *
-     * <p>
-     * This method can be called multiple times to inject multiple JavaScript objects.
-     *
-     * <p>
-     * Let's say the injected JavaScript object is named {@code myObject}. We will have following
-     * methods on that object once it is available to use:
-     * <pre class="prettyprint">
-     * // message needs to be a JavaScript String.
-     * myObject.postMessage(message)
-     *
-     * // To receive the message posted from the app side. event has a "data" property, which is the
-     * // message string from the app side.
-     * myObject.onmessage(event)
-     *
-     * // To be compatible with DOM EventTarget's addEventListener, it accepts type and listener
-     * // parameters, where type can be only "message" type and listener can only be a JavaScript
-     * // function for myObject. An event object will be passed to listener with a "data" property,
-     * // which is the message string from the app side.
-     * myObject.addEventListener(type, listener)
-     *
-     * // To be compatible with DOM EventTarget's removeEventListener, it accepts type and listener
-     * // parameters, where type can be only "message" type and listener can only be a JavaScript
-     * // function for myObject.
-     * myObject.removeEventListener(type, listener)
-     * </pre>
-     *
-     * <p>
-     * We start the communication between JavaScript and the app from the JavaScript side. In order
-     * to send message from the app to JavaScript, it needs to post a message from JavaScript first,
-     * so the app will have a {@link WebMessageReplyProxy} object to respond. Example:
-     * <pre class="prettyprint">
-     * // Web page (in JavaScript)
-     * myObject.onmessage = function(event) {
-     *   // prints "Got it!" when we receive the app's response.
-     *   console.log(event.data);
-     * }
-     * myObject.postMessage("I'm ready!");
-     *
-     * // App (in Java)
-     * WebMessageCallback callback = new WebMessageCallback() {
-     *   &#064;Override
-     *   public void onWebMessageReceived(WebMessageReplyProxy proxy,
-     *                                    WebMessage message) {
-     *     // do something about view, message, sourceOrigin and isMainFrame.
-     *     proxy.postMessage(new WebMessage("Got it!"));
-     *   }
-     * };
-     * tab.registerWebMessageCallback(callback, "myObject", rules);
-     * </pre>
-     *
-     * @param callback The WebMessageCallback to notify of messages.
-     * @param jsObjectName The name to give the injected JavaScript object.
-     * @param allowedOrigins The set of allowed origins.
-     *
-     * @throws IllegalArgumentException if jsObjectName or allowedOrigins is invalid.
-     */
-    public void registerWebMessageCallback(@NonNull WebMessageCallback callback,
-            @NonNull String jsObjectName, @NonNull List<String> allowedOrigins) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.registerWebMessageCallback(
-                    jsObjectName, allowedOrigins, new WebMessageCallbackClientImpl(callback));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * Removes the JavaScript object previously registered by way of registerWebMessageCallback.
-     * This impacts future navigations (not any already loaded navigations).
-     *
-     * @param jsObjectName Name of the JavaScript object.
-     */
-    public void unregisterWebMessageCallback(@NonNull String jsObjectName) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.unregisterWebMessageCallback(jsObjectName);
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
      * Returns true if the content displayed in this tab can be translated.
      */
     public boolean canTranslate() {
@@ -824,59 +654,6 @@ class Tab {
             mImpl.addToHomescreen();
         } catch (RemoteException e) {
             throw new APICallException(e);
-        }
-    }
-
-    private static final class WebMessageCallbackClientImpl extends IWebMessageCallbackClient.Stub {
-        private final WebMessageCallback mCallback;
-        // Maps from id of IWebMessageReplyProxy to WebMessageReplyProxy. This is done to avoid AIDL
-        // creating an implementation of IWebMessageReplyProxy every time onPostMessage() is called.
-        private final Map<Integer, WebMessageReplyProxy> mProxyIdToProxy =
-                new HashMap<Integer, WebMessageReplyProxy>();
-
-        private WebMessageCallbackClientImpl(WebMessageCallback callback) {
-            mCallback = callback;
-        }
-
-        @Override
-        public void onNewReplyProxy(IWebMessageReplyProxy proxy, int proxyId, boolean isMainFrame,
-                String sourceOrigin) {
-            StrictModeWorkaround.apply();
-            assert mProxyIdToProxy.get(proxyId) == null;
-            mProxyIdToProxy.put(
-                    proxyId, new WebMessageReplyProxy(proxy, isMainFrame, sourceOrigin));
-        }
-
-        @Override
-        public void onPostMessage(int proxyId, String string) {
-            StrictModeWorkaround.apply();
-            assert mProxyIdToProxy.get(proxyId) != null;
-            mCallback.onWebMessageReceived(mProxyIdToProxy.get(proxyId), new WebMessage(string));
-        }
-
-        @Override
-        public void onReplyProxyDestroyed(int proxyId) {
-            StrictModeWorkaround.apply();
-            WebMessageReplyProxy proxy = mProxyIdToProxy.get(proxyId);
-            assert proxy != null;
-            proxy.markClosed();
-            mProxyIdToProxy.remove(proxyId);
-            mCallback.onWebMessageReplyProxyClosed(proxy);
-        }
-
-        @Override
-        public void onReplyProxyActiveStateChanged(int proxyId) {
-            StrictModeWorkaround.apply();
-            WebMessageReplyProxy proxy = mProxyIdToProxy.get(proxyId);
-            assert proxy != null;
-            mCallback.onWebMessageReplyProxyActiveStateChanged(proxy);
-        }
-
-        @Override
-        public void onSetPage(int proxyId, IClientPage clientPage) {
-            StrictModeWorkaround.apply();
-            assert mProxyIdToProxy.get(proxyId) != null;
-            mProxyIdToProxy.get(proxyId).setPage((Page) clientPage);
         }
     }
 
