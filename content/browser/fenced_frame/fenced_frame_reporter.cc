@@ -525,12 +525,6 @@ void FencedFrameReporter::MaybeBindPrivateAggregationHost() {
   DCHECK(bound);
 }
 
-void FencedFrameReporter::UpdateAutomaticBeaconData(
-    const std::string& event_data,
-    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
-  automatic_beacon_info_.emplace(event_data, destination);
-}
-
 base::flat_map<blink::FencedFrame::ReportingDestination,
                FencedFrameReporter::ReportingUrlMap>
 FencedFrameReporter::GetAdBeaconMapForTesting() {

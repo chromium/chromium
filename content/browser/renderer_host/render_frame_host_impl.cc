@@ -8121,7 +8121,7 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
 
   // If there is no automatic beacon declared, there is nothing to send.
   absl::optional<AutomaticBeaconInfo> info =
-      properties->fenced_frame_reporter_->automatic_beacon_info();
+      properties->automatic_beacon_info();
   if (!info) {
     return;
   }

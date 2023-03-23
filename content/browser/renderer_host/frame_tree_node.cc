@@ -927,8 +927,7 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
         "origin to the mapped url from the fenced frame config.");
     return;
   }
-  properties->fenced_frame_reporter_->UpdateAutomaticBeaconData(event_data,
-                                                                destination);
+  properties->UpdateAutomaticBeaconData(event_data, destination);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth(

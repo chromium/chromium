@@ -262,4 +262,10 @@ void FencedFrameProperties::UpdateMappedURL(GURL url) {
   mapped_url_->value_ = url;
 }
 
+void FencedFrameProperties::UpdateAutomaticBeaconData(
+    const std::string& event_data,
+    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+  automatic_beacon_info_.emplace(event_data, destination);
+}
+
 }  // namespace content
