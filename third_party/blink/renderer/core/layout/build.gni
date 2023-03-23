@@ -373,6 +373,7 @@ blink_core_sources_layout = [
   "ng/grid/ng_grid_placement.h",
   "ng/grid/ng_grid_sizing_tree.cc",
   "ng/grid/ng_grid_sizing_tree.h",
+  "ng/grid/ng_grid_subtree.h",
   "ng/grid/ng_grid_track_collection.cc",
   "ng/grid/ng_grid_track_collection.h",
   "ng/inline/empty_offset_mapping_builder.h",
