@@ -21,55 +21,6 @@ import {IEventManager} from '../events/EventManager.js';
 
 import {Realm} from './realm.js';
 
-async function initChannelListener(
-  channel: Script.Channel,
-  channelHandle: string | undefined,
-  eventManager: IEventManager,
-  realm: Realm
-) {
-  const channelId = channel.value.channel;
-
-  // TODO(#294): Remove this loop after the realm is destroyed.
-  // Rely on the CDP throwing exception in such a case.
-  for (;;) {
-    const message = await realm.cdpClient.sendCommand(
-      'Runtime.callFunctionOn',
-      {
-        functionDeclaration: String(
-          async (channelHandle: {getMessage: () => Promise<unknown>}) =>
-            channelHandle.getMessage()
-        ),
-        arguments: [
-          {
-            objectId: channelHandle,
-          },
-        ],
-        awaitPromise: true,
-        executionContextId: realm.executionContextId,
-        generateWebDriverValue: true,
-      }
-    );
-
-    eventManager.registerPromiseEvent(
-      realm
-        .cdpToBidiValue(message, channel.value.ownership ?? 'none')
-        .then((data) => ({
-          method: Script.EventNames.MessageEvent,
-          params: {
-            channel: channelId,
-            data,
-            source: {
-              realm: realm.realmId,
-              context: realm.browsingContextId,
-            },
-          },
-        })),
-      realm.browsingContextId,
-      Script.EventNames.MessageEvent
-    );
-  }
-}
-
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.
 const CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
@@ -495,12 +446,7 @@ export class ScriptEvaluator {
         const channelHandle = createChannelHandleResult.result.objectId;
 
         // Long-poll the message queue asynchronously.
-        initChannelListener(
-          argumentValue,
-          channelHandle,
-          this.#eventManager,
-          realm
-        );
+        this.#initChannelListener(argumentValue, channelHandle, realm);
 
         const sendMessageArgResult = await realm.cdpClient.sendCommand(
           'Runtime.callFunctionOn',
@@ -569,6 +515,54 @@ export class ScriptEvaluator {
     }
 
     return result;
+  }
+
+  async #initChannelListener(
+    channel: Script.Channel,
+    channelHandle: string | undefined,
+    realm: Realm
+  ) {
+    const channelId = channel.value.channel;
+
+    // TODO(#294): Remove this loop after the realm is destroyed.
+    // Rely on the CDP throwing exception in such a case.
+    for (;;) {
+      const message = await realm.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: String(
+            async (channelHandle: {getMessage: () => Promise<unknown>}) =>
+              channelHandle.getMessage()
+          ),
+          arguments: [
+            {
+              objectId: channelHandle,
+            },
+          ],
+          awaitPromise: true,
+          executionContextId: realm.executionContextId,
+          generateWebDriverValue: true,
+        }
+      );
+
+      this.#eventManager.registerPromiseEvent(
+        realm
+          .cdpToBidiValue(message, channel.value.ownership ?? 'none')
+          .then((data) => ({
+            method: Script.EventNames.MessageEvent,
+            params: {
+              channel: channelId,
+              data,
+              source: {
+                realm: realm.realmId,
+                context: realm.browsingContextId,
+              },
+            },
+          })),
+        realm.browsingContextId,
+        Script.EventNames.MessageEvent
+      );
+    }
   }
 
   async #serializeCdpExceptionDetails(
