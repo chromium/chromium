@@ -10,7 +10,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
-#import "ios/chrome/browser/ui/ntp/metrics/feed_state_tracker.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_refresh_state_tracker.h"
 
 class DiscoverFeedRefresher;
 @protocol FeedControlDelegate;
@@ -21,7 +21,7 @@ class Time;
 }
 
 // Records different metrics for the NTP feeds.
-@interface FeedMetricsRecorder : NSObject <FeedStateTracker>
+@interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
 
 // Delegate to get the currently selected feed.
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;

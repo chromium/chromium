@@ -649,7 +649,7 @@ using feed::FeedUserActionType;
   }
 }
 
-#pragma mark - FeedStateTracker
+#pragma mark - FeedRefreshStateTracker
 
 - (BOOL)isNTPAndFeedVisible {
   return self.isNTPVisible && self.isFeedVisible;

@@ -10,10 +10,10 @@ source_set("metrics") {
     "feed_metrics_recorder+testing.h",
     "feed_metrics_recorder.h",
     "feed_metrics_recorder.mm",
+    "feed_refresh_state_tracker.h",
     "feed_session_recorder+testing.h",
     "feed_session_recorder.h",
     "feed_session_recorder.mm",
-    "feed_state_tracker.h",
     "metrics.h",
     "metrics.mm",
   ]

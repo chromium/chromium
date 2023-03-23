@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_STATE_TRACKER_H_
-#define IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_STATE_TRACKER_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_REFRESH_STATE_TRACKER_H_
+#define IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_REFRESH_STATE_TRACKER_H_
 
-// Tracks state of the feed, such as whether the feed is user visible, or if the
-// user has engaged with the latest refresh content.
-@protocol FeedStateTracker
+// Tracks state of the feed with regards to refreshing the feed, such as whether
+// the feed is user visible, or if the user has engaged with the latest refresh
+// content.
+@protocol FeedRefreshStateTracker
 
 // Returns YES if the user has engaged with the latest refreshed content. The
 // term "engaged" is an implementation detail of the receiver.
@@ -19,4 +20,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_STATE_TRACKER_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_METRICS_FEED_REFRESH_STATE_TRACKER_H_
