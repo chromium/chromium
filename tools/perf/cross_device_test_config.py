@@ -95,6 +95,9 @@ TARGET_DEVICES = {
         'speedometer2': {
             'Speedometer2': 20,
         },
+        'speedometer2-minormc': {
+            'Speedometer2': 20,
+        },
     },
     'win-10_laptop_low_end-perf': {
         'jetstream2': {
@@ -140,6 +143,9 @@ TARGET_DEVICES = {
             'JetStream2': 5,
         },
         'speedometer2': {
+            'Speedometer2': 20,
+        },
+        'speedometer2-minormc': {
             'Speedometer2': 20,
         },
     },
