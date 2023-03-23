@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   Browser* app_browser = GetBrowserFromFrame(app_frame);
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
-  CreateIframe(app_frame, "child", non_app_url, "");
+  web_app::CreateIframe(app_frame, "child", non_app_url, "");
 
   const auto& app_cookies = GetCookieHeadersForUrl(app_proxy_url);
   EXPECT_EQ(1u, app_cookies.size());
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
   content::RenderFrameHost* app_frame2 = OpenApp(url_info.app_id());
   Browser* app_browser2 = GetBrowserFromFrame(app_frame2);
   app_frame2 = ui_test_utils::NavigateToURL(app_browser2, app_url);
-  CreateIframe(app_frame2, "child", non_app_url, "");
+  web_app::CreateIframe(app_frame2, "child", non_app_url, "");
 
   EXPECT_EQ(2u, app_cookies.size());
   EXPECT_TRUE(app_cookies[1].empty());

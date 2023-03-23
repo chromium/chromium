@@ -75,10 +75,6 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
   Browser* GetBrowserFromFrame(content::RenderFrameHost* frame);
-  void CreateIframe(content::RenderFrameHost* parent_frame,
-                    const std::string& iframe_id,
-                    const GURL& url,
-                    const std::string& permissions_policy);
 };
 
 std::unique_ptr<net::EmbeddedTestServer> CreateAndStartDevServer(
@@ -90,6 +86,11 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
                                              const AppId& app_id);
+
+void CreateIframe(content::RenderFrameHost* parent_frame,
+                  const std::string& iframe_id,
+                  const GURL& url,
+                  const std::string& permissions_policy);
 
 struct TestSignedWebBundle {
   TestSignedWebBundle(std::vector<uint8_t> data,

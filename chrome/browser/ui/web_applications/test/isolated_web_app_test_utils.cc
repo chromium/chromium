@@ -90,26 +90,6 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
   return browser;
 }
 
-void IsolatedWebAppBrowserTestHarness::CreateIframe(
-    content::RenderFrameHost* parent_frame,
-    const std::string& iframe_id,
-    const GURL& url,
-    const std::string& permissions_policy) {
-  EXPECT_EQ(true, content::EvalJs(
-                      parent_frame,
-                      content::JsReplace(R"(
-            new Promise(resolve => {
-              let f = document.createElement('iframe');
-              f.id = $1;
-              f.src = $2;
-              f.allow = $3;
-              f.addEventListener('load', () => resolve(true));
-              document.body.appendChild(f);
-            });
-        )",
-                                         iframe_id, url, permissions_policy)));
-}
-
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
     const AppId& app_id) {
   return OpenIsolatedWebApp(profile(), app_id);
@@ -174,6 +154,25 @@ content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
   return ui_test_utils::NavigateToURLWithDisposition(
       app_window, app->start_url(), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+}
+
+void CreateIframe(content::RenderFrameHost* parent_frame,
+                  const std::string& iframe_id,
+                  const GURL& url,
+                  const std::string& permissions_policy) {
+  EXPECT_EQ(true, content::EvalJs(
+                      parent_frame,
+                      content::JsReplace(R"(
+            new Promise(resolve => {
+              let f = document.createElement('iframe');
+              f.id = $1;
+              f.src = $2;
+              f.allow = $3;
+              f.addEventListener('load', () => resolve(true));
+              document.body.appendChild(f);
+            });
+        )",
+                                         iframe_id, url, permissions_policy)));
 }
 
 TestSignedWebBundle::TestSignedWebBundle(

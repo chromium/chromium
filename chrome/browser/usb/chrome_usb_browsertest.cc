@@ -652,7 +652,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "";
-  CreateIframe(app_frame, "child", GURL("/index.html"), permissions_policy);
+  web_app::CreateIframe(app_frame, "child", GURL("/index.html"),
+                        permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -666,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // since it does not specify usb in the allowlist.
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
-  CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
   iframe = ChildFrameAt(app_frame, 1);
 
   EXPECT_THAT(EvalJs(iframe, OpenAndClaimDeviceScript).ExtractString(),
@@ -686,7 +687,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "usb 'self'";
-  CreateIframe(app_frame, "child", GURL("/index.html"), permissions_policy);
+  web_app::CreateIframe(app_frame, "child", GURL("/index.html"),
+                        permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -724,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   GURL non_app_url =
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
   const std::string permissions_policy = "usb 'src'";
-  CreateIframe(app_frame, "child", non_app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -762,7 +764,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   const std::string permissions_policy = "usb 'none'";
-  CreateIframe(app_frame, "child", GURL("/index.html"), permissions_policy);
+  web_app::CreateIframe(app_frame, "child", GURL("/index.html"),
+                        permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -792,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
       https_server()->GetURL(kNonAppHost, "/banners/isolated/simple.html");
   const std::string permissions_policy = base::StringPrintf(
       "usb %s", https_server()->GetURL(kNonAppHost, "/").spec().c_str());
-  CreateIframe(app_frame, "child", non_app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -822,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
 
   const std::string permissions_policy = "";
-  CreateIframe(app_frame, "child", app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -837,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // Create a cross-origin iframe and expect usb to be disabled in that context.
   GURL non_app_url = https_server()->GetURL(
       kNonAppHost, "/web_apps/simple_isolated_app/usb_none.html");
-  CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
   iframe = ChildFrameAt(app_frame, 1);
 
   EXPECT_THAT(EvalJs(iframe, OpenAndClaimDeviceScript).ExtractString(),
@@ -863,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
 
   const std::string permissions_policy = "";
-  CreateIframe(app_frame, "child", app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -876,7 +879,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // Create a cross-origin iframe and expect usb to be disabled in that context.
   GURL non_app_url = https_server()->GetURL(
       kNonAppHost, "/web_apps/simple_isolated_app/usb_self.html");
-  CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child2", non_app_url, permissions_policy);
   iframe = ChildFrameAt(app_frame, 1);
 
   EXPECT_THAT(EvalJs(iframe, OpenAndClaimDeviceScript).ExtractString(),
@@ -901,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
 
   const std::string permissions_policy = "";
-  CreateIframe(app_frame, "child", app_url, permissions_policy);
+  web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
   auto fake_device_info = CreateSmartCardDevice();
@@ -915,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   // usb to be enabled in that context.
   GURL non_app_url = https_server()->GetURL(
       kNonAppHost, "/web_apps/simple_isolated_app/usb_all.html");
-  CreateIframe(app_frame, "child2", non_app_url, "usb");
+  web_app::CreateIframe(app_frame, "child2", non_app_url, "usb");
   iframe = ChildFrameAt(app_frame, 1);
 
   EXPECT_EQ("Success", EvalJs(iframe, OpenAndClaimDeviceScript));
