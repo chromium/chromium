@@ -119,6 +119,7 @@ export function createSiteSettingsPrefs(
     defaults[ContentSettingsTypes[type as keyof typeof ContentSettingsTypes]] =
         createDefaultContentSetting({});
   }
+  defaults[ContentSettingsTypes.ANTI_ABUSE].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.COOKIES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.IMAGES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.JAVASCRIPT].setting = ContentSetting.ALLOW;

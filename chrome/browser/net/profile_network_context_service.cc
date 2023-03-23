@@ -1079,6 +1079,7 @@ void ProfileNetworkContextService::OnContentSettingChanged(
       UpdateAllStorageAccessSettings(profile_);
       break;
     case ContentSettingsType::DEFAULT:
+      UpdateAntiAbuseSettings(profile_);
       UpdateCookieSettings(profile_);
       UpdateLegacyCookieSettings(profile_);
       UpdateAllStorageAccessSettings(profile_);

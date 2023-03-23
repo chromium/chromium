@@ -30,10 +30,12 @@
   }
 </style>
 <settings-toggle-button
+    id="toggleButton"
     pref="{{pref_}}"
     no-set-pref
     label="$i18n{siteSettingsAntiAbuse}"
     sub-label="$i18n{siteSettingsAntiAbuseDescription}"
+    disabled="[[toggleDisabled_]]"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
 <div class="info-container">
