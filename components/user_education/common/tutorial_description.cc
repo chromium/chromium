@@ -21,6 +21,17 @@ TutorialDescription::Step::Step()
       arrow(HelpBubbleArrow::kNone) {}
 TutorialDescription::Step::~Step() = default;
 
+TutorialDescription::Step::Step(ElementSpecifier element_specifier,
+                                ui::InteractionSequence::StepType step_type_,
+                                ui::CustomElementEventType event_type_)
+    : step_type(step_type_), event_type(event_type_) {
+  if (auto* id = absl::get_if<ui::ElementIdentifier>(&element_specifier)) {
+    element_id = *id;
+  } else {
+    CHECK(absl::holds_alternative<std::string>(element_specifier));
+    element_name = absl::get<std::string>(element_specifier);
+  }
+}
 TutorialDescription::Step::Step(
     int title_text_id_,
     int body_text_id_,
@@ -33,12 +44,12 @@ TutorialDescription::Step::Step(
     bool transition_only_on_event_,
     TutorialDescription::NameElementsCallback name_elements_callback_,
     ContextMode context_mode_)
-    : title_text_id(title_text_id_),
-      body_text_id(body_text_id_),
+    : element_id(element_id_),
+      element_name(element_name_),
       step_type(step_type_),
       event_type(event_type_),
-      element_id(element_id_),
-      element_name(element_name_),
+      title_text_id(title_text_id_),
+      body_text_id(body_text_id_),
       arrow(arrow_),
       must_remain_visible(must_remain_visible_),
       transition_only_on_event(transition_only_on_event_),
