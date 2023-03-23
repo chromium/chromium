@@ -15,10 +15,13 @@ namespace content::prerender_navigation_utils {
 // main frame in a prerendered page.
 bool IsDisallowedHttpResponseCode(int response_code);
 
-// Returns true if target_url is in the same site as origin.
+// Returns true if `target_url` is in the same site as `origin`.
 bool IsSameSite(const GURL& target_url, const url::Origin& origin);
 
-// Returns true if target_url is not in the same site as origin.
+// Returns true if `target_url` is in the same site cross origin as `origin`.
+bool IsSameSiteCrossOrigin(const GURL& target_url, const url::Origin& origin);
+
+// Returns true if `target_url` is not in the same site as `origin`.
 bool IsCrossSite(const GURL& target_url, const url::Origin& origin);
 
 }  // namespace content::prerender_navigation_utils

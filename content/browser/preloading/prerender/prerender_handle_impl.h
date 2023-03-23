@@ -28,6 +28,8 @@ class PrerenderHandleImpl final : public PrerenderHandle {
   void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) override;
 
+  int frame_tree_node_id_for_testing() const { return frame_tree_node_id_; }
+
  private:
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
   // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered

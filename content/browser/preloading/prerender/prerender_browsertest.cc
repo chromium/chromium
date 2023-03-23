@@ -509,6 +509,38 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     EXPECT_TRUE(final_status_entry_found);
   }
 
+  void ExpectFinalStatusForEmbedder(PrerenderFinalStatus status) {
+    // Check FinalStatus in UMA.
+    histogram_tester().ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+        "EmbedderSuffixForTest",
+        status, 1);
+
+    // UKM can be recorded in an initiator page and an activated page. Embedder
+    // triggers don't have an initiator page, so UKM is not recorded anywhere
+    // when prerendering is canceled.
+    if (status != PrerenderFinalStatus::kActivated) {
+      return;
+    }
+
+    // Check all entries in UKM to make sure that the recorded FinalStatus is
+    // equal to `status`. At least one entry should exist.
+    bool final_status_entry_found = false;
+    const auto entries = ukm_recorder_->GetEntriesByName(
+        ukm::builders::PrerenderPageLoad::kEntryName);
+    for (const auto* entry : entries) {
+      if (ukm_recorder_->EntryHasMetric(
+              entry, ukm::builders::PrerenderPageLoad::kFinalStatusName)) {
+        final_status_entry_found = true;
+        ukm_recorder_->ExpectEntryMetric(
+            entry, ukm::builders::PrerenderPageLoad::kFinalStatusName,
+            static_cast<int>(status));
+      }
+    }
+
+    EXPECT_TRUE(final_status_entry_found);
+  }
+
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   // Stores all the navigation_ids for all navigations. This is used to check
@@ -2191,7 +2223,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 }
 
 // Tests for main frame navigation in a prerendered page.
-class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
+class PrerenderMainFrameNavigationBrowserTest
+    : public testing::WithParamInterface<PrerenderTriggerType>,
+      public PrerenderBrowserTest {
  protected:
   enum class NavigationType {
     kSameOrigin,
@@ -2200,12 +2234,36 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
     kCrossSite,
   };
 
+  // TODO(nhiroki): Move this to PrerenderTestHelper.
+  std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerender(
+      const GURL& url) {
+    std::unique_ptr<PrerenderHandle> handle =
+        web_contents_impl()->StartPrerendering(
+            url, PrerenderTriggerType::kEmbedder, "EmbedderSuffixForTest",
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            nullptr);
+    EXPECT_TRUE(handle);
+    test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(*web_contents(),
+                                                              url);
+    return handle;
+  }
+
+  void NavigatePrimaryPageFromAddressBar(const GURL& url) {
+    web_contents()->OpenURL(OpenURLParams(
+        url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+        /*is_renderer_initiated=*/false));
+  }
+
   // Runs navigations in the `navigations_types` order and makes sure it ends
   // with `expected_status`.
   void TestMainFrameNavigation(
       const std::vector<NavigationType>& navigation_types,
       PrerenderFinalStatus expected_status) {
     ASSERT_FALSE(navigation_types.empty());
+    PrerenderTriggerType trigger_type = GetParam();
 
     std::vector<GURL> urls;
     for (auto type : navigation_types) {
@@ -2219,7 +2277,20 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
     ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
     // Start a prerender.
-    int host_id = AddPrerender(kPrerenderingUrl);
+    int host_id = RenderFrameHost::kNoFrameTreeNodeId;
+    std::unique_ptr<PrerenderHandle> prerender_handle;
+    switch (trigger_type) {
+      case PrerenderTriggerType::kSpeculationRule:
+        host_id = AddPrerender(kPrerenderingUrl);
+        break;
+      case PrerenderTriggerType::kEmbedder:
+        prerender_handle = AddEmbedderTriggeredPrerender(kPrerenderingUrl);
+        host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
+                      ->frame_tree_node_id_for_testing();
+        break;
+    }
+    ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
     test::PrerenderHostObserver observer(*web_contents_impl(), host_id);
 
     // Run navigations in the main frame of the prerendered page. Only the last
@@ -2245,7 +2316,14 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
         EXPECT_TRUE(navigation_observer.was_successful());
 
         // Activation should succeed.
-        NavigatePrimaryPage(kPrerenderingUrl);
+        switch (trigger_type) {
+          case PrerenderTriggerType::kSpeculationRule:
+            NavigatePrimaryPage(kPrerenderingUrl);
+            break;
+          case PrerenderTriggerType::kEmbedder:
+            NavigatePrimaryPageFromAddressBar(kPrerenderingUrl);
+            break;
+        }
         observer.WaitForActivation();
         EXPECT_TRUE(observer.was_activated());
         EXPECT_EQ(web_contents()->GetLastCommittedURL(), last_url);
@@ -2259,7 +2337,16 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
         break;
       }
     }
-    ExpectFinalStatusForSpeculationRule(expected_status);
+
+    // Verify UMA/UKM records.
+    switch (trigger_type) {
+      case PrerenderTriggerType::kSpeculationRule:
+        ExpectFinalStatusForSpeculationRule(expected_status);
+        break;
+      case PrerenderTriggerType::kEmbedder:
+        ExpectFinalStatusForEmbedder(expected_status);
+        break;
+    }
   }
 
   // Runs redirections in the `navigations_types` order and makes sure it ends
@@ -2268,6 +2355,7 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
       const std::vector<NavigationType>& redirection_types,
       PrerenderFinalStatus expected_status) {
     ASSERT_FALSE(redirection_types.empty());
+    PrerenderTriggerType trigger_type = GetParam();
 
     // Create a URL that rus a redirection sequence in the order of
     // `redirection_types`. To make the URL, create a final URL from the last
@@ -2287,7 +2375,20 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
     ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
     // Start a prerender.
-    int host_id = AddPrerender(kPrerenderingUrl);
+    int host_id = RenderFrameHost::kNoFrameTreeNodeId;
+    std::unique_ptr<PrerenderHandle> prerender_handle;
+    switch (trigger_type) {
+      case PrerenderTriggerType::kSpeculationRule:
+        host_id = AddPrerender(kPrerenderingUrl);
+        break;
+      case PrerenderTriggerType::kEmbedder:
+        prerender_handle = AddEmbedderTriggeredPrerender(kPrerenderingUrl);
+        host_id = static_cast<PrerenderHandleImpl*>(prerender_handle.get())
+                      ->frame_tree_node_id_for_testing();
+        break;
+    }
+    ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+
     test::PrerenderHostObserver observer(*web_contents_impl(), host_id);
 
     // Run redirections in the main frame of the prerendered page.
@@ -2301,7 +2402,14 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
         EXPECT_TRUE(navigation_observer.was_successful());
 
         // Activation should succeed.
-        NavigatePrimaryPage(kPrerenderingUrl);
+        switch (trigger_type) {
+          case PrerenderTriggerType::kSpeculationRule:
+            NavigatePrimaryPage(kPrerenderingUrl);
+            break;
+          case PrerenderTriggerType::kEmbedder:
+            NavigatePrimaryPageFromAddressBar(kPrerenderingUrl);
+            break;
+        }
         observer.WaitForActivation();
         EXPECT_TRUE(observer.was_activated());
         EXPECT_EQ(web_contents()->GetLastCommittedURL(), final_url);
@@ -2315,7 +2423,16 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
         break;
       }
     }
-    ExpectFinalStatusForSpeculationRule(expected_status);
+
+    // Verify UMA/UKM records.
+    switch (trigger_type) {
+      case PrerenderTriggerType::kSpeculationRule:
+        ExpectFinalStatusForSpeculationRule(expected_status);
+        break;
+      case PrerenderTriggerType::kEmbedder:
+        ExpectFinalStatusForEmbedder(expected_status);
+        break;
+    }
   }
 
  private:
@@ -2354,19 +2471,33 @@ class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest, SameOrigin) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrerenderMainFrameNavigationBrowserTest,
+    testing::Values(PrerenderTriggerType::kSpeculationRule,
+                    PrerenderTriggerType::kEmbedder),
+    [](const testing::TestParamInfo<PrerenderTriggerType>& info) {
+      switch (info.param) {
+        case PrerenderTriggerType::kSpeculationRule:
+          return "SpeculationRule";
+        case PrerenderTriggerType::kEmbedder:
+          return "Embedder";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest, SameOrigin) {
   std::vector<NavigationType> navigations = {NavigationType::kSameOrigin};
   TestMainFrameNavigation(navigations, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        SameSiteCrossOriginWithOptIn) {
   std::vector<NavigationType> navigations = {
       NavigationType::kSameSiteCrossOriginWithOptIn};
   TestMainFrameNavigation(navigations, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        SameSiteCrossOrigin) {
   std::vector<NavigationType> navigations = {
       NavigationType::kSameSiteCrossOrigin};
@@ -2376,14 +2507,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
           kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest, CrossSite) {
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest, CrossSite) {
   std::vector<NavigationType> navigations = {NavigationType::kCrossSite};
   TestMainFrameNavigation(
       navigations,
       PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        SameSiteCrossOriginWithOptIn_SameOrigin) {
   std::vector<NavigationType> navigations = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
@@ -2391,7 +2522,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
   TestMainFrameNavigation(navigations, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     SameSiteCrossOriginWithOptIn_SameSiteCrossOriginWithOptIn) {
   std::vector<NavigationType> navigations = {
@@ -2400,7 +2531,7 @@ IN_PROC_BROWSER_TEST_F(
   TestMainFrameNavigation(navigations, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        SameSiteCrossOriginWithOptIn_SameSiteCrossOrigin) {
   std::vector<NavigationType> navigations = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
@@ -2411,7 +2542,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
           kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        SameSiteCrossOrigin_CrossSite) {
   std::vector<NavigationType> navigations = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
@@ -2421,14 +2552,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
       PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        Redirection_SameOrigin_SameOrigin) {
   std::vector<NavigationType> redirections = {NavigationType::kSameOrigin,
                                               NavigationType::kSameOrigin};
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        Redirection_SameOrigin_SameSiteCrossOriginWithOptIn) {
   std::vector<NavigationType> redirections = {
       NavigationType::kSameOrigin,
@@ -2436,7 +2567,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        Redirection_SameOrigin_SameSiteCrossOrigin) {
   std::vector<NavigationType> redirections = {
       NavigationType::kSameOrigin, NavigationType::kSameSiteCrossOrigin};
@@ -2446,7 +2577,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
           kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        Redirection_SameOrigin_CrossSite) {
   std::vector<NavigationType> redirections = {NavigationType::kSameOrigin,
                                               NavigationType::kCrossSite};
@@ -2455,7 +2586,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
       PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        Redirection_SameSiteCrossOriginWithOptIn_SameOrigin) {
   std::vector<NavigationType> redirections = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
@@ -2463,7 +2594,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameSiteCrossOriginWithOptIn_SameSiteCrossOriginWithOptIn) {
   std::vector<NavigationType> redirections = {
@@ -2472,7 +2603,7 @@ IN_PROC_BROWSER_TEST_F(
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameSiteCrossOriginWithOptIn_SameSiteCrossOrigin) {
   std::vector<NavigationType> redirections = {
@@ -2484,7 +2615,7 @@ IN_PROC_BROWSER_TEST_F(
           kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
+IN_PROC_BROWSER_TEST_P(PrerenderMainFrameNavigationBrowserTest,
                        Redirection_SameSiteCrossOriginWithOptIn_CrossSite) {
   std::vector<NavigationType> redirections = {
       NavigationType::kSameSiteCrossOriginWithOptIn,
@@ -2494,7 +2625,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderMainFrameNavigationBrowserTest,
       PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_SameOrigin) {
   std::vector<NavigationType> redirections = {
@@ -2504,7 +2635,7 @@ IN_PROC_BROWSER_TEST_F(
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_SameSiteCrossOriginWithOptIn) {
   std::vector<NavigationType> redirections = {
@@ -2514,7 +2645,7 @@ IN_PROC_BROWSER_TEST_F(
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_SameSiteCrossOrigin) {
   std::vector<NavigationType> redirections = {
@@ -2527,7 +2658,7 @@ IN_PROC_BROWSER_TEST_F(
           kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameOrigin_SameSiteCrossOriginWithOptIn_CrossSite) {
   std::vector<NavigationType> redirections = {
@@ -2539,7 +2670,7 @@ IN_PROC_BROWSER_TEST_F(
       PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_SameOrigin) {
   std::vector<NavigationType> redirections = {
@@ -2548,7 +2679,7 @@ IN_PROC_BROWSER_TEST_F(
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_SameSiteCrossOriginWithOptIn) {
   std::vector<NavigationType> redirections = {
@@ -2558,7 +2689,7 @@ IN_PROC_BROWSER_TEST_F(
   TestMainFrameRedirection(redirections, PrerenderFinalStatus::kActivated);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_SameSiteCrossOrigin) {
   std::vector<NavigationType> redirections = {
@@ -2570,7 +2701,7 @@ IN_PROC_BROWSER_TEST_F(
           kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PrerenderMainFrameNavigationBrowserTest,
     Redirection_SameSiteCrossOriginWithOptIn_SameOrigin_CrossSite) {
   std::vector<NavigationType> redirections = {
