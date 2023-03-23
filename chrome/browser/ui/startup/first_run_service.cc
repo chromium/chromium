@@ -409,6 +409,13 @@ FirstRunService* FirstRunServiceFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
+// static
+FirstRunService* FirstRunServiceFactory::GetForBrowserContextIfExists(
+    content::BrowserContext* context) {
+  return static_cast<FirstRunService*>(
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
+}
+
 KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);

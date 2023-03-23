@@ -171,6 +171,9 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
   static FirstRunService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static FirstRunService* GetForBrowserContextIfExists(
+      content::BrowserContext* context);
+
   static FirstRunServiceFactory* GetInstance();
 
  private:

@@ -208,7 +208,7 @@ void LaunchBrowserStartup(Profile* profile) {
 Browser* CreateBrowser(Profile* profile) {
   // Closes the first run if we open a new window.
   if (auto* fre_service =
-          FirstRunServiceFactory::GetForBrowserContext(profile)) {
+          FirstRunServiceFactory::GetForBrowserContextIfExists(profile)) {
     fre_service->FinishFirstRunWithoutResumeTask();
   }
 
@@ -647,7 +647,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // in the first run experience.
   if (auto* profile = [self lastProfileIfLoaded]) {
     if (auto* fre_service =
-            FirstRunServiceFactory::GetForBrowserContext(profile)) {
+            FirstRunServiceFactory::GetForBrowserContextIfExists(profile)) {
       fre_service->FinishFirstRunWithoutResumeTask();
     }
   }
