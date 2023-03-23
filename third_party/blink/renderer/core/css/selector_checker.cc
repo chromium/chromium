@@ -328,7 +328,29 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
   //
   // In all of those cases we need to skip matching the pseudo classes after the
   // pseudo element on the originating element.
-  if (dynamic_pseudo != kPseudoIdNone && context.pseudo_id == kPseudoIdNone) {
+  if (context.in_rightmost_compound && dynamic_pseudo != kPseudoIdNone &&
+      context.pseudo_id == kPseudoIdNone) {
+    // We are in the rightmost compound and have matched a pseudo element
+    // (dynamic_pseudo is not kPseudoIdNone), which means we are looking at
+    // pseudo classes after the pseudo element. We are also matching the
+    // originating element (context.pseudo_id is kPseudoIdnone), which means we
+    // are matching for tracking the existence of such pseudo elements which
+    // results in SetHasPseudoElementStyle() on the originating element's
+    // ComputedStyle.
+    if (!next_context.has_scrollbar_pseudo &&
+        dynamic_pseudo == kPseudoIdScrollbar) {
+      // Fail ::-webkit-scrollbar:hover because HasPseudoElementStyle for
+      // scrollbars will remove the native scrollbar. Having only
+      // ::-webkit-scrollbar rules that have pseudo class modifiers will end up
+      // with not adding a custom scrollbar which means we end up with no
+      // scrollbar.
+      return kSelectorFailsCompletely;
+    }
+    // This means we will end up with false positives for pseudo elements like
+    // ::before with only pseudo class modifiers where we end up trying to
+    // create the pseudo element but end up not doing it because we have no
+    // matching rules without modifiers. That is also already the case if you
+    // have ::before elements without content properties.
     return kSelectorMatches;
   }
 

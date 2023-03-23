@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>::-webkit-scrollbar:hover should not remove native scrollbar</title>
+<link rel="match" href="webkit-scrollbar-with-pseudo-class-ref.html">
+<style>
+  #scroller::-webkit-scrollbar:hover {
+    width: 20px; background-color: red;
+  }
+  #scroller {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #filler { height: 1000px }
+</style>
+<div id="scroller">
+  <div id="filler"></div>
+</div>
