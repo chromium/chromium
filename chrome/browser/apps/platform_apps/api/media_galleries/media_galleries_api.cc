@@ -638,7 +638,7 @@ ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
     return RespondNow(Error("options parameter not specified."));
 
   std::unique_ptr<MediaGalleries::MediaMetadataOptions> options =
-      MediaGalleries::MediaMetadataOptions::FromValue(args()[1]);
+      MediaGalleries::MediaMetadataOptions::FromValueDeprecated(args()[1]);
   if (!options)
     return RespondNow(Error("Invalid value for options parameter."));
 

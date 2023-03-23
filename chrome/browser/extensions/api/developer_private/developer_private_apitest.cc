@@ -47,7 +47,7 @@ class DeveloperPrivateApiTest : public ExtensionApiTest {
       return nullptr;
     }
     std::unique_ptr<api::developer_private::ExtensionInfo> info =
-        api::developer_private::ExtensionInfo::FromValue(*result);
+        api::developer_private::ExtensionInfo::FromValueDeprecated(*result);
     if (!info)
       ADD_FAILURE() << "Problem creating ExtensionInfo from result data";
     return info;

@@ -89,7 +89,7 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
     std::vector<InstallWarning>* install_warnings,
     std::u16string* error) {
   std::unique_ptr<ExternallyConnectable> externally_connectable =
-      ExternallyConnectable::FromValue(value, error);
+      ExternallyConnectable::FromValueDeprecated(value, error);
   if (!externally_connectable)
     return nullptr;
 

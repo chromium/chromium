@@ -65,7 +65,8 @@ std::unique_ptr<BluetoothManifestPermission>
 BluetoothManifestPermission::FromValue(const base::Value& value,
                                        std::u16string* error) {
   std::unique_ptr<api::extensions_manifest_types::Bluetooth> bluetooth =
-      api::extensions_manifest_types::Bluetooth::FromValue(value, error);
+      api::extensions_manifest_types::Bluetooth::FromValueDeprecated(value,
+                                                                     error);
   if (!bluetooth)
     return nullptr;
 

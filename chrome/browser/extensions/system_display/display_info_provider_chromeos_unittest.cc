@@ -1465,9 +1465,8 @@ TEST_F(DisplayInfoProviderChromeosTest, DisplayMode) {
 
   // Switch modes.
   api::system_display::DisplayProperties info;
-  info.display_mode = std::move(*api::system_display::DisplayMode::FromValue(
-                                     base::Value(other_mode->ToValue()))
-                                     .get());
+  info.display_mode =
+      api::system_display::DisplayMode::FromValue(other_mode->ToValue());
 
   EXPECT_TRUE(CallSetDisplayUnitInfo(base::NumberToString(id), info));
 

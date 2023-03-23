@@ -121,7 +121,7 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
     std::u16string options_ui_error;
 
     std::unique_ptr<OptionsUI> options_ui =
-        OptionsUI::FromValue(*options_ui_value, &options_ui_error);
+        OptionsUI::FromValueDeprecated(*options_ui_value, &options_ui_error);
     if (!options_ui) {
       install_warnings->push_back(
           InstallWarning(base::UTF16ToASCII(options_ui_error)));

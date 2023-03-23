@@ -164,7 +164,10 @@ class _Generator(object):
         c.Cblock(self._GenerateTypePopulateFromValue(
           classname_in_namespace, type_))
         if cpp_namespace is None:  # only generate for top-level types
-          c.Cblock(self._GenerateTypeFromValue(classname_in_namespace, type_))
+          c.Cblock(self._GenerateTypeFromValueDeprecated(
+              classname_in_namespace, type_))
+          c.Cblock(self._GenerateTypeFromValue(
+              classname_in_namespace, type_))
       if type_.origin.from_client:
         c.Cblock(self._GenerateTypeToValue(classname_in_namespace, type_))
 
@@ -367,11 +370,11 @@ class _Generator(object):
     })
     return c
 
-  def _GenerateTypeFromValue(self, cpp_namespace, type_):
+  def _GenerateTypeFromValueDeprecated(self, cpp_namespace, type_):
     classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
     c = Code()
     (c.Append('// static')
-      .Append('std::unique_ptr<%s> %s::FromValue(%s) {' % (classname,
+      .Append('std::unique_ptr<%s> %s::FromValueDeprecated(%s) {' % (classname,
         cpp_namespace, self._GenerateParams(('const base::Value& value',))))
     )
     c.Sblock();
@@ -395,8 +398,41 @@ class _Generator(object):
 
     if self._generate_error_messages:
       c.Append('DCHECK_EQ(result, error->empty());')
-    c.Sblock('if (!result)')
+    c.Sblock('if (!result) {')
     c.Append('return nullptr;')
+    c.Eblock('}')
+    c.Append('return out;')
+    c.Eblock('}')
+    return c
+
+  def _GenerateTypeFromValue(self, cpp_namespace, type_):
+    classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
+
+    # Choice types are still supposed to receive a base::Value as argument, as
+    # they might be used to parse different json types.
+    in_value_type = ('base::Value'
+                  if type_.property_type is PropertyType.CHOICES else
+                  'base::Value::Dict')
+
+    c = Code()
+    (c.Append('// static')
+      .Append('absl::optional<%s> %s::FromValue(%s) {' % (classname,
+        cpp_namespace, self._GenerateParams(
+          ('const %s& value' % in_value_type,))))
+    )
+    c.Sblock();
+    # TODO(crbug.com/1354063): Once the deprecated version of this method is
+    # removed, we should consider making Populate return an optional, rather
+    # than using an out param.
+    if self._generate_error_messages:
+      c.Append('DCHECK(error);')
+    c.Append('absl::optional<%s> out(absl::in_place);' % classname)
+    c.Append('bool result = Populate(%s);' %
+      self._GenerateArgs(('value', 'out.value()')))
+    if self._generate_error_messages:
+      c.Append('DCHECK_EQ(result, error->empty());')
+    c.Sblock('if (!result)')
+    c.Append('return absl::nullopt;')
     c.Eblock('return out;')
     c.Eblock('}')
     return c

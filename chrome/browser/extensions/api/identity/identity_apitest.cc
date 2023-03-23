@@ -653,7 +653,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     std::set<std::string> result_ids;
     for (const base::Value& item : results) {
       std::unique_ptr<api::identity::AccountInfo> info =
-          api::identity::AccountInfo::FromValue(item);
+          api::identity::AccountInfo::FromValueDeprecated(item);
       if (info.get()) {
         result_ids.insert(info->id);
       } else {
@@ -682,7 +682,7 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
     } else {
       for (const auto& result : *results) {
         std::unique_ptr<api::identity::AccountInfo> info =
-            api::identity::AccountInfo::FromValue(result);
+            api::identity::AccountInfo::FromValueDeprecated(result);
         if (info.get())
           msg << info->id << " ";
         else
@@ -740,7 +740,7 @@ class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
         ExtensionBuilder("Test").SetID(kExtensionId).Build().get());
     std::unique_ptr<base::Value> value(
         utils::RunFunctionAndReturnSingleResult(func.get(), "[]", browser()));
-    return api::identity::ProfileUserInfo::FromValue(*value);
+    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
   }
 
   std::unique_ptr<api::identity::ProfileUserInfo>
@@ -750,7 +750,7 @@ class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
     func->set_extension(CreateExtensionWithEmailPermission());
     std::unique_ptr<base::Value> value(
         utils::RunFunctionAndReturnSingleResult(func.get(), "[]", browser()));
-    return api::identity::ProfileUserInfo::FromValue(*value);
+    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
   }
 
   scoped_refptr<const Extension> CreateExtensionWithEmailPermission() {
@@ -813,7 +813,7 @@ class IdentityGetProfileUserInfoFunctionTestWithAccountStatusParam
                                           account_status().c_str());
     std::unique_ptr<base::Value> value(
         utils::RunFunctionAndReturnSingleResult(func.get(), args, browser()));
-    return api::identity::ProfileUserInfo::FromValue(*value);
+    return api::identity::ProfileUserInfo::FromValueDeprecated(*value);
   }
 
   std::string account_status() { return GetParam(); }
@@ -1002,7 +1002,7 @@ class GetAuthTokenFunctionTest
         utils::RunFunctionAndReturnSingleResult(function, args, browser);
     ASSERT_TRUE(result_value);
     std::unique_ptr<api::identity::GetAuthTokenResult> result =
-        api::identity::GetAuthTokenResult::FromValue(*result_value);
+        api::identity::GetAuthTokenResult::FromValueDeprecated(*result_value);
     ASSERT_TRUE(result);
 
     EXPECT_TRUE(result->token);
@@ -1025,7 +1025,7 @@ class GetAuthTokenFunctionTest
       function_runner->WaitForOneResult(function, &result_value);
     }
     std::unique_ptr<api::identity::GetAuthTokenResult> result =
-        api::identity::GetAuthTokenResult::FromValue(result_value);
+        api::identity::GetAuthTokenResult::FromValueDeprecated(result_value);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(result->token);

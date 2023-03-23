@@ -93,7 +93,8 @@ void PrintingMetricsService::GetPrintJobs(
 
 void PrintingMetricsService::OnPrintJobFinished(base::Value print_job) {
   std::unique_ptr<api::printing_metrics::PrintJobInfo> print_job_info =
-      api::printing_metrics::PrintJobInfo::FromValue(std::move(print_job));
+      api::printing_metrics::PrintJobInfo::FromValueDeprecated(
+          std::move(print_job));
   DCHECK(print_job_info);
 
   auto event = std::make_unique<Event>(

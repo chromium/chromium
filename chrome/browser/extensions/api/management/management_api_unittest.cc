@@ -633,7 +633,8 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         extension_function_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), args, browser()));
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::unique_ptr<ExtensionInfo> info =
+        ExtensionInfo::FromValueDeprecated(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     // |may_enable| is only returned for extensions which are not enabled.
@@ -656,7 +657,8 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         extension_function_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), args, browser()));
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::unique_ptr<ExtensionInfo> info =
+        ExtensionInfo::FromValueDeprecated(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -679,7 +681,8 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
         extension_function_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), args, browser()));
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::unique_ptr<ExtensionInfo> info =
+        ExtensionInfo::FromValueDeprecated(*value);
     ASSERT_TRUE(info);
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable);
@@ -705,7 +708,8 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
         extension_function_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), args, browser()));
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::unique_ptr<ExtensionInfo> info =
+        ExtensionInfo::FromValueDeprecated(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_TRUE(info->may_disable);
@@ -727,7 +731,8 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
         extension_function_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), args, browser()));
     ASSERT_TRUE(value);
-    std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    std::unique_ptr<ExtensionInfo> info =
+        ExtensionInfo::FromValueDeprecated(*value);
     ASSERT_TRUE(info);
     EXPECT_TRUE(info->enabled);
     EXPECT_FALSE(info->may_disable);

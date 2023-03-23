@@ -627,8 +627,8 @@ TEST_F(IndexedRuleTest, RedirectParsing) {
     ASSERT_TRUE(redirect_val);
 
     std::u16string error;
-    rule.action.redirect =
-        std::move(*dnr_api::Redirect::FromValue(*redirect_val, &error));
+    rule.action.redirect = std::move(
+        *dnr_api::Redirect::FromValueDeprecated(*redirect_val, &error));
     ASSERT_TRUE(rule.action.redirect);
     ASSERT_TRUE(error.empty());
 

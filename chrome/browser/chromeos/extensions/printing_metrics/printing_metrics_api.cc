@@ -34,7 +34,7 @@ void PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved(
   std::vector<api::printing_metrics::PrintJobInfo> print_job_infos;
   for (const auto& print_job : print_jobs) {
     std::unique_ptr<api::printing_metrics::PrintJobInfo> print_job_info =
-        api::printing_metrics::PrintJobInfo::FromValue(print_job);
+        api::printing_metrics::PrintJobInfo::FromValueDeprecated(print_job);
     DCHECK(print_job_info);
     print_job_infos.emplace_back(std::move(*print_job_info));
   }

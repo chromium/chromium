@@ -106,7 +106,8 @@ bool WasItemChangedEventDispatched(
   const Event& event = *iter->second;
   CHECK_GE(1u, event.event_args.size());
   std::unique_ptr<api::developer_private::EventData> event_data =
-      api::developer_private::EventData::FromValue(event.event_args[0]);
+      api::developer_private::EventData::FromValueDeprecated(
+          event.event_args[0]);
   if (!event_data)
     return false;
 
@@ -131,7 +132,8 @@ bool WasUserSiteSettingsChangedEventDispatched(
   const Event& event = *iter->second;
   CHECK_GE(1u, event.event_args.size());
   auto site_settings =
-      api::developer_private::UserSiteSettings::FromValue(event.event_args[0]);
+      api::developer_private::UserSiteSettings::FromValueDeprecated(
+          event.event_args[0]);
   if (!site_settings)
     return false;
 
@@ -208,7 +210,8 @@ void GetMatchingExtensionsForSite(
   infos->clear();
   for (const auto& value : (*results)[0].GetList()) {
     infos->push_back(std::move(
-        *api::developer_private::MatchingExtensionInfo::FromValue(value)));
+        *api::developer_private::MatchingExtensionInfo::FromValueDeprecated(
+            value)));
   }
 }
 
@@ -441,7 +444,8 @@ testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
   // part of the general extension api system.
   const base::Value& response_value = (*function->GetResultListForTest())[0];
   std::unique_ptr<api::developer_private::PackDirectoryResponse> response =
-      api::developer_private::PackDirectoryResponse::FromValue(response_value);
+      api::developer_private::PackDirectoryResponse::FromValueDeprecated(
+          response_value);
   CHECK(response);
 
   if (response->status != expected_status) {
@@ -480,7 +484,7 @@ void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
   ASSERT_EQ(1u, function->GetResultListForTest()->size());
   const base::Value& response_value = (*function->GetResultListForTest())[0];
   *profile_info =
-      api::developer_private::ProfileInfo::FromValue(response_value);
+      api::developer_private::ProfileInfo::FromValueDeprecated(response_value);
 }
 
 void DeveloperPrivateApiUnitTest::RunUpdateHostAccess(
@@ -755,7 +759,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
     // The loadError result should be populated.
     ASSERT_TRUE(result);
     std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValue(*result);
+        api::developer_private::LoadError::FromValueDeprecated(*result);
     ASSERT_TRUE(error);
     ASSERT_TRUE(error->source);
     // The source should have *something* (rely on file highlighter tests for
@@ -782,7 +786,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpackedLoadError) {
     // The load error should be populated.
     ASSERT_TRUE(result);
     std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValue(*result);
+        api::developer_private::LoadError::FromValueDeprecated(*result);
     ASSERT_TRUE(error);
     // The file source should be empty.
     ASSERT_TRUE(error->source);
@@ -846,7 +850,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
     ASSERT_TRUE(result);
     std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValue(*result);
+        api::developer_private::LoadError::FromValueDeprecated(*result);
     ASSERT_TRUE(error);
     EXPECT_FALSE(error->retry_guid.empty());
     retry_guid = error->retry_guid;
@@ -866,7 +870,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
             "[{\"failQuietly\": true, \"populateError\": true}]", profile());
     ASSERT_TRUE(result);
     std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValue(*result);
+        api::developer_private::LoadError::FromValueDeprecated(*result);
     ASSERT_TRUE(error);
     EXPECT_EQ(retry_guid, error->retry_guid);
   }
@@ -896,7 +900,7 @@ TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedRetryId) {
     // The loadError result should be populated.
     ASSERT_TRUE(result);
     std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValue(*result);
+        api::developer_private::LoadError::FromValueDeprecated(*result);
     ASSERT_TRUE(error);
     EXPECT_NE(retry_guid, error->retry_guid);
   }
@@ -1046,7 +1050,7 @@ TEST_F(DeveloperPrivateApiUnitTest, ReloadBadExtensionToLoadUnpackedRetry) {
             function.get(), reload_args, profile());
     ASSERT_TRUE(result);
     std::unique_ptr<api::developer_private::LoadError> error =
-        api::developer_private::LoadError::FromValue(*result);
+        api::developer_private::LoadError::FromValueDeprecated(*result);
     ASSERT_TRUE(error);
     EXPECT_FALSE(error->retry_guid.empty());
     retry_guid = error->retry_guid;
@@ -1147,7 +1151,8 @@ TEST_F(DeveloperPrivateApiUnitTest,
         api_test_utils::RunFunctionAndReturnSingleResult(
             function.get(), kLoadUnpackedArgs, profile());
     ASSERT_TRUE(result);
-    EXPECT_TRUE(api::developer_private::LoadError::FromValue(*result));
+    EXPECT_TRUE(
+        api::developer_private::LoadError::FromValueDeprecated(*result));
   }
 
   // Cleanup.
@@ -1177,7 +1182,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
 
   const base::Value& response_value = (*function->GetResultListForTest())[0];
   std::unique_ptr<api::developer_private::RequestFileSourceResponse> response =
-      api::developer_private::RequestFileSourceResponse::FromValue(
+      api::developer_private::RequestFileSourceResponse::FromValueDeprecated(
           response_value);
   EXPECT_FALSE(response->before_highlight.empty());
   EXPECT_EQ("\"name\": \"foo\"", response->highlight);
@@ -1205,7 +1210,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
     const base::Value::List& list = (*results)[0].GetList();
     ASSERT_EQ(1u, list.size());
     std::unique_ptr<api::developer_private::ExtensionInfo> info =
-        api::developer_private::ExtensionInfo::FromValue(list[0]);
+        api::developer_private::ExtensionInfo::FromValueDeprecated(list[0]);
     ASSERT_TRUE(info);
   }
 
@@ -1224,7 +1229,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetExtensionsInfo) {
     const base::Value::List& list = (*results)[0].GetList();
     ASSERT_EQ(1u, list.size());
     std::unique_ptr<api::developer_private::ItemInfo> item_info =
-        api::developer_private::ItemInfo::FromValue(list[0]);
+        api::developer_private::ItemInfo::FromValueDeprecated(list[0]);
     ASSERT_TRUE(item_info);
   }
 }
@@ -2000,7 +2005,8 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
           function.get(), /*args=*/"[]", profile());
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<api::developer_private::UserSiteSettings> settings =
-      api::developer_private::UserSiteSettings::FromValue(result.value());
+      api::developer_private::UserSiteSettings::FromValueDeprecated(
+          result.value());
 
   ASSERT_TRUE(settings);
   EXPECT_THAT(settings->permitted_sites, testing::IsEmpty());
@@ -2123,7 +2129,8 @@ TEST_F(DeveloperPrivateApiWithPermittedSitesUnitTest,
   ASSERT_EQ(1u, function->GetResultListForTest()->size());
   const base::Value& response_value = (*function->GetResultListForTest())[0];
   std::unique_ptr<api::developer_private::UserSiteSettings> settings =
-      api::developer_private::UserSiteSettings::FromValue(response_value);
+      api::developer_private::UserSiteSettings::FromValueDeprecated(
+          response_value);
 
   ASSERT_TRUE(settings);
   EXPECT_THAT(settings->permitted_sites,

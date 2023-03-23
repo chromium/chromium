@@ -315,7 +315,8 @@ class QuickUnlockPrivateUnitTest
     absl::optional<base::Value> result =
         RunFunction(std::move(func), std::move(params));
     EXPECT_TRUE(result);
-    auto token_info = quick_unlock_private::TokenInfo::FromValue(*result);
+    auto token_info =
+        quick_unlock_private::TokenInfo::FromValueDeprecated(*result);
     EXPECT_TRUE(token_info);
     return token_info;
   }

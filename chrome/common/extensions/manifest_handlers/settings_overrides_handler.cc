@@ -142,7 +142,7 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
       extension->manifest()->FindPath(manifest_keys::kSettingsOverride);
   CHECK(dict != nullptr);
   std::unique_ptr<ChromeSettingsOverrides> settings(
-      ChromeSettingsOverrides::FromValue(*dict, error));
+      ChromeSettingsOverrides::FromValueDeprecated(*dict, error));
   if (!settings)
     return false;
 

@@ -455,7 +455,8 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
           *browser, extension(), ExtensionTabUtil::kPopulateTabs,
           source_context_type());
   std::unique_ptr<api::windows::Window> window =
-      api::windows::Window::FromValue(base::Value(std::move(window_value)));
+      api::windows::Window::FromValueDeprecated(
+          base::Value(std::move(window_value)));
   DCHECK(window);
   return ArgumentList(Restore::Results::Create(
       CreateSessionModelHelper(base::Time::Now().ToTimeT(), absl::nullopt,

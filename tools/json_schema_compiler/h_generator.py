@@ -273,8 +273,15 @@ class _Generator(object):
           (c.Append()
             .Comment('Creates a %s object from a base::Value, or NULL on '
                      'failure.' % classname)
-            .Append('static std::unique_ptr<%s> FromValue(%s);' % (
+            .Append('static std::unique_ptr<%s> FromValueDeprecated(%s);' % (
                 classname, self._GenerateParams(('const base::Value& value',))))
+          )
+          (c.Append()
+            .Comment('Creates a %s object from a base::Value, or nullopt on '
+                     'failure.' % classname)
+            .Append('static absl::optional<%s> FromValue(%s);' % (
+                classname, self._GenerateParams(
+                  ('const %s& value' % value_type,))))
           )
       if type_.origin.from_client:
         (c.Append()

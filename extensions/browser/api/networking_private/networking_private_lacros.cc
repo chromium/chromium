@@ -219,8 +219,8 @@ void DeviceStateListCallbackAdapter(
   for (auto& item : *result) {
     if (item) {
       list->push_back(
-          extensions::api::networking_private::DeviceStateProperties::FromValue(
-              base::Value(std::move(*item))));
+          extensions::api::networking_private::DeviceStateProperties::
+              FromValueDeprecated(base::Value(std::move(*item))));
     } else {
       list->push_back(
           std::make_unique<

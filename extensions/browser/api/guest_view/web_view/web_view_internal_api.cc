@@ -310,7 +310,7 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
 
   std::unique_ptr<ImageDetails> image_details;
   if (args().size() > 1) {
-    image_details = ImageDetails::FromValue(args()[1]);
+    image_details = ImageDetails::FromValueDeprecated(args()[1]);
   }
 
   is_guest_transparent_ = guest_->allow_transparency();

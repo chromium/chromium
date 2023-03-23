@@ -62,7 +62,7 @@ bool ContentCapabilitiesHandler::Parse(Extension* extension,
   }
 
   std::unique_ptr<ContentCapabilities> capabilities(
-      ContentCapabilities::FromValue(*value, error));
+      ContentCapabilities::FromValueDeprecated(*value, error));
   if (!capabilities)
     return false;
 

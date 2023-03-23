@@ -1371,9 +1371,10 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, Success) {
   ASSERT_EQ(list_value.size(), signal_response.file_system_items.size());
 
   const base::Value& file_system_value = list_value.front();
+  ASSERT_TRUE(file_system_value.is_dict());
   auto parsed_file_system_signal =
       enterprise_reporting_private::GetFileSystemInfoResponse::FromValue(
-          file_system_value);
+          file_system_value.GetDict());
   ASSERT_TRUE(parsed_file_system_signal);
   EXPECT_EQ(parsed_file_system_signal->path,
             fake_file_item.file_path.AsUTF8Unsafe());
@@ -1568,9 +1569,10 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, Success) {
   ASSERT_EQ(list_value.size(), signal_response.settings_items.size());
 
   const base::Value& settings_value = list_value.front();
+  ASSERT_TRUE(settings_value.is_dict());
   auto parsed_settings_signal =
       enterprise_reporting_private::GetSettingsResponse::FromValue(
-          settings_value);
+          settings_value.GetDict());
   ASSERT_TRUE(parsed_settings_signal);
   EXPECT_EQ(parsed_settings_signal->path, fake_settings_item.path);
   EXPECT_EQ(parsed_settings_signal->presence,
@@ -1750,8 +1752,10 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
   ASSERT_EQ(list_value.size(), av_response.av_products.size());
 
   const base::Value& av_value = list_value.front();
+  ASSERT_TRUE(av_value.is_dict());
   auto parsed_av_signal =
-      enterprise_reporting_private::AntiVirusSignal::FromValue(av_value);
+      enterprise_reporting_private::AntiVirusSignal::FromValue(
+          av_value.GetDict());
   ASSERT_TRUE(parsed_av_signal);
   EXPECT_EQ(parsed_av_signal->display_name, fake_av_product.display_name);
   EXPECT_EQ(parsed_av_signal->state,
@@ -1896,8 +1900,9 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, Success) {
   ASSERT_EQ(list_value.size(), hotfix_response.hotfixes.size());
 
   const base::Value& hotfix_value = list_value.front();
-  auto parsed_hotfix =
-      enterprise_reporting_private::HotfixSignal::FromValue(hotfix_value);
+  ASSERT_TRUE(hotfix_value.is_dict());
+  auto parsed_hotfix = enterprise_reporting_private::HotfixSignal::FromValue(
+      hotfix_value.GetDict());
   ASSERT_TRUE(parsed_hotfix);
   EXPECT_EQ(parsed_hotfix->hotfix_id, kFakeHotfixId);
 

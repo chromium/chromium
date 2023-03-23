@@ -110,7 +110,7 @@ class TestEventRouter : public extensions::EventRouter {
 
     std::unique_ptr<extensions::api::lock_screen_data::DataItemsAvailableEvent>
         event_args = extensions::api::lock_screen_data::
-            DataItemsAvailableEvent::FromValue(arg_value);
+            DataItemsAvailableEvent::FromValueDeprecated(arg_value);
     ASSERT_TRUE(event_args);
     was_locked_values_.push_back(event_args->was_locked);
   }

@@ -116,7 +116,7 @@ dnr_api::URLTransform CreateUrlTransform() {
   CHECK(value);
 
   std::u16string error;
-  auto result = dnr_api::URLTransform::FromValue(*value, &error);
+  auto result = dnr_api::URLTransform::FromValueDeprecated(*value, &error);
   CHECK(result);
   CHECK(error.empty());
   return std::move(*result);

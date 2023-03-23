@@ -392,7 +392,7 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
   for (const base::Value& value : list) {
     std::u16string error;
     std::unique_ptr<api::content_scripts::ContentScript> content_script =
-        api::content_scripts::ContentScript::FromValue(value, &error);
+        api::content_scripts::ContentScript::FromValueDeprecated(value, &error);
 
     if (!content_script)
       continue;
