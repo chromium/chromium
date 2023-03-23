@@ -32,6 +32,8 @@ constexpr int kMessageCenterPadding = 8;
 constexpr int kMessageCenterBottomPadding = 8;
 constexpr int kMessageListNotificationSpacing = 2;
 
+constexpr auto kNotificationViewPadding = gfx::Insets(4);
+
 constexpr auto kNotificationBarPadding = gfx::Insets::TLBR(8, 0, 0, 4);
 
 // Horizontal spacing of the pill buttons inside notification.
@@ -51,6 +53,12 @@ constexpr auto kNotificationExpandButtonLabelInsets =
 constexpr int kNotificationExpandButtonCornerRadius = 12;
 constexpr int kNotificationExpandButtonChevronIconSize = 16;
 constexpr int kNotificationExpandButtonLabelFontSize = 12;
+
+constexpr int kProgressBarWithActionButtonsBottomPadding = 16;
+constexpr int kProgressBarExpandedBottomPadding =
+    24 - kNotificationViewPadding.bottom();
+constexpr int kProgressBarCollapsedBottomPadding =
+    22 - kNotificationViewPadding.bottom();
 
 constexpr auto kAppIconCollapsedPadding = gfx::Insets::TLBR(24, 12, 24, 0);
 constexpr auto kAppIconExpandedPadding = gfx::Insets::TLBR(20, 12, 0, 0);

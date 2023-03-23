@@ -247,6 +247,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   std::vector<views::LabelButton*> action_buttons() { return action_buttons_; }
 
+  views::ProgressBar* progress_bar_view() const { return progress_bar_view_; }
+
   NotificationInputContainer* inline_reply() { return inline_reply_; }
 
   views::Label* status_view() { return status_view_; }

@@ -81,6 +81,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/drag_utils.h"
@@ -106,7 +107,6 @@ namespace {
 // backing.
 constexpr size_t kMaxImageSizeInByte = 1000000;
 
-constexpr auto kNotificationViewPadding = gfx::Insets(4);
 constexpr int kMainRightViewVerticalSpacing = 4;
 
 // This padding is applied to all the children of `main_right_view_` except the
@@ -1087,6 +1087,20 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     message_label()->SetVisible(!expanded);
     message_label_in_expanded_state_->SetVisible(expanded &&
                                                  !is_grouped_parent_view_);
+  }
+
+  if (progress_bar_view()) {
+    int progress_bar_bottom_padding;
+    if (!action_buttons().empty()) {
+      progress_bar_bottom_padding = kProgressBarWithActionButtonsBottomPadding;
+    } else if (use_expanded_padding) {
+      progress_bar_bottom_padding = kProgressBarExpandedBottomPadding;
+    } else {
+      progress_bar_bottom_padding = kProgressBarCollapsedBottomPadding;
+    }
+    progress_bar_view()->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(message_center::kProgressBarTopPadding, 0,
+                          progress_bar_bottom_padding, 0)));
   }
 
   // Custom padding for app icon and expand button. These 2 views should always
