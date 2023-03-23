@@ -53,6 +53,7 @@ class FastCheckoutClientImpl
   bool IsSupported(const autofill::FormData& form,
                    const autofill::FormFieldData& field,
                    const autofill::AutofillManager& autofill_manager) override;
+  bool IsNotShownYet() const override;
 
   // FastCheckoutControllerImpl::Delegate:
   void OnOptionsSelected(

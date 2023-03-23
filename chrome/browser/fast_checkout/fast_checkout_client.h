@@ -56,6 +56,8 @@ class FastCheckoutClient {
       const autofill::FormFieldData& field,
       const autofill::AutofillManager& autofill_manager) = 0;
 
+  virtual bool IsNotShownYet() const = 0;
+
  protected:
   FastCheckoutClient() = default;
   virtual ~FastCheckoutClient() = default;

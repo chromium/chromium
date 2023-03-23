@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -58,7 +59,9 @@ enum class TouchToFillCreditCardTriggerOutcome {
   // TouchToFill is not supported for this field type. This value is not logged
   // to UMA.
   kUnsupportedFieldType = 10,
-  kMaxValue = kUnsupportedFieldType
+  // Fast Checkout was shown before TouchToFill could be triggered.
+  kFastCheckoutWasShown = 11,
+  kMaxValue = kFastCheckoutWasShown
 };
 
 constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
@@ -86,7 +89,8 @@ class FormStructure;
 // TODO(crbug.com/1324900): Consider using more descriptive name.
 class TouchToFillDelegateImpl : public TouchToFillDelegate {
  public:
-  explicit TouchToFillDelegateImpl(BrowserAutofillManager* manager);
+  TouchToFillDelegateImpl(BrowserAutofillManager* manager,
+                          FastCheckoutClient* fast_checkout_client);
   TouchToFillDelegateImpl(const TouchToFillDelegateImpl&) = delete;
   TouchToFillDelegateImpl& operator=(const TouchToFillDelegateImpl&) = delete;
   ~TouchToFillDelegateImpl() override;
@@ -163,6 +167,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
+  const raw_ptr<FastCheckoutClient> fast_checkout_client_;
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_;

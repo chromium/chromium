@@ -32,6 +32,30 @@ namespace autofill {
 
 namespace {
 
+class MockFastCheckoutClient : public FastCheckoutClient {
+ public:
+  MockFastCheckoutClient() = default;
+  ~MockFastCheckoutClient() override = default;
+  MOCK_METHOD(bool,
+              TryToStart,
+              (const GURL&,
+               const autofill::FormData&,
+               const autofill::FormFieldData&,
+               base::WeakPtr<autofill::AutofillManager>),
+              (override));
+  MOCK_METHOD(void, Stop, (bool), (override));
+  MOCK_METHOD(bool, IsRunning, (), (const, override));
+  MOCK_METHOD(bool, IsShowing, (), (const, override));
+  MOCK_METHOD(void, OnNavigation, (const GURL&, bool), (override));
+  MOCK_METHOD(bool,
+              IsSupported,
+              (const autofill::FormData&,
+               const autofill::FormFieldData&,
+               const autofill::AutofillManager&),
+              (override));
+  MOCK_METHOD(bool, IsNotShownYet, (), (const, override));
+};
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() = default;
@@ -141,7 +165,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
             autofill_driver_.get(), &autofill_client_);
 
     auto touch_to_fill_delegate = std::make_unique<TouchToFillDelegateImpl>(
-        browser_autofill_manager_.get());
+        browser_autofill_manager_.get(), &fast_checkout_client_);
     touch_to_fill_delegate_ = touch_to_fill_delegate.get();
     base::WeakPtr<TouchToFillDelegateImpl> touch_to_fill_delegate_weak =
         touch_to_fill_delegate->GetWeakPtr();
@@ -169,6 +193,8 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
             delegate->OnDismissed(/*dismissed_by_user=*/false);
           }
         });
+    ON_CALL(fast_checkout_client_, IsNotShownYet)
+        .WillByDefault(testing::Return(true));
 
     test::CreateTestCreditCardFormData(&form_, /*is_https=*/true,
                                        /*use_month_type=*/false);
@@ -195,6 +221,7 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
+  NiceMock<MockFastCheckoutClient> fast_checkout_client_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
@@ -436,6 +463,17 @@ TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillFailsIfShowFails) {
       .WillOnce(Return(false));
 
   TryToShowTouchToFill(/*expected_success=*/false);
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest,
+       TryToShowTouchToFillFailsIfFastCheckoutWasShown) {
+  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
+  EXPECT_CALL(fast_checkout_client_, IsNotShownYet).WillOnce(Return(false));
+
+  TryToShowTouchToFill(/*expected_success=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      kUmaTouchToFillCreditCardTriggerOutcome,
+      TouchToFillCreditCardTriggerOutcome::kFastCheckoutWasShown, 1);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest,

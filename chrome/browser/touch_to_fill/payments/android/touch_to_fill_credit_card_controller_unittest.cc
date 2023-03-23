@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/fast_checkout/mock_fast_checkout_client.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_controller.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_controller.h"
@@ -56,8 +57,9 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
  public:
   explicit MockTouchToFillDelegateImpl(
-      MockBrowserAutofillManager* autofill_manager)
-      : TouchToFillDelegateImpl(autofill_manager) {
+      MockBrowserAutofillManager* autofill_manager,
+      MockFastCheckoutClient* fast_checkout_client)
+      : TouchToFillDelegateImpl(autofill_manager, fast_checkout_client) {
     ON_CALL(*this, GetManager).WillByDefault(Return(autofill_manager));
     ON_CALL(*this, ShouldShowScanCreditCard).WillByDefault(Return(true));
   }
@@ -101,8 +103,11 @@ class TouchToFillCreditCardControllerTest
     NavigateAndCommit(GURL("about:blank"));
     credit_card_controller_ =
         std::make_unique<TouchToFillCreditCardController>(&autofill_client());
+    fast_checkout_client_ =
+        std::make_unique<MockFastCheckoutClient>(web_contents());
     autofill_manager().set_touch_to_fill_delegate(
-        std::make_unique<MockTouchToFillDelegateImpl>(&autofill_manager()));
+        std::make_unique<MockTouchToFillDelegateImpl>(
+            &autofill_manager(), fast_checkout_client_.get()));
     mock_view_ = std::make_unique<MockTouchToFillCreditCardViewImpl>();
   }
 
@@ -157,6 +162,7 @@ class TouchToFillCreditCardControllerTest
       autofill_client_injector_;
   TestAutofillManagerInjector<MockBrowserAutofillManager>
       autofill_manager_injector_;
+  std::unique_ptr<MockFastCheckoutClient> fast_checkout_client_;
   FormGlobalId some_form_ = test::MakeFormGlobalId();
   FieldGlobalId some_field_ = test::MakeFieldGlobalId();
 };

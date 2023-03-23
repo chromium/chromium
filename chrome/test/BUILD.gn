@@ -6662,6 +6662,8 @@ test("unit_tests") {
       "../browser/fast_checkout/fast_checkout_client_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_personal_data_helper_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_trigger_validator_impl_unittest.cc",
+      "../browser/fast_checkout/mock_fast_checkout_client.cc",
+      "../browser/fast_checkout/mock_fast_checkout_client.h",
       "../browser/feedback/android/family_info_feedback_source_unittest.cc",
       "../browser/long_screenshots/long_screenshots_tab_service_unittest.cc",
       "../browser/lookalikes/safety_tip_message_delegate_android_unittest.cc",

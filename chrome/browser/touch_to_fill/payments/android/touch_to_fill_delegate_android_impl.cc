@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/fast_checkout/fast_checkout_client.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
@@ -33,8 +35,9 @@ TouchToFillDelegateImpl::DryRunResult::operator=(DryRunResult&&) = default;
 TouchToFillDelegateImpl::DryRunResult::~DryRunResult() = default;
 
 TouchToFillDelegateImpl::TouchToFillDelegateImpl(
-    BrowserAutofillManager* manager)
-    : manager_(manager) {
+    BrowserAutofillManager* manager,
+    FastCheckoutClient* fast_checkout_client)
+    : manager_(manager), fast_checkout_client_(fast_checkout_client) {
   DCHECK(manager);
 }
 
@@ -83,7 +86,10 @@ TouchToFillDelegateImpl::DryRunResult TouchToFillDelegateImpl::DryRun(
   if (!field->IsFocusable() || !SanitizedFieldIsEmpty(field->value)) {
     return {TriggerOutcome::kFieldNotEmptyOrNotFocusable, {}};
   }
-
+  // Trigger only if Fast Checkout was not shown before.
+  if (!fast_checkout_client_->IsNotShownYet()) {
+    return {TriggerOutcome::kFastCheckoutWasShown, {}};
+  }
   // Trigger only if there is at least 1 complete valid credit card on file.
   // Complete = contains number, expiration date and name on card.
   // Valid = unexpired with valid number format.

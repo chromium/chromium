@@ -627,4 +627,8 @@ bool FastCheckoutClientImpl::IsSupported(
                                        is_running_, autofill_manager);
 }
 
+bool FastCheckoutClientImpl::IsNotShownYet() const {
+  return fast_checkout_ui_state_ == FastCheckoutUIState::kNotShownYet;
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FastCheckoutClientImpl);

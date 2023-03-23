@@ -60,8 +60,9 @@ void TouchToFillCreditCardController::OnContentAutofillDriverCreated(
     ContentAutofillDriver& driver) {
   auto* manager =
       static_cast<BrowserAutofillManager*>(driver.autofill_manager());
-  manager->set_touch_to_fill_delegate(
-      std::make_unique<TouchToFillDelegateImpl>(manager));
+  manager->set_touch_to_fill_delegate(std::make_unique<TouchToFillDelegateImpl>(
+      manager,
+      FastCheckoutClient::GetOrCreateForWebContents(factory.web_contents())));
 }
 
 bool TouchToFillCreditCardController::Show(

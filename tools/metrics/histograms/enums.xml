@@ -102013,6 +102013,10 @@ would be helpful to identify which type is being sent.
       label="Not shown: tried to display the sheet, but failed due to unknown
              reason"/>
   <int value="7" label="Not shown: incomplete form"/>
+  <int value="8" label="Not shown: unknown form"/>
+  <int value="9" label="Not shown: unknown field"/>
+  <int value="10" label="Not shown: unsupported field type"/>
+  <int value="11" label="Not shown: Fast Checkout was shown"/>
 </enum>
 
 <enum name="TouchToFill.Outcome">
