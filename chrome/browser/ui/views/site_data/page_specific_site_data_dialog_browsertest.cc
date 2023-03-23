@@ -90,9 +90,14 @@ class PageSpecificSiteDataDialogBrowserTest
     content::SetupCrossSiteRedirector(https_server());
     ASSERT_TRUE(https_server()->Start());
 
+    content::CookieChangeObserver observer(
+        browser()->tab_strip_model()->GetActiveWebContents(), 2);
+
     // Load a page with cookies.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), https_server()->GetURL("a.test", "/cookie1.html")));
+
+    observer.Wait();
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
@@ -442,9 +447,14 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
     return;
   }
 
+  content::CookieChangeObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(), 8);
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(
                      "a.test", "/third_party_partitioned_cookies.html")));
+
+  observer.Wait();
 
   auto* dialog = OpenDialog();
   ui::ElementContext context =
@@ -502,9 +512,14 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
+  content::CookieChangeObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents(), 9);
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(
                      "a.test", "/third_party_partitioned_cookies.html")));
+
+  observer.Wait();
 
   auto* dialog = OpenDialog();
   ui::ElementContext context =
