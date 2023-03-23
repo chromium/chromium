@@ -354,8 +354,16 @@ class Device final : public ui::GbmDevice {
     struct gbm_bo* bo =
         gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data, gbm_flags);
     if (!bo) {
-      LOG(ERROR) << "nullptr returned from gbm_bo_import";
-      return nullptr;
+      if (gbm_flags & GBM_BO_USE_SCANOUT) {
+        gbm_flags &= ~GBM_BO_USE_SCANOUT;
+        bo = gbm_bo_import(device_, GBM_BO_IMPORT_FD_MODIFIER, &fd_data,
+                           gbm_flags);
+      }
+
+      if (!bo) {
+        LOG(ERROR) << "nullptr returned from gbm_bo_import";
+        return nullptr;
+      }
     }
 
     return std::make_unique<Buffer>(bo, format, gbm_flags, handle.modifier,
