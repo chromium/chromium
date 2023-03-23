@@ -1382,6 +1382,10 @@ const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
      kJourneysCosineSimilarityWithPairwiseMergeParams,
      std::size(kJourneysCosineSimilarityWithPairwiseMergeParams), nullptr},
 };
+const FeatureEntry::FeatureParam
+    kJourneysLabelsWithSearchVisitEntitiesParams[] = {
+        {"labels_from_search_visit_entities", "true"},
+};
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
     {"labels_from_entities", "true"},
 };
@@ -1396,6 +1400,8 @@ const FeatureEntry::FeatureVariation kJourneysLabelsVariations[] = {
     {"With Entities, No Hostnames",
      kJourneysLabelsWithEntitiesNoHostnamesParams,
      std::size(kJourneysLabelsWithEntitiesNoHostnamesParams), nullptr},
+    {"With Search Entities", kJourneysLabelsWithSearchVisitEntitiesParams,
+     std::size(kJourneysLabelsWithSearchVisitEntitiesParams), nullptr},
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)

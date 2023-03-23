@@ -34,15 +34,71 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   absl::optional<std::u16string> current_highest_scoring_label_unquoted;
 
   // First try finding search terms to use as the cluster label.
+  int num_search_visits = 0;
   for (const auto& visit : cluster.visits) {
-    if (!visit.annotated_visit.content_annotations.search_terms.empty() &&
-        visit.score > max_label_score) {
+    if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
+      num_search_visits++;
+
+      if (visit.score > max_label_score) {
+        current_highest_scoring_label_unquoted =
+            visit.annotated_visit.content_annotations.search_terms;
+        current_highest_scoring_label = l10n_util::GetStringFUTF16(
+            IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
+            *current_highest_scoring_label_unquoted);
+        max_label_score = visit.score;
+      }
+    }
+  }
+
+  // If there are multiple search visits, find the most common entity.
+  if (GetConfig().labels_from_search_visit_entities && num_search_visits > 1) {
+    base::flat_map<std::string, float> entity_to_score;
+    base::flat_map<std::string, int> entity_to_count;
+    for (const auto& visit : cluster.visits) {
+      if (visit.annotated_visit.content_annotations.search_terms.empty()) {
+        continue;
+      }
+      for (const auto& entity : visit.annotated_visit.content_annotations
+                                    .model_annotations.entities) {
+        auto it = entity_to_score.find(entity.id);
+        float new_score = it != entity_to_score.end()
+                              ? it->second + (entity.weight * visit.score)
+                              : entity.weight * visit.score;
+        entity_to_score[entity.id] = new_score;
+
+        entity_to_count[entity.id]++;
+      }
+    }
+
+    // Get entity most common amongst the search visits and tiebreak using
+    // score.
+    int max_count = -1;
+    max_label_score = -1;
+    absl::optional<std::string> highest_scoring_entity;
+    for (const auto& entity_and_count : entity_to_count) {
+      auto entity_metadata_it =
+          entity_metadata_map_->find(entity_and_count.first);
+      if (entity_metadata_it == entity_metadata_map_->end()) {
+        continue;
+      }
+
+      if (entity_and_count.second > max_count) {
+        max_count = entity_and_count.second;
+        max_label_score = entity_to_score.at(entity_and_count.first);
+        highest_scoring_entity = entity_metadata_it->second.human_readable_name;
+      } else if (entity_and_count.second == max_count &&
+                 entity_to_score.at(entity_and_count.first) > max_label_score) {
+        max_label_score = entity_to_score.at(entity_and_count.first);
+        highest_scoring_entity = entity_metadata_it->second.human_readable_name;
+      }
+    }
+
+    if (highest_scoring_entity) {
       current_highest_scoring_label_unquoted =
-          visit.annotated_visit.content_annotations.search_terms;
+          base::UTF8ToUTF16(*highest_scoring_entity);
       current_highest_scoring_label = l10n_util::GetStringFUTF16(
           IDS_HISTORY_CLUSTERS_CLUSTER_LABEL_SEARCH_TERMS,
           *current_highest_scoring_label_unquoted);
-      max_label_score = visit.score;
     }
   }
 

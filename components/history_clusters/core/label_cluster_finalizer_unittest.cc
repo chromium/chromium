@@ -30,6 +30,9 @@ class LabelClusterFinalizerTest : public ::testing::Test {
     optimization_guide::EntityMetadata label_md;
     label_md.human_readable_name = "chosenlabel";
     entity_metadata_map_["baz"] = label_md;
+    optimization_guide::EntityMetadata github_md;
+    label_md.human_readable_name = "githublabel";
+    entity_metadata_map_["github"] = label_md;
 
     cluster_finalizer_ =
         std::make_unique<LabelClusterFinalizer>(&entity_metadata_map_);
@@ -134,6 +137,7 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
   Config config;
   config.labels_from_hostnames = true;
   config.labels_from_entities = true;
+  config.labels_from_search_visit_entities = false;
   SetConfigForTesting(config);
 
   history::ClusterVisit visit =
@@ -161,6 +165,45 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
   FinalizeCluster(cluster);
   EXPECT_THAT(cluster.raw_label, u"searchtermlabel");
   EXPECT_THAT(cluster.label, u"“searchtermlabel”");
+}
+
+TEST_F(LabelClusterFinalizerTest,
+       TakesHighestCountSearchTermIfMultipleSearchVisits) {
+  // Verify that search terms take precedence even if labels from entities are
+  // enabled.
+  Config config;
+  config.labels_from_hostnames = true;
+  config.labels_from_entities = true;
+  config.labels_from_search_visit_entities = true;
+  SetConfigForTesting(config);
+
+  history::ClusterVisit visit =
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          2, GURL("https://nosearchtermsbuthighscorevisit.com/")));
+  visit.engagement_score = 0.9;
+  visit.annotated_visit.content_annotations.model_annotations.entities = {
+      {"github", 100}, {"onlyinnoisyvisit", 99}};
+
+  history::ClusterVisit visit2 =
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://lowerscoringsearchterm.com/")));
+  visit2.score = 0.6;
+  visit2.annotated_visit.content_annotations.search_terms = u"lowscore";
+  visit2.annotated_visit.content_annotations.model_annotations.entities = {
+      {"github", 80}, {"commonsearch", 99}};
+
+  history::ClusterVisit visit3 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://baz.com/")));
+  visit3.score = 0.8;
+  visit3.annotated_visit.content_annotations.model_annotations.entities = {
+      {"github", 80}, {"other", 100}};
+  visit3.annotated_visit.content_annotations.search_terms = u"searchtermlabel";
+
+  history::Cluster cluster;
+  cluster.visits = {visit, visit2, visit3};
+  FinalizeCluster(cluster);
+  EXPECT_THAT(cluster.raw_label, u"githublabel");
+  EXPECT_THAT(cluster.label, u"“githublabel”");
 }
 
 }  // namespace

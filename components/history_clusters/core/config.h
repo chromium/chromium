@@ -79,6 +79,11 @@ struct Config {
   // Does nothing if `should_label_clusters` is false.
   bool labels_from_entities = false;
 
+  // Whether to assign labels to clusters from the entities associated with
+  // search visits within a cluster if there are multiple search visits for the
+  // cluster.
+  bool labels_from_search_visit_entities = false;
+
   // The `kJourneysImages` feature and child params.
 
   // Whether to attempt to provide images for eligible Journeys (so far just

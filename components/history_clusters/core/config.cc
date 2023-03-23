@@ -82,6 +82,10 @@ Config::Config() {
     labels_from_entities = GetFieldTrialParamByFeatureAsBool(
         internal::kJourneysLabels, "labels_from_entities",
         labels_from_entities);
+
+    labels_from_search_visit_entities = GetFieldTrialParamByFeatureAsBool(
+        internal::kJourneysLabels, "labels_from_search_visit_entities",
+        labels_from_search_visit_entities);
   }
 
   // The `kJourneysImages` feature.
