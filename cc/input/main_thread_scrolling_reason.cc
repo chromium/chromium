@@ -48,10 +48,6 @@ void MainThreadScrollingReason::AddToTracedValue(
     traced_value.AppendString("Failed hit test");
   if (reasons & kNoScrollingLayer)
     traced_value.AppendString("No scrolling layer");
-  if (reasons & kNotScrollable)
-    traced_value.AppendString("Not scrollable");
-  if (reasons & kNonInvertibleTransform)
-    traced_value.AppendString("Non-invertible transform");
   if (reasons & kWheelEventHandlerRegion)
     traced_value.AppendString("Wheel event handler region");
   if (reasons & kTouchEventHandlerRegion)
