@@ -2975,6 +2975,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute OPENED
 [Worker]     attribute UNSENT
 [Worker]     getter onreadystatechange
+[Worker]     getter privateTokenOperationError
 [Worker]     getter readyState
 [Worker]     getter response
 [Worker]     getter responseText
@@ -2993,6 +2994,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method open
 [Worker]     method overrideMimeType
 [Worker]     method send
+[Worker]     method setPrivateToken
 [Worker]     method setRequestHeader
 [Worker]     setter onreadystatechange
 [Worker]     setter responseType

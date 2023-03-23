@@ -1997,6 +1997,8 @@ interface Document : Node
     method getElementsByTagNameNS
     method getSelection
     method hasFocus
+    method hasPrivateToken
+    method hasRedemptionRecord
     method hasStorageAccess
     method importNode
     method open
@@ -4013,6 +4015,7 @@ interface HTMLIFrameElement : HTMLElement
     getter marginWidth
     getter name
     getter policy
+    getter privateToken
     getter referrerPolicy
     getter sandbox
     getter scrolling
@@ -4035,6 +4038,7 @@ interface HTMLIFrameElement : HTMLElement
     setter marginWidth
     setter name
     setter policy
+    setter privateToken
     setter referrerPolicy
     setter sandbox
     setter scrolling
@@ -11451,6 +11455,7 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     attribute OPENED
     attribute UNSENT
     getter onreadystatechange
+    getter privateTokenOperationError
     getter readyState
     getter response
     getter responseText
@@ -11469,6 +11474,7 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     method open
     method overrideMimeType
     method send
+    method setPrivateToken
     method setRequestHeader
     setter onreadystatechange
     setter responseType

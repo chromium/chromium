@@ -59,6 +59,7 @@ shared-autofill
 smart-card
 storage-access
 sync-xhr
+trust-token-redemption
 unload
 usb
 vertical-scroll
