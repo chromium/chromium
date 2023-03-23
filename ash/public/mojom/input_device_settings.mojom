@@ -44,9 +44,6 @@ struct KeyboardSettings {
   map<ui.mojom.ModifierKey, ui.mojom.ModifierKey> modifier_remappings;
   bool top_row_are_fkeys;
   bool suppress_meta_fkey_rewrites;
-  bool auto_repeat_enabled;
-  mojo_base.mojom.TimeDelta auto_repeat_delay;
-  mojo_base.mojom.TimeDelta auto_repeat_interval;
 };
 
 // Contains all information needed to display, apply, and update mouse

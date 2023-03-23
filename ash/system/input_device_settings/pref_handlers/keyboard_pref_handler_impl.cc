@@ -60,9 +60,6 @@ static constexpr auto kMetaKeyMapping =
 
 mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(bool is_external) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
-  settings->auto_repeat_delay = kDefaultAutoRepeatDelay;
-  settings->auto_repeat_interval = kDefaultAutoRepeatInterval;
-  settings->auto_repeat_enabled = kDefaultAutoRepeatEnabled;
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
   // This setting should be enabled by default for external keyboards.
   settings->top_row_are_fkeys =
@@ -101,12 +98,6 @@ mojom::KeyboardSettingsPtr GetKeyboardSettingsFromGlobalPrefs(
     const mojom::Keyboard& keyboard,
     ForceKeyboardSettingPersistence& force_persistence) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
-  settings->auto_repeat_delay =
-      base::Milliseconds(prefs->GetInteger(prefs::kXkbAutoRepeatDelay));
-  settings->auto_repeat_interval =
-      base::Milliseconds(prefs->GetInteger(prefs::kXkbAutoRepeatInterval));
-  settings->auto_repeat_enabled =
-      prefs->GetBoolean(prefs::kXkbAutoRepeatEnabled);
 
   const auto* top_row_are_fkeys_preference =
       prefs->GetUserPrefValue(prefs::kSendFunctionKeys);
@@ -137,15 +128,6 @@ mojom::KeyboardSettingsPtr RetrieveKeyboardSettings(
     const mojom::Keyboard& keyboard,
     const base::Value::Dict& settings_dict) {
   mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
-  settings->auto_repeat_enabled =
-      settings_dict.FindBool(prefs::kKeyboardSettingAutoRepeatEnabled)
-          .value_or(kDefaultAutoRepeatEnabled);
-  settings->auto_repeat_delay = base::Milliseconds(
-      settings_dict.FindInt(prefs::kKeyboardSettingAutoRepeatDelay)
-          .value_or(kDefaultAutoRepeatDelay.InMilliseconds()));
-  settings->auto_repeat_interval = base::Milliseconds(
-      settings_dict.FindInt(prefs::kKeyboardSettingAutoRepeatInterval)
-          .value_or(kDefaultAutoRepeatInterval.InMilliseconds()));
   settings->suppress_meta_fkey_rewrites =
       settings_dict.FindBool(prefs::kKeyboardSettingSuppressMetaFKeyRewrites)
           .value_or(kDefaultSuppressMetaFKeyRewrites);
@@ -202,14 +184,6 @@ void UpdateKeyboardSettingsImpl(
 
   // Populate `settings_dict` with all settings in `settings`.
   base::Value::Dict settings_dict;
-  settings_dict.Set(
-      prefs::kKeyboardSettingAutoRepeatDelay,
-      static_cast<int>(settings.auto_repeat_delay.InMilliseconds()));
-  settings_dict.Set(
-      prefs::kKeyboardSettingAutoRepeatInterval,
-      static_cast<int>(settings.auto_repeat_interval.InMilliseconds()));
-  settings_dict.Set(prefs::kKeyboardSettingAutoRepeatEnabled,
-                    settings.auto_repeat_enabled);
 
   // Settings should only be persisted if one or more of the following is true:
   // - Setting was previously persisted to storage

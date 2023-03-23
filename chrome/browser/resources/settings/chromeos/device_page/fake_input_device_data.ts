@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-
 import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
-
-
-export function mojoTimeDelta(timeDelta: number): TimeDelta {
-  return {microseconds: BigInt(Math.floor(timeDelta * 1000))};
-}
 
 export const fakeKeyboards: Keyboard[] = [
   {
@@ -33,9 +26,6 @@ export const fakeKeyboards: Keyboard[] = [
       },
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
-      autoRepeatEnabled: false,
-      autoRepeatDelay: mojoTimeDelta(2000),
-      autoRepeatInterval: mojoTimeDelta(2000),
     },
   },
   {
@@ -56,9 +46,6 @@ export const fakeKeyboards: Keyboard[] = [
       modifierRemappings: {},
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
-      autoRepeatEnabled: true,
-      autoRepeatDelay: mojoTimeDelta(150),
-      autoRepeatInterval: mojoTimeDelta(20),
     },
   },
   {
@@ -79,9 +66,6 @@ export const fakeKeyboards: Keyboard[] = [
       modifierRemappings: {[ModifierKey.kAlt]: ModifierKey.kAssistant},
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: false,
-      autoRepeatEnabled: true,
-      autoRepeatDelay: mojoTimeDelta(500),
-      autoRepeatInterval: mojoTimeDelta(100),
     },
   },
 ];
@@ -108,9 +92,6 @@ export const fakeKeyboards2: Keyboard[] = [
       },
       topRowAreFkeys: false,
       suppressMetaFkeyRewrites: false,
-      autoRepeatEnabled: false,
-      autoRepeatDelay: mojoTimeDelta(2000),
-      autoRepeatInterval: mojoTimeDelta(2000),
     },
   },
   {
@@ -131,9 +112,6 @@ export const fakeKeyboards2: Keyboard[] = [
       modifierRemappings: {},
       topRowAreFkeys: true,
       suppressMetaFkeyRewrites: true,
-      autoRepeatEnabled: true,
-      autoRepeatDelay: mojoTimeDelta(150),
-      autoRepeatInterval: mojoTimeDelta(20),
     },
   },
 ];

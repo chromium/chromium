@@ -31,34 +31,22 @@ const std::string kKeyboardKey1 = "device_key1";
 const std::string kKeyboardKey2 = "device_key2";
 const std::string kKeyboardKey3 = "device_key3";
 
-const int kGlobalAutoRepeatDelay = 1000;
-const int kGlobalAutoRepeatInterval = 1000;
-const bool kGlobalAutoRepeatEnabled = false;
 const bool kGlobalSendFunctionKeys = false;
 
 const mojom::KeyboardSettings kKeyboardSettingsDefault(
     /*modifier_remappings=*/{},
     /*top_row_are_fkeys=*/kDefaultTopRowAreFKeys,
-    /*suppress_meta_fkey_rewrites=*/kDefaultSuppressMetaFKeyRewrites,
-    /*auto_repeat_enabled=*/kDefaultAutoRepeatEnabled,
-    /*auto_repeat_delay=*/kDefaultAutoRepeatDelay,
-    /*auto_repeat_interval=*/kDefaultAutoRepeatInterval);
+    /*suppress_meta_fkey_rewrites=*/kDefaultSuppressMetaFKeyRewrites);
 
 const mojom::KeyboardSettings kKeyboardSettingsNotDefault(
     /*modifier_remappings=*/{},
     /*top_row_are_fkeys=*/!kDefaultTopRowAreFKeys,
-    /*suppress_meta_fkey_rewrites=*/!kDefaultSuppressMetaFKeyRewrites,
-    /*auto_repeat_enabled=*/kDefaultAutoRepeatEnabled,
-    /*auto_repeat_delay=*/kDefaultAutoRepeatDelay,
-    /*auto_repeat_interval=*/kDefaultAutoRepeatInterval);
+    /*suppress_meta_fkey_rewrites=*/!kDefaultSuppressMetaFKeyRewrites);
 
 const mojom::KeyboardSettings kKeyboardSettings1(
     /*modifier_remappings=*/{},
     /*top_row_are_fkeys=*/false,
-    /*suppress_meta_fkey_rewrites=*/false,
-    /*auto_repeat_enabled=*/false,
-    /*auto_repeat_delay=*/base::Milliseconds(2000),
-    /*auto_repeat_interval=*/base::Milliseconds(500));
+    /*suppress_meta_fkey_rewrites=*/false);
 
 const mojom::KeyboardSettings kKeyboardSettings2(
     /*modifier_remappings=*/{{ui::mojom::ModifierKey::kControl,
@@ -66,10 +54,7 @@ const mojom::KeyboardSettings kKeyboardSettings2(
                              {ui::mojom::ModifierKey::kAssistant,
                               ui::mojom::ModifierKey::kVoid}},
     /*top_row_are_fkeys=*/true,
-    /*suppress_meta_fkey_rewrites=*/true,
-    /*auto_repeat_enabled=*/true,
-    /*auto_repeat_delay=*/base::Milliseconds(100),
-    /*auto_repeat_interval=*/base::Milliseconds(100));
+    /*suppress_meta_fkey_rewrites=*/true);
 
 const mojom::KeyboardSettings kKeyboardSettings3(
     /*modifier_remappings=*/{{ui::mojom::ModifierKey::kAlt,
@@ -81,10 +66,7 @@ const mojom::KeyboardSettings kKeyboardSettings3(
                              {ui::mojom::ModifierKey::kControl,
                               ui::mojom::ModifierKey::kAssistant}},
     /*top_row_are_fkeys=*/true,
-    /*suppress_meta_fkey_rewrites=*/false,
-    /*auto_repeat_enabled=*/true,
-    /*auto_repeat_delay=*/base::Milliseconds(5000),
-    /*auto_repeat_interval=*/base::Milliseconds(3000));
+    /*suppress_meta_fkey_rewrites=*/false);
 }  // namespace
 
 class KeyboardPrefHandlerTest : public AshTestBase {
@@ -111,12 +93,6 @@ class KeyboardPrefHandlerTest : public AshTestBase {
 
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kKeyboardDeviceSettingsDictPref);
-    pref_service_->registry()->RegisterIntegerPref(prefs::kXkbAutoRepeatDelay,
-                                                   kGlobalAutoRepeatDelay);
-    pref_service_->registry()->RegisterIntegerPref(
-        prefs::kXkbAutoRepeatInterval, kGlobalAutoRepeatInterval);
-    pref_service_->registry()->RegisterBooleanPref(prefs::kXkbAutoRepeatEnabled,
-                                                   kGlobalAutoRepeatEnabled);
     pref_service_->registry()->RegisterBooleanPref(prefs::kSendFunctionKeys,
                                                    kGlobalSendFunctionKeys);
 
@@ -153,23 +129,6 @@ class KeyboardPrefHandlerTest : public AshTestBase {
   void CheckKeyboardSettingsAndDictAreEqual(
       const mojom::KeyboardSettings& settings,
       const base::Value::Dict& settings_dict) {
-    auto auto_repeat_delay =
-        settings_dict.FindInt(prefs::kKeyboardSettingAutoRepeatDelay);
-    ASSERT_TRUE(auto_repeat_delay.has_value());
-    EXPECT_EQ(static_cast<int>(settings.auto_repeat_delay.InMilliseconds()),
-              auto_repeat_delay);
-
-    auto auto_repeat_interval =
-        settings_dict.FindInt(prefs::kKeyboardSettingAutoRepeatInterval);
-    ASSERT_TRUE(auto_repeat_interval.has_value());
-    EXPECT_EQ(static_cast<int>(settings.auto_repeat_interval.InMilliseconds()),
-              auto_repeat_interval);
-
-    auto auto_repeat_enabled =
-        settings_dict.FindBool(prefs::kKeyboardSettingAutoRepeatEnabled);
-    ASSERT_TRUE(auto_repeat_enabled.has_value());
-    EXPECT_EQ(settings.auto_repeat_enabled, auto_repeat_enabled);
-
     auto suppress_meta_fkey_rewrites =
         settings_dict.FindBool(prefs::kKeyboardSettingSuppressMetaFKeyRewrites);
     if (suppress_meta_fkey_rewrites.has_value()) {
@@ -309,7 +268,6 @@ TEST_F(KeyboardPrefHandlerTest, UpdateSettings) {
   mojom::KeyboardSettings updated_settings = kKeyboardSettings1;
   updated_settings.modifier_remappings = {
       {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl}};
-  updated_settings.auto_repeat_enabled = !updated_settings.auto_repeat_enabled;
   updated_settings.suppress_meta_fkey_rewrites =
       !updated_settings.suppress_meta_fkey_rewrites;
   updated_settings.top_row_are_fkeys = !updated_settings.top_row_are_fkeys;
@@ -335,7 +293,6 @@ TEST_F(KeyboardPrefHandlerTest, UpdateSettings) {
 
 TEST_F(KeyboardPrefHandlerTest, NewSettingAddedRoundTrip) {
   mojom::KeyboardSettings test_settings = kKeyboardSettings1;
-  test_settings.auto_repeat_enabled = !kDefaultAutoRepeatEnabled;
   test_settings.suppress_meta_fkey_rewrites = !kDefaultSuppressMetaFKeyRewrites;
 
   CallUpdateKeyboardSettings(kKeyboardKey1, test_settings);
@@ -344,7 +301,6 @@ TEST_F(KeyboardPrefHandlerTest, NewSettingAddedRoundTrip) {
   auto* settings_dict = devices_dict.FindDict(kKeyboardKey1);
 
   // Remove keys from the dict to mock adding a new setting in the future.
-  settings_dict->Remove(prefs::kKeyboardSettingAutoRepeatEnabled);
   settings_dict->Remove(prefs::kKeyboardSettingSuppressMetaFKeyRewrites);
   pref_service_->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
                          std::move(devices_dict));
@@ -353,13 +309,11 @@ TEST_F(KeyboardPrefHandlerTest, NewSettingAddedRoundTrip) {
   // "new settings" match their default values.
   mojom::KeyboardSettingsPtr settings =
       CallInitializeKeyboardSettings(kKeyboardKey1);
-  EXPECT_EQ(kDefaultAutoRepeatEnabled, settings->auto_repeat_enabled);
   EXPECT_EQ(kDefaultSuppressMetaFKeyRewrites,
             settings->suppress_meta_fkey_rewrites);
 
   // Reset "new settings" to the values that match `test_settings` and check
   // that the rest of the fields are equal.
-  settings->auto_repeat_enabled = !kDefaultAutoRepeatEnabled;
   settings->suppress_meta_fkey_rewrites = !kDefaultSuppressMetaFKeyRewrites;
   EXPECT_EQ(test_settings, *settings);
 }
@@ -485,11 +439,6 @@ TEST_F(KeyboardPrefHandlerTest, KeyboardObserveredInTransitionPeriod) {
   // prefs were used as defaults.
   mojom::KeyboardSettingsPtr settings =
       CallInitializeKeyboardSettings(keyboard.device_key);
-  ASSERT_EQ(settings->auto_repeat_enabled, kGlobalAutoRepeatEnabled);
-  ASSERT_EQ(settings->auto_repeat_interval,
-            base::Milliseconds(kGlobalAutoRepeatInterval));
-  ASSERT_EQ(settings->auto_repeat_delay,
-            base::Milliseconds(kGlobalAutoRepeatDelay));
   ASSERT_EQ(settings->top_row_are_fkeys, kGlobalSendFunctionKeys);
   ASSERT_EQ(settings->suppress_meta_fkey_rewrites,
             kDefaultSuppressMetaFKeyRewrites);

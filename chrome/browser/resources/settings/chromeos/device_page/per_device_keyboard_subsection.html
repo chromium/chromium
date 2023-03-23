@@ -41,43 +41,6 @@
         deep-link-focus-id$="[[Setting.kKeyboardFunctionKeys]]">
     </settings-toggle-button>
   </template>
-  <settings-toggle-button
-      id="enableAutoRepeatButton"
-      class="hr"
-      pref="{{enableAutoRepeatPref}}"
-      label="$i18n{keyboardEnableAutoRepeat}"
-      deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
-  </settings-toggle-button>
-  <iron-collapse
-      opened="[[enableAutoRepeatPref.value]]">
-    <div class="settings-box continuation embedded">
-      <div class="start" id="repeatDelayLabel" aria-hidden="true">
-        $i18n{keyRepeatDelay}
-      </div>
-      <settings-slider id="delaySlider"
-          pref="{{autoRepeatDelaysPref}}"
-          ticks="[[autoRepeatDelays]]"
-          disabled="[[!enableAutoRepeatPref.value]]"
-          label-aria="$i18n{keyRepeatDelay}"
-          label-min="$i18n{keyRepeatDelayLong}"
-          label-max="$i18n{keyRepeatDelayShort}">
-      </settings-slider>
-    </div>
-    <div class="settings-box continuation embedded">
-      <div class="start" id="repeatRateLabel" aria-hidden="true">
-        $i18n{keyRepeatRate}
-      </div>
-      <settings-slider id="repeatRateSlider"
-          pref="{{autoRepeatIntervalsPref}}"
-          ticks="[[autoRepeatIntervals]]"
-          disabled="[[
-              !enableAutoRepeatPref.value]]"
-          label-aria="$i18n{keyRepeatRate}"
-          label-min="$i18n{keyRepeatRateSlow}"
-          label-max="$i18n{keyRepeatRateFast}">
-      </settings-slider>
-    </div>
-  </iron-collapse>
   <cr-link-row id="remapKeyboardKeys"
     class="hr" on-click="onRemapKeyboardKeysTap"
     label="$i18n{remapKeyboardKeysRowLabel}"
