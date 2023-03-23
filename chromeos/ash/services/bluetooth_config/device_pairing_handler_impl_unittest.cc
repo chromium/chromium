@@ -94,12 +94,16 @@ class DevicePairingHandlerImplTest : public testing::Test {
                                        true, success_count);
   }
 
-  void CheckPairingFailureReasonHistogram(
+  void CheckPairingFailureHistogram(
       device::ConnectionFailureReason failure_reason,
-      int count) {
+      size_t failure_count,
+      size_t filtered_count) {
     histogram_tester.ExpectBucketCount(
         "Bluetooth.ChromeOS.Pairing.Result.FailureReason", failure_reason,
-        count);
+        failure_count);
+    histogram_tester.ExpectBucketCount(
+        "Bluetooth.ChromeOS.Pairing.Result.FilteredFailureReason",
+        failure_reason, filtered_count);
   }
 
   void CheckDurationHistogramMetrics(base::TimeDelta bucket,
@@ -368,8 +372,8 @@ TEST_F(DevicePairingHandlerImplTest, MultipleDevicesPairAuthNone) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -384,8 +388,8 @@ TEST_F(DevicePairingHandlerImplTest, MultipleDevicesPairAuthNone) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/2, /*failure_count=*/1,
                          /*success_count=*/1);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/1,
                                 /*failure_count=*/0,
                                 /*transport_name=*/"Classic");
@@ -409,8 +413,8 @@ TEST_F(DevicePairingHandlerImplTest, DisableBluetoothBeforePairing) {
   CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Invalid");
@@ -434,8 +438,8 @@ TEST_F(DevicePairingHandlerImplTest, DisableBluetoothDuringPairing) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthCanceled, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthCanceled,
+                               /*failure_count=*/1, /*filtered_count=*/0);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -454,8 +458,8 @@ TEST_F(DevicePairingHandlerImplTest, DestroyHandlerBeforeConnectFinishes) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthCanceled, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthCanceled,
+                               /*failure_count=*/1, /*filtered_count=*/0);
   CheckDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -512,8 +516,8 @@ TEST_F(DevicePairingHandlerImplTest, DisconnectDelegateBeforeConnectFinishes) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthCanceled, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthCanceled,
+                               /*failure_count=*/1, /*filtered_count=*/0);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -530,10 +534,10 @@ TEST_F(DevicePairingHandlerImplTest, DisconnectDelegateBeforeConnectFinishes) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/2, /*failure_count=*/2,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthCanceled, /*count=*/1);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthCanceled,
+                               /*failure_count=*/1, /*filtered_count=*/0);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -561,8 +565,8 @@ TEST_F(DevicePairingHandlerImplTest,
   CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Invalid");
@@ -586,8 +590,8 @@ TEST_F(DevicePairingHandlerImplTest,
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -601,8 +605,8 @@ TEST_F(DevicePairingHandlerImplTest, PairDeviceNotFound) {
   CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Invalid");
@@ -659,8 +663,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCode) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthRejected, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthRejected,
+                               /*failure_count=*/1, /*filtered_count=*/0);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -684,8 +688,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCodeRemoveDevice) {
   CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Invalid");
@@ -706,8 +710,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskey) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kInprogress, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kInprogress,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -732,8 +736,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyRemoveDevice) {
   CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Invalid");
@@ -756,8 +760,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyInvalidKey) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthCanceled, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthCanceled,
+                               /*failure_count=*/1, /*filtered_count=*/0);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -770,8 +774,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyInvalidKey) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthCanceled, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthCanceled,
+                               /*failure_count=*/1, /*filtered_count=*/0);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -803,8 +807,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPinCode) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -857,8 +861,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPasskey) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -880,8 +884,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPasskeyPadZeroes) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -900,8 +904,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPasskeyPadZeroes) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -926,8 +930,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskey) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");
@@ -954,10 +958,10 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskey) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/2, /*failure_count=*/2,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthCanceled, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthCanceled,
+                               /*failure_count=*/1, /*filtered_count=*/0);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/2,
                                 /*transport_name=*/"Classic");
@@ -984,8 +988,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskeyRemoveDevice) {
   CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(device::ConnectionFailureReason::kFailed,
-                                     /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Invalid");
@@ -1008,8 +1012,8 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthAuthorizePairing) {
   CheckPairingHistograms(device::BluetoothTransportType::kClassic,
                          /*type_count=*/1, /*failure_count=*/1,
                          /*success_count=*/0);
-  CheckPairingFailureReasonHistogram(
-      device::ConnectionFailureReason::kAuthFailed, /*count=*/1);
+  CheckPairingFailureHistogram(device::ConnectionFailureReason::kAuthFailed,
+                               /*failure_count=*/1, /*filtered_count=*/1);
   CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Classic");

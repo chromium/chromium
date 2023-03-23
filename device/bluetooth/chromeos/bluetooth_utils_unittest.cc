@@ -328,29 +328,49 @@ TEST_F(BluetoothUtilsTest, TestPairMetric) {
         failure_reason, 1);
   };
 
+  auto assert_filtered_failure_histograms =
+      [&](device::ConnectionFailureReason error, size_t expected_count) {
+        histogram_tester.ExpectBucketCount(
+            "Bluetooth.ChromeOS.Pairing.Result.FilteredFailureReason", error,
+            expected_count);
+        histogram_tester.ExpectBucketCount(
+            "Bluetooth.ChromeOS.Pairing.Result.FilteredFailureReason.Classic",
+            error, expected_count);
+      };
+
   RecordPairingResult(device::ConnectionFailureReason::kAuthFailed,
                       device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,
                       base::Seconds(2));
   total_count++;
   assert_histograms(device::ConnectionFailureReason::kAuthFailed);
+  assert_filtered_failure_histograms(
+      device::ConnectionFailureReason::kAuthFailed, /*expected_count=*/1);
 
   RecordPairingResult(device::ConnectionFailureReason::kAuthCanceled,
                       device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,
                       base::Seconds(2));
   total_count++;
   assert_histograms(device::ConnectionFailureReason::kAuthCanceled);
+  assert_filtered_failure_histograms(
+      device::ConnectionFailureReason::kAuthCanceled,
+      /*expected_count=*/0);
 
   RecordPairingResult(device::ConnectionFailureReason::kAuthRejected,
                       device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,
                       base::Seconds(2));
   total_count++;
   assert_histograms(device::ConnectionFailureReason::kAuthRejected);
+  assert_filtered_failure_histograms(
+      device::ConnectionFailureReason::kAuthRejected,
+      /*expected_count=*/0);
 
   RecordPairingResult(device::ConnectionFailureReason::kInprogress,
                       device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,
                       base::Seconds(2));
   total_count++;
   assert_histograms(device::ConnectionFailureReason::kInprogress);
+  assert_filtered_failure_histograms(
+      device::ConnectionFailureReason::kInprogress, /*expected_count=*/1);
 }
 
 TEST_F(BluetoothUtilsTest, TestUserAttemptedReconnectionMetric) {

@@ -1620,6 +1620,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.Pairing.Result.FilteredFailureReason{BluetoothTransportTypes}"
+    enum="BluetoothConnectionFailureReason" expires_after="2024-02-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Breaks down why a pairing attempt to a peripheral failed (see
+    'Bluetooth.ChromeOS.Pairing.Result'). Emits the result of pairing attempts
+    that have explicitly failed, filtering out results where the device was not
+    paired due to non-error reasons e.g. the user cancelled the pairing attempt.
+
+    Suffixed by Bluetooth transport type. View the base histogram to see results
+    for all transport types aggregated together, and suffixed histograms for the
+    results of just that particular transport type. {BluetoothTransportTypes}
+  </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.Pairing.Result{BluetoothTransportTypes}"
     enum="BooleanSuccess" expires_after="2023-06-01">
   <owner>khorimoto@chromium.org</owner>

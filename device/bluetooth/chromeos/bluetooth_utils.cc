@@ -149,6 +149,44 @@ std::string GetTransportName(BluetoothTransport transport) {
   }
 }
 
+void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
+                               const std::string& transport_name) {
+  switch (failure_reason) {
+    case ConnectionFailureReason::kAuthCanceled:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthRejected:
+      return;
+    case ConnectionFailureReason::kUnknownError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthFailed:
+      [[fallthrough]];
+    case ConnectionFailureReason::kAuthTimeout:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnknownConnectionError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kUnsupportedDevice:
+      [[fallthrough]];
+    case ConnectionFailureReason::kNotConnectable:
+      [[fallthrough]];
+    case ConnectionFailureReason::kSystemError:
+      [[fallthrough]];
+    case ConnectionFailureReason::kFailed:
+      [[fallthrough]];
+    case ConnectionFailureReason::kInprogress:
+      const std::string result_histogram_name_prefix =
+          "Bluetooth.ChromeOS.Pairing.Result";
+      base::UmaHistogramEnumeration(
+          result_histogram_name_prefix + ".FilteredFailureReason",
+          failure_reason);
+      base::UmaHistogramEnumeration(result_histogram_name_prefix +
+                                        ".FilteredFailureReason." +
+                                        transport_name,
+                                    failure_reason);
+      return;
+  }
+  NOTREACHED();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsPolyDevice(const device::BluetoothDevice* device) {
   // OUI portions of Bluetooth addresses for devices manufactured by Poly. See
@@ -286,6 +324,7 @@ void RecordPairingResult(absl::optional<ConnectionFailureReason> failure_reason,
     base::UmaHistogramEnumeration(
         result_histogram_name_prefix + ".FailureReason." + transport_name,
         *failure_reason);
+    EmitFilteredFailureReason(*failure_reason, transport_name);
   }
 }
 
