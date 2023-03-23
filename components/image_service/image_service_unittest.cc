@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +18,7 @@
 #include "components/image_service/mojom/image_service.mojom-shared.h"
 #include "components/image_service/mojom/image_service.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_new_optimization_guide_decider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -187,28 +189,43 @@ TEST_F(ImageServiceTest, SyncInitialization) {
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_->FireStateChanged();
+  task_environment.FastForwardBy(kOptimizationGuideBatchingTimeout);
   EXPECT_EQ(test_opt_guide_->requests_received_, 1U)
       << "The test backend should immediately get the request after Sync "
-         "activates, and the consent throttle unthrottles.";
+         "activates, and the consent throttle unthrottles, and after the "
+         "short aggregation timeout expires.";
 
   // This test only covers sync unthrottling, so we don't care about fulfilling
   // the actual request. That's covered by
   // OptimizationGuideSalientImagesEndToEnd.
 }
 
+// This also tests batching, because it's an integral part of how Optimization
+// Guide backend works.
 TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   mojom::Options options;
   options.suggest_images = false;
   options.optimization_guide_images = true;
 
-  GURL image_url_response;
+  GURL response_1;
+  GURL response_2;
+  GURL response_3;
   image_service_->FetchImageFor(
-      mojom::ClientId::Journeys, GURL("https://page-url.com"), options,
-      base::BindOnce(&StoreImageUrlResponse, &image_url_response));
+      mojom::ClientId::Journeys, GURL("https://1.com"), options,
+      base::BindOnce(&StoreImageUrlResponse, &response_1));
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys, GURL("https://2.com"), options,
+      base::BindOnce(&StoreImageUrlResponse, &response_2));
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys, GURL("https://1.com"), options,
+      base::BindOnce(&StoreImageUrlResponse, &response_3));
+  task_environment.FastForwardBy(kOptimizationGuideBatchingTimeout);
 
   // Verify that the OptimizationGuide backend got one appropriate call.
+  ASSERT_EQ(test_opt_guide_->requests_received_, 1U);
   EXPECT_THAT(test_opt_guide_->on_demand_call_urls_,
-              ElementsAre(GURL("https://page-url.com")));
+              ElementsAre(GURL("https://1.com"), GURL("https://2.com"),
+                          GURL("https://1.com")));
   EXPECT_THAT(test_opt_guide_->on_demand_call_optimization_types_,
               ElementsAre(optimization_guide::proto::SALIENT_IMAGE));
   EXPECT_EQ(test_opt_guide_->on_demand_call_request_context_,
@@ -218,11 +235,11 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend",
                 PageImageServiceBackend::kOptimizationGuide),
-            1);
+            3);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.Journeys",
                 PageImageServiceBackend::kOptimizationGuide),
-            1);
+            3);
 
   // Verify the decision can be parsed and sent back to the original caller.
   optimization_guide::OptimizationGuideDecisionWithMetadata decision;
@@ -239,20 +256,64 @@ TEST_F(ImageServiceTest, OptimizationGuideSalientImagesEndToEnd) {
     decision.metadata.set_any_metadata(any);
   }
 
+  // Verify that the repeating callback can be called twice with the two
+  // different URLs, the "https://1.com" one being deduplicated.
   test_opt_guide_->on_demand_call_callback_.Run(
-      GURL("https://page-url.com"),
+      GURL("https://2.com"),
       {{optimization_guide::proto::SALIENT_IMAGE, decision}});
-  EXPECT_EQ(image_url_response, GURL("https://image-url.com/foo.png"));
+  EXPECT_EQ(response_1, GURL());
+  EXPECT_EQ(response_2, GURL("https://image-url.com/foo.png"));
+  EXPECT_EQ(response_3, GURL());
+  test_opt_guide_->on_demand_call_callback_.Run(
+      GURL("https://1.com"),
+      {{optimization_guide::proto::SALIENT_IMAGE, decision}});
+  EXPECT_EQ(response_1, GURL("https://image-url.com/foo.png"));
+  EXPECT_EQ(response_2, GURL("https://image-url.com/foo.png"));
+  EXPECT_EQ(response_3, GURL("https://image-url.com/foo.png"));
 
   // Test histograms with literal names to validate client-sliced names.
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.OptimizationGuide.Result",
                 PageImageServiceOptimizationGuideResult::kSuccess),
-            1);
+            2);
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.OptimizationGuide.Result.Journeys",
                 PageImageServiceOptimizationGuideResult::kSuccess),
-            1);
+            2);
+}
+
+TEST_F(ImageServiceTest, OptimizationGuideBatchingRespectsMaxUrls) {
+  mojom::Options options;
+  options.suggest_images = false;
+  options.optimization_guide_images = true;
+
+  std::vector<GURL> responses;
+
+  size_t max_batch = optimization_guide::features::
+      MaxUrlsForOptimizationGuideServiceHintsFetch();
+  // Fetch one LESS than the max batch size, to verify no requests are sent.
+  for (size_t i = 0; i < max_batch - 1; ++i) {
+    image_service_->FetchImageFor(
+        mojom::ClientId::Journeys,
+        GURL("https://" + base::NumberToString(i) + ".com"), options,
+        base::BindOnce(&AppendResponse, &responses));
+    EXPECT_EQ(test_opt_guide_->requests_received_, 0U) << "i = " << i;
+  }
+
+  image_service_->FetchImageFor(mojom::ClientId::Journeys,
+                                GURL("https://last.com"), options,
+                                base::BindOnce(&AppendResponse, &responses));
+  EXPECT_EQ(test_opt_guide_->requests_received_, 1U);
+  ASSERT_EQ(test_opt_guide_->on_demand_call_urls_.size(), max_batch);
+  EXPECT_EQ(test_opt_guide_->on_demand_call_urls_[0], GURL("https://0.com/"));
+  EXPECT_EQ(test_opt_guide_->on_demand_call_urls_[max_batch - 1],
+            GURL("https://last.com"));
+
+  image_service_->FetchImageFor(mojom::ClientId::Journeys,
+                                GURL("https://one_more.com"), options,
+                                base::BindOnce(&AppendResponse, &responses));
+  EXPECT_EQ(test_opt_guide_->requests_received_, 1U)
+      << "Expect that making more request restarts the queue.";
 }
 
 }  // namespace image_service

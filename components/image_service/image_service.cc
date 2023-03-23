@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
@@ -26,6 +27,18 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace image_service {
+
+namespace {
+
+// Fulfills all `callbacks` with `result`.
+void FulfillAllCallbacks(std::vector<ImageService::ResultCallback> callbacks,
+                         const GURL& result) {
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
+  }
+}
+
+}  // namespace
 
 // A one-time use object that uses Suggest to get an image URL corresponding
 // to `search_query` and `entity_id`. This is a hacky temporary implementation,
@@ -162,6 +175,11 @@ ImageService::ImageService(
   }
 }
 
+ImageService::OptGuideRequest::OptGuideRequest() = default;
+ImageService::OptGuideRequest::~OptGuideRequest() = default;
+ImageService::OptGuideRequest::OptGuideRequest(OptGuideRequest&& other) =
+    default;
+
 ImageService::~ImageService() = default;
 
 base::WeakPtr<ImageService> ImageService::GetWeakPtr() {
@@ -279,6 +297,32 @@ void ImageService::FetchOptimizationGuideImage(mojom::ClientId client_id,
   DCHECK(opt_guide_) << "FetchOptimizationGuideImage is never called when "
                         "opt_guide_ is nullptr.";
 
+  OptGuideRequest request;
+  request.url = page_url;
+  request.callback = std::move(callback);
+  auto& request_list = unsent_opt_guide_requests_[client_id];
+  request_list.push_back(std::move(request));
+
+  if (request_list.size() >=
+      optimization_guide::features::
+          MaxUrlsForOptimizationGuideServiceHintsFetch()) {
+    // Erasing the timer also cancels the timer callback.
+    opt_guide_timers_.erase(client_id);
+    ProcessAllBatchedOptimizationGuideRequests(client_id);
+  } else if (request_list.size() == 1U) {
+    // Otherwise, if we just enqueued our FIRST request, then kick off a timer
+    // to flush the queue. One millisecond is a long enough time in CPU time.
+    auto timer = std::make_unique<base::OneShotTimer>();
+    timer->Start(FROM_HERE, kOptimizationGuideBatchingTimeout,
+                 base::BindOnce(
+                     &ImageService::ProcessAllBatchedOptimizationGuideRequests,
+                     weak_factory_.GetWeakPtr(), client_id));
+    opt_guide_timers_[client_id] = std::move(timer);
+  }
+}
+
+void ImageService::ProcessAllBatchedOptimizationGuideRequests(
+    mojom::ClientId client_id) {
   optimization_guide::proto::RequestContext request_context;
   switch (client_id) {
     case mojom::ClientId::Journeys:
@@ -297,35 +341,53 @@ void ImageService::FetchOptimizationGuideImage(mojom::ClientId client_id,
     }
   }
 
-  // TODO(b/244507194): Consider batching requests in the future.
+  std::vector<OptGuideRequest>& unsent_requests =
+      unsent_opt_guide_requests_[client_id];
+  if (unsent_requests.empty()) {
+    return;
+  }
+
+  // Generate a list of URLs to request in this batch.
+  std::vector<GURL> urls;
+  for (auto& request : unsent_requests) {
+    urls.push_back(request.url);
+  }
+
+  // Move the list of unsent requests to the sent vector.
+  for (auto& request : unsent_requests) {
+    sent_opt_guide_requests_[client_id].push_back(std::move(request));
+  }
+  unsent_requests.clear();
+
   opt_guide_->CanApplyOptimizationOnDemand(
-      {page_url}, {optimization_guide::proto::OptimizationType::SALIENT_IMAGE},
+      urls, {optimization_guide::proto::OptimizationType::SALIENT_IMAGE},
       request_context,
-      // Note: This is subtle and nasty. OptimizationGuide demands a
-      // RepeatingCallback because it takes a vector of URLs and plans to call
-      // the callback once per URL. But we are only passing in a single URL, and
-      // we only possess the OnceCallback that the original caller gave us.
-      // The callback.md documentation says this is subtle, not ideal, but OK,
-      // so long as the RepeatingCallback is only ever called once in practice.
       base::BindRepeating(&ImageService::OnOptimizationGuideImageFetched,
-                          weak_factory_.GetWeakPtr(), client_id,
-                          base::Passed(std::move(callback))));
+                          weak_factory_.GetWeakPtr(), client_id));
 }
 
 void ImageService::OnOptimizationGuideImageFetched(
     mojom::ClientId client_id,
-    ResultCallback callback,
     const GURL& url,
     const base::flat_map<
         optimization_guide::proto::OptimizationType,
         optimization_guide::OptimizationGuideDecisionWithMetadata>& decisions) {
-  if (callback.is_null()) {
-    // This shouldn't happen, but maybe it can if OptimizationGuide decides to
-    // call the repeating callback more than once. Probably a programmer error
-    // in this case, but early exit and mark with NOTREACHED().
-    NOTREACHED() << "Called OnOptimizationGuideImageFetched more than once "
-                 << "while only having a single OnceCallback to respond with.";
-    return;
+  // Extract all waiting callbacks matching `url` to `matching_callbacks`.
+  std::vector<ResultCallback> matching_callbacks;
+  {
+    // Take over the existing whole list via a swap.
+    std::vector<OptGuideRequest> all_requests;
+    std::swap(all_requests, sent_opt_guide_requests_[client_id]);
+
+    // Steal the matching callbacks, pushing back the other pending requests
+    // back to the original list.
+    for (auto& request : all_requests) {
+      if (request.url == url) {
+        matching_callbacks.push_back(std::move(request.callback));
+      } else {
+        sent_opt_guide_requests_[client_id].push_back(std::move(request));
+      }
+    }
   }
 
   auto iter = decisions.find(optimization_guide::proto::SALIENT_IMAGE);
@@ -333,7 +395,7 @@ void ImageService::OnOptimizationGuideImageFetched(
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
         PageImageServiceOptimizationGuideResult::kDecisionMissing, client_id);
-    return std::move(callback).Run(GURL());
+    return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
 
   optimization_guide::OptimizationGuideDecisionWithMetadata decision =
@@ -343,13 +405,13 @@ void ImageService::OnOptimizationGuideImageFetched(
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
         PageImageServiceOptimizationGuideResult::kNoImage, client_id);
-    return std::move(callback).Run(GURL());
+    return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
   if (!decision.metadata.any_metadata().has_value()) {
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
         PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
-    return std::move(callback).Run(GURL());
+    return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
 
   auto parsed_any = optimization_guide::ParsedAnyMetadata<
@@ -359,7 +421,7 @@ void ImageService::OnOptimizationGuideImageFetched(
     UmaHistogramEnumerationForClient(
         kBackendOptimizationGuideResultHistogramName,
         PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
-    return std::move(callback).Run(GURL());
+    return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
   }
 
   // Look through the metadata, returning the first valid image URL.
@@ -371,7 +433,7 @@ void ImageService::OnOptimizationGuideImageFetched(
         UmaHistogramEnumerationForClient(
             kBackendOptimizationGuideResultHistogramName,
             PageImageServiceOptimizationGuideResult::kSuccess, client_id);
-        return std::move(callback).Run(image_url);
+        return FulfillAllCallbacks(std::move(matching_callbacks), image_url);
       }
     }
   }
@@ -380,7 +442,7 @@ void ImageService::OnOptimizationGuideImageFetched(
   UmaHistogramEnumerationForClient(
       kBackendOptimizationGuideResultHistogramName,
       PageImageServiceOptimizationGuideResult::kResponseMalformed, client_id);
-  std::move(callback).Run(GURL());
+  return FulfillAllCallbacks(std::move(matching_callbacks), GURL());
 }
 
 }  // namespace image_service
