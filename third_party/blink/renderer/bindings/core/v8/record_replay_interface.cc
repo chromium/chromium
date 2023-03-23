@@ -283,7 +283,11 @@ function commandCallback(method, params) {
     // Pass the error up to V8; it can (for now) decide how to handle itself, whether
     // it should crash or not, etc.  Eventually, the caller of the command should make
     // that decision.
-    return e;
+    return {
+      is_error: true,
+      message: e?.message || e.toString(),
+      stack: e?.stack?.split?.("\n") || e?.stack || [],
+    };
   }
 }
 
