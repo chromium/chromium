@@ -251,14 +251,8 @@ TEST_F(LocalDOMWindowTest, UserAgent) {
   }
 }
 
-#if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1141478)
-#define MAYBE_CSPForWorld DISABLED_CSPForWorld
-#else
-#define MAYBE_CSPForWorld CSPForWorld
-#endif  // BUILDFLAG(IS_IOS)
 // Tests ExecutionContext::GetContentSecurityPolicyForCurrentWorld().
-TEST_F(PageTestBase, MAYBE_CSPForWorld) {
+TEST_F(PageTestBase, CSPForWorld) {
   using ::testing::ElementsAre;
 
   // Set a CSP for the main world.
