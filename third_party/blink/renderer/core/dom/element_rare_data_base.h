@@ -25,6 +25,7 @@ typedef HeapVector<Member<Attr>> AttrNodeList;
 class ElementIntersectionObserverData;
 class ContainerQueryEvaluator;
 class EditContext;
+class AnchorElementObserver;
 class InlineStylePropertyMap;
 class ElementInternals;
 class AccessibleNode;
@@ -243,9 +244,12 @@ class ElementRareDataBase : public NodeRareData {
   virtual void RemoveAnchorScrollData() = 0;
   virtual AnchorScrollData& EnsureAnchorScrollData(Element*) = 0;
 
-  virtual void IncrementAnchoredPopoverCount() = 0;
-  virtual void DecrementAnchoredPopoverCount() = 0;
-  virtual bool HasAnchoredPopover() const = 0;
+  virtual AnchorElementObserver* GetAnchorElementObserver() const = 0;
+  virtual AnchorElementObserver& EnsureAnchorElementObserver(HTMLElement*) = 0;
+
+  virtual void IncrementImplicitlyAnchoredElementCount() = 0;
+  virtual void DecrementImplicitlyAnchoredElementCount() = 0;
+  virtual bool HasImplicitlyAnchoredElement() const = 0;
 
   // from NodeRareData
   virtual bool HasElementFlag(ElementFlags mask) const = 0;

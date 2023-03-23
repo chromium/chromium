@@ -66,6 +66,7 @@ class Vector2dF;
 namespace blink {
 
 class AccessibleNode;
+class AnchorElementObserver;
 class AnchorScrollData;
 class AriaNotificationOptions;
 class Attr;
@@ -1191,10 +1192,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RemoveAnchorScrollData();
   AnchorScrollData* GetAnchorScrollData() const;
 
-  // Returns true if any popover is anchored to this element.
-  bool HasAnchoredPopover() const;
-  void DecrementAnchoredPopoverCount();
-  void IncrementAnchoredPopoverCount();
+  // Returns true if any element is implicitly anchored to this element.
+  bool HasImplicitlyAnchoredElement() const;
+  void DecrementImplicitlyAnchoredElementCount();
+  void IncrementImplicitlyAnchoredElementCount();
+
+  AnchorElementObserver& EnsureAnchorElementObserver();
+  AnchorElementObserver* GetAnchorElementObserver() const;
 
   // https://drafts.csswg.org/css-anchor-1/#implicit-anchor-element
   Element* ImplicitAnchorElement();

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
+#include "third_party/blink/renderer/core/html/anchor_element_observer.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
@@ -46,9 +47,9 @@ namespace blink {
 
 struct SameSizeAsElementRareData : ElementRareDataBase {
   void* pointers_or_strings[4];
-  Member<void*> members[22];
+  Member<void*> members[23];
   gfx::Vector2dF scroll_offset;
-  wtf_size_t anchored_popover_count;
+  wtf_size_t implicitly_anchored_element_count;
 };
 
 ElementRareData::ElementRareData(NodeData* node_layout_data)
@@ -123,6 +124,17 @@ AnchorScrollData& ElementRareData::EnsureAnchorScrollData(
   return *anchor_scroll_data_;
 }
 
+AnchorElementObserver& ElementRareData::EnsureAnchorElementObserver(
+    HTMLElement* element) {
+  DCHECK(!anchor_element_observer_ ||
+         anchor_element_observer_->GetElement() == element);
+  if (!anchor_element_observer_) {
+    anchor_element_observer_ =
+        MakeGarbageCollected<AnchorElementObserver>(element);
+  }
+  return *anchor_element_observer_;
+}
+
 void ElementRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(dataset_);
   visitor->Trace(shadow_root_);
@@ -146,6 +158,7 @@ void ElementRareData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(popover_data_);
   visitor->Trace(toggle_map_);
   visitor->Trace(anchor_scroll_data_);
+  visitor->Trace(anchor_element_observer_);
   NodeRareData::Trace(visitor);
 }
 
