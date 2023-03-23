@@ -56,6 +56,8 @@ void ChromeSettingsPageHelper::OpenEnhancedProtectionSettingsWithIph(
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomLeft;
   params.bubble_text = l10n_util::GetStringUTF16(
       IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_TEXT);
+  params.close_button_alt_text_id =
+      IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_CLOSE_BUTTON_ARIA_LABEL_TEXT;
 
   // In rare circumstances, this happens outside of a Browser, better ignore
   // than crash.
