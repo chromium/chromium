@@ -93,4 +93,17 @@ suite('CrUrlListItemTest', () => {
     const slotElements = slot.assignedElements();
     assertEquals(1, slotElements.length);
   });
+
+  test('DisplaysMaxImageCount', () => {
+    element.imageUrls = [
+      'http://www.first.com',
+      'http://www.second.com',
+      'http://www.third.com',
+    ];
+    flush();
+    const imageElements =
+        element.shadowRoot!.querySelectorAll<HTMLElement>('.folder-image');
+    // No more than two images may be displayed for a folder.
+    assertEquals(2, imageElements.length);
+  });
 });

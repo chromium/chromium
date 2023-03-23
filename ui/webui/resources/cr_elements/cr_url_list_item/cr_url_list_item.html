@@ -1,5 +1,10 @@
 <style include="cr-hidden-style cr-icons">
   :host {
+    --cr-url-list-item-image-container-border_: 2px solid white;
+    /* Intentionally 1px higher than the inherited border radius to avoid
+     * anti-aliasing issues.
+     */
+     --cr-url-list-item-image-container-border-radius_: 5px;
     align-items: center;
     box-sizing: border-box;
     cursor: default;
@@ -9,9 +14,20 @@
     width: 100%;
   }
 
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --cr-url-list-item-image-container-border_: 2px solid black;
+    }
+  }
+
   :host-context([chrome-refresh-2023]):host {
     height: 48px;
     padding: 4px 16px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([size=medium]),
+  :host-context([chrome-refresh-2023]):host([size=large]) {
+    --cr-url-list-item-image-container-border-radius_: 9px;
   }
 
   :host([size=compact]) {
@@ -124,8 +140,18 @@
   }
 
   .folder-and-count .image-container {
+    border-bottom: var(--cr-url-list-item-image-container-border_);
+    border-radius: 0 var(--cr-url-list-item-image-container-border-radius_)
+        0 0;
+    box-sizing: border-box;
     height: 100%;
+    overflow: hidden;
     width: 100%;
+  }
+
+  :host-context([dir=rtl]) .folder-and-count .image-container {
+    border-radius: var(--cr-url-list-item-image-container-border-radius_)
+        0 0 0;
   }
 
   .folder-and-count .image-container img {
@@ -135,14 +161,26 @@
     width: 100%;
   }
 
-  /* If there is only 1 img, span the entire grid. */
-  .folder-and-count .image-container:first-of-type:not(:has(~ .image-container:nth-child(2))) {
-    grid-column: 1 / span 2;
+  /* If there is only 2 imgs, span the 1st image across both rows. */
+  .folder-and-count:not(:has(div:nth-child(3)))
+  .image-container:first-of-type {
+    border-bottom: none;
+    border-inline-end: var(--cr-url-list-item-image-container-border_);
+    border-radius: var(--cr-url-list-item-image-container-border-radius_) 0 0
+        var(--cr-url-list-item-image-container-border-radius_);
     grid-row: 1 / span 2;
   }
 
-  /* If there is only 2 imgs, span the 1st image across both rows. */
-  .folder-and-count .image-container:first-of-type:not(:has(~ .image-container:nth-of-type(3))) {
+  :host-context([dir=rtl]) .folder-and-count:not(:has(div:nth-child(3)))
+  .image-container:first-of-type {
+    border-radius: 0 var(--cr-url-list-item-image-container-border-radius_)
+        var(--cr-url-list-item-image-container-border-radius_) 0;
+  }
+
+  /* If there is only 1 img, span the entire grid. */
+  .folder-and-count:not(:has(div:nth-child(2))) .image-container:first-of-type {
+    border: none;
+    grid-column: 1 / span 2;
     grid-row: 1 / span 2;
   }
 
@@ -154,13 +192,14 @@
   }
 
   .count {
+    --cr-url-list-item-count-border-radius: 4px;
     display: none;
   }
 
   :host([size=large]) .count {
     align-items: center;
     background: var(--google-grey-50);
-    border-radius: 4px 0 0 0;
+    border-radius: var(--cr-url-list-item-count-border-radius) 0 0 0;
     display: flex;
     grid-column: 2;
     grid-row: 2;
@@ -168,6 +207,14 @@
     justify-content: center;
     width: 100%;
     z-index: 1;
+  }
+
+  :host-context([dir=rtl]):host([size=large]) .count {
+    border-radius: 0 var(--cr-url-list-item-count-border-radius) 0 0;
+  }
+
+  .folder-and-count:has(div:nth-child(2)) .count {
+    border-radius: 0;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -187,10 +234,7 @@
      * against the row background.
      */
     background: black;
-    /* Intentionally 1px higher than the inherited border radius to avoid
-     * anti-aliasing issues.
-     */
-    border-radius: 5px;
+    border-radius: var(--cr-url-list-item-image-container-border-radius_);
     height: 100%;
     width: 100%;
   }
@@ -199,11 +243,6 @@
     .image-container {
       background: transparent;
     }
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=medium]) .image-container,
-  :host-context([chrome-refresh-2023]):host([size=large]) .image-container {
-    border-radius: 9px;
   }
 
   .metadata {
@@ -342,14 +381,17 @@
   <div class="favicon" hidden$="[[!shouldShowFavicon_(url, size, imageUrls)]]"
       style$="background-image: [[getFavicon_(url)]];">
   </div>
-  <div class="image-container" hidden$="[[!shouldShowUrlImage_(url, size, imageUrls)]]">
+  <div class="image-container"
+      hidden$="[[!shouldShowUrlImage_(url, size, imageUrls)]]">
     <img class="url-image" is="cr-auto-img" auto-src="[[imageUrls.0]]">
   </div>
-  <div class="folder-and-count" hidden$="[[!shouldShowFolderCount_(url, count)]]">
+  <div class="folder-and-count"
+      hidden$="[[!shouldShowFolderCount_(url, count)]]">
     <template is="dom-if" if="[[shouldShowFolderImages_(size)]]" restamp>
-      <template is="dom-repeat" items="[[imageUrls]]" filter="shouldShowImageUrl_">
+      <template is="dom-repeat" items="[[imageUrls]]"
+          filter="shouldShowImageUrl_">
         <div class="image-container">
-          <img is="cr-auto-img" auto-src="[[item]]">
+          <img class="folder-image" is="cr-auto-img" auto-src="[[item]]">
         </div>
       </template>
     </template>

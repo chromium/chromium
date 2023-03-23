@@ -126,7 +126,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   }
 
   private shouldShowImageUrl_(_url: string, index: number) {
-    return index <= 2;
+    return index <= 1;
   }
 
   private onBadgesSlotChange_() {
