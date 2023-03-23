@@ -153,17 +153,6 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
   UpdatePrintedDocument(new_doc);
 }
 
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-void PrintJob::SetPrintDocumentClient(
-    PrintBackendServiceManager::ClientId client_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(worker_);
-  worker_->PostTask(FROM_HERE,
-                    base::BindOnce(&PrintJobWorker::SetPrintDocumentClient,
-                                   base::Unretained(worker_.get()), client_id));
-}
-#endif
-
 #if BUILDFLAG(IS_WIN)
 // static
 std::vector<uint32_t> PrintJob::GetFullPageMapping(

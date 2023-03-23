@@ -26,7 +26,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/printed_document.h"
@@ -39,7 +38,7 @@
 #include "printing/printed_page_win.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(ENABLE_OOP_PRINTING)
+#if BUILDFLAG(IS_WIN)
 #include "printing/printing_features.h"
 #endif
 
@@ -76,15 +75,6 @@ PrintJobWorker::~PrintJobWorker() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Stop();
 }
-
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-void PrintJobWorker::SetPrintDocumentClient(
-    PrintBackendServiceManager::ClientId client_id) {
-  // This call should only be made for configurations that use
-  // `PrintJobWorkerOop`.
-  NOTREACHED();
-}
-#endif
 
 bool PrintJobWorker::StartPrintingSanityCheck(
     const PrintedDocument* new_document) const {

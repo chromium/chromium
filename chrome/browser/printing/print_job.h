@@ -22,10 +22,6 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #endif
 
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-#include "chrome/browser/printing/print_backend_service_manager.h"
-#endif
-
 namespace base {
 class Location;
 class RefCountedMemory;
@@ -86,14 +82,6 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   virtual void Initialize(std::unique_ptr<PrinterQuery> query,
                           const std::u16string& name,
                           uint32_t page_count);
-
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  // Called to notify the print job that it has already been registered with the
-  // PrintBackendServiceManager as a print document client.  The PrintJob takes
-  // responsibility for (and passes along to PrintJobWorker) unregistering the
-  // client ID with PrintBackendServiceManager once printing is completed.
-  void SetPrintDocumentClient(PrintBackendServiceManager::ClientId client_id);
-#endif
 
 #if BUILDFLAG(IS_WIN)
   void StartConversionToNativeFormat(

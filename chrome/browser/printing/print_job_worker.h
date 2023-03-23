@@ -18,10 +18,6 @@
 #include "printing/page_number.h"
 #include "printing/printing_context.h"
 
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-#include "chrome/browser/printing/print_backend_service_manager.h"
-#endif
-
 namespace printing {
 
 class PrintJob;
@@ -43,17 +39,6 @@ class PrintJobWorker {
   PrintJobWorker& operator=(const PrintJobWorker&) = delete;
 
   virtual ~PrintJobWorker();
-
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  // Called to notify the print job that it has already been registered with the
-  // PrintBackendServiceManager as a print document client.  The PrintJobWorker
-  // takes responsibility for unregistering the client ID once the print job is
-  // completed.  This is only meaningful for jobs which are being printed OOP;
-  // this will DCHECK if it is used for jobs that make all the platform printing
-  // calls from the browser process.
-  virtual void SetPrintDocumentClient(
-      PrintBackendServiceManager::ClientId client_id);
-#endif
 
   // Starts the printing loop. Every pages are printed as soon as the data is
   // available. Makes sure the new_document is the right one.

@@ -48,10 +48,12 @@ constexpr char kPrintOopPrintResultHistogramName[] = "Printing.Oop.PrintResult";
 PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
+    absl::optional<PrintBackendServiceManager::ClientId> client_id,
     PrintJob* print_job,
     mojom::PrintTargetType print_target_type)
     : PrintJobWorkerOop(std::move(printing_context_delegate),
                         std::move(printing_context),
+                        client_id,
                         print_job,
                         print_target_type,
                         /*simulate_spooling_memory_errors=*/false) {}
@@ -59,6 +61,7 @@ PrintJobWorkerOop::PrintJobWorkerOop(
 PrintJobWorkerOop::PrintJobWorkerOop(
     std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
     std::unique_ptr<PrintingContext> printing_context,
+    absl::optional<PrintBackendServiceManager::ClientId> client_id,
     PrintJob* print_job,
     mojom::PrintTargetType print_target_type,
     bool simulate_spooling_memory_errors)
@@ -66,19 +69,12 @@ PrintJobWorkerOop::PrintJobWorkerOop(
                      std::move(printing_context),
                      print_job),
       simulate_spooling_memory_errors_(simulate_spooling_memory_errors),
+      service_manager_client_id_(client_id),
       print_target_type_(print_target_type) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
   DCHECK(!service_manager_client_id_.has_value());
 }
-
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-void PrintJobWorkerOop::SetPrintDocumentClient(
-    PrintBackendServiceManager::ClientId client_id) {
-  DCHECK(!service_manager_client_id_.has_value());
-  service_manager_client_id_ = client_id;
-}
-#endif
 
 void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
   if (!StartPrintingSanityCheck(new_document))

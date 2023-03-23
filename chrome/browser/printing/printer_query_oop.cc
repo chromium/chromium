@@ -94,9 +94,32 @@ void PrinterQueryOop::OnDidAskUserForSettings(
     VLOG(1) << "Ask user for settings from service complete";
     result = mojom::ResultCode::kSuccess;
     printing_context()->ApplyPrintSettings(print_settings->get_settings());
+
+    // Use the same PrintBackendService for querying and printing, so that the
+    // same device context can be used with both.
+    print_document_client_id_ =
+        PrintBackendServiceManager::GetInstance()
+            .RegisterPrintDocumentClientReusingClientRemote(
+                *query_with_ui_client_id_);
   }
 
   InvokeSettingsCallback(std::move(callback), result);
+}
+#else   // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+void PrinterQueryOop::OnDidAskUserForSettings(
+    SettingsCallback callback,
+    std::unique_ptr<PrintSettings> new_settings,
+    mojom::ResultCode result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (result == mojom::ResultCode::kSuccess) {
+    // Want the same PrintBackend service as the query so that we use the same
+    // device context.
+    print_document_client_id_ =
+        PrintBackendServiceManager::GetInstance()
+            .RegisterPrintDocumentClientReusingClientRemote(
+                *query_with_ui_client_id_);
+  }
+  std::move(callback).Run(std::move(new_settings), result);
 }
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
@@ -129,8 +152,10 @@ void PrinterQueryOop::GetSettingsWithUI(uint32_t document_page_count,
   //       browser process.
   //   - Other platforms don't have a system print UI or do not use OOP
   //     printing, so this does not matter.
-  PrinterQuery::GetSettingsWithUI(document_page_count, has_selection,
-                                  is_scripted, std::move(callback));
+  PrinterQuery::GetSettingsWithUI(
+      document_page_count, has_selection, is_scripted,
+      base::BindOnce(&PrinterQueryOop::OnDidAskUserForSettings,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 #endif
 }
 
@@ -174,6 +199,14 @@ void PrinterQueryOop::OnDidUpdatePrintSettings(
     VLOG(1) << "Update print settings via service complete for " << device_name;
     result = mojom::ResultCode::kSuccess;
     printing_context()->ApplyPrintSettings(print_settings->get_settings());
+
+    // Query work completed, next step will be to print.
+    // TODO(crbug.com/1414968):  Registration for printing a document will
+    // need to be made before calling `UpdatePrintSettings()` once it requires
+    // a context ID.
+    print_document_client_id_ =
+        PrintBackendServiceManager::GetInstance().RegisterPrintDocumentClient(
+            device_name);
   }
   InvokeSettingsCallback(std::move(callback), result);
 }
@@ -234,7 +267,7 @@ std::unique_ptr<PrintJobWorkerOop> PrinterQueryOop::CreatePrintJobWorker(
     PrintJob* print_job) {
   return std::make_unique<PrintJobWorkerOop>(
       std::move(printing_context_delegate_), std::move(printing_context_),
-      print_job, print_target_type_);
+      print_document_client_id_, print_job, print_target_type_);
 }
 
 }  // namespace printing

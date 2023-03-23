@@ -359,14 +359,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Client ID with the print backend service manager for system print dialog.
   absl::optional<PrintBackendServiceManager::ClientId> query_with_ui_client_id_;
-
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  // Client ID with the print backend service manager to reuse for printing, to
-  // get the same device context as was used with the system print dialog.
-  absl::optional<PrintBackendServiceManager::ClientId>
-      print_document_client_id_;
 #endif
-#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   // Indicates that a snapshot of the page/document is currently being made.

@@ -31,9 +31,16 @@ class PrintedDocument;
 // thread.  PrintJob always outlives its worker instance.
 class PrintJobWorkerOop : public PrintJobWorker {
  public:
+  // The `client_id` specifies the print document client registered with
+  // `PrintBackendServiceManager`.  `PrintJobWorkerOop` takes responsibility
+  // for unregistering the client ID with `PrintBackendServiceManager` once
+  // printing is completed.
+  // The `client_id` can be empty.  This can occur for placeholder print jobs
+  // that don't actually initiate printing such as during content analysis.
   PrintJobWorkerOop(
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
+      absl::optional<PrintBackendServiceManager::ClientId> client_id,
       PrintJob* print_job,
       mojom::PrintTargetType print_target_type);
   PrintJobWorkerOop(const PrintJobWorkerOop&) = delete;
@@ -41,10 +48,6 @@ class PrintJobWorkerOop : public PrintJobWorker {
   ~PrintJobWorkerOop() override;
 
   // `PrintJobWorker` overrides.
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  void SetPrintDocumentClient(
-      PrintBackendServiceManager::ClientId client_id) override;
-#endif
   void StartPrinting(PrintedDocument* new_document) override;
 
  protected:
@@ -52,10 +55,13 @@ class PrintJobWorkerOop : public PrintJobWorker {
   PrintJobWorkerOop(
       std::unique_ptr<PrintingContext::Delegate> printing_context_delegate,
       std::unique_ptr<PrintingContext> printing_context,
+      absl::optional<PrintBackendServiceManager::ClientId> client_id,
       PrintJob* print_job,
       mojom::PrintTargetType print_target_type,
       bool simulate_spooling_memory_errors);
 
+  // Local callback wrappers for Print Backend Service mojom call.  Virtual to
+  // support testing.
   virtual void OnDidStartPrinting(mojom::ResultCode result);
 #if BUILDFLAG(IS_WIN)
   virtual void OnDidRenderPrintedPage(uint32_t page_index,

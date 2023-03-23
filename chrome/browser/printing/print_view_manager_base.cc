@@ -382,18 +382,6 @@ void PrintViewManagerBase::ScriptedPrintReply(
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-    if (params) {
-      CHECK(params->params->document_cookie);
-      // Want the same PrintBackend service as the query so that we use the
-      // same device context.
-      DCHECK(query_with_ui_client_id_.has_value());
-      print_document_client_id_ =
-          PrintBackendServiceManager::GetInstance()
-              .RegisterPrintDocumentClientReusingClientRemote(
-                  *query_with_ui_client_id_);
-    }
-#endif
     // Finished getting all settings (defaults and from user), no further need
     // to be registered as a system print client.
     UnregisterSystemPrintClient();
@@ -1031,14 +1019,6 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
   // Don't start printing if the print job was created only for snapshotting.
   if (snapshotting_for_content_analysis_)
     return true;
-#endif
-
-#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  if (print_document_client_id_) {
-    // Ensure that the print job knows it is already registered as a client.
-    print_job_->SetPrintDocumentClient(*print_document_client_id_);
-    print_document_client_id_.reset();
-  }
 #endif
 
   // Settings are already loaded. Go ahead. This will set
