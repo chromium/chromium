@@ -5421,6 +5421,66 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestTextRangeProviderWinUnfocusableNodeForSelection) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kTextField states=kFocusable
+    ++++++3 kGenericContainer state=kEditable
+    ++++++++4 kStaticText state=kEditable
+    ++++++++++5 kInlineTextBox state=kEditable
+  )HTML"));
+
+  update.nodes[1].SetName("Hello World");
+  update.nodes[3].SetName("Hello World");
+  update.nodes[4].SetName("Hello World");
+
+  AXTree* tree = Init(update);
+
+  AXNode* input_node = GetNodeFromTree(tree->GetAXTreeID(), 2);
+
+  AXPlatformNodeWin* input_platform_node =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(input_node));
+
+  AXPlatformNodeWin* root = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+
+  input_platform_node->SetFocus();
+
+  // start: TextPosition, anchor_id=2, text_offset=0, annotated_text=<h>ello
+  // world end  : TextPosition, anchor_id=2, text_offset=0,
+  // annotated_text=<h>ello world
+  ComPtr<AXPlatformNodeTextRangeProviderWin> text_range_provider;
+  CreateTextRangeProviderWin(
+      text_range_provider, input_platform_node,
+      /*start_anchor=*/input_node, /*start_offset=*/0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor=*/input_node, /*end_offset=*/0,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  text_range_provider->Select();
+
+  // start: TextPosition, anchor_id=5, text_offset=6, annotated_text=hello
+  // <w>orld end  : TextPosition, anchor_id=5, text_offset=6,
+  // annotated_text=hello <w>orld
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Word,
+      /*count*/ 1,
+      /*expected_text*/ L"",
+      /*expected_count*/ 1);
+
+  text_range_provider->Select();
+  // Verify selection.
+  AXSelection unignored_selection =
+      root->GetDelegate()->GetUnignoredSelection();
+  EXPECT_EQ(5, unignored_selection.anchor_object_id);
+  EXPECT_EQ(5, unignored_selection.focus_object_id);
+  // Before patch that added this test, code this scenario would result in
+  // us focusing the root of the document, which is incorrect behavior.
+  EXPECT_FALSE(root->IsFocused());
+  EXPECT_TRUE(input_platform_node->IsFocused());
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestTextRangeProviderWinFindTextInContentEditable) {
   // Before the commit that added this test, we had incorrect behavior when
   // finding text in this tree scenario.

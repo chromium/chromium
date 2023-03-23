@@ -1552,6 +1552,17 @@ void AXPlatformNodeTextRangeProviderWin::
   if (!old_selection_node)
     return;
 
+  // We should not remove the focus when the selection remains in the same text
+  // field. It's possible for the new selection to be located on a descendant
+  // inline text box in the text field, so make sure we compare the nodes at the
+  // root of the text field.
+  AXNode* old_text_field_ancestor = old_selection_node->GetTextFieldAncestor();
+  AXNode* new_text_field_ancestor = new_selection_node->GetTextFieldAncestor();
+  if (old_text_field_ancestor && new_text_field_ancestor &&
+      old_text_field_ancestor == new_text_field_ancestor) {
+    return;
+  }
+
   if (!new_selection_node ||
       (old_selection_node->HasState(ax::mojom::State::kFocusable) &&
        !new_selection_node->HasState(ax::mojom::State::kFocusable))) {
