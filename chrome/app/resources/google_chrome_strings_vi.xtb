@@ -126,7 +126,7 @@
 <translation id="3140883423282498090">Thay đổi của bạn sẽ có hiệu lực vào lần tiếp theo bạn chạy lại Google Chrome.</translation>
 <translation id="3149510190863420837">Ứng dụng Chrome</translation>
 <translation id="3169523567916669830">Trong thời gian thử nghiệm, bạn có thể xem và xoá những chủ đề quan tâm mà các trang web dựa vào để hiện quảng cáo cho bạn. Chrome ước đoán các mối quan tâm của bạn dựa trên nhật ký duyệt web gần đây của bạn.</translation>
-<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome đã kết nối với một thiết bị HID}other{Google Chrome đã kết nối với nhiều thiết bị HID}}</translation>
+<translation id="3211604354460514046">{NUM_DEVICES,plural, =1{Google Chrome được kết nối với một thiết bị HID}other{Google Chrome được kết nối với nhiều thiết bị HID}}</translation>
 <translation id="3245429137663807393">Nếu bạn cũng chia sẻ báo cáo sử dụng của Chrome, các báo cáo đó sẽ bao gồm cả những URL bạn truy cập</translation>
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3286538390144397061">Khởi động lại Ngay bây giờ</translation>
