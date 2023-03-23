@@ -1127,8 +1127,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-included-in-tree.html"));
 }
 
+// TODO(crbug.com/1367886): Test flaky on win-asan. Renable it.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_AccessibilityAriaOwnsFromDisplayNone \
+  DISABLED_AccessibilityAriaOwnsFromDisplayNone
+#else
+#define MAYBE_AccessibilityAriaOwnsFromDisplayNone \
+  AccessibilityAriaOwnsFromDisplayNone
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaOwnsFromDisplayNone) {
+                       MAYBE_AccessibilityAriaOwnsFromDisplayNone) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-from-display-none.html"));
 }
 
