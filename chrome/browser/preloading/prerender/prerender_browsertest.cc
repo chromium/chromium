@@ -312,15 +312,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderHoldbackBrowserTest,
 }
 
 // TODO(crbug.com/1239281): Merge PrerenderMainFrameNavigationBrowserTest into
-// PrerenderBrowserTest once the feature is enabled by default.
+// PrerenderBrowserTest.
 class PrerenderMainFrameNavigationBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderMainFrameNavigationBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kPrerender2MainFrameNavigation},
-        // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
-        // disable this feature.
-        {features::kHttpsUpgrades});
+    // TODO(crbug.com/1394910): Use HTTPS URLs in tests to avoid having to
+    // disable this feature.
+    feature_list_.InitAndDisableFeature(features::kHttpsUpgrades);
   }
 
  private:

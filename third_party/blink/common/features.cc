@@ -361,7 +361,7 @@ BASE_FEATURE(kPrerender2SequentialPrerendering,
 
 BASE_FEATURE(kPrerender2MainFrameNavigation,
              "Prerender2MainFrameNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrerender2MaxNumOfRunningSpeculationRules[] =
     "max_num_of_running_speculation_rules";

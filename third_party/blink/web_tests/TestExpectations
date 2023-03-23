@@ -6645,11 +6645,6 @@ crbug.com/1414978 external/wpt/webrtc/RTCPeerConnection-GC.https.html [ Failure 
 crbug.com/1417178 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
 crbug.com/1416271 [ Linux ] external/wpt/js-self-profiling/time-domain.window.html [ Failure Pass ]
 
-# Remove the expectation once kPrerender2MainFrameNavigation is enabled by
-# default.
-crbug.com/1239281 external/wpt/speculation-rules/prerender/main-frame-navigation.https.html [ Skip Timeout ]
-crbug.com/1239281 virtual/prerender/external/wpt/speculation-rules/prerender/main-frame-navigation.https.html [ Pass ]
-
 # By default, WPTs run with "RTCLegacyCallbackBasedGetStats" enabled, which
 # suppresses the warning that is expected in this test causing it to timeout.
 # The virtual test suite "webrtc-legacy-stats-trial-disabled" disables this
