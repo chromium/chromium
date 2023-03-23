@@ -39,6 +39,11 @@ ArcSystemStateBridge* ArcSystemStateBridge::GetForBrowserContext(
   return ArcSystemStateBridgeFactory::GetForBrowserContext(context);
 }
 
+ArcSystemStateBridge* ArcSystemStateBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcSystemStateBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 // static
 void ArcSystemStateBridge::EnsureFactoryBuilt() {
   ArcSystemStateBridgeFactory::GetInstance();

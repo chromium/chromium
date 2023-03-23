@@ -40,6 +40,9 @@ class ArcSystemStateBridge : public KeyedService,
   static ArcSystemStateBridge* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static ArcSystemStateBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
+
   static void EnsureFactoryBuilt();
 
   ArcSystemStateBridge(content::BrowserContext* context,

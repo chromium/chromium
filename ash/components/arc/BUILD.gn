@@ -347,6 +347,8 @@ static_library("arc_test_support") {
     "test/fake_sharesheet_instance.h",
     "test/fake_storage_manager_instance.cc",
     "test/fake_storage_manager_instance.h",
+    "test/fake_system_state_instance.cc",
+    "test/fake_system_state_instance.h",
     "test/fake_system_ui_instance.cc",
     "test/fake_system_ui_instance.h",
     "test/fake_timer_instance.cc",
