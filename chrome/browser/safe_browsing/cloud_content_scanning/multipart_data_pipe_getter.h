@@ -150,9 +150,6 @@ class MultipartDataPipeGetter : public network::mojom::DataPipeGetter {
   // Indicates if this data pipe streams a pipe. If false, it streams a page.
   bool file_data_pipe_;
 
-  // Used for metrics.
-  base::TimeTicks write_start_time_;
-
   mojo::ScopedDataPipeProducerHandle pipe_;
   std::unique_ptr<mojo::SimpleWatcher> watcher_;
   mojo::ReceiverSet<network::mojom::DataPipeGetter> receivers_;

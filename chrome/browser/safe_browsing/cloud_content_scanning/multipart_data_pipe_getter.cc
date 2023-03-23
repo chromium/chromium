@@ -203,9 +203,6 @@ void MultipartDataPipeGetter::MojoReadyCallback(
 }
 
 void MultipartDataPipeGetter::Write() {
-  if (write_position_ == 0)
-    write_start_time_ = base::TimeTicks::Now();
-
   int64_t metadata_end = metadata_.size();
   if (0 <= write_position_ && write_position_ < metadata_end) {
     if (!WriteString(metadata_, write_position_))
@@ -236,18 +233,6 @@ void MultipartDataPipeGetter::Write() {
   }
 
   if (write_position_ == FullSize()) {
-    base::TimeDelta write_duration = base::TimeTicks::Now() - write_start_time_;
-    base::UmaHistogramCustomTimes("Enterprise.MultipartDataPipe.WriteDuration",
-                                  write_duration, base::Milliseconds(1),
-                                  base::Minutes(5), 50);
-    int64_t bps =
-        (1000 * FullSize()) /
-        std::max(1, static_cast<int>(write_duration.InMilliseconds()));
-    int64_t kbps = bps / 1024;
-    base::UmaHistogramCustomCounts("Enterprise.MultipartDataPipe.WriteRate",
-                                   kbps,
-                                   /*min*/ 0,
-                                   /*max*/ 100 * 1024, /*buckets*/ 50);
     Reset();
   }
 }

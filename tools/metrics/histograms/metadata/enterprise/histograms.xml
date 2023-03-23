@@ -2204,28 +2204,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.MultipartDataPipe.WriteDuration" units="ms"
-    expires_after="2022-06-17">
-  <owner>domfc@chromium.org</owner>
-  <owner>anthonyvd@chromium.org</owner>
-  <summary>
-    This metric is recorded every time a file is uploaded for deep scanning. It
-    measures the total duration for a complete writing of the file from the
-    browser process to the network service.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.MultipartDataPipe.WriteRate"
-    units="kilobytes per second" expires_after="2023-04-30">
-  <owner>domfc@chromium.org</owner>
-  <owner>anthonyvd@chromium.org</owner>
-  <summary>
-    This metric is recorded every time a file is uploaded for deep scanning. It
-    measures the writing rate of that file's contents from the browser process
-    to the network service.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
     expires_after="2023-09-10">
   <owner>domfc@chromium.org</owner>
