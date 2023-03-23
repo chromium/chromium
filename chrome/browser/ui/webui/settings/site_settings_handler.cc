@@ -2430,8 +2430,16 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
   // TODO(crbug.com/1271155) - When the browsing data model supports all storage
   // types, re-work this handler to work directly with primary hosts as defined
   // by the model.
-  for (const auto& origin : origins)
-    browsing_data_model_->RemoveBrowsingData(origin.host(), base::DoNothing());
+  // TODO(crbug.com/1368048) - Permission info loading before storage info
+  // can result in an interleaving of actions that means this pointer is
+  // null (as it hasn't loaded yet, but the user can delete an entry which has
+  // been created by permission info).
+  if (browsing_data_model_) {
+    for (const auto& origin : origins) {
+      browsing_data_model_->RemoveBrowsingData(origin.host(),
+                                               base::DoNothing());
+    }
+  }
 
 #if BUILDFLAG(IS_WIN)
   // Removes any Media License Data associated with the origin that is not
