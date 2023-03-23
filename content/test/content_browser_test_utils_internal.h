@@ -21,6 +21,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/navigation_type.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -723,6 +724,58 @@ class CustomStoragePartitionBrowserClient
 
  private:
   GURL site_to_isolate_;
+};
+
+// Helper for BeginNavigationInCommitCallbackInterceptor. Declared separately
+// to make it easier to friend.
+//
+// Defers an attempt to commit a navigation A in a speculative RenderFrameHost.
+// This observer should be owned by a base::Closure that is used for a
+// subsequent navigation B's `resume_commit_closure_` field.
+//
+// Navigation B will eventually be queued when it reaches ready to commit; since
+// navigation A is still stuck in the pending commit state, navigation B will
+// not be able to successfully select a RenderFrameHost.
+//
+// Navigation B will then assign an actual navigation continuation closure to
+// its `resume_commit_closure_` field, which will destroy `this`. The destructor
+// then resumes committing navigation A.
+class ResumeCommitClosureSetObserver {
+ public:
+  explicit ResumeCommitClosureSetObserver(
+      base::SafeRef<NavigationHandle> original_navigation,
+      mojom::DidCommitProvisionalLoadParamsPtr original_params,
+      mojom::DidCommitProvisionalLoadInterfaceParamsPtr
+          original_interface_params);
+
+  ~ResumeCommitClosureSetObserver();
+
+ private:
+  base::SafeRef<NavigationHandle> original_navigation_;
+  mojom::DidCommitProvisionalLoadParamsPtr original_params_;
+  mojom::DidCommitProvisionalLoadInterfaceParamsPtr original_interface_params_;
+};
+
+// Helper that ignores a request from the renderer to commit a navigation and
+// instead, begins another navigation to the specified `url` in
+// `frame_tree_node`.
+class BeginNavigationInCommitCallbackInterceptor
+    : public RenderFrameHostImpl::CommitCallbackInterceptor {
+ public:
+  BeginNavigationInCommitCallbackInterceptor(FrameTreeNode* frame_tree_node,
+                                             const GURL& url);
+
+  bool WillProcessDidCommitNavigation(
+      NavigationRequest* request,
+      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
+      override;
+
+ private:
+  class ObserverInstaller;
+
+  const raw_ptr<FrameTreeNode> frame_tree_node_;
+  const GURL url_;
 };
 
 }  // namespace content
