@@ -780,6 +780,13 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chromeos) {
+    sources += [
+      "../browser/smart_card/mock_smart_card_context_factory.cc",
+      "../browser/smart_card/mock_smart_card_context_factory.h",
+    ]
+  }
+
   if (is_fuchsia) {
     public_deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec:fuchsia.mediacodec_hlcpp" ]
   }
@@ -1016,13 +1023,6 @@ static_library("browsertest_support") {
 
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros:lacros" ]
-  }
-
-  if (is_chromeos) {
-    sources += [
-      "../browser/smart_card/mock_smart_card_context_factory.cc",
-      "../browser/smart_card/mock_smart_card_context_factory.h",
-    ]
   }
 
   configs += [ "//v8:external_startup_data" ]
@@ -3150,6 +3150,10 @@ test("content_unittests") {
         "//chromeos/dbus/u2f",
       ]
     }
+  }
+
+  if (is_chromeos) {
+    sources += [ "../browser/smart_card/smart_card_reader_tracker_unittest.cc" ]
   }
 
   if (use_aura) {
