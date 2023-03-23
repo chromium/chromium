@@ -76,8 +76,9 @@ class VideoThumbnailDecoderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<MockVideoDecoder> mock_video_decoder_;
+  // Must outlive `mock_video_decoder_`.
   std::unique_ptr<VideoThumbnailDecoder> thumbnail_decoder_;
+  raw_ptr<MockVideoDecoder> mock_video_decoder_;
 
   // The video frame returned from the thumbnail decoder.
   scoped_refptr<VideoFrame> frame_;
