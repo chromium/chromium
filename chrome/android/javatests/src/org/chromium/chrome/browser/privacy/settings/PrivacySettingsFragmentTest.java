@@ -117,9 +117,12 @@ public class PrivacySettingsFragmentTest {
         onView(withText(incognito_lock_title)).check(matches(isDisplayed()));
         for (int i = 0; i < privacySettings.getListView().getChildCount(); ++i) {
             View view = privacySettings.getListView().getChildAt(i);
-            String title = ((TextView) view.findViewById(android.R.id.title)).getText().toString();
-            if (!TextUtils.isEmpty(title) && TextUtils.equals(incognito_lock_title, title)) {
-                return view;
+            TextView titleView = view.findViewById(android.R.id.title);
+            if (titleView != null) {
+                String title = titleView.getText().toString();
+                if (TextUtils.equals(incognito_lock_title, title)) {
+                    return view;
+                }
             }
         }
         return null;
@@ -231,7 +234,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
@@ -247,7 +249,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @Features.DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
     public void testRenderIncognitoLockView_DeviceScreenLockEnabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
