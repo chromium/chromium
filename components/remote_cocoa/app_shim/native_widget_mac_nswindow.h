@@ -67,6 +67,10 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // window, so this function prevents that if the window is currently inactive.
 - (void)orderFrontKeepWindowKeyState;
 
+// Overridden to prevent headless windows to be constrained to the physical
+// screen bounds.
+- (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen;
+
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process
 // or the NativeWidgetNSWindowBridge in a display process.
@@ -77,6 +81,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 // Whether this window functions as a tooltip.
 @property(assign, nonatomic) BOOL isTooltip;
+
+// Whether this window is headless.
+@property(assign, nonatomic) BOOL isHeadless;
 
 // Called whenever a child window is added to the receiver.
 @property(nonatomic, copy) void (^childWindowAddedHandler)(NSWindow* child);

@@ -46,7 +46,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/gfx/geometry/dip_util.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
@@ -434,6 +433,8 @@ void NativeWidgetNSWindowBridge::InitWindow(
   if (params->is_headless_mode_window)
     headless_mode_window_ = absl::make_optional<HeadlessModeWindow>();
 
+  [window_ setIsHeadless:params->is_headless_mode_window];
+
   // Register for application hide notifications so that visibility can be
   // properly tracked. This is not done in the delegate so that the lifetime is
   // tied to the C++ object, rather than the delegate (which may be reference
@@ -498,34 +499,6 @@ void NativeWidgetNSWindowBridge::SetInitialBounds(
 void NativeWidgetNSWindowBridge::SetBounds(
     const gfx::Rect& new_bounds,
     const gfx::Size& minimum_content_size) {
-  // In headless mode we keep track of the expected window size and report it to
-  // the |host_| when it changes. The platform window is positioned only once
-  // during initialization and may have smaller size than the requested window
-  // size because Cocoa clamps windows size to the available display area which
-  // is undesirable for headless mode.
-  if (headless_mode_window_) {
-    if (new_bounds != headless_mode_window_->bounds) {
-      headless_mode_window_->bounds = new_bounds;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](WeakPtrNSObject* handle) {
-                           if (auto* bridge = ui::WeakPtrNSObjectFactory<
-                                   NativeWidgetNSWindowBridge>::Get(handle)) {
-                             bridge->UpdateWindowGeometry();
-                           }
-                         },
-                         ns_weak_factory_.handle()));
-    }
-
-    if (headless_mode_window_->initial_bounds_set) {
-      return;
-    }
-
-    // Fall through to set platform window size once. This ensures that the
-    // platform window has reasonable size.
-    headless_mode_window_->initial_bounds_set = true;
-  }
-
   // -[NSWindow contentMinSize] is only checked by Cocoa for user-initiated
   // resizes. This is not what toolkit-views expects, so clamp. Note there is
   // no check for maximum size (consistent with aura::Window::SetBounds()).
@@ -1681,27 +1654,6 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   gfx::Rect window_in_screen = gfx::ScreenRectFromNSRect([window_ frame]);
   gfx::Rect content_in_screen = gfx::ScreenRectFromNSRect(
       [window_ contentRectForFrameRect:[window_ frame]]);
-
-  // In headless mode the platform window dimensions are only used to calculate
-  // content rectangle inset. The host is reported the expected window size that
-  // was set in |SetBounds|.
-  if (headless_mode_window_) {
-    gfx::Insets insets;
-    insets.set_left(content_in_screen.x() - window_in_screen.x());
-    insets.set_right(window_in_screen.right() - content_in_screen.right());
-    insets.set_top(content_in_screen.y() - window_in_screen.y());
-    insets.set_bottom(window_in_screen.bottom() - content_in_screen.bottom());
-
-    // Apply platform window content rectangle insets to the headless bounds
-    // to find out headless content rectangle.
-    gfx::Rect headless_content_rect = headless_mode_window_->bounds;
-    headless_content_rect.Inset(insets);
-
-    host_->OnWindowGeometryChanged(headless_mode_window_->bounds,
-                                   headless_content_rect);
-    return;
-  }
-
   bool content_resized = content_dip_size_ != content_in_screen.size();
   content_dip_size_ = content_in_screen.size();
 

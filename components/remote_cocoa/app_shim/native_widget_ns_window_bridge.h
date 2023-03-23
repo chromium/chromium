@@ -432,8 +432,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   struct HeadlessModeWindow {
     bool visibility_state = false;
     bool fullscreen_state = false;
-    bool initial_bounds_set = false;
-    gfx::Rect bounds;
   };
 
   // This is present iff the window has been created in headless mode.

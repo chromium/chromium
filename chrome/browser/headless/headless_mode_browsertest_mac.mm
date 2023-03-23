@@ -83,12 +83,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithWindowSize, LargeWindowSize) {
   gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
   NSWindow* ns_window = native_window.GetNativeNSWindow();
 
-  // Expect the platform window size to be smaller than the requested window
-  // size due to Cocoa clamping the window dimensions to the monitor work
-  // area.
+  // Expect the platform window size to be the same as the requested window
+  // size.
   NSRect frame_rect = [ns_window frame];
-  EXPECT_LT(NSWidth(frame_rect), kWindowSize.width());
-  EXPECT_LT(NSHeight(frame_rect), kWindowSize.height());
+  EXPECT_EQ(NSWidth(frame_rect), kWindowSize.width());
+  EXPECT_EQ(NSHeight(frame_rect), kWindowSize.height());
 
   // Expect the reported browser window size to be the same as the requested
   // window size.
