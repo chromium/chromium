@@ -4,6 +4,7 @@ noparent = True
 
 include_rules = [
   "+base",
+  "+build/build_config.h",
   "+components/chrome_cleaner",
   "+crypto",
   "+mojo/public",

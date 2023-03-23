@@ -8,6 +8,7 @@
 
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_cleaner {
@@ -19,12 +20,24 @@ std::wstring FirstComponent(const std::wstring& original) {
 }
 
 TEST(FilePathSanitizationTests, NormalizePath) {
+#if defined(ARCH_CPU_ARM64)
+  // on Win Arm64, ::GetLongPathName fails on c:\program files.
+  base::FilePath expected_path =
+      base::FilePath(L"c:\\program files (arm)\\desktop.ini");
+  EXPECT_EQ(NormalizePath(base::FilePath(L"C:\\PROGRA~2\\DESKTOP.INI")),
+            expected_path);
+  EXPECT_EQ(
+      NormalizePath(base::FilePath(L"c:\\pRoGrAm FiLeS (Arm)\\desktop.INI")),
+      expected_path);
+#else
   base::FilePath expected_path =
       base::FilePath(L"c:\\program files\\desktop.ini");
   EXPECT_EQ(NormalizePath(base::FilePath(L"C:\\PROGRA~1\\DESKTOP.INI")),
             expected_path);
   EXPECT_EQ(NormalizePath(base::FilePath(L"c:\\pRoGrAm FiLeS\\desktop.INI")),
             expected_path);
+#endif  // defined(ARCH_CPU_ARM64)
+
   base::FilePath empty_path;
   EXPECT_EQ(NormalizePath(empty_path), empty_path);
 }
