@@ -1230,12 +1230,14 @@ void PrefetchService::GetPrefetchToServe(
   }
 
   if (prefetch_container->IsPrefetchServable(PrefetchCacheableDuration())) {
+    prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
     ReturnPrefetchToServe(prefetch_container,
                           std::move(on_prefetch_to_serve_ready));
     return;
   }
 
   if (prefetch_container->ShouldBlockUntilHeadReceived()) {
+    prefetch_container->OnGetPrefetchToServe(/*blocked_until_head=*/false);
     prefetch_container->GetStreamingLoader()->SetOnReceivedHeadCallback(
         base::BindOnce(&PrefetchService::ReturnPrefetchToServe,
                        weak_method_factory_.GetWeakPtr(), prefetch_container,
@@ -1257,6 +1259,7 @@ void PrefetchService::ReturnPrefetchToServe(
       !prefetch_container->IsPrefetchServable(PrefetchCacheableDuration()) ||
       prefetch_container->HaveDefaultContextCookiesChanged(
           prefetch_container->GetURL())) {
+    prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
     std::move(on_prefetch_to_serve_ready).Run(nullptr);
     return;
   }
@@ -1265,8 +1268,7 @@ void PrefetchService::ReturnPrefetchToServe(
     CopyIsolatedCookies(prefetch_container);
   }
 
-  prefetch_container->OnNavigationToPrefetch();
-
+  prefetch_container->OnReturnPrefetchToServe(/*served=*/true);
   std::move(on_prefetch_to_serve_ready).Run(prefetch_container);
   return;
 }

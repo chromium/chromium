@@ -418,7 +418,7 @@ TEST_F(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
 
   // Simulates the URL of the prefetch being navigated to and the prefetch being
   // considered for serving.
-  prefetch_container->OnNavigationToPrefetch();
+  prefetch_container->OnReturnPrefetchToServe(/*served=*/true);
 
   // Simulate a successful DNS probe for this prefetch. Not this will also
   // update the status of the prefetch to
@@ -711,6 +711,75 @@ TEST_F(PrefetchContainerTest, NoVarySearchHelper) {
   EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(kTestUrl));
   EXPECT_TRUE(prefetch_container.HaveDefaultContextCookiesChanged(
       GURL("https://test.com?a=2")));
+}
+
+TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
+  struct TestCase {
+    blink::mojom::SpeculationEagerness eagerness;
+    bool block_until_head;
+    base::TimeDelta block_until_head_duration;
+    bool served;
+  };
+
+  std::vector<TestCase> test_cases{
+      {blink::mojom::SpeculationEagerness::kEager, true, base::Milliseconds(10),
+       true},
+      {blink::mojom::SpeculationEagerness::kModerate, false,
+       base::Milliseconds(20), false},
+      {blink::mojom::SpeculationEagerness::kConservative, true,
+       base::Milliseconds(40), false}};
+
+  base::HistogramTester histogram_tester;
+  for (const auto& test_case : test_cases) {
+    PrefetchContainer prefetch_container(
+        GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+        PrefetchType(/*use_isolated_network_context=*/true,
+                     /*use_prefetch_proxy=*/true, test_case.eagerness),
+        blink::mojom::Referrer(), nullptr);
+
+    prefetch_container.OnGetPrefetchToServe(test_case.block_until_head);
+    if (test_case.block_until_head) {
+      task_environment()->FastForwardBy(test_case.block_until_head_duration);
+    }
+    prefetch_container.OnReturnPrefetchToServe(test_case.served);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.Eager", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.Eager", false,
+      0);
+
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.Moderate", true,
+      0);
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.Moderate", false,
+      1);
+
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.Conservative",
+      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.Conservative",
+      false, 0);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration.Served.Eager",
+      base::Milliseconds(10), 1);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.Eager", 0);
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration.Served.Moderate", 0);
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.Moderate", 0);
+
+  histogram_tester.ExpectTotalCount(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration.Served.Conservative", 0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PrefetchProxy.AfterClick.BlockUntilHeadDuration.NotServed.Conservative",
+      base::Milliseconds(40), 1);
 }
 
 }  // namespace content

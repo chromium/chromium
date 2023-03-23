@@ -72,6 +72,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
 
   bool Servable(base::TimeDelta cacheable_duration) const;
+  bool Failed() const;
 
   absl::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
       const {

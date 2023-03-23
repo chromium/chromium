@@ -283,7 +283,8 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
   // Cover the case where we want to navigate again to the same prefetched
   // Url.
   // Simulate that we've already navigated to prefetched URL.
-  GetPrefetchesPreparedToServe()[0].second->OnNavigationToPrefetch();
+  GetPrefetchesPreparedToServe()[0].second->OnReturnPrefetchToServe(
+      /*served=*/true);
   // Try to navigate again to the same URL.
   NavigateMainframeRendererTo(GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
   EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 2u);
