@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -541,6 +542,7 @@ void LoginUnlockThroughputRecorder::AddLoginTimeMarker(
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Jank.TabletMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Duration.ClamshellMode");
     REPORT_LOGIN_THROUGHPUT_EVENT("Ash.UnlockAnimation.Duration.TabletMode");
+    REPORT_LOGIN_THROUGHPUT_EVENT("ArcUiAvailable");
     if (!reported) {
       constexpr char kFailedEvent[] = "FailedToReportEvent";
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
@@ -566,6 +568,13 @@ void LoginUnlockThroughputRecorder::RestoreDataLoaded() {
     browser_windows_will_not_be_restored_ = true;
     ScheduleWaitForShelfAnimationEndIfNeeded();
   }
+}
+
+void LoginUnlockThroughputRecorder::ArcUiAvailableAfterLogin() {
+  AddLoginTimeMarker("ArcUiAvailable");
+  const base::TimeDelta duration =
+      base::TimeTicks::Now() - primary_user_logged_in_;
+  LOCAL_HISTOGRAM_TIMES("Ash.Tast.ArcUiAvailableAfterLogin.Duration", duration);
 }
 
 void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {

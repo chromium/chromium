@@ -94,6 +94,9 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // This flag signals that all expected browser windows are already scheduled.
   void RestoreDataLoaded();
 
+  // Records that ARC has finished booting.
+  void ArcUiAvailableAfterLogin();
+
  private:
   class TimeMarker {
    public:
