@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 import static junit.framework.Assert.assertFalse;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,6 +43,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
@@ -119,6 +121,10 @@ public class OptionalButtonViewTest {
 
     private ButtonDataImpl getDataForStaticNewTabIconButton() {
         Drawable iconDrawable = AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon);
+        return getDataForStaticNewTabIconButton(iconDrawable);
+    }
+
+    private ButtonDataImpl getDataForStaticNewTabIconButton(Drawable iconDrawable) {
         OnClickListener clickListener = mock(OnClickListener.class);
         OnLongClickListener longClickListener = mock(OnLongClickListener.class);
         String contentDescription = mActivity.getString(R.string.button_new_tab);
@@ -727,5 +733,69 @@ public class OptionalButtonViewTest {
 
         // Action chip shouldn't be visible
         assertEquals(View.GONE, mActionChipLabel.getVisibility());
+    }
+
+    @Test
+    public void testUpdateButton_sameVariantUpdatesShouldNotBeAnimated() {
+        ArgumentCaptor<Transition> transitionArgumentCaptor =
+                ArgumentCaptor.forClass(Transition.class);
+        // Create two ButtonData objects for the same variant (NEW_TAB) with different icons.
+        ButtonDataImpl newTabButtonData = getDataForStaticNewTabIconButton(
+                AppCompatResources.getDrawable(mActivity, R.drawable.btn_star));
+        ButtonDataImpl updatedNewTabButtonData = getDataForStaticNewTabIconButton(
+                AppCompatResources.getDrawable(mActivity, R.drawable.btn_star_filled));
+
+        // First show the first icon.
+        mOptionalButtonView.updateButtonWithAnimation(newTabButtonData);
+
+        verify(mMockBeginDelayedTransition).onResult(transitionArgumentCaptor.capture());
+        // Going from no button to a button should be animated.
+        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Now show the second icon, with the same variant but a different drawable.
+        mOptionalButtonView.updateButtonWithAnimation(updatedNewTabButtonData);
+
+        verify(mMockBeginDelayedTransition, times(2)).onResult(transitionArgumentCaptor.capture());
+        // Updating the drawable without changing variant should not be animated.
+        assertEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Now hide the button.
+        mOptionalButtonView.updateButtonWithAnimation(null);
+        verify(mMockBeginDelayedTransition, times(3)).onResult(transitionArgumentCaptor.capture());
+        // Hiding the button should be animated.
+        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+    }
+
+    @Test
+    public void testUpdateButton_differentVariantUpdatesShouldBeAnimated() {
+        ArgumentCaptor<Transition> transitionArgumentCaptor =
+                ArgumentCaptor.forClass(Transition.class);
+        // Create two ButtonData objects with different variants.
+        ButtonData newTabButtonData = getDataForStaticNewTabIconButton();
+        ButtonData priceTrackingButtonData = getDataForPriceTrackingIconButton();
+
+        // First show the new tab variant.
+        mOptionalButtonView.updateButtonWithAnimation(newTabButtonData);
+
+        verify(mMockBeginDelayedTransition).onResult(transitionArgumentCaptor.capture());
+        // Going from no button to a button should be animated.
+        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Now show the price tracking button.
+        mOptionalButtonView.updateButtonWithAnimation(priceTrackingButtonData);
+
+        verify(mMockBeginDelayedTransition, times(2)).onResult(transitionArgumentCaptor.capture());
+        // Changing variants should be animated.
+        assertNotEquals(0, transitionArgumentCaptor.getValue().getDuration());
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
     }
 }

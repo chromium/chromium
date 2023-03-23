@@ -172,7 +172,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
                     + "a transition");
         }
 
-        boolean canAnimate = mIsAnimationAllowedPredicate.getAsBoolean();
+        boolean isAnimationAllowedByParent = mIsAnimationAllowedPredicate.getAsBoolean();
 
         if (isRunningTransition()) {
             // If we are running any transitions then finish them immediately and jump to the next
@@ -195,11 +195,15 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         if (buttonData == null || !buttonData.canShow()) {
             mCurrentButtonVariant = AdaptiveToolbarButtonVariant.NONE;
             mCanCurrentButtonShow = false;
-            hide(canAnimate);
+            hide(isAnimationAllowedByParent);
             return;
         }
 
         ButtonSpec buttonSpec = buttonData.getButtonSpec();
+        boolean isButtonVariantChanging = mCurrentButtonVariant != buttonSpec.getButtonVariant();
+        // This boolean is final because it's passed to an inner class (OnGlobalLayoutListener).
+        final boolean canAnimate = isAnimationAllowedByParent && isButtonVariantChanging;
+
         mCurrentButtonVariant = buttonSpec.getButtonVariant();
         mCanCurrentButtonShow = buttonData.canShow();
 
