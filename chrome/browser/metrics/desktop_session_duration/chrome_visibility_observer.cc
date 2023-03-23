@@ -6,12 +6,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "components/variations/variations_associated_data.h"
 
 namespace metrics {
 
@@ -67,7 +67,7 @@ void ChromeVisibilityObserver::InitVisibilityGapTimeout() {
   const int kDefaultVisibilityGapTimeout = 3;
 
   int timeout_seconds = kDefaultVisibilityGapTimeout;
-  std::string param_value = variations::GetVariationParamValue(
+  std::string param_value = base::GetFieldTrialParamValue(
       "DesktopSessionDuration", "visibility_gap_timeout");
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_seconds);

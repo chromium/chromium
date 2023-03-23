@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -130,18 +131,16 @@ std::string GetDefaultSearchEngineCountryCode(
 }
 
 std::string GetVariationCountry() {
-  return variations::GetVariationParamValue(kPopularSitesFieldTrialName,
-                                            "country");
+  return base::GetFieldTrialParamValue(kPopularSitesFieldTrialName, "country");
 }
 
 std::string GetVariationVersion() {
-  return variations::GetVariationParamValue(kPopularSitesFieldTrialName,
-                                            "version");
+  return base::GetFieldTrialParamValue(kPopularSitesFieldTrialName, "version");
 }
 
 std::string GetVariationDirectory() {
-  return variations::GetVariationParamValue(kPopularSitesFieldTrialName,
-                                            "directory");
+  return base::GetFieldTrialParamValue(kPopularSitesFieldTrialName,
+                                       "directory");
 }
 
 PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {

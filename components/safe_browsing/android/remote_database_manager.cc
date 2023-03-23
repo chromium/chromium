@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,7 +21,6 @@
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -131,7 +131,7 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager()
   // The param is expected to be a comma-separated list of ints
   // corresponding to the enum types.  We're keeping this finch
   // control around so we can add back types if they later become dangerous.
-  const std::string ints_str = variations::GetVariationParamValue(
+  const std::string ints_str = base::GetFieldTrialParamValue(
       kAndroidFieldExperiment, kAndroidTypesToCheckParam);
   if (ints_str.empty()) {
     // By default, we check all types except a few.

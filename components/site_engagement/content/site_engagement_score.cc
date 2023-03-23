@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
@@ -19,7 +20,6 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
-#include "components/variations/variations_associated_data.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 namespace site_engagement {
@@ -191,8 +191,8 @@ void SiteEngagementScore::UpdateFromVariations(const char* param_name) {
   double param_vals[MAX_VARIATION];
 
   for (int i = 0; i < MAX_VARIATION; ++i) {
-    std::string param_string = variations::GetVariationParamValue(
-        param_name, GetParamValues()[i].first);
+    std::string param_string =
+        base::GetFieldTrialParamValue(param_name, GetParamValues()[i].first);
 
     // Bail out if we didn't get a param string for the key, or if we couldn't
     // convert the param string to a double, or if we get a negative value.

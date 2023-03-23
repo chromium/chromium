@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/variations/variations_associated_data.h"
@@ -93,8 +94,8 @@ base::TimeDelta VariationsRequestScheduler::GetFetchPeriod() const {
     return overridden_period.value();
 
   // The fetch interval can be overridden by a variation param.
-  std::string period_min_str =
-      GetVariationParamValue("VariationsServiceControl", "fetch_period_min");
+  std::string period_min_str = base::GetFieldTrialParamValue(
+      "VariationsServiceControl", "fetch_period_min");
   size_t period_min;
   if (base::StringToSizeT(period_min_str, &period_min))
     return base::Minutes(period_min);

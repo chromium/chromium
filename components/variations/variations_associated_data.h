@@ -33,7 +33,7 @@
 //    // use |params|
 //  }
 //
-//  std::string value = GetVariationParamValue("trial", "param_x");
+//  std::string value = base::GetFieldTrialParamValue("trial", "param_x");
 //  // use |value|, which will be "" if it does not exist
 //
 // VariationID id = GetGoogleVariationID(
@@ -125,11 +125,6 @@ COMPONENT_EXPORT(VARIATIONS)
 bool AssociateVariationParams(const std::string& trial_name,
                               const std::string& group_name,
                               const std::map<std::string, std::string>& params);
-
-// Deprecated. Use base::GetFieldTrialParamValue() instead.
-COMPONENT_EXPORT(VARIATIONS)
-std::string GetVariationParamValue(const std::string& trial_name,
-                                   const std::string& param_name);
 
 // Expose some functions for testing.
 namespace testing {

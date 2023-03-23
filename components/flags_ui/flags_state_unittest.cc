@@ -367,7 +367,7 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParameters) {
   flags_state_->RegisterAllFeatureVariationParameters(&flags_storage_,
                                                       feature_list.get());
   // No value should be associated.
-  EXPECT_EQ("", variations::GetVariationParamValue(kTestTrial, kTestParam1));
+  EXPECT_EQ("", base::GetFieldTrialParamValue(kTestTrial, kTestParam1));
   // The trial should not be created.
   base::FieldTrial* trial = base::FieldTrialList::Find(kTestTrial);
   EXPECT_EQ(nullptr, trial);
@@ -379,7 +379,7 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParameters) {
   flags_state_->RegisterAllFeatureVariationParameters(&flags_storage_,
                                                       feature_list.get());
   // No value should be associated as this is the default option.
-  EXPECT_EQ("", variations::GetVariationParamValue(kTestTrial, kTestParam1));
+  EXPECT_EQ("", base::GetFieldTrialParamValue(kTestTrial, kTestParam1));
 
   // The trial should be created.
   trial = base::FieldTrialList::Find(kTestTrial);
@@ -393,7 +393,7 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParameters) {
   flags_state_->RegisterAllFeatureVariationParameters(&flags_storage_,
                                                       feature_list.get());
   // Associating for the second time should not change the value.
-  EXPECT_EQ("", variations::GetVariationParamValue(kTestTrial, kTestParam1));
+  EXPECT_EQ("", base::GetFieldTrialParamValue(kTestTrial, kTestParam1));
 }
 
 TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersNonDefault) {
@@ -413,7 +413,7 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersNonDefault) {
 
   // The param should have the value predefined in this variation.
   EXPECT_EQ(kTestParamValue,
-            variations::GetVariationParamValue(kTestTrial, kTestParam1));
+            base::GetFieldTrialParamValue(kTestTrial, kTestParam1));
 
   // The value should be associated also via the name of the feature.
   EXPECT_EQ(kTestParamValue,
@@ -446,9 +446,9 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersWithDefaultTrials) {
             base::GetFieldTrialParamValueByFeature(kTestFeature2, kTestParam2));
   // The params are registered in the same trial.
   EXPECT_EQ(kTestParamValue,
-            variations::GetVariationParamValue(kTestTrial, kTestParam1));
+            base::GetFieldTrialParamValue(kTestTrial, kTestParam1));
   EXPECT_EQ(kTestParamValue,
-            variations::GetVariationParamValue(kTestTrial, kTestParam2));
+            base::GetFieldTrialParamValue(kTestTrial, kTestParam2));
 }
 
 base::CommandLine::StringType CreateSwitch(const std::string& value) {

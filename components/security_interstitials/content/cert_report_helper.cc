@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,7 +21,6 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_prefs/user_prefs.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -243,7 +243,7 @@ bool CertReportHelper::ShouldReportCertificateError() {
   // for all of these users. Check the Finch configuration for a sending
   // threshold and only send reports in case the threshold isn't exceeded.
   const std::string param =
-      variations::GetVariationParamValue(kFinchExperimentName, kFinchParamName);
+      base::GetFieldTrialParamValue(kFinchExperimentName, kFinchParamName);
   if (!param.empty()) {
     double sendingThreshold;
     if (base::StringToDouble(param, &sendingThreshold)) {

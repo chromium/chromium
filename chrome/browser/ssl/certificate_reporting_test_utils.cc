@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -17,7 +18,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/cert_report_helper.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/url_request/report_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -118,9 +118,9 @@ ExpectReport GetReportExpectedFromFinch() {
       CertReportHelper::kFinchExperimentName);
 
   if (group_name == CertReportHelper::kFinchGroupShowPossiblySend) {
-    const std::string param = variations::GetVariationParamValue(
-        CertReportHelper::kFinchExperimentName,
-        CertReportHelper::kFinchParamName);
+    const std::string param =
+        base::GetFieldTrialParamValue(CertReportHelper::kFinchExperimentName,
+                                      CertReportHelper::kFinchParamName);
     double sendingThreshold;
     if (!base::StringToDouble(param, &sendingThreshold))
       return CERT_REPORT_NOT_EXPECTED;

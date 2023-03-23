@@ -6,10 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/variations/variations_associated_data.h"
 
 namespace metrics {
 
@@ -174,7 +174,7 @@ void DesktopSessionDurationTracker::InitInactivityTimeout() {
   const int kDefaultInactivityTimeoutMinutes = 5;
 
   int timeout_minutes = kDefaultInactivityTimeoutMinutes;
-  std::string param_value = variations::GetVariationParamValue(
+  std::string param_value = base::GetFieldTrialParamValue(
       "DesktopSessionDuration", "inactivity_timeout");
   if (!param_value.empty())
     base::StringToInt(param_value, &timeout_minutes);

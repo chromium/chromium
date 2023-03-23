@@ -201,7 +201,7 @@ size_t HUPScoringParams::EstimateMemoryUsage() const {
 }
 
 int OmniboxFieldTrial::GetDisabledProviderTypes() {
-  const std::string& types_string = variations::GetVariationParamValue(
+  const std::string& types_string = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kDisableProvidersRule);
   int types = 0;
   if (types_string.empty() || !base::StringToInt(types_string, &types)) {
@@ -375,7 +375,7 @@ void OmniboxFieldTrial::GetExperimentalHUPScoringParams(
 }
 
 float OmniboxFieldTrial::HQPBookmarkValue() {
-  std::string bookmark_value_str = variations::GetVariationParamValue(
+  std::string bookmark_value_str = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kHQPBookmarkValueRule);
   if (bookmark_value_str.empty()) {
     return 10;
@@ -389,24 +389,23 @@ float OmniboxFieldTrial::HQPBookmarkValue() {
 }
 
 bool OmniboxFieldTrial::HQPAllowMatchInTLDValue() {
-  return variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
-                                            kHQPAllowMatchInTLDRule) == "true";
+  return base::GetFieldTrialParamValue(kBundledExperimentFieldTrialName,
+                                       kHQPAllowMatchInTLDRule) == "true";
 }
 
 bool OmniboxFieldTrial::HQPAllowMatchInSchemeValue() {
-  return variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
-                                            kHQPAllowMatchInSchemeRule) ==
-         "true";
+  return base::GetFieldTrialParamValue(kBundledExperimentFieldTrialName,
+                                       kHQPAllowMatchInSchemeRule) == "true";
 }
 
 void OmniboxFieldTrial::GetSuggestPollingStrategy(bool* from_last_keystroke,
                                                   int* polling_delay_ms) {
   *from_last_keystroke =
-      variations::GetVariationParamValue(
+      base::GetFieldTrialParamValue(
           kBundledExperimentFieldTrialName,
           kMeasureSuggestPollingDelayFromLastKeystrokeRule) == "true";
 
-  const std::string& polling_delay_string = variations::GetVariationParamValue(
+  const std::string& polling_delay_string = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kSuggestPollingDelayMsRule);
   if (polling_delay_string.empty() ||
       !base::StringToInt(polling_delay_string, polling_delay_ms) ||
@@ -416,12 +415,12 @@ void OmniboxFieldTrial::GetSuggestPollingStrategy(bool* from_last_keystroke,
 }
 
 std::string OmniboxFieldTrial::HQPExperimentalScoringBuckets() {
-  return variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName, kHQPExperimentalScoringBucketsParam);
+  return base::GetFieldTrialParamValue(kBundledExperimentFieldTrialName,
+                                       kHQPExperimentalScoringBucketsParam);
 }
 
 float OmniboxFieldTrial::HQPExperimentalTopicalityThreshold() {
-  std::string topicality_threshold_str = variations::GetVariationParamValue(
+  std::string topicality_threshold_str = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName,
       kHQPExperimentalScoringTopicalityThresholdParam);
 
@@ -456,7 +455,7 @@ int OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup() {
 }
 
 size_t OmniboxFieldTrial::HQPMaxVisitsToScore() {
-  std::string max_visits_str = variations::GetVariationParamValue(
+  std::string max_visits_str = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kHQPMaxVisitsToScoreRule);
   constexpr size_t kDefaultMaxVisitsToScore = 10;
   static_assert(
@@ -474,7 +473,7 @@ size_t OmniboxFieldTrial::HQPMaxVisitsToScore() {
 }
 
 float OmniboxFieldTrial::HQPTypedValue() {
-  std::string typed_value_str = variations::GetVariationParamValue(
+  std::string typed_value_str = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kHQPTypedValueRule);
   if (typed_value_str.empty()) {
     return 1.5;
@@ -488,7 +487,7 @@ float OmniboxFieldTrial::HQPTypedValue() {
 }
 
 OmniboxFieldTrial::NumMatchesScores OmniboxFieldTrial::HQPNumMatchesScores() {
-  std::string str = variations::GetVariationParamValue(
+  std::string str = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kHQPNumMatchesScoresRule);
   static constexpr char kDefaultNumMatchesScores[] = "1:3,2:2.5,3:2,4:1.5";
   if (str.empty()) {
@@ -519,8 +518,8 @@ size_t OmniboxFieldTrial::HQPNumTitleWordsToAllow() {
   // size_t) containing the number of words.
   size_t num_title_words;
   if (!base::StringToSizeT(
-          variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
-                                             kHQPNumTitleWordsRule),
+          base::GetFieldTrialParamValue(kBundledExperimentFieldTrialName,
+                                        kHQPNumTitleWordsRule),
           &num_title_words)) {
     return 20;
   }
@@ -528,19 +527,18 @@ size_t OmniboxFieldTrial::HQPNumTitleWordsToAllow() {
 }
 
 bool OmniboxFieldTrial::HQPAlsoDoHUPLikeScoring() {
-  return variations::GetVariationParamValue(kBundledExperimentFieldTrialName,
-                                            kHQPAlsoDoHUPLikeScoringRule) ==
-         "true";
+  return base::GetFieldTrialParamValue(kBundledExperimentFieldTrialName,
+                                       kHQPAlsoDoHUPLikeScoringRule) == "true";
 }
 
 bool OmniboxFieldTrial::HUPSearchDatabase() {
-  const std::string& value = variations::GetVariationParamValue(
+  const std::string& value = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kHUPSearchDatabaseRule);
   return value.empty() || (value == "true");
 }
 
 int OmniboxFieldTrial::KeywordScoreForSufficientlyCompleteMatch() {
-  std::string value_str = variations::GetVariationParamValue(
+  std::string value_str = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName,
       kKeywordScoreForSufficientlyCompleteMatchRule);
   if (value_str.empty()) {

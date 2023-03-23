@@ -15,12 +15,12 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permissions_client.h"
-#include "components/variations/variations_associated_data.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/common/switches.h"
@@ -134,9 +134,9 @@ class AppPrefs {
 // Queries variations for the number of days which dismissing and ignoring the
 // banner should prevent a banner from showing.
 void UpdateDaysBetweenShowing() {
-  std::string dismiss_param = variations::GetVariationParamValue(
+  std::string dismiss_param = base::GetFieldTrialParamValue(
       kBannerParamsKey, kBannerParamsDaysAfterBannerDismissedKey);
-  std::string ignore_param = variations::GetVariationParamValue(
+  std::string ignore_param = base::GetFieldTrialParamValue(
       kBannerParamsKey, kBannerParamsDaysAfterBannerIgnoredKey);
 
   if (!dismiss_param.empty() && !ignore_param.empty()) {
@@ -154,7 +154,7 @@ void UpdateDaysBetweenShowing() {
 // Queries variations for the maximum site engagement score required to trigger
 // the banner showing.
 void UpdateSiteEngagementToTrigger() {
-  std::string total_param = variations::GetVariationParamValue(
+  std::string total_param = base::GetFieldTrialParamValue(
       kBannerParamsKey, kBannerParamsEngagementTotalKey);
 
   if (!total_param.empty()) {

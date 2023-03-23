@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -631,8 +632,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, BlocklistShouldBlock) {
 
   if (base::FieldTrialList::TrialExists("WebBluetoothBlocklist")) {
     LOG(INFO) << "WebBluetoothBlocklist field trial already configured.";
-    ASSERT_NE(variations::GetVariationParamValue("WebBluetoothBlocklist",
-                                                 "blocklist_additions")
+    ASSERT_NE(base::GetFieldTrialParamValue("WebBluetoothBlocklist",
+                                            "blocklist_additions")
                   .find("ed5f25a4"),
               std::string::npos)
         << "ERROR: WebBluetoothBlocklist field trial being tested in\n"

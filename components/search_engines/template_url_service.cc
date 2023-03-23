@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -38,7 +39,6 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/url_formatter/url_fixer.h"
-#include "components/variations/variations_associated_data.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
@@ -171,7 +171,7 @@ bool OmniboxFieldTrialKeywordRequiresRegistry() {
   constexpr char kBundledExperimentFieldTrialName[] =
       "OmniboxBundledExperimentV1";
   constexpr char kKeywordRequiresRegistryRule[] = "KeywordRequiresRegistry";
-  const std::string value = variations::GetVariationParamValue(
+  const std::string value = base::GetFieldTrialParamValue(
       kBundledExperimentFieldTrialName, kKeywordRequiresRegistryRule);
   return value.empty() || (value == "true");
 }

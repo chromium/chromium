@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,7 +20,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
-#include "components/variations/variations_associated_data.h"
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 #include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
@@ -313,7 +313,7 @@ std::unique_ptr<content::BackgroundTracingConfig>
 BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
     const std::string& trial_name) {
   std::string config_text =
-      variations::GetVariationParamValue(trial_name, kBackgroundTracingConfig);
+      base::GetFieldTrialParamValue(trial_name, kBackgroundTracingConfig);
   if (config_text.empty())
     return nullptr;
 

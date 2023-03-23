@@ -3259,7 +3259,7 @@ ChromeContentBrowserClient::AllowWebBluetooth(
   // TODO(crbug.com/598890): Don't disable if
   // base::CommandLine::ForCurrentProcess()->
   // HasSwitch(switches::kEnableWebBluetooth) is true.
-  if (variations::GetVariationParamValue(
+  if (base::GetFieldTrialParamValue(
           permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy,
           "Bluetooth") ==
       permissions::PermissionContextBase::kPermissionsKillSwitchBlockedValue) {
@@ -3280,8 +3280,8 @@ ChromeContentBrowserClient::AllowWebBluetooth(
 }
 
 std::string ChromeContentBrowserClient::GetWebBluetoothBlocklist() {
-  return variations::GetVariationParamValue("WebBluetoothBlocklist",
-                                            "blocklist_additions");
+  return base::GetFieldTrialParamValue("WebBluetoothBlocklist",
+                                       "blocklist_additions");
 }
 
 bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(

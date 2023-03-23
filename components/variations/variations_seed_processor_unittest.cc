@@ -18,6 +18,7 @@
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -407,13 +408,13 @@ TYPED_TEST(VariationsSeedProcessorTest, VariationParams) {
   Study::Experiment* experiment2 = AddExperiment("B", 0, study);
 
   this->CreateTrialsFromSeed(seed);
-  EXPECT_EQ("y", GetVariationParamValue("Study1", "x"));
+  EXPECT_EQ("y", base::GetFieldTrialParamValue("Study1", "x"));
 
   study->set_name("Study2");
   experiment1->set_probability_weight(0);
   experiment2->set_probability_weight(1);
   this->CreateTrialsFromSeed(seed);
-  EXPECT_EQ(std::string(), GetVariationParamValue("Study2", "x"));
+  EXPECT_EQ(std::string(), base::GetFieldTrialParamValue("Study2", "x"));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, VariationParamsWithForcingFlag) {
@@ -427,7 +428,7 @@ TYPED_TEST(VariationsSeedProcessorTest, VariationParamsWithForcingFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
   this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study->name()));
-  EXPECT_EQ("y", GetVariationParamValue(study->name(), "x"));
+  EXPECT_EQ("y", base::GetFieldTrialParamValue(study->name(), "x"));
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StartsActive) {
@@ -503,7 +504,7 @@ TYPED_TEST(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
             base::FieldTrialList::FindFullName(study->name()));
 
   // Check that params and experiment ids correspond.
-  EXPECT_EQ("y", GetVariationParamValue(study->name(), "x"));
+  EXPECT_EQ("y", base::GetFieldTrialParamValue(study->name(), "x"));
   VariationID id = GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
                                         kFlagStudyName, kNonFlagGroupName);
   EXPECT_EQ(kExperimentId, id);
