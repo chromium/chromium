@@ -19,13 +19,14 @@ public class QuickDeleteMetricsDelegate {
      * Must be kept in sync with the PrivacyQuickDelete in enums.xml.
      */
     @IntDef({PrivacyQuickDelete.MENU_ITEM_CLICKED, PrivacyQuickDelete.DELETE_CLICKED,
-            PrivacyQuickDelete.CANCEL_CLICKED})
+            PrivacyQuickDelete.CANCEL_CLICKED, PrivacyQuickDelete.DIALOG_DISMISSED_IMPLICITLY})
     public @interface PrivacyQuickDelete {
         int MENU_ITEM_CLICKED = 0;
         int DELETE_CLICKED = 1;
         int CANCEL_CLICKED = 2;
+        int DIALOG_DISMISSED_IMPLICITLY = 3;
         // Always update MAX_VALUE to match the last item.
-        int MAX_VALUE = CANCEL_CLICKED;
+        int MAX_VALUE = DIALOG_DISMISSED_IMPLICITLY;
     }
 
     public static void recordHistogram(@PrivacyQuickDelete int privacyQuickDelete) {

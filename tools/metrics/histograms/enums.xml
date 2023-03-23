@@ -85924,6 +85924,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Entry from menu item clicked"/>
   <int value="1" label="Delete button on dialog clicked"/>
   <int value="2" label="Cancel button on dialog clicked"/>
+  <int value="3"
+      label="Dialog dismissed due to reasons other than Cancel or Delete"/>
 </enum>
 
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">

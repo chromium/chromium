@@ -37,7 +37,11 @@ public class QuickDeleteMetricsDelegateTest {
                     .name("Delete"),
             new ParameterSet()
                     .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED)
-                    .name("Cancel"));
+                    .name("Cancel"),
+            new ParameterSet()
+                    .value(QuickDeleteMetricsDelegate.PrivacyQuickDelete
+                                    .DIALOG_DISMISSED_IMPLICITLY)
+                    .name("Dismissed"));
 
     private @QuickDeleteMetricsDelegate.PrivacyQuickDelete int mPrivacyQuickDeleteMetric;
 

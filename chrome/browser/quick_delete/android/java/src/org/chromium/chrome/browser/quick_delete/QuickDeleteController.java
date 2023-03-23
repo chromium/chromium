@@ -79,6 +79,8 @@ public class QuickDeleteController {
                         QuickDeleteMetricsDelegate.PrivacyQuickDelete.CANCEL_CLICKED);
                 break;
             default:
+                QuickDeleteMetricsDelegate.recordHistogram(
+                        QuickDeleteMetricsDelegate.PrivacyQuickDelete.DIALOG_DISMISSED_IMPLICITLY);
                 break;
         }
     }

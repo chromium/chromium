@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.quick_delete;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -114,6 +115,25 @@ public class QuickDeleteControllerTest {
                         .build();
 
         onViewWaiting(withId(R.id.negative_button)).perform(click());
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testDialogDismissedImplicitlyHistogram_WhenClickingBackButton() throws IOException {
+        openQuickDeleteDialog();
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Privacy.QuickDelete",
+                                QuickDeleteMetricsDelegate.PrivacyQuickDelete
+                                        .DIALOG_DISMISSED_IMPLICITLY,
+                                1)
+                        .build();
+
+        // Implicitly dismiss pop up by pressing Clank's back button.
+        pressBack();
 
         histogramWatcher.assertExpected();
     }
