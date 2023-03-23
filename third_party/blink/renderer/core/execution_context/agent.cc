@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
 
@@ -34,7 +33,7 @@ Agent::Agent(v8::Isolate* isolate,
              bool origin_agent_cluster_left_as_default)
     : rejected_promises_(RejectedPromises::Create()),
       event_loop_(base::AdoptRef(
-          new scheduler::EventLoop(isolate, std::move(microtask_queue)))),
+          new scheduler::EventLoop(this, isolate, std::move(microtask_queue)))),
       cluster_id_(cluster_id),
       origin_keyed_because_of_inheritance_(false),
       is_origin_agent_cluster_(is_origin_agent_cluster),
@@ -107,7 +106,9 @@ bool Agent::IsWindowAgent() const {
 
 void Agent::PerformMicrotaskCheckpoint() {
   event_loop_->PerformMicrotaskCheckpoint();
-  rejected_promises_->ProcessQueue();
+  if (!event_loop_->RejectsPromisesOnEachCompletion()) {
+    rejected_promises_->ProcessQueue();
+  }
 }
 
 void Agent::Dispose() {
@@ -116,6 +117,10 @@ void Agent::Dispose() {
 
 RejectedPromises& Agent::GetRejectedPromises() {
   return *rejected_promises_;
+}
+
+void Agent::NotifyRejectedPromises() {
+  rejected_promises_->ProcessQueue();
 }
 
 }  // namespace blink

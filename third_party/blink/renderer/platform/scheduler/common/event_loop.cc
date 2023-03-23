@@ -9,19 +9,32 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 namespace scheduler {
 
-EventLoop::EventLoop(v8::Isolate* isolate,
+EventLoop::EventLoop(EventLoop::Delegate* delegate,
+                     v8::Isolate* isolate,
                      std::unique_ptr<v8::MicrotaskQueue> microtask_queue)
-    : isolate_(isolate),
+    : delegate_(delegate),
+      isolate_(isolate),
       // TODO(keishi): Create MicrotaskQueue to enable per-EventLoop microtask
       // queue.
-      microtask_queue_(std::move(microtask_queue)) {
+      microtask_queue_(std::move(microtask_queue)),
+      reject_promises_on_completion_(
+          microtask_queue_ &&
+          base::FeatureList::IsEnabled(
+              kMicrotaskQueueRejectPromisesOnEachCompletion)) {
   DCHECK(isolate_);
+  DCHECK(delegate);
+
+  if (reject_promises_on_completion_) {
+    // We need to always have a completion callback.
+    AddCompletedCallbackIfNecessary();
+  }
 }
 
 EventLoop::~EventLoop() {
@@ -68,13 +81,17 @@ void EventLoop::AddCompletedCallbackIfNecessary() {
 }
 
 void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
-  register_complete_callback_ = false;
-  if (microtask_queue_) {
-    microtask_queue_->RemoveMicrotasksCompletedCallback(
-        &EventLoop::RunEndOfCheckpointTasks, this);
-  } else {
-    isolate_->RemoveMicrotasksCompletedCallback(
-        &EventLoop::RunEndOfCheckpointTasks, this);
+  // When `reject_promises_on_completeion_` is true we do not deregister
+  // the callback.
+  if (!reject_promises_on_completion_) {
+    register_complete_callback_ = false;
+    if (microtask_queue_) {
+      microtask_queue_->RemoveMicrotasksCompletedCallback(
+          &EventLoop::RunEndOfCheckpointTasks, this);
+    } else {
+      isolate_->RemoveMicrotasksCompletedCallback(
+          &EventLoop::RunEndOfCheckpointTasks, this);
+    }
   }
   if (!pending_microtasks_.empty()) {
     // We are discarding microtasks here. This implies that the microtask
@@ -82,6 +99,15 @@ void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
     // microtasks are discarded here. See https://crbug.com/1394714.
     pending_microtasks_.clear();
   }
+
+  if (reject_promises_on_completion_ && delegate_) {
+    // 4. For each environment settings object whose responsible event loop is
+    // this event loop, notify about rejected promises on that environment
+    // settings object.
+    delegate_->NotifyRejectedPromises();
+  }
+
+  // 5. Cleanup Indexed Database Transactions.
   if (!end_of_checkpoint_tasks_.empty()) {
     Vector<base::OnceClosure> tasks = std::move(end_of_checkpoint_tasks_);
     for (auto& task : tasks)

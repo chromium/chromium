@@ -9,6 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -59,6 +61,14 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   USING_FAST_MALLOC(EventLoop);
 
  public:
+  // A pure virtual class implemented by the `environment settings object`.
+  // Callbacks exist for steps completed in the microtask completion
+  // algorithm.
+  class Delegate : public GarbageCollectedMixin {
+   public:
+    virtual void NotifyRejectedPromises() = 0;
+  };
+
   EventLoop(const EventLoop&) = delete;
   EventLoop& operator=(const EventLoop&) = delete;
 
@@ -95,18 +105,24 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
 
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
 
+  bool RejectsPromisesOnEachCompletion() const {
+    return reject_promises_on_completion_;
+  }
+
  private:
   friend class WTF::RefCounted<EventLoop>;
   friend blink::Agent;
 
-  EventLoop(v8::Isolate* isolate,
-            std::unique_ptr<v8::MicrotaskQueue> microtask_queue = nullptr);
+  EventLoop(Delegate* delegate,
+            v8::Isolate* isolate,
+            std::unique_ptr<v8::MicrotaskQueue> microtask_queue);
   ~EventLoop();
   void AddCompletedCallbackIfNecessary();
 
   static void RunPendingMicrotask(void* data);
   static void RunEndOfCheckpointTasks(v8::Isolate* isolat, void* data);
 
+  WeakPersistent<Delegate> delegate_;
   v8::Isolate* isolate_;
   bool loop_enabled_ = true;
   bool register_complete_callback_ = false;
@@ -114,6 +130,7 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
   HashSet<FrameOrWorkerScheduler*> schedulers_;
+  const bool reject_promises_on_completion_;
 };
 
 }  // namespace scheduler

@@ -11,15 +11,12 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-microtask-queue.h"
 
 namespace blink {
-
-namespace scheduler {
-class EventLoop;
-}
 
 class ExecutionContext;
 class RejectedPromises;
@@ -33,7 +30,8 @@ class RejectedPromises;
 // While an WindowAgentFactory is shared across a group of reachable frames,
 // Agent is shared across a group of reachable and same-site frames.
 class CORE_EXPORT Agent : public GarbageCollected<Agent>,
-                          public Supplementable<Agent> {
+                          public Supplementable<Agent>,
+                          public scheduler::EventLoop::Delegate {
  public:
   // Do not create the instance directly.
   // Use MakeGarbageCollected<Agent>() or
@@ -122,6 +120,9 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
         bool origin_agent_cluster_left_as_default);
 
  private:
+  // scheduler::EventLoopDelegate overrides:
+  void NotifyRejectedPromises() override;
+
   scoped_refptr<RejectedPromises> rejected_promises_;
   scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;

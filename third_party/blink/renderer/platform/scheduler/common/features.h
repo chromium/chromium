@@ -195,6 +195,10 @@ BASE_FEATURE(kMicrotaskQueuePerWorkerAgent,
              "BlinkSchedulerMicroTaskQueuePerWorkerAgent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMicrotaskQueueRejectPromisesOnEachCompletion,
+             "BlinkSchedulerMicroTaskRejectPromisesOnEachCompletion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace scheduler
 }  // namespace blink
 
