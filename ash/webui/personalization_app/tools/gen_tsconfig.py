@@ -73,7 +73,6 @@ def main(args):
     with open(out_json_path, 'r') as f:
         out_json = json.load(f)
 
-    curdir = os.path.curdir
     out_json_dir = os.path.dirname(out_json_path)
     local_json = {
         'extends': normalize_path(out_json_dir, out_json['extends']),
@@ -91,6 +90,12 @@ def main(args):
                 for key, value in out_json['compilerOptions']['paths'].items()
             },
         },
+        'files': [
+            # Add the .d.ts files.  Type definition only files are not
+            # picked up automatically with `rootDirs`.
+            normalize_path(out_json_dir, path)
+            for path in out_json['files'] if path.endswith('.d.ts')
+        ],
         'references': [{
             'path': normalize_path(out_json_dir, path['path'])
         } for path in out_json['references']],
