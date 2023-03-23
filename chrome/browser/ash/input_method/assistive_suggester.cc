@@ -464,15 +464,17 @@ void AssistiveSuggester::OnLongpressDetected() {
   }
 
   if (IsLongpressEnabledControlV(current_longpress_keydown_.value())) {
-    current_suggester_ = &longpress_control_v_suggester_;
     const auto anchor_rect =
         IMEBridge::Get()->GetInputContextHandler()->GetTextFieldBounds();
-    Shell::Get()->clipboard_history_controller()->ShowMenu(
-        anchor_rect, ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
-        crosapi::mojom::ClipboardHistoryControllerShowSource::
-            kControlVLongpress,
-        base::BindOnce(&AssistiveSuggester::OnClipboardHistoryMenuClosing,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (Shell::Get()->clipboard_history_controller()->ShowMenu(
+            anchor_rect, ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+            crosapi::mojom::ClipboardHistoryControllerShowSource::
+                kControlVLongpress,
+            base::BindOnce(&AssistiveSuggester::OnClipboardHistoryMenuClosing,
+                           weak_ptr_factory_.GetWeakPtr()))) {
+      // Only set `current_suggester_` if the clipboard history menu was shown.
+      current_suggester_ = &longpress_control_v_suggester_;
+    }
   } else if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
                  current_longpress_keydown_->GetCharacter())) {
     current_suggester_ = &longpress_diacritics_suggester_;

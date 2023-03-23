@@ -235,6 +235,47 @@ TEST_F(ClipboardHistoryControllerTest, ShowMenu) {
       "Ash.ClipboardHistory.ContextMenu.UserJourneyTime", 2);
 }
 
+// Tests that `ShowMenu()` returns whether the menu was shown successfully.
+TEST_F(ClipboardHistoryControllerTest, ShowMenuReturnsSuccess) {
+  // Try to show the menu without populating the clipboard. The menu should not
+  // show.
+  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Copy something to enable the clipboard history menu.
+  WriteTextToClipboardAndConfirm(u"test");
+
+  // Try to show the menu with the screen locked. The menu should not show.
+  auto* session_controller = Shell::Get()->session_controller();
+  session_controller->LockScreen();
+  GetSessionControllerClient()->FlushForTest();
+  EXPECT_TRUE(session_controller->IsScreenLocked());
+
+  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+
+  session_controller->HideLockScreen();
+  GetSessionControllerClient()->FlushForTest();
+  EXPECT_FALSE(session_controller->IsScreenLocked());
+
+  // Show the menu.
+  EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Try to show the menu again without closing the active menu. The menu should
+  // still be showing, but this attempt should fail.
+  EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown));
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+}
+
 // Tests that the client-provided `OnMenuClosingCallback` runs before the menu
 // closes.
 TEST_F(ClipboardHistoryControllerTest, OnMenuClosingCallback) {

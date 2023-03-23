@@ -91,11 +91,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // ClipboardHistoryController:
   void AddObserver(ClipboardHistoryController::Observer* observer) override;
   void RemoveObserver(ClipboardHistoryController::Observer* observer) override;
-  void ShowMenu(const gfx::Rect& anchor_rect,
+  bool ShowMenu(const gfx::Rect& anchor_rect,
                 ui::MenuSourceType source_type,
                 crosapi::mojom::ClipboardHistoryControllerShowSource
                     show_source) override;
-  void ShowMenu(
+  bool ShowMenu(
       const gfx::Rect& anchor_rect,
       ui::MenuSourceType source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource show_source,

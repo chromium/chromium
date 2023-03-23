@@ -51,17 +51,16 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // Returns whether the clipboard history menu is able to show.
   virtual bool CanShowMenu() const = 0;
 
-  // Shows the clipboard history menu triggered by `source_type` at the
-  // position specified by `anchor_rect`, provided the menu can currently be
+  // Attempts to show the clipboard history menu triggered by `source_type` at
+  // the position specified by `anchor_rect`. Returns whether the menu was
   // shown. `show_source` indicates how the user opened the menu. As long as the
   // menu is shown, `callback` runs just before the menu closes to indicate
   // whether a clipboard history paste is imminent.
-  // TODO(b/267694199): Make these functions return whether the menu was shown.
-  virtual void ShowMenu(
+  virtual bool ShowMenu(
       const gfx::Rect& anchor_rect,
       ui::MenuSourceType source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource show_source) = 0;
-  virtual void ShowMenu(
+  virtual bool ShowMenu(
       const gfx::Rect& anchor_rect,
       ui::MenuSourceType source_type,
       crosapi::mojom::ClipboardHistoryControllerShowSource show_source,

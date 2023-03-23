@@ -322,20 +322,21 @@ void ClipboardHistoryControllerImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ClipboardHistoryControllerImpl::ShowMenu(
+bool ClipboardHistoryControllerImpl::ShowMenu(
     const gfx::Rect& anchor_rect,
     ui::MenuSourceType source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
-  ShowMenu(anchor_rect, source_type, show_source, OnMenuClosingCallback());
+  return ShowMenu(anchor_rect, source_type, show_source,
+                  OnMenuClosingCallback());
 }
 
-void ClipboardHistoryControllerImpl::ShowMenu(
+bool ClipboardHistoryControllerImpl::ShowMenu(
     const gfx::Rect& anchor_rect,
     ui::MenuSourceType source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
     OnMenuClosingCallback callback) {
   if (IsMenuShowing() || !CanShowMenu())
-    return;
+    return false;
 
   // Close the running context menu if any before showing the clipboard history
   // menu. Because the clipboard history menu should not be nested.
@@ -380,6 +381,7 @@ void ClipboardHistoryControllerImpl::ShowMenu(
   for (auto& observer : observers_) {
     observer.OnClipboardHistoryMenuShown(show_source);
   }
+  return true;
 }
 
 void ClipboardHistoryControllerImpl::GetHistoryValues(
