@@ -31,9 +31,6 @@
 // Called by WebViewSyncControllerObserverBridge's |OnStateChanged|.
 - (void)syncStateDidChange;
 
-// Call to reload accounts from the |dataSource|.
-- (void)reloadAccounts;
-
 @end
 
 namespace ios_web_view {
@@ -104,18 +101,6 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
         std::make_unique<ios_web_view::WebViewSyncControllerObserverBridge>(
             self);
     _syncService->AddObserver(_observer.get());
-
-    // Refresh access tokens on foreground to extend expiration dates.
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(reloadAccounts)
-               name:UIApplicationWillEnterForegroundNotification
-             object:nil];
-
-    // This allows internals of |_identityManager| to fetch and store the user's
-    // info and profile image. This must be called manually *after* all services
-    // have been started to avoid issues in https://crbug.com/441399.
-    _identityManager->OnNetworkInitialized();
   }
   return self;
 }
@@ -216,13 +201,6 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   if ([_delegate respondsToSelector:@selector(syncControllerDidUpdateState:)]) {
     [_delegate syncControllerDidUpdateState:self];
   }
-}
-
-- (void)reloadAccounts {
-  _identityManager->GetDeviceAccountsSynchronizer()
-      ->ReloadAllAccountsFromSystemWithPrimaryAccount(
-          _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-              .account_id);
 }
 
 @end
