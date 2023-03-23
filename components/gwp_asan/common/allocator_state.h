@@ -185,6 +185,12 @@ class AllocatorState {
       LightweightDetector::MetadataId,
       SlotMetadata* metadata_arr);
 
+  // The relationship between a metadata slot and an ID is one-to-many.
+  // This function returns true if the ID stored in the slot matches
+  // the ID that's used to access the slot.
+  bool HasLightweightMetadataForId(LightweightDetector::MetadataId,
+                                   SlotMetadata* metadata_arr);
+
   uintptr_t pages_base_addr = 0;     // Points to start of mapped region.
   uintptr_t pages_end_addr = 0;      // Points to the end of mapped region.
   uintptr_t first_page_addr = 0;     // Points to first allocatable page.

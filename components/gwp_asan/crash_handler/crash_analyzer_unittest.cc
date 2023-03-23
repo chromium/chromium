@@ -4,6 +4,8 @@
 
 #include "components/gwp_asan/crash_handler/crash_analyzer.h"
 
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/crashpad/crashpad/client/annotation.h"
 #include "third_party/crashpad/crashpad/snapshot/annotation_snapshot.h"
+#include "third_party/crashpad/crashpad/snapshot/cpu_architecture.h"
 #include "third_party/crashpad/crashpad/snapshot/cpu_context.h"
 #include "third_party/crashpad/crashpad/snapshot/test/test_exception_snapshot.h"
 #include "third_party/crashpad/crashpad/snapshot/test/test_module_snapshot.h"
@@ -35,24 +38,75 @@
 namespace gwp_asan {
 namespace internal {
 
-class CrashAnalyzerTest : public testing::Test {
+namespace {
+
+void SetNonCanonicalAccessAddress(
+    crashpad::test::TestExceptionSnapshot& exception,
+    crashpad::VMAddress address) {
+#if defined(ARCH_CPU_X86_64)
+  auto* context = exception.MutableContext();
+  context->architecture = crashpad::kCPUArchitectureX86_64;
+  memset(context->x86_64, 0, sizeof(*context->x86_64));
+#endif  // defined(ARCH_CPU_X86_64)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  exception.SetException(SIGSEGV);
+#if defined(ARCH_CPU_X86_64)
+  exception.SetExceptionInfo(SI_KERNEL);
+  exception.SetExceptionAddress(0);
+  context->x86_64->rax = address;
+#else   // defined(ARCH_CPU_X86_64)
+  exception.SetExceptionAddress(address);
+#endif  // defined(ARCH_CPU_X86_64)
+
+#elif BUILDFLAG(IS_APPLE)
+  exception.SetException(EXC_BAD_ACCESS);
+#if defined(ARCH_CPU_X86_64)
+  exception.SetExceptionInfo(EXC_I386_GPFLT);
+  exception.SetExceptionAddress(0);
+  context->x86_64->rax = address;
+#else   // defined(ARCH_CPU_X86_64)
+  exception.SetExceptionAddress(address);
+#endif  // defined(ARCH_CPU_X86_64)
+
+#elif BUILDFLAG(IS_WIN)
+  exception.SetException(EXCEPTION_ACCESS_VIOLATION);
+#if defined(ARCH_CPU_X86_64)
+  exception.SetCodes({0, std::numeric_limits<uint64_t>::max()});
+  context->x86_64->rax = address;
+#else   // defined(ARCH_CPU_X86_64)
+  exception.SetCodes({0, address});
+#endif  // defined(ARCH_CPU_X86_64)
+#else
+#error "Unknown platform"
+#endif
+}
+
+}  // namespace
+
+class BaseCrashAnalyzerTest : public testing::Test {
  protected:
-  void SetUp() final {
-    gpa_.Init(1, 1, 1, base::DoNothing(), false,
-              LightweightDetectorState::kDisabled, 0);
-    InitializeSnapshot();
+  using testing::Test::SetUp;
+
+  void SetUp(bool is_partition_alloc,
+             LightweightDetectorState lightweight_detector_state,
+             size_t num_lightweight_detector_metadata) {
+    is_partition_alloc_ = is_partition_alloc;
+    gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc,
+              lightweight_detector_state, num_lightweight_detector_metadata);
   }
 
   // Initializes the ProcessSnapshot so that it appears the given allocator was
-  // used for backing malloc.
-  void InitializeSnapshot() {
+  // used for backing either malloc or PartitionAlloc, depending on
+  // `is_partition_alloc_`.
+  void InitializeSnapshot(crashpad::VMAddress exception_address) {
     std::string crash_key_value = gpa_.GetCrashKey();
     std::vector<uint8_t> crash_key_vector(crash_key_value.begin(),
                                           crash_key_value.end());
 
     std::vector<crashpad::AnnotationSnapshot> annotations;
     annotations.emplace_back(
-        kMallocCrashKey,
+        is_partition_alloc_ ? kPartitionAllocCrashKey : kMallocCrashKey,
         static_cast<uint16_t>(crashpad::Annotation::Type::kString),
         crash_key_vector);
 
@@ -68,6 +122,7 @@ class CrashAnalyzerTest : public testing::Test {
     exception->MutableContext()->architecture =
         crashpad::CPUArchitecture::kCPUArchitectureX86;
 #endif
+    SetNonCanonicalAccessAddress(*exception, exception_address);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     ASSERT_TRUE(connection_.Initialize(getpid()));
@@ -89,6 +144,15 @@ class CrashAnalyzerTest : public testing::Test {
   crashpad::test::FakePtraceConnection connection_;
 #endif
 
+  bool is_partition_alloc_ = false;
+};
+
+class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
+  void SetUp() final {
+    BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ false,
+                                 LightweightDetectorState::kDisabled, 0);
+    InitializeSnapshot(0);
+  }
 };
 
 // Stack trace collection on Android builds with frame pointers enabled does
@@ -160,6 +224,54 @@ TEST_F(CrashAnalyzerTest, InternalError) {
   ASSERT_TRUE(proto.has_missing_metadata());
   EXPECT_TRUE(proto.missing_metadata());
 }
+
+// The detector is not used on 32-bit systems because pointers there aren't big
+// enough to safely store metadata IDs.
+#if defined(ARCH_CPU_64_BITS)
+class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
+  void SetUp() final {
+    BaseCrashAnalyzerTest::SetUp(/* is_partition_alloc = */ true,
+                                 LightweightDetectorState::kEnabled, 1);
+  }
+};
+
+TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
+  uint64_t alloc;
+  gpa_.RecordLightweightDeallocation(&alloc, sizeof(alloc));
+  InitializeSnapshot(alloc);
+
+  gwp_asan::Crash proto;
+  bool proto_present =
+      CrashAnalyzer::GetExceptionInfo(process_snapshot_, &proto);
+  ASSERT_TRUE(proto_present);
+
+  ASSERT_FALSE(proto.has_allocation());
+  ASSERT_TRUE(proto.has_deallocation());
+  EXPECT_FALSE(proto.has_internal_error());
+  ASSERT_TRUE(proto.has_missing_metadata());
+  EXPECT_FALSE(proto.missing_metadata());
+}
+
+TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
+  uint64_t alloc;
+  gpa_.RecordLightweightDeallocation(&alloc, sizeof(alloc));
+  InitializeSnapshot(alloc);
+
+  // Corrupt the metadata ID.
+  ++gpa_.lightweight_detector_metadata_[0].lightweight_id;
+
+  gwp_asan::Crash proto;
+  bool proto_present =
+      CrashAnalyzer::GetExceptionInfo(process_snapshot_, &proto);
+  ASSERT_TRUE(proto_present);
+
+  ASSERT_FALSE(proto.has_allocation());
+  ASSERT_FALSE(proto.has_deallocation());
+  EXPECT_TRUE(proto.has_internal_error());
+  ASSERT_TRUE(proto.has_missing_metadata());
+  EXPECT_TRUE(proto.missing_metadata());
+}
+#endif  // defined(ARCH_CPU_64_BITS)
 
 }  // namespace internal
 }  // namespace gwp_asan

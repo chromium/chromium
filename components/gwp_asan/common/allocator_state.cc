@@ -179,5 +179,11 @@ AllocatorState::SlotMetadata& AllocatorState::GetLightweightSlotMetadataById(
   return metadata_arr[id % num_lightweight_detector_metadata];
 }
 
+bool AllocatorState::HasLightweightMetadataForId(
+    LightweightDetector::MetadataId id,
+    SlotMetadata* metadata_arr) {
+  return GetLightweightSlotMetadataById(id, metadata_arr).lightweight_id == id;
+}
+
 }  // namespace internal
 }  // namespace gwp_asan
