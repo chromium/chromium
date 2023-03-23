@@ -885,6 +885,19 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(Id(item.stable_id)));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
+  // Spurious events with no stable_id should be ignored (b/268419828).
+  event.stable_id = 0;
+  manager.OnFileCreated(std::as_const(event));
+
+  EXPECT_EQ(manager.progress_.pinned_files, 0);
+  EXPECT_EQ(manager.progress_.pinned_bytes, 0);
+  EXPECT_EQ(manager.progress_.bytes_to_pin, 2487);
+  EXPECT_EQ(manager.progress_.required_space, 4096);
+  EXPECT_EQ(manager.progress_.syncing_files, 0);
+
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(Id(item.stable_id)));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+
   manager.progress_.stage = Stage::kStopped;
 }
 

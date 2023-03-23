@@ -1004,6 +1004,12 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
   const Id id = Id(event.stable_id);
   const Path& path = event.path;
 
+  if (id == Id::kNone) {
+    // Ignore spurious event (b/268419828).
+    LOG(ERROR) << "Ignored " << Quote(event) << ": Spurious event";
+    return;
+  }
+
   if (const Files::iterator it = files_to_track_.find(id);
       it != files_to_track_.end()) {
     DCHECK_EQ(it->first, id);
