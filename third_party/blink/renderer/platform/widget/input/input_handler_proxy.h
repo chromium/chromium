@@ -320,10 +320,10 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
     event_attribution_enabled_ = enabled;
   }
 
-  void RecordScrollBegin(blink::WebGestureDevice device,
-                         uint32_t reasons_from_scroll_begin,
-                         bool was_main_thread_hit_tested,
-                         uint32_t main_thread_repaint_reasons);
+  void RecordMainThreadScrollingReasons(blink::WebGestureDevice device,
+                                        uint32_t reasons_from_scroll_begin,
+                                        bool was_main_thread_hit_tested,
+                                        uint32_t main_thread_repaint_reasons);
 
   bool HasQueuedEventsReadyForDispatch();
 

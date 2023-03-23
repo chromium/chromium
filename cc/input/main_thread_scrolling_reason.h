@@ -59,6 +59,8 @@ struct CC_EXPORT MainThreadScrollingReason {
     kNonFastScrollableRegion = 1 << 8,
     kFailedHitTest = 1 << 9,
     kNoScrollingLayer = 1 << 10,
+    kNotScrollable = 1 << 11,
+    kNonInvertibleTransform = 1 << 12,
     kWheelEventHandlerRegion = 1 << 13,
     kTouchEventHandlerRegion = 1 << 14,
 
@@ -83,7 +85,8 @@ struct CC_EXPORT MainThreadScrollingReason {
   static bool CompositorCanSetScrollReasons(uint32_t reasons) {
     constexpr uint32_t reasons_set_by_compositor =
         kNonFastScrollableRegion | kFailedHitTest | kNoScrollingLayer |
-        kWheelEventHandlerRegion | kTouchEventHandlerRegion;
+        kNotScrollable | kNonInvertibleTransform | kWheelEventHandlerRegion |
+        kTouchEventHandlerRegion;
     return (reasons & reasons_set_by_compositor) == reasons;
   }
 
