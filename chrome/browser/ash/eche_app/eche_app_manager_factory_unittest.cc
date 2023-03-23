@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/eche/eche_tray.h"
@@ -47,6 +48,9 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
     DCHECK(profile_);
     DCHECK(test_web_view_factory_.get());
     ChromeAshTestBase::SetUp();
+    connection_handler_ = std::make_unique<EcheConnectionStatusHandler>();
+    apps_launch_info_provider_ =
+        std::make_unique<AppsLaunchInfoProvider>(connection_handler_.get());
     eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
     phone_hub_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
@@ -99,6 +103,9 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
   }
 
   TestingProfile* GetProfile() { return profile_; }
+  AppsLaunchInfoProvider* GetAppsLaunchInfoProvider() {
+    return apps_launch_info_provider_.get();
+  }
   EcheTray* eche_tray() { return eche_tray_; }
   PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
 
@@ -106,6 +113,8 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
+  std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
+  std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   EcheTray* eche_tray_ = nullptr;
   PhoneHubTray* phone_hub_tray_ = nullptr;
   EcheAppManagerFactory* eche_app_manager_factory_ = nullptr;
@@ -138,10 +147,16 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
     DCHECK(profile_);
     DCHECK(test_web_view_factory_.get());
     ChromeAshTestBase::SetUp();
+    connection_handler_ = std::make_unique<EcheConnectionStatusHandler>();
+    apps_launch_info_provider_ =
+        std::make_unique<AppsLaunchInfoProvider>(connection_handler_.get());
     eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
   }
 
   TestingProfile* GetProfile() { return profile_; }
+  AppsLaunchInfoProvider* GetAppsLaunchInfoProvider() {
+    return apps_launch_info_provider_.get();
+  }
 
   EcheTray* eche_tray() { return eche_tray_; }
 
@@ -149,6 +164,8 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
+  std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
+  std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   EcheTray* eche_tray_ = nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
@@ -160,13 +177,11 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const char16_t visible_name_1[] = u"Fake App 1";
   const char package_name_1[] = "com.fakeapp1";
   const char16_t phone_name[] = u"your phone";
-  auto apps_launch_info_provider = std::make_unique<AppsLaunchInfoProvider>(
-      std::make_unique<EcheConnectionStatusHandler>().get());
 
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name_1,
       visible_name_1, user_id, gfx::Image(), phone_name,
-      apps_launch_info_provider.get());
+      GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   // Eche icon should be visible after launch.
@@ -179,7 +194,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name_2,
       visible_name_2, user_id, gfx::Image(), phone_name,
-      apps_launch_info_provider.get());
+      GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(widget, eche_tray()->GetBubbleWidget());
@@ -191,12 +206,10 @@ TEST_F(EcheAppManagerFactoryTest, LaunchedAppInfo) {
   const std::string package_name = "com.fakeapp";
   const gfx::Image icon = gfx::test::CreateImage(100, 100);
   const std::u16string phone_name = u"your phone";
-  auto apps_launch_info_provider = std::make_unique<AppsLaunchInfoProvider>(
-      std::make_unique<EcheConnectionStatusHandler>().get());
 
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name,
-      visible_name, user_id, icon, phone_name, apps_launch_info_provider.get());
+      visible_name, user_id, icon, phone_name, GetAppsLaunchInfoProvider());
 
   std::unique_ptr<LaunchedAppInfo> launched_app_info =
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
@@ -216,13 +229,11 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   const char16_t visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
   const char16_t phone_name[] = u"your phone";
-  auto apps_launch_info_provider = std::make_unique<AppsLaunchInfoProvider>(
-      std::make_unique<EcheConnectionStatusHandler>().get());
 
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name,
       visible_name, user_id, gfx::Image(), phone_name,
-      apps_launch_info_provider.get());
+      GetAppsLaunchInfoProvider());
   // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   // Eche tray should be visible when streaming is active, not ative when
