@@ -81,11 +81,13 @@ export namespace Message {
     | ErrorResult;
 
   export type EventMessage =
+    // keep-sorted start
     | BrowsingContext.Event
-    | Log.Event
     | CDP.Event
+    | Log.Event
     | Network.Event
     | Script.Event;
+  // keep-sorted end;
 
   export type ErrorCode =
     | 'unknown error'
@@ -99,6 +101,15 @@ export namespace Message {
     readonly message: string;
     readonly stacktrace?: string;
   };
+
+  export type EventNames =
+    // keep-sorted start
+    | BrowsingContext.EventNames
+    | CDP.EventNames
+    | Log.EventNames
+    | Network.EventNames
+    | Script.EventNames;
+  // keep-sorted end;
 
   export class ErrorResponseClass implements Message.ErrorResult {
     protected constructor(
@@ -1091,16 +1102,14 @@ export namespace Session {
   };
 
   export type SubscribeParametersEvent =
-    | BrowsingContext.EventNames
+    // keep-sorted start
+    | Message.EventNames
     | typeof BrowsingContext.AllEvents
-    | Log.EventNames
-    | typeof Log.AllEvents
-    | CDP.EventNames
     | typeof CDP.AllEvents
-    | Network.EventNames
+    | typeof Log.AllEvents
     | typeof Network.AllEvents
-    | Script.EventNames
     | typeof Script.AllEvents;
+  // keep-sorted end;
 
   // SessionSubscribeParameters = {
   //   events: [*text],

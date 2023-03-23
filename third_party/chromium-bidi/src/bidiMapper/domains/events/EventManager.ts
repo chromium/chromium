@@ -63,7 +63,7 @@ export interface IEventManager {
   registerPromiseEvent(
     event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null,
-    eventName: string
+    eventName: Message.EventNames
   ): void;
 
   subscribe(
@@ -130,9 +130,9 @@ export class EventManager implements IEventManager {
    * Returns consistent key to be used to access value maps.
    */
   static #getMapKey(
-    eventName: string,
+    eventName: Message.EventNames,
     browsingContext: CommonDataTypes.BrowsingContext | null,
-    channel: string | null | undefined = undefined
+    channel?: string | null
   ) {
     return JSON.stringify({eventName, browsingContext, channel});
   }
@@ -147,7 +147,7 @@ export class EventManager implements IEventManager {
   registerPromiseEvent(
     event: Promise<Message.EventMessage>,
     contextId: CommonDataTypes.BrowsingContext | null,
-    eventName: Session.SubscribeParametersEvent
+    eventName: Message.EventNames
   ): void {
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedChannels =
@@ -183,7 +183,7 @@ export class EventManager implements IEventManager {
         await this.#handleDomains(eventName, contextId);
         this.#subscriptionManager.subscribe(eventName, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
-          eventName,
+          eventName as Message.EventNames,
           contextId,
           channel
         )) {
@@ -191,7 +191,11 @@ export class EventManager implements IEventManager {
           this.#bidiServer.emitOutgoingMessage(
             OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel)
           );
-          this.#markEventSent(eventWrapper, channel, eventName);
+          this.#markEventSent(
+            eventWrapper,
+            channel,
+            eventName as Message.EventNames
+          );
         }
       }
     }
@@ -202,7 +206,7 @@ export class EventManager implements IEventManager {
    * globally.
    */
   async #handleDomains(
-    eventName: string,
+    eventName: Session.SubscribeParametersEvent,
     contextId: CommonDataTypes.BrowsingContext | null
   ) {
     // Enable network domain if user subscribed to any of network events.
@@ -236,7 +240,7 @@ export class EventManager implements IEventManager {
   /**
    * If the event is buffer-able, put it in the buffer.
    */
-  #bufferEvent(eventWrapper: EventWrapper, eventName: string) {
+  #bufferEvent(eventWrapper: EventWrapper, eventName: Message.EventNames) {
     if (!eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
       return;
@@ -265,7 +269,7 @@ export class EventManager implements IEventManager {
   #markEventSent(
     eventWrapper: EventWrapper,
     channel: string | null,
-    eventName: string
+    eventName: Message.EventNames
   ) {
     if (!eventBufferLength.has(eventName)) {
       // Do nothing if the event is no buffer-able.
@@ -287,7 +291,7 @@ export class EventManager implements IEventManager {
    * Returns events which are buffered and not yet sent to the given channel events.
    */
   #getBufferedEvents(
-    eventName: string,
+    eventName: Message.EventNames,
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): EventWrapper[] {
