@@ -86,6 +86,12 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         **kwargs
     )
 
+###############################################################################
+# NOTE: If you change any of the following builders, please make sure the
+# GCE image roller that watches these builders is similarly up-to-date. See
+# http://shortn/_F1oktuhGEV.
+###############################################################################
+
 ci_builder(
     name = "android-pie-arm64-rel-swarming",
     builder_spec = builder_config.builder_spec(
