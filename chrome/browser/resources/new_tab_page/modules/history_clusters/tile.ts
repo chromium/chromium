@@ -72,8 +72,11 @@ export class TileModuleElement extends I18nMixin
           await ImageServiceBrowserProxy.getInstance().handler.getPageImageUrl(
               ImageServiceClientId.NtpQuests, visitUrl,
               {suggestImages: false, optimizationGuideImages: true});
-      if (result && result.result) {
-        this.imageUrl_ = result.result.imageUrl;
+      const success = !!(result && result.result);
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.HistoryClusters.ImageLoadSuccess', success);
+      if (success) {
+        this.imageUrl_ = result!.result!.imageUrl;
         return;
       }
     }
