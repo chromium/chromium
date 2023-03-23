@@ -510,6 +510,11 @@ ArcPolicyBridge::ArcPolicyBridge(content::BrowserContext* context,
 
 ArcPolicyBridge::~ArcPolicyBridge() {
   VLOG(2) << "ArcPolicyBridge::~ArcPolicyBridge";
+  if (is_policy_service_observed) {
+    policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+    is_policy_service_observed = false;
+    policy_service_ = nullptr;
+  }
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // It can be null in unittests
   if (arc_session_manager) {
