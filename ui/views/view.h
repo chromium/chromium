@@ -1586,20 +1586,22 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Accessibility -------------------------------------------------------------
 
-  // Convenience functions to set common accessibility properties, typically
-  // during view construction.
-  void AccessibilityInit(ax::mojom::Role role,
-                         const std::u16string& name,
-                         const std::u16string& description);
-  void AccessibilityInit(ax::mojom::Role role,
-                         const std::u16string& role_description,
-                         const std::u16string& name,
-                         const std::u16string& description);
-  void AccessibilityInit(ax::mojom::Role role,
-                         const std::u16string& name,
-                         ax::mojom::NameFrom name_from,
-                         const std::u16string& description,
-                         ax::mojom::DescriptionFrom description_from);
+  // Convenience functions to set common accessibility properties during view
+  // construction/initialization. They are intended to define property values as
+  // part of the creation of this view and should not be used to provide
+  // property-change updates.
+  void SetAccessibilityProperties(ax::mojom::Role role,
+                                  const std::u16string& name,
+                                  const std::u16string& description);
+  void SetAccessibilityProperties(ax::mojom::Role role,
+                                  const std::u16string& role_description,
+                                  const std::u16string& name,
+                                  const std::u16string& description);
+  void SetAccessibilityProperties(ax::mojom::Role role,
+                                  const std::u16string& name,
+                                  ax::mojom::NameFrom name_from,
+                                  const std::u16string& description,
+                                  ax::mojom::DescriptionFrom description_from);
 
   // Called when the accessible name of the View changed.
   virtual void OnAccessibleNameChanged(const std::u16string& new_name) {}
@@ -2354,8 +2356,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // `GetAccessibleNodeData`.
   std::unique_ptr<ui::AXNodeData> ax_node_data_;
 
-  // Used by `AccessibilityInit` and to prevent accessibility property-change
-  // events from being fired during initialization of this view.
+  // Used by `SetAccessibilityProperties` and to prevent accessibility
+  // property-change events from being fired during initialization of this view.
   bool pause_accessibility_events_ = false;
 
   // Keeps track of whether accessibility checks for this View have run yet.

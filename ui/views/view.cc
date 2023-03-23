@@ -1934,30 +1934,31 @@ void View::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   *node_data = *ax_node_data_;
 }
 
-void View::AccessibilityInit(ax::mojom::Role role,
-                             const std::u16string& name,
-                             const std::u16string& description) {
+void View::SetAccessibilityProperties(ax::mojom::Role role,
+                                      const std::u16string& name,
+                                      const std::u16string& description) {
   base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
   SetAccessibleRole(role);
   SetAccessibleName(name);
   SetAccessibleDescription(description);
 }
 
-void View::AccessibilityInit(ax::mojom::Role role,
-                             const std::u16string& role_description,
-                             const std::u16string& name,
-                             const std::u16string& description) {
+void View::SetAccessibilityProperties(ax::mojom::Role role,
+                                      const std::u16string& role_description,
+                                      const std::u16string& name,
+                                      const std::u16string& description) {
   base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
   SetAccessibleRole(role, role_description);
   SetAccessibleName(name);
   SetAccessibleDescription(description);
 }
 
-void View::AccessibilityInit(ax::mojom::Role role,
-                             const std::u16string& name,
-                             ax::mojom::NameFrom name_from,
-                             const std::u16string& description,
-                             ax::mojom::DescriptionFrom description_from) {
+void View::SetAccessibilityProperties(
+    ax::mojom::Role role,
+    const std::u16string& name,
+    ax::mojom::NameFrom name_from,
+    const std::u16string& description,
+    ax::mojom::DescriptionFrom description_from) {
   base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
   SetAccessibleRole(role);
   SetAccessibleName(name, name_from);
@@ -1972,7 +1973,15 @@ void View::SetAccessibleName(const std::u16string& name) {
 
 void View::SetAccessibleName(const std::u16string& name,
                              ax::mojom::NameFrom name_from) {
+  // Ensure we have a current `name_from` value. For instance, the name might
+  // still be an empty string, but a view is now indicating that this is by
+  // design by setting `NameFrom::kAttributeExplicitlyEmpty`.
   ax_node_data_->SetNameFrom(name_from);
+
+  if (name == accessible_name_) {
+    return;
+  }
+
   if (name.empty()) {
     ax_node_data_->RemoveStringAttribute(ax::mojom::StringAttribute::kName);
   } else if (ax_node_data_->role != ax::mojom::Role::kUnknown &&
@@ -1981,14 +1990,10 @@ void View::SetAccessibleName(const std::u16string& name,
     // in `AXNodeData` that wants to have a role to calculate a name-from.
     // If we don't have a role yet, don't add it to the data until we do.
     // See `SetAccessibleRole` where we check for and handle this condition.
-    // Also note that the `AccessibilityInit` function allows view authors
-    // to set the role and name at once, if all views use it, we can remove
-    // this workaround.
+    // Also note that the `SetAccessibilityProperties` function allows view
+    // authors to set the role and name at once, if all views use it, we can
+    // remove this workaround.
     ax_node_data_->SetName(name);
-  }
-
-  if (name == accessible_name_) {
-    return;
   }
 
   accessible_name_ = name;
@@ -2072,12 +2077,22 @@ void View::SetAccessibleDescription(const std::u16string& description) {
 void View::SetAccessibleDescription(
     const std::u16string& description,
     ax::mojom::DescriptionFrom description_from) {
+  // Ensure we have a current `description_from` value. For instance, the
+  // description might still be an empty string, but a view is now indicating
+  // that this is by design by setting
+  // `DescriptionFrom::kAttributeExplicitlyEmpty`.
   ax_node_data_->SetDescriptionFrom(description_from);
-  if (!description.empty()) {
-    ax_node_data_->SetDescription(description);
-  }
+
   if (description == accessible_description_) {
     return;
+  }
+
+  // `AXNodeData::SetDescription` DCHECKs that the description is not empty
+  // unless it has `DescriptionFrom::kAttributeExplicitlyEmpty`.
+  if (!description.empty() ||
+      ax_node_data_->GetDescriptionFrom() ==
+          ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
+    ax_node_data_->SetDescription(description);
   }
 
   accessible_description_ = description;
