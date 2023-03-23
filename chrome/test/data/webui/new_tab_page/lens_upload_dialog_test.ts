@@ -138,6 +138,53 @@ suite('LensUploadDialogTest', () => {
                 LensUploadDialogAction.DIALOG_CLOSED));
       });
 
+  test(
+      'focusout with null related target closes the dialog when doc has focus',
+      async () => {
+        // Arrange.
+        uploadDialog.openDialog();
+        await waitAfterNextRender(uploadDialog);
+        const event = new FocusEvent('focusout', {relatedTarget: null});
+
+        // Act.
+        (document.activeElement as HTMLElement).focus();
+        uploadDialog.$.dialog.dispatchEvent(event);
+
+        // Assert.
+        assertTrue(uploadDialog.$.dialog.hidden);
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.Lens.UploadDialog.DialogAction',
+                LensUploadDialogAction.DIALOG_CLOSED));
+      });
+
+  test(
+      'focusout with null related target closes the dialog when doc does not have focus',
+      async () => {
+        // Arrange.
+        uploadDialog.openDialog();
+        await waitAfterNextRender(uploadDialog);
+        const event = new FocusEvent('focusout', {relatedTarget: null});
+
+        // Act.
+        const nativeHasFocus = document.hasFocus;
+        document.hasFocus = () => {
+          return false;
+        };
+        uploadDialog.$.dialog.dispatchEvent(event);
+
+        // Assert.
+        assertFalse(uploadDialog.$.dialog.hidden);
+        assertEquals(
+            0,
+            metrics.count(
+                'NewTabPage.Lens.UploadDialog.DialogAction',
+                LensUploadDialogAction.DIALOG_CLOSED));
+
+        document.hasFocus = nativeHasFocus;
+      });
+
   test('clicking esc key closes the dialog', async () => {
     // Arrange.
     uploadDialog.openDialog();

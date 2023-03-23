@@ -433,13 +433,16 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
       recordLensUploadDialogAction(LensUploadDialogAction.IMAGE_DROPPED);
     }
   }
-  private onFocusOut_ = (event: FocusEvent) => {
-    const outsideDialog = !event.relatedTarget ||
-        !this.$.dialog.contains(event.relatedTarget as Node);
+
+  private onFocusOut_(event: FocusEvent) {
+    // Focus ensures that the file picker pop-up does not close dialog.
+    const outsideDialog = document.hasFocus() &&
+        (!event.relatedTarget ||
+         !this.$.dialog.contains(event.relatedTarget as Node));
     if (outsideDialog) {
       this.closeDialog();
     }
-  };
+  }
 }
 declare global {
   interface HTMLElementTagNameMap {
