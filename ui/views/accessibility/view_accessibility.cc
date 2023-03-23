@@ -436,41 +436,6 @@ void ViewAccessibility::OverrideDescription(
   OverrideDescription(base::UTF16ToUTF8(description), description_from);
 }
 
-void ViewAccessibility::OverrideDescribedBy(
-    const View* described_by_view,
-    const ax::mojom::DescriptionFrom description_from) {
-  DCHECK_NE(described_by_view, view_);
-  // |OverrideDescription| might have been used before |OverrideDescribedBy|.
-  // We don't want to keep an old/incorrect description. In addition, some ATs
-  // might expect the description to be provided by us from the describing View.
-  // So try to get the name from the describing View and use the result as the
-  // description string.
-  //
-  // |ViewAccessibility::GetAccessibleNodeData| gets properties from: 1) The
-  // View's implementation of |View::GetAccessibleNodeData| and 2) the
-  // custom_data_ set via ViewAccessibility's various Override functions.
-  // HOWEVER, it returns early prior to checking either of those sources if the
-  // Widget does not exist or is closed. Thus given a View whose Widget is about
-  // to be created, we cannot use |ViewAccessibility::GetAccessibleNodeData| to
-  // obtain the name. If |OverrideDescribedBy| is being called, presumably the
-  // labelling View is not in the process of being destroyed. So manually check
-  // the two sources.
-  ui::AXNodeData data;
-  const_cast<View*>(described_by_view)->GetAccessibleNodeData(&data);
-  custom_data_.SetDescription(
-      data.GetStringAttribute(ax::mojom::StringAttribute::kName).empty()
-          ? described_by_view->GetViewAccessibility()
-                .custom_data_.GetStringAttribute(
-                    ax::mojom::StringAttribute::kName)
-          : data.GetStringAttribute(ax::mojom::StringAttribute::kName));
-
-  int32_t described_by_id =
-      described_by_view->GetViewAccessibility().GetUniqueId().Get();
-  custom_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
-                                   {described_by_id});
-  custom_data_.SetDescriptionFrom(description_from);
-}
-
 void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {
   NOTIMPLEMENTED() << "Only implemented on Mac for now.";
 }

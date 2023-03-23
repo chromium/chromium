@@ -149,22 +149,6 @@ class VIEWS_EXPORT ViewAccessibility {
                            const ax::mojom::DescriptionFrom description_from =
                                ax::mojom::DescriptionFrom::kAriaDescription);
 
-  // Sets the accessible description source by establishing a relationship
-  // between this View and another view, such as a Label. By default the source
-  // type of the description is "related element." This default should cover
-  // most, if not all, of the use cases for Views. Note that the description
-  // source types were created based on needs associated with web content
-  // accessibility, and assistive technologies may make decisions based on that
-  // supposition. For instance, kTitle implies that the source of the
-  // description will be presented as a tooltip, such as would result from the
-  // HTML 'title' attribute or the SVG <title> element. See also
-  // OverrideDescription, which allows a View to provide a flat string
-  // description which is appropriate in cases where there is not one single
-  // Label/View containing the entire description.
-  void OverrideDescribedBy(const View* described_by_view,
-                           const ax::mojom::DescriptionFrom description_from =
-                               ax::mojom::DescriptionFrom::kRelatedElement);
-
   // Sets the platform-specific accessible name/title property of the
   // NativeViewAccessible window. This is needed on platforms where the name
   // of the NativeViewAccessible window is automatically calculated by the

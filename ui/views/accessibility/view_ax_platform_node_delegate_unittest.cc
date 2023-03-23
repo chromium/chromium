@@ -497,13 +497,6 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
   EXPECT_EQ(button_accessibility()->GetNameFrom(),
             ax::mojom::NameFrom::kRelatedElement);
 
-  // Set the label's View as the description source of the accessible button.
-  // This should also remove the previously-set description.
-  button_accessibility()->OverrideDescribedBy(label_);
-  EXPECT_EQ(button_accessibility()->GetDescription(), "Label's Name");
-  EXPECT_EQ(button_accessibility()->GetDescriptionFrom(),
-            ax::mojom::DescriptionFrom::kRelatedElement);
-
   // Setting the labelledby View to itself should trigger a DCHECK.
   EXPECT_DCHECK_DEATH_WITH(button_accessibility()->OverrideLabelledBy(button_),
                            "Check failed: labelled_by_view != view_");
