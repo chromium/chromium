@@ -12,6 +12,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -32,6 +33,7 @@ import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -1323,20 +1325,28 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                 "Android.MediaPickerShown", value, SHOWING_ENUM_COUNT);
     }
 
+    private static String resolvePackageNameFromIntent(Intent intent) {
+        String packageName = "";
+        ResolveInfo resolveInfo = PackageManagerUtils.resolveActivity(intent, 0);
+        if (resolveInfo != null && resolveInfo.activityInfo != null
+                && resolveInfo.activityInfo.applicationInfo != null
+                && resolveInfo.activityInfo.applicationInfo.packageName != null) {
+            packageName = resolveInfo.activityInfo.applicationInfo.packageName;
+        }
+        return packageName;
+    }
+
     private static boolean showPhotoPicker(WindowAndroid windowAndroid,
             WindowAndroid.IntentCallback intentCallback, PhotoPickerListener listener,
             boolean allowMultiple, List<String> mimeTypes) {
         if (preferAndroidMediaPickerViaGetContent()) {
-            logMediaPickerShown(SHOWING_ANDROID_PICKER_INDIRECT);
             return showAndroidMediaPickerIndirect(
                     windowAndroid, intentCallback, allowMultiple, mimeTypes);
         } else if (preferAndroidMediaPickerViaPickImage()
                 || preferAndroidMediaPickerViaPickImagePlus()) {
-            logMediaPickerShown(SHOWING_ANDROID_PICKER_DIRECT);
             return showAndroidMediaPickerDirect(
                     windowAndroid, intentCallback, allowMultiple, mimeTypes);
         } else {
-            logMediaPickerShown(SHOWING_CHROME_PICKER);
             return showChromeMediaPicker(windowAndroid, listener, allowMultiple, mimeTypes);
         }
     }
@@ -1377,6 +1387,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             return false;
         }
 
+        logMediaPickerShown(SHOWING_ANDROID_PICKER_DIRECT);
         return true;
     }
 
@@ -1394,11 +1405,21 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         intent.setType("*/*");
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes.toArray(new String[0]));
 
+        // When relying on the indirect way of launching the Android Media Picker, we want to be
+        // sure that the Android Media Picker is the one handling the request and not something
+        // random.
+        String packageNameForGetContent = resolvePackageNameFromIntent(intent);
+        if (!"com.google.android.providers.media.module".equals(packageNameForGetContent)) {
+            return showAndroidMediaPickerDirect(
+                    windowAndroid, intentCallback, allowMultiple, mimeTypes);
+        }
+
         if (!windowAndroid.showIntent(
                     intent, intentCallback, /* errorId= */ R.string.opening_android_media_picker)) {
             return false;
         }
 
+        logMediaPickerShown(SHOWING_ANDROID_PICKER_INDIRECT);
         return true;
     }
 
@@ -1408,6 +1429,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         assert sPhotoPicker == null;
         sPhotoPicker = sPhotoPickerDelegate.showPhotoPicker(
                 windowAndroid, listener, allowMultiple, mimeTypes);
+        logMediaPickerShown(SHOWING_CHROME_PICKER);
         return true;
     }
 
