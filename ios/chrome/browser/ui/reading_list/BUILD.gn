@@ -25,7 +25,6 @@ source_set("reading_list") {
   ]
   deps = [
     ":reading_list_ui",
-    "resources:distillation_fail_new",
     "//base",
     "//components/favicon/core",
     "//components/feature_engagement",
@@ -54,7 +53,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
-    "//ios/chrome/browser/ui/reading_list/resources:distillation_fail_new",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/sharing/activity_services",
     "//ios/chrome/browser/ui/side_swipe",
@@ -128,7 +126,6 @@ source_set("reading_list_ui") {
   deps = [
     ":reading_list_constants",
     "resources:reading_list_empty",
-    "resources:reading_list_empty_state",
     "//base",
     "//base:i18n",
     "//components/prefs",

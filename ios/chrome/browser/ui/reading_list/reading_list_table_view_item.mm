@@ -76,10 +76,8 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
   _distillationState = distillationState;
   switch (_distillationState) {
     case ReadingListUIDistillationStatusFailure:
-      self.distillationBadgeImage =
-          UseSymbols() ? DefaultSymbolTemplateWithPointSize(
-                             kErrorCircleFillSymbol, kSymbolBadgeImagePointSize)
-                       : [UIImage imageNamed:@"distillation_fail_new"];
+      self.distillationBadgeImage = DefaultSymbolTemplateWithPointSize(
+          kErrorCircleFillSymbol, kSymbolBadgeImagePointSize);
       self.distillationBadgeTintColor = [UIColor colorNamed:kGrey600Color];
       break;
     case ReadingListUIDistillationStatusSuccess:
@@ -113,9 +111,7 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
     URLCell.titleLabel.textColor = styler.cellTitleColor;
   [URLCell.faviconView configureWithAttributes:self.attributes];
   URLCell.faviconBadgeView.image = self.distillationBadgeImage;
-  if (UseSymbols()) {
-    URLCell.faviconBadgeView.tintColor = self.distillationBadgeTintColor;
-  }
+  URLCell.faviconBadgeView.tintColor = self.distillationBadgeTintColor;
   cell.isAccessibilityElement = YES;
   cell.accessibilityLabel = GetReadingListCellAccessibilityLabel(
       self.title, [self hostname], self.distillationState,

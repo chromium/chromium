@@ -46,12 +46,6 @@ const char kPage1Link[] = "page-1";
 const char kPage2Link[] = "page-2";
 const char kPage3Link[] = "page-3";
 
-id<GREYMatcher> ContextMenuMatcherForText(NSString* text) {
-  return grey_allOf(
-      grey_ancestor(grey_kindOfClassName(@"PopupMenuNavigationCell")),
-      grey_text(text), nil);
-}
-
 // Response provider which can be paused. When it is paused it buffers all
 // requests and does not respond to them until `set_paused(false)` is called.
 class PausableResponseProvider : public HtmlResponseProvider {
@@ -234,14 +228,9 @@ class PausableResponseProvider : public HtmlResponseProvider {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
       performAction:grey_longPress()];
   NSString* URL1Title = base::SysUTF8ToNSString(kTestPage1);
-  if ([ChromeEarlGrey isSFSymbolEnabled]) {
-    [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                     URL1Title)] performAction:grey_tap()];
-  } else {
-    [[EarlGrey selectElementWithMatcher:ContextMenuMatcherForText(URL1Title)]
-        performAction:grey_tap()];
-  }
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   URL1Title)] performAction:grey_tap()];
 
   {
     // Disables EG synchronization.

@@ -1180,10 +1180,6 @@ NSString* SerializedValue(const base::Value* value) {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
 }
 
-+ (BOOL)isSFSymbolEnabled {
-  return UseSymbols();
-}
-
 + (BOOL)isUIButtonConfigurationEnabled {
   return IsUIButtonConfigurationEnabled();
 }

@@ -373,9 +373,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       [[TableViewImageItem alloc] initWithType:ItemTypeShowFullHistory];
   historyItem.title = l10n_util::GetNSString(IDS_HISTORY_SHOWFULLHISTORY_LINK);
 
-  historyItem.image = UseSymbols() ? DefaultSymbolWithPointSize(
-                                         kHistorySymbol, kSymbolActionPointSize)
-                                   : [UIImage imageNamed:@"show_history"];
+  historyItem.image =
+      DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
   historyItem.textColor = [UIColor colorNamed:kBlueColor];
   historyItem.accessibilityIdentifier =
       kRecentTabsShowFullHistoryCellAccessibilityIdentifier;

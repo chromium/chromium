@@ -15,7 +15,6 @@ source_set("cells") {
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/ui/favicon/resources:default_favicon",
     "//ios/chrome/browser/ui/popup_menu/public:ui_constants",
     "//ios/chrome/browser/ui/popup_menu/public/cells",
     "//ios/chrome/browser/ui/reading_list:reading_list_ui",

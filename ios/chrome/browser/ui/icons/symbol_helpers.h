@@ -11,9 +11,6 @@
 /// Import `symbols.h` and not this file directly.
 /// *******
 
-// Returns YES if the kUseSFSymbols flag is enabled.
-bool UseSymbols();
-
 // Returns YES if the kUseSFSymbolsInOmnibox flag is enabled.
 bool UseSymbolsInOmnibox();
 

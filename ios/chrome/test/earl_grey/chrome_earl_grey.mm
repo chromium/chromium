@@ -1323,10 +1323,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
 }
 
-- (BOOL)isSFSymbolEnabled {
-  return [ChromeEarlGreyAppInterface isSFSymbolEnabled];
-}
-
 - (BOOL)isUIButtonConfigurationEnabled {
   return [ChromeEarlGreyAppInterface isUIButtonConfigurationEnabled];
 }

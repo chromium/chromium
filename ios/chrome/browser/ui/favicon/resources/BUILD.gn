@@ -21,12 +21,3 @@ imageset("default_world_favicon_regular") {
     "default_world_favicon_regular.imageset/default_world_favicon_regular@3x.png",
   ]
 }
-
-imageset("default_favicon") {
-  sources = [
-    "default_favicon.imageset/Contents.json",
-    "default_favicon.imageset/default_favicon.png",
-    "default_favicon.imageset/default_favicon@2x.png",
-    "default_favicon.imageset/default_favicon@3x.png",
-  ]
-}

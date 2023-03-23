@@ -169,7 +169,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewImageItem* textImageItem =
       [[TableViewImageItem alloc] initWithType:ItemTypeTextAccessoryImage];
   textImageItem.title = @"Image Item with History Image";
-  textImageItem.image = [UIImage imageNamed:@"show_history"];
+  textImageItem.image =
+      DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
   [model addItem:textImageItem toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewTabsSearchSuggestedHistoryItem* searchHistorySuggestedItem =

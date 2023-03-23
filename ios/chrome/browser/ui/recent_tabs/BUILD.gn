@@ -16,7 +16,6 @@ source_set("recent_tabs") {
   ]
   deps = [
     ":recent_tabs_ui",
-    "resources:show_history",
     "//base",
     "//components/sessions",
     "//components/signin/public/identity_manager",

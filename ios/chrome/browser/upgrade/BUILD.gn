@@ -13,7 +13,6 @@ source_set("upgrade") {
   ]
   deps = [
     ":public",
-    "resources:infobar_update",
     "//base",
     "//components/infobars/core",
     "//components/version_info",

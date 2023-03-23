@@ -94,10 +94,8 @@ class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
-      icon_ = gfx::Image(UseSymbols()
-                             ? DefaultSymbolWithPointSize(
-                                   kInfoCircleSymbol, kInfobarSymbolPointSize)
-                             : [UIImage imageNamed:@"infobar_update"]);
+      icon_ = gfx::Image(DefaultSymbolWithPointSize(kInfoCircleSymbol,
+                                                    kInfobarSymbolPointSize));
     }
     return ui::ImageModel::FromImage(icon_);
   }

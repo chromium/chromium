@@ -690,9 +690,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the Web Channels feature is enabled.
 - (BOOL)isWebChannelsEnabled;
 
-// Returns whether SF Symbols are used.
-- (BOOL)isSFSymbolEnabled;
-
 // Returns whether UIButtonConfiguration changes are enabled.
 - (BOOL)isUIButtonConfigurationEnabled;
 
