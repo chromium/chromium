@@ -793,7 +793,10 @@ void BluetoothAdapterFloss::AdapterSspRequest(
   BluetoothPairingFloss* pairing = device->pairing();
 
   if (!pairing) {
-    LOG(WARNING) << "SSP request for an unknown pairing";
+    // For incoming bonding, reject it right away to avoid users try to pair
+    // with it while the remote is waiting reply.
+    FlossDBusManager::Get()->GetAdapterClient()->SetPairingConfirmation(
+        base::DoNothing(), remote_device, /*accept=*/false);
     return;
   }
 
