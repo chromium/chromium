@@ -68,10 +68,10 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
 
   void TearDown() override {
     apps_launch_info_provider_.reset();
-    connection_status_handler_.reset();
     launch_app_helper_.reset();
     handler_.reset();
     stream_status_change_handler_.reset();
+    connection_status_handler_.reset();
   }
 
   void FakeLaunchEcheAppFunction(
